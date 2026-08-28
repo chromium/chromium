@@ -5,13 +5,12 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_AW_DRAW_FN_IMPL_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_AW_DRAW_FN_IMPL_H_
 
-#include <optional>
-
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/circular_deque.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace android_webview {
@@ -58,7 +57,11 @@ class AwDrawFnImpl {
   // Vulkan context provider for Vk rendering.
   scoped_refptr<AwVulkanContextProvider> vulkan_context_provider_;
 
-  std::optional<AwVulkanContextProvider::ScopedSecondaryCBDraw>
+  // Same functor may be inserted multiple times in the same draw, in which case
+  // multiple DrawVk can be called and then the same number of PostDrawVk is
+  // called. Use a deque to allow creating a ScopedSecondaryCBDraw for each
+  // DrawVk call.
+  base::circular_deque<AwVulkanContextProvider::ScopedSecondaryCBDraw>
       scoped_secondary_cb_draw_;
 
   bool skip_next_post_draw_vk_ = false;
