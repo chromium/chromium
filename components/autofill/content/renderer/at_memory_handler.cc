@@ -90,6 +90,7 @@ bool IsModifierKey(const WebKeyboardEvent& event) {
     case ui::VKEY_ALTGR:
     case ui::VKEY_LWIN:  // VKEY_LWIN is an alias Mac's VKEY_COMMAND.
     case ui::VKEY_RWIN:
+    case ui::VKEY_RIGHT_COMMAND:
     case ui::VKEY_CAPITAL:
     case ui::VKEY_NUMLOCK:
     case ui::VKEY_SCROLL:
