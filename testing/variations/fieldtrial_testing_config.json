@@ -2927,6 +2927,24 @@
             ]
         }
     ],
+    "AutomatedPasswordChangeWithPrivateInferenceLoginCheck": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordChangeWithPrivateInferenceLoginCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomaticUsbDetach": [
         {
             "platforms": [

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -42,6 +44,12 @@ std::unique_ptr<KeyedService> CreateMockOptimizationService(
 
 class PasswordChangeUiBrowserTest : public DialogBrowserTest {
  public:
+  PasswordChangeUiBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        password_change::features::
+            kPasswordChangeWithPrivateInferenceLoginCheck);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -103,6 +111,7 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
     return PasswordChangeServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription create_services_subscription_;
 };
 
