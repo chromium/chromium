@@ -286,9 +286,6 @@ bool GapGeometry::IsMultiColSpanner(wtf_size_t gap_index,
 
 LayoutUnit GapGeometry::ComputeInsetEnd(
     const ComputedStyle& style,
-    wtf_size_t gap_index,
-    wtf_size_t intersection_index,
-    const Vector<GapIntersection>& intersections,
     bool is_cap_intersection,
     bool is_column_gap,
     bool is_main,
@@ -314,9 +311,6 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
 
 LayoutUnit GapGeometry::ComputeInsetStart(
     const ComputedStyle& style,
-    wtf_size_t gap_index,
-    wtf_size_t intersection_index,
-    const Vector<GapIntersection>& intersections,
     bool is_cap_intersection,
     bool is_column_gap,
     bool is_main,

@@ -584,9 +584,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // container edge or a dangling interior endpoint with no visible crossing
   // decoration; https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit ComputeInsetEnd(const ComputedStyle& style,
-                             wtf_size_t gap_index,
-                             wtf_size_t intersection_index,
-                             const Vector<GapIntersection>& intersections,
                              bool is_cap_intersection,
                              bool is_column_gap,
                              bool is_main,
@@ -598,9 +595,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // container edge or a dangling interior endpoint with no visible crossing
   // decoration; https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit ComputeInsetStart(const ComputedStyle& style,
-                               wtf_size_t gap_index,
-                               wtf_size_t intersection_index,
-                               const Vector<GapIntersection>& intersections,
                                bool is_cap_intersection,
                                bool is_column_gap,
                                bool is_main,

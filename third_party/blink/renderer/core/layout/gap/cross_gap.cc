@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/gap/cross_gap.h"
 
+#include <utility>
+
 namespace blink {
 
 void CrossGapRange::Increment(wtf_size_t cross_gap_index) {
@@ -117,7 +119,7 @@ void CrossGap::AdjustGapSegmentStateRangesForFragmentation(
       ranges[range_start_idx - 1].end > first_track_in_next_fragment) {
     --range_start_idx;
   }
-  gap_segment_state_ranges_ = adjusted_ranges;
+  gap_segment_state_ranges_ = std::move(adjusted_ranges);
 }
 
 }  // namespace blink

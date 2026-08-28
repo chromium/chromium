@@ -29,8 +29,6 @@ namespace {
 //
 // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
 bool ShouldMoveIntersectionStartForward(
-    const GridTrackSizingDirection track_direction,
-    wtf_size_t gap_index,
     wtf_size_t start_index,
     const RuleBreak rule_break,
     const RuleVisibilityItems rule_visibility,
@@ -174,8 +172,7 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
   //  Advance `start` to the first intersection where painting can begin, based
   //  on blocked status from spanners and visibility from empty cells.
   while (start < last_intersection_index &&
-         ShouldMoveIntersectionStartForward(track_direction, gap_index, start,
-                                            rule_break, rule_visibility,
+         ShouldMoveIntersectionStartForward(start, rule_break, rule_visibility,
                                             gap_geometry, intersections)) {
     ++start;
   }
@@ -480,13 +477,13 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       // intersection point.
       // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
       LayoutUnit start_inset = gap_geometry.ComputeInsetStart(
-          style, gap_index, start, intersections, start_is_cap_intersection,
-          is_column_gap, is_main, start_has_joining_decoration,
-          start_max_inset_width, start_cross_decoration_width);
+          style, start_is_cap_intersection, is_column_gap, is_main,
+          start_has_joining_decoration, start_max_inset_width,
+          start_cross_decoration_width);
       LayoutUnit end_inset = gap_geometry.ComputeInsetEnd(
-          style, gap_index, end, intersections, end_is_cap_intersection,
-          is_column_gap, is_main, end_has_joining_decoration,
-          end_max_inset_width, end_cross_decoration_width);
+          style, end_is_cap_intersection, is_column_gap, is_main,
+          end_has_joining_decoration, end_max_inset_width,
+          end_cross_decoration_width);
 
       // `*_cross_width` is the width of the gap at the intersection point in
       // the cross axis, which is used to compute the gap decoration offset from
