@@ -152,10 +152,14 @@ impl StreamSegment for MoofSegment {
         let mut sample_num_rel = sample_num - self.seq[track_num].first_sample;
         let mut trun_ts_offset = self.seq[track_num].first_ts;
 
+        let mvex = match self.moov.mvex.as_ref() {
+            Some(v) => v,
+            None => return decode_error("isomp4: fragmented stream missing mvex atom"),
+        };
         let default_dur = traf
             .tfhd
             .default_sample_duration
-            .unwrap_or(self.moov.mvex.as_ref().unwrap().trexs[track_num].default_sample_duration);
+            .unwrap_or(mvex.trexs[track_num].default_sample_duration);
 
         for trun in traf.truns.iter() {
             // If the sample is contained within the this track run, get the timing of of the
@@ -184,10 +188,14 @@ impl StreamSegment for MoofSegment {
         let mut sample_num = self.seq[track_num].first_sample;
         let mut ts_accum = self.seq[track_num].first_ts;
 
+        let mvex = match self.moov.mvex.as_ref() {
+            Some(v) => v,
+            None => return decode_error("isomp4: fragmented stream missing mvex atom"),
+        };
         let default_dur = traf
             .tfhd
             .default_sample_duration
-            .unwrap_or(self.moov.mvex.as_ref().unwrap().trexs[track_num].default_sample_duration);
+            .unwrap_or(mvex.trexs[track_num].default_sample_duration);
 
         for trun in traf.truns.iter() {
             // Get the total duration of this track run.
@@ -214,7 +222,10 @@ impl StreamSegment for MoofSegment {
         get_offset: bool,
     ) -> Result<SampleDataDesc> {
         // Get the track fragment associated with track_num.
-        let traf = self.try_get_traf(track_num).unwrap();
+        let traf = match self.try_get_traf(track_num) {
+            Some(t) => t,
+            None => return decode_error("isomp4: no track fragment for track"),
+        };
 
         // If an explicit anchor-point is set, then use that for the position, otherwise use the
         // first-byte of the enclosing moof atom.
@@ -226,10 +237,12 @@ impl StreamSegment for MoofSegment {
         let mut sample_num_rel = sample_num - self.seq[track_num].first_sample;
         let mut trun_offset = traf_base_pos;
 
-        let default_size = traf
-            .tfhd
-            .default_sample_size
-            .unwrap_or(self.moov.mvex.as_ref().unwrap().trexs[track_num].default_sample_size);
+        let mvex = match self.moov.mvex.as_ref() {
+            Some(v) => v,
+            None => return decode_error("isomp4: fragmented stream missing mvex atom"),
+        };
+        let default_size =
+            traf.tfhd.default_sample_size.unwrap_or(mvex.trexs[track_num].default_sample_size);
 
         for trun in traf.truns.iter() {
             // If a data offset is present for this track fragment run, then calculate the new base
@@ -403,7 +416,10 @@ impl StreamSegment for MoovSegment {
         let chunk_in_stream = group.first_chunk + chunk_in_group;
 
         // Get the byte position of the first sample of the chunk containing the sample.
-        let base_pos = get_chunk_offset(stco, co64, chunk_in_stream as usize)?.unwrap();
+        let base_pos = match get_chunk_offset(stco, co64, chunk_in_stream as usize)? {
+            Some(pos) => pos,
+            None => return decode_error("isomp4: chunk offset not found"),
+        };
 
         // Determine the absolute sample byte position if requested by calculating the offset of
         // the sample from the base position of the chunk.

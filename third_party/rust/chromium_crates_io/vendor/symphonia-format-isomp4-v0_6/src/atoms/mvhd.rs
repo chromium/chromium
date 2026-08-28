@@ -38,7 +38,7 @@ impl Atom for MvhdAtom {
         let mut mvhd = MvhdAtom {
             ctime: 0,
             mtime: 0,
-            timescale: NonZero::new(1).unwrap(),
+            timescale: NonZero::new(1).expect("1 is non-zero"),
             duration: 0,
             volume: Default::default(),
         };

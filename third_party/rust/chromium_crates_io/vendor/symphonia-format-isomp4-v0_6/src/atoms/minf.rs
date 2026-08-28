@@ -36,10 +36,11 @@ impl Atom for MinfAtom {
             }
         }
 
-        if stbl.is_none() {
+        let Some(stbl) = stbl
+        else {
             return decode_error("isomp4 (minf): missing stbl atom");
-        }
+        };
 
-        Ok(MinfAtom { smhd, stbl: stbl.unwrap() })
+        Ok(MinfAtom { smhd, stbl })
     }
 }

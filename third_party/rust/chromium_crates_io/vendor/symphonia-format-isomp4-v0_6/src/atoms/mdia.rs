@@ -39,18 +39,19 @@ impl Atom for MdiaAtom {
             }
         }
 
-        if mdhd.is_none() {
+        let Some(mdhd) = mdhd
+        else {
             return decode_error("isomp4 (mdia): missing mdhd atom");
-        }
-
-        if hdlr.is_none() {
+        };
+        let Some(hdlr) = hdlr
+        else {
             return decode_error("isomp4 (mdia): missing hdlr atom");
-        }
-
-        if minf.is_none() {
+        };
+        let Some(minf) = minf
+        else {
             return decode_error("isomp4 (mdia): missing minf atom");
-        }
+        };
 
-        Ok(MdiaAtom { mdhd: mdhd.unwrap(), hdlr: hdlr.unwrap(), minf: minf.unwrap() })
+        Ok(MdiaAtom { mdhd, hdlr, minf })
     }
 }

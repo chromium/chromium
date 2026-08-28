@@ -50,11 +50,12 @@ impl Atom for EsdsAtom {
             }
         }
 
-        if descriptor.is_none() {
+        let Some(es_desc) = descriptor
+        else {
             return decode_error("isomp4 (esds): missing es descriptor in esds");
-        }
+        };
 
-        Ok(EsdsAtom { es_desc: descriptor.unwrap() })
+        Ok(EsdsAtom { es_desc })
     }
 }
 

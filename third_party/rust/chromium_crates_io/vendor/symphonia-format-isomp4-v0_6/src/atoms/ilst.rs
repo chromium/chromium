@@ -319,8 +319,10 @@ fn add_pair_tag<R: ReadAtom>(
 
             // The first value is reserved, the second value is the track or disk number, the third
             // value is the track or disk total, and the fourth is reserved (if present).
-            let d0 = u16::from_be_bytes(value.data[2..4].try_into().unwrap());
-            let d1 = u16::from_be_bytes(value.data[4..6].try_into().unwrap());
+            let d0 =
+                u16::from_be_bytes(value.data[2..4].try_into().expect("slice is exactly 2 bytes"));
+            let d1 =
+                u16::from_be_bytes(value.data[4..6].try_into().expect("slice is exactly 2 bytes"));
 
             // Ignore a track/disk number of 0.
             if d0 > 0 {
@@ -470,7 +472,9 @@ fn add_id3v1_genre_tag<R: ReadAtom>(
         // The ID3v1 genre number is stored as a unsigned 16-bit big-endian integer. The data type
         // is no-type.
         if value_atom.data.len() == 2 {
-            let index = u16::from_be_bytes(value_atom.data.as_ref().try_into().unwrap());
+            let index = u16::from_be_bytes(
+                value_atom.data.as_ref().try_into().expect("data.len() == 2 checked above"),
+            );
 
             // The stored index uses 1-based indexing, but the ID3v1 genre list is 0-based.
             let genre = match index {
@@ -951,7 +955,7 @@ fn get_raw_tag_key(atom_type: AtomType) -> &'static str {
         AtomType::AuthorTag => "\u{a9}aut",
         AtomType::CommentTag => "\u{a9}cmt",
         AtomType::CompilationTag => "cpil",
-        AtomType::ComposerTag => "\u{a9}wrt",
+        AtomType::ComposerTag => "\u{a9}com",
         AtomType::ConductorTag => "\u{a9}con",
         AtomType::CopyrightTag => "cprt",
         AtomType::CoverTag => "covr",

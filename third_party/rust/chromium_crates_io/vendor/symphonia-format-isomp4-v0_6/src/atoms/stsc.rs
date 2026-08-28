@@ -35,7 +35,7 @@ impl StscAtom {
         while left < right {
             let mid = left + (right - left) / 2;
 
-            let entry = self.entries.get(mid).unwrap();
+            let entry = self.entries.get(mid).expect("mid is always within entries bounds");
 
             if entry.first_sample < sample_num {
                 left = mid + 1;

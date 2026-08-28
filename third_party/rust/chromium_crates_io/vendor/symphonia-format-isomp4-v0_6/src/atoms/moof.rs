@@ -40,13 +40,14 @@ impl Atom for MoofAtom {
             }
         }
 
-        if mfhd.is_none() {
+        let Some(mfhd) = mfhd
+        else {
             return decode_error("isomp4 (moof): missing mfhd atom");
-        }
+        };
 
         // The position of the first byte of the entire moof atom.
         let moof_base_pos = header.pos();
 
-        Ok(MoofAtom { moof_base_pos, mfhd: mfhd.unwrap(), trafs })
+        Ok(MoofAtom { moof_base_pos, mfhd, trafs })
     }
 }

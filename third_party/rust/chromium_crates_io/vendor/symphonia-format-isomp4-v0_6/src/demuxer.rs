@@ -121,7 +121,7 @@ pub struct TimeSpan {
 
 impl Default for TimeSpan {
     fn default() -> Self {
-        Self { timescale: NonZero::new(1).unwrap(), duration: Duration::ZERO }
+        Self { timescale: NonZero::new(1).expect("1 is non-zero"), duration: Duration::ZERO }
     }
 }
 
@@ -273,7 +273,7 @@ impl<'s> IsoMp4Reader<'s> {
             }
         }
 
-        let mut moov = moov.unwrap();
+        let mut moov = moov.expect("moov is checked for None above");
 
         if moov.is_fragmented() {
             if !sidx_timespans.is_empty() {
@@ -351,7 +351,7 @@ impl<'s> IsoMp4Reader<'s> {
 
         for (state, track) in self.track_states.iter().zip(&self.tracks) {
             // Get the timebase of the track used to calculate the presentation time.
-            let tb = track.time_base.unwrap();
+            let tb = track.time_base.expect("track always created with a timebase");
 
             // Get the next timestamp for the next sample of the current track. The next sample may
             // be in a future segment.
@@ -437,7 +437,8 @@ impl<'s> IsoMp4Reader<'s> {
         //
         // Note, there will always be one segment because the moov atom was converted into a segment
         // when the reader was instantiated.
-        if self.segs.last().unwrap().all_tracks_ended() {
+        let last_seg = self.segs.last().expect("always at least one segment from moov atom");
+        if last_seg.all_tracks_ended() {
             return Ok(false);
         }
 
@@ -468,7 +469,8 @@ impl<'s> IsoMp4Reader<'s> {
                     // A moof segment can only be created if the media is fragmented.
                     if self.moov.is_fragmented() {
                         // Get the last segment.
-                        let last_seg = self.segs.last().unwrap();
+                        let last_seg =
+                            self.segs.last().expect("always at least one segment from moov atom");
 
                         // Create a new segment for the moof atom.
                         let seg = MoofSegment::new(moof, self.moov.clone(), last_seg.as_ref());
@@ -498,7 +500,7 @@ impl<'s> IsoMp4Reader<'s> {
     fn seek_track_by_time(&mut self, track_num: usize, time: Time) -> Result<SeekedTo> {
         // Convert time to timestamp for the track.
         if let Some(track) = self.tracks.get(track_num) {
-            let tb = track.time_base.unwrap();
+            let tb = track.time_base.expect("track always created with a timebase");
             let ts = tb.calc_timestamp(time).ok_or(Error::SeekError(SeekErrorKind::OutOfRange))?;
             self.seek_track_by_ts(track_num, ts)
         }
@@ -543,7 +545,10 @@ impl<'s> IsoMp4Reader<'s> {
         let seg = &self.segs[seek_loc.seg_idx];
 
         // Get the sample timing.
-        let timing = seg.sample_timing(track_num, seek_loc.sample_num)?.unwrap();
+        let timing = match seg.sample_timing(track_num, seek_loc.sample_num)? {
+            Some(t) => t,
+            None => return seek_error(SeekErrorKind::OutOfRange),
+        };
 
         // Try to convert the sample timing to a timestamp.
         let actual_ts = match Timestamp::try_from(timing.ts) {
@@ -559,7 +564,11 @@ impl<'s> IsoMp4Reader<'s> {
 
         track.cur_seg = seek_loc.seg_idx;
         track.next_sample = seek_loc.sample_num;
-        track.next_sample_pos = data_desc.base_pos + data_desc.offset.unwrap();
+        track.next_sample_pos = data_desc.base_pos
+            + match data_desc.offset {
+                Some(o) => o,
+                None => return seek_error(SeekErrorKind::OutOfRange),
+            };
 
         debug!(
             "seeked track_num={} (track_id={}) to packet_ts={} (delta={})",
@@ -635,7 +644,10 @@ impl FormatReader for IsoMp4Reader<'_> {
         };
 
         // Get the position and length information of the next sample.
-        let sample_info = self.consume_next_sample(&next_sample_info)?.unwrap();
+        let sample_info = match self.consume_next_sample(&next_sample_info)? {
+            Some(s) => s,
+            None => return decode_error("isomp4: failed to get next sample data"),
+        };
 
         let data =
             self.iter.read_raw_boxed_slice_exact(sample_info.pos, sample_info.len as usize)?;
@@ -670,11 +682,12 @@ impl FormatReader for IsoMp4Reader<'_> {
                     self.tracks.iter().enumerate().find(|(_, track)| track.id == track_id)
                 {
                     // Convert to time units.
-                    let time = track
-                        .time_base
-                        .unwrap()
-                        .calc_time(ts)
-                        .ok_or(Error::SeekError(SeekErrorKind::Unseekable))?;
+                    let tb = match track.time_base {
+                        Some(tb) => tb,
+                        None => return seek_error(SeekErrorKind::Unseekable),
+                    };
+                    let time =
+                        tb.calc_time(ts).ok_or(Error::SeekError(SeekErrorKind::Unseekable))?;
 
                     // Seek all tracks excluding the primary track to the desired time.
                     for t in 0..self.track_states.len() {

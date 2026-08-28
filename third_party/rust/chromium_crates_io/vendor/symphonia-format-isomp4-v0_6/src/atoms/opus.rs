@@ -5,13 +5,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use symphonia_common::xiph::audio::opus;
 use symphonia_core::codecs::audio::well_known::CODEC_ID_OPUS;
 use symphonia_core::errors::Error;
+use symphonia_core::io::BufReader;
 
 use crate::atoms::stsd::AudioSampleEntry;
 use crate::atoms::{
     Atom, AtomHeader, AtomIterator, ReadAtom, Result, decode_error, unsupported_error,
 };
+
+const OPUS_MAGIC: &[u8] = b"OpusHead";
+const OPUS_MAGIC_LEN: usize = OPUS_MAGIC.len();
 
 /// Opus atom.
 #[allow(dead_code)]
@@ -23,9 +28,6 @@ pub struct OpusAtom {
 
 impl Atom for OpusAtom {
     fn read<R: ReadAtom>(reader: &mut AtomIterator<R>, header: &AtomHeader) -> Result<Self> {
-        const OPUS_MAGIC: &[u8] = b"OpusHead";
-        const OPUS_MAGIC_LEN: usize = OPUS_MAGIC.len();
-
         const MIN_OPUS_EXTRA_DATA_SIZE: usize = OPUS_MAGIC_LEN + 11;
         const MAX_OPUS_EXTRA_DATA_SIZE: usize = MIN_OPUS_EXTRA_DATA_SIZE + 257;
 
@@ -67,6 +69,13 @@ impl Atom for OpusAtom {
 
 impl OpusAtom {
     pub fn fill_audio_sample_entry(self, entry: &mut AudioSampleEntry) {
+        let mut reader = BufReader::new(&self.extra_data);
+
+        if let Ok(opus_head) = opus::OpusHead::read(&mut reader, 0) {
+            entry.channels = Some(opus_head.channels);
+            entry.sample_rate = 48_000.0;
+        }
+
         entry.codec_id = CODEC_ID_OPUS;
         entry.extra_data = Some(self.extra_data);
     }
