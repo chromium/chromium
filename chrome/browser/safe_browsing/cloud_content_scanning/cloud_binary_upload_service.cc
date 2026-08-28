@@ -24,8 +24,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/management/management_service.h"

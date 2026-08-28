@@ -19,6 +19,8 @@ namespace safe_browsing {
 
 namespace {
 
+using ::enterprise_connectors::MultipartUploadRequest;
+
 // Handles the uploading of a single downloaded binary to the safebrowsing
 // download feedback service.
 class DownloadFeedbackImpl : public DownloadFeedback {

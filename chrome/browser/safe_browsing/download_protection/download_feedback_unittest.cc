@@ -32,6 +32,7 @@ namespace safe_browsing {
 
 using ::enterprise_connectors::ConnectorUploadRequest;
 using ::enterprise_connectors::ConnectorUploadRequestFactory;
+using ::enterprise_connectors::MultipartUploadRequest;
 
 namespace {
 

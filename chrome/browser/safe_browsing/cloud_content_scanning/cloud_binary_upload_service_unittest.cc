@@ -31,8 +31,6 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
