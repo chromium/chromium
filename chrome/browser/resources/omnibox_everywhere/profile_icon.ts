@@ -10,7 +10,8 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './profile_icon.css.js';
 import {getHtml} from './profile_icon.html.js';
@@ -57,6 +58,28 @@ export class OmniboxEverywhereProfileIconElement extends
 
   private searchboxHandler_: SearchboxPageHandlerInterface =
       SearchboxBrowserProxy.getInstance().handler;
+  private callbackRouter_: PageCallbackRouter =
+      SearchboxBrowserProxy.getInstance().callbackRouter;
+  private updateProfileInfoListenerId_: number|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.updateProfileInfoListenerId_ =
+        this.callbackRouter_.updateProfileInfo.addListener(
+            (avatarUrl: Url, name: string, email: string) => {
+              this.profileAvatarUrl_ = avatarUrl;
+              this.profileName_ = name;
+              this.profileEmail_ = email;
+            });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.updateProfileInfoListenerId_ !== null) {
+      this.callbackRouter_.removeListener(this.updateProfileInfoListenerId_);
+      this.updateProfileInfoListenerId_ = null;
+    }
+  }
 
   protected onProfileIconClick_() {
     if (!this.profilePickerEnabled_) {

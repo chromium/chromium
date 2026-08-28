@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -21,7 +23,8 @@ class WebUI;
 
 // Custom handler for OmniboxEverywhere searchbox.
 // It owns its own OmniboxController and OmniboxEverywhereClient.
-class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
+class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
+                                 public ProfileAttributesStorage::Observer {
  public:
   OmniboxEverywhereHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
@@ -72,12 +75,23 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
   // dismissed, allowing the standalone widget to regain activation and focus.
   void CleanupDrivePicker() override;
 
+  // ProfileAttributesStorage::Observer:
+  void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
+  void OnProfileHighResAvatarLoaded(
+      const base::FilePath& profile_path) override;
+  void OnProfileNameChanged(const base::FilePath& profile_path,
+                            const std::u16string& old_profile_name) override;
+
  private:
   void OnAimEligibilityChanged();
   void UpdatePromoState();
+  void PushProfileInfo();
 
   raw_ptr<OmniboxEverywhereService> service_;
   PrefChangeRegistrar pref_change_registrar_;
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_attributes_storage_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_HANDLER_H_

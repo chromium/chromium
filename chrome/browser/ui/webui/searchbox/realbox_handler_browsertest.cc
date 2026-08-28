@@ -119,6 +119,9 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       (const std::string&, const std::string&, const std::string&, const GURL&),
       (override));
   MOCK_METHOD(void, OnScreenshotMenuClosed, (), (override));
+  void UpdateProfileInfo(const GURL& avatar_url,
+                         const std::string& name,
+                         const std::string& email) override {}
 
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();

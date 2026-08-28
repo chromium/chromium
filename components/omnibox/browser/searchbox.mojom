@@ -691,4 +691,7 @@ interface Page {
 
   // Notifies that a native screenshot menu has closed.
   OnScreenshotMenuClosed();
+
+  // Notifies the page of updated profile information (avatar URL, name, email).
+  UpdateProfileInfo(url.mojom.Url avatar_url, string name, string email);
 };

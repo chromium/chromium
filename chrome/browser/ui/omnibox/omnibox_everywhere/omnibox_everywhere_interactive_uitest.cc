@@ -12,6 +12,9 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/status_icons/status_tray.h"
@@ -42,6 +45,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1012,6 +1016,78 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   // Dismissing the FRE persists the preference.
   profile_prefs->SetBoolean(prefs::kFreDismissed, true);
   EXPECT_TRUE(profile_prefs->GetBoolean(prefs::kFreDismissed));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ProfileAvatarUpdatesWhenGAIAPictureLoads \
+  DISABLED_ProfileAvatarUpdatesWhenGAIAPictureLoads
+#else
+#define MAYBE_ProfileAvatarUpdatesWhenGAIAPictureLoads \
+  ProfileAvatarUpdatesWhenGAIAPictureLoads
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_ProfileAvatarUpdatesWhenGAIAPictureLoads) {
+  Profile* profile = browser()->GetProfile();
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_TRUE(entry);
+
+  // 1. Configure the profile to use a GAIA picture, but simulate cold startup
+  // where the GAIA picture has not yet finished loading from cache/disk.
+  entry->SetIsUsingGAIAPicture(true);
+  entry->SetGAIAPicture(std::string(), gfx::Image());
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAvatarUpdatedEvent);
+
+  // 2. Compute the initial placeholder avatar data URL.
+  gfx::Image initial_icon =
+      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 48, 48);
+  const std::string initial_avatar_data_url =
+      webui::GetBitmapDataUrl(initial_icon.AsBitmap());
+
+  // 3. Create a unique 48x48 GAIA avatar image (solid red) that will be
+  // delivered when disk loading finishes.
+  SkBitmap gaia_bitmap;
+  gaia_bitmap.allocN32Pixels(48, 48);
+  gaia_bitmap.eraseColor(SK_ColorRED);
+  gfx::Image gaia_image = gfx::Image::CreateFrom1xBitmap(gaia_bitmap);
+  const std::string expected_gaia_avatar_data_url =
+      webui::GetBitmapDataUrl(gaia_bitmap);
+
+  StateChange avatar_updated_to_gaia;
+  avatar_updated_to_gaia.where = {
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+      "omnibox-everywhere-profile-icon",
+      "img#profileIcon",
+  };
+  avatar_updated_to_gaia.test_function =
+      base::StringPrintf(R"((el) => el && el.src === '%s')",
+                         expected_gaia_avatar_data_url.c_str());
+  avatar_updated_to_gaia.event = kAvatarUpdatedEvent;
+
+  RunTestSequence(
+      InvokeViaHotkey(), WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      CheckJsResult(
+          kOmniboxWebContentsId,
+          "() => {"
+          "  const iconEl = document.querySelector('omnibox-everywhere-app')"
+          "      .shadowRoot.querySelector('omnibox-everywhere-omnibox')"
+          "      .shadowRoot.querySelector('omnibox-everywhere-profile-icon')"
+          "      .shadowRoot.querySelector('img#profileIcon');"
+          "  return iconEl ? iconEl.src : '';"
+          "}",
+          initial_avatar_data_url),
+      Do([&]() { entry->SetGAIAPicture("gaia_picture_key", gaia_image); }),
+      WaitForStateChange(kOmniboxWebContentsId, avatar_updated_to_gaia));
 }
 
 }  // namespace omnibox_everywhere

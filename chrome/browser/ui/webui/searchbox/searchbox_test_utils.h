@@ -137,6 +137,10 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               (override));
   MOCK_METHOD(void, OnScreenshotMenuClosed, (), (override));
   MOCK_METHOD(void, SetShowFre, (bool show), (override));
+  MOCK_METHOD(void,
+              UpdateProfileInfo,
+              (const GURL&, const std::string&, const std::string&),
+              (override));
 };
 
 #if !BUILDFLAG(IS_ANDROID)
