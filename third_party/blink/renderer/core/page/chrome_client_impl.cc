@@ -826,10 +826,14 @@ DateTimeChooser* ChromeClientImpl::OpenDateTimeChooser(
     DateTimeChooserClient* picker_client,
     const DateTimeChooserParameters& parameters) {
   NotifyPopupOpeningObservers();
+  // Android does not support PagePopup, so we must always use the native
+  // picker.
+#if !BUILDFLAG(IS_ANDROID)
   if (RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled()) {
     return MakeGarbageCollected<DateTimeChooserImpl>(frame, picker_client,
                                                      parameters);
   }
+#endif
 
   // JavaScript may try to open a date time chooser while one is already open.
   if (external_date_time_chooser_ &&

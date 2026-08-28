@@ -31,6 +31,9 @@
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -39,5 +42,26 @@ DateTimeChooserParameters::DateTimeChooserParameters() = default;
 DateTimeChooserParameters::~DateTimeChooserParameters() = default;
 
 DateTimeChooser::~DateTimeChooser() = default;
+
+// static
+bool DateTimeChooser::ShouldSubfieldsBeFocusable(LocalFrame* frame) {
+  if (!frame || !frame->GetSettings()) {
+    return true;
+  }
+
+  const bool has_fine_pointer =
+      frame->GetSettings()->GetAvailablePointerTypes() &
+      static_cast<int>(mojom::blink::PointerType::kPointerFineType);
+  const bool has_coarse_pointer =
+      frame->GetSettings()->GetAvailablePointerTypes() &
+      static_cast<int>(mojom::blink::PointerType::kPointerCoarseType);
+
+  // We generally want to target mobile, which has a coarse pointer and no fine
+  // pointer. If a fine pointer is present, then the user should be able to
+  // click the picker icon to open the picker. If the user is using a stylus on
+  // a tablet, then they should be able to click the picker icon without the
+  // need for the entire control being a target to open the picker.
+  return has_fine_pointer || !has_coarse_pointer;
+}
 
 }  // namespace blink

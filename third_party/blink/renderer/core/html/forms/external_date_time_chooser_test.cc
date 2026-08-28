@@ -5,29 +5,23 @@
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser_client.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
-class ExternalDateTimeChooserTest : public testing::Test {
- protected:
-  void SetUp() final {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
-  }
-  Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
-
- private:
-  test::TaskEnvironment task_environment_;
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
-};
+class ExternalDateTimeChooserTest : public PageTestBase {};
 
 class TestDateTimeChooserClient final
     : public GarbageCollected<TestDateTimeChooserClient>,
@@ -64,7 +58,6 @@ class TestDateTimeChooserClient final
 // when it's called twice because |client_| was already nullptr.
 TEST_F(ExternalDateTimeChooserTest, EndChooserShouldNotCrash) {
   ScopedNullExecutionContext execution_context;
-  ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
   auto* element = document->CreateRawElement(html_names::kInputTag);
@@ -82,7 +75,6 @@ TEST_F(ExternalDateTimeChooserTest, EndChooserShouldNotCrash) {
 // receiving side.
 TEST_F(ExternalDateTimeChooserTest,
        OpenDateTimeChooserShouldNotCrashWhenLabelAndValueIsTheSame) {
-  ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <input id=test type="date" list="src" />
         <datalist id="src">
@@ -113,7 +105,6 @@ TEST_F(ExternalDateTimeChooserTest,
 }
 
 TEST_F(ExternalDateTimeChooserTest, IsPickerVisible) {
-  ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input id=test type=date>");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -143,6 +134,62 @@ TEST_F(ExternalDateTimeChooserTest, IsPickerVisible) {
   external_date_time_chooser->OpenDateTimeChooser(GetDocument().GetFrame(),
                                                   params);
   EXPECT_TRUE(external_date_time_chooser->IsPickerVisible());
+}
+
+TEST_F(ExternalDateTimeChooserTest, FinePointerFocusability) {
+  GetDocument().GetFrame()->GetSettings()->SetAvailablePointerTypes(
+      static_cast<int>(mojom::blink::PointerType::kPointerFineType));
+
+  SetBodyContent("<input id=test type=date>");
+
+  auto* input =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
+  ASSERT_TRUE(input);
+
+  ShadowRoot* shadow = input->UserAgentShadowRoot();
+  ASSERT_TRUE(shadow);
+
+  Element* edit = shadow->getElementById(shadow_element_names::kIdDateTimeEdit);
+  ASSERT_TRUE(edit);
+  Element* wrapper = ElementTraversal::FirstChild(*edit);
+  ASSERT_TRUE(wrapper);
+  Element* subfield = ElementTraversal::FirstChild(*wrapper);
+  ASSERT_TRUE(subfield);
+
+  Element* picker_indicator =
+      shadow->getElementById(shadow_element_names::kIdPickerIndicator);
+  ASSERT_TRUE(picker_indicator);
+
+  EXPECT_TRUE(subfield->IsFocusable());
+  EXPECT_TRUE(picker_indicator->IsFocusable());
+}
+
+TEST_F(ExternalDateTimeChooserTest, NonFinePointerFocusability) {
+  GetDocument().GetFrame()->GetSettings()->SetAvailablePointerTypes(
+      static_cast<int>(mojom::blink::PointerType::kPointerCoarseType));
+
+  SetBodyContent("<input id=test type=date>");
+
+  auto* input =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
+  ASSERT_TRUE(input);
+
+  ShadowRoot* shadow = input->UserAgentShadowRoot();
+  ASSERT_TRUE(shadow);
+
+  Element* edit = shadow->getElementById(shadow_element_names::kIdDateTimeEdit);
+  ASSERT_TRUE(edit);
+  Element* wrapper = ElementTraversal::FirstChild(*edit);
+  ASSERT_TRUE(wrapper);
+  Element* subfield = ElementTraversal::FirstChild(*wrapper);
+  ASSERT_TRUE(subfield);
+
+  Element* picker_indicator =
+      shadow->getElementById(shadow_element_names::kIdPickerIndicator);
+  ASSERT_TRUE(picker_indicator);
+
+  EXPECT_FALSE(subfield->IsFocusable());
+  EXPECT_FALSE(picker_indicator->IsFocusable());
 }
 
 }  // namespace blink

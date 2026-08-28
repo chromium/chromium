@@ -69,7 +69,6 @@ void ExternalDateTimeChooser::Trace(Visitor* visitor) const {
 ExternalDateTimeChooser::ExternalDateTimeChooser(DateTimeChooserClient* client)
     : date_time_chooser_(client->OwnerElement().GetExecutionContext()),
       client_(client) {
-  DCHECK(!RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled());
   DCHECK(client);
 }
 

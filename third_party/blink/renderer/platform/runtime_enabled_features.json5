@@ -3677,6 +3677,16 @@
       // No plan to support complex UI for date/time INPUT types on Android and
       // iOS.
       status: {"Android": "test", "iOS": "test", "default": "stable"},
+      implied_by: ["InputMultipleFieldsUIWithPointerChecks"],
+    },
+    {
+      // Enables InputMultipleFieldsUI on all platforms by tweaking the inner
+      // fields to be non-focusable and making the whole input element
+      // focusable for coarse input devices. When this flag is removed, the
+      // InputMultipleFieldsUI flag can also be removed. Enabled in M154, safe
+      // to remove in M158.
+      name: "InputMultipleFieldsUIWithPointerChecks",
+      status: "stable",
     },
     // Enables the `alpha` and `colorspace` content/IDL attributes on
     // <input type=color>, allowing alpha and Display P3 color values.

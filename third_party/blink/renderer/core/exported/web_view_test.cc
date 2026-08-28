@@ -5028,8 +5028,12 @@ static void OpenDateTimeChooser(WebView* web_view,
       WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
 }
 
+// TODO(crbug.com/529822615): Delete this test when the input multiple fields
+// flags are removed.
 TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
   ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
+  ScopedInputMultipleFieldsUIWithPointerChecksForTest
+      input_multiple_fields_with_pointer_checks(false);
   std::string url = RegisterMockedHttpURLLoad("date_time_chooser.html");
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad(url, nullptr, nullptr);

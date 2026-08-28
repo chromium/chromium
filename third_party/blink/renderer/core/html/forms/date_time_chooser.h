@@ -43,6 +43,7 @@ namespace blink {
 
 class AXObject;
 class Element;
+class LocalFrame;
 
 struct DateTimeChooserParameters {
   DISALLOW_NEW();
@@ -93,6 +94,11 @@ class CORE_EXPORT DateTimeChooser : public GarbageCollected<DateTimeChooser> {
   virtual bool IsPickerVisible() const = 0;
 
   virtual void Trace(Visitor* visitor) const {}
+
+  // ShouldSubfieldsBeFocusable returns true if date/time input elements should
+  // have focusable subfields for using the keyboard to type in values without
+  // opening the picker.
+  static bool ShouldSubfieldsBeFocusable(LocalFrame* frame);
 };
 
 }  // namespace blink

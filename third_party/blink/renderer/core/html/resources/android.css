@@ -36,6 +36,12 @@
    @namespace "http://www.w3.org/1999/xhtml"
 */
 
+/* When InputMultipleFieldsUIWithPointerChecks is enabled, android will render
+ * date/time inputs the same way that other platforms do, so they should have
+ * the same UA styles. TODO(crbug.com/529822615): Remove this entire file when
+ * the input multiple fields flags are removed. */
+@supports not blink-feature(InputMultipleFieldsUIWithPointerChecks) {
+
 input[type="date" i]:disabled,
 input[type="datetime-local" i]:disabled,
 input[type="month" i]:disabled,
@@ -72,4 +78,6 @@ input::-webkit-date-and-time-value {
     margin: 1px 24px 1px 4px;
     overflow: hidden;
     white-space: pre;
+}
+
 }

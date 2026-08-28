@@ -96,6 +96,7 @@ class MultipleFieldsTemporalInputTypeView final
   void DisabledAttributeChanged(DisabledChangedReason) final;
   void ForwardEvent(Event&) final;
   void HandleClickEvent(MouseEvent&) final;
+  void HandleDOMActivateEvent(Event&) override;
   void HandleFocusInEvent(Element* old_focused_element,
                           mojom::blink::FocusType) final;
   void HandleKeydownEvent(KeyboardEvent&) final;

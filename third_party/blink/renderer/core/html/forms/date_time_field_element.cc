@@ -33,8 +33,10 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -227,6 +229,10 @@ void DateTimeFieldElement::SetDisabled() {
 }
 
 FocusableState DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
+  if (RuntimeEnabledFeatures::InputMultipleFieldsUIWithPointerChecksEnabled() &&
+      !DateTimeChooser::ShouldSubfieldsBeFocusable(GetDocument().GetFrame())) {
+    return FocusableState::kNotFocusable;
+  }
   return (!IsDisabled() && !IsFieldOwnerDisabled())
              ? FocusableState::kFocusable
              : FocusableState::kNotFocusable;

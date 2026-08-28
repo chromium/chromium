@@ -108,6 +108,10 @@
 [ Mac ] fast/forms/calendar-picker/month-open-picker-with-f4-key.html [ Skip ]
 [ Mac ] fast/forms/calendar-picker/week-open-picker-with-f4-key.html [ Skip ]
 
+# Date/time input subfields are not focusable without a fine pointer, and
+# on fuchsia there is only a coarse pointer set in pointer_device_web_engine.cc
+[ Fuchsia ] fast/forms/date-multiple-fields/date-multiple-fields-ax-value-changed-notification.html [ Skip ]
+
 # Mac does not have menu key.
 [ Mac ] editing/spelling/spelling-on-context-menu-key.html [ Skip ]
 [ Mac ] fast/events/context-menu-key-shift-f10-modifiers.html [ Skip ]

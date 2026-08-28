@@ -410,12 +410,32 @@ void MultipleFieldsTemporalInputTypeView::HandleClickEvent(MouseEvent& event) {
   }
 }
 
+void MultipleFieldsTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
+  if (!RuntimeEnabledFeatures::
+          InputMultipleFieldsUIWithPointerChecksEnabled()) {
+    return;
+  }
+  if (GetElement().IsDisabledOrReadOnly() || !GetElement().GetLayoutObject()) {
+    return;
+  }
+  if (!DateTimeChooser::ShouldSubfieldsBeFocusable(
+          GetElement().GetDocument().GetFrame())) {
+    OpenPopupView();
+    event.SetDefaultHandled();
+  }
+}
+
 void MultipleFieldsTemporalInputTypeView::HandleFocusInEvent(
     Element* old_focused_element,
     mojom::blink::FocusType type) {
   DateTimeEditElement* edit = GetDateTimeEditElement();
   if (!edit || is_destroying_shadow_subtree_)
     return;
+  if (RuntimeEnabledFeatures::InputMultipleFieldsUIWithPointerChecksEnabled() &&
+      !DateTimeChooser::ShouldSubfieldsBeFocusable(
+          GetElement().GetDocument().GetFrame())) {
+    return;
+  }
   if (type == mojom::blink::FocusType::kBackward) {
     if (GetElement().GetDocument().GetPage())
       GetElement().GetDocument().GetPage()->GetFocusController().AdvanceFocus(
