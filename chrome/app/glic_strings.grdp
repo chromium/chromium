@@ -232,7 +232,7 @@
     Quickly shake the mouse cursor back and forth to select from the screen
   </message>
   <message name="IDS_SETTINGS_GLIC_MEDIA_UNDERSTANDING" desc="Name of the media understanding setting.">
-    Media Understanding
+    Media understanding
   </message>
   <message name="IDS_SETTINGS_GLIC_MEDIA_UNDERSTANDING_SUBLABEL" desc="Sublabel describing that this setting will enable media understanding for Gemini.">
     Gemini can answer questions about the video or audio you’ve played on <ph name="LINK_BEGIN">&lt;a&gt;</ph>some websites<ph name="LINK_END">&lt;/a&gt;</ph>.
