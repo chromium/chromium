@@ -39,6 +39,9 @@
 
 namespace ash {
 
+BASE_FEATURE(kChromeSecurityDelegateIgnoreArcVm,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr char kUriListSeparator[] = "\r\n";
@@ -112,6 +115,12 @@ base::FilePath GetVmMount(const std::string& vm_name) {
 // Translate |vm_paths| from |source| VM to host paths.
 std::vector<FileInfo> TranslateVMToHost(const std::string& vm_name,
                                         std::vector<ui::FileInfo> vm_paths) {
+  // Arc doesn't currently support drag-drop or clipboard via exo.
+  // If Arc ever adds support, we must map paths correctly like other VMs.
+  if (vm_name == arc::kArcVmName &&
+      base::FeatureList::IsEnabled(kChromeSecurityDelegateIgnoreArcVm)) {
+    return {};
+  }
   std::vector<FileInfo> file_infos;
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   bool is_crostini = vm_name == crostini::kCrostiniDefaultVmName;

@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_EXO_CHROME_SECURITY_DELEGATE_H_
 #define CHROME_BROWSER_ASH_EXO_CHROME_SECURITY_DELEGATE_H_
 
+#include "base/feature_list.h"
 #include "components/exo/security_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
+
+BASE_DECLARE_FEATURE(kChromeSecurityDelegateIgnoreArcVm);
 
 // Translate paths from |source| VM to valid paths in the host. Invalid paths
 // are ignored.
