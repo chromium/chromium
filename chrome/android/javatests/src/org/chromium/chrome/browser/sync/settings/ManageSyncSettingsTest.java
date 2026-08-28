@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.sync.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressKey;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
@@ -18,7 +17,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -30,7 +28,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.isHighlighted;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertNoSearchResultsFound;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.highlighted;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeSearchQuery;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import static java.util.Map.entry;
@@ -1680,23 +1681,10 @@ public class ManageSyncSettingsTest {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("history and tabs"));
+        typeSearchQuery("history and tabs");
+        clickSearchResult(R.string.account_section_history_toggle);
 
-        onViewWaiting(
-                        allOf(
-                                withId(android.R.id.title),
-                                withText(R.string.account_section_history_toggle)))
-                .perform(click());
-
-        onView(
-                        allOf(
-                                withText(R.string.account_settings_title),
-                                withParent(withId(R.id.action_bar))))
-                .check(matches(isDisplayed()));
-
-        onView(highlighted(withText(R.string.account_section_history_toggle)))
-                .check(matches(isDisplayed()));
+        onView(highlighted(R.string.account_section_history_toggle)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -1704,10 +1692,9 @@ public class ManageSyncSettingsTest {
     public void testSearchHistoryAndTabs_signedOut() {
         mSettingsSearchTestRule.startSettingsActivity();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("history and tabs"));
+        typeSearchQuery("history and tabs");
 
-        onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
+        assertNoSearchResultsFound();
     }
 
     @Test
@@ -1717,8 +1704,7 @@ public class ManageSyncSettingsTest {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("personalization"));
+        typeSearchQuery("personalization");
 
         onViewWaiting(withText(R.string.sign_in_personalize_google_services_title))
                 .check(matches(isDisplayed()));
@@ -1731,16 +1717,12 @@ public class ManageSyncSettingsTest {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("linking"));
+        typeSearchQuery("linking");
 
         onViewWaiting(withText(R.string.sign_in_personalize_google_services_title_eea))
                 .check(matches(isDisplayed()));
     }
 
-    private static Matcher<View> highlighted(Matcher<View> childMatcher) {
-        return allOf(hasDescendant(childMatcher), isHighlighted());
-    }
 
     private void assertOpensIncognitoSession(
             boolean openAsWindow, Matcher<Intent> expectedIntentMatcher) {

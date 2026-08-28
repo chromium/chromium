@@ -6,27 +6,22 @@ package org.chromium.chrome.browser.sync.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.isHighlighted;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-
-import android.view.View;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertNoSearchResultsFound;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.highlighted;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeSearchQuery;
 
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -151,12 +146,11 @@ public class PersonalizeGoogleServicesSettingsTest {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("app activity"));
+        typeSearchQuery("app activity");
 
-        onViewWaiting(withText(R.string.personalized_google_services_waa_title)).perform(click());
+        clickSearchResult(R.string.personalized_google_services_waa_title);
 
-        onView(highlighted(withText(R.string.personalized_google_services_waa_title)))
+        onView(highlighted(R.string.personalized_google_services_waa_title))
                 .check(matches(isDisplayed()));
     }
 
@@ -167,13 +161,11 @@ public class PersonalizeGoogleServicesSettingsTest {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("linked google services"));
+        typeSearchQuery("linked google services");
 
-        onViewWaiting(withText(R.string.personalized_google_services_linked_services_title))
-                .perform(click());
+        clickSearchResult(R.string.personalized_google_services_linked_services_title);
 
-        onView(highlighted(withText(R.string.personalized_google_services_linked_services_title)))
+        onView(highlighted(R.string.personalized_google_services_linked_services_title))
                 .check(matches(isDisplayed()));
     }
 
@@ -185,10 +177,9 @@ public class PersonalizeGoogleServicesSettingsTest {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("linked google services"));
+        typeSearchQuery("linked google services");
 
-        onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
+        assertNoSearchResultsFound();
     }
 
     @Test
@@ -197,13 +188,8 @@ public class PersonalizeGoogleServicesSettingsTest {
     public void testSearchPersonalizeGoogleServices_signedOut() {
         mSettingsSearchTestRule.startSettingsActivity();
 
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("linked google services"));
+        typeSearchQuery("linked google services");
 
-        onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
-    }
-
-    private static Matcher<View> highlighted(Matcher<View> childMatcher) {
-        return allOf(hasDescendant(childMatcher), isHighlighted());
+        assertNoSearchResultsFound();
     }
 }

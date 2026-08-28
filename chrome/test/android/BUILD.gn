@@ -363,6 +363,7 @@ android_library("chrome_java_integration_test_support") {
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/history/TestBrowsingHistoryObserver.java",
+    "javatests/src/org/chromium/chrome/browser/settings/SettingsSearchTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/toolbar/top/ButtonHighlightMatcher.java",
     "javatests/src/org/chromium/chrome/test/ChromeActivityTestRule.java",
     "javatests/src/org/chromium/chrome/test/ChromeTabbedActivityTestRule.java",

@@ -7,10 +7,6 @@ package org.chromium.components.browser_ui.widget.highlight;
 import android.graphics.Canvas;
 import android.view.View;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
-
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
@@ -60,7 +56,7 @@ public class ViewHighlighterTestUtils {
      *
      * @param view The view of interest.
      * @param timeoutDuration The timeout duration (should be set depending on the number of pulses
-     *         and the pulse duration).
+     *     and the pulse duration).
      * @return True iff the view was highlighted, and then turned off.
      */
     public static boolean checkHighlightPulse(View view, long timeoutDuration) {
@@ -99,24 +95,5 @@ public class ViewHighlighterTestUtils {
         if (pulse != null) {
             pulse.draw(canvas);
         }
-    }
-
-    /**
-     * Returns a matcher that matches views currently highlighted with ViewHighlighter.
-     *
-     * @return A custom Matcher for checking whether a View is highlighted.
-     */
-    public static Matcher<View> isHighlighted() {
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("is highlighted by ViewHighlighter");
-            }
-
-            @Override
-            protected boolean matchesSafely(View view) {
-                return checkHighlightOn(view);
-            }
-        };
     }
 }
