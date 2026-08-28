@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -15,7 +16,13 @@ class BrowserWindowInterface;
 class BrowserContentSettingBubbleModelDelegate
     : public ContentSettingBubbleModelDelegate {
  public:
+  DECLARE_USER_DATA(BrowserContentSettingBubbleModelDelegate);
+
   explicit BrowserContentSettingBubbleModelDelegate(
+      BrowserWindowInterface* browser);
+
+  // Returns the delegate for `browser`, or null if it does not have one.
+  static BrowserContentSettingBubbleModelDelegate* From(
       BrowserWindowInterface* browser);
 
   BrowserContentSettingBubbleModelDelegate(
@@ -32,6 +39,9 @@ class BrowserContentSettingBubbleModelDelegate
   void ShowLearnMorePage(ContentSettingsType type) override;
 
  private:
+  ui::ScopedUnownedUserData<BrowserContentSettingBubbleModelDelegate>
+      scoped_unowned_user_data_;
+
   const raw_ref<BrowserWindowInterface> browser_;
 };
 

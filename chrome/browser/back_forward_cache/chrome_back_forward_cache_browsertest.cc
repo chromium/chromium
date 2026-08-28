@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   {
     std::unique_ptr<ContentSettingBubbleModel> model(
         ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            BrowserContentSettingBubbleModelDelegate::From(browser()),
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()

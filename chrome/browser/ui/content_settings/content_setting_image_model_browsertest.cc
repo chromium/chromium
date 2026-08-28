@@ -120,8 +120,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest,
 
   auto model = ContentSettingImageModel::CreateForContentType(ImageType::kAds);
   std::unique_ptr<ContentSettingBubbleModel> bubble(model->CreateBubbleModel(
-      browser()->GetFeatures().content_setting_bubble_model_delegate(),
-      web_contents));
+      BrowserContentSettingBubbleModelDelegate::From(browser()), web_contents));
 
   content::TestNavigationObserver observer(nullptr);
   observer.StartWatchingNewWebContents();

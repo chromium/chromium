@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
   {
     std::unique_ptr<ContentSettingBubbleModel> model(
         ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            BrowserContentSettingBubbleModelDelegate::From(browser()),
             web_contents()->GetPrimaryPage(),
             ContentSettingsType::MIXEDSCRIPT));
     model->OnCustomLinkClicked();
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
   {
     std::unique_ptr<ContentSettingBubbleModel> model(
         ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            BrowserContentSettingBubbleModelDelegate::From(browser()),
             web_contents()->GetPrimaryPage(),
             ContentSettingsType::MIXEDSCRIPT));
     model->OnCustomLinkClicked();
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperFencedFrameBrowserTest,
   {
     std::unique_ptr<ContentSettingBubbleModel> model(
         ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            BrowserContentSettingBubbleModelDelegate::From(browser()),
             web_contents()->GetPrimaryPage(),
             ContentSettingsType::MIXEDSCRIPT));
     model->OnCustomLinkClicked();

@@ -73,7 +73,7 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
         ->OnMediaStreamPermissionSet(web_contents->GetLastCommittedURL(),
                                      state);
     return std::make_unique<ContentSettingMediaStreamBubbleModel>(
-        browser()->GetFeatures().content_setting_bubble_model_delegate(),
+        BrowserContentSettingBubbleModelDelegate::From(browser()),
         web_contents->GetPrimaryPage());
   }
 
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
           {PageSpecificContentSettings::kMicrophoneAccessed});
   std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
       std::make_unique<ContentSettingMediaStreamBubbleModel>(
-          browser()->GetFeatures().content_setting_bubble_model_delegate(),
+          BrowserContentSettingBubbleModelDelegate::From(browser()),
           web_contents->GetPrimaryPage());
 
   EXPECT_TRUE(mic_bubble->bubble_content().is_user_modifiable);
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest, PopupsActionsCount) {
   // Creates the ContentSettingPopupBubbleModel in order to emulate clicks.
   std::unique_ptr<ContentSettingBubbleModel> model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          browser()->GetFeatures().content_setting_bubble_model_delegate(),
+          BrowserContentSettingBubbleModelDelegate::From(browser()),
           browser()
               ->GetTabStripModel()
               ->GetActiveWebContents()

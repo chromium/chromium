@@ -814,7 +814,7 @@ PictureInPictureBrowserFrameView::GetContentSettingBubbleModelDelegate() {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           GetWebContents());
-  return browser->GetFeatures().content_setting_bubble_model_delegate();
+  return BrowserContentSettingBubbleModelDelegate::From(browser);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

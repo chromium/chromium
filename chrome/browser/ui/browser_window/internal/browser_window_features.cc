@@ -378,7 +378,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   }
 
   content_setting_bubble_model_delegate_ =
-      std::make_unique<BrowserContentSettingBubbleModelDelegate>(browser);
+      GetUserDataFactory()
+          .CreateInstance<BrowserContentSettingBubbleModelDelegate>(*browser,
+                                                                    browser);
 
   context_highlight_window_feature_ =
       std::make_unique<ContextHighlightWindowFeature>(*browser);

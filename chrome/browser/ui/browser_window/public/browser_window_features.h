@@ -321,11 +321,6 @@ class BrowserWindowFeatures {
     return browser_command_controller_.get();
   }
 
-  BrowserContentSettingBubbleModelDelegate*
-  content_setting_bubble_model_delegate() {
-    return content_setting_bubble_model_delegate_.get();
-  }
-
   content_settings::CookieControlsController* cookie_controls_controller() {
     return cookie_controls_controller_.get();
   }

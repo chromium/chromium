@@ -456,9 +456,8 @@ WebAppToolbarButtonContainer::GetContentSettingWebContents() {
 
 ContentSettingBubbleModelDelegate*
 WebAppToolbarButtonContainer::GetContentSettingBubbleModelDelegate() {
-  return browser_view_->browser()
-      ->GetFeatures()
-      .content_setting_bubble_model_delegate();
+  return BrowserContentSettingBubbleModelDelegate::From(
+      browser_view_->browser());
 }
 
 // ImmersiveModeController::Observer:

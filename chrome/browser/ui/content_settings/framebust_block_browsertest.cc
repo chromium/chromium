@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   EXPECT_EQ(1u, helper->blocked_urls().size());
 
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      BrowserContentSettingBubbleModelDelegate::From(browser()),
       GetWebContents()->GetPrimaryPage());
 
   class InitiatorObserver : public content::WebContentsObserver {
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   // Create a content bubble and simulate clicking on the first radio button
   // before closing it.
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      BrowserContentSettingBubbleModelDelegate::From(browser()),
       GetWebContents()->GetPrimaryPage());
   std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
       framebust_block_bubble_model, kDisallowRadioButtonIndex);
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   // Create a content bubble and simulate clicking on the second radio button
   // before closing it.
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      BrowserContentSettingBubbleModelDelegate::From(browser()),
       GetWebContents()->GetPrimaryPage());
 
   std::unique_ptr<FakeOwner> owner =
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
   // Create a content bubble and simulate clicking on the second radio button
   // before closing it.
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      BrowserContentSettingBubbleModelDelegate::From(browser()),
       GetWebContents()->GetPrimaryPage());
 
   content::TestNavigationObserver navigation_observer(nullptr);
