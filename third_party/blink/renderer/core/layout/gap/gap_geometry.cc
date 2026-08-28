@@ -1077,21 +1077,8 @@ GapSegmentState GapGeometry::GetIntersectionGapSegmentState(
     GridTrackSizingDirection track_direction,
     wtf_size_t primary_index,
     wtf_size_t secondary_index) const {
-  const GapSegmentStateRanges* gap_segment_state_ranges = nullptr;
-
-  if (IsMainDirection(track_direction)) {
-    CHECK(primary_index < main_gaps_.size());
-    if (main_gaps_[primary_index].HasGapSegmentStateRanges()) {
-      gap_segment_state_ranges =
-          &main_gaps_[primary_index].GetGapSegmentStateRanges();
-    }
-  } else {
-    CHECK(primary_index < cross_gaps_.size());
-    if (cross_gaps_[primary_index].HasGapSegmentStateRanges()) {
-      gap_segment_state_ranges =
-          &cross_gaps_[primary_index].GetGapSegmentStateRanges();
-    }
-  }
+  const GapSegmentStateRanges* gap_segment_state_ranges =
+      GetGapSegmentStateRangesForGap(track_direction, primary_index);
 
   // If no ranges exist for this gap, assume `kNone` (both sides
   // occupied).
