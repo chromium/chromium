@@ -7,9 +7,11 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MENU_SHOW_DELAY_MS, SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ReadAnythingToolbarElement, SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setupTestEnvironment, stubAnimationFrame} from './common.js';
@@ -41,6 +43,7 @@ suite('Toolbar', () => {
     visualBrowserProxy = result.visualBrowserProxy;
     audioBrowserProxy = result.audioBrowserProxy;
     metrics = result.metrics;
+    stubAnimationFrame();
     return createToolbar();
   });
 
@@ -49,37 +52,17 @@ suite('Toolbar', () => {
     assertTrue(!!audioControls);
   });
 
-  test('does not have highlight menu', () => {
-    stubAnimationFrame();
-    const highlightButton = getButton('highlight');
-    assertFalse(!!highlightButton);
-  });
-
-  test('does not have voice menu', () => {
-    stubAnimationFrame();
-    const voiceButton = getButton('voice-selection');
-    assertFalse(!!voiceButton);
-  });
-
-  test('does have settings menu', () => {
-    stubAnimationFrame();
-    const moreButton = getButton('more');
-    assertTrue(!!moreButton);
-  });
-
   suite('tab index', () => {
     setup(() => {
       assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
     });
 
     test('is -1 after Tab keydown', () => {
-      stubAnimationFrame();
       toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
       assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
     });
 
     test('is reset after closing reading mode', async () => {
-      stubAnimationFrame();
       toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
       assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
       toolbar.presentationState = visualBrowserProxy.inHiddenPresentationState;
@@ -88,7 +71,6 @@ suite('Toolbar', () => {
     });
 
     test('is reset after opening reading mode in side panel', async () => {
-      stubAnimationFrame();
       toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
       assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
       toolbar.presentationState =
@@ -113,9 +95,9 @@ suite('Toolbar', () => {
       rateButton = rate;
     });
 
-    test('shows rate menu on click', () => {
-      stubAnimationFrame();
+    test('shows rate menu on click', async () => {
       rateButton.click();
+      await microtasksFinished();
       assertTrue(toolbar.$.rateMenu.$.menu.$.lazyMenu.get().open);
     });
 
@@ -382,5 +364,297 @@ suite('Toolbar', () => {
     const rateButton = shadowRoot.querySelector('#rate');
     assertTrue(!!rateButton);
     assertEquals('1.5', rateButton.textContent.trim());
+  });
+
+  suite('settings menu', () => {
+    let moreButton: CrIconButtonElement;
+    let settingsMenu: SettingsMenuElement;
+
+    function getMenuItem(id: SettingsOption): HTMLElement|null {
+      const actionMenu = settingsMenu.$.lazyMenu.get();
+      const menuItems =
+          Array.from(actionMenu.querySelectorAll<HTMLElement>('.menu-row'));
+      return menuItems.find(item => item.id === id) || null;
+    }
+
+    setup(async () => {
+      const more = getButton('more');
+      assertTrue(!!more);
+      moreButton = more;
+
+      settingsMenu = toolbar.$.settingsMenu;
+
+      moreButton.click();
+      settingsMenu.$.lazyMenu.get();
+      await microtasksFinished();
+    });
+
+    teardown(async () => {
+      if (toolbar) {
+        for (const menu of Object.values(toolbar.settingsMenu_)) {
+          menu?.close();
+        }
+      }
+      if (settingsMenu) {
+        settingsMenu.close();
+      }
+      return microtasksFinished();
+    });
+
+    test('shows dropdown menu on click', () => {
+      assertTrue(settingsMenu.$.lazyMenu.get().open);
+    });
+
+    test('isSpeechActive is passed to settings menu', async () => {
+      toolbar.isSpeechActive = true;
+      await microtasksFinished();
+      assertTrue(settingsMenu.isSpeechActive);
+
+      toolbar.isSpeechActive = false;
+      await microtasksFinished();
+      assertFalse(settingsMenu.isSpeechActive);
+    });
+
+    test('opens submenus on click', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      targetItem.click();
+      assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    });
+
+    test('opens appearance submenu on click when flag enabled', async () => {
+      settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+      visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+      await microtasksFinished();
+      const targetItem = getMenuItem(SettingsOption.APPEARANCE);
+      assertTrue(!!targetItem);
+      targetItem.click();
+      assertTrue(toolbar.$.appearanceMenu.$.menu.$.lazyMenu.get().open);
+    });
+
+    test('opens submenus on hover', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      const timer = new MockTimer();
+      timer.install();
+
+      targetItem.dispatchEvent(new PointerEvent(
+          'pointerenter', {bubbles: true, cancelable: true, view: window}));
+      timer.tick(MENU_SHOW_DELAY_MS + 10);
+      timer.uninstall();
+      assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    });
+
+    test('does not open submenu before delay', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      const timer = new MockTimer();
+      timer.install();
+
+      targetItem.dispatchEvent(new PointerEvent(
+          'pointerenter', {bubbles: true, cancelable: true, view: window}));
+      timer.tick(MENU_SHOW_DELAY_MS - 10);
+
+      assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+      timer.uninstall();
+    });
+
+    test('closes when clicked outside', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      const timer = new MockTimer();
+      timer.install();
+
+      targetItem.dispatchEvent(new PointerEvent(
+          'pointerenter', {bubbles: true, cancelable: true, view: window}));
+      timer.tick(MENU_SHOW_DELAY_MS + 10);
+      timer.uninstall();
+
+      assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+
+      moreButton.click();
+      const actionMenu = settingsMenu.$.lazyMenu.get();
+      assertFalse(actionMenu.open);
+      assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    });
+
+    test('closes opened menu if mouse is moved out', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      const timer = new MockTimer();
+      timer.install();
+
+      targetItem.dispatchEvent(new PointerEvent(
+          'pointerenter', {bubbles: true, cancelable: true, view: window}));
+      timer.tick(MENU_SHOW_DELAY_MS + 10);
+
+      assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+
+      targetItem.dispatchEvent(new PointerEvent('pointerleave', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        relatedTarget: moreButton,
+      }));
+      timer.tick(MENU_SHOW_DELAY_MS + 10);
+      timer.uninstall();
+
+      const actionMenu = settingsMenu.$.lazyMenu.get();
+      assertTrue(actionMenu.open);
+      assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    });
+
+    test('clicking language menu does not close settings menu', async () => {
+      // Open the voice selection menu
+      const targetItem = getMenuItem(SettingsOption.VOICE_SELECTION);
+      assertTrue(!!targetItem);
+      targetItem.click();
+      assertTrue(toolbar.$.voiceSelectionMenu.$.voiceSelectionMenu.get().open);
+
+      // Open the language menu
+      const languageMenuButton =
+          toolbar.$.voiceSelectionMenu.shadowRoot.querySelector<HTMLElement>(
+              '.language-menu-button');
+      assertTrue(!!languageMenuButton);
+      languageMenuButton.click();
+      await microtasksFinished();
+
+      const languageMenu =
+          toolbar.$.voiceSelectionMenu.shadowRoot.querySelector(
+              'language-menu');
+      assertTrue(!!languageMenu);
+      const dialog = languageMenu.$.languageMenu;
+
+      dialog.click();
+
+      assertTrue(settingsMenu.$.lazyMenu.get().open);
+    });
+
+    test('cancels open timer on key event', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      const timer = new MockTimer();
+      timer.install();
+
+      targetItem.dispatchEvent(new PointerEvent(
+          'pointerenter', {bubbles: true, cancelable: true, view: window}));
+      const elapsedTime = MENU_SHOW_DELAY_MS - 10;
+      timer.tick(elapsedTime);
+
+      keyDownOn(settingsMenu, 0, undefined, 'ArrowDown');
+      timer.tick(elapsedTime + 20);
+      assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+      timer.uninstall();
+    });
+
+    test('opens submenu of focused element on horizontal forward arrow', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      targetItem.focus();
+
+      keyDownOn(settingsMenu, 0, undefined, 'ArrowRight');
+      assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    });
+
+    test('focuses a different element on vertical forward arrow', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      targetItem.focus();
+
+      keyDownOn(settingsMenu, 0, undefined, 'ArrowUp');
+      assertNotEquals(document.activeElement, targetItem);
+    });
+
+    test('does nothing on toggle items on arrow event', () => {
+      const targetItem = getMenuItem(SettingsOption.LINKS);
+      assertTrue(!!targetItem);
+      targetItem.focus();
+
+      keyDownOn(settingsMenu, 0, undefined, 'ArrowRight');
+      assertEquals(0, visualBrowserProxy.getCallCount('onLinksEnabledToggled'));
+    });
+
+    test('closes submenu on horizontal backward arrow or escape key', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      const targetMenu = toolbar.$.fontMenu.$.menu.$.lazyMenu.get();
+      assertTrue(!!targetItem);
+
+      targetItem.click();
+      assertTrue(targetMenu.open);
+      keyDownOn(settingsMenu, 0, undefined, 'ArrowLeft');
+      assertFalse(targetMenu.open);
+
+      targetItem.click();
+      assertTrue(targetMenu.open);
+      keyDownOn(settingsMenu, 0, undefined, 'Escape');
+      assertFalse(targetMenu.open);
+    });
+
+    test('does not open submenus after settings menu is closed', () => {
+      const targetItem = getMenuItem(SettingsOption.FONT);
+      assertTrue(!!targetItem);
+      const timer = new MockTimer();
+      timer.install();
+
+      targetItem.dispatchEvent(new PointerEvent(
+          'pointerenter', {bubbles: true, cancelable: true, view: window}));
+      timer.tick(MENU_SHOW_DELAY_MS - 1);
+      settingsMenu.close();
+      timer.tick(1);
+
+      assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+      timer.uninstall();
+    });
+
+    test('shows close button in immersive mode', async () => {
+      toolbar.isImmersiveMode = true;
+      await microtasksFinished();
+      const closeButton = getButton('close');
+      assertTrue(!!closeButton);
+    });
+
+    test('does not show close button in side panel mode', () => {
+      const closeButton = getButton('close');
+      assertFalse(!!closeButton);
+    });
+
+    test(
+        'does not close opened submenu if mouse moves directly into it', () => {
+          const targetItem = getMenuItem(SettingsOption.FONT);
+          assertTrue(!!targetItem);
+          const timer = new MockTimer();
+          timer.install();
+
+          targetItem.dispatchEvent(new PointerEvent(
+              'pointerenter', {bubbles: true, cancelable: true, view: window}));
+          timer.tick(MENU_SHOW_DELAY_MS + 10);
+
+          const fontSubmenu = toolbar.$.fontMenu;
+          assertTrue(fontSubmenu.$.menu.$.lazyMenu.get().open);
+
+          // Simulate that mouse moved out of item, but we specify that the new
+          // element is directly under the cursor.
+          targetItem.dispatchEvent(new PointerEvent('pointerleave', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            relatedTarget: fontSubmenu,
+          }));
+
+          timer.tick(MENU_SHOW_DELAY_MS + 10);
+          timer.uninstall();
+
+          const actionMenu = settingsMenu.$.lazyMenu.get();
+          assertTrue(actionMenu.open);
+          assertTrue(fontSubmenu.$.menu.$.lazyMenu.get().open);
+        });
+
+    test('invokes visualBrowserProxy on translation requested event', () => {
+      visualBrowserProxy.translateEntryPointEnabled = true;
+      settingsMenu.dispatchEvent(
+          new CustomEvent(ToolbarEvent.TRANSLATION_REQUESTED));
+      assertEquals(
+          1, visualBrowserProxy.getCallCount('onTranslationRequested'));
+    });
   });
 });

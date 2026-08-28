@@ -329,11 +329,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SettingsMenu) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarSettingsMenu) {
-  RunSidePanelTest("side_panel/read_anything/toolbar_settings_menu_test.js",
-                   "mocha.run()");
-}
-
 class ReadAnythingWithReadabilityMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:
