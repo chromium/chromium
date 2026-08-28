@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="TextAppearance.BookmarkPopup.Hint" parent="TextAppearance.TextSmall.Secondary" tools:ignore="SpUsage">
+        <item name="android:textSize">12dp</item>
+    </style>
+    <style name="TextAppearance.BookmarkPopup.Headline" parent="TextAppearance.Headline.Primary" tools:ignore="SpUsage">
+        <item name="android:textSize">22dp</item>
+    </style>
+    <style name="TextAppearance.BookmarkPopup.Input" parent="TextAppearance.TextLarge.Primary" tools:ignore="SpUsage">
+        <item name="android:textSize">16dp</item>
+    </style>
+    <style name="TextAppearance.BookmarkPopup.TextMedium" parent="TextAppearance.TextMedium.Primary" tools:ignore="SpUsage">
+        <item name="android:textSize">14dp</item>
+    </style>
+    <style name="TextAppearance.BookmarkPopup.TextSmall" parent="TextAppearance.TextSmall.Secondary" tools:ignore="SpUsage">
+        <item name="android:textSize">12dp</item>
+    </style>
+    <style name="TextAppearance.BookmarkPopup.Button" parent="" tools:ignore="SpUsage">
+        <item name="android:textSize">14dp</item>
+    </style>
+</resources>

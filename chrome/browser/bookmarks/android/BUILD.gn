@@ -46,6 +46,7 @@ android_resources("java_resources") {
     "java/res/layout/bookmark_popup.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [ "//components/browser_ui/widget/android:java_resources" ]
 }

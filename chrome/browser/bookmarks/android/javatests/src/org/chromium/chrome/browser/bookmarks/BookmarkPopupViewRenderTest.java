@@ -103,6 +103,44 @@ public class BookmarkPopupViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testBookmarkPopupView_LargeFontScale() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = mActivityTestRule.getActivity();
+                    android.content.res.Configuration config =
+                            new android.content.res.Configuration(
+                                    activity.getResources().getConfiguration());
+                    config.fontScale = 2.0f;
+                    android.content.Context wrappedContext =
+                            activity.createConfigurationContext(config);
+                    wrappedContext.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+                    LinearLayout contentView = new LinearLayout(activity);
+                    contentView.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(activity));
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT);
+
+                    BookmarkPopupView largeFontView =
+                            (BookmarkPopupView)
+                                    LayoutInflater.from(wrappedContext)
+                                            .inflate(R.layout.bookmark_popup, contentView, false);
+                    contentView.addView(largeFontView);
+
+                    largeFontView.setHeaderText("Bookmark added");
+                    largeFontView.setTitle("Test Bookmark");
+                    largeFontView.setFolderName("Mobile bookmarks");
+
+                    activity.setContentView(contentView, params);
+                    mView = largeFontView;
+                });
+        mRenderTestRule.render(mView, "bookmark_popup_view_large_font");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testBookmarkPopupView_PriceTrackingUnchecked() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
