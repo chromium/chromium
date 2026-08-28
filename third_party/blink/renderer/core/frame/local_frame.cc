@@ -445,6 +445,20 @@ void LocalFrame::Init(
   loader_.Init(document_token, std::move(policy_container), storage_key,
                document_ukm_source_id, creator_base_url,
                std::move(sandbox_origin_token));
+
+  // If this frame is created inside a same-process parent that is already
+  // hidden for media playback (e.g. a subframe inserted into a display:none
+  // iframe), inherit that hidden state directly. The parent's viewport-
+  // intersection pass that propagated the hidden bit down its subtree ran
+  // before this frame existed, and it will not re-run while the parent stays
+  // hidden (a hidden frame is render-throttled, so scheduling another pass will
+  // not reach this frame). Without this seed, media in the newly created frame
+  // would never learn that it is hidden.
+  if (LocalFrame* parent_local_frame = DynamicTo<LocalFrame>(Tree().Parent())) {
+    if (parent_local_frame->IsHiddenForMediaPlayback().value_or(false)) {
+      is_hidden_for_media_playback_ = true;
+    }
+  }
 }
 
 void LocalFrame::SetView(LocalFrameView* view) {

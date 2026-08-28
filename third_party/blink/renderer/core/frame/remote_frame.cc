@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_dom_window.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
@@ -471,6 +472,19 @@ void RemoteFrame::CreateView() {
 
   if (OwnerLayoutObject())
     DeprecatedLocalOwner()->SetEmbeddedContentView(view_);
+
+  // Force the embedding (parent) frame to recompute and propagate this frame's
+  // viewport intersection state on the next lifecycle update. This ensures the
+  // remote frame receives its initial `is_hidden_for_media_playback` bit even
+  // when it has no layout object (e.g. an out-of-process iframe that is
+  // display:none before insertion). Without this, such a frame would keep the
+  // default (not-hidden) state, allowing media to play while hidden.
+  if (LocalFrame* parent_local_frame = DynamicTo<LocalFrame>(Tree().Parent())) {
+    if (LocalFrameView* parent_view = parent_local_frame->View()) {
+      parent_view->SetIntersectionObservationState(LocalFrameView::kRequired);
+      parent_view->ScheduleAnimation();
+    }
+  }
 }
 
 void RemoteFrame::ForwardPostMessage(
