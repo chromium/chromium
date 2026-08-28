@@ -1011,11 +1011,19 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * @return Whether the Autofill feature for Payment Methods is enabled.
+     * This checks both the underlying user setting ({@link Pref#AUTOFILL_CREDIT_CARD_ENABLED}) and
+     * whether payments autofill is blocked by the {@code AutofillSettings} enterprise policy
+     * ({@code autofill.types_blocked}). If an enterprise policy disables payments, this will return
+     * {@code false} so that payment autofill operations are suppressed and the setting is treated
+     * as disabled.
+     *
+     * @return True if payment methods autofill is enabled and not blocked by policy, false
+     *     otherwise.
      */
     public boolean isAutofillPaymentMethodsEnabled() {
         // TODO(crbug.com/40903277): Rename pref to AUTOFILL_PAYMENT_METHODS_ENABLED.
-        return mPrefService.getBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED);
+        return mPrefService.getBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED)
+                && !isAutofillTypeDisabledByEnterprisePolicy(AutofillPolicyDataCategory.PAYMENTS);
     }
 
     /**

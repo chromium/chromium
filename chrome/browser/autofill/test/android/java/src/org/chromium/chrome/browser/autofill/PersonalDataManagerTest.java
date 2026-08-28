@@ -1292,4 +1292,69 @@ public class PersonalDataManagerTest {
                     spyPdm.setAutofillProfileEnabled(true);
                 });
     }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testIsAutofillPaymentMethodsEnabled_defaultEnabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager pdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    assertTrue(pdm.isAutofillPaymentMethodsEnabled());
+                    assertFalse(pdm.isAutofillCreditCardManaged());
+                    assertFalse(
+                            pdm.isAutofillTypeDisabledByEnterprisePolicy(
+                                    AutofillPolicyDataCategory.PAYMENTS));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testIsAutofillPaymentMethodsEnabled_whenDisabledByEnterprisePolicy() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager realPdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    PersonalDataManager spyPdm = spy(realPdm);
+                    doReturn(true)
+                            .when(spyPdm)
+                            .isAutofillTypeDisabledByEnterprisePolicy(
+                                    AutofillPolicyDataCategory.PAYMENTS);
+
+                    // When AutofillSettings policy blocks payments, enabled is forced to false.
+                    spyPdm.setAutofillCreditCardEnabled(true);
+                    assertFalse(spyPdm.isAutofillPaymentMethodsEnabled());
+
+                    spyPdm.setAutofillCreditCardEnabled(false);
+                    assertFalse(spyPdm.isAutofillPaymentMethodsEnabled());
+
+                    spyPdm.setAutofillCreditCardEnabled(true);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testIsAutofillPaymentMethodsEnabled_whenNotDisabledByEnterprisePolicy() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager realPdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    PersonalDataManager spyPdm = spy(realPdm);
+                    doReturn(false)
+                            .when(spyPdm)
+                            .isAutofillTypeDisabledByEnterprisePolicy(
+                                    AutofillPolicyDataCategory.PAYMENTS);
+
+                    spyPdm.setAutofillCreditCardEnabled(true);
+                    assertTrue(spyPdm.isAutofillPaymentMethodsEnabled());
+
+                    spyPdm.setAutofillCreditCardEnabled(false);
+                    assertFalse(spyPdm.isAutofillPaymentMethodsEnabled());
+
+                    spyPdm.setAutofillCreditCardEnabled(true);
+                });
+    }
 }
