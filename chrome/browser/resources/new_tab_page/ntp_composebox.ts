@@ -186,6 +186,10 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     return super.shouldShowDivider();
   }
 
+  override shouldHandleSuggestionFuseboxActions(): boolean {
+    return true;
+  }
+
   override deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean):
       ComposeboxFile|null {
     const file = super.deleteFile(uuidToDelete, fromUserAction);

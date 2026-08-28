@@ -350,6 +350,8 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
         private smartComposeAnnounceTimeout_: number|null = null;
+        private updateStateComplete_: Promise<void> = Promise.resolve();
+        private userInputGeneration_: number = 0;
 
         // =====================================================================
         // Lifecycle Hooks
@@ -398,6 +400,11 @@ export const ComposeboxEmbedderMixin =
           // </if>
 
           this.getSearchboxHandler().notifySessionStarted();
+
+          this.eventTracker.add(this, 'match-pre-accept', (e: Event) => {
+            this.onMatchPreAccept_(
+                e as CustomEvent<{match: AutocompleteMatch}>);
+          });
 
           this.initializeInitialState_();
 
@@ -607,7 +614,7 @@ export const ComposeboxEmbedderMixin =
             }
           }
           if (changedPrivateProperties.has('state') && this.state) {
-            this.updateState(this.state);
+            this.updateStateComplete_ = this.updateState(this.state);
           }
         }
 
@@ -650,6 +657,10 @@ export const ComposeboxEmbedderMixin =
 
         getFileInputsElement(): ComposeboxFileInputsElement|null {
           return null;
+        }
+
+        shouldHandleSuggestionFuseboxActions(): boolean {
+          return false;
         }
 
         // =====================================================================
@@ -730,6 +741,10 @@ export const ComposeboxEmbedderMixin =
           this.selectedMatchIndex = e.detail.value;
           this.selectedMatch =
               this.result?.matches[this.selectedMatchIndex] || null;
+        }
+
+        private onMatchPreAccept_(e: CustomEvent<{match: AutocompleteMatch}>) {
+          this.maybeHandleSuggestionFuseboxAction_(e.detail.match, e);
         }
 
         onMatchClick(e: CustomEvent<{
@@ -914,6 +929,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         onInputInput(_e: CustomEvent<Event>) {
+          this.userInputGeneration_++;
           // Clear suggestInventory when the user edits query.
           this.suggestInventory = null;
           const newInput = this.getInputElement().input;
@@ -2042,6 +2058,58 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        private maybeHandleSuggestionFuseboxAction_(
+            match: AutocompleteMatch, event?: Event): boolean {
+          const action = match.fuseboxAction;
+          if (!this.shouldHandleSuggestionFuseboxActions() || !action ||
+              action.queryActionOverride === QueryActionOverride.kDefault) {
+            return false;
+          }
+
+          const isHint =
+              action.queryActionOverride === QueryActionOverride.kHint;
+          const originalInput = isHint ? this.lastQueriedInput : null;
+          const request: ComposeboxFuseboxActionRequest = {
+            suggestion: match.fillIntoEdit,
+            files: [],
+            fuseboxAction: action,
+          };
+          event?.preventDefault();
+          void this.executeSuggestionFuseboxAction_(
+              request, originalInput, this.userInputGeneration_);
+          return true;
+        }
+
+        private async executeSuggestionFuseboxAction_(
+            request: ComposeboxFuseboxActionRequest, originalInput: string|null,
+            userInputGeneration: number) {
+          this.clearAutocompleteMatches();
+          const handlerComplete = this.handleFuseboxAction(request);
+          const actionState = this.state;
+          const canRestoreInput = () =>
+              this.userInputGeneration_ === userInputGeneration &&
+              this.state === actionState;
+          await handlerComplete;
+          if (originalInput === null || !canRestoreInput()) {
+            return;
+          }
+          await this.updateComplete;
+          if (!canRestoreInput()) {
+            return;
+          }
+          const updateStateComplete = this.updateStateComplete_;
+          await updateStateComplete;
+          if (!canRestoreInput()) {
+            return;
+          }
+          this.clearAutocompleteMatches();
+          await this.updateComplete;
+          if (!canRestoreInput()) {
+            return;
+          }
+          this.input = originalInput;
+        }
+
         cacheSubmittedTabs() {
           if (!this.contextManagementInComposeboxEnabled) {
             return;
@@ -2944,6 +3012,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
       |ContextualEntrypointAndMenuElement|null;
   getLensButtonElement(): HTMLElement|null;
   getFileInputsElement(): ComposeboxFileInputsElement|null;
+  shouldHandleSuggestionFuseboxActions(): boolean;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean,
       onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void):

@@ -6,15 +6,17 @@ import 'chrome://contextual-tasks/strings.m.js';
 import './test_composebox_mixin.js';
 
 import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, isValidTabId, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import type {ComposeboxEmbedderMixinInterface} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
-import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
+import {createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {InputSource, QueryActionOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import {InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {DriveDisclaimerStatus, DriveUploadError, InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -113,6 +115,28 @@ suite('ComposeboxMixinTest', () => {
     document.body.appendChild(element);
     await microtasksFinished();
   });
+
+  // Sets up matches mirroring the production structure: index 0 is the
+  // hidden verbatim match (no action), and index 1 is the Fusebox action match.
+  async function showFuseboxMatches(
+      fuseboxAction: FuseboxAction, originalInput: string = 'typed input',
+      fillIntoEdit: string = 'action suggestion') {
+    await microtasksFinished();
+    element.input = originalInput;
+    element.lastQueriedInput = originalInput;
+    element.result = {
+      input: originalInput,
+      matches: [
+        createAutocompleteMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: originalInput,
+        }),
+        createAutocompleteMatch({fillIntoEdit, fuseboxAction}),
+      ],
+    } as AutocompleteResult;
+    await element.updateComplete;
+    await microtasksFinished();
+  }
 
   test(
       'refreshTabSuggestions() dedupes restored tabs with same tabId',
@@ -777,6 +801,169 @@ suite('ComposeboxMixinTest', () => {
     assertFalse(element.showDropdown);
     assertEquals(null, element.result);
     assertEquals('', element.lastQueriedInput);
+  });
+
+  test('routes suggestion actions on click only', async () => {
+    const makeAction = (overrides: Partial<FuseboxAction> = {}) =>
+        createFuseboxActionRequest(overrides).fuseboxAction;
+    const originalHandler = element.handleFuseboxAction;
+    const requests: ComposeboxFuseboxActionRequest[] = [];
+    element.handleFuseboxAction = async request => {
+      requests.push(request);
+      await originalHandler.call(element, request);
+    };
+
+    // Track handler side-effects and event dispatches in invocation order
+    // to assert their relative sequence and call counts at each step.
+    const effects: string[] = [];
+    searchboxHandler.setResultMapperFor(
+        'setSmartComposeStats', () => effects.push('stats'));
+    searchboxHandler.setResultMapperFor(
+        'openAutocompleteMatch', () => effects.push('open'));
+    element.showZps = false;
+    let closeCount = 0;
+    element.addEventListener('close-composebox', () => ++closeCount);
+    let matchClickCount = 0;
+    element.addEventListener('match-click', () => ++matchClickCount);
+    const dropdown = element.getDropdownElement();
+
+    // Clicks the visible action match at index 1 (index 0 is the hidden
+    // verbatim match, which cannot be clicked by users).
+    function clickActionMatch() {
+      const matchEls =
+          dropdown.shadowRoot.querySelectorAll('cr-composebox-match');
+      assertEquals(2, matchEls.length);
+      const matchEl = matchEls[1]! as HTMLElement;
+      assertFalse(matchEl.hidden);
+      matchEl.dispatchEvent(new MouseEvent(
+          'click',
+          {button: 0, bubbles: true, cancelable: true, composed: true}));
+    }
+
+    try {
+      // 1. When suggestion fusebox actions are disabled (default), clicking an
+      // action match falls back to standard match opening instead of calling
+      // handleFuseboxAction.
+      await showFuseboxMatches(makeAction({
+        queryActionOverride: QueryActionOverride.kPaste,
+      }));
+      clickActionMatch();
+      await microtasksFinished();
+
+      assertEquals(0, requests.length);
+      assertDeepEquals(['open'], effects);
+      assertEquals(1, matchClickCount);
+      assertTrue(element.submitting);
+
+      // 2. When suggestion fusebox actions are enabled, selecting an action
+      // match via keyboard and pressing Enter does not trigger
+      // handleFuseboxAction; it submits the query as normal.
+      element.submitting = false;
+      element.suggestionFuseboxActionsEnabled = true;
+      await showFuseboxMatches(makeAction({
+        queryActionOverride: QueryActionOverride.kPaste,
+      }));
+      dropdown.selectIndex(1);
+      await microtasksFinished();
+      element.submitQuery(new KeyboardEvent('keydown', {key: 'Enter'}));
+      await microtasksFinished();
+
+      assertEquals(0, requests.length);
+      assertDeepEquals(['open', 'stats', 'open'], effects);
+      assertEquals(1, matchClickCount);
+      assertTrue(element.submitting);
+
+      // 3. Clicking a fusebox action match routes the action to
+      // handleFuseboxAction with the action payload, preserves existing files,
+      // and does not submit.
+      element.submitting = false;
+      const action = makeAction({
+        preferredInventory: SuggestInventory.kTravel,
+        preselectedInputSource: InputSource.kInputSourceUnspecified,
+        preselectedModel: ModelMode.kGeminiRegular,
+        preselectedTool: ToolMode.kDeepSearch,
+        searchboxOverride: SearchboxOverride.kComposebox,
+      });
+      await showFuseboxMatches(action);
+      const file = ComposeboxFile.createFromFile(
+          'existing-file', {name: 'existing.pdf', type: 'application/pdf'});
+      element.files.set(file.uuid, file);
+      clickActionMatch();
+      await microtasksFinished();
+      await element.updateComplete;
+
+      assertEquals(1, requests.length);
+      assertEquals('action suggestion', requests[0]!.suggestion);
+      assertEquals(0, requests[0]!.files.length);
+      assertEquals(action, requests[0]!.fuseboxAction);
+      assertDeepEquals(['open', 'stats', 'open'], effects);
+      assertTrue(element.files.has(file.uuid));
+      assertFalse(element.submitting);
+      assertEquals(1, matchClickCount);
+      assertEquals(0, closeCount);
+      assertEquals(null, element.result);
+
+      // 4. For kHint actions, clicking the match executes handleFuseboxAction,
+      // restores the original typed input, and re-queries autocomplete.
+      element.files.clear();
+      const originalInput = 'original typed input';
+      await showFuseboxMatches(
+          makeAction({
+            preselectedTool: ToolMode.kDeepSearch,
+            queryActionOverride: QueryActionOverride.kHint,
+          }),
+          originalInput, 'hint suggestion');
+      dropdown.selectIndex(1);
+      await microtasksFinished();
+      assertEquals('hint suggestion', element.input);
+      const initialQueryCount =
+          searchboxHandler.getCallCount('queryAutocomplete');
+      clickActionMatch();
+      await microtasksFinished();
+
+      assertEquals(2, requests.length);
+      assertDeepEquals(['open', 'stats', 'open'], effects);
+      assertEquals(originalInput, element.input);
+      assertEquals(
+          initialQueryCount + 1,
+          searchboxHandler.getCallCount('queryAutocomplete'));
+      assertFalse(element.submitting);
+      assertEquals(-1, element.activeQueryId);
+
+      // Verify that subsequent async autocomplete responses for the reissued
+      // query do not overwrite the restored user input.
+      const actionQueryId =
+          searchboxHandler.getArgs('queryAutocomplete').at(-1)![0] as number;
+      searchboxCallbackRouterRemote.autocompleteResultChanged(
+          createAutocompleteResultForTesting({
+            input: originalInput,
+            matches: [createAutocompleteMatch({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'async replacement',
+            })],
+            queryId: actionQueryId,
+          }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      assertEquals(originalInput, element.input);
+      assertEquals(null, element.result);
+
+      // 5. Actions with kDefault queryActionOverride are submitted normally
+      // rather than intercepted by handleFuseboxAction.
+      await showFuseboxMatches(makeAction({
+        queryActionOverride: QueryActionOverride.kDefault,
+      }));
+      clickActionMatch();
+      await microtasksFinished();
+
+      assertEquals(2, requests.length);
+      assertDeepEquals(['open', 'stats', 'open', 'open'], effects);
+      assertEquals(2, matchClickCount);
+      assertTrue(element.submitting);
+    } finally {
+      element.handleFuseboxAction = originalHandler;
+    }
   });
 
   test('activeQueryId is not reset to -1 when selection cleared and input is empty', async () => {
