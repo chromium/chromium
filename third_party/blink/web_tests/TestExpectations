@@ -2647,7 +2647,7 @@ crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-s
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-elliptical.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-bevel.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-elliptical.html [ Failure ]
-crbug.com/552713154 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure ]
+crbug.com/552713154 external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Pass Failure ]
 crbug.com/552713154 external/wpt/webdriver/tests/classic/perform_actions/duration.py [ Failure ]
 crbug.com/552555180 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-004.html?class=cap [ Failure ]
 crbug.com/552555180 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-004.html?class=ex [ Failure ]
