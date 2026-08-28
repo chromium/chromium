@@ -260,13 +260,12 @@ class ExecutionEngine : public ToolDelegate,
   using NavigationDecisionCallback =
       base::OnceCallback<void(bool may_continue)>;
 
-  // Returns a value indicating how the given navigation should be handled
-  // (proceed, cancel and ignore, defer, etc.). This method must only be called
-  // on the primary main frame or a prerendered main frame. `callback` will be
-  // invoked iff this function returns `content::NavigationThrottle::DEFER`.
-  content::NavigationThrottle::ThrottleAction ShouldDeferNavigation(
-      content::NavigationHandle& navigation_handle,
-      NavigationDecisionCallback callback);
+  // Invokes `callback` with a value indicating how the given navigation should
+  // be handled (proceed, cancel and ignore). This method must only be called on
+  // the primary main frame or a prerendered main frame. `callback` will be
+  // invoked after this function returns.
+  void ShouldNavigationCommit(content::NavigationHandle& navigation_handle,
+                              NavigationDecisionCallback callback);
 
   // Cancels all pending navigation gating checks, resolving their callbacks
   // with a negative decision (e.g., false or kTaskWentAway).

@@ -817,12 +817,13 @@ std::string ExecutionEngine::StateToString(State state) {
   }
 }
 
-content::NavigationThrottle::ThrottleAction
-ExecutionEngine::ShouldDeferNavigation(
+void ExecutionEngine::ShouldNavigationCommit(
     content::NavigationHandle& navigation_handle,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!IsNavigationGatingEnabled()) {
-    return content::NavigationThrottle::PROCEED;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
   }
 
   CHECK(navigation_handle.GetNavigatingFrameType() ==
@@ -854,7 +855,6 @@ ExecutionEngine::ShouldDeferNavigation(
               MakeBrowserTrackUUID(task_->id()), "OriginGatingDecision", {}),
           source_origin, url::Origin::Create(navigation_handle.GetURL()),
           state_, navigation_handle.GetInitiatorOrigin(), event));
-  return content::NavigationThrottle::DEFER;
 }
 
 void ExecutionEngine::CancelPendingNavigations() {

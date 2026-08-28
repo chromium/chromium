@@ -1078,9 +1078,8 @@ TEST_F(ExecutionEngineNavigationGatingTest,
   navigation_handle.set_initiator_origin(kInitiatorOrigin);
 
   base::test::TestFuture<bool> future;
-  EXPECT_EQ(task_->GetExecutionEngine().ShouldDeferNavigation(
-                navigation_handle, future.GetCallback()),
-            content::NavigationThrottle::DEFER);
+  task_->GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
+                                                     future.GetCallback());
 
   EXPECT_TRUE(future.Get());
 
@@ -1114,9 +1113,8 @@ TEST_F(ExecutionEngineNavigationGatingTest,
   content::MockNavigationHandle navigation_handle(kDestinationUrl, main_rfh());
 
   base::test::TestFuture<bool> future;
-  EXPECT_EQ(task_->GetExecutionEngine().ShouldDeferNavigation(
-                navigation_handle, future.GetCallback()),
-            content::NavigationThrottle::DEFER);
+  task_->GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
+                                                     future.GetCallback());
 
   EXPECT_TRUE(future.Get());
 
@@ -1544,9 +1542,8 @@ TEST_F(ExecutionEngineUrlGatingTest,
   content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
 
   base::test::TestFuture<bool> future;
-  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
-                                                       future.GetCallback()),
-            content::NavigationThrottle::DEFER);
+  GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
+                                              future.GetCallback());
 
   EXPECT_TRUE(future.Get());
 }
@@ -1568,9 +1565,8 @@ TEST_F(ExecutionEngineUrlGatingTest,
   content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
 
   base::test::TestFuture<bool> future;
-  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
-                                                       future.GetCallback()),
-            content::NavigationThrottle::DEFER);
+  GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
+                                              future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }
@@ -1614,9 +1610,8 @@ TEST_P(ExecutionEngineMimeGatingTest, HandlesMimeTypes) {
   navigation_handle.set_response_headers(builder.Build());
 
   base::test::TestFuture<bool> future;
-  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
-                                                       future.GetCallback()),
-            content::NavigationThrottle::DEFER);
+  GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
+                                              future.GetCallback());
 
   EXPECT_EQ(future.Get(), expected_allowed());
 }
@@ -1665,9 +1660,8 @@ TEST_F(ExecutionEngineUrlGatingTest,
   navigation_handle.set_response_headers(builder.Build());
 
   base::test::TestFuture<bool> future;
-  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
-                                                       future.GetCallback()),
-            content::NavigationThrottle::DEFER);
+  GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
+                                              future.GetCallback());
 
   EXPECT_TRUE(future.Get());
 }
