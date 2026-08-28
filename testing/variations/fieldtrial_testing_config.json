@@ -21225,6 +21225,23 @@
             ]
         }
     ],
+    "WebRtcNeuralResidualEchoEstimationAsyncInit": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRtcNeuralResidualEchoEstimationAsyncInit"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebSigninLoadingDialog": [
         {
             "platforms": [
