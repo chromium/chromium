@@ -11,13 +11,17 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_notice_view_test_api.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -111,6 +115,9 @@ class PopupNoticeViewTest : public ChromeViewsTestBase {
   }
   base::MockCallback<base::RepeatingClosure>& mock_on_link_clicked() {
     return mock_on_link_clicked_;
+  }
+  TestContentAutofillClient* autofill_client() {
+    return test_autofill_client_injector_[web_contents_.get()];
   }
 
   // Verifies that the description is visible and has the correct text.
@@ -214,6 +221,8 @@ class PopupNoticeViewTest : public ChromeViewsTestBase {
 
  private:
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      test_autofill_client_injector_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
@@ -654,6 +663,55 @@ TEST_F(PopupNoticeViewTest, CreateAutofillAiPrivateInferenceNoticeViewCreated) {
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_FALSE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
                    .empty());
+}
+
+// Tests that clicking the link in the Autofill AI Private Inference Notice view
+// marks the notice as acknowledged in preferences and logs the metric.
+TEST_F(PopupNoticeViewTest,
+       ClickLinkInAutofillAiPrivateInferenceNoticeViewAcknowledgesNotice) {
+  base::HistogramTester histogram_tester;
+  controller().set_suggestions(
+      {Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)});
+
+  PrefService* const prefs = autofill_client()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  EXPECT_EQ(prefs->GetTime(
+                prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp),
+            base::Time());
+
+  auto notice_view = CreateAutofillAiPrivateInferenceNoticeView(
+      mock_a11y_selection_delegate(), mock_announce_callback().Get(),
+      controller().GetWeakPtr(), kNoticePosition);
+  ASSERT_TRUE(notice_view);
+
+  PopupNoticeView* view_ptr = widget().SetContentsView(std::move(notice_view));
+  widget().SetBounds(gfx::Rect(0, 0, 500, 500));
+  widget().Show();
+  widget().LayoutRootViewIfNecessary();
+
+  views::StyledLabel* description = test_api(*view_ptr).description();
+  ASSERT_NE(description, nullptr);
+  views::Link* link = description->GetFirstLinkForTesting();
+  ASSERT_NE(link, nullptr);
+
+  const base::Time before = base::Time::Now();
+  generator().MoveMouseTo(link->GetBoundsInScreen().CenterPoint());
+  generator().ClickLeftButton();
+  const base::Time after = base::Time::Now();
+
+  const base::Time ack_time = prefs->GetTime(
+      prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp);
+  EXPECT_GE(ack_time, before);
+  EXPECT_LE(ack_time, after);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PrivateInferenceNoticeInteractions",
+      AutofillMetrics::PopupNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.PrivateInferenceNoticeInteractions",
+      AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.PrivateInferenceNoticeInteractions", 2);
 }
 
 }  // namespace

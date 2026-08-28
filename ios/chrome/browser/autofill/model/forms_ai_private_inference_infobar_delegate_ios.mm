@@ -99,4 +99,7 @@ void FormsAiPrivateInferenceInfoBarDelegateIOS::OnSettingsLinkClicked() {
   base::UmaHistogramEnumeration(
       "Autofill.Ai.PrivateInferenceNoticeInteractions",
       PopupNoticeInteractions::kLinkButtonClicked);
+  prefs_->SetTime(
+      autofill::prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
+      base::Time::Now());
 }

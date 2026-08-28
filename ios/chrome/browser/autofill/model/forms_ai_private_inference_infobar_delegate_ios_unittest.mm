@@ -93,14 +93,27 @@ TEST_F(FormsAiPrivateInferenceInfoBarDelegateIOSTest, LogsDismissedMetric) {
       "Autofill.Ai.PrivateInferenceNoticeInteractions", 2, 1);
 }
 
-// Tests that clicking the settings link logs the "LinkButtonClicked" metric and
-// blocks "Dismissed" from being logged afterwards.
+// Tests that clicking the settings link updates the timestamp, logs the
+// "LinkButtonClicked" metric, and blocks "Dismissed" from being logged
+// afterwards.
 TEST_F(FormsAiPrivateInferenceInfoBarDelegateIOSTest,
        LogsSettingsLinkClickedAndPreventsDoubleLogging) {
   base::HistogramTester histogram_tester;
   FormsAiPrivateInferenceInfoBarDelegateIOS delegate(&pref_service_);
 
+  EXPECT_TRUE(
+      pref_service_
+          .GetTime(autofill::prefs::
+                       kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null());
+
   delegate.OnSettingsLinkClicked();
+
+  EXPECT_FALSE(
+      pref_service_
+          .GetTime(autofill::prefs::
+                       kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null());
 
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.PrivateInferenceNoticeInteractions", 2);
