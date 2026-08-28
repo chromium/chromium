@@ -48,7 +48,10 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **Reuse & Pre-research**: Research relevant existing libraries, utilities, and methods before implementing something new. Follow existing patterns in the codebase when applicable.
 - **Resource & Type Annotations**: Always annotate integer resource IDs and typed values with appropriate AndroidX annotations (e.g., `@ColorInt`, `@ColorRes`, `@DrawableRes`, `@StringRes`, `@Px`).
 - **Constants over Magic Numbers**: Do not create or use magic numbers directly in the code. Define and use descriptive constants instead.
-- **Method Signatures**: Avoid creating constructors or methods that accept too many boolean parameters, as this degrades readability.
+- **Method Signatures & Parameter Comments**:
+  - Avoid creating constructors or methods that accept too many boolean parameters, as this degrades readability.
+  - **Boolean Parameter Annotations**: Call-site boolean literals must be documented with a `/* paramName= */` comment unless the parameter's meaning is unmistakably clear from the method name (e.g., `setVisible(true)` is fine, but `open(view, /* animated= */ true)` is not).
+  - **Repeated Plain-Old-Data (POD) Parameters**: Repeated primitive / POD parameters (e.g., consecutive `int`, `long`, `float`, `boolean` values) unconditionally must be documented at call sites with `/* paramName= */` comments unless the parameter order is self-evident from the method name (e.g., `new Rect(...)` is fine, but `MotionEvent.obtain(/* downTime= */ 0, /* eventTime= */ 0, /* action= */ ACTION_DOWN, /* x= */ 0, /* y= */ 0, /* metaState= */ 0)` is not).
 - **Complexity & Early Returns**: Prefer early return statements over deeply nested conditional statements. Keep the cyclomatic complexity of methods low.
 - **Avoid `instanceof` Checks**: Avoid using `instanceof` and explicit downcasting. `instanceof` is typically a code smell indicating that concrete implementation details are being shoehorned into code that should be properly abstracted. Prefer polymorphism, interface contracts, or delegating behavior directly to the class hierarchy rather than type-checking and branching on concrete types.
 - **Placement**: Ensure logic is implemented in the correct architectural location as early as possible in the flow.
