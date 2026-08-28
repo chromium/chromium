@@ -4,6 +4,7 @@
 
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 
+#include <cmath>
 #include <optional>
 #include <string>
 
@@ -27,6 +28,9 @@
 
 namespace {
 
+// The upper (exclusive) bound for valid 7-bit ASCII code points [0, 127].
+constexpr uint32_t kMaxAsciiCodePoint = 128;
+
 ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
   switch (button_type) {
     case chrome_pdf::ButtonType::kRadioButton:
@@ -38,30 +42,74 @@ ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
   }
 }
 
-std::string GetTextRunCharsAsUTF8(
-    const chrome_pdf::AccessibilityTextRunInfo& text_run,
-    const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
-    int char_index) {
-  std::string chars_utf8;
-  for (uint32_t i = 0; i < text_run.len; ++i) {
-    base::WriteUnicodeCharacter(
-        static_cast<base_icu::UChar32>(chars[char_index + i].unicode_character),
-        &chars_utf8);
-  }
-  return chars_utf8;
+bool IsAsciiWhitespace(uint32_t char_code) {
+  return char_code < kMaxAsciiCodePoint &&
+         base::IsAsciiWhitespace(static_cast<char>(char_code));
 }
 
-std::vector<int32_t> GetTextRunCharOffsets(
+// Holds sanitized text and corresponding character offsets for a text run.
+struct ProcessedTextRun {
+  std::string chars_utf8;
+  std::vector<int32_t> char_offsets;
+};
+
+ProcessedTextRun ProcessTextRunChars(
     const chrome_pdf::AccessibilityTextRunInfo& text_run,
     const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
-    int char_index) {
-  std::vector<int32_t> char_offsets(text_run.len);
+    uint32_t char_index) {
+  CHECK_LE(char_index + text_run.len, chars.size());
+  ProcessedTextRun result;
+  const bool is_pdf_enhancements_enabled =
+      features::IsPdfAccessibilityHeuristicEnhancementsEnabled();
+
+  // Find the start index of any trailing whitespace in the text run.
+  uint32_t trailing_whitespace_start = text_run.len;
+  if (is_pdf_enhancements_enabled) {
+    while (trailing_whitespace_start > 0) {
+      uint32_t char_code =
+          chars[char_index + trailing_whitespace_start - 1].unicode_character;
+      if (!IsAsciiWhitespace(char_code)) {
+        break;
+      }
+      --trailing_whitespace_start;
+    }
+  }
+
   double offset = 0.0;
   for (uint32_t i = 0; i < text_run.len; ++i) {
+    uint32_t char_code = chars[char_index + i].unicode_character;
+    bool is_ascii_space = IsAsciiWhitespace(char_code);
+
+    // Ignore non-whitespace control characters (e.g. for words split across a
+    // visual line in the PDF).
+    if (is_pdf_enhancements_enabled && base::IsUnicodeControl(char_code) &&
+        !is_ascii_space) {
+      continue;
+    }
+
+    // Replace trailing non-space whitespace (such as '\r' or '\n') with a space
+    // ' '. Collapse consecutive converted spaces (e.g. '\r\n') so extra spaces
+    // are not introduced between lines.
+    bool should_collapse = is_pdf_enhancements_enabled && is_ascii_space &&
+                           char_code != ' ' && i >= trailing_whitespace_start;
+    if (should_collapse) {
+      if (!result.chars_utf8.empty() && result.chars_utf8.back() == ' ') {
+        // Accumulate width for skipped characters so character bounds stay
+        // aligned.
+        offset += chars[char_index + i].char_width;
+        continue;
+      }
+      char_code = ' ';
+    }
+
+    // Convert character code to UTF-8 string representation.
+    base::WriteUnicodeCharacter(static_cast<base_icu::UChar32>(char_code),
+                                &result.chars_utf8);
+    // Accumulate total character offset width and store rounded pixel position.
     offset += chars[char_index + i].char_width;
-    char_offsets[i] = floor(offset);
+    result.char_offsets.push_back(std::floor(offset));
   }
-  return char_offsets;
+  return result;
 }
 
 bool IsTextRenderModeFill(const chrome_pdf::AccessibilityTextRenderMode& mode) {
@@ -283,10 +331,10 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateInlineTextBoxNode(
       ax::mojom::Role::kInlineTextBox, ax::mojom::Restriction::kReadOnly);
   inline_text_box_node->SetNameFrom(ax::mojom::NameFrom::kContents);
 
-  std::string chars__utf8 =
-      GetTextRunCharsAsUTF8(text_run, *chars_, page_char_index.char_index);
+  ProcessedTextRun processed_text =
+      ProcessTextRunChars(text_run, *chars_, page_char_index.char_index);
   inline_text_box_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                           chars__utf8);
+                                           processed_text.chars_utf8);
   inline_text_box_node->AddIntAttribute(
       ax::mojom::IntAttribute::kTextDirection,
       static_cast<uint32_t>(text_run.direction));
@@ -308,10 +356,9 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateInlineTextBoxNode(
 
   inline_text_box_node->relative_bounds.bounds =
       text_run.bounds + page_node_->relative_bounds.bounds.OffsetFromOrigin();
-  std::vector<int32_t> char_offsets =
-      GetTextRunCharOffsets(text_run, *chars_, page_char_index.char_index);
   inline_text_box_node->AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, char_offsets);
+      ax::mojom::IntListAttribute::kCharacterOffsets,
+      processed_text.char_offsets);
   AddWordStartsAndEnds(inline_text_box_node);
   node_id_to_page_char_index_->emplace(inline_text_box_node->id,
                                        page_char_index);

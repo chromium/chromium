@@ -2230,6 +2230,98 @@ TEST_P(PdfAccessibilityTreeStructuredModeTest,
   EXPECT_EQ(32, out_node_char_index);
 }
 
+TEST_P(PdfAccessibilityTreeStructuredModeTest,
+       CreateInlineTextBoxNode_FiltersControlCharacters) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  CreatePdfAccessibilityTree();
+
+  // "Prac\u0002tical Cats\r\n" -> control char \u0002 should be filtered out,
+  // trailing \r\n converted to ' '.
+  constexpr std::string_view kRawText = "Prac\u0002tical Cats\r\n";
+  chrome_pdf::AccessibilityTextRunInfo run1 = {
+      /*start_index=*/0, static_cast<uint32_t>(kRawText.size()),
+      gfx::RectF(0.0f, 0.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+  text_runs_ = {run1};
+
+  for (char c : kRawText) {
+    chars_.push_back({static_cast<uint32_t>(c), 10.0f});
+  }
+
+  BuildAndSetAccessibilityTree();
+
+  ui::AXNode* static_text = FindFirstStaticTextNode();
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  EXPECT_EQ(static_text->GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Practical Cats ");
+}
+
+TEST_P(PdfAccessibilityTreeStructuredModeTest,
+       CreateInlineTextBoxNode_ReplacesAndCollapsesNewlines) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  CreatePdfAccessibilityTree();
+
+  // "Dramatical Cats\r\n\r\n" -> trailing \r\n\r\n converted to ' '.
+  constexpr std::string_view kRawText = "Dramatical Cats\r\n\r\n";
+  chrome_pdf::AccessibilityTextRunInfo run1 = {
+      /*start_index=*/0, static_cast<uint32_t>(kRawText.size()),
+      gfx::RectF(0.0f, 0.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+  text_runs_ = {run1};
+
+  for (char c : kRawText) {
+    chars_.push_back({static_cast<uint32_t>(c), 10.0f});
+  }
+
+  BuildAndSetAccessibilityTree();
+
+  ui::AXNode* static_text = FindFirstStaticTextNode();
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  EXPECT_EQ(static_text->GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Dramatical Cats ");
+}
+
+TEST_P(PdfAccessibilityTreeStructuredModeTest,
+       CreateInlineTextBoxNode_ReplacesAndCollapsesOtherWhitespace) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  CreatePdfAccessibilityTree();
+
+  // "Pragmatical Cats\t\v\f" -> trailing whitespace converted and collapsed to
+  // ' '.
+  constexpr std::string_view kRawText = "Pragmatical Cats\t\v\f";
+  chrome_pdf::AccessibilityTextRunInfo run1 = {
+      /*start_index=*/0, static_cast<uint32_t>(kRawText.size()),
+      gfx::RectF(0.0f, 0.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+  text_runs_ = {run1};
+
+  for (char c : kRawText) {
+    chars_.push_back({static_cast<uint32_t>(c), 10.0f});
+  }
+
+  BuildAndSetAccessibilityTree();
+
+  ui::AXNode* static_text = FindFirstStaticTextNode();
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  EXPECT_EQ(static_text->GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Pragmatical Cats ");
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfAccessibilityTreeStructuredModeTest,
                          testing::Bool());

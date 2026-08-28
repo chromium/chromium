@@ -1,25 +1,25 @@
 pdfRoot name='PDF document containing 1 page' restriction=readOnly
 ++region name='Page 1' restriction=readOnly isPageBreakingObject=true
 ++++paragraph restriction=readOnly
-++++++staticText name='This is body text line one.<newline>This is body text line two.<newline>' restriction=readOnly
-++++++++inlineTextBox name='This is body text line one.<newline>' restriction=readOnly
-++++++++inlineTextBox name='This is body text line two.<newline>' restriction=readOnly
+++++++staticText name='This is body text line one. This is body text line two. ' restriction=readOnly
+++++++++inlineTextBox name='This is body text line one. ' restriction=readOnly
+++++++++inlineTextBox name='This is body text line two. ' restriction=readOnly
 ++++heading restriction=readOnly
-++++++staticText name='Heading By Color<newline>' restriction=readOnly
-++++++++inlineTextBox name='Heading By Color<newline>' restriction=readOnly
+++++++staticText name='Heading By Color ' restriction=readOnly
+++++++++inlineTextBox name='Heading By Color ' restriction=readOnly
 ++++paragraph restriction=readOnly
-++++++staticText name='Body text below color heading.<newline>' restriction=readOnly
-++++++++inlineTextBox name='Body text below color heading.<newline>' restriction=readOnly
+++++++staticText name='Body text below color heading. ' restriction=readOnly
+++++++++inlineTextBox name='Body text below color heading. ' restriction=readOnly
 ++++heading restriction=readOnly
-++++++staticText name='Larger Heading By Color<newline>' restriction=readOnly
-++++++++inlineTextBox name='Larger Heading By Color<newline>' restriction=readOnly
+++++++staticText name='Larger Heading By Color ' restriction=readOnly
+++++++++inlineTextBox name='Larger Heading By Color ' restriction=readOnly
 ++++paragraph restriction=readOnly
-++++++staticText name='Body text below larger color heading.<newline>Body text with inline colored text in a paragraph.<newline>Body text with inline larger colored text in a paragraph.<newline>Trailing body text.' restriction=readOnly
-++++++++inlineTextBox name='Body text below larger color heading.<newline>' restriction=readOnly
+++++++staticText name='Body text below larger color heading. Body text with inline colored text in a paragraph. Body text with inline larger colored text in a paragraph. Trailing body text.' restriction=readOnly
+++++++++inlineTextBox name='Body text below larger color heading. ' restriction=readOnly
 ++++++++inlineTextBox name='Body text with ' restriction=readOnly
 ++++++++inlineTextBox name='inline colored text ' restriction=readOnly
-++++++++inlineTextBox name='in a paragraph.<newline>' restriction=readOnly
+++++++++inlineTextBox name='in a paragraph. ' restriction=readOnly
 ++++++++inlineTextBox name='Body text with ' restriction=readOnly
 ++++++++inlineTextBox name='inline larger colored text ' restriction=readOnly
-++++++++inlineTextBox name='in a paragraph.<newline>' restriction=readOnly
+++++++++inlineTextBox name='in a paragraph. ' restriction=readOnly
 ++++++++inlineTextBox name='Trailing body text.' restriction=readOnly

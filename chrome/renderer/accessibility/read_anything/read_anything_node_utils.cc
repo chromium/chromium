@@ -218,20 +218,9 @@ std::u16string GetTextContent(const ui::AXNode* ax_node,
     }
   }
 
-  // TODO(crbug.com/467180032): Investigate whether to move this to the pdf
-  // side. Requires better understanding of other assistive technologies needs
-  // and expectations. See discussion at go/rm-pdf-heuristic.
-  if (is_pdf) {
+  if (is_pdf && !features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     std::u16string filtered_string(ax_node->GetTextContentUTF16());
     if (filtered_string.size() > 0) {
-      // Ignore non-whitespace control characters (e.g. hyphens for words split
-      // across a visual line in the PDF) as those are artifacts of the page-
-      // based format of PDFs and breaks the reading flow in reading mode.
-      if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-        std::erase_if(filtered_string, [](char16_t c) {
-          return base::IsUnicodeControl(c) && !base::IsAsciiWhitespace(c);
-        });
-      }
 
       // When we receive text from a pdf node, there are return characters at
       // each visual line break in the page. If these aren't filtered, one of

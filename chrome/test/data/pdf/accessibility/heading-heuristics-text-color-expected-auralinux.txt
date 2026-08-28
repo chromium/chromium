@@ -1,12 +1,12 @@
 [document frame] name='PDF document containing 1 page'
 ++[landmark] name='Page 1'
 ++++[paragraph]
-++++++[static] name='This is body text line one.<newline>This is body text line two.<newline>'
+++++++[static] name='This is body text line one. This is body text line two. '
 ++++[heading]
-++++++[static] name='Heading By Color<newline>'
+++++++[static] name='Heading By Color '
 ++++[paragraph]
-++++++[static] name='Body text below color heading.<newline>'
+++++++[static] name='Body text below color heading. '
 ++++[heading]
-++++++[static] name='Larger Heading By Color<newline>'
+++++++[static] name='Larger Heading By Color '
 ++++[paragraph]
-++++++[static] name='Body text below larger color heading.<newline>Body text with inline colored text in a paragraph.<newline>Body text with inline larger colored text in a paragraph.<newline>Trailing body text.'
+++++++[static] name='Body text below larger color heading. Body text with inline colored text in a paragraph. Body text with inline larger colored text in a paragraph. Trailing body text.'

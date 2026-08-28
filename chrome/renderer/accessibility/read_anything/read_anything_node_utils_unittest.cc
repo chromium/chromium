@@ -100,45 +100,6 @@ TEST_F(ReadAnythingNodeUtilsTest,
   EXPECT_NE(text.find('\r'), std::string::npos);
 }
 
-TEST_F(ReadAnythingNodeUtilsTest, GetTextContent_PDF_FiltersControlCharacters) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPdfAccessibilityHeuristicEnhancements);
-
-  const std::u16string sentence =
-      u"in\u0002formation and anti-gravity and accessi\u0002bility";
-  const std::u16string expected =
-      u"information and anti-gravity and accessibility";
-  static constexpr ui::AXNodeID kId = 2;
-  ui::AXNodeData data = test::TextNode(kId, sentence);
-  ui::AXTree tree;
-  ui::AXNode node(&tree, nullptr, kId, 0);
-  node.SetData(std::move(data));
-
-  std::u16string text =
-      a11y::GetTextContent(&node, /*is_pdf=*/true, /*is_docs=*/false);
-  EXPECT_EQ(text, expected);
-}
-
-TEST_F(ReadAnythingNodeUtilsTest,
-       GetTextContent_PDF_DoesNotFilterControlCharactersIfFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPdfAccessibilityHeuristicEnhancements);
-
-  const std::u16string sentence =
-      u"in\u0002formation and anti-gravity and accessi\u0002bility";
-  static constexpr ui::AXNodeID kId = 2;
-  ui::AXNodeData data = test::TextNode(kId, sentence);
-  ui::AXTree tree;
-  ui::AXNode node(&tree, nullptr, kId, 0);
-  node.SetData(std::move(data));
-
-  std::u16string text =
-      a11y::GetTextContent(&node, /*is_pdf=*/true, /*is_docs=*/false);
-  EXPECT_EQ(text, sentence);
-}
-
 TEST_F(ReadAnythingNodeUtilsTest,
        GetTextContent_PDF_ReplacesWhitespaceControlCharacters) {
   const std::u16string sentence = u"Hello\tworld\vthis\fis a test.";
@@ -152,6 +113,24 @@ TEST_F(ReadAnythingNodeUtilsTest,
   std::u16string text =
       a11y::GetTextContent(&node, /*is_pdf=*/true, /*is_docs=*/false);
   EXPECT_EQ(text, expected);
+}
+
+TEST_F(
+    ReadAnythingNodeUtilsTest,
+    GetTextContent_PDF_DoesNotReplaceWhitespaceControlCharactersWithFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+  const std::u16string sentence = u"Pragmatical\tcats,\vfanatical\fcats.";
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData data = test::TextNode(kId, sentence);
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+  node.SetData(std::move(data));
+
+  std::u16string text =
+      a11y::GetTextContent(&node, /*is_pdf=*/true, /*is_docs=*/false);
+  EXPECT_EQ(text, sentence);
 }
 
 TEST_F(ReadAnythingNodeUtilsTest, GetPrefixText_ReturnsPreviousText) {

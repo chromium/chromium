@@ -1,35 +1,35 @@
 pdfRoot name='PDF document containing 1 page' restriction=readOnly
 ++region name='Page 1' restriction=readOnly isPageBreakingObject=true
 ++++heading restriction=readOnly
-++++++staticText name='Large Font Size Heading<newline>' restriction=readOnly
-++++++++inlineTextBox name='Large Font Size Heading<newline>' restriction=readOnly
+++++++staticText name='Large Font Size Heading ' restriction=readOnly
+++++++++inlineTextBox name='Large Font Size Heading ' restriction=readOnly
 ++++paragraph restriction=readOnly
-++++++staticText name='This is body text line one.<newline>This is body text line two.<newline>' restriction=readOnly
-++++++++inlineTextBox name='This is body text line one.<newline>' restriction=readOnly
-++++++++inlineTextBox name='This is body text line two.<newline>' restriction=readOnly
+++++++staticText name='This is body text line one. This is body text line two. ' restriction=readOnly
+++++++++inlineTextBox name='This is body text line one. ' restriction=readOnly
+++++++++inlineTextBox name='This is body text line two. ' restriction=readOnly
 ++++heading restriction=readOnly
-++++++staticText name='Medium Bold Heading<newline>' restriction=readOnly
-++++++++inlineTextBox name='Medium Bold Heading<newline>' restriction=readOnly
+++++++staticText name='Medium Bold Heading ' restriction=readOnly
+++++++++inlineTextBox name='Medium Bold Heading ' restriction=readOnly
 ++++paragraph restriction=readOnly
-++++++staticText name='Body text below medium bold heading.<newline>' restriction=readOnly
-++++++++inlineTextBox name='Body text below medium bold heading.<newline>' restriction=readOnly
+++++++staticText name='Body text below medium bold heading. ' restriction=readOnly
+++++++++inlineTextBox name='Body text below medium bold heading. ' restriction=readOnly
 ++++heading restriction=readOnly
-++++++staticText name='Medium Font Name Heading<newline>' restriction=readOnly
-++++++++inlineTextBox name='Medium Font Name Heading<newline>' restriction=readOnly
+++++++staticText name='Medium Font Name Heading ' restriction=readOnly
+++++++++inlineTextBox name='Medium Font Name Heading ' restriction=readOnly
 ++++paragraph restriction=readOnly
-++++++staticText name='Body text below medium name heading.<newline>' restriction=readOnly
-++++++++inlineTextBox name='Body text below medium name heading.<newline>' restriction=readOnly
+++++++staticText name='Body text below medium name heading. ' restriction=readOnly
+++++++++inlineTextBox name='Body text below medium name heading. ' restriction=readOnly
 ++++heading restriction=readOnly
-++++++staticText name='MEDIUM ALL CAPS HEADING<newline>' restriction=readOnly
-++++++++inlineTextBox name='MEDIUM ALL CAPS HEADING<newline>' restriction=readOnly
+++++++staticText name='MEDIUM ALL CAPS HEADING ' restriction=readOnly
+++++++++inlineTextBox name='MEDIUM ALL CAPS HEADING ' restriction=readOnly
 ++++paragraph restriction=readOnly
 ++++++staticText name='Body text with ' restriction=readOnly
 ++++++++inlineTextBox name='Body text with ' restriction=readOnly
 ++++++staticText name='inline bold text ' restriction=readOnly
 ++++++++inlineTextBox name='inline bold text ' restriction=readOnly
-++++++staticText name='in a paragraph.<newline>Body text with INLINE ALL CAPS TEXT in a paragraph.<newline>Trailing body text.' restriction=readOnly
-++++++++inlineTextBox name='in a paragraph.<newline>' restriction=readOnly
+++++++staticText name='in a paragraph. Body text with INLINE ALL CAPS TEXT in a paragraph. Trailing body text.' restriction=readOnly
+++++++++inlineTextBox name='in a paragraph. ' restriction=readOnly
 ++++++++inlineTextBox name='Body text with ' restriction=readOnly
 ++++++++inlineTextBox name='INLINE ALL CAPS TEXT ' restriction=readOnly
-++++++++inlineTextBox name='in a paragraph.<newline>' restriction=readOnly
+++++++++inlineTextBox name='in a paragraph. ' restriction=readOnly
 ++++++++inlineTextBox name='Trailing body text.' restriction=readOnly
