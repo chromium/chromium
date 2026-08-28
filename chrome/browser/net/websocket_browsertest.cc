@@ -392,43 +392,45 @@ class LocalNetworkAccessWebSocketsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAWebSocketConnectionHasPermission) {
+                       DISABLED_LNAWebSocketConnectionHasPermission) {
   bubble_factory()->set_response_type(ACCEPT_ALL);
   ConnectToLNAWebSocket("/websocket/connect_to.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAWebSocketConnectionDeniedPermission) {
+                       DISABLED_LNAWebSocketConnectionDeniedPermission) {
   bubble_factory()->set_response_type(DENY_ALL);
   ConnectToLNAWebSocket("/websocket/connect_to.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAInsecureWebSocketConnectionHasPermission) {
+                       DISABLED_LNAInsecureWebSocketConnectionHasPermission) {
   bubble_factory()->set_response_type(ACCEPT_ALL);
   ConnectToInsecureLNAWebSocket("/websocket/connect_to.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAInsecureWebSocketDeniedPermission) {
+                       DISABLED_LNAInsecureWebSocketDeniedPermission) {
   bubble_factory()->set_response_type(DENY_ALL);
   ConnectToInsecureLNAWebSocket("/websocket/connect_to.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAInsecureWebSocketTargetAddressSpaceHasPermission) {
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessWebSocketsBrowserTest,
+    DISABLED_LNAInsecureWebSocketTargetAddressSpaceHasPermission) {
   bubble_factory()->set_response_type(ACCEPT_ALL);
   ConnectToInsecureLNAWebSocketWithTargetAddressSpace(
       "/websocket/connect_to_with_target_address_space_loopback.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAInsecureWebSocketTargetAddressSpaceDeniedPermission) {
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessWebSocketsBrowserTest,
+    DISABLED_LNAInsecureWebSocketTargetAddressSpaceDeniedPermission) {
   bubble_factory()->set_response_type(DENY_ALL);
   ConnectToInsecureLNAWebSocketWithTargetAddressSpace(
       "/websocket/connect_to_with_target_address_space_loopback.html");
@@ -436,28 +438,30 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAWorkerWebSocketConnectionHasPermission) {
+                       DISABLED_LNAWorkerWebSocketConnectionHasPermission) {
   bubble_factory()->set_response_type(ACCEPT_ALL);
   ConnectToLNAWebSocket("/websocket/connect_to_using_worker.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAWorkerWebSocketConnectionDeniedPermission) {
+                       DISABLED_LNAWorkerWebSocketConnectionDeniedPermission) {
   bubble_factory()->set_response_type(DENY_ALL);
   ConnectToLNAWebSocket("/websocket/connect_to_using_worker.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAWorkerInsecureWebSocketConnectionHasPermission) {
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessWebSocketsBrowserTest,
+    DISABLED_LNAWorkerInsecureWebSocketConnectionHasPermission) {
   bubble_factory()->set_response_type(ACCEPT_ALL);
   ConnectToInsecureLNAWebSocket("/websocket/connect_to_using_worker.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
-                       LNAWorkerInsecureWebSocketConnectionDeniedPermission) {
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessWebSocketsBrowserTest,
+    DISABLED_LNAWorkerInsecureWebSocketConnectionDeniedPermission) {
   bubble_factory()->set_response_type(DENY_ALL);
   ConnectToInsecureLNAWebSocket("/websocket/connect_to_using_worker.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());

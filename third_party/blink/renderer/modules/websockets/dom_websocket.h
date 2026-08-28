@@ -65,7 +65,7 @@ class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
 class ExecutionContext;
-class V8UnionStringOrStringSequenceOrWebSocketInit;
+class V8UnionStringOrStringSequence;
 
 class MODULES_EXPORT DOMWebSocket
     : public EventTarget,
@@ -87,16 +87,10 @@ class MODULES_EXPORT DOMWebSocket
   static DOMWebSocket* Create(ExecutionContext*,
                               const String& url,
                               ExceptionState&);
-  static DOMWebSocket* Create(
-      ExecutionContext* execution_context,
-      const String& url,
-      const V8UnionStringOrStringSequenceOrWebSocketInit* protocols_or_options,
-      ExceptionState& exception_state);
-  static bool ParseConstructorOptions(
-      const V8UnionStringOrStringSequenceOrWebSocketInit* protocols_or_options,
-      Vector<String>& protocols_vector,
-      network::mojom::blink::IPAddressSpace& target_address_space,
-      ExceptionState& exception_state);
+  static DOMWebSocket* Create(ExecutionContext* execution_context,
+                              const String& url,
+                              const V8UnionStringOrStringSequence* protocols,
+                              ExceptionState& exception_state);
 
   explicit DOMWebSocket(ExecutionContext*);
   ~DOMWebSocket() override;
