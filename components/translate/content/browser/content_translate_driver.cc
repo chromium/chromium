@@ -463,8 +463,25 @@ int ContentTranslateDriver::UpdatePageSequenceNumber() {
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   if (active_page_seq_no_ == 0 || page_id != last_registered_page_id_) {
     last_registered_page_id_ = page_id;
+    int old_page_seq_no = active_page_seq_no_;
     active_page_seq_no_ = ++next_page_seq_no_;
     translate_manager_->set_current_seq_no(active_page_seq_no_);
+
+    if (old_page_seq_no != 0) {
+      std::map<int, PageAgents>::iterator it =
+          translate_agents_.find(old_page_seq_no);
+      if (it != translate_agents_.end() &&
+          it->second.side_panel_agent.is_bound()) {
+        PageAgents& new_agents = translate_agents_[active_page_seq_no_];
+        new_agents.side_panel_agent = std::move(it->second.side_panel_agent);
+        new_agents.side_panel_agent.set_disconnect_handler(
+            base::BindOnce(&ContentTranslateDriver::OnSidePanelAway,
+                           base::Unretained(this), active_page_seq_no_));
+        if (!it->second.main_agent.is_bound()) {
+          translate_agents_.erase(it);
+        }
+      }
+    }
   }
   return active_page_seq_no_;
 }

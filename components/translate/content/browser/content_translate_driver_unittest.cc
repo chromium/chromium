@@ -303,4 +303,58 @@ TEST_F(ContentTranslateDriverTest, SidePanelDisconnectDoesNotEraseMainAgent) {
   EXPECT_FALSE(main_agent.called_translate_);
 }
 
+// Test that reloading a page preserves the side panel agent and updates its
+// sequence number mapping cleanly.
+TEST_F(ContentTranslateDriverTest, PageReloadPreservesSidePanelAgent) {
+  MockTranslateAgent main_agent1;
+  MockTranslateAgent side_panel_agent;
+
+  // 1. Register main page first.
+  translate::LanguageDetectionDetails main_details1;
+  main_details1.url = GURL("https://example.com");
+  main_details1.adopted_language = "en";
+  main_details1.is_model_reliable = true;
+  driver_->RegisterPage(main_agent1.BindToNewPageRemote(), main_details1, true);
+
+  // Active page sequence number is now 1.
+  constexpr int kSeqNo1 = 1;
+
+  // 2. Register side panel agent.
+  translate::LanguageDetectionDetails side_panel_details;
+  side_panel_details.url =
+      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
+  side_panel_details.adopted_language = "en";
+  side_panel_details.is_model_reliable = true;
+  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(), side_panel_details,
+                        true);
+
+  // Both agents are registered under sequence number 1.
+  content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("application/pdf");
+  driver_->TranslatePage(kSeqNo1, "script", "en", "fr");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(side_panel_agent.called_translate_);
+  side_panel_agent.called_translate_ = false;
+
+  // 3. Navigate/Reload to same or new URL. This changes the MainFrame PageUkmSourceId.
+  NavigateAndCommit(GURL("https://example.com/reloaded"));
+
+  // 4. Register the new page.
+  MockTranslateAgent main_agent2;
+  translate::LanguageDetectionDetails main_details2;
+  main_details2.url = GURL("https://example.com/reloaded");
+  main_details2.adopted_language = "en";
+  main_details2.is_model_reliable = true;
+  driver_->RegisterPage(main_agent2.BindToNewPageRemote(), main_details2, true);
+
+  // The active page sequence number is updated to 2 (kSeqNo2).
+  constexpr int kSeqNo2 = 2;
+
+  // 5. Translating with the new sequence number kSeqNo2 under PDF should
+  // correctly invoke the moved/preserved side panel agent.
+  content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("application/pdf");
+  driver_->TranslatePage(kSeqNo2, "script", "en", "fr");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(side_panel_agent.called_translate_);
+}
+
 }  // namespace translate
