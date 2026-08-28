@@ -579,6 +579,7 @@ void IndigoPageActionController::DidFinishNavigation(
 
   invoke_weak_ptr_factory_.InvalidateWeakPtrs();
 
+  last_evaluated_url_ = navigation_handle->GetURL();
   ResetTriggeringState();
 
   if (navigation_handle->IsSameDocument()) {
@@ -700,10 +701,14 @@ void IndigoPageActionController::OnDeleteOriginalPhotoComplete(
 IndigoPageActionController::TriggerEvaluation
 IndigoPageActionController::EvaluateTriggerState() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch)) {
-    return {.is_pending = false, .source = IndigoTriggerSource::kForced};
+    return {.is_pending = false,
+            .source = IndigoTriggerSource::kForced,
+            .holds_regardless_of_url = true};
   }
   if (!indigo_service_ || !indigo_service_->IsLocallyEligible()) {
-    return {.is_pending = false, .source = std::nullopt};
+    return {.is_pending = false,
+            .source = std::nullopt,
+            .holds_regardless_of_url = true};
   }
   if (optimization_guide_decision_ ==
       optimization_guide::OptimizationGuideDecision::kTrue) {
@@ -759,7 +764,6 @@ void IndigoPageActionController::ResetTriggeringState() {
   heuristic_result_ = std::nullopt;
   last_anchored_message_priority_ = std::nullopt;
   metadata_remote_.reset();
-  ResolvePendingEligibilityCallbacks(/*eligible=*/false);
   UpdateEntryPointsState();
 }
 
@@ -774,8 +778,14 @@ void IndigoPageActionController::UpdateEntryPointsState() {
   const bool should_show = eval.source.has_value();
   if (should_show) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/true);
+    base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
+                                  *eval.source);
   } else if (!eval.is_pending) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/false);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2)) {
+    return;
   }
 
   if (should_show == is_shown_) {
@@ -791,27 +801,27 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     } else {
       page_action_controller_->ShowSuggestionChip(kActionIndigo);
     }
-    base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
-                                  *eval.source);
 
-    // Refresh discovery skills to make sure the latest skills are available for
-    // the user.
-    if (content::WebContents* web_contents = tab().GetContents()) {
-      if (Profile* profile =
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
-        if (skills::SkillsService* skills_service =
-                skills::SkillsServiceFactory::GetForProfile(profile)) {
-          Require1PSkillRefreshObserver observer;
-          skills_service->AddObserver(&observer);
-          skills_service->RefreshDiscoverySkills();
-          skills_service->RemoveObserver(&observer);
-        }
-      }
-    }
+    RefreshDiscoverySkills();
   } else {
     page_action_controller_->Hide(kActionIndigo);
   }
   is_shown_ = should_show;
+}
+
+void IndigoPageActionController::RefreshDiscoverySkills() {
+  if (content::WebContents* web_contents = tab().GetContents()) {
+    if (Profile* profile =
+            Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
+      if (skills::SkillsService* skills_service =
+              skills::SkillsServiceFactory::GetForProfile(profile)) {
+        Require1PSkillRefreshObserver observer;
+        skills_service->AddObserver(&observer);
+        skills_service->RefreshDiscoverySkills();
+        skills_service->RemoveObserver(&observer);
+      }
+    }
+  }
 }
 
 void IndigoPageActionController::OnOnboardingDialogClosed(
@@ -1037,6 +1047,7 @@ void IndigoPageActionController::OnDiscardContents(
 
   RegisterObserverWithHost(nullptr);
   Reset(ResetType::kResetReplacementsAndContentScript);
+  last_evaluated_url_ = GURL();
   ResetTriggeringState();
 }
 
@@ -1142,18 +1153,33 @@ void IndigoPageActionController::OnProductClassified(
   UpdateEntryPointsState();
 }
 
-void IndigoPageActionController::CheckEligibility(
+void IndigoPageActionController::CheckEligibilityForCueing(
     EligibilityCallback callback) {
   TriggerEvaluation eval = EvaluateTriggerState();
-  if (eval.is_pending) {
-    pending_eligibility_callbacks_.push_back(std::move(callback));
-    if (!eligibility_timeout_timer_.IsRunning()) {
-      // TODO(b/552501787): Remove or adjust this 3s timer once EvaluateCues
-      // is tied to page load lifecycle.
-      eligibility_timeout_timer_.Start(
-          FROM_HERE, base::Seconds(3), this,
-          &IndigoPageActionController::OnEligibilityTimeout);
+
+  // Check if our state is for the current URL.
+  // This check is needed because Contextual Cueing can call CheckEligibility
+  // before IndigoPageActionController::DidFinishNavigation has had a chance to
+  // run and update the state. In this case, the decision might appear
+  // up-to-date but is actually for the previous page. We can't assert here
+  // because this race condition is expected in normal operation.
+  bool url_matches = false;
+  if (content::WebContents* web_contents = tab().GetContents()) {
+    url_matches = web_contents->GetLastCommittedURL().EqualsIgnoringRef(
+        last_evaluated_url_);
+  }
+
+  if (eval.is_pending || (!eval.holds_regardless_of_url && !url_matches)) {
+    if (pending_eligibility_callback_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(pending_eligibility_callback_), false));
     }
+    pending_eligibility_callback_ = std::move(callback);
+    eligibility_timeout_timer_.Stop();
+    eligibility_timeout_timer_.Start(
+        FROM_HERE, base::Seconds(3), this,
+        &IndigoPageActionController::OnEligibilityTimeout);
     return;
   }
 
@@ -1165,12 +1191,10 @@ void IndigoPageActionController::CheckEligibility(
 void IndigoPageActionController::ResolvePendingEligibilityCallbacks(
     bool eligible) {
   eligibility_timeout_timer_.Stop();
-  std::vector<EligibilityCallback> callbacks =
-      std::move(pending_eligibility_callbacks_);
-  pending_eligibility_callbacks_.clear();
-  for (auto& cb : callbacks) {
+  if (pending_eligibility_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(cb), eligible));
+        FROM_HERE,
+        base::BindOnce(std::move(pending_eligibility_callback_), eligible));
   }
 }
 

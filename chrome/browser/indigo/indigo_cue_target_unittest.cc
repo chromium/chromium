@@ -12,15 +12,18 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/skills/mocks/mock_skills_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,7 +41,16 @@ class IndigoCueTargetTest : public testing::Test {
   ~IndigoCueTargetTest() override = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        skills::SkillsServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<skills::MockSkillsService>>();
+        }));
+    profile_ = builder.Build();
+
     tab_interface_ =
         std::make_unique<page_actions::FakeTabInterface>(profile_.get());
     page_action_controller_ = std::make_unique<
@@ -46,6 +58,10 @@ class IndigoCueTargetTest : public testing::Test {
 
     controller_ = std::make_unique<IndigoPageActionController>(
         *tab_interface_, *page_action_controller_);
+
+    mock_skills_service_ =
+        static_cast<testing::NiceMock<skills::MockSkillsService>*>(
+            skills::SkillsServiceFactory::GetForProfile(profile_.get()));
 
     service_ = IndigoServiceFactory::GetForProfile(profile_.get());
     ASSERT_TRUE(service_);
@@ -60,6 +76,7 @@ class IndigoCueTargetTest : public testing::Test {
     page_action_controller_.reset();
     tab_interface_.reset();
     service_ = nullptr;
+    mock_skills_service_ = nullptr;
     profile_.reset();
   }
 
@@ -70,6 +87,7 @@ class IndigoCueTargetTest : public testing::Test {
   std::unique_ptr<testing::NiceMock<page_actions::MockPageActionController>>
       page_action_controller_;
   std::unique_ptr<IndigoPageActionController> controller_;
+  raw_ptr<testing::NiceMock<skills::MockSkillsService>> mock_skills_service_;
   raw_ptr<IndigoService> service_;
   std::unique_ptr<IndigoCueTarget> cue_target_;
 };
@@ -116,6 +134,7 @@ TEST_F(IndigoCueTargetTest, CheckEligibility_LocallyIneligible) {
 TEST_F(IndigoCueTargetTest, CheckEligibility_EligibleGeneratesContent) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(kForceIndigoSwitch);
+  EXPECT_CALL(*mock_skills_service_, RefreshDiscoverySkills()).Times(1);
 
   base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
       future;
@@ -135,7 +154,9 @@ TEST_F(IndigoCueTargetTest, CheckEligibility_EligibleGeneratesContent) {
 
   auto cue_opt = cue_future.Take();
   ASSERT_TRUE(cue_opt.has_value());
-  EXPECT_TRUE(cue_opt->suggested_cuj().empty());
+  EXPECT_EQ(
+      cue_opt->suggested_cuj(),
+      contextual_cueing::GetName(contextual_cueing::CueTargetType::kIndigo));
   EXPECT_EQ(cue_opt->anchored_message_cue().action_text(),
             base::UTF16ToUTF8(
                 l10n_util::GetStringUTF16(IDS_INDIGO_ENTRYPOINT_CHIP_TEXT)));

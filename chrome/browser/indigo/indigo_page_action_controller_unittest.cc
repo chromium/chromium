@@ -1788,6 +1788,26 @@ TEST_F(IndigoPageActionControllerTest,
   navigation->Commit();
 }
 
+TEST_F(IndigoPageActionControllerTest,
+       EntryPointsStateDelegatedWhenIndigoContextualCueingV2Enabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(features::kIndigoContextualCueingV2);
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo)).Times(0);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _)).Times(0);
+  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(_, _)).Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+}
+
 TEST_F(IndigoPageActionControllerTest, TriggerSource_OptimizationGuide) {
   CreateController();
   SetupEligibleAndOnboarded();
@@ -1947,31 +1967,31 @@ TEST_F(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {
                                       1);
 }
 
-TEST_F(IndigoPageActionControllerTest, CheckEligibilityForced) {
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingForced) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(kForceIndigoSwitch);
 
   CreateController();
 
   base::test::TestFuture<bool> future;
-  controller_->CheckEligibility(future.GetCallback());
+  controller_->CheckEligibilityForCueing(future.GetCallback());
   EXPECT_TRUE(future.Get());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // ChromeOS profiles in browser tests have multi profiles.
-TEST_F(IndigoPageActionControllerTest, CheckEligibilityNotLocallyEligible) {
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingNotLocallyEligible) {
   CreateController();
   // Ensure not locally eligible.
   identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
 
   base::test::TestFuture<bool> future;
-  controller_->CheckEligibility(future.GetCallback());
+  controller_->CheckEligibilityForCueing(future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
 #endif
 
-TEST_F(IndigoPageActionControllerTest, CheckEligibilityOptGuideTrue) {
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingOptGuideTrue) {
   CreateController();
   SetupEligibleAndOnboarded();
 
@@ -1984,12 +2004,12 @@ TEST_F(IndigoPageActionControllerTest, CheckEligibilityOptGuideTrue) {
   navigation->Commit();
 
   base::test::TestFuture<bool> future;
-  controller_->CheckEligibility(future.GetCallback());
+  controller_->CheckEligibilityForCueing(future.GetCallback());
   EXPECT_TRUE(future.Get());
 }
 
 TEST_F(IndigoPageActionControllerTest,
-       CheckEligibilityOptGuideFalseNoHeuristic) {
+       CheckEligibilityForCueingOptGuideFalseNoHeuristic) {
   CreateController();
   SetupEligibleAndOnboarded();
 
@@ -2005,12 +2025,12 @@ TEST_F(IndigoPageActionControllerTest,
   navigation->Commit();
 
   base::test::TestFuture<bool> future;
-  controller_->CheckEligibility(future.GetCallback());
+  controller_->CheckEligibilityForCueing(future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
 
 TEST_F(IndigoPageActionControllerTest,
-       CheckEligibilityOptGuideFalseHeuristicTrue) {
+       CheckEligibilityForCueingOptGuideFalseHeuristicTrue) {
   CreateController();
   SetupEligibleAndOnboarded();
   SetupHeuristicConfig();
@@ -2050,13 +2070,13 @@ TEST_F(IndigoPageActionControllerTest,
   navigation->Commit();
 
   base::test::TestFuture<bool> future;
-  controller_->CheckEligibility(future.GetCallback());
+  controller_->CheckEligibilityForCueing(future.GetCallback());
 
   // Expect true because heuristic says true.
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(IndigoPageActionControllerTest, CheckEligibilityPendingOptGuide) {
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingPendingOptGuide) {
   CreateController();
   SetupEligibleAndOnboarded();
 
@@ -2082,7 +2102,7 @@ TEST_F(IndigoPageActionControllerTest, CheckEligibilityPendingOptGuide) {
   navigation->Commit();
 
   base::test::TestFuture<bool> future;
-  controller_->CheckEligibility(future.GetCallback());
+  controller_->CheckEligibilityForCueing(future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -2093,7 +2113,7 @@ TEST_F(IndigoPageActionControllerTest, CheckEligibilityPendingOptGuide) {
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(IndigoPageActionControllerTest, CheckEligibilityPendingTimeout) {
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingPendingTimeout) {
   CreateController();
   SetupEligibleAndOnboarded();
 
@@ -2119,7 +2139,7 @@ TEST_F(IndigoPageActionControllerTest, CheckEligibilityPendingTimeout) {
   navigation->Commit();
 
   base::test::TestFuture<bool> future;
-  controller_->CheckEligibility(future.GetCallback());
+  controller_->CheckEligibilityForCueing(future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 

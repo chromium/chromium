@@ -4,11 +4,14 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
+
+#include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
@@ -22,8 +25,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -39,6 +44,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -953,6 +959,78 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabDiscarding) {
   // Switch back to the discarded tab and navigate it again.
   browser()->GetTabStripModel()->ActivateTabAt(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+}
+
+class IndigoContextualCueingV2BrowserTest : public IndigoBrowserTest {
+ public:
+  IndigoContextualCueingV2BrowserTest() = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(fake_api_.InitializeAndListen());
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIndigo,
+          {{features::kIndigoGenerateUrl.name,
+            fake_api_.GetGenerateUrl().spec()},
+           {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
+         {blink::features::kImageReplacement, {}},
+         {contextual_cueing::kContextualCueingV2,
+          {{contextual_cueing::kDisableCueBackoff.name, "true"}}},
+         {contextual_cueing::kContextualCueingV2MultiSource, {}},
+         {features::kIndigoContextualCueingV2, {}}},
+        /*disabled_features=*/{
+            contextual_cueing::kContextualCueingV2EnforceAgeRestriction});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IndigoBrowserTest::SetUpBrowserContextKeyedServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+  }
+
+  void SetUpOnMainThread() override {
+    IndigoBrowserTest::SetUpOnMainThread();
+    auto* sync_service = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+    sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IndigoContextualCueingV2BrowserTest,
+                       ArbitrationAndInvocationFlow) {
+  base::HistogramTester histogram_tester;
+  const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, main_tab_url),
+      WaitForWebContentsReady(kWebContentsId, main_tab_url),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      WaitForShow(IndigoToolbar::kToolbarElementId));
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.ShownCueCUJ",
+      base::HashMetricName(contextual_cueing::GetName(
+          contextual_cueing::CueTargetType::kIndigo)),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueShown",
+      base::HashMetricName(contextual_cueing::GetName(
+          contextual_cueing::CueTargetType::kIndigo)),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.Clicked",
+      base::HashMetricName(contextual_cueing::GetName(
+          contextual_cueing::CueTargetType::kIndigo)),
+      1);
 }
 
 }  // namespace
