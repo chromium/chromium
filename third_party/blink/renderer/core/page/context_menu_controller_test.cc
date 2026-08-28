@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -229,6 +230,66 @@ class ContextMenuControllerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestWebFrameClientImpl web_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
+};
+
+class ContextMenuControllerInputTest : public ContextMenuControllerTest {
+ protected:
+  HTMLInputElement* SetUpTextInput(const String& value) {
+    LoadAhem();
+    GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+      <style>
+        body { margin: 0; }
+        input { border: 0; padding: 0; width: 80px; font: 10px/10px Ahem; }
+      </style>
+      <input>
+    )HTML");
+    auto* input = To<HTMLInputElement>(
+        GetDocument()->QuerySelector(AtomicString("input")));
+    input->SetValue(value);
+    input->Focus();
+    return input;
+  }
+
+  gfx::Point SetCaret(HTMLInputElement& input, unsigned offset) {
+    Node* text = input.InnerEditorElement()->firstChild();
+    FrameSelection& selection = GetDocument()->GetFrame()->Selection();
+    selection.SetSelection(
+        SelectionInDomTree::Builder().Collapse(Position(text, offset)).Build(),
+        SetSelectionOptions());
+    LocalMainFrame()->ViewImpl()->MainFrameWidget()->UpdateAllLifecyclePhases(
+        DocumentUpdateReason::kTest);
+    return selection.AbsoluteCaretBounds().CenterPoint();
+  }
+
+  void SendMouseEvent(const gfx::Point& location,
+                      WebInputEvent::Type type,
+                      WebInputEvent::Modifiers modifiers,
+                      WebMouseEvent::Button button) {
+    WebMouseEvent event(type, modifiers,
+                        WebInputEvent::GetStaticTimeStampForTests());
+    event.SetFrameScale(1);
+    event.button = button;
+    event.SetPositionInWidget(location.x(), location.y());
+    event.click_count = 1;
+    GetWebView()->MainFrameWidget()->HandleInputEvent(
+        WebCoalescedInputEvent(event, ui::LatencyInfo()));
+  }
+
+  void LeftClick(const gfx::Point& location) {
+    SendMouseEvent(location, WebInputEvent::Type::kMouseDown,
+                   WebInputEvent::kLeftButtonDown,
+                   WebMouseEvent::Button::kLeft);
+    SendMouseEvent(location, WebInputEvent::Type::kMouseUp,
+                   WebInputEvent::kNoModifiers, WebMouseEvent::Button::kLeft);
+  }
+
+  void RightClick(const gfx::Point& location) {
+    SendMouseEvent(location, WebInputEvent::Type::kMouseDown,
+                   WebInputEvent::kRightButtonDown,
+                   WebMouseEvent::Button::kRight);
+    SendMouseEvent(location, WebInputEvent::Type::kMouseUp,
+                   WebInputEvent::kNoModifiers, WebMouseEvent::Button::kRight);
+  }
 };
 
 TEST_F(ContextMenuControllerTest, CopyFromPlugin) {
@@ -1923,6 +1984,75 @@ TEST_F(ContextMenuControllerTest,
   EXPECT_TRUE(
       ShowContextMenu(location, ui::mojom::blink::MenuSourceType::kKeyboard));
   EXPECT_EQ(GetDocument()->GetFrame()->Selection().SelectedText(), "is a");
+}
+
+TEST_F(ContextMenuControllerInputTest,
+       MouseContextMenuAwayFromCaretSelectsWord) {
+  HTMLInputElement* input = SetUpTextInput("test");
+  GetDocument()->GetFrame()->GetSettings()->SetEditingBehaviorType(
+      mojom::EditingBehavior::kEditingMacBehavior);
+  gfx::Point location = SetCaret(*input, 2);
+  SetCaret(*input, 4);
+  RightClick(location);
+  EXPECT_EQ(0u, input->selectionStart());
+  EXPECT_EQ(4u, input->selectionEnd());
+}
+
+TEST_F(ContextMenuControllerInputTest,
+       MouseContextMenuOnExistingCaretPreservesCaret) {
+  HTMLInputElement* input = SetUpTextInput("test");
+  GetDocument()->GetFrame()->GetSettings()->SetEditingBehaviorType(
+      mojom::EditingBehavior::kEditingMacBehavior);
+  const gfx::Point location = SetCaret(*input, 2);
+  LeftClick(location);
+  const unsigned caret_offset = input->selectionStart();
+  ASSERT_EQ(caret_offset, input->selectionEnd());
+  ASSERT_GT(caret_offset, 0u);
+  ASSERT_LT(caret_offset, 4u);
+
+  RightClick(location);
+  EXPECT_EQ(caret_offset, input->selectionStart());
+  EXPECT_EQ(caret_offset, input->selectionEnd());
+}
+
+TEST_F(ContextMenuControllerInputTest,
+       MouseContextMenuAfterTextPreservesEndCaret) {
+  HTMLInputElement* input = SetUpTextInput("test");
+  GetDocument()->GetFrame()->GetSettings()->SetEditingBehaviorType(
+      mojom::EditingBehavior::kEditingMacBehavior);
+  gfx::Point location = SetCaret(*input, 4);
+  const int end_caret_x = location.x();
+  location.set_x(static_cast<int>(input->GetBoundingClientRect()->right()) - 5);
+  ASSERT_GT(location.x(), end_caret_x);
+  LeftClick(location);
+  ASSERT_EQ(4u, input->selectionStart());
+  ASSERT_EQ(4u, input->selectionEnd());
+  RightClick(location);
+  EXPECT_EQ(4u, input->selectionStart());
+  EXPECT_EQ(4u, input->selectionEnd());
+}
+
+TEST_F(ContextMenuControllerInputTest,
+       MouseContextMenuAtCaretSelectsMisspellingAndProvidesSuggestions) {
+  HTMLInputElement* input = SetUpTextInput("spllchck");
+  Node* text = input->InnerEditorElement()->firstChild();
+  gfx::Point location = SetCaret(*input, 4);
+  GetDocument()->Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 0), Position(text, 8)), "spellcheck");
+  LocalMainFrame()->ViewImpl()->MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+  LeftClick(location);
+  ASSERT_EQ(input->selectionStart(), input->selectionEnd());
+  ASSERT_GT(input->selectionStart(), 0u);
+  ASSERT_LT(input->selectionStart(), 8u);
+  RightClick(location);
+
+  const ContextMenuData& data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(u"spllchck", data.misspelled_word);
+  ASSERT_EQ(1u, data.dictionary_suggestions.size());
+  EXPECT_EQ(u"spellcheck", data.dictionary_suggestions[0]);
+  EXPECT_EQ(0u, input->selectionStart());
+  EXPECT_EQ(8u, input->selectionEnd());
 }
 
 TEST_F(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
