@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -277,6 +278,12 @@ class GlicMetricsTest : public GlicMetricsTestBase {
 };
 
 TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt,
+      {{features::kGlicSelectionDefaultBlockedSites.name,
+        "https://default-blocked-1.com,https://default-blocked-2.com"}});
+
   // Set up preferences to true.
   profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
@@ -310,8 +317,10 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
 #if !BUILDFLAG(IS_ANDROID)
   histogram_tester().ExpectUniqueSample("Glic.Selection.InlineCueMenuEnabled",
                                         true, 1);
-  histogram_tester().ExpectUniqueSample("Glic.Selection.HasSiteExceptions",
-                                        false, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Selection.SiteExceptionsCount", 0,
+                                        1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Selection.RemovedDefaultBlockedSitesCount", 0, 1);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Set up preferences to false.
@@ -332,8 +341,15 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
   settings_map->SetDefaultContentSetting(ContentSettingsType::INLINE_CUE_MENU,
                                          CONTENT_SETTING_BLOCK);
   settings_map->SetContentSettingDefaultScope(
-      GURL("https://example.com"), GURL("https://example.com"),
+      GURL("https://example1.com"), GURL("https://example1.com"),
       ContentSettingsType::INLINE_CUE_MENU, CONTENT_SETTING_BLOCK);
+  settings_map->SetContentSettingDefaultScope(
+      GURL("https://example2.com"), GURL("https://example2.com"),
+      ContentSettingsType::INLINE_CUE_MENU, CONTENT_SETTING_BLOCK);
+  EXPECT_TRUE(UnblockDefaultSiteForInlineCue(profile(),
+                                             "https://default-blocked-1.com"));
+  EXPECT_TRUE(UnblockDefaultSiteForInlineCue(profile(),
+                                             "https://default-blocked-2.com"));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   metrics()->RecordGlicProfilePreferences();
@@ -385,10 +401,15 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
   histogram_tester().ExpectBucketCount("Glic.Selection.InlineCueMenuEnabled",
                                        false, 1);
 
-  histogram_tester().ExpectBucketCount("Glic.Selection.HasSiteExceptions", true,
+  histogram_tester().ExpectBucketCount("Glic.Selection.SiteExceptionsCount", 2,
                                        1);
-  histogram_tester().ExpectBucketCount("Glic.Selection.HasSiteExceptions",
-                                       false, 1);
+  histogram_tester().ExpectBucketCount("Glic.Selection.SiteExceptionsCount", 0,
+                                       1);
+
+  histogram_tester().ExpectBucketCount(
+      "Glic.Selection.RemovedDefaultBlockedSitesCount", 2, 1);
+  histogram_tester().ExpectBucketCount(
+      "Glic.Selection.RemovedDefaultBlockedSitesCount", 0, 1);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

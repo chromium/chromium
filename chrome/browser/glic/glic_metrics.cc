@@ -321,16 +321,26 @@ void GlicMetrics::RecordGlicProfilePreferences() {
 
     ContentSettingsForOneType exceptions = settings_map->GetSettingsForOneType(
         ContentSettingsType::INLINE_CUE_MENU);
-    bool has_site_exceptions = false;
+    size_t site_exceptions_count = 0;
+    size_t removed_default_blocked_sites_count = 0;
+
     for (const auto& exception : exceptions) {
-      if (exception.GetContentSetting() == CONTENT_SETTING_BLOCK &&
-          !exception.primary_pattern.MatchesAllHosts()) {
-        has_site_exceptions = true;
-        break;
+      if (exception.primary_pattern.MatchesAllHosts()) {
+        continue;
+      }
+      if (exception.GetContentSetting() == CONTENT_SETTING_BLOCK) {
+        site_exceptions_count++;
+      } else if (exception.GetContentSetting() == CONTENT_SETTING_ALLOW) {
+        // Explicit ALLOW exceptions for the inline cue menu are only created
+        // when a user unblocks a default-blocked site in Settings.
+        removed_default_blocked_sites_count++;
       }
     }
-    base::UmaHistogramBoolean("Glic.Selection.HasSiteExceptions",
-                              has_site_exceptions);
+    base::UmaHistogramCounts100("Glic.Selection.SiteExceptionsCount",
+                                site_exceptions_count);
+    base::UmaHistogramCounts100(
+        "Glic.Selection.RemovedDefaultBlockedSitesCount",
+        removed_default_blocked_sites_count);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

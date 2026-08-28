@@ -2797,17 +2797,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Glic.Selection.HasSiteExceptions" enum="Boolean"
-    expires_after="2026-12-31">
-  <owner>wusirui@google.com</owner>
-  <owner>naai-xfn@google.com</owner>
-  <summary>
-    Recorded when the GlicKeyedService for a profile is created. Recorded once
-    per profile initialization. This logs whether the profile has at least one
-    blocked origin site exception for the inline cue.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Selection.InlineCueMenuEnabled" enum="BooleanEnabled"
     expires_after="2026-12-31">
   <owner>wusirui@google.com</owner>
@@ -2831,6 +2820,28 @@ chromium-metrics-reviews@google.com.
     <variant name="PostFre" summary="User has accepted the FRE"/>
     <variant name="PreFre" summary="User has not accepted the FRE"/>
   </token>
+</histogram>
+
+<histogram name="Glic.Selection.RemovedDefaultBlockedSitesCount" units="sites"
+    expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when the GlicKeyedService for a profile is created. Recorded once
+    per profile initialization. This logs the number of default-blocked sites
+    unblocked (removed) by the user for the inline cue.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Selection.SiteExceptionsCount" units="exceptions"
+    expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when the GlicKeyedService for a profile is created. Recorded once
+    per profile initialization. This logs the number of blocked origin site
+    exceptions for the inline cue.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Selection.WidgetClicked.SelectionLength.{FreState}"
