@@ -137,7 +137,8 @@ TEST_F(IndigoToolbarTest, CloseAndReopen) {
   EXPECT_TRUE(toolbar_view_after_close->GetVisible());
 }
 
-TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
+// TODO(crbug.com/536086195): Flaky on all platforms.
+TEST_F(IndigoToolbarTest, DISABLED_ExpandCollapseInteractions) {
   MockIndigoToolbarDelegate delegate;
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
