@@ -1857,12 +1857,12 @@
     {
         "name": "wire-runtime",
         "group": "com.squareup.wire",
-        "version": "6.4.0"
+        "version": "6.4.7"
     },
     {
         "name": "wire-runtime-jvm",
         "group": "com.squareup.wire",
-        "version": "6.4.0"
+        "version": "6.4.7"
     },
     {
         "name": "javapoet",
