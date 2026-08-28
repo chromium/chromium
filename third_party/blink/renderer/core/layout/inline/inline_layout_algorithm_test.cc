@@ -1336,5 +1336,48 @@ TEST_F(InlineLayoutAlgorithmTest, RubyTextEmphasisHeight) {
             ruby->GetPhysicalFragment(0)->Size().height);
 }
 
+TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimOnInlineBox) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        font: 100px/1 Ahem;
+      }
+      .target {
+        text-box: trim-both cap alphabetic;
+      }
+    </style>
+    <div id="container"><span id="target" class="target">X</span></div>
+  )HTML");
+
+  LayoutBlockFlow* container = GetLayoutBlockFlowByElementId("container");
+  ASSERT_NE(container, nullptr);
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  ASSERT_NE(target, nullptr);
+
+  {
+    ScopedTextBoxTrimOnInlineBoxForTest enable_text_box_trim_on_inline_box(
+        false);
+    container->SetNeedsLayout("test");
+    UpdateAllLifecyclePhasesForTest();
+
+    InlineCursor cursor(*container);
+    cursor.MoveTo(*target);
+    ASSERT_TRUE(cursor);
+    EXPECT_EQ(cursor.Current().Size().height, LayoutUnit(100));
+  }
+
+  ScopedTextBoxTrimOnInlineBoxForTest enable_text_box_trim_on_inline_box(true);
+  container->SetNeedsLayout("test");
+  UpdateAllLifecyclePhasesForTest();
+
+  InlineCursor cursor(*container);
+  cursor.MoveTo(*target);
+  ASSERT_TRUE(cursor);
+  // In Ahem at 100px, cap-height is 80px and alphabetic baseline is 0px.
+  // Trimming to cap-to-alphabetic results in height of 80px.
+  EXPECT_EQ(cursor.Current().Size().height, LayoutUnit(80));
+}
+
 }  // namespace
 }  // namespace blink

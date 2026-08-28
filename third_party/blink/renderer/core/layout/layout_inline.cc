@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -193,8 +194,11 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
     return true;
 
   if (style.HasBoxDecorationBackground() || style.MayHavePadding() ||
-      style.MayHaveMargin())
+      style.MayHaveMargin() ||
+      (style.TextBoxTrim() != ETextBoxTrim::kNone &&
+       RuntimeEnabledFeatures::TextBoxTrimOnInlineBoxEnabled())) {
     return true;
+  }
 
   if (style.AnchorName())
     return true;

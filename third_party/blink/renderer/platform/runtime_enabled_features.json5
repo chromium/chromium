@@ -6250,6 +6250,11 @@
       status: "stable",
     },
     {
+      // Kill switch for crbug.com/514953511.
+      name: "TextBoxTrimOnInlineBox",
+      status: "stable",
+    },
+    {
       name: "TextDetector",
       status: "experimental",
     },
