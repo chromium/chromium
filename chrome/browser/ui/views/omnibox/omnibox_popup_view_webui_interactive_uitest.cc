@@ -89,11 +89,18 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
 
   void CreatePopupForTestQuery();
 
-  LocationBarView* location_bar() {
+  LocationBar* location_bar() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    return browser_view->GetLocationBar();
+  }
+  LocationBarView* location_bar_view() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->toolbar()->location_bar_view();
   }
-  OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
+  OmniboxView* omnibox_view() { return location_bar()->GetOmniboxView(); }
+  OmniboxViewViews* omnibox_view_views() {
+    return location_bar_view() ? location_bar_view()->omnibox_view() : nullptr;
+  }
   OmniboxController* controller() {
     return location_bar()->GetOmniboxController();
   }
@@ -203,34 +210,39 @@ void OmniboxPopupViewWebUITest::SetUp() {
 // color.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
                        PopupMatchesLocationBarBackground) {
+  if (!location_bar_view()) {
+    GTEST_SKIP() << "Not applicable when WebUILocationBar is enabled.";
+  }
+
   // In dark mode the omnibox focused and unfocused colors are the same, which
   // makes this test fail; see comments below.
   ui::MockOsSettingsProvider os_settings_provider;  // Forces light mode.
 
   // Start with the Omnibox unfocused.
-  omnibox_view()->GetFocusManager()->ClearFocus();
+  omnibox_view_views()->GetFocusManager()->ClearFocus();
   const SkColor color_before_focus =
-      location_bar()->GetBackgroundColorForTesting();
-  EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
+      location_bar_view()->GetBackgroundColorForTesting();
+  EXPECT_EQ(color_before_focus, omnibox_view_views()->GetBackgroundColor());
 
   // Give the Omnibox focus and get its focused color.
-  omnibox_view()->RequestFocus();
+  omnibox_view_views()->RequestFocus();
   const SkColor color_after_focus =
-      location_bar()->GetBackgroundColorForTesting();
+      location_bar_view()->GetBackgroundColorForTesting();
 
-  EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
+  EXPECT_EQ(color_after_focus, omnibox_view_views()->GetBackgroundColor());
 
   // The background is hosted in the view that contains the results area.
   CreatePopupForTestQuery();
-  LocationBarView* background_host = location_bar();
+  LocationBarView* background_host = location_bar_view();
   EXPECT_EQ(color_after_focus, background_host->GetBackgroundColorForTesting());
 
-  omnibox_view()->GetFocusManager()->ClearFocus();
+  omnibox_view_views()->GetFocusManager()->ClearFocus();
 
   // Blurring the Omnibox w/ in-progress input (e.g. "foo") should result in
   // the on-focus colors.
-  EXPECT_EQ(color_after_focus, location_bar()->GetBackgroundColorForTesting());
-  EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
+  EXPECT_EQ(color_after_focus,
+            location_bar_view()->GetBackgroundColorForTesting());
+  EXPECT_EQ(color_after_focus, omnibox_view_views()->GetBackgroundColor());
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
@@ -400,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupDimensionsTest, DimensionsAndAnchoring) {
   ASSERT_TRUE(widget);
 
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
-  gfx::Rect location_bar_bounds = location_bar()->GetBoundsInScreen();
+  gfx::Rect location_bar_bounds = location_bar()->BoundsInScreen();
 
   gfx::Rect expected_bounds = location_bar_bounds;
   expected_bounds.Inset(
@@ -448,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, MAYBE_PopupResizeWindow) {
   }));
 
   gfx::Rect new_widget_bounds = widget->GetWindowBoundsInScreen();
-  gfx::Rect location_bar_bounds = location_bar()->GetBoundsInScreen();
+  gfx::Rect location_bar_bounds = location_bar()->BoundsInScreen();
   gfx::Rect expected_bounds = location_bar_bounds;
   expected_bounds.Inset(
       -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
@@ -467,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, MAYBE_PopupResizeWindow) {
   }));
 
   new_widget_bounds = widget->GetWindowBoundsInScreen();
-  location_bar_bounds = location_bar()->GetBoundsInScreen();
+  location_bar_bounds = location_bar()->BoundsInScreen();
   expected_bounds = location_bar_bounds;
   expected_bounds.Inset(
       -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
@@ -555,6 +567,10 @@ class TestPermissionPromptDelegate
 // synchronously and prevents the popup from closing.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
                        PermissionPromptCreationLocksRegularWebUIPresenter) {
+  if (!location_bar_view()) {
+    GTEST_SKIP() << "Not applicable when WebUILocationBar is enabled.";
+  }
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabPageURL)));
 
