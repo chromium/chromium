@@ -70,6 +70,7 @@ public class AutofillWalletReminderNoticeBottomSheetCoordinator {
     }
 
     void openLegalMessageLink(String url) {
+        mMediator.onLegalMessageLinkClicked();
         AutofillUiUtils.openLink(mContext, url);
     }
 

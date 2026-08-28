@@ -11,7 +11,7 @@ namespace autofill::autofill_metrics {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.payments
 // LINT.IfChange(WalletReminderNoticeInteraction)
 enum class WalletReminderNoticeInteraction {
   // User clicked the primary "Got it" button.

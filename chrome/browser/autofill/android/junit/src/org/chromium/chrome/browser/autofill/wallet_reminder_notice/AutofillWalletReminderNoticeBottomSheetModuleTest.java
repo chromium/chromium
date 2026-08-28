@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill.wallet_reminder_notice.AutofillWalletReminderNoticeBottomSheetMediator.HISTOGRAM_INTERACTION;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -32,8 +34,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.payments.LegalMessageLine;
+import org.chromium.components.autofill.payments.WalletReminderNoticeInteraction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
@@ -103,6 +107,10 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
 
     @Test
     public void testClickGotItButton() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_INTERACTION, WalletReminderNoticeInteraction.ACKNOWLEDGED_CTA);
+
         mCoordinator.requestShowContent();
         Button gotItButton =
                 mCoordinator
@@ -111,6 +119,7 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
         assertThat(gotItButton, notNullValue());
         gotItButton.performClick();
 
+        histogramWatcher.assertExpected();
         verify(mBottomSheetController)
                 .hideContent(
                         any(AutofillWalletReminderNoticeBottomSheetContent.class),
@@ -120,6 +129,10 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
 
     @Test
     public void testClickLegalMessageLink_launchesCustomTabIntent() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_INTERACTION, WalletReminderNoticeInteraction.CLICKED_LINK);
+
         final String urlString = "https://example.test";
         LegalMessageLine line =
                 new LegalMessageLine(
@@ -144,6 +157,7 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
 
         spans[0].onClick(legalMessageView);
 
+        histogramWatcher.assertExpected();
         Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
         assertThat(intent, notNullValue());
         assertThat(intent.getData(), equalTo(Uri.parse(urlString)));

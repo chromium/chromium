@@ -250,6 +250,7 @@ java_cpp_enum("payments_autofill_core_browser_java_enums") {
   sources = [
     "../core/browser/data_model/payments/bank_account.h",
     "../core/browser/data_model/payments/payment_instrument.h",
+    "../core/browser/metrics/payments/wallet_reminder_notice_metrics.h",
   ]
 }
 
