@@ -33,6 +33,7 @@ config("warnings_config") {
     "-Wno-thread-safety-analysis",
     "-Wno-loop-analysis",
     "-Wno-exit-time-destructors",
+    "-Wno-unused-lambda-capture",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",

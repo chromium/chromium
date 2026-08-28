@@ -217,6 +217,7 @@ if (!use_litert_tflite) {
       "-Wno-deprecated-anon-enum-enum-conversion",
       "-Wno-unused-function",
       "-Wno-unreachable-code-return",
+      "-Wno-unused-lambda-capture",
 
       # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if
       # possible.
