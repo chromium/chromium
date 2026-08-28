@@ -36,12 +36,6 @@ cr-icon {
   vertical-align: middle;
 }
 
-.language-menu-close-button {
-  display: table-cell;
-  float: right;
-  vertical-align: middle;
-}
-
 .language-line {
   align-items: center;
   background-color: transparent;

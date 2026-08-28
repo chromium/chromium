@@ -20,7 +20,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       ${this.i18n('turnLineFocusOffTitle')}
     </cr-button>
     ` : ''}
-    <span id="audio-controls" class="audio-background-immersive-enabled">
+    <span id="audio-controls">
       <span ?hidden="${this.hideSpinner_}">
         <picture class="spinner toolbar-button audio-controls">
           <source media="(prefers-color-scheme: dark)"
@@ -38,8 +38,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
           tabindex="0"
           @click="${this.onPlayPauseClick_}">
       </cr-icon-button>
-      <span id="granularity-container"
-          class="granularity-container-when-active-true">
+      <span id="granularity-container">
         <cr-icon-button id="previousGranularity"
             class="toolbar-button audio-controls"
             ?disabled="${this.shouldDisableGranularityNavButtons_()}"

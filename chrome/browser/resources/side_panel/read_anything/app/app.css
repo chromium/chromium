@@ -20,12 +20,6 @@
   --immersive-menu-font-weight: 400;
 }
 
-:host #appFlexParent {
-  flex: 1;
-  height: auto;
-  min-height: 0;
-}
-
 #lineFocus {
   position: absolute;
   top: var(--line-focus-y);
@@ -87,8 +81,10 @@
 
 #appFlexParent {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  height: 100%;
+  height: auto;
+  min-height: 0;
   overflow-x: hidden;
   width: 100%;
 }

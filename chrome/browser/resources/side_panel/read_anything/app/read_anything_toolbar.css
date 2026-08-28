@@ -26,40 +26,17 @@
 }
 
 
-.audio-background-inactive {
-  --audio-controls-background: transparent;
-  --audio-controls-right-margin: 2px;
-  --audio-controls-right-padding: 0px;
-}
-
-.audio-background-active {
-  --audio-controls-background: var(--color-sys-tonal-container);
-  --audio-controls-right-margin: 6px;
-  --audio-controls-right-padding: 4px;
-}
-
-.audio-background-immersive-enabled {
-  --audio-controls-background: var(--audio-player-background-color);
-  --audio-controls-right-margin: 8px;
-  --audio-controls-right-padding: 4px;
-}
-
 #audio-controls {
-  background: var(--audio-controls-background);
-  border-radius: 18px;
+  background: var(--audio-player-background-color);
+  border-radius: 100px;
   display: flex;
   flex-direction: row;
   align-items: center;
   height: fit-content;
-  margin-inline-end: var(--audio-controls-right-margin);
-  padding: 4px var(--audio-controls-right-padding) 4px 4px;
+  margin-inline-end: 8px;
+  padding: 0 6px;
   position: relative;
   z-index: 9998;
-}
-
-#audio-controls.audio-background-immersive-enabled {
-  border-radius: 100px;
-  padding: 0 6px;
 }
 
 .audio-controls {
@@ -68,9 +45,6 @@
 
 #audio-controls cr-icon-button {
   --cr-icon-button-fill-color: var(--audio-controls-icon-color-internal);
-}
-
-#audio-controls.audio-background-immersive-enabled cr-icon-button {
   margin: 4px 2px;
 }
 
@@ -82,25 +56,10 @@
   z-index: 9998;
 }
 
-/* Separate CSS classes are needed instead of setting the style directly so
- * that when forced colors are active, the color menu isn't reshown through
- * the code used to manage toolbar overflows. */
-.hidden {
-  display: none;
-}
-
-.visibility-hidden {
-  visibility: hidden;
-}
-
-.granularity-container-when-active-true {
+#granularity-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-}
-
-.granularity-container-when-active-false {
-  display: none;
 }
 
 #font-size-increase {
@@ -114,23 +73,6 @@
 
 #font-size-reset {
   margin-inline-end: 4px;
-}
-
-.text-button {
-  border: none;
-  font-size: 13px;
-}
-
-.toolbar-container {
-  --cr-icon-button-fill-color-default: var(--legacy-toolbar-icon-color);
-  --play-pause-icon-color: var(--legacy-audio-player-icon-color);
-  --rate-button-text-color: var(--legacy-toolbar-icon-color);
-  --audio-controls-icon-color-internal: var(--color-sys-on-surface-subtle);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  overflow: visible;
-  padding: 6px 8px;
 }
 
 .immersive-toolbar-container {
@@ -180,6 +122,7 @@
  * button in order for the rates to be properly localized. i.e. 1,5 vs. 1.5
  */
 #rate {
+  --cr-focus-outline-color: var(--on-audio-player-focus-outline-color);
   background-color: transparent;
   border: none;
   border-radius: 50%;
@@ -188,39 +131,17 @@
   justify-content: center;
   font-size: 12px;
   font-weight: 500;
-  height: 24px;
-  margin: 4px;
+  height: 28px;
+  margin: 4px 2px;
   min-width: 0;
   padding: 0;
-  width: 24px;
-}
-
-.immersive-toolbar-container #rate {
-  --cr-focus-outline-color: var(--on-audio-player-focus-outline-color);
-  height: 28px;
   width: 28px;
-  margin: 4px 2px;
-}
-
-.separator {
-  border: 1px solid var(--color-side-panel-divider);
-  display: inline;
-  height: 20px;
-  margin: 6px 8px;
-  width: 0;
-  /* Ensure this stays above the line focus scrim. */
-  position: relative;
-  z-index: 9998;
 }
 
 .spinner {
   display: inline-block;
   height: 100%;
   vertical-align: middle;
-}
-
-.more-options-icon {
-  margin: 8px 6px;
 }
 
 #ai-playback-toggle {
@@ -243,10 +164,6 @@
   border-radius: 12px;
 }
 
-#more-options-menu-dialog::part(dialog) {
-  min-width: 92px;
-}
-
 .immersive-font-size-menu::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
 }
@@ -256,9 +173,5 @@
   #audio-controls cr-icon-button,
   #audio-controls #play-pause {
     --cr-icon-button-fill-color: CanvasText;
-  }
-
-  cr-icon-button#color {
-    display: none;
   }
 }

@@ -24,25 +24,18 @@ cr-icon-button {
   margin: 0 4px;
 }
 
-cr-icon-button.active {
-  background-color: var(--cr-active-background-color);
-}
-
 .spinner {
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-  }
-
-#voiceSelectionMenu::part(dialog) {
-  min-width: 304px;
-  width: fit-content;
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 }
 
 cr-action-menu::part(dialog) {
   max-height: calc(90% - 36px);
+  min-width: 304px;
   /* Prevent jank due to overscrolling from the dialog */
   overscroll-behavior: contain;
+  width: fit-content;
   z-index: 9999;
 }
 
