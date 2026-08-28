@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SIDE_PANEL_SIDE_PANEL_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_SIDE_PANEL_SIDE_PANEL_SERVICE_H_
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -153,13 +157,13 @@ class SidePanelService : public BrowserContextKeyedAPI,
   void DispatchOnOpenedEvent(const ExtensionId& extension_id,
                              int window_id,
                              std::optional<int> tab_id,
-                             const std::string& path);
+                             std::string_view path);
 
   // Dispatch the sidePanel.onClosed event to the extension.
   void DispatchOnClosedEvent(const ExtensionId& extension_id,
                              int window_id,
                              std::optional<int> tab_id,
-                             const std::string& path);
+                             std::string_view path);
 
  private:
   friend class BrowserContextKeyedAPIFactory<SidePanelService>;

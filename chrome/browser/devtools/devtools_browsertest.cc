@@ -184,7 +184,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
@@ -2096,7 +2097,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   ExtensionTestMessageListener default_path_listener("default_path");
   browser_window_interface()->GetFeatures().side_panel_ui()->Show(
-      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id()));
+      SidePanelEntryKey(SidePanelEntryId::kExtension, extension->id()));
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
 
   content::WebContents* side_panel_contents =

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -92,4 +92,4 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_

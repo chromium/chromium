@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_EXTENSIONS_EXTENSION_SIDE_PANEL_COORDINATOR_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_EXTENSIONS_EXTENSION_SIDE_PANEL_COORDINATOR_H_
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_COORDINATOR_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_COORDINATOR_H_
+
+#include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -11,25 +15,23 @@
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
-#include "chrome/browser/ui/views/extensions/extension_view_views.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_icon_image.h"
 
 class BrowserWindowInterface;
+class SidePanelEntry;
 class SidePanelEntryScope;
 class SidePanelRegistry;
 
 namespace content {
 class WebContents;
 }
-
-namespace views {
-class View;
-}  // namespace views
 
 namespace extensions {
 
@@ -38,14 +40,40 @@ class Extension;
 // ExtensionSidePanelCoordinator handles the creation and registration of
 // SidePanelEntries for the associated extension and creates the view to be
 // shown if this extension's SidePanelEntry is active.
-// TODO(crbug.com/40264634): Separate into different classes for global vs
-// contextual extension side panels given the difference in behavior between
-// these two panel types.
-class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
-                                      public SidePanelService::Observer,
+class ExtensionSidePanelCoordinator : public SidePanelService::Observer,
                                       public SidePanelEntryObserver,
                                       public ExtensionHostObserver {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Creates the platform-specific ExtensionViewHost.
+    virtual std::unique_ptr<ExtensionViewHost> CreateHost(const GURL& url) = 0;
+
+    // Creates the platform-specific native view.
+    virtual SidePanelNativeView CreateView(SidePanelEntryScope& scope) = 0;
+
+    // Closes the active side panel view.
+    virtual void CloseSidePanel(SidePanelEntry* entry) {}
+
+    // Called when the entry is registered in the SidePanelRegistry.
+    virtual void OnEntryRegistered() {}
+
+    // Called when the entry is deregistered from the SidePanelRegistry.
+    virtual void OnEntryDeregistered() {}
+
+    // Called when the extension icon has been loaded or updated.
+    virtual void OnIconUpdated() {}
+
+    // Called when a tab-scoped coordinator's tab is about to leave its window.
+    virtual void OnTabWillDetach(tabs::TabInterface* tab,
+                                 tabs::TabInterface::DetachReason reason) {}
+
+    // Called when a tab-scoped coordinator's tab is inserted into a window.
+    virtual void OnTabDidInsert(tabs::TabInterface* tab) {}
+  };
+
   explicit ExtensionSidePanelCoordinator(Profile* profile,
                                          BrowserWindowInterface* browser,
                                          tabs::TabInterface* tab_interface,
@@ -59,12 +87,30 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   static SidePanelType GetPanelType();
 
+  // Creates the platform-specific delegate.
+  static std::unique_ptr<Delegate> CreateDelegate(
+      ExtensionSidePanelCoordinator* coordinator);
+
   // Returns the WebContents managed by `host_`.
   content::WebContents* GetHostWebContentsForTesting() const;
 
   // Deregisters this extension's SidePanelEntry from `registry_`.
   // To avoid re-entrancy this does not happen automatically in the destructor.
   void DeregisterEntry();
+
+  // Called when the native view is destroyed.
+  void OnViewDestroyed();
+
+  Profile* profile() const { return profile_; }
+  BrowserWindowInterface* browser() const { return browser_; }
+  tabs::TabInterface* tab_interface() const { return tab_interface_; }
+  const Extension* extension() const { return extension_; }
+  ExtensionViewHost* host() const { return host_.get(); }
+  IconImage* extension_icon() const { return extension_icon_.get(); }
+
+  SidePanelEntryKey GetEntryKey() const;
+  SidePanelEntry* GetEntry() const;
+  BrowserWindowInterface* GetBrowser();
 
  private:
   // SidePanelEntryObserver:
@@ -80,10 +126,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // dispatched prior.
   void OnClosed();
 
-  SidePanelEntry::Key GetEntryKey() const;
-
-  SidePanelEntry* GetEntry() const;
-
   bool IsGlobalCoordinator() const;
 
   // SidePanelService::Observer:
@@ -91,9 +133,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
       const ExtensionId& extension_id,
       const api::side_panel::PanelOptions& updated_options) override;
   void OnSidePanelServiceShutdown() override;
-
-  // ExtensionViewViews::Observer
-  void OnViewDestroying() override;
 
   // ExtensionHostObserver:
   void OnExtensionHostDestroyed(ExtensionHost* host) override;
@@ -106,7 +145,7 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Creates a view for the extension's resource URL. This is called when this
   // extension's SidePanelEntry is about to be shown in the side panel and a
   // view for the entry has not been cached.
-  std::unique_ptr<views::View> CreateView(SidePanelEntryScope& scope);
+  SidePanelNativeView CreateView(SidePanelEntryScope& scope);
 
   // Called when window.close() is called from the extension's side panel page.
   // This closes the side panel if the extension's panel is showing. Otherwise
@@ -121,34 +160,10 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Loads the extension's icon for its SidePanelEntry.
   void LoadExtensionIcon();
 
-  // Adds the icon of the extension to the action item. This action item is
-  // later retrieved by the side panel coordinator to show the side panel.
-  void UpdateActionItemIcon();
-
   // Called when the tab's WebContents is discarded.
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
-
-  // Called when a tab-scoped coordinator's tab is about to leave its window.
-  // Releases the reference held on the current window's shared action item.
-  void WillDetach(tabs::TabInterface* tab,
-                  tabs::TabInterface::DetachReason reason);
-
-  // Called when a tab-scoped coordinator's tab is inserted into a window.
-  // Reacquires a reference on the (possibly new) window's shared action item.
-  void DidInsert(tabs::TabInterface* tab);
-
-  // Acquires or releases this coordinator's single reference to the extension's
-  // shared action item, no-op if the reference is already held / not held. The
-  // reference keeps the action item alive while this coordinator's entry is
-  // registered.
-  void AcquireActionItemReference();
-  void ReleaseActionItemReference();
-
-  // Returns `browser_` if it is a global coordinator and otherwise it returns
-  // the browser associated with `web_contents_`.
-  BrowserWindowInterface* GetBrowser();
 
   // The profile associated with either `browser_` or `web_contents_`.
   raw_ptr<Profile> profile_;
@@ -191,25 +206,19 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Track whether the onOpened event has been dispatched.
   bool on_opened_dispatched_ = false;
 
-  // Whether this coordinator currently holds a reference to the extension's
-  // shared action item. This usually mirrors whether its SidePanelEntry is
-  // registered, but the two diverge while the tab is detached between windows:
-  // the entry stays registered while the reference is dropped (no window owns
-  // the action item) and is reacquired on the destination window in DidInsert.
-  bool holds_action_item_reference_ = false;
-
   // The ID of the browser window in which the panel is shown.
   std::optional<int> window_id_;
 
   // Whether this coordinator is tab-scoped or window-scoped.
   const bool for_tab_;
 
+  // Optional platform-specific delegate.
+  std::unique_ptr<Delegate> delegate_;
+
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   // Scoped observations for UI and extension backend components.
-  base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>
-      scoped_view_observation_{this};
   base::ScopedObservation<SidePanelService, SidePanelService::Observer>
       scoped_service_observation_{this};
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
@@ -223,4 +232,4 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_EXTENSIONS_EXTENSION_SIDE_PANEL_COORDINATOR_H_
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_COORDINATOR_H_

@@ -667,6 +667,10 @@ if (enable_devtools_frontend) {
       ]
     }
 
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/ui/extensions" ]
+    }
+
     if (is_android) {
       deps += [
         "//chrome/browser/ui/android/tab_model:test_support",

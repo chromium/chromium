@@ -7,10 +7,12 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -322,7 +324,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
 void SidePanelService::DispatchOnClosedEvent(const ExtensionId& extension_id,
                                              int window_id,
                                              std::optional<int> tab_id,
-                                             const std::string& path) {
+                                             std::string_view path) {
   auto* router = EventRouter::Get(browser_context_);
   if (!router->ExtensionHasEventListener(
           extension_id, api::side_panel::OnClosed::kEventName)) {
@@ -344,12 +346,16 @@ void SidePanelService::DispatchOnClosedEvent(const ExtensionId& extension_id,
 }
 
 api::side_panel::PanelLayout SidePanelService::GetSidePanelLayout() {
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
   api::side_panel::PanelLayout layout;
+#if BUILDFLAG(IS_ANDROID)
+  layout.side = api::side_panel::Side::kRight;
+#else
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
   layout.side =
       profile->GetPrefs()->GetBoolean(prefs::kSidePanelHorizontalAlignment)
           ? api::side_panel::Side::kRight
           : api::side_panel::Side::kLeft;
+#endif
   return layout;
 }
 
@@ -431,7 +437,7 @@ base::expected<bool, std::string> SidePanelService::CloseSidePanelForWindow(
 void SidePanelService::DispatchOnOpenedEvent(const ExtensionId& extension_id,
                                              int window_id,
                                              std::optional<int> tab_id,
-                                             const std::string& path) {
+                                             std::string_view path) {
   auto* router = EventRouter::Get(browser_context_);
   if (!router->ExtensionHasEventListener(
           extension_id, api::side_panel::OnOpened::kEventName)) {

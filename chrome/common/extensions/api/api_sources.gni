@@ -37,6 +37,7 @@ schema_sources_ = [
   "reading_list.webidl",
   "search.idl",
   "sessions.json",
+  "side_panel.idl",
   "tab_capture.idl",
   "tab_groups.json",
   "tabs.json",
@@ -92,7 +93,6 @@ if (enable_extensions) {
     "resources_private.idl",
     "safe_browsing_private.idl",
     "settings_private.idl",
-    "side_panel.idl",
     "system_private.json",
 
     # Despite the name, these APIs do not rely on any WebRTC-specific bits and

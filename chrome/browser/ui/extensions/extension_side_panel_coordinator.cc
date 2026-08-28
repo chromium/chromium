@@ -2,22 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/extension_view_host_factory.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/actions/chrome_actions.h"
-#include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_action_item_util.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -28,12 +21,9 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/views/controls/webview/webview.h"
-#include "ui/views/view.h"
 
 namespace extensions {
 
@@ -69,7 +59,8 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
       tab_interface_(tab_interface),
       extension_(extension),
       registry_(registry),
-      for_tab_(for_tab) {
+      for_tab_(for_tab),
+      delegate_(CreateDelegate(this)) {
   // Only one of `browser` or `tab_interface` should be defined when
   // constructing this class.
   DCHECK(browser != nullptr ^ tab_interface != nullptr);
@@ -99,14 +90,14 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     tab_subscriptions_.push_back(tab_interface_->RegisterWillDiscardContents(
         base::BindRepeating(&ExtensionSidePanelCoordinator::WillDiscardContents,
                             weak_factory_.GetWeakPtr())));
-    // Keep this coordinator's action item reference on the window the tab
-    // currently belongs to as the tab moves between windows.
-    tab_subscriptions_.push_back(tab_interface_->RegisterWillDetach(
-        base::BindRepeating(&ExtensionSidePanelCoordinator::WillDetach,
-                            weak_factory_.GetWeakPtr())));
-    tab_subscriptions_.push_back(tab_interface_->RegisterDidInsert(
-        base::BindRepeating(&ExtensionSidePanelCoordinator::DidInsert,
-                            weak_factory_.GetWeakPtr())));
+    if (delegate_) {
+      tab_subscriptions_.push_back(
+          tab_interface_->RegisterWillDetach(base::BindRepeating(
+              &Delegate::OnTabWillDetach, base::Unretained(delegate_.get()))));
+      tab_subscriptions_.push_back(
+          tab_interface_->RegisterDidInsert(base::BindRepeating(
+              &Delegate::OnTabDidInsert, base::Unretained(delegate_.get()))));
+    }
   }
 }
 
@@ -146,7 +137,9 @@ void ExtensionSidePanelCoordinator::DeregisterEntry() {
   // Deregister synchronously closes the side panel if this entry is showing.
   // Release the action item reference only when an entry was actually removed.
   if (registry_->Deregister(GetEntryKey())) {
-    ReleaseActionItemReference();
+    if (delegate_) {
+      delegate_->OnEntryDeregistered();
+    }
   }
 }
 
@@ -209,10 +202,9 @@ void ExtensionSidePanelCoordinator::OnSidePanelServiceShutdown() {
   scoped_service_observation_.Reset();
 }
 
-void ExtensionSidePanelCoordinator::OnViewDestroying() {
+void ExtensionSidePanelCoordinator::OnViewDestroyed() {
   // Reset the panel state to inactive. The panel state should reflect the
-  // state of the view and not the visibility of the entry so handling this
-  // during view destruction.
+  // state of the view and not the visibility of the entry.
   if (is_panel_active_) {
     OnClosed();
     is_panel_active_ = false;
@@ -227,7 +219,6 @@ void ExtensionSidePanelCoordinator::OnViewDestroying() {
   // exists when its event listeners are triggered. Otherwise, a use after free
   // could occur as documented in crbug.com/40062350.
   host_.reset();
-  scoped_view_observation_.Reset();
 }
 
 void ExtensionSidePanelCoordinator::OnExtensionHostDestroyed(
@@ -249,8 +240,9 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   // not be null.
   DCHECK(extension_icon_);
 
-  // Reference the shared action item for as long as this entry is registered.
-  AcquireActionItemReference();
+  if (delegate_) {
+    delegate_->OnEntryRegistered();
+  }
 
   // Use a `WeakPtr` for the creation callback to safely handle cases where
   // this coordinator is destroyed before the view is created. Use a
@@ -260,7 +252,7 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
       GetPanelType(), GetEntryKey(),
       base::BindRepeating(
           [](base::WeakPtr<ExtensionSidePanelCoordinator> coordinator,
-             SidePanelEntryScope& scope) -> std::unique_ptr<views::View> {
+             SidePanelEntryScope& scope) -> SidePanelNativeView {
             if (!coordinator) {
               return nullptr;
             }
@@ -275,41 +267,29 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   CHECK(registry_->Register(std::move(entry)));
 }
 
-std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
+SidePanelNativeView ExtensionSidePanelCoordinator::CreateView(
     SidePanelEntryScope& scope) {
-  host_ = ExtensionViewHostFactory::CreateSidePanelHost(
-      *extension_, side_panel_url_, browser_, tab_interface_);
-
-  // `host_` could be null if `side_panel_url_` is invalid or if the extension
-  // is not currently enabled. The latter can happen when the extension has
-  // unloaded, and the contextual extension entry is deregistered before the
-  // global entry (and so the SidePanelCoordinator tries to show the global
-  // one). In this case, return an empty view which should be deleted
-  // immediately when the global entry is deregistered.
-  if (!host_) {
-    DCHECK(!ExtensionRegistry::Get(profile_)->enabled_extensions().GetByID(
-        extension_->id()));
-    return std::make_unique<views::WebView>(/*browser_context=*/nullptr);
+  if (delegate_) {
+    host_ = delegate_->CreateHost(side_panel_url_);
   }
 
-  // Observe the host to dispatch onOpened after its initial load completes.
-  scoped_host_observation_.Reset();
-  scoped_host_observation_.Observe(host_.get());
+  if (host_) {
+    // Observe the host to dispatch onOpened after its initial load completes.
+    scoped_host_observation_.Reset();
+    scoped_host_observation_.Observe(host_.get());
 
-  // Handle the containing view calling window.close();
-  // The base::Unretained() below is safe because this object owns `host_`, so
-  // the callback will never fire if `this` is deleted.
-  host_->SetCloseHandler(base::BindOnce(
-      &ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel,
-      base::Unretained(this)));
+    // Handle the containing view calling window.close();
+    // The base::Unretained() below is safe because this object owns `host_`, so
+    // the callback will never fire if `this` is deleted.
+    host_->SetCloseHandler(base::BindOnce(
+        &ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel,
+        base::Unretained(this)));
+  }
 
-  auto extension_view =
-      std::make_unique<ExtensionViewViews>(profile_, host_.get());
-  extension_view->SetVisible(true);
-
-  scoped_view_observation_.Reset();
-  scoped_view_observation_.Observe(extension_view.get());
-  return extension_view;
+  if (delegate_) {
+    return delegate_->CreateView(scope);
+  }
+  return nullptr;
 }
 
 void ExtensionSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
@@ -324,7 +304,7 @@ void ExtensionSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
     is_panel_active_ = true;
   }
 
-  // Store the current `window_id_`. if the window later closes, the browser may
+  // Store the current `window_id_`. If the window later closes, the browser may
   // no longer be retrievable.
   window_id_ = ExtensionTabUtil::GetWindowId(GetBrowser());
 
@@ -338,8 +318,8 @@ void ExtensionSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
 //   1. The panel is closed on the tab.
 //   2. The panel is replaced by another panel.
 //   3. The tab / window itself is closed.
-// OnEntryWillHide() handles scenarios 2, whereas the
-// OnViewDestroying() handles scenario 1 and 3.
+// OnEntryWillHide() handles scenario 2, whereas
+// OnViewDestroyed() handles scenario 1 and 3.
 void ExtensionSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
@@ -373,7 +353,7 @@ void ExtensionSidePanelCoordinator::OnOpened() {
   // Dispatch all arguments to reach the router listener.
   service->DispatchOnOpenedEvent(extension_id,
                                  ExtensionTabUtil::GetWindowId(GetBrowser()),
-                                 tab_id, side_panel_url_.GetPath());
+                                 tab_id, side_panel_url_.path());
   on_opened_dispatched_ = true;
 }
 
@@ -394,27 +374,15 @@ void ExtensionSidePanelCoordinator::OnClosed() {
 
   // Dispatch all arguments to reach the router listener.
   service->DispatchOnClosedEvent(extension_id, window_id_.value(), tab_id,
-                                 side_panel_url_.GetPath());
+                                 side_panel_url_.path());
   on_opened_dispatched_ = false;
 }
 
 void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
     ExtensionHost* host) {
   DCHECK_EQ(host, host_.get());
-  BrowserWindowInterface* browser = GetBrowser();
-  DCHECK(browser);
-
-  auto* const side_panel_ui = browser->GetFeatures().side_panel_ui();
-
-  // If the SidePanelEntry for this extension is showing when window.close() is
-  // called, close the side panel. Otherwise, clear the entry's cached view.
-  SidePanelEntry* entry = GetEntry();
-  DCHECK(entry);
-
-  if (side_panel_ui->IsSidePanelEntryShowing(entry->key(), for_tab_)) {
-    side_panel_ui->Close();
-  } else {
-    entry->ClearCachedView();
+  if (delegate_) {
+    delegate_->CloseSidePanel(GetEntry());
   }
 }
 
@@ -451,17 +419,9 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
   // representation when they are shown. Remove this when the aforementioned
   // crbug has been fixed.
   extension_icon_->image_skia().EnsureRepsForSupportedScales();
-}
 
-void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
-  std::optional<actions::ActionId> extension_action_id =
-      actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
-  CHECK(extension_action_id.has_value());
-  BrowserActions* browser_actions = BrowserActions::From(GetBrowser());
-  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-      extension_action_id.value(), browser_actions->root_action_item());
-  if (action_item) {
-    action_item->SetImage(ui::ImageModel::FromImage(extension_icon_->image()));
+  if (delegate_) {
+    delegate_->OnIconUpdated();
   }
 }
 
@@ -474,56 +434,6 @@ void ExtensionSidePanelCoordinator::WillDiscardContents(
   // As this is a tab that is about to be discarded there are not yet any panel
   // options. The entry will be reregistered in OnPanelOptionsChanged if
   // necessary.
-}
-
-void ExtensionSidePanelCoordinator::WillDetach(
-    tabs::TabInterface* tab,
-    tabs::TabInterface::DetachReason reason) {
-  switch (reason) {
-    case tabs::TabInterface::DetachReason::kDelete:
-      // The tab and its entry are being destroyed. Deregister the entry before
-      // its reference is released so the shared action item is never removed
-      // while a registered entry still references it.
-      DeregisterEntry();
-      break;
-    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
-      // The entry moves with the tab. Release the reference on the window the
-      // tab is leaving; DidInsert reacquires it on the destination window.
-      ReleaseActionItemReference();
-      break;
-  }
-}
-
-void ExtensionSidePanelCoordinator::DidInsert(tabs::TabInterface* tab) {
-  // Reacquire on the window the tab now belongs to. No entry is registered yet
-  // on the tab's initial insertion, so this is a no-op then.
-  if (GetEntry()) {
-    AcquireActionItemReference();
-  }
-}
-
-void ExtensionSidePanelCoordinator::AcquireActionItemReference() {
-  if (holds_action_item_reference_) {
-    return;
-  }
-  // A tab that is between windows has no browser; DidInsert acquires the
-  // reference once the tab is inserted into a window.
-  BrowserWindowInterface* browser = GetBrowser();
-  if (!browser) {
-    return;
-  }
-  side_panel_action_item_util::AcquireActionItem(browser, *extension_);
-  holds_action_item_reference_ = true;
-  UpdateActionItemIcon();
-}
-
-void ExtensionSidePanelCoordinator::ReleaseActionItemReference() {
-  if (!holds_action_item_reference_) {
-    return;
-  }
-  side_panel_action_item_util::ReleaseActionItem(GetBrowser(),
-                                                 extension_->id());
-  holds_action_item_reference_ = false;
 }
 
 BrowserWindowInterface* ExtensionSidePanelCoordinator::GetBrowser() {
