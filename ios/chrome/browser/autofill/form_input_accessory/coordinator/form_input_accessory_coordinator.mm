@@ -812,17 +812,12 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 }
 
 - (void)openAutofillSettings {
-  [self dismissAtMemory];
+  __weak __typeof(self) weakSelf = self;
   id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
-  if (IsYourSavedInfoSettingsPageIosEnabled()) {
-    // TODO(crbug.com/540433768): Present the Autofill Settings page without a
-    // back button.
-    [settingsHandler showAutofillSettings];
-  } else {
-    [settingsHandler
-        showProfileSettingsFromViewController:self.baseViewController];
-  }
+  [settingsHandler showEnhancedAutofillSettingsWithCompletion:^{
+    [weakSelf onAutofillSettingsDismissed];
+  }];
 }
 
 - (void)openManageEnhancedAutofillDetails {
@@ -1119,6 +1114,16 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 
   // Ensure the keyboard accessory knows we are now in manual filling mode.
   [self updateKeyboardAccessoryForManualFilling];
+}
+
+// Handles dismissal of the Autofill settings page opened from AtMemory notice.
+- (void)onAutofillSettingsDismissed {
+  if (!self.browser) {
+    return;
+  }
+  if (!autofill::IsEnhancedAutofillEnabled(self.browser->GetProfile())) {
+    [self dismissAtMemory];
+  }
 }
 
 @end
