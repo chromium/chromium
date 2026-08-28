@@ -481,6 +481,23 @@ BPF_TEST_C(SandboxBPF, SyntheticPolicy, SyntheticPolicy) {
     if (IsSyscallForTestHarness(syscall_number)) {
       continue;
     }
+#if defined(__NR_uretprobe)
+    if (syscall_number == __NR_uretprobe) {
+      // The kernel executes uretprobe(2) without consulting seccomp filters
+      // (it is a kernel implementation detail of x86-64 uprobes that default
+      // container policies were breaking), and it raises SIGILL when called
+      // from outside a real uprobe return trampoline, so it cannot be
+      // filtered or invoked here.
+      continue;
+    }
+#endif
+#if defined(__NR_uprobe)
+    if (syscall_number == __NR_uprobe) {
+      // uprobe(2) bypasses seccomp the same way and fails with its own errno
+      // rather than the filter's when called from outside a probe trampoline.
+      continue;
+    }
+#endif
     errno = 0;
     BPF_ASSERT(syscall(syscall_number) == -1);
     BPF_ASSERT(errno == SysnoToRandomErrno(syscall_number));

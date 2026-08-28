@@ -1350,6 +1350,14 @@
 #define __NR_rseq 334
 #endif
 
+#if !defined(__NR_uretprobe)
+#define __NR_uretprobe 335
+#endif
+
+#if !defined(__NR_uprobe)
+#define __NR_uprobe 336
+#endif
+
 #if !defined(__NR_pidfd_send_signal)
 #define __NR_pidfd_send_signal 424
 #endif
