@@ -10,7 +10,7 @@ export function getHtml(this: IwaDevAppElement) {
   // clang-format off
   return html`
 <h1>Isolated Web App Developer Tool</h1>
-<div id="learn-more">
+<div id="learn-more" class="subtitle">
   Install and test Isolated Web Apps during development.
   <a href="https://developer.chrome.com/docs/iwa/introduction"
       target="_blank" rel="noopener"
@@ -33,9 +33,14 @@ ${!this.devModeEnabled_ ? html`
   <div id="content">
     ${!this.hasFetchedApps_ ? '' : html`
       <div class="header-row">
-        <h2 class="title">
-          Installed Applications (${this.installedApps_.length})
-        </h2>
+        <div>
+          <h2 class="title">
+            Installed Applications (${this.installedApps_.length})
+          </h2>
+          <div id="installed-apps-subtitle" class="subtitle">
+            Only apps installed via developer mode appear here.
+          </div>
+        </div>
         <cr-button class="action-button" id="installButton"
             @click="${this.onOpenInstallDialogClick_}">
           <cr-icon class="icon-16" icon="cr:add" slot="prefix-icon"></cr-icon>

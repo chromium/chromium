@@ -198,6 +198,12 @@ suite('<iwa-dev-app>', () => {
     assertTrue(!!heading);
     assertEquals('Isolated Web App Developer Tool', heading.textContent.trim());
 
+    const subtitle = app.shadowRoot.querySelector('#installed-apps-subtitle');
+    assertTrue(!!subtitle);
+    assertEquals(
+        'Only apps installed via developer mode appear here.',
+        subtitle.textContent.trim());
+
     assertFalse(!!app.shadowRoot.querySelector('#dev-mode-disabled-message'));
   });
 
