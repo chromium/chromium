@@ -1,18 +1,14 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef EXTENSIONS_COMMON_PERMISSIONS_USB_DEVICE_PERMISSION_DATA_H_
 #define EXTENSIONS_COMMON_PERMISSIONS_USB_DEVICE_PERMISSION_DATA_H_
-
-#include <memory>
-#include <string>
 
 #include "extensions/common/permissions/api_permission.h"
 
 namespace base {
-
 class Value;
-
 }  // namespace base
 
 namespace extensions {
@@ -44,7 +40,7 @@ class UsbDevicePermissionData {
   bool Check(const APIPermission::CheckParam* param) const;
 
   // Convert `this` into a base::Value.
-  std::unique_ptr<base::Value> ToValue() const;
+  base::Value ToValue() const;
 
   // Populate `this` from a base::Value.
   bool FromValue(const base::Value* value);

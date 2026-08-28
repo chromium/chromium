@@ -52,7 +52,7 @@ class SocketPermissionData {
   bool Check(const APIPermission::CheckParam* param) const;
 
   // Convert `this` into a base::Value.
-  std::unique_ptr<base::Value> ToValue() const;
+  base::Value ToValue() const;
 
   // Populate `this` from a base::Value.
   bool FromValue(const base::Value* value);

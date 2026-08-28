@@ -137,7 +137,7 @@ class SetDisjunctionPermission : public APIPermission {
   std::unique_ptr<base::Value> ToValue() const override {
     base::ListValue list;
     for (const auto& item : data_set_) {
-      list.Append(base::Value::FromUniquePtrValue(item.ToValue()));
+      list.Append(item.ToValue());
     }
     return std::make_unique<base::Value>(std::move(list));
   }
