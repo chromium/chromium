@@ -259,8 +259,6 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarAutofillAiSaveEntityBannerEventHistogram, event);
       break;
-    case InfobarType::kInfobarTypeFormsAiPrivateInference:
-      break;
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support banners.
       NOTREACHED();
@@ -331,8 +329,6 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarAutofillAiSaveEntityBannerDismissTypeHistogram, dismissType);
       break;
-    case InfobarType::kInfobarTypeFormsAiPrivateInference:
-      break;
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support banners.
       NOTREACHED();
@@ -399,9 +395,6 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
       base::UmaHistogramEnumeration(
           kInfobarAutofillAiSaveEntityModalEventHistogram, event);
       break;
-    case InfobarType::kInfobarTypeFormsAiPrivateInference:
-      // FormsAiPrivateInference notice does not support modals.
-      NOTREACHED();
     case InfobarType::kInfobarTypeReaderMode:
       // Reader Mode infobar does not support modals.
       NOTREACHED();
@@ -459,9 +452,6 @@ const char kInfobarSaveCvcBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveCvc:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSaveCvcBadgeTappedHistogram, state);
       break;
-    case InfobarType::kInfobarTypeFormsAiPrivateInference:
-      // FormsAiPrivateInference notice does not support badges.
-      NOTREACHED();
     case InfobarType::kInfobarTypeAutofillAiSaveEntity:
       // Autofill Ai infobar does not support badges.
       NOTREACHED();

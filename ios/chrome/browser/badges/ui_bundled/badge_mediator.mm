@@ -82,7 +82,6 @@ bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType,
     case InfobarType::kInfobarTypeSaveCvc:
       return IsProactiveSuggestionsFrameworkEnabled();
     case InfobarType::kInfobarTypeAutofillAiSaveEntity:
-    case InfobarType::kInfobarTypeFormsAiPrivateInference:
       // This infobar is not supported in reader mode since forms are not shown
       // in reader mode, so the user shouldn't be able to submit a form.
       return false;
