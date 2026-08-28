@@ -74,9 +74,13 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   histogram_tester.ExpectUniqueSample(
@@ -279,9 +283,13 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreloadInBackground) {
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/false, "Other",
+                                  /*is_in_foreground=*/false,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {334});
@@ -326,7 +334,9 @@ TEST(PreloadServingMetricsTest, NavigationWithBFCacheRestore) {
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/true, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/true,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
 
   // Note: `RecordFirstContentfulPaint` is not called for BFCache restore
   // because `PreloadServingMetricsPageLoadMetricsObserver` does not handle
@@ -351,9 +361,13 @@ TEST(PreloadServingMetricsTest, NavigationWithSRP) {
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/true);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/true);
   log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/true);
 
   ExpectFCP(histogram_tester, "All.All.All", {334});
@@ -381,6 +395,59 @@ TEST(PreloadServingMetricsTest, NavigationWithSRP) {
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 1);
+}
+
+// Scenario:
+//
+// - Navigation A started to a search result page (SRP).
+// - Navigation A was served by legacy search prefetch.
+// - A committed.
+TEST(PreloadServingMetricsTest, NavigationWithLegacySearchPrefetch) {
+  base::HistogramTester histogram_tester;
+
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
+  log->prerender_initial_preload_serving_metrics = nullptr;
+
+  log->RecordMetricsForNonPrerenderNavigationCommitted();
+  log->RecordPreloadServingMetricsByNavigationInitiator(
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/true, "Other",
+      /*is_url_srp=*/true);
+  log->RecordFirstContentfulPaint(base::Milliseconds(334),
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/true,
+                                  "Other",
+                                  /*is_url_srp=*/true);
+
+  ExpectFCP(histogram_tester, "WithPrefetch", {334});
+  ExpectFCP(histogram_tester, "WithoutPreload", {});
+  ExpectFCP(histogram_tester, "WithPrerender", {});
+
+  ExpectFCP(histogram_tester, "All.All.All", {334});
+  ExpectFCP(histogram_tester, "All.All.Prefetch", {334});
+  ExpectFCP(histogram_tester, "All.SRP.All", {334});
+  ExpectFCP(histogram_tester, "All.SRP.Prefetch", {334});
+
+  ExpectFCP(histogram_tester, "Other.All.All", {334});
+  ExpectFCP(histogram_tester, "Other.All.Prefetch", {334});
+  ExpectFCP(histogram_tester, "Other.SRP.All", {334});
+  ExpectFCP(histogram_tester, "Other.SRP.Prefetch", {334});
+
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.All", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.SRP.Prefetch", {334});
+
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.All", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.Prefetch", {334});
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
+                                      1 /* kPrefetch */, 1);
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.SRP",
+                                      1 /* kPrefetch */, 1);
 }
 
 // Scenario:
@@ -443,9 +510,13 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   histogram_tester.ExpectUniqueSample(
@@ -699,9 +770,13 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   histogram_tester.ExpectUniqueSample(
@@ -806,9 +881,13 @@ TEST(PreloadServingMetricsTest, RecordByNavigationInitiator) {
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "TestInitiator", /*is_url_srp=*/true);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "TestInitiator",
+      /*is_url_srp=*/true);
   log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true, "TestInitiator",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "TestInitiator",
                                   /*is_url_srp=*/true);
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.TestInitiator.All",
@@ -908,9 +987,13 @@ TEST(PreloadServingMetricsTest,
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(334),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   histogram_tester.ExpectUniqueSample(
@@ -1189,9 +1272,13 @@ TEST(PreloadServingMetricsTest,
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(2157),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   histogram_tester.ExpectUniqueSample(
@@ -1521,9 +1608,13 @@ TEST(
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(10334),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   histogram_tester.ExpectUniqueSample(
@@ -1865,9 +1956,13 @@ TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
   log->RecordPreloadServingMetricsByNavigationInitiator(
-      /*did_nav_use_bfcache=*/false, "Other", /*is_url_srp=*/false);
+      /*did_nav_use_bfcache=*/false,
+      /*is_served_by_legacy_search_prefetch=*/false, "Other",
+      /*is_url_srp=*/false);
   log->RecordFirstContentfulPaint(base::Milliseconds(10334),
-                                  /*is_in_foreground=*/true, "Other",
+                                  /*is_in_foreground=*/true,
+                                  /*is_served_by_legacy_search_prefetch=*/false,
+                                  "Other",
                                   /*is_url_srp=*/false);
 
   histogram_tester.ExpectUniqueSample(

@@ -41,6 +41,13 @@ class NavigationHandleUserData
     return navigation_type_string_;
   }
 
+  bool is_served_by_legacy_search_prefetch() const {
+    return is_served_by_legacy_search_prefetch_;
+  }
+  void set_is_served_by_legacy_search_prefetch(bool is_served) {
+    is_served_by_legacy_search_prefetch_ = is_served;
+  }
+
  private:
   NavigationHandleUserData(content::NavigationHandle& navigation,
                            InitiatorLocation navigation_type,
@@ -53,6 +60,19 @@ class NavigationHandleUserData
 
   // Stringified information of `navigation_type_`.
   const std::string navigation_type_string_;
+
+  // Indicates whether this navigation was served by a legacy search prefetch
+  // mechanism (i.e., DSEv1 search prefetch). Legacy search prefetch refers to
+  // embedder-managed search prefetch mechanisms that operate outside and
+  // predate the unified `content::PrefetchService` preloading pipeline.
+  //
+  // Because such prefetch requests are handled directly by the embedder rather
+  // than the content layer, they do not automatically integrate with
+  // `content::PreloadServingMetrics`. This variable allows the embedder to
+  // signal that the navigation was served by the legacy search prefetch so that
+  // `PreloadServingMetricsPageLoadMetricsObserver` can accurately record
+  // preload serving metrics.
+  bool is_served_by_legacy_search_prefetch_ = false;
 
   friend content::NavigationHandleUserData<NavigationHandleUserData>;
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();

@@ -51,6 +51,17 @@ std::string GetNavigationInitiatorString(
   return "Other";
 }
 
+bool GetServedByLegacySearchPrefetch(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle) {
+    return false;
+  }
+  auto* user_data =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  return user_data && user_data->is_served_by_legacy_search_prefetch();
+}
+
 }  // namespace
 
 PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData() =
@@ -112,6 +123,8 @@ PreloadServingMetricsPageLoadMetricsObserver::CreateNavigationData(
       GetNavigationInitiatorString(navigation_handle);
   navigation_data.is_url_srp =
       google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
+  navigation_data.is_served_by_legacy_search_prefetch =
+      GetServedByLegacySearchPrefetch(navigation_handle);
 
   return navigation_data;
 }
@@ -169,6 +182,7 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
   navigation_data_->preload_serving_metrics_capsule->RecordFirstContentfulPaint(
       corrected, is_in_foreground,
+      navigation_data_->is_served_by_legacy_search_prefetch,
       navigation_data_->navigation_initiator_string,
       navigation_data_->is_url_srp);
 }
@@ -217,6 +231,7 @@ void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
   navigation_data_->preload_serving_metrics_capsule
       ->RecordPreloadServingMetricsByNavigationInitiator(
           navigation_data_->used_bfcache,
+          navigation_data_->is_served_by_legacy_search_prefetch,
           navigation_data_->navigation_initiator_string,
           navigation_data_->is_url_srp);
 }

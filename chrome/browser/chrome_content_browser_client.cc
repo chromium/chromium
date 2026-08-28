@@ -6691,7 +6691,7 @@ ChromeContentBrowserClient::
   // that loader must respect the Connection Allowlist of that context.
   SearchPrefetchURLLoader::RequestHandler prefetch_handler =
       SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
-          resource_request, frame_tree_node_id);
+          resource_request, frame_tree_node_id, navigation_id);
   if (prefetch_handler) {
     prefetch_handler =
         SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler(
