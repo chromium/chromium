@@ -25,6 +25,11 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
+namespace base {
+template <typename T>
+class DeleteHelper;
+}
+
 class BrowserWindowInterface;
 
 namespace autofill {
@@ -108,6 +113,7 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
       base::span<const views::BubbleArrowSide> preferred_popup_sides);
 
  private:
+  friend class base::DeleteHelper<PopupBaseView>;
   friend class PopupBaseViewBrowsertest;
 
   class Widget;
@@ -148,6 +154,9 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   // Ensures that the menu start event is not fired redundantly.
   bool is_ax_menu_start_event_fired_ = false;
+
+  // Ensures that hiding logic and deletion are only executed once.
+  bool is_hiding_ = false;
 
   // Responsible for blocking (and re-enabling) custom cursors across all
   // browser windows.

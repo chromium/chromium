@@ -966,6 +966,12 @@ BASE_FEATURE(kAutofillPopupCheckHtmlFormPopupOverlap,
 BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, `PopupBaseView` uses `DeleteSoon` instead of synchronous
+// `delete this` during `DoHide()` when no widget has been created, and
+// guards against double destruction or showing while hiding.
+// TODO(crbug.com/524084900): Remove when launched.
+BASE_FEATURE(kAutofillPopupUseDeleteSoon, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
 // triggering events.
