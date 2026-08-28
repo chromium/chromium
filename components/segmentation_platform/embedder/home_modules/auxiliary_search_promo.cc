@@ -71,6 +71,12 @@ CardSelectionInfo::ShowResult AuxiliarySearchPromo::ComputeCardResult(
   CardSelectionInfo::ShowResult result;
   result.result_label = kAuxiliarySearch;
 
+  // SPECIAL BEHAVIOR FOR THIS PROMO: Only show the card once per session.
+  if (has_been_shown_this_session_) {
+    result.position = EphemeralHomeModuleRank::kNotShown;
+    return result;
+  }
+
   bool has_been_interacted_with =
       profile_prefs_->GetBoolean(kAuxiliarySearchPromoInteractedPref);
 

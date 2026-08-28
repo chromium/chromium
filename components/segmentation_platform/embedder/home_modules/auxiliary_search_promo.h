@@ -39,6 +39,8 @@ class AuxiliarySearchPromo : public CardSelectionInfo {
 
   // Tracks whether the card has already recorded an impression during this
   // session so it doesn't overcount if displayed multiple times.
+  // SPECIAL BEHAVIOR FOR THIS PROMO: This is also used to ensure the card is
+  // only shown once per session.
   bool has_been_shown_this_session_ = false;
 };
 

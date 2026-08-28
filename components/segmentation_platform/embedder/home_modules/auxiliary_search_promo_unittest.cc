@@ -56,6 +56,45 @@ TEST_F(AuxiliarySearchPromoTest, TestComputeCardResult_NotShown) {
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
+TEST_F(AuxiliarySearchPromoTest, TestComputeCardResult_ShownOncePerSession) {
+  auto card = std::make_unique<AuxiliarySearchPromo>(&pref_service_);
+  AllCardSignals all_signals =
+      CreateAllCardSignals(card.get(), {/* kAuxiliarySearchAvailable */ 1});
+  CardSelectionSignals card_signal(&all_signals, kAuxiliarySearch);
+
+  // The card should be shown initially.
+  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+
+  // Record an impression for the card in this session.
+  card->OnShow(&pref_service_, nullptr);
+
+  // Subsequent calls in the same session should not show the card.
+  result = card->ComputeCardResult(card_signal);
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+TEST_F(AuxiliarySearchPromoTest,
+       TestComputeCardResult_ForceShownOverridesSessionLimit) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kAndroidAppIntegrationModule,
+        {{"force_card_shown", "true"}}}},
+      {});
+
+  auto card = std::make_unique<AuxiliarySearchPromo>(&pref_service_);
+  AllCardSignals all_signals =
+      CreateAllCardSignals(card.get(), {/* kAuxiliarySearchAvailable */ 1});
+  CardSelectionSignals card_signal(&all_signals, kAuxiliarySearch);
+
+  // Record an impression in this session.
+  card->OnShow(&pref_service_, nullptr);
+
+  // The card should still be shown when force_card_shown is true.
+  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+}
+
 // Validates that `IsEnabled()` returns true when under the impression limit and
 // false otherwise.
 TEST_F(AuxiliarySearchPromoTest,
