@@ -47,6 +47,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
+#include "components/contextual_cueing/contextual_cueing_utils.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/google/core/common/google_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -70,7 +71,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -85,10 +85,6 @@
 namespace contextual_cueing {
 
 namespace {
-
-const char kHomepagePathRegex[] =
-    "(?i)(/((us/en|en)\\b/?)?((index|default|home|homepage|main|welcome)(\\.[^/"
-    "?;]+)?)?)?";
 
 std::optional<CueTargetType> GetTargetType(
     optimization_guide::proto::ContextualCue::FulfillmentSurfaceCase
@@ -856,7 +852,7 @@ bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
       template_url_service_->ExtractSearchMetadata(url)) {
     return false;
   }
-  if (RE2::FullMatch(url.path(), kHomepagePathRegex)) {
+  if (IsHomepageUrl(url)) {
     return false;
   }
   return true;

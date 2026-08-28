@@ -6,12 +6,15 @@ source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_cap_tracker.h",
     "contextual_cueing_cap_tracker.mm",
+    "contextual_cueing_evaluator.h",
+    "contextual_cueing_evaluator.mm",
     "contextual_cueing_tab_helper.h",
     "contextual_cueing_tab_helper.mm",
   ]
   public_deps = [
     "//base",
     "//components/contextual_cueing",
+    "//components/google/core/common",
     "//components/page_content_annotations/core",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/on_device_category_classifier",
@@ -25,6 +28,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "contextual_cueing_cap_tracker_unittest.mm",
+    "contextual_cueing_evaluator_unittest.mm",
     "contextual_cueing_tab_helper_unittest.mm",
   ]
   deps = [

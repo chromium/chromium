@@ -5,17 +5,24 @@
 source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_enums.h",
+    "contextual_cueing_utils.cc",
+    "contextual_cueing_utils.h",
     "nudge_cap_tracker.cc",
     "nudge_cap_tracker.h",
     "ucb_scorer.cc",
     "ucb_scorer.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+  deps = [ "//third_party/re2" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "contextual_cueing_utils_unittest.cc",
     "nudge_cap_tracker_unittest.cc",
     "ucb_scorer_unittest.cc",
   ]
@@ -23,5 +30,6 @@ source_set("unit_tests") {
     ":contextual_cueing",
     "//base/test:test_support",
     "//testing/gtest",
+    "//url",
   ]
 }

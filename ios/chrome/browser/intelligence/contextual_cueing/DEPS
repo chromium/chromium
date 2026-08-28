@@ -1,5 +1,6 @@
 include_rules = [
   "+components/contextual_cueing",
+  "+components/google/core/common",
   "+components/page_content_annotations/core",
   "+ios/chrome/browser/intelligence/on_device_category_classifier",
 ]
