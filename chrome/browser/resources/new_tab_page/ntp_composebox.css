@@ -18,6 +18,7 @@
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
   --text-input-max-height: 190px;
+  --cr-composebox-entrypoint-icon-animation-delay: 250ms;
   --cr-composebox-font-size: var(--cr-composebox-custom-font-size, 16px);
   --input-bottom-spacing: 12px;
   --ntp-composebox-carousel-padding-block-end: 2px;
@@ -73,21 +74,23 @@ cr-composebox-submit::part(submit) {
 
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
-  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px);
-  padding-inline-end: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end, 8px);
+  inset-inline-start: 0;
+  position: absolute;
+  top: 0;
 }
 
 #contextEntrypoint::part(context-menu-entrypoint-icon) {
-  inset-inline-start: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px);
-  position: absolute;
-  top: 10px;
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-margin-start: 2px;
   --cr-icon-button-size: 36px;
 }
 
-#inputContainer:has(.has-tabs)
+:host([glif-animation-state]:not([glif-animation-state='ineligible']))
     #contextEntrypoint::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-margin-start: 0;
+}
+
+#inputContainer:has(.has-tabs) #contextEntrypoint {
   inset-inline-start: unset;
   position: relative;
   top: unset;

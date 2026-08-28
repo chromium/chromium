@@ -4,6 +4,7 @@
 
 import {ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, InputSource, QueryActionOverride} from 'chrome://new-tab-page/new_tab_page.js';
+import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -1195,6 +1196,47 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.getInputElement().updateComplete;
         assertEquals('chip hint', input.getAttribute('placeholder'));
       });
+
+  // TODO(crbug.com/548681676): Verify that actions trigger the contextual
+  // entrypoint energy effect animation only when animation and test mode are
+  // enabled. Update to test TutorialId once the server proto rolls.
+  [false, true].forEach(scaledActionChipsInTestMode => {
+    [false, true].forEach(energyEffectAnimationEnabled => {
+      test(
+          `handleFuseboxAction animation with testMode=${
+              scaledActionChipsInTestMode}, energyEnabled=${
+              energyEffectAnimationEnabled}`,
+          async () => {
+            loadTimeData.overrideValues({scaledActionChipsInTestMode});
+            const composebox = new NtpComposeboxElement();
+            composebox.energyEffectAnimationEnabled =
+                energyEffectAnimationEnabled;
+            document.body.appendChild(composebox);
+            await microtasksFinished();
+
+            const action = {
+              preselectedTool: ToolMode.kUnspecified,
+              preferredInventory: null,
+              preselectedModel: null,
+              queryActionOverride: null,
+              preselectedInputSource: null,
+              searchboxOverride: null,
+            };
+
+            const expectedState =
+                scaledActionChipsInTestMode && energyEffectAnimationEnabled ?
+                GlifAnimationState.STARTED :
+                GlifAnimationState.INELIGIBLE;
+            await composebox.handleFuseboxAction({
+              suggestion: '',
+              files: [],
+              fuseboxAction: action,
+            });
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            assertEquals(expectedState, composebox.glifAnimationState);
+          });
+    });
+  });
 });
 
 // ==========================================================
