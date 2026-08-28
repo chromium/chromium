@@ -161,6 +161,10 @@ class SaveUpdatePasswordMessageDelegate
 
   void ClearState();
 
+  // Returns true if password saving (not updating) is blocked by a trusted
+  // vault error. Ensures the client is non-null before checking error state.
+  bool IsSavingBlockedByTrustedVaultError() const;
+
   void RecordMessageShownMetrics(bool update_password);
   void RecordDismissalReasonMetrics(
       password_manager::metrics_util::UIDismissalReason ui_dismissal_reason);

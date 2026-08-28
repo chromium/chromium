@@ -406,6 +406,25 @@ enum class GenerationDialogChoice {
   kMaxValue = kRejected
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Metric: "PasswordManager.SaveWithTrustedVaultError.Outcome"
+//
+// LINT.IfChange(SaveWithTrustedVaultErrorOutcome)
+enum class SaveWithTrustedVaultErrorOutcome {
+  kSavedSuccessfully = 0,
+  kMessageTimedOut = 1,
+  kUserDismissedPrompt = 2,
+  kDeviceLockCanceled = 3,
+  kNewStoreError = 4,
+  kNeverForThisSite = 5,
+  // TODO(crbug.com/543028154): Add a value for key retrieval failed once the
+  // failure signal is available.
+  // TODO(crbug.com/543028154): Add a value for tab destruction.
+  kMaxValue = kNeverForThisSite,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:SaveWithTrustedVaultErrorOutcome)
+
 enum class SignInState {
   // The user is signed out.
   kSignedOut = 0,
@@ -713,6 +732,11 @@ void LogSaveUIDismissalReason(
     std::optional<features_util::PasswordAccountStorageUserState> user_state,
     bool log_adoption_metric,
     std::optional<ActionableError> saving_blocked_error = std::nullopt);
+
+// Log the outcome of saving a password when saving is blocked by a trusted
+// vault error (logged on Android only).
+void LogSaveWithTrustedVaultErrorOutcome(
+    SaveWithTrustedVaultErrorOutcome outcome);
 
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);

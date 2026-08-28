@@ -3919,6 +3919,21 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
+<histogram name="PasswordManager.SaveWithTrustedVaultError.Outcome"
+    enum="PasswordManagerSaveWithTrustedVaultErrorOutcome"
+    expires_after="2027-08-31">
+  <owner>izuzic@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the outcome of the password save prompt when saving is blocked by a
+    trusted vault error. Recorded when the message times out, when the user
+    dismisses the prompt, when the user selects never save, when device lock UI
+    is canceled, when a new store error occurs, or when key retrieval completes
+    and the password is saved successfully. Logged on Android only.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.SavingBlockedByTrustedVaultErrorOnSuccessfulLogin"
     enum="Boolean" expires_after="2027-01-01">

@@ -233,6 +233,12 @@ void LogSaveUIDismissalReason(
   }
 }
 
+void LogSaveWithTrustedVaultErrorOutcome(
+    SaveWithTrustedVaultErrorOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", outcome);
+}
+
 void LogUpdateUIDismissalReason(UIDismissalReason reason) {
   base::UmaHistogramEnumeration("PasswordManager.UpdateUIDismissalReason",
                                 reason, NUM_UI_RESPONSES);

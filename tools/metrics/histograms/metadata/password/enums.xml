@@ -1523,6 +1523,23 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Passkey unlock promo"/>
 </enum>
 
+<!-- LINT.IfChange(SaveWithTrustedVaultErrorOutcome) -->
+
+<enum name="PasswordManagerSaveWithTrustedVaultErrorOutcome">
+  <int value="0" label="Saved successfully after key retrieval"/>
+  <int value="1" label="Message timed out"/>
+  <int value="2" label="User dismissed the prompt"/>
+  <int value="3" label="Device lock UI canceled"/>
+  <int value="4" label="New store error"/>
+  <int value="5" label="Never save for this site"/>
+<!-- TODO(crbug.com/543028154): Add a value for key retrieval failed. -->
+
+<!-- TODO(crbug.com/543028154): Add a value for tab destruction. -->
+
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:SaveWithTrustedVaultErrorOutcome) -->
+
 <enum name="PasswordManagerShortcutMetric">
   <int value="0" label="User clicked Add shortcut from the UI."/>
   <int value="1" label="Shortcut was successfully installed."/>
