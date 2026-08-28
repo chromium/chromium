@@ -50,6 +50,10 @@ BASE_DECLARE_FEATURE_PARAM(bool, kGlicAllowImplicitToolOriginGrants);
 
 BASE_DECLARE_FEATURE(kGlicAttachNavigationThrottleToPausedTasks);
 
+// Apply navigation gating protections to "page activation" events (navigations
+// served from the BFCache, prerender page activations).
+BASE_DECLARE_FEATURE(kGlicPageActivationGating);
+
 // When enabled, `beforeunload` dialog will not be displayed and the callback
 // indicating the dialog outcome will be called with `true`.
 // Warning: Enabling this feature can lead to data loss when navigating.

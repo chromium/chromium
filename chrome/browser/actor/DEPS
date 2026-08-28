@@ -61,6 +61,9 @@ specific_include_rules = {
     # This is required for unit tests.
     "+chrome/browser/actor/ui/event_dispatcher.h",
   ],
+  'actor_commit_deferring_condition_unittest\\.cc': [
+    "+chrome/browser/actor/ui/test_support/mock_event_dispatcher.h",
+  ],
   'execution_engine_(unit|browser)test\\.cc': [
     "+chrome/browser/actor/ui/event_dispatcher.h",
   ],

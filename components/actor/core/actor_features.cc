@@ -67,6 +67,8 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kGlicAttachNavigationThrottleToPausedTasks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicPageActivationGating, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicSkipAwaitVisualStateForNewTabs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -56,6 +56,7 @@
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
+#include "chrome/browser/actor/actor_commit_deferring_condition.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -5500,14 +5501,17 @@ std::vector<std::unique_ptr<content::CommitDeferringCondition>>
 ChromeContentBrowserClient::CreateCommitDeferringConditionsForNavigation(
     content::NavigationHandle* navigation_handle,
     content::CommitDeferringCondition::NavigationType navigation_type) {
-  auto conditions =
-      std::vector<std::unique_ptr<content::CommitDeferringCondition>>();
+  std::vector<std::unique_ptr<content::CommitDeferringCondition>> conditions;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   MaybeAddCondition(
       safe_browsing::MaybeCreateCommitDeferringCondition(*navigation_handle),
       &conditions);
 #endif
+
+  MaybeAddCondition(actor::ActorCommitDeferringCondition::MaybeCreate(
+                        *navigation_handle, navigation_type),
+                    &conditions);
 
   return conditions;
 }
