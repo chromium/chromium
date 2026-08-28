@@ -47,6 +47,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/experiment_group_ids.h"
 #include "components/variations/field_trial_internals_utils.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/study.pb.h"
@@ -1199,7 +1200,7 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
   // TODO(crbug.com/482450020): Support runtime mutability for Google web
   // studies. For now, disallow applying a runtime experiment if it has a
   // Google web experiment ID.
-  if (VariationsSeedProcessor::HasGoogleWebExperimentId(experiment)) {
+  if (HasGoogleWebExperimentId(experiment)) {
     return kRuntimeExperimentHasGoogleWebId;
   }
 

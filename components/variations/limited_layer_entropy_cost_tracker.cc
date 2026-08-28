@@ -17,8 +17,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/variations/experiment_group_ids.h"
 #include "components/variations/variations_layers.h"
-#include "components/variations/variations_seed_processor.h"
 
 namespace variations {
 namespace {
@@ -70,9 +70,8 @@ double GetEntropyUsedByStudy(const Study& study) {
   uint32_t min_weight = std::numeric_limits<uint32_t>::max();
   uint64_t total_weight = 0;
 
-  // The entropy limit applies specifically to the experiments that specify a
-  // Google web experiment ID (or Google web trigger experiment ID).
-  bool has_google_web_experiment = false;
+  // The entropy limit applies to experiments with experiment IDs.
+  bool has_experiment_id = false;
   for (const auto& experiment : study.experiment()) {
     // This will CHECK if `total_weight` (a uint64_t) overflows, which is nearly
     // impossible since each `experiment.probability_weight()` is a uint32_t.
@@ -82,19 +81,18 @@ double GetEntropyUsedByStudy(const Study& study) {
 
     // Skip experiments with zero probability. They will not cause entropy
     // usage since they will never be assigned. Also, checking for non-zero
-    // probability ensures that `has_google_web_experiment`
-    // implies that `total_weight` > 0.
-    if (experiment.probability_weight() > 0u &&
-        VariationsSeedProcessor::HasGoogleWebExperimentId(experiment)) {
-      has_google_web_experiment = true;
+    // probability ensures that `has_experiment_id` implies that `total_weight`
+    // > 0.
+    if (IsWeightedGroupWithExperimentId(experiment)) {
+      has_experiment_id = true;
       min_weight = std::min(min_weight, experiment.probability_weight());
     }
   }
-  if (!has_google_web_experiment) {
+  if (!has_experiment_id) {
     return 0.0;
   }
 
-  // By now, `has_google_web_experiment` being true implies 0 < `min_weight` <=
+  // By now, `has_experiment_id` being true implies 0 < `min_weight` <=
   // `total_weight`, which is required by ConvertToBitsOfEntropy().
   //
   // Mathematically, this returns -log2(`min_weight` / `total_weight`).

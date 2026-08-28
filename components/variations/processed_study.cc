@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
+#include "components/variations/experiment_group_ids.h"
 #include "components/variations/proto/study.pb.h"
 #include "entropy_provider.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -164,9 +165,7 @@ bool ValidateAndComputeTotalProbability(
       return false;
     }
 
-    if (experiment.has_google_web_experiment_id() ||
-        experiment.has_google_web_trigger_experiment_id() ||
-        experiment.has_google_app_experiment_id()) {
+    if (HasExperimentId(experiment)) {
       if (study.activation_type() == Study::STICKY_AFTER_QUERY) {
         LogInvalidReason(InvalidStudyReason::kExperimentIdInStickyStudy);
         DVLOG(1) << study.name() << " with sticky activation has experiment ("

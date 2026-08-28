@@ -65,6 +65,13 @@ Study::Experiment CreateTriggerExperiment(
   return experiment;
 }
 
+Study::Experiment CreateGoogleAppExperiment(int weight,
+                                            int google_app_experiment_id) {
+  auto experiment = CreateExperiment(weight);
+  experiment.set_google_app_experiment_id(google_app_experiment_id);
+  return experiment;
+}
+
 std::vector<Study::Experiment> CreateExperimentsWithTwoBitsOfEntropy() {
   // Create 3 experiments with a total probability weight of 100. Only the 25%
   // group has a google_web_experiment_id so the entropy used should be
@@ -688,6 +695,23 @@ TEST_F(LimitedLayerEntropyCostTrackerTest,
   std::vector<Study::Experiment> experiments = {
       CreateTriggerExperiment(25, 100001), CreateTriggerExperiment(25, 100002),
       CreateExperiment(50)};
+  auto test_layer = CreateLayer(
+      kTestLayerId, /*num_slots=*/100, /*entropy_mode=*/Layer::LIMITED,
+      {CreateLayerMember(kTestLayerMemberId, {{0, 99}})});
+  auto test_study = CreateTestStudy(
+      experiments,
+      CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}));
+  LimitedLayerEntropyCostTracker limited_entropy_tracker(test_layer, 13);
+
+  EXPECT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(test_study));
+  EXPECT_EQ(2, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+}
+
+TEST_F(LimitedLayerEntropyCostTrackerTest,
+       TestAddEntropyUsedByStudy_WithGoogleAppExpID) {
+  std::vector<Study::Experiment> experiments = {
+      CreateGoogleAppExperiment(25, 100001),
+      CreateGoogleAppExperiment(25, 100002), CreateExperiment(50)};
   auto test_layer = CreateLayer(
       kTestLayerId, /*num_slots=*/100, /*entropy_mode=*/Layer::LIMITED,
       {CreateLayerMember(kTestLayerMemberId, {{0, 99}})});

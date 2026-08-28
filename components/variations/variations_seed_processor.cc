@@ -23,6 +23,7 @@
 #include "base/types/optional_ref.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
+#include "components/variations/experiment_group_ids.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
@@ -104,7 +105,7 @@ void RegisterExperimentParams(const Study& study,
 // trigger experiment ID.
 std::optional<IDCollectionKey> GetKeyForWebExperiment(
     const Study::Experiment& experiment) {
-  if (!VariationsSeedProcessor::HasGoogleWebExperimentId(experiment)) {
+  if (!HasGoogleWebExperimentId(experiment)) {
     return std::nullopt;
   }
   bool has_web_experiment_id = experiment.has_google_web_experiment_id();
@@ -155,7 +156,7 @@ void RegisterVariationIds(base::PassKey<VariationsSeedProcessor> pass_key,
     return;
   }
 
-  CHECK(VariationsSeedProcessor::HasGoogleWebExperimentId(experiment));
+  CHECK(HasGoogleWebExperimentId(experiment));
   // An experiment cannot have both |google_web_experiment_id| and
   // |google_trigger_web_experiment_id|. See GetKeyForWebExperiment() for more
   // details.
@@ -316,13 +317,6 @@ base::FieldTrial* CreateTrialWithFeatureConflictGroup(const Study& study) {
 }
 
 }  // namespace
-
-// static
-bool VariationsSeedProcessor::HasGoogleWebExperimentId(
-    const Study::Experiment& experiment) {
-  return experiment.has_google_web_experiment_id() ||
-         experiment.has_google_web_trigger_experiment_id();
-}
 
 VariationsSeedProcessor::VariationsSeedProcessor(
     StickyActivationManager& sticky_activation_manager)

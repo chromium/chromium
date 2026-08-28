@@ -15,6 +15,7 @@
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/experiment_group_ids.h"
 #include "components/variations/limited_layer_entropy_cost_tracker.h"
 #include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
@@ -153,20 +154,8 @@ bool IsLowEntropyLayer(const Layer& layer) {
 // Returns true if the study consumes entropy. This is true if the study has
 // permanent consistency and uses experiment ids.
 bool ConsumesEntropy(const Study& study) {
-  if (study.consistency() != Study::PERMANENT) {
-    return false;
-  }
-  for (const auto& experiment : study.experiment()) {
-    if (experiment.probability_weight() == 0) {
-      continue;
-    }
-    if (experiment.has_google_web_experiment_id() ||
-        experiment.has_google_web_trigger_experiment_id() ||
-        experiment.has_google_app_experiment_id()) {
-      return true;
-    }
-  }
-  return false;
+  return study.consistency() == Study::PERMANENT &&
+         HasWeightedGroupWithExperimentId(study);
 }
 // Returns true if the study applies to the client's platform.
 bool AppliesToClientPlatform(const Study& study,
