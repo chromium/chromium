@@ -423,14 +423,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int tabStripHeight = 0;
         if (ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()) {
-            View toolbar = findViewById(R.id.toolbar);
             View hairline = findViewById(R.id.toolbar_hairline);
-
-            if (toolbar != null && hairline != null) {
-                tabStripHeight = mToolbar != null ? mToolbar.getTabStripHeight() : 0;
-
+            if (hairline != null) {
                 // Set the hairline's top margin to toolbar view to avoid the hairline's top
                 // margin from becoming too big (e.g. toolbar height + tab strip height).
                 MarginLayoutParams hairlineParams = (MarginLayoutParams) hairline.getLayoutParams();
@@ -439,15 +434,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 }
             }
         }
-
-        // Set a top margin of tab strip height (if snapshot refactor is enabled) + narrow width
-        // top margin to the toolbar_container.
-        MarginLayoutParams containerParams =
-                (MarginLayoutParams) mToolbarContainer.getLayoutParams();
-        int targetTopMargin = tabStripHeight + mTopMarginNarrowWidth;
-        if (containerParams.topMargin != targetTopMargin) {
-            containerParams.topMargin = targetTopMargin;
-        }
+        updateToolbarContainerTopMargin();
 
         // Run the measure pass once with the correct params already in place.
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -1360,11 +1347,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         updateToolbarRightOffset(mTabStripHeight);
         updateSystemGestureExclusions();
         updateTopLeftCornerOverlay();
+        updateToolbarContainerTopMargin();
     }
 
     @Override
     public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
         updateTopLeftCornerOverlay();
+        updateToolbarContainerTopMargin();
     }
 
     public void setIsVerticalTabsActiveSupplier(NonNullObservableSupplier<Boolean> supplier) {
@@ -1382,6 +1371,29 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         updateTopLeftCornerOverlay();
         updateToolbarRightOffset(mTabStripHeight);
         updateSystemGestureExclusions();
+        updateToolbarContainerTopMargin();
+    }
+
+    // Set a top margin of tab strip height (if snapshot refactor is enabled) + narrow width
+    // top margin to the toolbar_container.
+    private void updateToolbarContainerTopMargin() {
+        int tabStripHeight =
+                ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled() && mToolbar != null
+                        ? mToolbar.getTabStripHeight()
+                        : 0;
+        var containerParams = (MarginLayoutParams) mToolbarContainer.getLayoutParams();
+        int targetTopMargin = tabStripHeight + getNarrowWidthTopMargin();
+        if (containerParams.topMargin != targetTopMargin) {
+            containerParams.topMargin = targetTopMargin;
+        }
+    }
+
+    private int getNarrowWidthTopMargin() {
+        AppHeaderState appHeaderState = getAppHeaderState();
+        boolean isInDesktopWindow = appHeaderState != null && appHeaderState.isInDesktopWindow();
+        boolean isVerticalTabsActive =
+                mIsVerticalTabsActiveSupplier != null && mIsVerticalTabsActiveSupplier.get();
+        return (isVerticalTabsActive && isInDesktopWindow) ? mTopMarginNarrowWidth : 0;
     }
 
     private void updateTopLeftCornerOverlay() {
@@ -1415,15 +1427,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      * @param hidden Whether Vertical Tabs is hidden due to narrow window width.
      */
     public void setToolbarContainerTopMarginForAutoHiddenVerticalTab(boolean hidden) {
-        // This method is triggered by an event resizing toolbar, which means |onMeasure| will
-        // always follow to reflect the update in |mTopMarginNarrowWidth|. No need to call
-        // call |ToolbarContainer.invalidate|.
         mTopMarginNarrowWidth =
                 hidden
                         ? getContext()
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.tab_strip_height)
                         : 0;
+        updateToolbarContainerTopMargin();
     }
 
     private void updateToolbarRightOffset(int currentTabStripHeight) {
