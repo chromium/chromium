@@ -292,6 +292,7 @@ source_set("contents_web_view") {
     "//ui/base/interaction",
     "//ui/base/metadata",
     "//ui/gfx/geometry",
+    "//ui/views",
     "//ui/views/controls/webview",
   ]
   deps = [
@@ -388,4 +389,27 @@ source_set("multi_contents_view_delegate") {
     "//ui/base",
     "//url",
   ]
+}
+
+source_set("system_menu_model_delegate") {
+  public = [ "system_menu_model_delegate.h" ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/menus",
+  ]
+}
+
+source_set("tab_modal_dialog_host") {
+  public = [ "tab_modal_dialog_host.h" ]
+  public_deps = [
+    "//base",
+    "//components/web_modal",
+    "//ui/views",
+  ]
+}
+
+source_set("contents_border_controller") {
+  public = [ "contents_border_controller.h" ]
+  public_deps = [ "//base" ]
 }

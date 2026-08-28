@@ -285,6 +285,7 @@ static_library("devtools") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/browser/ui/views/frame:scrim_view",
       "//chrome/browser/ui/webui_browser:headers",
       "//chrome/browser/user_education",
