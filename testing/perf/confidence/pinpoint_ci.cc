@@ -141,6 +141,22 @@ void PrintDataForSpeedometerSpreadsheet(
   }
 }
 
+bool IsSpeedometerStory(string_view name) {
+  constexpr string_view kSpeedometerPrefixes[] = {
+      "TodoMVC", "NewsSite",          "Editor-",
+      "Charts-", "React-Stockcharts", "Perf-Dashboard",
+  };
+  if (name == "Score") {
+    return true;
+  }
+  for (string_view prefix : kSpeedometerPrefixes) {
+    if (name.starts_with(prefix)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -190,8 +206,12 @@ int main(int argc, char** argv) {
     bool is_motionmark =
         name == "motionmark" || line.count("motionmarkTag") != 0;
     bool is_speedometer =
-        name.find("TodoMVC") != string::npos ||
-        (line.count("stories") != 0 && line["stories"] == "Speedometer3");
+        IsSpeedometerStory(name) ||
+        (line.count("benchmark") != 0 &&
+         line["benchmark"].find("speedometer") != string::npos) ||
+        (line.count("stories") != 0 && (line["stories"] == "Speedometer3" ||
+                                        line["stories"] == "Speedometer" ||
+                                        IsSpeedometerStory(line["stories"])));
     if (!is_motionmark && !is_speedometer) {
       // Not the core metrics we are looking for.
       continue;
