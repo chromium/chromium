@@ -52,6 +52,7 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -384,6 +385,11 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   }
 
   widget_ = std::make_unique<views::Widget>();
+
+  // TODO(crbug.com/542731882): Remove once dark mode for loomnibox is
+  // implemented.
+  widget_->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
+
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
