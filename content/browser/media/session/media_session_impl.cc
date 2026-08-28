@@ -47,6 +47,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1771,8 +1772,18 @@ RenderFrameHost* MediaSessionImpl::ComputeFrameForRouting(bool ensure_service) {
   size_t min_depth = std::numeric_limits<size_t>::max();
   std::map<RenderFrameHost*, size_t> map_rfh_to_depth;
 
+  std::set<url::Origin> highest_player_origins;
+  size_t min_player_depth = std::numeric_limits<size_t>::max();
+
   for (RenderFrameHost* frame : frames) {
     size_t depth = ComputeFrameDepth(frame, &map_rfh_to_depth);
+    if (depth < min_player_depth) {
+      highest_player_origins.clear();
+      min_player_depth = depth;
+    }
+    if (depth == min_player_depth) {
+      highest_player_origins.insert(frame->GetLastCommittedOrigin());
+    }
     if (depth >= min_depth) {
       continue;
     }
@@ -1784,7 +1795,8 @@ RenderFrameHost* MediaSessionImpl::ComputeFrameForRouting(bool ensure_service) {
   }
 
   // If we cannot find a suitable frame, take the top-most frame with an active
-  // MediaSessionService.
+  // MediaSessionService (and same-origin with the highest-level active player
+  // if one exists).
   if (!best_frame) {
     // `FrameTree::Nodes()` iterates in breadth-first order, so this is
     // guaranteed to find the topmost (or tied topmost) frame with an active
@@ -1793,6 +1805,10 @@ RenderFrameHost* MediaSessionImpl::ComputeFrameForRouting(bool ensure_service) {
                                    ->GetPrimaryFrameTree()
                                    .Nodes()) {
       RenderFrameHost* rfh = node->current_frame_host();
+      if (!highest_player_origins.empty() &&
+          !highest_player_origins.contains(rfh->GetLastCommittedOrigin())) {
+        continue;
+      }
       if (IsServiceActiveForRenderFrameHost(rfh)) {
         best_frame = rfh;
         break;

@@ -14,6 +14,7 @@
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
 #include "content/public/browser/media_session_player_observer.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_media_session_client.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -347,6 +348,27 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   CreateServiceForFrame(sub_frame_);
 
   ASSERT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       MainFrameProducesAudio_CrossOriginSubFrameHasService_NotRouted) {
+  auto* cross_origin_sub_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("http://www.cross-origin.com"),
+          main_frame_->AppendChild("cross_origin_sub_frame")));
+
+  StartPlayerForFrame(main_frame_);
+  CreateServiceForFrame(cross_origin_sub_frame);
+
+  EXPECT_EQ(nullptr, ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       MainFrameProducesAudio_SameOriginSubFrameHasService_Routed) {
+  StartPlayerForFrame(main_frame_);
+  CreateServiceForFrame(sub_frame_);
+
+  EXPECT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,
