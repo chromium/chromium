@@ -3004,10 +3004,6 @@ source_set("browser") {
       "//ui/wm/public",
     ]
 
-    if (enable_server_based_recognition) {
-      deps += [ "//chrome/services/speech/internal:lib" ]
-    }
-
     if (use_cups) {
       deps += [ "//chrome/browser/chromeos/printing" ]
     }
