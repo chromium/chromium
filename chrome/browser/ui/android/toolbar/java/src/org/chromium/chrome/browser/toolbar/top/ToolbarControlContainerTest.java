@@ -36,6 +36,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.LayoutRes;
@@ -1180,7 +1181,11 @@ public class ToolbarControlContainerTest {
         assertFalse(controlContainer.onInterceptTouchEvent(toolbarClickEvent));
         assertTrue(controlContainer.onTouchEvent(toolbarClickEvent));
 
-        // Click below the toolbar container (e.g. on bookmark bar or web contents).
+        // Click below the toolbar container when tablet find in page is open.
+        ViewStub findToolbarStub = controlContainer.findViewById(R.id.find_toolbar_tablet_stub);
+        View findToolbar = findToolbarStub.inflate();
+        findToolbar.setVisibility(View.VISIBLE);
+
         MotionEvent belowToolbarClickEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 150, 0);
         assertFalse(controlContainer.onInterceptTouchEvent(belowToolbarClickEvent));

@@ -1268,6 +1268,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     private boolean isBelowToolbarContainer(MotionEvent e) {
+        View findToolbar = findViewById(R.id.find_toolbar);
+        if (findToolbar == null
+                || findToolbar.getVisibility() != VISIBLE
+                || findToolbar.getParent() != this) {
+            return false;
+        }
         return mToolbarContainer != null && e.getY() > mToolbarContainer.getBottom();
     }
 

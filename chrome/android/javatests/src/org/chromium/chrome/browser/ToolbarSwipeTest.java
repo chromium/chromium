@@ -25,7 +25,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -103,7 +102,6 @@ public class ToolbarSwipeTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisabledTest(message = "crbug.com/553578467")
     public void testToolbarSwipePrevTab() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(
@@ -117,7 +115,6 @@ public class ToolbarSwipeTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisabledTest(message = "crbug.com/553578467")
     public void testToolbarSwipeNextTab() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(
@@ -129,7 +126,6 @@ public class ToolbarSwipeTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisabledTest(message = "crbug.com/553578467")
     public void testToolbarSwipePrevTabNone() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(
@@ -141,7 +137,6 @@ public class ToolbarSwipeTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisabledTest(message = "crbug.com/553578467")
     public void testToolbarSwipeNextTabNone() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(
@@ -155,7 +150,6 @@ public class ToolbarSwipeTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisabledTest(message = "crbug.com/553578467")
     public void testToolbarSwipeNextThenPrevTab() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(
@@ -170,7 +164,6 @@ public class ToolbarSwipeTest {
     @MediumTest
     @Feature({"Android-TabSwitcher"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287381
-    @DisabledTest(message = "crbug.com/553578467")
     public void testToolbarSwipeNextThenPrevTabIncognito() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(
