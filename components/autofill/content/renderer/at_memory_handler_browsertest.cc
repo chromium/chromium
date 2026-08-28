@@ -1125,17 +1125,64 @@ TEST_F(AtMemoryHandlerContentEditableTest, AtMemoryShortcutTrigger) {
 
 class AtMemoryHandlerDoubleCtrlTest : public AtMemoryHandlerTest {
  public:
+  enum class CommandKey { kLeft, kRight };
+
   AtMemoryHandlerDoubleCtrlTest() {
     feature_list_.InitAndEnableFeature(features::kAutofillAtMemoryDoubleCtrl);
   }
 
-  void SendCtrlKeyDown(ui::DomCode dom_code = ui::DomCode::CONTROL_LEFT,
-                       ui::KeyboardCode key_code = ui::VKEY_CONTROL,
-                       int modifiers = blink::WebInputEvent::kControlKey) {
+  // On Mac, we treat the Command (aka Windows aka Meta aka Super) key as the
+  // Ctrl key.
+  void SendCtrlKeyDown(CommandKey key = CommandKey::kLeft,
+                       bool is_auto_repeat = false) {
+    int modifiers = [] {
+      if constexpr (BUILDFLAG(IS_MAC)) {
+        return blink::WebInputEvent::kMetaKey;
+      } else {
+        return blink::WebInputEvent::kControlKey;
+      }
+    }();
+    if (is_auto_repeat) {
+      modifiers |= blink::WebInputEvent::kIsAutoRepeat;
+    }
+
     blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kRawKeyDown,
                                   modifiers, base::TimeTicks::Now());
-    event.windows_key_code = key_code;
-    event.dom_code = static_cast<int>(dom_code);
+
+    event.windows_key_code = [](CommandKey key) {
+      if constexpr (BUILDFLAG(IS_MAC)) {
+        switch (key) {
+          case CommandKey::kLeft:
+            return ui::VKEY_COMMAND;
+          case CommandKey::kRight:
+            return ui::VKEY_RIGHT_COMMAND;
+        }
+      } else {
+        // The WebKeyboardEvent::windows_key_code does not distinguish between
+        // left and right Ctrl buttons.
+        return ui::VKEY_CONTROL;
+      }
+    }(key);
+
+    event.dom_code = static_cast<int>([&key] {
+      if constexpr (BUILDFLAG(IS_MAC)) {
+        switch (key) {
+          case CommandKey::kLeft:
+            return ui::DomCode::META_LEFT;
+          case CommandKey::kRight:
+            return ui::DomCode::META_RIGHT;
+        }
+      } else {
+        switch (key) {
+          case CommandKey::kLeft:
+            return ui::DomCode::CONTROL_LEFT;
+          case CommandKey::kRight:
+            return ui::DomCode::CONTROL_RIGHT;
+        }
+      }
+      NOTREACHED();
+    }());
+
     SendWebKeyboardEvent(event);
   }
 
@@ -1256,9 +1303,7 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, AutoRepeatDoesNotTrigger) {
       .Times(AnyNumber());
 
   SendCtrlKeyDown();
-  SendCtrlKeyDown(
-      ui::DomCode::CONTROL_LEFT, ui::VKEY_CONTROL,
-      blink::WebInputEvent::kControlKey | blink::WebInputEvent::kIsAutoRepeat);
+  SendCtrlKeyDown(CommandKey::kLeft, /*is_auto_repeat=*/true);
   task_environment_.RunUntilIdle();
 }
 
@@ -1318,13 +1363,13 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, LeftCtrlFollowedByRightCtrl) {
       .Times(AnyNumber());
 
   // 1. Left Ctrl followed by Right Ctrl does not trigger.
-  SendCtrlKeyDown(ui::DomCode::CONTROL_LEFT);
-  SendCtrlKeyDown(ui::DomCode::CONTROL_RIGHT);
+  SendCtrlKeyDown(CommandKey::kLeft);
+  SendCtrlKeyDown(CommandKey::kRight);
   task_environment_.RunUntilIdle();
   check_point.Call(1);
 
   // 2. A second Right Ctrl completes the Right Ctrl pair and triggers.
-  SendCtrlKeyDown(ui::DomCode::CONTROL_RIGHT);
+  SendCtrlKeyDown(CommandKey::kRight);
   task_environment_.RunUntilIdle();
   check_point.Call(2);
 }

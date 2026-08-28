@@ -101,11 +101,19 @@ bool IsModifierKey(const WebKeyboardEvent& event) {
 
 bool IsSingleCtrlKey(const WebKeyboardEvent& event) {
   switch (event.windows_key_code) {
+#if BUILDFLAG(IS_MAC)
+    // On Mac, we use Command instead of Ctrl.
+    case ui::VKEY_COMMAND:
+    case ui::VKEY_RIGHT_COMMAND:
+      return (event.GetModifiers() & WebKeyboardEvent::kKeyModifiers) ==
+             WebKeyboardEvent::kMetaKey;
+#else
     case ui::VKEY_CONTROL:
     case ui::VKEY_LCONTROL:
     case ui::VKEY_RCONTROL:
       return (event.GetModifiers() & WebKeyboardEvent::kKeyModifiers) ==
              WebKeyboardEvent::kControlKey;
+#endif
     default:
       return false;
   }
