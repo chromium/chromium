@@ -4,14 +4,16 @@
 
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
-#include <algorithm>
+#import <algorithm>
 #import <concepts>
 #import <functional>
 #import <optional>
+#import <ranges>
 #import <type_traits>
 #import <utility>
 #import <variant>
 
+#import "base/barrier_callback.h"
 #import "base/check_deref.h"
 #import "base/containers/to_vector.h"
 #import "base/feature_list.h"
@@ -374,30 +376,39 @@ void AutofillDriverIOS::TriggerFormExtractionInDriverFrame(
   }
 }
 
-void AutofillDriverIOS::ScanForms(bool immediately) {
+void AutofillDriverIOS::ScanForms(bool immediately,
+                                  base::OnceCallback<void(bool)> callback) {
   if (!web_frame()) {
+    std::move(callback).Run(false);
     return;
   }
 
-  const auto callback = [](id<AutofillDriverIOSBridge> bridge,
-                           base::WeakPtr<web::WebFrame> frame,
-                           std::optional<std::vector<FormData>> forms) {
-    if (!frame || !forms || forms->empty()) {
-      return;
-    }
-    [bridge notifyFormsSeen:*std::move(forms) inFrame:frame.get()];
-  };
+  FormFetchCompletion form_fetch_completion_handler =
+      base::BindOnce(
+          [](id<AutofillDriverIOSBridge> bridge,
+             base::WeakPtr<web::WebFrame> frame,
+             std::optional<std::vector<FormData>> forms) {
+            bool success = forms.has_value();
+            if (frame && forms && !forms->empty()) {
+              [bridge notifyFormsSeen:*std::move(forms) inFrame:frame.get()];
+            }
+            return success;
+          },
+          bridge_, web_frame()->AsWeakPtr())
+          .Then(std::move(callback));
 
   if (base::FeatureList::IsEnabled(kAutofillThrottleDocumentFormScanIos)) {
-    immediately ? document_scan_batcher_.PushRequestAndRun(base::BindOnce(
-                      callback, bridge_, web_frame()->AsWeakPtr()))
-                : document_scan_batcher_.PushRequest(base::BindOnce(
-                      callback, bridge_, web_frame()->AsWeakPtr()));
+    if (immediately) {
+      document_scan_batcher_.PushRequestAndRun(
+          std::move(form_fetch_completion_handler));
+    } else {
+      document_scan_batcher_.PushRequest(
+          std::move(form_fetch_completion_handler));
+    }
   } else {
     [bridge_ fetchFormsFiltered:std::nullopt
                         inFrame:web_frame()
-              completionHandler:base::BindOnce(callback, bridge_,
-                                               web_frame()->AsWeakPtr())];
+              completionHandler:std::move(form_fetch_completion_handler)];
   }
 }
 
@@ -421,11 +432,38 @@ void AutofillDriverIOS::FetchFormsFilteredByName(
 
 void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
     base::OnceCallback<void(bool)> form_extraction_finished_callback) {
-  NOTIMPLEMENTED();
+  if (!web_state_) {
+    std::move(form_extraction_finished_callback).Run(false);
+    return;
+  }
+
+  web::WebFramesManager* frames_manager =
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state_);
+  if (!frames_manager) {
+    std::move(form_extraction_finished_callback).Run(false);
+    return;
+  }
+
+  std::vector<AutofillDriverIOS*> drivers;
+  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+    if (AutofillDriverIOS* driver =
+            FromWebStateAndWebFrame(web_state_, frame)) {
+      drivers.push_back(driver);
+    }
+  }
+
+  auto barrier_callback = base::BarrierCallback<bool>(
+      drivers.size(), base::BindOnce([](const std::vector<bool>& successes) {
+                        return std::ranges::all_of(successes, std::identity());
+                      }).Then(std::move(form_extraction_finished_callback)));
+
+  for (AutofillDriverIOS* driver : drivers) {
+    driver->ScanForms(/*immediately=*/false, barrier_callback);
+  }
 }
 
 void AutofillDriverIOS::ClearFormCacheInAllFrames() {
-  NOTIMPLEMENTED();
+  // iOS does not maintain a renderer-side form cache across scans.
 }
 
 void AutofillDriverIOS::ObserveFieldVisibility(

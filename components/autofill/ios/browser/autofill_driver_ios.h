@@ -10,6 +10,7 @@
 
 #import "base/containers/flat_set.h"
 #import "base/containers/span.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
@@ -220,8 +221,10 @@ class AutofillDriverIOS final : public AutofillDriver,
 
   // Scans to find all eligible forms in the frame's document. If batching is
   // enabled and `immediately` is true, runs this scan and the batch
-  // immediately altogether.
-  void ScanForms(bool immediately = false);
+  // immediately altogether. `callback` is called with true if forms were
+  // extracted successfully or false otherwise upon completion.
+  void ScanForms(bool immediately = false,
+                 base::OnceCallback<void(bool)> callback = base::DoNothing());
 
   // Fetches forms filtered by `form_name` and calls `caller_completion` with
   // the form fetch results upon completion of the fetch.

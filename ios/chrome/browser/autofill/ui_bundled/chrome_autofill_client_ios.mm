@@ -29,6 +29,8 @@
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/form_predictions_tracker.h"
+#import "components/autofill/core/browser/foundations/autofill_driver.h"
+#import "components/autofill/core/browser/foundations/autofill_manager.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -858,8 +860,12 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
 }
 
 void ChromeAutofillClientIOS::OnActorTaskStateChange(bool is_actuating) {
-  // TODO(crbug.com/539473551): reparse known forms here so Autofill uses Actor
-  // specific heuristics.
+  if (is_actuating) {
+    for (AutofillDriver* driver :
+         GetAutofillDriverFactory().GetExistingDrivers()) {
+      driver->GetAutofillManager().ReparseKnownForms();
+    }
+  }
 }
 
 }  // namespace autofill

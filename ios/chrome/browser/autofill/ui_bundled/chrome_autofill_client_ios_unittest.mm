@@ -523,4 +523,17 @@ TEST_F(ChromeAutofillClientIOSTest, IsTabInActorMode_NoActorTabHelper) {
   EXPECT_FALSE(client().IsTabInActorMode());
 }
 
+// Test that `OnActorTaskStateChange` reparses known forms when actuating.
+TEST_F(ChromeAutofillClientIOSTest, OnActorTaskStateChange_ReparsesForms) {
+  ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state());
+  ASSERT_TRUE(actor_tab_helper);
+
+  NSString* html = @"<form><input name='name'><input name='address'></form>";
+  ASSERT_TRUE(LoadHtmlAndWaitForFormsSeen(html, 1));
+
+  actor_tab_helper->SetActuating(true);
+  ASSERT_TRUE(main_frame_manager()->waiter().Wait(1));
+  EXPECT_TRUE(client().IsTabInActorMode());
+}
+
 }  // namespace autofill
