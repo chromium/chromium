@@ -4,15 +4,11 @@
 
 #include "services/network/public/cpp/avail_language_header_parser.h"
 
-#include <iostream>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using testing::UnorderedElementsAre;
 
 namespace network {
 
@@ -46,30 +42,30 @@ TEST(AvailLanguageTest, ParseAvailLanguage) {
   result = ParseAvailLanguage("(en jp), (zh es)");
   EXPECT_FALSE(result.has_value());
 
-  // Parameters to with default.
+  // Parameters with default.
   result = ParseAvailLanguage("en, zh;d");
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), std::vector<std::string>({"zh", "en"}));
 
-  // Parameters to with two defaults.
+  // Parameters with two defaults.
   result = ParseAvailLanguage("en, zh;d, ja;d");
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), std::vector<std::string>({"zh", "ja", "en"}));
 
-  // Parameters to with other pattern are ignored.
+  // Parameters with other pattern are ignored.
   result = ParseAvailLanguage("en, zh;d=1");
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), std::vector<std::string>({"en", "zh"}));
 
-  // Parameters to with other boolean value are ignored.
+  // Parameters with other boolean value are ignored.
   result = ParseAvailLanguage("en, zh;d=?0");
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), std::vector<std::string>({"en", "zh"}));
 
-  // Matching is case-insensitive.
+  // Case is retained; users must match case-insensitively.
   result = ParseAvailLanguage("de-DE, en-CA ");
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), std::vector<std::string>({"de-de", "en-ca"}));
+  EXPECT_EQ(result.value(), std::vector<std::string>({"de-DE", "en-CA"}));
 
   result = ParseAvailLanguage("en, fr (This is a dictionary)");
   ASSERT_FALSE(result.has_value());

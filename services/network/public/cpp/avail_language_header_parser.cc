@@ -11,17 +11,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 
 namespace network {
 
 std::optional<std::vector<std::string>> ParseAvailLanguage(
     const std::string& header) {
-  // Avail-Language is a sh-list of tokens to header; see:
-  // https://mnot.github.io/I-D/draft-nottingham-http-availability-hints.html#section-5.3
+  // https://projects.mnot.net/I-D/draft-nottingham-http-availability-hints.html#name-content-language
   std::optional<net::structured_headers::List> maybe_list =
-      net::structured_headers::ParseList(base::ToLowerASCII(header));
+      net::structured_headers::ParseList(header);
 
   if (!maybe_list.has_value()) {
     return std::nullopt;
