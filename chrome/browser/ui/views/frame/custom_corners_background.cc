@@ -34,6 +34,8 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+// Radius of the corner blur used for the glass frame.
+constexpr float kBackgroundBlurRadius = 5.0f;
 
 int CornerToRadius(const CustomCornersBackground::Corner& corner,
                    int default_radius) {
@@ -141,12 +143,6 @@ CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner(
 }
 
 void CustomCornersBackground::SetUseBackgroundBlur(bool use_background_blur) {
-  static const bool background_blur_enabled =
-      features::kGlassExpandOnHoverOpacity.Get() < 1.0f;
-  static const float background_blur_radius =
-      static_cast<float>(features::kGlassExpandOnHoverBlurRadius.Get());
-  use_background_blur &=
-      background_blur_enabled && background_blur_radius > 0.0f;
   if (!view_->layer()) {
     CHECK(!use_background_blur);
     return;
@@ -157,7 +153,7 @@ void CustomCornersBackground::SetUseBackgroundBlur(bool use_background_blur) {
     layer->SetBackgroundBlur(0.0f);
     return;
   }
-  layer->SetBackgroundBlur(background_blur_radius);
+  layer->SetBackgroundBlur(kBackgroundBlurRadius);
   layer->SetBackdropFilterBounds(GetBackgroundPath(view_->GetLocalBounds()));
   SchedulePaintHost();
 }

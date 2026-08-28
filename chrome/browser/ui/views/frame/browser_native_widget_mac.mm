@@ -106,10 +106,6 @@ bool ShouldHandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) {
 }
 
 double GetGlassFrameTintOpacity(bool is_dark_mode, bool is_vertical_tabs) {
-  double opacity_value = is_dark_mode
-                             ? features::kGlassTintOpacityForDarkMode.Get()
-                             : features::kGlassTintOpacityForLightMode.Get();
-
   // Default opacities mapped by [is_vertical_tabs][is_dark_mode]:
   // Values updated after discussion with UX.
   static constexpr std::array<std::array<double, 2>, 2> kDefaultOpacities = {{
@@ -117,10 +113,7 @@ double GetGlassFrameTintOpacity(bool is_dark_mode, bool is_vertical_tabs) {
       {0.65, 0.80},  // Vertical: light, dark
   }};
 
-  double opacity = opacity_value >= 0.0
-                       ? opacity_value
-                       : kDefaultOpacities[is_vertical_tabs][is_dark_mode];
-
+  const double opacity = kDefaultOpacities[is_vertical_tabs][is_dark_mode];
   return std::clamp(opacity, 0.0, 1.0);
 }
 

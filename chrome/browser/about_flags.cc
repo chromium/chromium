@@ -4896,20 +4896,6 @@ const FeatureEntry::FeatureVariation kToolbarGlowUpVariations[] = {
     {"no reload, back, or forward animations",
      kToolbarGlowUpNoReloadBackForward, nullptr}};
 
-const FeatureEntry::FeatureParam kGlassFrameEoHOpaque[] = {
-    {"GlassExpandOnHoverOpacity", "1.0"}};
-const FeatureEntry::FeatureParam kGlassFrameEoH95[] = {
-    {"GlassExpandOnHoverOpacity", "0.95"}};
-const FeatureEntry::FeatureParam kGlassFrameEoH925[] = {
-    {"GlassExpandOnHoverOpacity", "0.925"}};
-const FeatureEntry::FeatureParam kGlassFrameEoH90[] = {
-    {"GlassExpandOnHoverOpacity", "0.90"}};
-const FeatureEntry::FeatureVariation kGlassFrameVariations[] = {
-    {"expand-on-hover opaque", kGlassFrameEoHOpaque, nullptr},
-    {"expand-on-hover 5% glass", kGlassFrameEoH95, nullptr},
-    {"expand-on-hover 7.5% glass", kGlassFrameEoH925, nullptr},
-    {"expand-on-hover 10% glass", kGlassFrameEoH90, nullptr}};
-
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kDictationEvalModeParam[] = {
     {"eval_mode", "true"}};
@@ -9986,9 +9972,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"glass-frame", flag_descriptions::kGlassFrameName,
      flag_descriptions::kGlassFrameDescription, kOsMac,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlassFrame,
-                                    kGlassFrameVariations,
-                                    "GlassFrame")},
+     FEATURE_VALUE_TYPE(features::kGlassFrame)},
 
     {"desktop-glow-up", flag_descriptions::kDesktopGlowUpName,
      flag_descriptions::kDesktopGlowUpDescription, kOsDesktop,

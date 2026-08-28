@@ -76,6 +76,10 @@ constexpr float kMaxContentsHeightSidePanelFraction = 2.f / 3.f;
 // meaning the outline disappears completely.
 constexpr double kVerticalTabStripOutlineFadeOnHover = 0.5;
 
+// The opacity of the vertical tab strip background when the glass frame is
+// enabled and expand-on-hover is active.
+constexpr double kGlassExpandOnHoverOpacity = 0.95;
+
 // Increases the leading or trailing exclusion padding to `minimum`.
 void IncreasePaddingToMinimum(BrowserLayoutParams& params, int minimum) {
   // Default to increasing the trailing exclusion padding. On ChromeOS, the
@@ -591,13 +595,6 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation() {
   animation.bottom_corner = *controller->GetCurrentValue(
       TabStripAnimations::kVerticalTabStrip, TabStripAnimations::kBottomCorner);
 
-  // If the bottom corner is being suppressed for performance reasons, prevent
-  // an exterior corner.
-  if (in_glass_mode() && !is_fullscreen(layout_data_->window_state) &&
-      !features::kGlassRoundContentCorner.Get()) {
-    animation.bottom_corner = std::min(0.0, animation.bottom_corner);
-  }
-
   return animation;
 }
 
@@ -849,7 +846,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     layout.AddChild(
         views().vertical_tab_strip_background_blur_backdrop,
         vertical_tab_strip_bounds,
-        in_glass_mode() && features::kGlassExpandOnHoverOpacity.Get() < 1.0 &&
+        in_glass_mode() &&
             layout_data_->vertical_tab_strip_animation.expand_on_hover_width >
                 0.0f);
   }
@@ -1217,8 +1214,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   if (in_glass_mode()) {
     gfx::RoundedCornersF content_corners;
     if (layout_data_->tab_strip_type == TabStripType::kVertical &&
-        !is_fullscreen(layout_data_->window_state) &&
-        features::kGlassRoundContentCorner.Get()) {
+        !is_fullscreen(layout_data_->window_state)) {
       // Note that this will set a lower leading corner on the multi contents
       // view even if there's a shadow box, but since the curve is effectively
       // the same this will not produce a visual bug.
@@ -1516,11 +1512,9 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       // visible fade. This isn't perfect, but hopefully with glass
       // expand-on-hover it will improve.
       auto vertical_tabs_background_color = frame_color;
-      static const double expand_on_hover_opacity =
-          features::kGlassExpandOnHoverOpacity.Get();
       vertical_tabs_background_color.opacity = static_cast<float>(
           (1.0 - animation.expand_on_hover_opacity) * frame_color.opacity +
-          animation.expand_on_hover_opacity * expand_on_hover_opacity);
+          animation.expand_on_hover_opacity * kGlassExpandOnHoverOpacity);
       vertical_tabs_background->SetPrimaryColor(vertical_tabs_background_color);
     } else {
       vertical_tabs_background->SetPrimaryColor(frame_color);
