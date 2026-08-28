@@ -15,6 +15,9 @@
 namespace device {
 namespace cbor_extract {
 
+// DEPRECATED: Do not use cbor_extract in new code. This API is being removed
+// in favor of direct components/cbor value parsing.
+//
 // cbor_extract implements a framework for pulling select members out of a
 // cbor::Value and checking that they have the expected type. It is intended for
 // use in contexts where code-size is important.
