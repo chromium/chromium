@@ -12,7 +12,6 @@ import os
 import re
 import shutil
 import subprocess
-import shlex
 import stat
 import sys
 
@@ -115,53 +114,6 @@ class WinTool(object):
             if not os.path.exists(dest):
                 raise Exception("Copying of %s to %s failed" % (source, dest))
 
-    def _HandleCollectInputsOnly(self, args):
-        """Checks if --collect-inputs-only is inside the response file. If so,
-        records input files (.obj/.lib/.o/.a) to /OUT:, creates placeholder
-        /IMPLIB: and /PDB: files (to satisfy ninja).
-
-        Returns True if inputs were collected, and False otherwise.
-        """
-        collect_inputs = False
-        out_path = None
-        implib_path = None
-        pdb_path = None
-        rsp_content = None
-
-        # Iterate through the arguments to determine if --collect-inputs-only
-        # was passed. Unfortunately, all linker arguments on windows are in the
-        # .rsp file, so we need to inspect it in order to see if we need to
-        # collect the inputs or not.
-        for arg in args:
-            if arg.upper().startswith('/IMPLIB:'):
-                implib_path = arg[8:]
-            elif arg.upper().startswith('/PDB:'):
-                pdb_path = arg[5:]
-            elif arg.upper().startswith('/OUT:'):
-                out_path = arg[5:]
-            elif arg.startswith('@') and os.path.exists(arg[1:]):
-                with open(
-                    arg[1:], 'r', encoding='utf-8', errors='ignore'
-                ) as rsp:
-                    rsp_content = rsp.read()
-                    if '--collect-inputs-only' in rsp_content:
-                        collect_inputs = True
-
-        if not collect_inputs:
-            return False
-
-        # Make placeholder output files because ninja expects them to exist
-        if implib_path:
-            open(implib_path, 'w').close()
-        if pdb_path:
-            open(pdb_path, 'w').close()
-        if out_path and rsp_content:
-            with open(out_path, 'w', encoding='utf-8') as out:
-                for path in shlex.split(rsp_content, posix=False):
-                    if not path.startswith(('/', '-')):
-                        out.write(path + '\n')
-        return True
-
     def ExecLinkWrapper(self, arch, use_separate_mspdbsrv, *args):
         """Filter diagnostic output from link that looks like:
         '   Creating library ui.dll.lib and object ui.dll.exp'
@@ -170,12 +122,10 @@ class WinTool(object):
         env = self._GetEnv(arch)
         if use_separate_mspdbsrv == 'True':
             self._UseSeparateMspdbsrv(env, args)
-
-        if self._HandleCollectInputsOnly(args):
-            return 0
-
-        args = list(args)
         if sys.platform == 'win32':
+            args = list(
+                args
+            )  # *args is a tuple by default, which is read-only.
             args[0] = args[0].replace('/', '\\')
         # https://docs.python.org/2/library/subprocess.html:
         # "On Unix with shell=True [...] if args is a sequence, the first item
@@ -185,6 +135,11 @@ class WinTool(object):
         #   Popen(['/bin/sh', '-c', args[0], args[1], ...])"
         # For that reason, since going through the shell doesn't seem necessary on
         # non-Windows don't do that there.
+        pe_name = None
+        for arg in args:
+            m = _LINK_EXE_OUT_ARG.match(arg)
+            if m:
+                pe_name = m.group('out')
         link = subprocess.Popen(
             args,
             shell=sys.platform == 'win32',

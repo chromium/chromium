@@ -8,7 +8,6 @@ import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/gcc_toolchain.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build/toolchain/win/win_toolchain_data.gni")
@@ -142,15 +141,7 @@ template("msvc_toolchain") {
     }
 
     if (host_os != "win" || (use_lld && defined(invoker.sys_lib_flags))) {
-      # TODO(crbug.com/548717713): Find a better way to retrieve object files
-      # for the link step. At least, it doesn't need to use tool_wrapper.py.
-      if (enable_resource_allowlist_generation) {
-        linker_wrapper =
-            "$python_path $_tool_wrapper_path link-wrapper $env False "
-      } else {
-        linker_wrapper = ""
-      }
-
+      linker_wrapper = ""
       sys_lib_flags = "${invoker.sys_lib_flags}"
 
       # TODO(thakis): Remove once crbug.com/1300005 is fixed
