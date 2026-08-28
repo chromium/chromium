@@ -13931,13 +13931,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletDirectOffers)},
 
-    {"autofill-and-passwords-remove-sign-in-promo",
-     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoName,
-     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAndPasswordsRemoveSignInPromo)},
-
     {"universal-opt-out-settings",
      flag_descriptions::kUniversalOptOutSettingsName,
      flag_descriptions::kUniversalOptOutSettingsDescription, kOsAll,
