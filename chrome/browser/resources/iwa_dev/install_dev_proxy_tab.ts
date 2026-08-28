@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_input/cr_input.js';
 import {getHtml} from './install_dev_proxy_tab.html.js';
 import {IwaDevInstallTabElement} from './install_tab.js';
 
-export const PLACEHOLDER_URL = 'http://localhost:2137';
+export const PLACEHOLDER_URL = 'http://localhost:5173';
 
 export class IwaDevInstallDevProxyTabElement extends IwaDevInstallTabElement {
   static get is() {

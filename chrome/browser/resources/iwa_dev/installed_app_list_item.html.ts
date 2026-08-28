@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {InstalledAppListItemElement} from './installed_app_list_item.js';
 
@@ -22,7 +22,18 @@ export function getHtml(this: InstalledAppListItemElement) {
     <span id="source-text">• ${this.sourceMetadata.label}</span>
   </div>
   <div id="id">ID: ${this.app.webBundleId}</div>
-  <div id="source">${this.sourceMetadata.description}</div>
+  <div id="source">
+    ${this.sourceMetadata.description}
+    ${this.isManifestApp_() ? html`
+      <cr-icon-button id="copy-btn"
+          class="${this.copied_ ? '' : 'icon-copy-content'}"
+          iron-icon="${this.copied_ ? 'cr:check' : nothing}"
+          aria-label="${this.copied_ ? 'Copied' : 'Copy update manifest URL'}"
+          title="${this.copied_ ? 'Copied' : 'Copy update manifest URL'}"
+          @click="${this.onCopyClick}">
+      </cr-icon-button>
+    ` : ''}
+  </div>
 </div>
 <div id="actions">
   ${this.isManifestApp_() ? html`

@@ -724,25 +724,68 @@ suite('<iwa-dev-app>', () => {
         const items = getListItems();
         assertEquals(3, items.length);
 
-        // Local Bundle App: no split button or update options button
+        // Local Bundle App: no split button or update options button, no copy
+        // button
         assertFalse(!!items[0]!.shadowRoot.querySelector('#split-button'));
         assertFalse(
             !!items[0]!.shadowRoot.querySelector('#update-options-btn'));
+        assertFalse(!!items[0]!.shadowRoot.querySelector('#copy-btn'));
         assertTrue(!!items[0]!.shadowRoot.querySelector('#update-btn'));
 
-        // Proxy App: no split button or update options button
+        // Proxy App: no split button or update options button, no copy button
         assertFalse(!!items[1]!.shadowRoot.querySelector('#split-button'));
         assertFalse(
             !!items[1]!.shadowRoot.querySelector('#update-options-btn'));
+        assertFalse(!!items[1]!.shadowRoot.querySelector('#copy-btn'));
         assertTrue(!!items[1]!.shadowRoot.querySelector('#update-btn'));
 
-        // Manifest App: split button and update options button present
+        // Manifest App: split button, update options button, and copy button
+        // present
         const splitButton = items[2]!.shadowRoot.querySelector('#split-button');
         assertTrue(!!splitButton);
         const optionsBtn =
             items[2]!.shadowRoot.querySelector<HTMLButtonElement>(
                 '#update-options-btn');
         assertTrue(!!optionsBtn);
+        const copyBtn =
+            items[2]!.shadowRoot.querySelector<HTMLElement>('#copy-btn');
+        assertTrue(!!copyBtn);
+      });
+
+  test(
+      'clicking copy button copies update manifest url to clipboard',
+      async () => {
+        let clipboardText = '';
+        Object.defineProperty(navigator, 'clipboard', {
+          value: {
+            writeText: (text: string) => {
+              clipboardText = text;
+              return Promise.resolve();
+            },
+            readText: () => Promise.resolve(clipboardText),
+          },
+          configurable: true,
+        });
+
+        await setupManifestInstalledApp();
+
+        const items = getListItems();
+        assertEquals(1, items.length);
+        const copyButton =
+            items[0]!.shadowRoot.querySelector<HTMLElement>('#copy-btn');
+        assertTrue(!!copyButton);
+        assertEquals('Copy update manifest URL', copyButton.title);
+        assertTrue(copyButton.classList.contains('icon-copy-content'));
+        assertFalse(copyButton.hasAttribute('iron-icon'));
+
+        copyButton.click();
+        await microtasksFinished();
+
+        assertEquals('https://example.com/manifest.json', clipboardText);
+        assertEquals('Copied', copyButton.title);
+        assertEquals('Copied', copyButton.getAttribute('aria-label'));
+        assertEquals('cr:check', copyButton.getAttribute('iron-icon'));
+        assertFalse(copyButton.classList.contains('icon-copy-content'));
       });
 
   function getUpdateOptionsDialog(): IwaDevUpdateOptionsDialogElement|null {

@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {assertNotReached} from '//resources/js/assert.js';
@@ -69,6 +70,7 @@ export class InstalledAppListItemElement extends CrLitElement {
       app: {type: Object},
       sourceMetadata: {type: Object},
       isUpdating: {type: Boolean},
+      copied_: {type: Boolean, state: true},
     };
   }
 
@@ -94,8 +96,34 @@ export class InstalledAppListItemElement extends CrLitElement {
     description: '',
   };
 
+  protected accessor copied_: boolean = false;
+  private copiedTimeoutId_: number|null = null;
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.copiedTimeoutId_ !== null) {
+      window.clearTimeout(this.copiedTimeoutId_);
+      this.copiedTimeoutId_ = null;
+    }
+  }
+
   protected isManifestApp_(): boolean {
     return !!this.app.source.updateInfo;
+  }
+
+  protected onCopyClick() {
+    if (this.app.source.updateInfo) {
+      navigator.clipboard.writeText(
+          this.app.source.updateInfo.updateManifestUrl);
+      this.copied_ = true;
+      if (this.copiedTimeoutId_ !== null) {
+        window.clearTimeout(this.copiedTimeoutId_);
+      }
+      this.copiedTimeoutId_ = window.setTimeout(() => {
+        this.copied_ = false;
+        this.copiedTimeoutId_ = null;
+      }, 2000);
+    }
   }
 
   protected onUpdateOptionsClick() {
