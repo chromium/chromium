@@ -617,8 +617,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // the currently-focused node. We do this so that screen readers are made
   // aware of changes in the tree which might be relevant to subsequent events
   // on the focused node, such as the focused node being a descendant of a
-  // reparented node or a newly-shown dialog box.
-  BrowserAccessibility* focus = GetFocus();
+  // reparented node or a newly-shown dialog box. `raw_ptr` mitigates
+  // crbug.com/549740754.
+  raw_ptr<BrowserAccessibility> focus = GetFocus();
   std::vector<AXEventGenerator::TargetedEvent> deferred_events;
   for (const auto& targeted_event : event_generator()) {
     if (!ShouldFireGeneratedEvent(targeted_event.event_params->event)) {
