@@ -590,7 +590,8 @@ TEST_P(PdfInkModuleTest, HandleGetAllTextAnnotationsMessage) {
                   "alignment": "center",
                   "styles": {
                     "bold": false,
-                    "italic": true
+                    "italic": true,
+                    "strikethrough": false
                   }
                 },
                 "viewportOrientation": 0
@@ -1022,6 +1023,7 @@ class PdfInkModuleTextTest : public testing::Test {
                        .viewport_orientation = PageOrientation::kOriginal,
                        .is_bold = true,
                        .is_italic = true,
+                       .is_strikethrough = true,
                        .text = kOriginalText,
                    });
     test_box.ink_loaded_text_id = kLoadedTextId;
@@ -1438,7 +1440,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationItalic", 0);
 
   {
-    // Send an edited message with bold=true, italic=true.
+    // Send an edited message with bold=true, italic=true, strikethrough=false.
     base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
                                                           kPageIndex, kPdfZoom);
 
@@ -1447,8 +1449,10 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
     data.Set("newTypefaces", std::move(typefaces));
 
     base::DictValue text_attributes = SampleTextAttributesDict();
-    text_attributes.Set(
-        "styles", base::DictValue().Set("bold", true).Set("italic", false));
+    text_attributes.Set("styles", base::DictValue()
+                                      .Set("bold", true)
+                                      .Set("italic", false)
+                                      .Set("strikethrough", false));
     data.Set("textAttributes", std::move(text_attributes));
 
     EXPECT_TRUE(ink_module().OnMessage(
@@ -1459,7 +1463,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
   }
 
   {
-    // Send an edited message with bold=false, italic=true.
+    // Send an edited message with bold=false, italic=true, strikethrough=false.
     base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
                                                           kPageIndex, kPdfZoom);
     base::ListValue typefaces_edit;
@@ -1467,8 +1471,10 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
     data.Set("newTypefaces", std::move(typefaces_edit));
 
     base::DictValue text_attributes_edit = SampleTextAttributesDict();
-    text_attributes_edit.Set(
-        "styles", base::DictValue().Set("bold", false).Set("italic", true));
+    text_attributes_edit.Set("styles", base::DictValue()
+                                           .Set("bold", false)
+                                           .Set("italic", true)
+                                           .Set("strikethrough", false));
     data.Set("textAttributes", std::move(text_attributes_edit));
 
     EXPECT_TRUE(ink_module().OnMessage(

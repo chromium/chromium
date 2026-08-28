@@ -100,6 +100,7 @@ TEST_P(PDFiumInkReaderTest, BasicTextAnnotation) {
           .viewport_orientation = PageOrientation::kOriginal,
           .is_bold = true,
           .is_italic = false,
+          .is_strikethrough = false,
           .text = "Hello\n!",
       }));
 
@@ -161,6 +162,7 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
           .viewport_orientation = PageOrientation::kOriginal,
           .is_bold = true,
           .is_italic = false,
+          .is_strikethrough = false,
           .text = "Hello",
       }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
@@ -184,6 +186,7 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
           .viewport_orientation = PageOrientation::kOriginal,
           .is_bold = false,
           .is_italic = true,
+          .is_strikethrough = false,
           .text = "World",
       }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&

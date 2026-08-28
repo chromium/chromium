@@ -190,6 +190,7 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
   const base::DictValue& styles = *text_attributes.FindDict("styles");
   bool is_bold = styles.FindBool("bold").value();
   bool is_italic = styles.FindBool("italic").value();
+  bool is_strikethrough = styles.FindBool("strikethrough").value();
 
   return InkTextBoxAttributes{
       .rect = textbox,
@@ -201,6 +202,7 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
       .viewport_orientation = viewport_orientation,
       .is_bold = is_bold,
       .is_italic = is_italic,
+      .is_strikethrough = is_strikethrough,
       .text = *data.FindString("text"),
   };
 }
@@ -1419,9 +1421,11 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
               .Set("color", SkColorToDict(item.attributes.color))
               .Set("alignment",
                    TextAlignmentToString(item.attributes.alignment))
-              .Set("styles", base::DictValue()
-                                 .Set("bold", item.attributes.is_bold)
-                                 .Set("italic", item.attributes.is_italic));
+              .Set("styles",
+                   base::DictValue()
+                       .Set("bold", item.attributes.is_bold)
+                       .Set("italic", item.attributes.is_italic)
+                       .Set("strikethrough", item.attributes.is_strikethrough));
 
       const gfx::RectF& rect = item.attributes.rect;
       auto textbox_rect = base::DictValue()

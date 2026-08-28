@@ -71,6 +71,7 @@ struct InkTextBoxAttributes {
   PageOrientation viewport_orientation;
   bool is_bold;
   bool is_italic;
+  bool is_strikethrough;
   std::string text;
 };
 
