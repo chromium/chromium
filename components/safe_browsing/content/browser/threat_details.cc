@@ -674,8 +674,6 @@ void ThreatDetails::FinishCollection(
 
   all_done_expected_ = true;
 
-  is_tab_closed_ = web_contents_ ? web_contents_->IsBeingDestroyed() : true;
-
   // Do a second pass over the elements and update iframe elements to have
   // references to their children. Children may have been received from a
   // different renderer than the iframe element.
