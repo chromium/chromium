@@ -7,12 +7,14 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom.h"
 
 class Profile;
 class BrowserWindowInterface;
@@ -24,16 +26,17 @@ class ToolController {
   explicit ToolController(Profile* profile);
   ~ToolController();
 
-  void OpenUrl(
-      BrowserWindowInterface* browser,
-      const std::string& url_string,
-      bool new_tab,
-      ai_overlay_dialog::mojom::AiOverlayTools::OpenUrlCallback callback);
+  using OpenUrlResult = base::expected<std::monostate, std::string>;
+  using OpenUrlCallback = base::OnceCallback<void(OpenUrlResult)>;
+  void OpenUrl(BrowserWindowInterface* browser,
+               const std::string& url_string,
+               bool new_tab,
+               OpenUrlCallback callback);
 
  private:
   void EnsureTaskCreated(actor::ActorKeyedService* actor_service);
   void OnNavigateActionsFinished(
-      ai_overlay_dialog::mojom::AiOverlayTools::OpenUrlCallback callback,
+      OpenUrlCallback callback,
       std::vector<actor::ActionResultWithLatencyInfo> results,
       actor::TabObservationStrategy strategy);
 

@@ -5,6 +5,7 @@
 source_set("ttc") {
   public = [
     "features.h",
+    "tool_controller.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
   ]
@@ -13,19 +14,12 @@ source_set("ttc") {
     "//chrome/browser/actor",
     "//chrome/browser/profiles:profile",
   ]
-  # TODO(b/553441360): Remove this exclusion once ToolController
-  # no longer relies on WebUI.
-  if (!is_android) {
-    public += [ "tool_controller.h" ]
-    public_deps += [
-      "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings",
-    ]
-  }
 }
 
 source_set("impl") {
   sources = [
     "features.cc",
+    "tool_controller.cc",
     "ttc_keyed_service.cc",
     "ttc_keyed_service_factory.cc",
   ]
@@ -37,7 +31,6 @@ source_set("impl") {
     "//content/public/browser",
   ]
   if (!is_android) {
-    sources += [ "tool_controller.cc" ]
     deps += [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",

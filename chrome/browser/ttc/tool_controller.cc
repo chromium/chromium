@@ -16,9 +16,14 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "url/gurl.h"
+#else
+#include "base/notimplemented.h"
+#endif
 
 namespace ttc {
 
@@ -33,11 +38,11 @@ ToolController::~ToolController() {
   }
 }
 
-void ToolController::OpenUrl(
-    BrowserWindowInterface* browser,
-    const std::string& url_string,
-    bool new_tab,
-    ai_overlay_dialog::mojom::AiOverlayTools::OpenUrlCallback callback) {
+void ToolController::OpenUrl(BrowserWindowInterface* browser,
+                             const std::string& url_string,
+                             bool new_tab,
+                             OpenUrlCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(b/544823467): Add support for opening in a new tab.
   if (new_tab) {
     std::move(callback).Run(base::unexpected("New tab not supported yet"));
@@ -66,6 +71,10 @@ void ToolController::OpenUrl(
       task_id_, std::move(actions), actor::ActorTaskMetadata(),
       base::BindOnce(&ToolController::OnNavigateActionsFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+#else
+  NOTIMPLEMENTED();
+  std::move(callback).Run(base::unexpected("Not supported"));
+#endif
 }
 
 void ToolController::EnsureTaskCreated(
@@ -86,7 +95,7 @@ void ToolController::EnsureTaskCreated(
 }
 
 void ToolController::OnNavigateActionsFinished(
-    ai_overlay_dialog::mojom::AiOverlayTools::OpenUrlCallback callback,
+    OpenUrlCallback callback,
     std::vector<actor::ActionResultWithLatencyInfo> results,
     actor::TabObservationStrategy strategy) {
   CHECK(!results.empty());
