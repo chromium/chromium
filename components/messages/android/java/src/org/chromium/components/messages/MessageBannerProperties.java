@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -160,12 +161,19 @@ public class MessageBannerProperties {
     static final WritableObjectPropertyKey<Supplier<Boolean>>
             IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER = new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS =
+    /**
+     * Keys whose mutation alters the content, identity, appearance, or actions of the message
+     * banner. When any of these properties are mutated while the banner is shown, the tap
+     * protection period is reset.
+     */
+    static final PropertyKey[] TAP_PROTECTION_RESETTING_KEYS =
             new PropertyKey[] {
-                MESSAGE_IDENTIFIER,
+                PRIMARY_WIDGET_APPEARANCE,
                 PRIMARY_BUTTON_TEXT,
                 PRIMARY_BUTTON_TEXT_MAX_LINES,
                 PRIMARY_BUTTON_CLICK_LISTENER,
+                ON_PRIMARY_ACTION,
+                ON_SECONDARY_ACTION,
                 TITLE,
                 TITLE_CONTENT_DESCRIPTION,
                 DESCRIPTION,
@@ -174,32 +182,42 @@ public class MessageBannerProperties {
                 DESCRIPTION_MAX_LINES,
                 ICON,
                 ICON_RESOURCE_ID,
-                ICON_TINT_COLOR,
                 LARGE_ICON,
                 ICON_ROUNDED_CORNER_RADIUS_PX,
+                ICON_TINT_COLOR,
                 SECONDARY_ICON,
                 SECONDARY_ICON_RESOURCE_ID,
                 SECONDARY_BUTTON_MENU_TEXT,
                 ON_SECONDARY_BUTTON_CLICK,
                 SECONDARY_ICON_CONTENT_DESCRIPTION,
+                SECONDARY_MENU_BUTTON_DELEGATE,
+                SECONDARY_MENU_MAX_SIZE
+            };
+
+    /**
+     * Keys related to gestures, layout animations, lifetime callbacks, and internal component
+     * state. Mutations to these properties do not reset tap protection.
+     */
+    static final PropertyKey[] NON_TAP_PROTECTION_RESETTING_KEYS =
+            new PropertyKey[] {
+                MESSAGE_IDENTIFIER,
                 DISMISSAL_DURATION,
-                TRANSLATION_X,
-                TRANSLATION_Y,
-                CONTENT_ALPHA,
-                ON_TOUCH_RUNNABLE,
-                ON_PRIMARY_ACTION,
-                ON_SECONDARY_ACTION,
                 ON_DISMISSED,
                 ON_FULLY_VISIBLE,
+                TRANSLATION_X,
+                TRANSLATION_Y,
                 IS_FULLY_VISIBLE,
-                SECONDARY_MENU_BUTTON_DELEGATE,
-                SECONDARY_MENU_MAX_SIZE,
-                PRIMARY_WIDGET_APPEARANCE,
-                ELEVATION,
                 MARGIN_TOP,
+                CONTENT_ALPHA,
                 VISUAL_HEIGHT,
-                IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
+                ON_TOUCH_RUNNABLE,
+                ELEVATION,
                 CLOSE_BUTTON_CLICK_LISTENER,
-                ENABLE_CLOSE_BUTTON
+                ENABLE_CLOSE_BUTTON,
+                IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER
             };
+
+    public static final PropertyKey[] ALL_KEYS =
+            PropertyModel.concatKeys(
+                    TAP_PROTECTION_RESETTING_KEYS, NON_TAP_PROTECTION_RESETTING_KEYS);
 }

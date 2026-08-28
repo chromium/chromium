@@ -10,6 +10,7 @@ import static org.chromium.components.messages.MessageBannerProperties.CONTENT_A
 import static org.chromium.components.messages.MessageBannerProperties.ENABLE_CLOSE_BUTTON;
 import static org.chromium.components.messages.MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER;
 import static org.chromium.components.messages.MessageBannerProperties.MARGIN_TOP;
+import static org.chromium.components.messages.MessageBannerProperties.TAP_PROTECTION_RESETTING_KEYS;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
 import static org.chromium.components.messages.MessageBannerProperties.VISUAL_HEIGHT;
@@ -34,14 +35,17 @@ import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.Sc
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
+import org.chromium.ui.modelutil.PropertyObservable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /** Mediator responsible for the business logic in a message banner. */
@@ -60,6 +64,9 @@ class MessageBannerMediator implements SwipeHandler {
         // User gesture
         int GESTURE = 3;
     }
+
+    private static final Set<PropertyKey> sTapProtectionResettingKeys =
+            Set.of(TAP_PROTECTION_RESETTING_KEYS);
 
     private static final long TAP_PROTECTION_DURATION_MS = 500;
 
@@ -83,12 +90,16 @@ class MessageBannerMediator implements SwipeHandler {
     private final SwipeAnimationHandler mSwipeAnimationHandler;
     private final int mPeekingMarginTop;
     private final int mDefaultMarginTop;
+    private final PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver =
+            this::onPropertyChanged;
 
     private @Nullable Animator mAnimation;
     @State private int mCurrentState = State.HIDDEN;
     @ScrollDirection private int mSwipeDirection;
     private float mSwipeStartTranslation;
     private boolean mDidFling;
+    private long mTapProtectionEndTimestamp;
+    private boolean mInFront;
 
     /** Constructs the message banner mediator. */
     MessageBannerMediator(
@@ -112,6 +123,7 @@ class MessageBannerMediator implements SwipeHandler {
         mPeekingMarginTop =
                 resources.getDimensionPixelSize(R.dimen.message_peeking_layer_height)
                         + mDefaultMarginTop;
+        mModel.addObserver(mPropertyObserver);
     }
 
     /**
@@ -141,19 +153,19 @@ class MessageBannerMediator implements SwipeHandler {
             mModel.set(TRANSLATION_Y, mModel.get(MARGIN_TOP) - mDefaultMarginTop);
             mModel.set(MARGIN_TOP, mDefaultMarginTop);
         }
-        if (toIndex == Position.FRONT
-                && (!BuildConfig.IS_FOR_TEST || sTapProtectionDurationMsForTesting > 0)) {
-            long startTimestamp = TimeUtils.elapsedRealtimeMillis();
-            long protectionDuration =
-                    sTapProtectionDurationMsForTesting > 0
-                            ? sTapProtectionDurationMsForTesting
-                            : TAP_PROTECTION_DURATION_MS;
+        mInFront = toIndex == Position.FRONT;
+        long protectionDuration = getTapProtectionDuration();
+        if (mInFront && protectionDuration > 0) {
+            // The banner takes ENTER_DURATION_MS to animate in and becomes sufficiently visible
+            // around the halfway point (~275ms). Add half the entrance animation duration so that
+            // tap protection lasts the full protection duration once the banner is visible.
+            mTapProtectionEndTimestamp =
+                    TimeUtils.elapsedRealtimeMillis() + ENTER_DURATION_MS / 2 + protectionDuration;
             mModel.set(
                     IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
-                    () -> {
-                        return TimeUtils.elapsedRealtimeMillis()
-                                < ENTER_DURATION_MS / 2 + protectionDuration + startTimestamp;
-                    });
+                    () -> TimeUtils.elapsedRealtimeMillis() < mTapProtectionEndTimestamp);
+        } else if (!mInFront) {
+            mTapProtectionEndTimestamp = 0;
         }
         mModel.set(
                 ENABLE_CLOSE_BUTTON,
@@ -182,6 +194,10 @@ class MessageBannerMediator implements SwipeHandler {
             boolean animate,
             Runnable messageHidden) {
         cancelAnyAnimations();
+        mInFront = toIndex == Position.FRONT;
+        if (!mInFront) {
+            mTapProtectionEndTimestamp = 0;
+        }
         float translateTo = toIndex == Position.FRONT ? 0 : -mTopOffsetSupplier.get();
         if (!animate) {
             mModel.set(CONTENT_ALPHA, 0.f);
@@ -199,6 +215,10 @@ class MessageBannerMediator implements SwipeHandler {
 
     void setOnTouchRunnable(@Nullable Runnable runnable) {
         mModel.set(MessageBannerProperties.ON_TOUCH_RUNNABLE, runnable);
+    }
+
+    void destroy() {
+        mModel.removeObserver(mPropertyObserver);
     }
 
     // region SwipeHandler implementation
@@ -420,6 +440,35 @@ class MessageBannerMediator implements SwipeHandler {
 
     private boolean isResting() {
         return mModel.get(TRANSLATION_Y) == 0.f && mModel.get(TRANSLATION_X) == 0.f;
+    }
+
+    private void onPropertyChanged(
+            PropertyObservable<PropertyKey> source, @Nullable PropertyKey propertyKey) {
+        // A null propertyKey indicates a bulk update where multiple properties changed at once.
+        // Re-arm tap protection for safety on bulk updates as well as key-specific mutations.
+        if (!mInFront
+                || (propertyKey != null && !sTapProtectionResettingKeys.contains(propertyKey))) {
+            return;
+        }
+
+        long protectionDuration = getTapProtectionDuration();
+        if (protectionDuration <= 0) {
+            return;
+        }
+
+        mTapProtectionEndTimestamp =
+                Math.max(
+                        mTapProtectionEndTimestamp,
+                        TimeUtils.elapsedRealtimeMillis() + protectionDuration);
+    }
+
+    private long getTapProtectionDuration() {
+        if (BuildConfig.IS_FOR_TEST && sTapProtectionDurationMsForTesting <= 0) {
+            return 0;
+        }
+        return sTapProtectionDurationMsForTesting > 0
+                ? sTapProtectionDurationMsForTesting
+                : TAP_PROTECTION_DURATION_MS;
     }
 
     /** Set duration of tap protection period. */

@@ -7,6 +7,9 @@ package org.chromium.components.messages;
 import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -28,14 +31,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.messages.MessageStateHandler.Position;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.time.Duration;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link MessageBannerMediator}. */
@@ -559,6 +566,177 @@ public class MessageBannerMediatorUnitTest {
 
         assertModelState(500, 0, 0, 1, DEFAULT_MARGIN, "dismissed to right after fling.");
         verify(mDismissedRunnable, times(1)).run();
+    }
+
+    @Test
+    public void testTapProtection_ShowFront() {
+        MessageBannerMediator.setTapProtectionDurationMsForTesting(500);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, 0, mShownRunnable);
+
+        Supplier<Boolean> supplier =
+                mModel.get(MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER);
+        assertNotNull("Tap protection supplier should be set.", supplier);
+        assertTrue("Tap protection should be active upon show.", supplier.get());
+
+        // Advance past enter animation (275ms) + tap protection (500ms) = 775ms.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(800));
+        assertFalse("Tap protection should end after duration expires.", supplier.get());
+    }
+
+    @Test
+    public void testTapProtection_PropertyMutationResetsTapProtection() {
+        MessageBannerMediator.setTapProtectionDurationMsForTesting(500);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, 0, mShownRunnable);
+
+        Supplier<Boolean> supplier =
+                mModel.get(MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER);
+        assertNotNull("Tap protection supplier should be set.", supplier);
+
+        // Advance time so initial tap protection expires.
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        assertFalse("Tap protection should have expired.", supplier.get());
+
+        // Mutating primary button text should restart tap protection.
+        mModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "New Action");
+        assertTrue("Tap protection should be reactivated on button text change.", supplier.get());
+
+        // Advance time partially (300ms < 500ms).
+        ShadowSystemClock.advanceBy(Duration.ofMillis(300));
+        assertTrue("Tap protection should still be active within 500ms window.", supplier.get());
+
+        // Advance time past 500ms.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(300));
+        assertFalse("Tap protection should expire after 500ms from mutation.", supplier.get());
+    }
+
+    @Test
+    public void testTapProtection_ActionAndAppearanceMutationsResetTapProtection() {
+        MessageBannerMediator.setTapProtectionDurationMsForTesting(500);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, 0, mShownRunnable);
+
+        Supplier<Boolean> supplier =
+                mModel.get(MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER);
+        assertNotNull("Tap protection supplier should be set.", supplier);
+
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        assertFalse("Tap protection should have expired.", supplier.get());
+
+        // Mutating title should restart tap protection.
+        mModel.set(MessageBannerProperties.TITLE, "New Title");
+        assertTrue("Tap protection should be reactivated on title change.", supplier.get());
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(600));
+        assertFalse("Tap protection should have expired.", supplier.get());
+
+        // Mutating appearance should restart tap protection.
+        mModel.set(
+                MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                PrimaryWidgetAppearance.PROGRESS_SPINNER);
+        assertTrue("Tap protection should be reactivated on appearance change.", supplier.get());
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(600));
+        assertFalse("Tap protection should have expired.", supplier.get());
+
+        // Mutating primary action callback should restart tap protection.
+        mModel.set(
+                MessageBannerProperties.ON_PRIMARY_ACTION,
+                () -> PrimaryActionClickBehavior.DISMISS_IMMEDIATELY);
+        assertTrue(
+                "Tap protection should be reactivated on primary action change.", supplier.get());
+    }
+
+    @Test
+    public void testTapProtection_NonFrontPositionDoesNotActivateTapProtection() {
+        MessageBannerMediator.setTapProtectionDurationMsForTesting(500);
+        mMediator.show(Position.FRONT, Position.BACK, 0, mShownRunnable);
+
+        // Mutating properties while message is in the back should not activate tap protection.
+        mModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "New Action");
+        Supplier<Boolean> supplier =
+                mModel.get(MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER);
+        if (supplier != null) {
+            assertFalse("Tap protection should not be active when in back.", supplier.get());
+        }
+    }
+
+    @Test
+    public void testAllPropertiesCategorizedForTapProtection() {
+        Set<PropertyKey> resettingKeys =
+                Set.of(MessageBannerProperties.TAP_PROTECTION_RESETTING_KEYS);
+        Set<PropertyKey> nonResettingKeys =
+                Set.of(MessageBannerProperties.NON_TAP_PROTECTION_RESETTING_KEYS);
+
+        // Ensure both sets are disjoint.
+        for (PropertyKey key : resettingKeys) {
+            assertFalse(
+                    "Key should not be in both resetting and non-resetting arrays: " + key,
+                    nonResettingKeys.contains(key));
+        }
+
+        // Ensure ALL_KEYS is fully partitioned into these two arrays.
+        assertEquals(
+                "All keys should be partitioned into resetting and non-resetting arrays.",
+                MessageBannerProperties.ALL_KEYS.length,
+                resettingKeys.size() + nonResettingKeys.size());
+
+        for (PropertyKey key : MessageBannerProperties.ALL_KEYS) {
+            assertTrue(
+                    "Key must be categorized for tap protection in MessageBannerProperties: " + key,
+                    resettingKeys.contains(key) || nonResettingKeys.contains(key));
+        }
+    }
+
+    @Test
+    public void testTapProtection_DestroyRemovesPropertyObserver() {
+        MessageBannerMediator.setTapProtectionDurationMsForTesting(500);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, 0, mShownRunnable);
+
+        Supplier<Boolean> supplier =
+                mModel.get(MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER);
+        assertNotNull("Tap protection supplier should be set.", supplier);
+
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        assertFalse("Tap protection should have expired.", supplier.get());
+
+        // Destroy the mediator to detach property observers.
+        mMediator.destroy();
+
+        // Mutating a property should not reactivate tap protection after destruction.
+        mModel.set(MessageBannerProperties.TITLE, "New Title");
+        assertFalse(
+                "Tap protection should not activate after mediator is destroyed.", supplier.get());
+    }
+
+    @Test
+    public void testTapProtection_NullPropertyKeyNotification() {
+        MessageBannerMediator.setTapProtectionDurationMsForTesting(500);
+        var model =
+                new PropertyModel(MessageBannerProperties.ALL_KEYS) {
+                    void notifyNullPropertyKey() {
+                        notifyPropertyChanged(null);
+                    }
+                };
+        MessageBannerMediator mediator =
+                new MessageBannerMediator(
+                        model,
+                        mTopOffsetSupplier,
+                        mMaxTranslationSupplier,
+                        mResources,
+                        mDismissedRunnable,
+                        mSwipeAnimationHandler);
+        mediator.show(Position.INVISIBLE, Position.FRONT, 0, mShownRunnable);
+
+        Supplier<Boolean> supplier =
+                model.get(MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER);
+        assertNotNull("Tap protection supplier should be set.", supplier);
+
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        assertFalse("Tap protection should have expired.", supplier.get());
+
+        // Notify with a null propertyKey (e.g. bulk update or initial attachment).
+        // This should re-arm tap protection for safety without throwing NullPointerException.
+        model.notifyNullPropertyKey();
+        assertTrue("Tap protection should be reactivated on bulk property update.", supplier.get());
     }
 
     /**

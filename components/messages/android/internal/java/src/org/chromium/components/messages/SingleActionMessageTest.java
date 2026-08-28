@@ -130,6 +130,7 @@ public class SingleActionMessageTest {
                 0,
                 container.getChildCount());
         message.dismiss(DismissReason.UNKNOWN);
+        verify(mMessageBanner).destroy();
         mDismissCallback.waitForOnly("Dismiss callback should be called when message is dismissed");
         Assert.assertTrue(
                 "mMessageDismissed should be true when a message is dismissed.",

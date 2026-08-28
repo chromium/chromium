@@ -223,6 +223,63 @@ public class MessageTest {
         Assert.assertEquals("Not clickable with tap protection period", 0, helper.getCallCount());
         mFakeTimeTestRule.advanceMillis(1500);
         onView(withId(R.id.message_primary_button)).perform(click());
-        helper.waitForNext("Should able to click when tap protection period ends");
+        helper.waitForNext("Should be able to click when tap protection period ends");
+    }
+
+    /** Test that mutating message properties resets the tap protection period. */
+    @Test
+    @SmallTest
+    public void testTapProtection_PropertyMutation() throws TimeoutException {
+        MessagesTestHelper.enableTapProtectionDuration(500);
+        CallbackHelper helper = new CallbackHelper();
+        PropertyModel model =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                        .with(MessageBannerProperties.TITLE, "Test title")
+                                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                                        .with(
+                                                MessageBannerProperties.ON_DISMISSED,
+                                                CallbackUtils.emptyCallback())
+                                        .with(
+                                                MessageBannerProperties.ON_PRIMARY_ACTION,
+                                                () -> {
+                                                    helper.notifyCalled();
+                                                    return PrimaryActionClickBehavior
+                                                            .DO_NOT_DISMISS;
+                                                })
+                                        .build());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageDispatcher.enqueueWindowScopedMessage(model, true);
+                });
+        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
+
+        // Wait for initial tap protection period to end.
+        mFakeTimeTestRule.advanceMillis(1500);
+        onView(withId(R.id.message_primary_button)).perform(click());
+        helper.waitForNext("Should be able to click when initial tap protection period ends");
+        Assert.assertEquals(1, helper.getCallCount());
+
+        // Mutating property should reset tap protection.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "New Action"));
+        onView(withId(R.id.message_primary_button)).perform(click());
+        Assert.assertEquals(
+                "Not clickable immediately after property mutation", 1, helper.getCallCount());
+
+        // Still within tap protection period.
+        mFakeTimeTestRule.advanceMillis(450);
+        onView(withId(R.id.message_primary_button)).perform(click());
+        Assert.assertEquals(
+                "Not clickable within tap protection period after property mutation",
+                1,
+                helper.getCallCount());
+
+        // Advance time past tap protection.
+        mFakeTimeTestRule.advanceMillis(1500);
+        onView(withId(R.id.message_primary_button)).perform(click());
+        helper.waitForNext("Should be able to click after post-mutation tap protection ends");
+        Assert.assertEquals(2, helper.getCallCount());
     }
 }
