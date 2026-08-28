@@ -8,10 +8,12 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/one_time_tokens/core/browser/fetch_user_data_processing_consent_response.pb.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
+#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -143,7 +145,29 @@ TEST_F(UserDataProcessingConsentFetcherTest, FetchTimeout) {
       "access_token", base::Time::Now() + base::Hours(1));
 
   task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_TRUE(future.IsReady());
 
+  std::optional<UserDataProcessingConsentStates> result = future.Get();
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(UserDataProcessingConsentFetcherTest, FetchTimeout_CustomFeatureParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGmailOtpRetrievalService,
+      {{"user_data_processing_consent_fetch_timeout", "1s"}});
+
+  base::test::TestFuture<std::optional<UserDataProcessingConsentStates>> future;
+  fetcher_.Start(future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  task_environment_.FastForwardBy(base::Milliseconds(900));
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(future.IsReady());
   std::optional<UserDataProcessingConsentStates> result = future.Get();
   EXPECT_FALSE(result.has_value());
 }

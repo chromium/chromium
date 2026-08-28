@@ -18,6 +18,7 @@
 #include "components/one_time_tokens/core/browser/fetch_user_data_processing_consent_response.pb.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
+#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -174,7 +175,8 @@ void UserDataProcessingConsentFetcher::StartNetworkRequest(
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
 
-  simple_url_loader_->SetTimeoutDuration(base::Seconds(3));
+  simple_url_loader_->SetTimeoutDuration(
+      features::kUserDataProcessingConsentFetchTimeoutParam.Get());
   simple_url_loader_->SetRetryOptions(
       2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
              network::SimpleURLLoader::RETRY_ON_5XX);

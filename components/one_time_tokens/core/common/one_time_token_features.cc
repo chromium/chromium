@@ -16,4 +16,10 @@ const base::FeatureParam<base::TimeDelta> kGmailOtpSubscriptionPeriodParam{
     &kGmailOtpRetrievalService, /*name=*/"subscription_period",
     /*default_value=*/base::Minutes(1)};
 
+const base::FeatureParam<base::TimeDelta>
+    kUserDataProcessingConsentFetchTimeoutParam{
+        &kGmailOtpRetrievalService,
+        /*name=*/"user_data_processing_consent_fetch_timeout",
+        /*default_value=*/base::Milliseconds(3000)};
+
 }  // namespace one_time_tokens::features
