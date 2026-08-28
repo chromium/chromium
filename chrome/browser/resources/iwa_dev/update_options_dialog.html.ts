@@ -19,8 +19,7 @@ export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
           class="dropdown-select"
           .value="${this.selectedChannel_}"
           @input="${this.onChannelInput_}"
-          ?disabled="${this.isFetching_}"
-          placeholder="${this.getChannelPlaceholder_()}">
+          placeholder="Select or enter channel">
       <datalist id="channelList">
         ${this.channels_.map(item => html`
           <option value="${item.channel}">
@@ -39,15 +38,13 @@ export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
             class="dropdown-select"
             .value="${this.selectedPinnedVersion_}"
             @input="${this.onPinnedVersionInput_}"
-            ?disabled="${this.isFetching_}"
-            placeholder="${this.getVersionPlaceholder_()}">
+            placeholder="Select or enter version">
         ${this.selectedPinnedVersion_ ? html`
           <cr-icon-button id="clearPinnedVersionButton"
               iron-icon="cr:close"
               title="Clear pinned version"
               aria-label="Clear pinned version"
-              ?disabled="${this.isFetching_}"
-              @click="${this.onClearPinnedVersionClick_}">
+                  @click="${this.onClearPinnedVersionClick_}">
           </cr-icon-button>
         ` : ''}
       </div>
@@ -64,8 +61,7 @@ export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
       <cr-toggle id="allowDowngradesToggle"
           aria-labelledby="allowDowngradesLabel"
           ?checked="${this.selectedAllowDowngrades_}"
-          @change="${this.onAllowDowngradesChange_}"
-          ?disabled="${this.isFetching_}">
+          @change="${this.onAllowDowngradesChange_}">
       </cr-toggle>
     </div>
     ${this.fetchError_ ? html`

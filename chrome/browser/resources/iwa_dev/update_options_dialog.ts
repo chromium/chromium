@@ -51,7 +51,6 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
       app: {type: Object},
       currentPinnedVersion: {type: String},
       currentAllowDowngrades: {type: Boolean},
-      isFetching_: {type: Boolean, state: true},
       fetchError_: {type: String, state: true},
       channels_: {type: Array, state: true},
       selectedChannel_: {type: String, state: true},
@@ -72,7 +71,6 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   accessor currentPinnedVersion: string|null = null;
   accessor currentAllowDowngrades: boolean = false;
 
-  protected accessor isFetching_: boolean = true;
   protected accessor fetchError_: string = '';
   protected accessor channels_: ChannelMetadata[] = [];
   protected accessor selectedChannel_: string = '';
@@ -121,18 +119,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     return this.currentPinnedVersion;
   }
 
-  protected getChannelPlaceholder_(): string {
-    return this.isFetching_ ? 'Loading channels...' : 'Select or enter channel';
-  }
-
-  protected getVersionPlaceholder_(): string {
-    return this.isFetching_ ? 'Loading versions...' : 'Select or enter version';
-  }
-
   protected isSaveDisabled_(): boolean {
-    if (this.isFetching_) {
-      return true;
-    }
     return !this.hasChannelChange_() && !this.hasPinnedVersionChange_() &&
         !this.hasAllowDowngradesChange_();
   }
@@ -162,7 +149,6 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   }
 
   private fetchManifest_(url: string) {
-    this.isFetching_ = true;
     this.fetchError_ = '';
     this.fire('request-parse-update-manifest-from-url', {
       url,
@@ -170,7 +156,6 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
         if (!this.$.dialog.open) {
           return;
         }
-        this.isFetching_ = false;
         if (result.error) {
           this.fetchError_ =
               'Failed to fetch suggestions from update manifest.';

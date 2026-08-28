@@ -390,20 +390,6 @@ suite('<iwa-dev-update-options-dialog>', () => {
     assertFalse(!!dialog.shadowRoot.querySelector('#clearPinnedVersionButton'));
   });
 
-  test(
-      'disables clear pinned version button while fetching manifest',
-      async () => {
-        const callback = await createDialog(createAppInfo('default'), '1.0.0');
-        const clearButton = dialog.shadowRoot.querySelector<HTMLElement>(
-            '#clearPinnedVersionButton');
-        assertTrue(!!clearButton);
-        assertTrue(clearButton.hasAttribute('disabled'));
-
-        callback({success: {versions: [], channels: []}});
-        await microtasksFinished();
-        assertFalse(clearButton.hasAttribute('disabled'));
-      });
-
   test('closes dialog on cancel click', async () => {
     await openDialog();
 
@@ -420,37 +406,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
   });
 
   test('shows appropriate placeholder text', async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    dialog = document.createElement('iwa-dev-update-options-dialog');
-    dialog.app = createAppInfo('default');
-
-    const manifestRequestPromise =
-        eventToPromise('request-parse-update-manifest-from-url', dialog);
-    document.body.appendChild(dialog);
-    await microtasksFinished();
-
-    channelInput =
-        dialog.shadowRoot.querySelector<HTMLInputElement>('#channelInput')!;
-    pinnedVersionInput = dialog.shadowRoot.querySelector<HTMLInputElement>(
-        '#pinnedVersionInput')!;
-
-    assertEquals('Loading channels...', channelInput.placeholder);
-    assertEquals('Loading versions...', pinnedVersionInput.placeholder);
-
-    const event =
-        await manifestRequestPromise as CustomEvent<{
-          url: string,
-          callback: (result: {success?: UpdateManifest, error?: string}) =>
-              void,
-        }>;
-    event.detail.callback({
-      success: {
-        versions: [],
-        channels: [{channel: 'default', displayName: 'Default'}],
-      },
-    });
-    await microtasksFinished();
-
+    await openDialog();
     assertEquals('Select or enter channel', channelInput.placeholder);
     assertEquals('Select or enter version', pinnedVersionInput.placeholder);
   });
