@@ -148,13 +148,15 @@ void QuicSessionPool::EndpointConnector::OnAttemptComplete(int rv) {
   attempt_in_flight_ = false;
   if (rv != OK) {
     RecordAttemptFailure(rv);
-    std::optional<int> result = TryAdvance();
-    if (result == ERR_IO_PENDING) {
-      return;
+    if (rv != ERR_ABORTED) {
+      std::optional<int> result = TryAdvance();
+      if (result == ERR_IO_PENDING) {
+        return;
+      }
+      // Nothing else could be attempted. Report the most recent failure so
+      // the job can fail or keep waiting for more DNS results.
+      rv = result.value_or(*last_attempt_error_);
     }
-    // Nothing else could be attempted. Report the most recent failure so
-    // the job can fail or keep waiting for more DNS results.
-    rv = result.value_or(*last_attempt_error_);
   }
   job_->OnConnectorComplete(rv, *this);
 }

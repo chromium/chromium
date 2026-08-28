@@ -3931,4 +3931,41 @@ TEST_P(QuicSessionPoolAsyncDnsJobStaticTimerTest, UsesStaticTimer) {
   ipv4_data.ExpectAllWriteDataConsumed();
 }
 
+// Verifies that destroying the pool while an attempt is in flight with
+// multiple endpoints does not advance to next candidates and safely cleans up.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       DestroyPoolWhileAttemptInFlightWithMultipleEndpoints) {
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "192.168.0.1,192.168.0.2", "");
+  Initialize();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_INITIAL);
+  socket_data1.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(1)
+          .AddConnectionCloseFrame(quic::QUIC_CONNECTION_CANCELLED, "net error")
+          .AddPaddingFrame()
+          .Build());
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  {
+    RequestBuilder builder(this);
+    EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+  }
+
+  pool_.reset();
+}
+
 }  // namespace net::test
