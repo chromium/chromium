@@ -387,8 +387,10 @@ void SlowlyTypeText(NSString* text) {
             (testPasswordSuggestionsSubtext_ConditionalPasskeyLoginEnabled)]) {
     config.features_enabled.push_back(kIOSPasskeyShim);
     config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
+  } else {
+    config.features_disabled.push_back(kIOSPasskeyConditionalLoginWithShim);
   }
-
+  config.features_disabled.push_back(kIOSPasskeyModalLoginWithShim);
 
   return config;
 }

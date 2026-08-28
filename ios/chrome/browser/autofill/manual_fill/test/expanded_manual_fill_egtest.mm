@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -250,6 +251,9 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  config.features_disabled.push_back(kIOSPasskeyConditionalLoginWithShim);
+  config.features_disabled.push_back(kIOSPasskeyModalLoginWithShim);
 
   return config;
 }
