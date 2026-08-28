@@ -495,7 +495,8 @@ import java.util.function.Supplier;
         if (!isInInputSession()) {
             targetState = FuseboxState.DISABLED;
         } else if (mInput.getAutocompleteState() == AutocompleteState.STANDBY_NO_FOCUS
-                || mInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS) {
+                || mInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS
+                || mInput.getDisplayState() == DisplayState.DRAFTING) {
             targetState = FuseboxState.DISABLED;
         } else {
             boolean isPopover =

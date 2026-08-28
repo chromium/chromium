@@ -639,6 +639,23 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void updateFuseboxState_drafting_isDisabled() {
+        mInput.setDisplayState(DisplayState.DRAFTING);
+        recreateMediator();
+
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+    }
+
+    @Test
+    public void updateFuseboxState_aiMode_drafting_isDisabled() {
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mInput.setDisplayState(DisplayState.DRAFTING);
+        recreateMediator();
+
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+    }
+
+    @Test
     public void updateFuseboxState_setsRequestTypeButtonVisible_true() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
