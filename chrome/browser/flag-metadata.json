@@ -4111,7 +4111,12 @@
     "owners": [ "mercerd@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 140
   },
-    {
+  {
+    "name": "enable-lens-overlay-virtual-focus",
+    "owners": [ "adamyao@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-lens-search-aim-m3",
     "owners": [ "mercerd@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 142
@@ -4239,6 +4244,16 @@
   {
     "name": "enable-oauth-multilogin-youtube-cookies-binding",
     "owners": [ "alexilin@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "enable-omnibox-everywhere-virtual-focus",
+    "owners": [ "adamyao@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "enable-omnibox-popup-virtual-focus",
+    "owners": [ "adamyao@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160
   },
   {
@@ -4734,6 +4749,11 @@
     "name": "enable-webrtc-use-min-max-vea-dimensions",
     "owners": [ "mcasas@chromium.org", "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 88
+  },
+  {
+    "name": "enable-webui-browser-virtual-focus",
+    "owners": [ "adamyao@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-webusb-device-detection",

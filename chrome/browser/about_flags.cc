@@ -7362,6 +7362,30 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRealboxVirtualFocusNavigationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRealboxVirtualFocusNavigation)},
 
+    {"enable-omnibox-popup-virtual-focus",
+     flag_descriptions::kOmniboxPopupVirtualFocusNavigationName,
+     flag_descriptions::kOmniboxPopupVirtualFocusNavigationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kOmniboxPopupVirtualFocusNavigation)},
+
+    {"enable-lens-overlay-virtual-focus",
+     flag_descriptions::kLensOverlayVirtualFocusNavigationName,
+     flag_descriptions::kLensOverlayVirtualFocusNavigationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kLensOverlayVirtualFocusNavigation)},
+
+    {"enable-omnibox-everywhere-virtual-focus",
+     flag_descriptions::kOmniboxEverywhereVirtualFocusNavigationName,
+     flag_descriptions::kOmniboxEverywhereVirtualFocusNavigationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kOmniboxEverywhereVirtualFocusNavigation)},
+
+    {"enable-webui-browser-virtual-focus",
+     flag_descriptions::kWebuiBrowserVirtualFocusNavigationName,
+     flag_descriptions::kWebuiBrowserVirtualFocusNavigationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebuiBrowserVirtualFocusNavigation)},
+
     {"ntp-next-features", flag_descriptions::kNtpNextFeaturesName,
      flag_descriptions::kNtpNextFeaturesDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpNextFeatures,

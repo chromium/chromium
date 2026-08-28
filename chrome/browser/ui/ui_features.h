@@ -177,6 +177,10 @@ BASE_DECLARE_FEATURE(kProcessIsolationSettings);
 #endif  // BUILDFLAG(IS_WIN)
 
 BASE_DECLARE_FEATURE(kRealboxVirtualFocusNavigation);
+BASE_DECLARE_FEATURE(kOmniboxPopupVirtualFocusNavigation);
+BASE_DECLARE_FEATURE(kLensOverlayVirtualFocusNavigation);
+BASE_DECLARE_FEATURE(kOmniboxEverywhereVirtualFocusNavigation);
+BASE_DECLARE_FEATURE(kWebuiBrowserVirtualFocusNavigation);
 
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kShowDropTargetForTabDelay);
 

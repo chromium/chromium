@@ -8113,6 +8113,8 @@ from previous Chrome versions.
   <int value="-2041180857" label="DevToolsMobileSafeAreaEmulation:enabled"/>
   <int value="-2041091005" label="OmniboxDomainSuggestions:enabled"/>
   <int value="-2040899483" label="TabGroupParityAndroid:disabled"/>
+  <int value="-2040788343"
+      label="OmniboxEverywhereVirtualFocusNavigation:enabled"/>
   <int value="-2040695258" label="WebUIOmniboxFullPopup:disabled"/>
   <int value="-2040471724" label="CrOSComponent:disabled"/>
   <int value="-2040360427" label="DesktopScreenshots:disabled"/>
@@ -9013,6 +9015,7 @@ from previous Chrome versions.
   <int value="-1771552112" label="QueryTilesInOmnibox:disabled"/>
   <int value="-1769585756" label="LoadAllTabsAtStartup:enabled"/>
   <int value="-1769361050" label="DynamicSafeAreaInsetsSupportedByCC:disabled"/>
+  <int value="-1769111062" label="WebuiBrowserVirtualFocusNavigation:disabled"/>
   <int value="-1768672408" label="ChromeDuplex:disabled"/>
   <int value="-1768308156" label="OmniboxDedupeGoogleDriveURLs:enabled"/>
   <int value="-1767470652" label="out-of-process-pdf"/>
@@ -14600,6 +14603,7 @@ from previous Chrome versions.
   <int value="-38088645"
       label="ReadClipboardDataOnClipboardItemGetType:enabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
+  <int value="-37159249" label="OmniboxPopupVirtualFocusNavigation:enabled"/>
   <int value="-36671802"
       label="ApplyClientsideModelPredictionsForOtps:disabled"/>
   <int value="-36550471" label="HTMLPopoverAttribute:enabled"/>
@@ -16227,6 +16231,7 @@ from previous Chrome versions.
   <int value="466248382" label="disable-push-api-background-mode"/>
   <int value="466421847" label="WebuiRefresh2026:enabled"/>
   <int value="467078443" label="FwupdDeveloperMode:disabled"/>
+  <int value="467291749" label="LensOverlayVirtualFocusNavigation:disabled"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>
   <int value="468901900" label="AppStoreBillingDebug:disabled"/>
   <int value="468959230"
@@ -17372,6 +17377,7 @@ from previous Chrome versions.
   <int value="820645399"
       label="ConsolidateMetricsServiceInitialLogLogic:enabled"/>
   <int value="820650704" label="disable-ntp-popular-sites"/>
+  <int value="820917854" label="OmniboxPopupVirtualFocusNavigation:disabled"/>
   <int value="821192723" label="show-fps-counter"/>
   <int value="821819319" label="NavBarColorAnimation:enabled"/>
   <int value="821831159" label="LensSearchReinvocationAffordance:enabled"/>
@@ -21237,6 +21243,8 @@ from previous Chrome versions.
   <int value="2015542544"
       label="IsolatedWebAppManagedGuestSessionInstall:disabled"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
+  <int value="2016461113"
+      label="OmniboxEverywhereVirtualFocusNavigation:disabled"/>
   <int value="2017283500" label="DragDropTabTearingEnableOEM:disabled"/>
   <int value="2017591110" label="ApproximateGeolocationPermission:enabled"/>
   <int value="2017916099"
@@ -21319,6 +21327,7 @@ from previous Chrome versions.
   <int value="2047503404" label="FilesSWA:enabled"/>
   <int value="2047636405" label="MemorySaverModeAggressiveness:disabled"/>
   <int value="2047695652" label="DelegateOverscrollSwipes:enabled"/>
+  <int value="2048974996" label="LensOverlayVirtualFocusNavigation:enabled"/>
   <int value="2049432745" label="VaapiWebPImageDecodeAcceleration:enabled"/>
   <int value="2049513703" label="HeadlessTabModel:disabled"/>
   <int value="2049674680" label="EnableAutomaticSnooze:enabled"/>
@@ -21600,6 +21609,7 @@ from previous Chrome versions.
   <int value="2133647636" label="ClipboardFilenames:disabled"/>
   <int value="2133657265"
       label="AISummarizationPerformancePreference:disabled"/>
+  <int value="2134193662" label="WebuiBrowserVirtualFocusNavigation:enabled"/>
   <int value="2134480727" label="MediaSessionAccelerators:disabled"/>
   <int value="2135059376" label="WiFiDirect:enabled"/>
   <int value="2135408204" label="OverscrollHistoryNavigation:disabled"/>

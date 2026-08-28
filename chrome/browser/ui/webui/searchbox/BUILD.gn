@@ -262,6 +262,7 @@ source_set("unit_tests") {
     deps += [
       ":searchbox",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/omnibox:test_support",
       "//chrome/browser/ui/webui/cr_components/searchbox",

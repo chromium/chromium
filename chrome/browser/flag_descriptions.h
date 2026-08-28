@@ -6955,6 +6955,28 @@ inline constexpr char kRealboxVirtualFocusNavigationDescription[] =
     "from the searchbox, unifying behavior with the Omnibox and improving "
     "accessibility.";
 
+inline constexpr char kOmniboxPopupVirtualFocusNavigationName[] =
+    "Enable WebUI Omnibox Popup Virtual Focus Navigation";
+inline constexpr char kOmniboxPopupVirtualFocusNavigationDescription[] =
+    "Enables virtual focus keyboard navigation within the WebUI Omnibox Popup.";
+
+inline constexpr char kLensOverlayVirtualFocusNavigationName[] =
+    "Enable Lens Overlay Virtual Focus Navigation";
+inline constexpr char kLensOverlayVirtualFocusNavigationDescription[] =
+    "Enables virtual focus keyboard navigation within the Lens Overlay "
+    "searchbox.";
+
+inline constexpr char kOmniboxEverywhereVirtualFocusNavigationName[] =
+    "Enable Omnibox Everywhere Virtual Focus Navigation";
+inline constexpr char kOmniboxEverywhereVirtualFocusNavigationDescription[] =
+    "Enables virtual focus keyboard navigation within Omnibox Everywhere.";
+
+inline constexpr char kWebuiBrowserVirtualFocusNavigationName[] =
+    "Enable WebUI Browser Virtual Focus Navigation";
+inline constexpr char kWebuiBrowserVirtualFocusNavigationDescription[] =
+    "Enables virtual focus keyboard navigation within the WebUI Browser "
+    "searchbox.";
+
 inline constexpr char kMarkAllCredentialsAsLeakedName[] =
     "Mark all credential as leaked";
 inline constexpr char kMarkAllCredentialsAsLeakedDescription[] =

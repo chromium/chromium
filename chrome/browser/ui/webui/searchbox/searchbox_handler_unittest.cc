@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -177,6 +178,38 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsDragAndDrop) {
 TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVoiceWaiting) {
   base::DictValue strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
   EXPECT_NE(nullptr, strings.Find("voiceWaiting"));
+}
+
+TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVirtualFocusFlags) {
+  // 1. Default state: flags disabled.
+  {
+    base::DictValue strings =
+        SearchboxHandler::GetWebUIDataSourceDict(profile());
+    EXPECT_FALSE(*strings.FindBool("realboxVirtualFocusNavigation"));
+    EXPECT_FALSE(*strings.FindBool("omniboxPopupVirtualFocusNavigation"));
+    EXPECT_FALSE(*strings.FindBool("lensOverlayVirtualFocusNavigation"));
+    EXPECT_FALSE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
+    EXPECT_FALSE(*strings.FindBool("webuiBrowserVirtualFocusNavigation"));
+  }
+
+  // 2. Flags enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {features::kRealboxVirtualFocusNavigation,
+         features::kOmniboxPopupVirtualFocusNavigation,
+         features::kLensOverlayVirtualFocusNavigation,
+         features::kOmniboxEverywhereVirtualFocusNavigation,
+         features::kWebuiBrowserVirtualFocusNavigation},
+        {});
+    base::DictValue strings =
+        SearchboxHandler::GetWebUIDataSourceDict(profile());
+    EXPECT_TRUE(*strings.FindBool("realboxVirtualFocusNavigation"));
+    EXPECT_TRUE(*strings.FindBool("omniboxPopupVirtualFocusNavigation"));
+    EXPECT_TRUE(*strings.FindBool("lensOverlayVirtualFocusNavigation"));
+    EXPECT_TRUE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
+    EXPECT_TRUE(*strings.FindBool("webuiBrowserVirtualFocusNavigation"));
+  }
 }
 
 TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictLensSearchHint) {

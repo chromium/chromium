@@ -512,6 +512,18 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set(
       "realboxVirtualFocusNavigation",
       base::FeatureList::IsEnabled(features::kRealboxVirtualFocusNavigation));
+  dict.Set("omniboxPopupVirtualFocusNavigation",
+           base::FeatureList::IsEnabled(
+               features::kOmniboxPopupVirtualFocusNavigation));
+  dict.Set("lensOverlayVirtualFocusNavigation",
+           base::FeatureList::IsEnabled(
+               features::kLensOverlayVirtualFocusNavigation));
+  dict.Set("omniboxEverywhereVirtualFocusNavigation",
+           base::FeatureList::IsEnabled(
+               features::kOmniboxEverywhereVirtualFocusNavigation));
+  dict.Set("webuiBrowserVirtualFocusNavigation",
+           base::FeatureList::IsEnabled(
+               features::kWebuiBrowserVirtualFocusNavigation));
 
   int max_files = omnibox::kDefaultMaxTotalInputs;
   int max_images = max_files;
