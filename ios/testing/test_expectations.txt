@@ -111,3 +111,4 @@ crbug.com/553554439 [ iOS26.5 iPad Simulator ] ReadingListTestCase/testMarkMixed
 crbug.com/553941600 [ Device ] SafeBrowsingTestCase/testClientSideDetectionRuns [ Pass Failure ]
 crbug.com/553941600 [ Device ] SafeBrowsingTestCase/testPageWithUnsafeIframeSkipSubresources [ Pass Failure ]
 crbug.com/553941600 [ Device ] SafeBrowsingTestCase/testRestoreToWarningPagePreservesHistory [ Pass Failure ]
+crbug.com/554049961 GeminiMultiTabTestCase/testActiveTabNotBlockedOnTabGridWhenSharedTabExists [ Pass Failure ]
