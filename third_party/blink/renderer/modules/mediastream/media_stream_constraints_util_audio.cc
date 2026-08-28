@@ -529,8 +529,10 @@ class EchoCancellationContainer {
   }
 
   std::tuple<Score, EchoCancellationMode> SelectSettingsAndScore(
-      const ConstraintSet& constraint_set) const {
-    EchoCancellationMode selected_ec_mode = SelectBestEcMode(constraint_set);
+      const ConstraintSet& constraint_set,
+      bool exclude_remote_only) const {
+    EchoCancellationMode selected_ec_mode =
+        SelectBestEcMode(constraint_set, exclude_remote_only);
     double fitness =
         Fitness(selected_ec_mode, constraint_set.echo_cancellation);
     Score score(fitness);
@@ -539,6 +541,21 @@ class EchoCancellationContainer {
   }
 
   bool IsEmpty() const { return ec_allowed_values_.IsEmpty(); }
+
+  bool IsStrictlyRemoteOnly() const {
+    return ec_allowed_values_.Contains(EchoCancellationMode::kRemoteOnly) &&
+           !ec_allowed_values_.Contains(
+               EchoCancellationMode::kBrowserDecides) &&
+           !ec_allowed_values_.Contains(EchoCancellationMode::kAll) &&
+           !ec_allowed_values_.Contains(EchoCancellationMode::kDisabled);
+  }
+
+  void ExcludeRemoteOnly() {
+    ec_allowed_values_ =
+        ec_allowed_values_.Intersection(EchoCancellationModeSet(
+            {EchoCancellationMode::kBrowserDecides, EchoCancellationMode::kAll,
+             EchoCancellationMode::kDisabled}));
+  }
 
   // Audio-processing properties are disabled by default for content capture,
   // or if the |echo_cancellation| constraint is false.
@@ -586,49 +603,54 @@ class EchoCancellationContainer {
     }
   }
 
-  EchoCancellationMode SelectBestEcMode(
-      const ConstraintSet& constraint_set) const {
+  EchoCancellationMode SelectBestEcMode(const ConstraintSet& constraint_set,
+                                        bool exclude_remote_only) const {
     CHECK(!IsEmpty());
+    EchoCancellationModeSet candidates = ec_allowed_values_;
+    if (exclude_remote_only) {
+      candidates = candidates.Intersection(EchoCancellationModeSet(
+          {EchoCancellationMode::kBrowserDecides, EchoCancellationMode::kAll,
+           EchoCancellationMode::kDisabled}));
+    }
+    CHECK(!candidates.IsEmpty());
 
     // Try to use an ideal candidate, if supplied.
     std::optional<EchoCancellationMode> ideal_mode =
         IdealEchoCancellationModeFromConstraint(
             constraint_set.echo_cancellation, api_);
-    if (ideal_mode && ec_allowed_values_.Contains(*ideal_mode)) {
+    if (ideal_mode && candidates.Contains(*ideal_mode)) {
       return *ideal_mode;
     }
 
     // If no ideal could be selected and the set contains only one value, pick
     // that one.
-    if (ec_allowed_values_.elements().size() == 1) {
-      return ec_allowed_values_.FirstElement();
+    if (candidates.elements().size() == 1) {
+      return candidates.FirstElement();
     }
 
     switch (api_) {
       case AudioCaptureApi::kGumMicrophone:
       case AudioCaptureApi::kOther:
-        if (ec_allowed_values_.Contains(
-                EchoCancellationMode::kBrowserDecides)) {
+        if (candidates.Contains(EchoCancellationMode::kBrowserDecides)) {
           return EchoCancellationMode::kBrowserDecides;
         }
         if (RuntimeEnabledFeatures::
                 GetUserMediaEchoCancellationModesEnabled()) {
-          if (ec_allowed_values_.Contains(EchoCancellationMode::kAll)) {
+          if (candidates.Contains(EchoCancellationMode::kAll)) {
             return EchoCancellationMode::kAll;
           }
-          if (ec_allowed_values_.Contains(EchoCancellationMode::kRemoteOnly)) {
+          if (candidates.Contains(EchoCancellationMode::kRemoteOnly)) {
             return EchoCancellationMode::kRemoteOnly;
           }
         }
-        CHECK(ec_allowed_values_.Contains(EchoCancellationMode::kDisabled));
+        CHECK(candidates.Contains(EchoCancellationMode::kDisabled));
         return EchoCancellationMode::kDisabled;
 
       case AudioCaptureApi::kExtensionScreenShare:
-        if (ec_allowed_values_.Contains(EchoCancellationMode::kDisabled)) {
+        if (candidates.Contains(EchoCancellationMode::kDisabled)) {
           return EchoCancellationMode::kDisabled;
         }
-        CHECK(
-            ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides));
+        CHECK(candidates.Contains(EchoCancellationMode::kBrowserDecides));
         return EchoCancellationMode::kBrowserDecides;
     }
   }
@@ -743,6 +765,14 @@ class VoiceIsolationContainer {
   }
 
   bool IsEmpty() const { return allowed_values_.IsEmpty(); }
+
+  bool IsStrictlyEnabled() const {
+    return allowed_values_.Contains(true) && !allowed_values_.Contains(false);
+  }
+
+  void ExcludeEnabled() {
+    allowed_values_ = allowed_values_.Intersection(BoolSet({false}));
+  }
 
  private:
   BoolSet allowed_values_;
@@ -879,6 +909,23 @@ class ProcessingBasedContainer {
       return failed_constraint_name;
     }
 
+    // Cross-constraint validation and pruning: Voice Isolation (Audio Service)
+    // and Remote-Only Echo Cancellation (Renderer) cannot run concurrently.
+    // Prune mutually exclusive values and fail if any set becomes empty (see
+    // constraint matrix in SelectSettingsAndScore).
+    if (echo_cancellation_container_.IsStrictlyRemoteOnly()) {
+      voice_isolation_container_.ExcludeEnabled();
+      if (voice_isolation_container_.IsEmpty()) {
+        return constraint_set.voice_isolation.GetName();
+      }
+    }
+    if (voice_isolation_container_.IsStrictlyEnabled()) {
+      echo_cancellation_container_.ExcludeRemoteOnly();
+      if (echo_cancellation_container_.IsEmpty()) {
+        return constraint_set.echo_cancellation.GetName();
+      }
+    }
+
     failed_constraint_name =
         sample_size_container_.ApplyConstraintSet(constraint_set.sample_size);
     if (failed_constraint_name) {
@@ -961,10 +1008,6 @@ class ProcessingBasedContainer {
     }
 
     AudioProcessingProperties properties;
-    Score ec_score(0.0);
-    std::tie(ec_score, properties.echo_cancellation_mode) =
-        echo_cancellation_container_.SelectSettingsAndScore(constraint_set);
-    score += ec_score;
 
     // Update the default settings for each audio-processing properties
     // according to |echo_cancellation| and whether the source considered is
@@ -972,20 +1015,68 @@ class ProcessingBasedContainer {
     echo_cancellation_container_.UpdateDefaultValues(
         constraint_set.echo_cancellation, &properties);
 
-    std::tie(sub_score, properties.auto_gain_control) =
-        auto_gain_control_container_.SelectSettingsAndScore(
-            constraint_set, properties.auto_gain_control);
-    score += sub_score;
+    // ApplyConstraintSet guarantees that contradictory exact constraints were
+    // eliminated before reaching scoring.
+    if (voice_isolation_container_.IsStrictlyEnabled()) {
+      CHECK(!echo_cancellation_container_.IsStrictlyRemoteOnly());
+    }
+    if (echo_cancellation_container_.IsStrictlyRemoteOnly()) {
+      CHECK(!voice_isolation_container_.IsStrictlyEnabled());
+    }
 
+    // Voice Isolation requires ML processing in the Audio Service, whereas
+    // Remote-Only Echo Cancellation requires WebRTC playout reference audio
+    // available only in the Renderer process. Since APM cannot execute in both
+    // processes simultaneously, their combination is resolved as follows:
+    //
+    // 1. exact VI=true + exact AEC="remote-only":
+    //    Rejected with OverconstrainedError (handled in ApplyConstraintSet).
+    // 2. exact VI=true + ideal AEC="remote-only":
+    //    VI is enabled; "remote-only" AEC is excluded and relaxes to
+    //    kBrowserDecides.
+    // 3. ideal VI=true + exact AEC="remote-only":
+    //    AEC is "remote-only"; VI is forced to kVoiceIsolationDisabled.
+    // 4. ideal VI=true + ideal AEC="remote-only":
+    //    VI takes precedence and enables; AEC relaxes to kBrowserDecides.
+    // 5. exact/ideal VI=false + ideal AEC="remote-only":
+    //    VI remains disabled; "remote-only" AEC is selected.
+    // 6. VI=true + AEC="all" or AEC=false:
+    //    Both are satisfied (both run in the Audio Service).
+
+    // Voice Isolation runs in Audio Service and cannot run concurrently with
+    // Remote-Only Echo Cancellation (Renderer). Select Voice Isolation first.
     std::tie(sub_score, properties.voice_isolation) =
         voice_isolation_container_.SelectSettingsAndScore(
             constraint_set, properties.voice_isolation);
+    score += sub_score;
+
+    // If Voice Isolation is enabled, exclude Remote-Only Echo Cancellation.
+    bool exclude_remote_only =
+        (properties.voice_isolation ==
+         AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+    Score ec_score(0.0);
+    std::tie(ec_score, properties.echo_cancellation_mode) =
+        echo_cancellation_container_.SelectSettingsAndScore(
+            constraint_set, exclude_remote_only);
+    score += ec_score;
+
+    std::tie(sub_score, properties.auto_gain_control) =
+        auto_gain_control_container_.SelectSettingsAndScore(
+            constraint_set, properties.auto_gain_control);
     score += sub_score;
 
     std::tie(sub_score, properties.noise_suppression) =
         noise_suppression_container_.SelectSettingsAndScore(
             constraint_set.noise_suppression, properties.noise_suppression);
     score += sub_score;
+
+    // Voice Isolation and Remote-Only AEC cannot execute concurrently.
+    CHECK(!(properties.voice_isolation ==
+                AudioProcessingProperties::VoiceIsolationType::
+                    kVoiceIsolationEnabled &&
+            properties.echo_cancellation_mode ==
+                EchoCancellationMode::kRemoteOnly));
 
     score.set_processing_priority(
         GetProcessingPriority(constraint_set.echo_cancellation));
@@ -996,7 +1087,8 @@ class ProcessingBasedContainer {
   // The ProcessingBasedContainer is considered empty if at least one of the
   // containers owned by it is empty.
   bool IsEmpty() const {
-    return echo_cancellation_container_.IsEmpty() ||
+    return voice_isolation_container_.IsEmpty() ||
+           echo_cancellation_container_.IsEmpty() ||
            auto_gain_control_container_.IsEmpty() ||
            noise_suppression_container_.IsEmpty() ||
            sample_size_container_.IsEmpty() || channels_container_.IsEmpty() ||
