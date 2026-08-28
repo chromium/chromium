@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import unittest
+import uuid
 
 import PRESUBMIT
 
@@ -101,8 +102,12 @@ class MockFile(object):
 
 class LintWPTTest(unittest.TestCase):
     def setUp(self):
-        self._test_file = os.path.join(os.path.dirname(__file__), 'wpt', '_DO_NOT_SUBMIT_.html')
-        self._ignored_directory = os.path.join(os.path.dirname(__file__), 'wpt', 'css', '_DNS_')
+        self._test_file = os.path.join(
+            os.path.dirname(__file__), 'wpt',
+            '_DO_NOT_SUBMIT_%s_.html' % uuid.uuid4().hex)
+        self._ignored_directory = os.path.join(os.path.dirname(__file__),
+                                               'wpt', 'css',
+                                               '_DNS_%s_' % uuid.uuid4().hex)
 
     def tearDown(self):
         if os.path.exists(self._test_file):
