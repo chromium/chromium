@@ -486,8 +486,19 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
   base::WeakPtrFactory<RenderProcessHostIsReadyObserver> weak_factory_{this};
 };
 
+// Context in which process reuse eligibility is being checked.
+enum class ProcessReuseContext {
+  // Evaluated during actual process allocation/reuse for navigation.
+  kProcessAllocation,
+  // Evaluated during warm process queries (e.g., checking if a warm process
+  // exists for SiteInstance swap decisions) where side-effects like UMA logging
+  // should be avoided.
+  kWarmProcessQuery,
+};
+
 bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
-                                        size_t main_frame_count) {
+                                        size_t main_frame_count,
+                                        ProcessReuseContext context) {
   // Grab the current memory footprint and determine if we can fit the size
   // of another main frame into the memory space that is set as an upper limit.
   //
@@ -544,11 +555,10 @@ bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
     return true;
   }
 
-  // Only log the histogram once per RenderProcessHost. Since the
-  // RenderProcessHost can enter and exit this condition because of the dynamic
-  // nature of memory allocation we don't want to over-record it so we only
-  // record it on the first time we determine we are over the limit.
-  if (!host->GetUserData(kProcessPerSiteUmaLoggedKey)) {
+  // Only log the histogram once per RenderProcessHost during actual allocation.
+  // Speculative queries should not trigger UMA side-effects.
+  if (context == ProcessReuseContext::kProcessAllocation &&
+      !host->GetUserData(kProcessPerSiteUmaLoggedKey)) {
     base::UmaHistogramCounts1000(
         "BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit",
         main_frame_count);
@@ -559,7 +569,8 @@ bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
 }
 
 bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
-                                    ProcessReusePolicy process_reuse_policy) {
+                                    ProcessReusePolicy process_reuse_policy,
+                                    ProcessReuseContext context) {
   if (process_reuse_policy !=
           ProcessReusePolicy::
               kReusePendingOrCommittedSiteWithMainFrameThreshold &&
@@ -606,7 +617,7 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
       return false;
     }
 
-    return HasEnoughMemoryForAnotherMainFrame(host, main_frame_count);
+    return HasEnoughMemoryForAnotherMainFrame(host, main_frame_count, context);
   }
 
   CHECK_EQ(process_reuse_policy,
@@ -770,7 +781,8 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
       if (!IsEligibleForProcessReuse(host, site_instance->GetIsolationContext(),
                                      site_instance->GetSiteInfo(),
-                                     process_reuse_policy)) {
+                                     process_reuse_policy,
+                                     ProcessReuseContext::kProcessAllocation)) {
         continue;
       }
 
@@ -807,7 +819,8 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       if (host->GetProcessLock().IsLockedToSite() &&
           host->GetProcessLock() == ProcessLock::FromSiteInfo(site_info) &&
           IsEligibleForProcessReuse(host, isolation_context, site_info,
-                                    process_reuse_policy)) {
+                                    process_reuse_policy,
+                                    ProcessReuseContext::kWarmProcessQuery)) {
         return true;
       }
     }
@@ -912,7 +925,8 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       RenderProcessHost* host,
       const IsolationContext& isolation_context,
       const SiteInfo& site_info,
-      ProcessReusePolicy process_reuse_policy) {
+      ProcessReusePolicy process_reuse_policy,
+      ProcessReuseContext context) {
     // It's possible that |host| has become unsuitable for hosting
     // |site_info|, for example if it was reused by a navigation to a
     // different site, and |site_info| requires a dedicated process. Do
@@ -923,7 +937,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
     }
 
     // Don't reuse processes that have high resource usage already.
-    if (!IsBelowReuseResourceThresholds(host, process_reuse_policy)) {
+    if (!IsBelowReuseResourceThresholds(host, process_reuse_policy, context)) {
       return false;
     }
 
