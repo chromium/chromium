@@ -28,7 +28,7 @@
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
-#include "components/viz/service/display/overlay_processor_stub.h"
+#include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -52,7 +52,6 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "components/viz/service/display/overlay_processor_mac.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
@@ -295,8 +294,15 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
     data = CreatePerCompositorData(compositor.get());
   data->Bind(display_private.BindNewEndpointAndPassDedicatedReceiver());
 
+  auto* test_gpu_service_holder = viz::TestGpuServiceHolder::GetInstance();
+#if BUILDFLAG(IS_WIN)
+  if (initialize_direct_composition_) {
+    // Calling this multiple times is safe on the same instance.
+    test_gpu_service_holder->InitializeDirectComposition();
+  }
+#endif
   auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
-      viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
+      test_gpu_service_holder->gpu_service(),
       output_to_window_ ? data->surface_handle() : gpu::kNullSurfaceHandle);
   auto display_dependency =
       std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
@@ -305,19 +311,12 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       viz::SkiaOutputSurfaceImpl::Create(display_dependency.get(),
                                          renderer_settings_, &debug_settings_);
 
-  std::unique_ptr<viz::OverlayProcessorInterface> overlay_processor;
-#if BUILDFLAG(IS_MAC)
-  if (output_to_window_) {
-    // On macOS, OverlayProcessorMac is essential for interactive rendering
-    // (e.g., in views_examples) to avoid a blank/white screen, as it handles
-    // the translation of quads to CALayer parameters.
-    overlay_processor = std::make_unique<viz::OverlayProcessorMac>();
-  } else {
-    overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
-  }
-#else
-  overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
-#endif
+  auto overlay_processor =
+      viz::OverlayProcessorInterface::CreateOverlayProcessor(
+          output_surface.get(),
+          output_to_window_ ? data->surface_handle() : gpu::kNullSurfaceHandle,
+          output_surface->capabilities(), display_dependency.get(),
+          &shared_image_manager_, renderer_settings_, &debug_settings_);
 
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source;
   if (disable_vsync_) {

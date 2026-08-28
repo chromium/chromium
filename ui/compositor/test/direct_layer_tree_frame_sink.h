@@ -64,8 +64,7 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
   void DisplayDidReceiveCALayerParams(
       gfx::CALayerParams ca_layer_params) override;
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
-  void DisplayAddChildWindowToBrowser(
-      gpu::SurfaceHandle child_window) override {}
+  void DisplayAddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
   void SetWideColorEnabled(bool enabled) override {}
 
  private:

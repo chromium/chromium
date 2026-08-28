@@ -107,11 +107,6 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
     ax_platform = std::make_unique<ui::AXPlatformForTest>();
   }
 
-  // Disabling Direct Composition works around the limitation that
-  // InProcessContextFactory doesn't work with Direct Composition, causing the
-  // window to not render. See http://crbug.com/936249.
-  command_line->AppendSwitch(switches::kDisableDirectComposition);
-
   base::FeatureList::InitInstance(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures));
@@ -169,6 +164,11 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
       std::make_unique<ui::TestContextFactories>(under_test,
                                                  /*output_to_window=*/true);
 
+#if BUILDFLAG(IS_WIN)
+  context_factories->GetContextFactory()->set_initialize_direct_composition(
+      true);
+#endif
+
 #if defined(USE_AURA)
   std::unique_ptr<aura::Env> env;
   if (!under_test) {
@@ -186,6 +186,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
     ExamplesViewsDelegateChromeOS views_delegate;
 #else  // BUILDFLAG(IS_CHROMEOS)
     views::DesktopTestViewsDelegate views_delegate;
+    views_delegate.set_use_desktop_native_widgets(true);
 #if BUILDFLAG(IS_MAC)
     views_delegate.set_context_factory(context_factories->GetContextFactory());
 #endif

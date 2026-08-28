@@ -225,4 +225,15 @@ void DirectLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   support_->SetNeedsBeginFrame(needs_begin_frames);
 }
 
+void DirectLayerTreeFrameSink::DisplayAddChildWindowToBrowser(
+    gpu::SurfaceHandle child_window) {
+#if BUILDFLAG(IS_WIN)
+  if (widget_ != gfx::kNullAcceleratedWidget && child_window) {
+    ::SetParent(child_window, widget_);
+    ::SetWindowPos(child_window, HWND_BOTTOM, 0, 0, 0, 0,
+                   SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+  }
+#endif
+}
+
 }  // namespace ui

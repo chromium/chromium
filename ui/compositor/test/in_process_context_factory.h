@@ -79,6 +79,16 @@ class InProcessContextFactory : public ContextFactory {
   display::VariableRefreshRateState GetVrrState(Compositor* compositor) const;
   void ResetDisplayOutputParameters(Compositor* compositor);
 
+#if BUILDFLAG(IS_WIN)
+  // Must be called *before* CreateLayerTreeFrameSink is ever called.
+  // Call this to ensure DirectComposition is initialized when on Windows.
+  // This is useful for cases where rendering windows onto the desktop needs to
+  // blend with the existing desktop.
+  void set_initialize_direct_composition(bool init_direct_composition) {
+    initialize_direct_composition_ = init_direct_composition;
+  }
+#endif
+
  private:
   class PerCompositorData;
 
@@ -97,6 +107,9 @@ class InProcessContextFactory : public ContextFactory {
   double refresh_rate_ = 60.0;
   const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   const raw_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
+#if BUILDFLAG(IS_WIN)
+  bool initialize_direct_composition_ = false;
+#endif
 
   viz::RendererSettings renderer_settings_;
   viz::DebugRendererSettings debug_settings_;

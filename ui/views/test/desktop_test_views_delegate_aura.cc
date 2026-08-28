@@ -6,6 +6,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/widget/native_widget_aura.h"
+#include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -21,6 +22,7 @@ void DesktopTestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  TestViewsDelegate::OnBeforeWidgetInit(params, delegate);
   // If we already have a native_widget, we don't have to try to come
   // up with one.
   if (params->native_widget) {

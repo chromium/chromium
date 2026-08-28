@@ -50,6 +50,12 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gl/dc_surface_solid_color_pool.h"
+#include "ui/gl/direct_composition_support.h"
+#include "ui/gl/gl_angle_util_win.h"
+#endif
+
 namespace viz {
 
 namespace {
@@ -290,6 +296,31 @@ void TestGpuServiceHolder::ScheduleCompositorGpuTask(
   else
     ScheduleGpuMainTask(std::move(callback));
 }
+
+#if BUILDFLAG(IS_WIN)
+void TestGpuServiceHolder::InitializeDirectComposition() {
+  if (direct_composition_initialized_) {
+    return;
+  }
+  base::WaitableEvent completion;
+  gpu_main_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WaitableEvent* completion) {
+            if (auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE()) {
+              auto solid_color_factory =
+                  gl::CreateDCSurfaceSolidColorPoolFactory(d3d11_device);
+              gl::InitializeDirectComposition(d3d11_device,
+                                              /*d3d12_command_queue=*/nullptr,
+                                              std::move(solid_color_factory));
+            }
+            completion->Signal();
+          },
+          &completion));
+  completion.Wait();
+  direct_composition_initialized_ = true;
+}
+#endif
 
 void TestGpuServiceHolder::InitializeOnGpuThread(
     const gpu::GpuPreferences& original_gpu_preferences,
