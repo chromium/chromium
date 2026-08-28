@@ -113,7 +113,9 @@ class SystemNetworkContextManager {
 
   // Called when content creates a NetworkService. Creates the
   // SystemNetworkContext, if the network service is enabled.
-  void OnNetworkServiceCreated(network::mojom::NetworkService* network_service);
+  static void OnNetworkServiceCreated(
+      network::mojom::NetworkService* network_service,
+      PrefService* pref_service);
 
   // Permanently disables QUIC, both for NetworkContexts using the IOThread's
   // NetworkService, and for those using the network service (if enabled).
@@ -240,6 +242,9 @@ class SystemNetworkContextManager {
 
   // Constructor. |pref_service| must out live this object.
   explicit SystemNetworkContextManager(PrefService* pref_service);
+
+  void OnNetworkServiceCreatedInternal(
+      network::mojom::NetworkService* network_service);
 
   void UpdateReferrersEnabled();
 

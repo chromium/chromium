@@ -183,6 +183,7 @@ source_set("impl") {
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ssl",
+    "//chrome/browser/task_manager",
     "//chrome/browser/webid",
     "//chrome/common:version_header",
     "//components/certificate_transparency",

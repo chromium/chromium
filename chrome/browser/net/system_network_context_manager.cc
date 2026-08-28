@@ -37,6 +37,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
+#include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -788,7 +789,27 @@ SystemNetworkContextManager::GetStubResolverConfigReader() {
   return &GetInstance()->stub_resolver_config_reader_;
 }
 
+// static
 void SystemNetworkContextManager::OnNetworkServiceCreated(
+    network::mojom::NetworkService* network_service,
+    PrefService* pref_service) {
+  // Create SystemNetworkContextManager if it has not been created yet. We need
+  // to set up global NetworkService state before anything else uses it and this
+  // is the first opportunity to initialize SystemNetworkContextManager with the
+  // NetworkService.
+  if (!HasInstance()) {
+    CreateInstance(pref_service);
+  }
+
+  GetInstance()->OnNetworkServiceCreatedInternal(network_service);
+
+  if (task_manager::TaskManagerImpl::IsCreated() &&
+      task_manager::TaskManagerImpl::GetInstance()->is_running()) {
+    network_service->EnableDataUseUpdates(true);
+  }
+}
+
+void SystemNetworkContextManager::OnNetworkServiceCreatedInternal(
     network::mojom::NetworkService* network_service) {
   // On network service restart, it's possible for |url_loader_factory_| to not
   // be disconnected yet (so any consumers of GetURLLoaderFactory() in network
