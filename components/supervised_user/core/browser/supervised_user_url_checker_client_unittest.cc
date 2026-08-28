@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -23,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -199,12 +201,46 @@ class SupervisedUserUrlCheckerClientFamilyLinkEnabledTest
             CredentialsMode::kRequireCredentialsFromFamilyLink) {}
 };
 
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(SupervisedUserUrlCheckerClientFamilyLinkEnabledTest,
-       NoPrimaryAccount) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(SupervisedUserUrlCheckerClientFamilyLinkEnabledTest, NoPrimaryAccount) {
   ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
-  // On Android, uncredentialed access will hang on access token wait.
+
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kAllowed));
+  CheckUrl("http://example.com");
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SupervisedUserUrlCheckerClientFamilyLinkEnabledTest,
+       NoPrimaryAccount_VerificationPageEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSupervisedUserVerificationPageOnAndroid);
+
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kAllowed));
+  CheckUrl("http://example.com");
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
+}
+
+TEST_F(SupervisedUserUrlCheckerClientFamilyLinkEnabledTest,
+       NoPrimaryAccount_VerificationPageDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kSupervisedUserVerificationPageOnAndroid);
+
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  // On Android, uncredentialed access will hang on access token wait when
+  // verification page is disabled.
   EXPECT_CALL(*this, OnCheckDone(GURL("http://example.com"), _)).Times(0);
   CheckUrl("http://example.com");
 }
@@ -310,6 +346,35 @@ TEST_P(SupervisedUserUrlCheckerClientTest, AccessTokenError) {
   SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(SupervisedUserUrlCheckerClientTest,
+       AccessTokenError_VerificationPageEnabled) {
+  if (GetParam() != CredentialsMode::kRequireCredentialsFromFamilyLink) {
+    GTEST_SKIP()
+        << "Access token errors are only relevant for family link users.";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSupervisedUserVerificationPageOnAndroid);
+
+  CHECK(CredentialsRequired(GetParam()));
+
+  MakePrimaryAccountAvailable();
+  StopAutomaticIssueOfAccessTokens();
+
+  // With the verification page feature enabled on Android, we fallback to
+  // making an uncredentialed request to ClassifyUrl, which succeeds.
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kAllowed));
+
+  CheckUrl("http://example.com");
+  SimulateAccessTokenError();
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(SupervisedUserUrlCheckerClientTest, NetworkError) {
   MakePrimaryAccountAvailable();

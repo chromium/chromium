@@ -68,6 +68,12 @@ bool IsLocalWebApprovalsEnabledForSubframes() {
   return base::FeatureList::IsEnabled(kAllowSubframeLocalWebApprovals);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSupervisedUserVerificationPageOnAndroid,
+             "SupervisedUserVerificationPageOnAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);

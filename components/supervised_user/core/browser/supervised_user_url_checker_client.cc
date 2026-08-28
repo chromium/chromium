@@ -22,6 +22,7 @@
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
@@ -74,11 +75,14 @@ FetcherConfig GetFetcherConfig(
          "controls";
   return kClassifyUrlConfigBestEffort;
 #elif BUILDFLAG(IS_ANDROID)
-  // Android enforces at the OS level that family link supervised users must
-  // have valid sign in credentials (and triggers a reauth if not). We can
-  // therefore wait for a valid access token to be available before calling
-  // ClassifyUrl, to avoid window conditions where the access token is not yet
-  // available (eg. during startup).
+  if (base::FeatureList::IsEnabled(kSupervisedUserVerificationPageOnAndroid)) {
+    // Supervised users on Android might get into a state where their
+    // credentials are not available (e.g. remote sign out), so best-effort
+    // access mode is a fallback here for Family Link supervised users.
+    return is_subject_to_family_link_parental_controls
+               ? kClassifyUrlConfigBestEffort
+               : kClassifyUrlConfigWithoutCredentials;
+  }
   return is_subject_to_family_link_parental_controls
              ? kClassifyUrlConfigWaitUntilAccessTokenAvailable
              : kClassifyUrlConfigWithoutCredentials;
