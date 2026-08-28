@@ -10,6 +10,8 @@ source_set("aim_availability") {
     "ios_chrome_aim_eligibility_service_factory.mm",
   ]
   deps = [
+    "//base",
+    "//components/application_locale_storage",
     "//components/contextual_tasks/public:feature_list",
     "//components/omnibox/browser",
     "//components/search",
@@ -69,20 +71,32 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "aim_tab_helper_unittest.mm" ]
+  sources = [
+    "aim_tab_helper_unittest.mm",
+    "ios_chrome_aim_eligibility_service_unittest.mm",
+  ]
   deps = [
     ":aim_availability",
     ":tab_helper",
     ":test_support",
     "//base/test:test_support",
+    "//components/application_locale_storage",
     "//components/omnibox/browser:test_support",
     "//components/search_engines",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/variations:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//third_party/omnibox_proto",
   ]
 }
 

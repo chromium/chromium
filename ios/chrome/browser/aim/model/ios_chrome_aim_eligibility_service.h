@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/callback_list.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 
@@ -36,6 +39,12 @@ class IOSChromeAimEligibilityService : public AimEligibilityService {
   // AimEligibilityService:
   std::string GetLocaleImpl() const override;
   variations::VariationsService* GetVariationsService() const override;
+
+ private:
+  void OnLocaleChanged(const std::string& new_locale);
+
+  base::CallbackListSubscription locale_change_subscription_;
+  base::WeakPtrFactory<IOSChromeAimEligibilityService> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_AIM_MODEL_IOS_CHROME_AIM_ELIGIBILITY_SERVICE_H_
