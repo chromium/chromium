@@ -27,7 +27,8 @@ bool IsHistoryStateChangeValid(const GURL& current_url, const GURL& to_url) {
   CHECK(to_url.is_valid());
 
   if (base::FeatureList::IsEnabled(kHistoryStateChangeNonStandardURLFix)) {
-    return url::IsSameOriginWith(current_url, to_url);
+    return current_url.SchemeIs(to_url.scheme()) &&
+           url::IsSameOriginWith(current_url, to_url);
   }
 
   return to_url.DeprecatedGetOriginAsURL() ==
@@ -45,7 +46,6 @@ GURL GetHistoryStateChangeUrl(const GURL& current_url,
   if (!to_url.is_valid() || !IsHistoryStateChangeValid(current_url, to_url)) {
     return GURL();
   }
-
   return to_url;
 }
 

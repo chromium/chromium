@@ -39,6 +39,7 @@
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/page_transition_types.h"
+#import "url/origin.h"
 
 namespace {
 
@@ -1443,7 +1444,7 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   // visible.
   const GURL& web_view_origin_url =
       web_view_cache_.GetVisibleWebViewOriginURL();
-  if (web_view_origin_url == last_committed_url.DeprecatedGetOriginAsURL()) {
+  if (url::IsSameOriginWith(web_view_origin_url, last_committed_url)) {
     return true;
   }
 
@@ -1543,7 +1544,7 @@ const GURL& NavigationManagerImpl::WKWebViewCache::GetVisibleWebViewOriginURL()
         ![cached_visible_host_nsstring_ isEqualToString:url.host] ||
         ![cached_visible_scheme_nsstring_ isEqualToString:url.scheme]) {
       cached_visible_origin_url_ =
-          net::GURLWithNSURL(url).DeprecatedGetOriginAsURL();
+          url::Origin::Create(net::GURLWithNSURL(url)).GetURL();
       cached_visible_host_nsstring_ = url.host;
       cached_visible_scheme_nsstring_ = url.scheme;
       cached_visible_port_nsnumber_ = url.port;

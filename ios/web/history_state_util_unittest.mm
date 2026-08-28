@@ -11,6 +11,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace web {
 namespace {
@@ -53,21 +54,22 @@ constexpr auto kTests = std::to_array<TestEntry>({
     // Invalid URL.
     {"http://foo.com", "http://fo o.c om/ba r", ""},
     {"http://foo.com:80", "bar", "http://foo.com:80/bar"},
-    // Valid blob URL changes (same inner origin).
+    // Valid blob URL changes (same inner origin and scheme).
     {"blob:http://foo.com/1", "blob:http://foo.com/2", "blob:http://foo.com/2"},
     {"blob:https://foo.com/1", "blob:https://foo.com/2",
      "blob:https://foo.com/2"},
-    {"http://foo.com/bar", "blob:http://foo.com/1", "blob:http://foo.com/1"},
-    {"blob:http://foo.com/1", "http://foo.com/bar", "http://foo.com/bar"},
+    // Invalid cross-scheme transitions with blob and filesystem URLs.
+    {"http://foo.com/bar", "blob:http://foo.com/1", ""},
+    {"blob:http://foo.com/1", "http://foo.com/bar", ""},
+    {"https://foo.com/bar", "blob:https://foo.com/1", ""},
+    {"blob:https://foo.com/1", "https://foo.com/bar", ""},
+    {"http://foo.com/bar", "filesystem:http://foo.com/temporary/1", ""},
+    {"filesystem:http://foo.com/temporary/1", "http://foo.com/bar", ""},
     // Invalid blob URL changes (cross inner origin or scheme).
     {"blob:http://foo.com/1", "blob:http://bar.com/2", ""},
     {"blob:http://foo.com/1", "blob:https://foo.com/2", ""},
-    {"blob:http://foo.com:8080/1", "blob:https://accounts.google.com/signin",
-     ""},
+    {"blob:http://foo.com:8080/1", "blob:https://foo.com/signin", ""},
     {"blob:http://foo.com:8080/1", "blob:http://foo.com:8081/2", ""},
-    {"http://foo.com/bar", "blob:https://accounts.google.com/signin", ""},
-    {"blob:http://foo.com/1", "https://foo.com/bar", ""},
-    {"blob:http://foo.com/1", "http://bar.com/bar", ""},
     // Invalid non-standard / opaque origin URL changes.
     {"data:text/html,foo", "data:text/html,bar", ""},
     {"about:blank", "about:blank", ""},
@@ -161,26 +163,25 @@ TEST_F(HistoryStateUtilTest, TestBlobUrlHistoryStateChange) {
   EXPECT_FALSE(history_state_util::IsHistoryStateChangeValid(http_blob1,
                                                              diff_port_blob));
 
-  GURL attacker_target_blob("blob:https://accounts.google.com/signin");
+  GURL other_target_blob("blob:https://foo.com/signin");
   EXPECT_FALSE(history_state_util::IsHistoryStateChangeValid(
-      diff_port_blob, attacker_target_blob));
+      diff_port_blob, other_target_blob));
 
-  // Standard URL to same-origin blob and vice versa.
+  // Standard URL to blob and vice versa are rejected because schemes differ.
   GURL http_standard("http://foo.com/bar");
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       history_state_util::IsHistoryStateChangeValid(http_standard, http_blob1));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       history_state_util::IsHistoryStateChangeValid(http_blob1, http_standard));
 
   GURL https_standard("https://foo.com/bar");
-  EXPECT_TRUE(history_state_util::IsHistoryStateChangeValid(https_standard,
-                                                            https_blob1));
-  EXPECT_TRUE(history_state_util::IsHistoryStateChangeValid(https_blob1,
-                                                            https_standard));
+  EXPECT_FALSE(history_state_util::IsHistoryStateChangeValid(https_standard,
+                                                             https_blob1));
+  EXPECT_FALSE(history_state_util::IsHistoryStateChangeValid(https_blob1,
+                                                             https_standard));
 
-  // Standard URL to cross-origin blob and vice versa.
   EXPECT_FALSE(history_state_util::IsHistoryStateChangeValid(
-      http_standard, attacker_target_blob));
+      http_standard, other_target_blob));
   EXPECT_FALSE(history_state_util::IsHistoryStateChangeValid(http_blob1,
                                                              https_standard));
 }
@@ -216,9 +217,12 @@ TEST_F(HistoryStateUtilTest, TestFileSystemUrlHistoryStateChange) {
   GURL fs_url2("filesystem:http://foo.com/temporary/2");
   EXPECT_TRUE(history_state_util::IsHistoryStateChangeValid(fs_url1, fs_url2));
 
+  // Cross-scheme transitions between standard http and filesystem are rejected.
   GURL http_url("http://foo.com/bar");
-  EXPECT_TRUE(history_state_util::IsHistoryStateChangeValid(http_url, fs_url1));
-  EXPECT_TRUE(history_state_util::IsHistoryStateChangeValid(fs_url1, http_url));
+  EXPECT_FALSE(
+      history_state_util::IsHistoryStateChangeValid(http_url, fs_url1));
+  EXPECT_FALSE(
+      history_state_util::IsHistoryStateChangeValid(fs_url1, http_url));
 
   GURL diff_host_fs("filesystem:http://bar.com/temporary/1");
   EXPECT_FALSE(

@@ -29,6 +29,7 @@
 #import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 using web::NavigationManagerImpl;
 
@@ -366,8 +367,8 @@ using web::NavigationManagerImpl;
            // Re-check origin in case navigaton has occurred since
            // start of JavaScript evaluation.
            BOOL newURLOriginMatchesDocumentURLOrigin =
-               self.documentURL.DeprecatedGetOriginAsURL() ==
-               URL.DeprecatedGetOriginAsURL();
+               self.documentURL.SchemeIs(URL.scheme()) &&
+               url::IsSameOriginWith(self.documentURL, URL);
            // Check that the web view URL still matches the new URL.
            // TODO(crbug.com/41224497): webViewURLMatchesNewURL check
            // may drop same document URL changes if pending URL
@@ -411,9 +412,8 @@ using web::NavigationManagerImpl;
 - (BOOL)isKVOChangePotentialSameDocumentNavigationToURL:(const GURL&)newURL {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // If the origin changes, it can't be same-document.
-  if (const GURL originAsURL = self.documentURL.DeprecatedGetOriginAsURL();
-      originAsURL.is_empty() ||
-      originAsURL != newURL.DeprecatedGetOriginAsURL()) {
+  if (!self.documentURL.SchemeIs(newURL.scheme()) ||
+      !url::IsSameOriginWith(self.documentURL, newURL)) {
     return NO;
   }
   if (self.navigationHandler.navigationState ==

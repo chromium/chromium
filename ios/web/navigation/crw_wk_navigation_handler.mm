@@ -58,6 +58,7 @@
 #import "net/cert/x509_util_apple.h"
 #import "net/http/http_content_disposition.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 using web::wk_navigation_util::kReferrerHeaderName;
 
@@ -1038,8 +1039,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     if (currentWKItemURL == webViewURL &&
         currentWKItemURL != context->GetUrl() &&
         item == self.navigationManagerImpl->GetLastCommittedItem() &&
-        item->GetURL().DeprecatedGetOriginAsURL() ==
-            currentWKItemURL.DeprecatedGetOriginAsURL()) {
+        item->GetURL().SchemeIs(currentWKItemURL.scheme()) &&
+        url::IsSameOriginWith(item->GetURL(), currentWKItemURL)) {
       // WKWebView sometimes changes URL on the same navigation, likely due to
       // location.replace() or history.replaceState in onload handler that does
       // not change the origin. It's safe to update `item` and `context` URL
