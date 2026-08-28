@@ -88,4 +88,9 @@ public class DropDataAndroid {
     public boolean hasBrowserContent() {
         return false;
     }
+
+    /** Return whether this data presents custom data. */
+    public boolean hasCustomData() {
+        return !TextUtils.isEmpty(customData);
+    }
 }

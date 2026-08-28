@@ -37,6 +37,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.CursorOffset;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.DragShadowSpec;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -65,6 +66,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         DragTargetType.IMAGE,
         DragTargetType.LINK,
         DragTargetType.BROWSER_CONTENT,
+        DragTargetType.WEB_CUSTOM_DATA,
         DragTargetType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -74,9 +76,11 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         int IMAGE = 2;
         int LINK = 3;
         int BROWSER_CONTENT = 4;
+        int WEB_CUSTOM_DATA = 5;
 
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
     }
+
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidDragTargetType)
 
     private int mShadowWidth;
@@ -294,6 +298,18 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             case DragTargetType.BROWSER_CONTENT:
                 assumeNonNull(mDragAndDropBrowserDelegate);
                 return mDragAndDropBrowserDelegate.buildClipData(dropData);
+            case DragTargetType.WEB_CUSTOM_DATA:
+                // Android deliberately redacts ClipData during the drag phase. But Blink requires
+                // custom MIME types to be available during dragover so the webpage can determine if
+                // it accepts the drop. By smuggling the JSON payload in the ClipDescription extras
+                // (via addCustomDataToClipData), we ensure the metadata is available throughout the
+                // entire drag lifecycle. We add a placeholder empty string Item to satisfy
+                // Android's
+                // requirement that a ClipData must contain at least one Item.
+                return new ClipData(
+                        null,
+                        new String[] {ClipboardImpl.CHROME_WEB_CUSTOM_DATA_MIME_TYPE},
+                        new Item(""));
             case DragTargetType.INVALID:
                 return null;
             case DragTargetType.NUM_ENTRIES:
@@ -311,7 +327,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                     : mDragAndDropBrowserDelegate.buildFlags(flag, dropData);
         }
         int flag = 0;
-        if (dropData.isPlainText() || dropData.hasLink()) {
+        if (dropData.isPlainText() || dropData.hasLink() || dropData.hasCustomData()) {
             flag |= View.DRAG_FLAG_GLOBAL;
         }
         if (dropData.hasImage()) {
@@ -476,6 +492,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             return DragTargetType.IMAGE;
         } else if (dropDataAndroid.hasLink()) {
             return DragTargetType.LINK;
+        } else if (dropDataAndroid.hasCustomData()) {
+            return DragTargetType.WEB_CUSTOM_DATA;
         } else {
             return DragTargetType.INVALID;
         }

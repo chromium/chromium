@@ -259,6 +259,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Image"/>
   <int value="3" label="Link"/>
   <int value="4" label="Browser content"/>
+  <int value="5" label="Web Custom Data"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/android/java/src/org/chromium/ui/dragdrop/DragAndDropDelegateImpl.java:DragTargetType) -->

@@ -283,6 +283,17 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   gfx::PointF drag_location_;
   gfx::PointF drag_screen_location_;
 
+  // The operation the target decided to perform on drop. Valid only if
+  // |drag_dropped_| is true.
+  ui::mojom::DragOperation drag_operation_ = ui::mojom::DragOperation::kNone;
+  // True if we received an ACTION_DROP. This is used to distinguish between a
+  // successfully completed drag and a cancelled drag (where the user releases
+  // the drag outside a valid target, firing ACTION_DRAG_ENDED without an
+  // ACTION_DROP). Without this, we might erroneously report a successful drop
+  // if the drag was cancelled while hovering over a valid target.
+  // This variable is only valid while handling ACTION_DRAG_ENDED.
+  bool drag_dropped_ = false;
+
   // Set to true when the document is handling the drag.  This means that
   // the document has registeted interest in the dropped data and the
   // renderer process should pass the data to the document on drop.
