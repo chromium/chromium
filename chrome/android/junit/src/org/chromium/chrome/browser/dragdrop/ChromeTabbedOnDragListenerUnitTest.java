@@ -123,6 +123,20 @@ public class ChromeTabbedOnDragListenerUnitTest {
         doTestOnDragActionDragStarted(/* isGroupDrag= */ false, /* isMultiTabDrag= */ true);
     }
 
+    @Test
+    public void testOnDrag_ActionDragStarted_NullSelectedTab() {
+        when(mTabModelSelector.getCurrentTab()).thenReturn(null);
+        assertTrue(
+                "Drag started should return true even when selected tab is null.",
+                mChromeTabbedOnDragListener.onDrag(
+                        mCompositorViewHolder,
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED,
+                                /* result= */ false,
+                                /* isGroupDrag= */ false,
+                                /* isMultiTabDrag= */ false)));
+    }
+
     private void doTestOnDragActionDragStarted(boolean isGroupDrag, boolean isMultiTabDrag) {
         // Drag started should return false, since drag source is not chrome tab or group.
         assertFalse(
