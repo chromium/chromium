@@ -244,6 +244,13 @@ NET_EXPORT std::vector<uint8_t> CreateMtcLandmarkGroupTrustAnchorID(
     uint16_t log_number,
     uint64_t landmark_number);
 
+// Encodes a list of Trust Anchor IDs into a TLS wire format
+// RequestedTrustAnchorList. The contents will be sorted so that the result is
+// the same regardless of the input ordering. The output does not include the
+// 16-bit length for the whole list.
+NET_EXPORT std::vector<uint8_t> EncodeTlsRequestedTrustAnchorIDList(
+    std::vector<std::vector<uint8_t>> trust_anchor_ids);
+
 }  // namespace x509_util
 
 }  // namespace net

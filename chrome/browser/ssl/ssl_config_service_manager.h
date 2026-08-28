@@ -8,11 +8,26 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/ssl/ssl_config_service.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 
 class PrefService;
 class PrefRegistrySimple;
+
+// This is defined as a standalone struct so that it can be forward-declared.
+// Otherwise it would be cleaner to have it nested inside
+// SSLConfigServiceManager.
+struct SSLConfigServiceMtcLandmarkInfo {
+  // The time after which these Trust Anchor IDs should no longer be used.
+  base::Time max_usable_time;
+
+  // A list of MTC Trust Anchor IDs which should contain at least one landmark
+  // relative IDs, and also any standalone IDs for MTC CAs that did not have
+  // landmark data.
+  std::vector<std::vector<uint8_t>>
+      mtc_landmark_and_standalone_trust_anchor_ids;
+};
 
 // Sends updated `network::mojom::SSLConfig`s to one or more
 // `network::Mojom::SSLConfigClient`s. Not threadsafe.
@@ -45,9 +60,10 @@ class SSLConfigServiceManager {
   // by component updater, to update/override a set of compiled-in trust anchor
   // IDs.
   void UpdateTrustAnchorIDs(
-      std::vector<std::vector<uint8_t>> trust_anchor_ids,
-      std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids,
-      int64_t mtc_update_time_seconds);
+      base::span<const std::vector<uint8_t>> classic_trust_anchor_ids,
+      base::span<const std::vector<uint8_t>>
+          mtc_standalone_only_trust_anchor_ids,
+      std::optional<SSLConfigServiceMtcLandmarkInfo> mtc_landmark_info);
 
   // Computes the SSL compliance policy settings based on the given prefs and
   // feature state, and writes those settings into the appropriate fields in
@@ -74,6 +90,14 @@ class SSLConfigServiceManager {
   // cached list of parsed SSL/TLS cipher suites that are disabled.
   void OnDisabledCipherSuitesChange(PrefService* local_state);
 
+  // Initializes the `trust_anchor_ids_` and `time_bound_trust_anchor_ids_`
+  // from the provided inputs.
+  void InitializeTrustAnchorIDs(
+      base::span<const std::vector<uint8_t>> classic_trust_anchor_ids,
+      base::span<const std::vector<uint8_t>>
+          mtc_standalone_only_trust_anchor_ids,
+      std::optional<SSLConfigServiceMtcLandmarkInfo> mtc_landmark_info);
+
   PrefChangeRegistrar local_state_change_registrar_;
 
   // The local_state prefs.
@@ -91,18 +115,12 @@ class SSLConfigServiceManager {
 
   mojo::RemoteSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
 
-  // The latest set of Trust Anchor IDs either from the compiled-in root store,
-  // or configured via UpdateTrustAnchorIDs(). This is used to set the initial
-  // set of Trust Anchor IDs on newly created network contexts to the latest
-  // ones.
-  std::vector<std::vector<uint8_t>> trust_anchor_ids_;
-
-  // Like `trust_anchor_ids_` but for MTCs.
-  std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids_;
-
-  // The time (in seconds since the unix epoch) that the MTC trust anchor IDs
-  // were generated.
-  int64_t mtc_update_time_seconds_ = 0;
+  // The latest sets of Trust Anchor IDs either from the compiled-in root
+  // store, or configured via UpdateTrustAnchorIDs(). These are used to set the
+  // initial set of Trust Anchor IDs on newly created network contexts to the
+  // latest ones.
+  std::vector<uint8_t> trust_anchor_ids_;
+  std::optional<net::TimeBoundTrustAnchorIDs> time_bound_trust_anchor_ids_;
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_CONFIG_SERVICE_MANAGER_H_

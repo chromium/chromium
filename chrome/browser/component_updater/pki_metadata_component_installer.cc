@@ -39,6 +39,7 @@
 #include "chrome/browser/component_updater/pki_metadata_fastpush_component_installer_policy.h"
 #include "chrome/browser/net/key_pinning.pb.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
@@ -195,8 +196,10 @@ PKIMetadataComponentInstallerService::PKIMetadataComponentInstallerService() {
   // to initialize the data from the compiled in versions so that on
   // startup/first run the TAI data is calculated correctly regardless which
   // order and timing the components initialize in.
-  crs_trust_anchor_ids_ =
-      net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+  if (base::FeatureList::IsEnabled(net::features::kNonMtcTrustAnchorIDs)) {
+    crs_trust_anchor_ids_ =
+        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+  }
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
     auto trusted_mtc_ca_ids =
@@ -369,44 +372,59 @@ void PKIMetadataComponentInstallerService::UpdateMtcMetadataOnUI(
           weak_factory_.GetWeakPtr()));
 }
 
-void PKIMetadataComponentInstallerService::UpdateTrustAnchorIDsImpl() {
-  // Start with trust anchor ids of the CRS trusted anchors.
-  std::vector<std::vector<uint8_t>> trust_anchor_ids = crs_trust_anchor_ids_;
-
-  // Add MTC trust anchor ids, if MTCs are enabled.
-  std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids;
-  if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
-    absl::flat_hash_set<std::vector<uint8_t>> trusted_mtc_ca_ids =
-        crs_trusted_mtc_ca_ids_;
-    for (const auto& landmark_info : mtc_ca_id_landmark_trust_anchor_ids_) {
-      if (!trusted_mtc_ca_ids.contains(landmark_info.ca_id)) {
-        // The fastpush component contained data for a CA that isn't trusted in
-        // the signer set. Ignore it.
-        continue;
-      }
-      // If we have landmark group TAI(s) for a MTC CA, they also imply trust
-      // of the standalone CA ID, so we don't need to advertise that
-      // separately. Remove the CA ID from the list that will be advertised.
-      trusted_mtc_ca_ids.erase(landmark_info.ca_id);
-
-      // Add the landmark group IDs to the result.
-      base::Extend(mtc_trust_anchor_ids,
-                   landmark_info.landmark_trust_anchor_ids);
-    }
-
-    // If there were trusted MTC CAs that did not have trusted landmarks in the
-    // fastpush data (or there was no fastpush data), add those CA IDs to the
-    // result. This indicates we support these CAs for standalone MTC
-    // verification only.
-    base::Extend(mtc_trust_anchor_ids, trusted_mtc_ca_ids);
+std::optional<SSLConfigServiceMtcLandmarkInfo>
+PKIMetadataComponentInstallerService::CalculateTrustAnchorIdsWithLandmarks() {
+  if (mtc_ca_id_landmark_trust_anchor_ids_.empty()) {
+    // There is no landmark data from the fastpush component.
+    return std::nullopt;
   }
 
+  std::vector<std::vector<uint8_t>>
+      mtc_landmark_and_standalone_trust_anchor_ids;
+  absl::flat_hash_set<std::vector<uint8_t>> trusted_mtc_ca_ids =
+      crs_trusted_mtc_ca_ids_;
+  for (const auto& landmark_info : mtc_ca_id_landmark_trust_anchor_ids_) {
+    if (!trusted_mtc_ca_ids.contains(landmark_info.ca_id)) {
+      // The fastpush component contained data for a CA that isn't trusted in
+      // the signer set. Ignore it.
+      continue;
+    }
+    // If we have landmark group TAI(s) for a MTC CA, they also imply trust
+    // of the standalone CA ID, so we don't need to advertise that
+    // separately. Remove the CA ID from the list that will be advertised.
+    trusted_mtc_ca_ids.erase(landmark_info.ca_id);
+
+    // Add the landmark group IDs to the result.
+    base::Extend(mtc_landmark_and_standalone_trust_anchor_ids,
+                 landmark_info.landmark_trust_anchor_ids);
+  }
+
+  if (mtc_landmark_and_standalone_trust_anchor_ids.empty()) {
+    // There was landmark data from the fastpush component, but it didn't
+    // match any trusted MTC CAs from the signerset.
+    return std::nullopt;
+  }
+
+  // If there were trusted MTC CAs that did not have trusted landmarks in the
+  // fastpush data (or there was no fastpush data), add those CA IDs to the
+  // result. This indicates we support these CAs for standalone MTC
+  // verification only.
+  base::Extend(mtc_landmark_and_standalone_trust_anchor_ids,
+               trusted_mtc_ca_ids);
+  return SSLConfigServiceMtcLandmarkInfo{
+      .max_usable_time = mtc_landmark_max_usable_time_,
+      .mtc_landmark_and_standalone_trust_anchor_ids =
+          mtc_landmark_and_standalone_trust_anchor_ids,
+  };
+}
+
+void PKIMetadataComponentInstallerService::UpdateTrustAnchorIDsImpl() {
   SystemNetworkContextManager* network_context_manager =
       SystemNetworkContextManager::GetInstance();
   CHECK(network_context_manager);
   network_context_manager->UpdateTrustAnchorIDs(
-      std::move(trust_anchor_ids), std::move(mtc_trust_anchor_ids),
-      mtc_metadata_update_time_seconds_);
+      crs_trust_anchor_ids_, base::ToVector(crs_trusted_mtc_ca_ids_),
+      CalculateTrustAnchorIdsWithLandmarks());
 }
 
 bool PKIMetadataComponentInstallerService::UpdateSignerSetTrustAnchorIDs(
@@ -444,6 +462,9 @@ bool PKIMetadataComponentInstallerService::UpdateSignerSetTrustAnchorIDs(
 
 bool PKIMetadataComponentInstallerService::UpdateCRSTrustAnchorIDs(
     const mojo_base::ProtoWrapper& chrome_root_store) {
+  if (!base::FeatureList::IsEnabled(net::features::kNonMtcTrustAnchorIDs)) {
+    return false;
+  }
   auto message = chrome_root_store.As<chrome_root_store::RootStore>();
   if (!message.has_value()) {
     LOG(ERROR) << "error parsing proto for Chrome Root Store";
@@ -487,16 +508,11 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
     return false;
   }
 
-  // TODO(crbug.com/452986180): should the out-of-date check use the network
-  // time rather than system time?
+  // TODO(crbug.com/452986180): should the out-of-date checks use the network
+  // time rather than system time? (Both here and in ssl_config_service.)
   //
-  // TODO(crbug.com/452986180): This check prevents the component updater from
-  // loading out-of-date MTC metadata, but there is nothing to stop already
-  // loaded metadata from continuing to be used if it becomes out of date
-  // without a new component update being received. Should there be something
-  // to stop using existing data that becomes out of date if a new component
-  // update hasn't been received to replace it?  (Aside from restarting the
-  // browser.)
+  // TODO(crbug.com/452986180): We could still load old data and just ignore the
+  // trusted landmarks, since old revocation data might still be useful.
   //
   // Ignore out-of-data component data.
   // (MtcMetadata is not compiled into the binary, so there doesn't need to be
@@ -545,7 +561,9 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
 
   mtc_ca_id_landmark_trust_anchor_ids_ =
       std::move(mtc_ca_id_landmark_trust_anchor_ids);
-  mtc_metadata_update_time_seconds_ = message->update_time_seconds();
+  mtc_landmark_max_usable_time_ =
+      base::Time::UnixEpoch() + base::Seconds(message->update_time_seconds()) +
+      kMaxMtcMetadataAge;
 
   UpdateTrustAnchorIDsImpl();
   return true;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -22,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verifier.h"
+#include "net/cert/x509_util.h"
 #include "net/ssl/ssl_config.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -29,6 +31,24 @@
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+std::vector<std::vector<uint8_t>> ConcatAndSort(
+    const std::vector<std::vector<uint8_t>>& a,
+    const std::vector<std::vector<uint8_t>>& b) {
+  std::vector<std::vector<uint8_t>> result = a;
+  base::Extend(result, b);
+  std::sort(result.begin(), result.end());
+  return result;
+}
+
+std::vector<std::vector<uint8_t>> Sorted(
+    const std::vector<std::vector<uint8_t>>& a) {
+  std::vector<std::vector<uint8_t>> result = a;
+  std::sort(result.begin(), result.end());
+  return result;
+}
 
 class SSLConfigServiceManagerTest : public testing::Test,
                                     public network::mojom::SSLConfigClient {
@@ -305,21 +325,19 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
   std::unique_ptr<SSLConfigServiceManager> config_manager =
       SetUpConfigServiceManager(&local_state);
   EXPECT_THAT(
-      initial_config_->trust_anchor_ids,
-      testing::UnorderedElementsAreArray(
-          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()));
-  EXPECT_THAT(
-      initial_config_->mtc_trust_anchor_ids,
-      testing::UnorderedElementsAreArray(
-          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore()));
+      net::x509_util::ParseTlsTrustAnchorIDs(initial_config_->trust_anchor_ids),
+      testing::ElementsAreArray(ConcatAndSort(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore())));
+  EXPECT_FALSE(initial_config_->time_bound_trust_anchor_ids);
 
   // Simulate an update that has an empty set of Trust Anchor IDs.
-  config_manager->UpdateTrustAnchorIDs({}, {}, 0);
+  config_manager->UpdateTrustAnchorIDs({}, {}, std::nullopt);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
   EXPECT_TRUE(observed_configs_[0]->trust_anchor_ids.empty());
-  EXPECT_TRUE(observed_configs_[0]->mtc_trust_anchor_ids.empty());
+  EXPECT_FALSE(observed_configs_[0]->time_bound_trust_anchor_ids);
 
   // New network context params should use the latest Trust Anchor IDs (i.e.,
   // empty set).
@@ -333,20 +351,21 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
     ASSERT_TRUE(network_context_params->initial_ssl_config);
     EXPECT_TRUE(
         network_context_params->initial_ssl_config->trust_anchor_ids.empty());
-    EXPECT_TRUE(network_context_params->initial_ssl_config->mtc_trust_anchor_ids
-                    .empty());
+    EXPECT_FALSE(network_context_params->initial_ssl_config
+                     ->time_bound_trust_anchor_ids);
   }
 
   // Simulate an update that has a non-empty set of Trust Anchor IDs.
-  config_manager->UpdateTrustAnchorIDs({{0x01, 0x02}, {0x03, 0x04}}, {}, 0);
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x02}, {0x03, 0x04}}, {},
+                                       std::nullopt);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_THAT(
-      observed_configs_[1]->trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x02}),
-                                    std::vector<uint8_t>({0x03, 0x04})));
-  EXPECT_TRUE(observed_configs_[1]->mtc_trust_anchor_ids.empty());
+  EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                  observed_configs_[1]->trust_anchor_ids),
+              testing::ElementsAre(std::vector<uint8_t>({0x01, 0x02}),
+                                   std::vector<uint8_t>({0x03, 0x04})));
+  EXPECT_FALSE(observed_configs_[1]->time_bound_trust_anchor_ids);
 
   // New network context params should use the latest Trust Anchor IDs.
   {
@@ -358,27 +377,27 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
     config_manager->AddToNetworkContextParams(network_context_params.get());
     ASSERT_TRUE(network_context_params->initial_ssl_config);
     EXPECT_THAT(
-        network_context_params->initial_ssl_config->trust_anchor_ids,
-        testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x02}),
-                                      std::vector<uint8_t>({0x03, 0x04})));
-    EXPECT_TRUE(network_context_params->initial_ssl_config->mtc_trust_anchor_ids
-                    .empty());
+        net::x509_util::ParseTlsTrustAnchorIDs(
+            network_context_params->initial_ssl_config->trust_anchor_ids),
+        testing::ElementsAre(std::vector<uint8_t>({0x01, 0x02}),
+                             std::vector<uint8_t>({0x03, 0x04})));
+    EXPECT_FALSE(network_context_params->initial_ssl_config
+                     ->time_bound_trust_anchor_ids);
   }
 
   // Simulate an update that also has a non-empty set of MTC Trust Anchor IDs.
-  config_manager->UpdateTrustAnchorIDs({{0x01, 0x03}, {0x03, 0x05}},
-                                       {{0x05, 0x06}, {0x07, 0x08}}, 0);
+  config_manager->UpdateTrustAnchorIDs(
+      {{0x01, 0x03}, {0x05, 0x06}}, {{0x07, 0x08}, {0x03, 0x05}}, std::nullopt);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_THAT(
-      observed_configs_[2]->trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x03}),
-                                    std::vector<uint8_t>({0x03, 0x05})));
-  EXPECT_THAT(
-      observed_configs_[2]->mtc_trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x05, 0x06}),
-                                    std::vector<uint8_t>({0x07, 0x08})));
+  EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                  observed_configs_[2]->trust_anchor_ids),
+              testing::ElementsAre(std::vector<uint8_t>({0x01, 0x03}),
+                                   std::vector<uint8_t>({0x03, 0x05}),
+                                   std::vector<uint8_t>({0x05, 0x06}),
+                                   std::vector<uint8_t>({0x07, 0x08})));
+  EXPECT_FALSE(observed_configs_[2]->time_bound_trust_anchor_ids);
 
   // New network context params should use the latest Trust Anchor IDs.
   {
@@ -390,26 +409,28 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
     config_manager->AddToNetworkContextParams(network_context_params.get());
     ASSERT_TRUE(network_context_params->initial_ssl_config);
     EXPECT_THAT(
-        network_context_params->initial_ssl_config->trust_anchor_ids,
-        testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x03}),
-                                      std::vector<uint8_t>({0x03, 0x05})));
-    EXPECT_THAT(
-        network_context_params->initial_ssl_config->mtc_trust_anchor_ids,
-        testing::UnorderedElementsAre(std::vector<uint8_t>({0x05, 0x06}),
-                                      std::vector<uint8_t>({0x07, 0x08})));
+        net::x509_util::ParseTlsTrustAnchorIDs(
+            network_context_params->initial_ssl_config->trust_anchor_ids),
+        testing::ElementsAre(std::vector<uint8_t>({0x01, 0x03}),
+                             std::vector<uint8_t>({0x03, 0x05}),
+                             std::vector<uint8_t>({0x05, 0x06}),
+                             std::vector<uint8_t>({0x07, 0x08})));
+    EXPECT_FALSE(network_context_params->initial_ssl_config
+                     ->time_bound_trust_anchor_ids);
   }
 
   // Simulate an update that only has MTC Trust Anchor IDs, but no regular
   // ones.
-  config_manager->UpdateTrustAnchorIDs({}, {{0x05, 0x07}, {0x07, 0x09}}, 0);
+  config_manager->UpdateTrustAnchorIDs({}, {{0x05, 0x07}, {0x07, 0x09}},
+                                       std::nullopt);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_TRUE(observed_configs_[3]->trust_anchor_ids.empty());
-  EXPECT_THAT(
-      observed_configs_[3]->mtc_trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x05, 0x07}),
-                                    std::vector<uint8_t>({0x07, 0x09})));
+  EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                  observed_configs_[3]->trust_anchor_ids),
+              testing::ElementsAre(std::vector<uint8_t>({0x05, 0x07}),
+                                   std::vector<uint8_t>({0x07, 0x09})));
+  EXPECT_FALSE(observed_configs_[3]->time_bound_trust_anchor_ids);
 
   // New network context params should use the latest Trust Anchor IDs.
   {
@@ -420,12 +441,73 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
             cert_verifier::mojom::CertVerifierCreationParams::New());
     config_manager->AddToNetworkContextParams(network_context_params.get());
     ASSERT_TRUE(network_context_params->initial_ssl_config);
-    EXPECT_TRUE(
-        network_context_params->initial_ssl_config->trust_anchor_ids.empty());
     EXPECT_THAT(
-        network_context_params->initial_ssl_config->mtc_trust_anchor_ids,
-        testing::UnorderedElementsAre(std::vector<uint8_t>({0x05, 0x07}),
-                                      std::vector<uint8_t>({0x07, 0x09})));
+        net::x509_util::ParseTlsTrustAnchorIDs(
+            network_context_params->initial_ssl_config->trust_anchor_ids),
+        testing::ElementsAre(std::vector<uint8_t>({0x05, 0x07}),
+                             std::vector<uint8_t>({0x07, 0x09})));
+    EXPECT_FALSE(network_context_params->initial_ssl_config
+                     ->time_bound_trust_anchor_ids);
+  }
+
+  // Simulate an update that has classic Trust Anchor IDs, standalone MTC Trust
+  // Anchor IDs, and landmark relative MTC Trust Anchor IDs.
+  const base::Time landmark_usable_time = base::Time::Now() + base::Days(5);
+  config_manager->UpdateTrustAnchorIDs(
+      {{0x15, 0x01}, {0x10, 0x02}}, {{0x16, 0x03}, {0x11, 0x04}},
+      SSLConfigServiceMtcLandmarkInfo{
+          .max_usable_time = landmark_usable_time,
+          .mtc_landmark_and_standalone_trust_anchor_ids = {
+              {0x16, 0x03, 0x02, 0x01}, {0x11, 0x04}}});
+  // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
+  // IDs being changed, and for it to notify the test fixture of the change.
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+  EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                  observed_configs_[4]->trust_anchor_ids),
+              testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                                   std::vector<uint8_t>({0x11, 0x04}),
+                                   std::vector<uint8_t>({0x15, 0x01}),
+                                   std::vector<uint8_t>({0x16, 0x03})));
+  ASSERT_TRUE(observed_configs_[4]->time_bound_trust_anchor_ids);
+  EXPECT_EQ(observed_configs_[4]->time_bound_trust_anchor_ids->max_usable_time,
+            landmark_usable_time);
+  EXPECT_THAT(
+      net::x509_util::ParseTlsTrustAnchorIDs(
+          observed_configs_[4]->time_bound_trust_anchor_ids->trust_anchor_ids),
+      testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                           std::vector<uint8_t>({0x11, 0x04}),
+                           std::vector<uint8_t>({0x15, 0x01}),
+                           std::vector<uint8_t>({0x16, 0x03, 0x02, 0x01})));
+
+  // New network context params should use the latest Trust Anchor IDs.
+  {
+    network::mojom::NetworkContextParamsPtr network_context_params =
+        network::mojom::NetworkContextParams::New();
+    network_context_params->cert_verifier_params =
+        content::GetCertVerifierParams(
+            cert_verifier::mojom::CertVerifierCreationParams::New());
+    config_manager->AddToNetworkContextParams(network_context_params.get());
+    ASSERT_TRUE(network_context_params->initial_ssl_config);
+    EXPECT_THAT(
+        net::x509_util::ParseTlsTrustAnchorIDs(
+            network_context_params->initial_ssl_config->trust_anchor_ids),
+        testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                             std::vector<uint8_t>({0x11, 0x04}),
+                             std::vector<uint8_t>({0x15, 0x01}),
+                             std::vector<uint8_t>({0x16, 0x03})));
+    ASSERT_TRUE(network_context_params->initial_ssl_config
+                    ->time_bound_trust_anchor_ids);
+    EXPECT_EQ(network_context_params->initial_ssl_config
+                  ->time_bound_trust_anchor_ids->max_usable_time,
+              landmark_usable_time);
+    EXPECT_THAT(
+        net::x509_util::ParseTlsTrustAnchorIDs(
+            network_context_params->initial_ssl_config
+                ->time_bound_trust_anchor_ids->trust_anchor_ids),
+        testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                             std::vector<uint8_t>({0x11, 0x04}),
+                             std::vector<uint8_t>({0x15, 0x01}),
+                             std::vector<uint8_t>({0x16, 0x03, 0x02, 0x01})));
   }
 }
 
@@ -442,13 +524,11 @@ TEST_F(SSLConfigServiceManagerTest,
   std::unique_ptr<SSLConfigServiceManager> config_manager =
       SetUpConfigServiceManager(&local_state);
   EXPECT_THAT(
-      initial_config_->trust_anchor_ids,
-      testing::UnorderedElementsAreArray(
-          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()));
-  EXPECT_THAT(
-      initial_config_->mtc_trust_anchor_ids,
-      testing::UnorderedElementsAreArray(
-          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore()));
+      net::x509_util::ParseTlsTrustAnchorIDs(initial_config_->trust_anchor_ids),
+      testing::ElementsAreArray(ConcatAndSort(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore())));
+  EXPECT_FALSE(initial_config_->time_bound_trust_anchor_ids);
 }
 
 TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDsMtcDisabled) {
@@ -462,11 +542,29 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDsMtcDisabled) {
   std::unique_ptr<SSLConfigServiceManager> config_manager =
       SetUpConfigServiceManager(&local_state);
   EXPECT_THAT(
-      initial_config_->trust_anchor_ids,
-      testing::UnorderedElementsAreArray(
-          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()));
-  EXPECT_THAT(initial_config_->mtc_trust_anchor_ids,
-              testing::UnorderedElementsAre());
+      net::x509_util::ParseTlsTrustAnchorIDs(initial_config_->trust_anchor_ids),
+      testing::ElementsAreArray(Sorted(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore())));
+  EXPECT_FALSE(initial_config_->time_bound_trust_anchor_ids);
+}
+
+TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDsNonMtcDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{net::features::kTLSTrustAnchorIDs, true},
+       {net::features::kNonMtcTrustAnchorIDs, false},
+       {net::features::kVerifyMTCs, true}});
+
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+  EXPECT_THAT(
+      net::x509_util::ParseTlsTrustAnchorIDs(initial_config_->trust_anchor_ids),
+      testing::ElementsAreArray(Sorted(
+          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore())));
+  EXPECT_FALSE(initial_config_->time_bound_trust_anchor_ids);
 }
 
 // Tests that Trust Anchor IDs are properly set in new SSLConfigs after pref
@@ -481,15 +579,30 @@ TEST_F(SSLConfigServiceManagerTest, TrustAnchorIDsAfterPrefChange) {
       SetUpConfigServiceManager(&local_state);
 
   EXPECT_FALSE(initial_config_->rev_checking_required_local_anchors);
-  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}}, {{0x02, 0x02}}, 0);
+  const base::Time landmark_usable_time = base::Time::Now() + base::Days(5);
+  config_manager->UpdateTrustAnchorIDs(
+      {{0x15, 0x01}, {0x10, 0x02}}, {{0x16, 0x03}, {0x11, 0x04}},
+      SSLConfigServiceMtcLandmarkInfo{
+          .max_usable_time = landmark_usable_time,
+          .mtc_landmark_and_standalone_trust_anchor_ids = {
+              {0x16, 0x03, 0x02, 0x01}, {0x11, 0x04}}});
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+  EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                  observed_configs_[0]->trust_anchor_ids),
+              testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                                   std::vector<uint8_t>({0x11, 0x04}),
+                                   std::vector<uint8_t>({0x15, 0x01}),
+                                   std::vector<uint8_t>({0x16, 0x03})));
+  ASSERT_TRUE(observed_configs_[0]->time_bound_trust_anchor_ids);
+  EXPECT_EQ(observed_configs_[0]->time_bound_trust_anchor_ids->max_usable_time,
+            landmark_usable_time);
   EXPECT_THAT(
-      observed_configs_[0]->trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x01})));
-  EXPECT_THAT(
-      observed_configs_[0]->mtc_trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x02, 0x02})));
-  EXPECT_FALSE(observed_configs_[0]->rev_checking_required_local_anchors);
+      net::x509_util::ParseTlsTrustAnchorIDs(
+          observed_configs_[0]->time_bound_trust_anchor_ids->trust_anchor_ids),
+      testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                           std::vector<uint8_t>({0x11, 0x04}),
+                           std::vector<uint8_t>({0x15, 0x01}),
+                           std::vector<uint8_t>({0x16, 0x03, 0x02, 0x01})));
 
   // Change a pref and check that both the new pref and the existing Trust
   // Anchor IDs are reflected in the new config.
@@ -500,13 +613,22 @@ TEST_F(SSLConfigServiceManagerTest, TrustAnchorIDsAfterPrefChange) {
   // being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
 
-  EXPECT_TRUE(observed_configs_[1]->rev_checking_required_local_anchors);
+  EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                  observed_configs_[1]->trust_anchor_ids),
+              testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                                   std::vector<uint8_t>({0x11, 0x04}),
+                                   std::vector<uint8_t>({0x15, 0x01}),
+                                   std::vector<uint8_t>({0x16, 0x03})));
+  ASSERT_TRUE(observed_configs_[1]->time_bound_trust_anchor_ids);
+  EXPECT_EQ(observed_configs_[1]->time_bound_trust_anchor_ids->max_usable_time,
+            landmark_usable_time);
   EXPECT_THAT(
-      observed_configs_[1]->trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x01})));
-  EXPECT_THAT(
-      observed_configs_[1]->mtc_trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x02, 0x02})));
+      net::x509_util::ParseTlsTrustAnchorIDs(
+          observed_configs_[1]->time_bound_trust_anchor_ids->trust_anchor_ids),
+      testing::ElementsAre(std::vector<uint8_t>({0x10, 0x02}),
+                           std::vector<uint8_t>({0x11, 0x04}),
+                           std::vector<uint8_t>({0x15, 0x01}),
+                           std::vector<uint8_t>({0x16, 0x03, 0x02, 0x01})));
 }
 
 // Tests that prefs are preserved in new SSLConfigs after Trust Anchor IDs are
@@ -524,14 +646,13 @@ TEST_F(SSLConfigServiceManagerTest, PrefsPreservedAfterTrustAnchorIDsUpdated) {
 
   // Update Trust Anchor IDs and check that both the existing pref and the new
   // Trust Anchor IDs are reflected in the new config.
-  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}}, {{0x02, 0x02}}, 0);
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}}, {{0x02, 0x02}},
+                                       std::nullopt);
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
-  EXPECT_THAT(
-      observed_configs_[0]->trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x01})));
-  EXPECT_THAT(
-      observed_configs_[0]->mtc_trust_anchor_ids,
-      testing::UnorderedElementsAre(std::vector<uint8_t>({0x02, 0x02})));
+  EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                  observed_configs_[0]->trust_anchor_ids),
+              testing::ElementsAre(std::vector<uint8_t>({0x01, 0x01}),
+                                   std::vector<uint8_t>({0x02, 0x02})));
   EXPECT_TRUE(observed_configs_[0]->rev_checking_required_local_anchors);
 }
 
@@ -603,3 +724,5 @@ TEST_F(SSLConfigServiceManagerTest, Tls13CiphersComplianceFeatureCnsa) {
   // be configured by the pref.
   EXPECT_TRUE(initial_config_->tls13_cipher_prefer_aes_256);
 }
+
+}  // namespace

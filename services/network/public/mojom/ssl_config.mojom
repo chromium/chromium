@@ -4,6 +4,8 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 enum SSLVersion {
   kTLS12,
   kTLS13,
@@ -38,6 +40,15 @@ enum SSLNamedGroupsPreset {
   //   X25519MLKEM768 (0x11EC),
   //   X25519 (0x001D).
   kCnsa2,
+};
+
+struct TimeBoundTrustAnchorIDs  {
+  // The latest time this set of Trust Anchor IDs should be used.
+  mojo_base.mojom.Time max_usable_time;
+
+  // TLS Trust Anchor IDs that are configured as trusted, encoded in the TLS
+  // list binary representation.
+  array<uint8> trust_anchor_ids;
 };
 
 // This is a combination of net::SSLContextConfig and
@@ -79,18 +90,13 @@ struct SSLConfig {
   // may be enabled or disabled, depending on feature flags.
   bool ech_enabled = true;
 
-  // TLS Trust Anchor IDs that are configured as trusted, each in binary
-  // representation.
-  array<array<uint8>> trust_anchor_ids;
+  // An optional, preferred, set of trusted TLS Trust Anchor IDs which should be
+  // used if the system time is not after the `max_usable_time`.
+  TimeBoundTrustAnchorIDs? time_bound_trust_anchor_ids;
 
-  // Merkle Tree Certificate TLS Trust Anchor IDs that are configured as
-  // trusted, each in binary representation.
-  array<array<uint8>> mtc_trust_anchor_ids;
-
-  // The time (represented as seconds since the unix epoch) that the latest
-  // MtcMetadata was generated. See also MtcMetadata.update_time_seconds in
-  // net/cert/root_store.proto.
-  int64 mtc_update_time_seconds;
+  // TLS Trust Anchor IDs that are configured as trusted, encoded in the TLS
+  // list binary representation.
+  array<uint8> trust_anchor_ids;
 };
 
 // Receives SSL configuration updates.

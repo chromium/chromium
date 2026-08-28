@@ -32,6 +32,7 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -70,6 +71,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_doh_server.h"
+#include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -312,6 +314,22 @@ std::vector<std::string> GetNetLogCertPemChainsForHost(
     observed_cert_pem.push_back(base::JoinString(chain_pems, "\n"));
   }
   return observed_cert_pem;
+}
+
+std::vector<std::vector<uint8_t>> ConcatAndSort(
+    const std::vector<std::vector<uint8_t>>& a,
+    const std::vector<std::vector<uint8_t>>& b) {
+  std::vector<std::vector<uint8_t>> result = a;
+  base::Extend(result, b);
+  std::sort(result.begin(), result.end());
+  return result;
+}
+
+std::vector<std::vector<uint8_t>> Sorted(
+    const std::vector<std::vector<uint8_t>>& a) {
+  std::vector<std::vector<uint8_t>> result = a;
+  std::sort(result.begin(), result.end());
+  return result;
 }
 
 }  // namespace
@@ -719,7 +737,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class PKIMetadataComponentChromeRootStoreUpdateTest
     : public InProcessBrowserTest,
-      public PKIMetadataComponentInstallerService::Observer {
+      public PKIMetadataComponentInstallerService::Observer,
+      public network::mojom::SSLConfigClient {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
@@ -734,6 +753,25 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         std::nullopt);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    network::mojom::NetworkContextParamsPtr context_params =
+        g_browser_process->system_network_context_manager()
+            ->CreateDefaultNetworkContextParams();
+    last_ssl_config_ = context_params->initial_ssl_config->Clone();
+    ssl_config_client_receiver_.Bind(
+        std::move(context_params->ssl_config_client_receiver));
+  }
+
+  void OnSSLConfigUpdated(network::mojom::SSLConfigPtr ssl_config) override {
+    last_ssl_config_ = ssl_config->Clone();
+  }
+
+  const network::mojom::SSLConfig& last_ssl_config() const {
+    return *last_ssl_config_;
   }
 
   class CRSWaiter {
@@ -830,6 +868,11 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
   base::OnceClosure crs_config_closure_;
   base::OnceClosure mtc_metadata_config_closure_;
   int64_t last_used_crs_version_ = net::CompiledChromeRootStoreVersion();
+
+  network::mojom::SSLConfigPtr last_ssl_config_ =
+      network::mojom::SSLConfig::New();
+  mojo::Receiver<network::mojom::SSLConfigClient> ssl_config_client_receiver_{
+      this};
 };
 
 IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
@@ -1127,6 +1170,13 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
 // Tests that when new network contexts are created after a Trust Anchor IDs
 // component update is received, the new network context uses the Trust Anchor
 // IDs from the component updater.
+//
+// TODO(crbug.com/432044228): This is one of the few remaining uses of
+// GetTrustAnchorIDsForTesting, but it can't be switched to use
+// last_ssl_config() since that doesn't tell us whether the restarted network
+// service is using the right IDs. Consider changing this to an end to end test
+// that connects to a test server to see what IDs were sent, and then removing
+// GetTrustAnchorIDsForTesting?
 IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
                        NewNetworkContextAfterUpdatingTrustAnchorIDs) {
   // This test is only works with an out-of-process network service because it
@@ -1310,10 +1360,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                        TrustAnchorIDsWhenUpdateMtcMetadataBeforeCRS) {
-  content::StoragePartition* partition =
-      chrome_test_utils::GetActiveWebContents(this)
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition();
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
   scoped_refptr<net::X509Certificate> root_cert =
       net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
@@ -1327,25 +1373,29 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
 
   // Test that the initial set of Trust Anchor IDs comes from the compiled-in
   // root store.
-  {
-    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
-        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
-    if (mtcs_enabled()) {
-      base::Extend(
-          expected_trust_anchor_ids,
-          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore());
-    }
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
-    EXPECT_THAT(future.Get(),
-                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
-  }
+  EXPECT_THAT(
+      net::x509_util::ParseTlsTrustAnchorIDs(
+          last_ssl_config().trust_anchor_ids),
+      testing::ElementsAreArray(ConcatAndSort(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+          mtcs_enabled() ? net::TrustStoreChrome::
+                               GetTrustedMtcCaIDsFromCompiledInRootStore()
+                         : std::vector<std::vector<uint8_t>>())));
+  EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
 
   static constexpr uint8_t kMtcCaWithLandmarksId[] = {0x01, 0x02, 0x03};
   static constexpr uint8_t kMtcCaInMetadataWithNoLandmarksId[] = {0x01, 0x02,
                                                                   0x04};
   static constexpr uint8_t kMtcCaStandaloneId[] = {0x01, 0x02, 0x05};
+
+  // The MTC metadata only stores the update time with second accuracy, so
+  // truncate the time before calculating test expectations.
+  const base::Time metadata_update_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 * 1000);
+  const base::Time expected_metadata_max_usable_time =
+      metadata_update_time + base::Days(47);
+
   // Install MTC metadata update that contains trusted landmark data for MTCs.
   // Before we've loaded a CRS update proto, these should be used if they match
   // the base_ids of the compiled-in trusted MTC issuers. The TAIs for the
@@ -1353,7 +1403,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   {
     chrome_root_store::MtcMetadata mtc_metadata_proto;
     mtc_metadata_proto.set_update_time_seconds(
-        SecondsSinceEpoch(base::Time::Now()));
+        SecondsSinceEpoch(metadata_update_time));
 
     // MTC anchor metadata matching the fake MTC anchors that will be loaded in
     // the CRS update proto in the next part of the test.
@@ -1385,11 +1435,13 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
       revoked_range->set_end_exclusive(10);
     }
 
-    // MTC anchor metadata matching a compiled-in MTC anchor.
-    auto expected_builtin_trusted_mtc_ca_ids =
+    // Create an MTC anchor metadata matching a compiled-in MTC anchor, so that
+    // the compiled-in CA will use a landmark relative TAI.
+    auto expected_builtin_trusted_mtcs_with_landmark =
         net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore();
-    if (!expected_builtin_trusted_mtc_ca_ids.empty()) {
-      std::vector<uint8_t> ca_id = expected_builtin_trusted_mtc_ca_ids.back();
+    if (!expected_builtin_trusted_mtcs_with_landmark.empty()) {
+      std::vector<uint8_t> ca_id =
+          expected_builtin_trusted_mtcs_with_landmark.back();
       chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
           mtc_metadata_proto.add_mtc_anchor_data();
       mtc_anchor_metadata->set_ca_id(base::as_string_view(ca_id));
@@ -1406,7 +1458,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
       subtree->set_hash(std::string(32, 'a'));
       // Replace this CA id in the list of expected IDs, since this CA will be
       // advertised using the landmark group ID instead.
-      expected_builtin_trusted_mtc_ca_ids.back() =
+      expected_builtin_trusted_mtcs_with_landmark.back() =
           net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(ca_id, 3, 2);
     }
 
@@ -1417,21 +1469,41 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
         ->FlushSSLConfigManagerForTesting();
     // Test that the set of Trust Anchor IDs is the compiled-in ones plus the
     // one matching the builtin MTC Anchor that we added a matching metadata.
-    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
-        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
-    if (mtcs_enabled() && !expected_builtin_trusted_mtc_ca_ids.empty()) {
-      base::Extend(expected_trust_anchor_ids,
-                   expected_builtin_trusted_mtc_ca_ids);
+    if (mtcs_enabled()) {
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().trust_anchor_ids),
+          testing::ElementsAreArray(ConcatAndSort(
+              net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+              net::TrustStoreChrome::
+                  GetTrustedMtcCaIDsFromCompiledInRootStore())));
+    } else {
+      EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                      last_ssl_config().trust_anchor_ids),
+                  testing::ElementsAreArray(
+                      Sorted(net::TrustStoreChrome::
+                                 GetTrustAnchorIDsFromCompiledInRootStore())));
     }
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
-    EXPECT_THAT(future.Get(),
-                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+    if (mtcs_enabled() &&
+        !expected_builtin_trusted_mtcs_with_landmark.empty()) {
+      ASSERT_TRUE(last_ssl_config().time_bound_trust_anchor_ids);
+      EXPECT_EQ(last_ssl_config().time_bound_trust_anchor_ids->max_usable_time,
+                expected_metadata_max_usable_time);
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().time_bound_trust_anchor_ids->trust_anchor_ids),
+          testing::ElementsAreArray(ConcatAndSort(
+              net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+              expected_builtin_trusted_mtcs_with_landmark)));
+    } else {
+      EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
+    }
   }
 
   // Install CRS update that contains trusted MTC Issuers matching the added
-  // MtcMetadata, as well as a traditional anchor with a TAI.
+  // MtcMetadata, as well as a traditional anchor with a TAI. The TAIs for the
+  // added anchors should be configured, the TAI for the metadata that matched
+  // the compiled-in CA should no longer be configured.
   {
     chrome_root_store::RootStore root_store_proto;
     root_store_proto.set_version_major(++crs_version);
@@ -1462,34 +1534,41 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
 
-    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids = {
-        std::vector<uint8_t>({0x05, 0x06, 0x07})};
+    const auto kExpectedClassicIds = std::vector<std::vector<uint8_t>>(
+        {std::vector<uint8_t>({0x05, 0x06, 0x07})});
+    std::vector<std::vector<uint8_t>> expected_mtc_ca_ids;
+    std::vector<std::vector<uint8_t>> expected_mtc_ids_with_landmarks;
     if (expect_test_mtc_is_used()) {
-      // Once a Chrome Root Store update containing the matching MtcAnchor is
-      // loaded, the landmark relative MTC trust anchor IDs should be usable
-      // immediately. The MTC CA that did not have landmark data should also be
-      // advertised using the CA id.
-      base::Extend(expected_trust_anchor_ids,
-                   {base::ToVector(kMtcCaStandaloneId),
-                    base::ToVector(kMtcCaInMetadataWithNoLandmarksId),
-                    net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
-                        kMtcCaWithLandmarksId, 2, 5)});
+      expected_mtc_ca_ids.assign(
+          {base::ToVector(kMtcCaStandaloneId),
+           base::ToVector(kMtcCaInMetadataWithNoLandmarksId),
+           base::ToVector(kMtcCaWithLandmarksId)});
+      expected_mtc_ids_with_landmarks.assign(
+          {base::ToVector(kMtcCaStandaloneId),
+           base::ToVector(kMtcCaInMetadataWithNoLandmarksId),
+           net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
+               kMtcCaWithLandmarksId, 2, 5)});
+      ASSERT_TRUE(last_ssl_config().time_bound_trust_anchor_ids);
+      EXPECT_EQ(last_ssl_config().time_bound_trust_anchor_ids->max_usable_time,
+                expected_metadata_max_usable_time);
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().time_bound_trust_anchor_ids->trust_anchor_ids),
+          testing::ElementsAreArray(ConcatAndSort(
+              kExpectedClassicIds, expected_mtc_ids_with_landmarks)));
+    } else {
+      EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
     }
-    EXPECT_THAT(future.Get(),
-                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+    EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                    last_ssl_config().trust_anchor_ids),
+                testing::ElementsAreArray(
+                    ConcatAndSort(kExpectedClassicIds, expected_mtc_ca_ids)));
   }
 }
 
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                        TrustAnchorIDsWhenUpdateCRSBeforeMtcMetadata) {
-  content::StoragePartition* partition =
-      chrome_test_utils::GetActiveWebContents(this)
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition();
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
   scoped_refptr<net::X509Certificate> root_cert =
       net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
@@ -1503,20 +1582,15 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
 
   // Test that the initial set of Trust Anchor IDs comes from the compiled-in
   // root store.
-  {
-    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
-        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
-    if (mtcs_enabled()) {
-      base::Extend(
-          expected_trust_anchor_ids,
-          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore());
-    }
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
-    EXPECT_THAT(future.Get(),
-                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
-  }
+  EXPECT_THAT(
+      net::x509_util::ParseTlsTrustAnchorIDs(
+          last_ssl_config().trust_anchor_ids),
+      testing::ElementsAreArray(ConcatAndSort(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+          mtcs_enabled() ? net::TrustStoreChrome::
+                               GetTrustedMtcCaIDsFromCompiledInRootStore()
+                         : std::vector<std::vector<uint8_t>>())));
+  EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
 
   static constexpr uint8_t kMtcCaWithLandmarksId[] = {0x01, 0x02, 0x03};
   static constexpr uint8_t kMtcCaInMetadataWithNoLandmarksId[] = {0x01, 0x02,
@@ -1555,10 +1629,6 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
-
     std::vector<std::vector<uint8_t>> expected_trust_anchor_ids = {
         std::vector<uint8_t>({0x05, 0x06, 0x07})};
     if (expect_test_mtc_is_used()) {
@@ -1569,9 +1639,19 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                     base::ToVector(kMtcCaInMetadataWithNoLandmarksId),
                     base::ToVector(kMtcCaWithLandmarksId)});
     }
-    EXPECT_THAT(future.Get(),
-                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+    EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                    last_ssl_config().trust_anchor_ids),
+                testing::ElementsAreArray(Sorted(expected_trust_anchor_ids)));
+    EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
   }
+
+  // The MTC metadata only stores the update time with second accuracy, so
+  // truncate the time before calculating test expectations.
+  const base::Time metadata_update_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 * 1000);
+  const base::Time expected_metadata_max_usable_time =
+      metadata_update_time + base::Days(47);
 
   // Install MTC metadata update that contains Trust AnchorIDs for
   // landmark relative MTCs. Since the SignerSet was already loaded, the
@@ -1579,7 +1659,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   {
     chrome_root_store::MtcMetadata mtc_metadata_proto;
     mtc_metadata_proto.set_update_time_seconds(
-        SecondsSinceEpoch(base::Time::Now()));
+        SecondsSinceEpoch(metadata_update_time));
     {
       chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
           mtc_metadata_proto.add_mtc_anchor_data();
@@ -1613,33 +1693,41 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
-    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids = {
-        std::vector<uint8_t>({0x05, 0x06, 0x07})};
+
+    const auto kExpectedClassicIds = std::vector<std::vector<uint8_t>>(
+        {std::vector<uint8_t>({0x05, 0x06, 0x07})});
+    std::vector<std::vector<uint8_t>> expected_mtc_ca_ids;
+    std::vector<std::vector<uint8_t>> expected_mtc_ids_with_landmarks;
     if (expect_test_mtc_is_used()) {
-      // Once a Chrome Root Store update containing the matching MtcAnchor is
-      // loaded, the landmark relative MTC trust anchor IDs should be usable
-      // immediately. The MTC CA that did not have landmark data should also be
-      // advertised using the CA id.
-      base::Extend(expected_trust_anchor_ids,
-                   {base::ToVector(kMtcCaStandaloneId),
-                    base::ToVector(kMtcCaInMetadataWithNoLandmarksId),
-                    net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
-                        kMtcCaWithLandmarksId, 2, 5)});
+      expected_mtc_ca_ids.assign(
+          {base::ToVector(kMtcCaStandaloneId),
+           base::ToVector(kMtcCaInMetadataWithNoLandmarksId),
+           base::ToVector(kMtcCaWithLandmarksId)});
+      expected_mtc_ids_with_landmarks.assign(
+          {base::ToVector(kMtcCaStandaloneId),
+           base::ToVector(kMtcCaInMetadataWithNoLandmarksId),
+           net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
+               kMtcCaWithLandmarksId, 2, 5)});
+      ASSERT_TRUE(last_ssl_config().time_bound_trust_anchor_ids);
+      EXPECT_EQ(last_ssl_config().time_bound_trust_anchor_ids->max_usable_time,
+                expected_metadata_max_usable_time);
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().time_bound_trust_anchor_ids->trust_anchor_ids),
+          testing::ElementsAreArray(ConcatAndSort(
+              kExpectedClassicIds, expected_mtc_ids_with_landmarks)));
+    } else {
+      EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
     }
-    EXPECT_THAT(future.Get(),
-                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
+    EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                    last_ssl_config().trust_anchor_ids),
+                testing::ElementsAreArray(
+                    ConcatAndSort(kExpectedClassicIds, expected_mtc_ca_ids)));
   }
 }
 
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                        StaleMtcMetadata) {
-  content::StoragePartition* partition =
-      chrome_test_utils::GetActiveWebContents(this)
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition();
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
   scoped_refptr<net::X509Certificate> root_cert =
       net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
@@ -1653,20 +1741,15 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
 
   // Test that the initial set of Trust Anchor IDs comes from the compiled-in
   // root store.
-  {
-    std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
-        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
-    if (mtcs_enabled()) {
-      base::Extend(
-          expected_trust_anchor_ids,
-          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore());
-    }
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
-    EXPECT_THAT(future.Get(),
-                testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
-  }
+  EXPECT_THAT(
+      net::x509_util::ParseTlsTrustAnchorIDs(
+          last_ssl_config().trust_anchor_ids),
+      testing::ElementsAreArray(ConcatAndSort(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+          mtcs_enabled() ? net::TrustStoreChrome::
+                               GetTrustedMtcCaIDsFromCompiledInRootStore()
+                         : std::vector<std::vector<uint8_t>>())));
+  EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
 
   static constexpr uint8_t kMtcCaWithLandmarksId[] = {0x01, 0x02, 0x03};
   // Install CRS update that contains a trusted MtcAnchor matching the
@@ -1695,19 +1778,21 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
     if (expect_test_mtc_is_used()) {
       // MTCMetadata hasn't been loaded, so the TAI have the MTC CA ID instead
       // of the landmark group ID.
-      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
-                                    std::vector<uint8_t>({0x05, 0x06, 0x07}),
-                                    base::ToVector(kMtcCaWithLandmarksId)));
+      EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                      last_ssl_config().trust_anchor_ids),
+                  testing::ElementsAreArray(
+                      Sorted({std::vector<uint8_t>({0x05, 0x06, 0x07}),
+                              base::ToVector(kMtcCaWithLandmarksId)})));
     } else {
-      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
-                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().trust_anchor_ids),
+          testing::ElementsAre(std::vector<uint8_t>({0x05, 0x06, 0x07})));
     }
+    EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
   }
 
   // Populate a MtcMetadata proto that will be used as the base for each of the
@@ -1743,45 +1828,63 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
     if (expect_test_mtc_is_used()) {
       // MTCMetadata update should have been ignored, so the TAI have the MTC CA
       // ID instead of the landmark group ID.
-      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
-                                    std::vector<uint8_t>({0x05, 0x06, 0x07}),
-                                    base::ToVector(kMtcCaWithLandmarksId)));
+      EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                      last_ssl_config().trust_anchor_ids),
+                  testing::ElementsAreArray(
+                      Sorted({std::vector<uint8_t>({0x05, 0x06, 0x07}),
+                              base::ToVector(kMtcCaWithLandmarksId)})));
     } else {
-      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
-                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().trust_anchor_ids),
+          testing::ElementsAre(std::vector<uint8_t>({0x05, 0x06, 0x07})));
     }
+    EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
   }
 
+  // The MTC metadata only stores the update time with second accuracy, so
+  // truncate the time before calculating test expectations.
+  const base::Time metadata_update_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 * 1000);
+  const base::Time expected_metadata_max_usable_time =
+      metadata_update_time + base::Days(47);
   // Install a new MTC metadata update that contains Trust Anchor IDs for
   // landmark relative MTCs and which is up to date.
   {
     chrome_root_store::MtcMetadata new_mtc_metadata_proto =
         base_mtc_metadata_proto;
     new_mtc_metadata_proto.set_update_time_seconds(
-        SecondsSinceEpoch(base::Time::Now()));
+        SecondsSinceEpoch(metadata_update_time));
     InstallMtcMetadataUpdate(new_mtc_metadata_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
     if (expect_test_mtc_is_used()) {
-      EXPECT_THAT(future.Get(),
-                  testing::UnorderedElementsAre(
-                      std::vector<uint8_t>({0x05, 0x06, 0x07}),
-                      net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
-                          kMtcCaWithLandmarksId, 2, 5)));
+      EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                      last_ssl_config().trust_anchor_ids),
+                  testing::ElementsAreArray(
+                      Sorted({std::vector<uint8_t>({0x05, 0x06, 0x07}),
+                              base::ToVector(kMtcCaWithLandmarksId)})));
+      ASSERT_TRUE(last_ssl_config().time_bound_trust_anchor_ids);
+      EXPECT_EQ(last_ssl_config().time_bound_trust_anchor_ids->max_usable_time,
+                expected_metadata_max_usable_time);
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().time_bound_trust_anchor_ids->trust_anchor_ids),
+          Sorted({std::vector<uint8_t>({0x05, 0x06, 0x07}),
+                  net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
+                      kMtcCaWithLandmarksId, 2, 5)}));
     } else {
-      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
-                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().trust_anchor_ids),
+          testing::ElementsAre(std::vector<uint8_t>({0x05, 0x06, 0x07})));
+      EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
     }
   }
 
@@ -1803,22 +1906,31 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
-    partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
-        future.GetCallback());
-    // This MTCMetadata update should have been ignored, so the TAI will still
-    // be from the previous successful update. (This is slightly weird test
-    // scenario since you wouldn't normally expect to have a still-valid
-    // component and then be served an older, out-of-date one.)
     if (expect_test_mtc_is_used()) {
-      EXPECT_THAT(future.Get(),
-                  testing::UnorderedElementsAre(
-                      std::vector<uint8_t>({0x05, 0x06, 0x07}),
-                      net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
-                          kMtcCaWithLandmarksId, 2, 5)));
+      // This MTCMetadata update should have been ignored, so the TAI will still
+      // be from the previous successful update. (This is slightly weird test
+      // scenario since you wouldn't normally expect to have a still-valid
+      // component and then be served an older, out-of-date one.)
+      EXPECT_THAT(net::x509_util::ParseTlsTrustAnchorIDs(
+                      last_ssl_config().trust_anchor_ids),
+                  testing::ElementsAreArray(
+                      Sorted({std::vector<uint8_t>({0x05, 0x06, 0x07}),
+                              base::ToVector(kMtcCaWithLandmarksId)})));
+      ASSERT_TRUE(last_ssl_config().time_bound_trust_anchor_ids);
+      EXPECT_EQ(last_ssl_config().time_bound_trust_anchor_ids->max_usable_time,
+                expected_metadata_max_usable_time);
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().time_bound_trust_anchor_ids->trust_anchor_ids),
+          Sorted({std::vector<uint8_t>({0x05, 0x06, 0x07}),
+                  net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
+                      kMtcCaWithLandmarksId, 2, 5)}));
     } else {
-      EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
-                                    std::vector<uint8_t>({0x05, 0x06, 0x07})));
+      EXPECT_THAT(
+          net::x509_util::ParseTlsTrustAnchorIDs(
+              last_ssl_config().trust_anchor_ids),
+          testing::ElementsAre(std::vector<uint8_t>({0x05, 0x06, 0x07})));
+      EXPECT_FALSE(last_ssl_config().time_bound_trust_anchor_ids);
     }
   }
 }

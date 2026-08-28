@@ -38,6 +38,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
+#include "net/cert/x509_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/alternate_protocol_usage.h"
@@ -7772,7 +7773,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
   AddScopedFeatureList().InitAndDisableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
-  config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
+  config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
+      {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
   ssl_config_service()->UpdateSSLConfigAndNotify(config);
 
   SequencedSocketData data;
@@ -7810,7 +7812,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
   AddScopedFeatureList().InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
-  config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
+  config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
+      {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
   ssl_config_service()->UpdateSSLConfigAndNotify(config);
 
   SequencedSocketData data;
@@ -7849,7 +7852,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsEnabledWithECHDisabled) {
   AddScopedFeatureList().InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
-  config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
+  config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
+      {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
   ssl_config_service()->UpdateSSLConfigAndNotify(config);
 
   SetEchMode(EchMode::kDisabled, "www.example.org");

@@ -15578,7 +15578,8 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDs) {
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig ssl_config;
-  ssl_config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x01, 0x01}};
+  ssl_config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
+      {{0x01, 0x02, 0x03}, {0x01, 0x01}});
   ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
 
   HostResolverEndpointResult endpoint;
@@ -15725,73 +15726,6 @@ TEST_P(QuicSessionPoolTest, ServerHandshakePaddingZeroPadding) {
             GetIntegerValueFromParams(entries[0], "requested_server_padding"));
 }
 
-// Test that MTC Trust Anchor IDs are provided via GetSSLConfig() when enabled.
-TEST_P(QuicSessionPoolTest, MtcTrustAnchorIDs) {
-  base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kVerifyMTCs}, {});
-#else
-  feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
-#endif
-
-  SSLContextConfig ssl_config;
-  ssl_config.mtc_trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x01, 0x01}};
-  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
-
-  HostResolverEndpointResult endpoint;
-  endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
-  endpoint.metadata.trust_anchor_ids = {
-      {0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 05}};
-
-  host_resolver_ = std::make_unique<MockHostResolver>();
-  host_resolver_->rules()->AddRule(
-      kDefaultServerHostName,
-      MockHostResolverBase::RuleResolver::RuleResult({endpoint}));
-
-  Initialize();
-  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
-
-  MockQuicData socket_data(version_);
-  socket_data.AddReadPauseForever();
-  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddSocketDataToFactory(socket_factory_.get());
-
-  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
-                                           NetLogCaptureMode::kDefault);
-  RequestBuilder builder(this);
-  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
-  ASSERT_THAT(callback_.WaitForResult(), IsOk());
-
-  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
-  ASSERT_TRUE(session);
-  quic::QuicSSLConfig config = session->GetSSLConfig();
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  EXPECT_THAT(
-      x509_util::ParseTlsTrustAnchorIDs(
-          base::as_byte_span(config.trust_anchor_ids.value())),
-      testing::UnorderedElementsAre(std::vector<uint8_t>{0x01, 0x02, 0x03},
-                                    std::vector<uint8_t>{0x01, 0x01}));
-#else
-  EXPECT_FALSE(config.trust_anchor_ids.has_value());
-#endif
-  auto entries =
-      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
-  ASSERT_EQ(1u, entries.size());
-  EXPECT_EQ("1.2.3, 2.2, 4.5",
-            GetStringValueFromParams(entries[0], "trust_anchor_ids_from_dns"));
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  EXPECT_THAT(
-      base::SplitString(
-          GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"),
-          ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
-      testing::UnorderedElementsAre("1.2.3", "1.1"));
-#else
-  EXPECT_FALSE(entries[0].params.contains("selected_trust_anchor_ids"));
-#endif
-}
-
 // Test that when Trust Anchor IDs are not advertised by the server, but are
 // enabled on the client, we still unconditionally send them (bypassing DNS).
 TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotAdvertisedInDns) {
@@ -15799,7 +15733,8 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotAdvertisedInDns) {
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig ssl_config;
-  ssl_config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x01, 0x01}};
+  ssl_config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
+      {{0x01, 0x02, 0x03}, {0x01, 0x01}});
   ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
 
   HostResolverEndpointResult endpoint;
@@ -15852,7 +15787,8 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsDisabled) {
   feature_list.InitAndDisableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig ssl_config;
-  ssl_config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x01, 0x01}};
+  ssl_config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
+      {{0x01, 0x02, 0x03}, {0x01, 0x01}});
   ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
 
   HostResolverEndpointResult endpoint;

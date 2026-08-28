@@ -76,7 +76,7 @@ class OCSPBrowserTest : public InProcessBrowserTest,
     network::mojom::NetworkContextParamsPtr context_params =
         g_browser_process->system_network_context_manager()
             ->CreateDefaultNetworkContextParams();
-    last_ssl_config_ = *context_params->initial_ssl_config;
+    last_ssl_config_ = context_params->initial_ssl_config->Clone();
     receiver_.Bind(std::move(context_params->ssl_config_client_receiver));
   }
 
@@ -103,7 +103,7 @@ class OCSPBrowserTest : public InProcessBrowserTest,
 
   void EnableRevocationChecking() {
     // OCSP checking is disabled by default.
-    EXPECT_FALSE(last_ssl_config_.rev_checking_enabled);
+    EXPECT_FALSE(last_ssl_config().rev_checking_enabled);
     EXPECT_FALSE(g_browser_process->system_network_context_manager()
                      ->CreateDefaultNetworkContextParams()
                      ->initial_ssl_config->rev_checking_enabled);
@@ -117,7 +117,7 @@ class OCSPBrowserTest : public InProcessBrowserTest,
                      policy::key::kEnableOnlineRevocationChecks,
                      prefs::kCertRevocationCheckingEnabled));
     run_loop.Run();
-    EXPECT_TRUE(last_ssl_config_.rev_checking_enabled);
+    EXPECT_TRUE(last_ssl_config().rev_checking_enabled);
     EXPECT_TRUE(g_browser_process->system_network_context_manager()
                     ->CreateDefaultNetworkContextParams()
                     ->initial_ssl_config->rev_checking_enabled);
@@ -156,13 +156,13 @@ class OCSPBrowserTest : public InProcessBrowserTest,
 
   // network::mojom::SSLConfigClient implementation.
   void OnSSLConfigUpdated(network::mojom::SSLConfigPtr ssl_config) override {
-    last_ssl_config_ = *ssl_config;
+    last_ssl_config_ = ssl_config->Clone();
     if (ssl_config_updated_callback_)
       ssl_config_updated_callback_.Run();
   }
 
   const network::mojom::SSLConfig& last_ssl_config() const {
-    return last_ssl_config_;
+    return *last_ssl_config_;
   }
 
  private:
@@ -178,7 +178,8 @@ class OCSPBrowserTest : public InProcessBrowserTest,
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   base::RepeatingClosure ssl_config_updated_callback_;
-  network::mojom::SSLConfig last_ssl_config_;
+  network::mojom::SSLConfigPtr last_ssl_config_ =
+      network::mojom::SSLConfig::New();
   mojo::Receiver<network::mojom::SSLConfigClient> receiver_{this};
 };
 

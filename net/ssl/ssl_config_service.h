@@ -14,7 +14,6 @@
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_config.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -29,6 +28,16 @@ struct NET_EXPORT SSLNamedGroupInfo {
   bool send_key_share = false;
 
   bool operator==(const SSLNamedGroupInfo&) const = default;
+};
+
+struct NET_EXPORT TimeBoundTrustAnchorIDs {
+  // The latest time this set of Trust Anchor IDs should be used.
+  base::Time max_usable_time;
+
+  // The set of Trust Anchor IDs, in TLS encoded form.
+  std::vector<uint8_t> trust_anchor_ids;
+
+  bool operator==(const TimeBoundTrustAnchorIDs&) const = default;
 };
 
 // Configuration options for SSL connections.
@@ -64,7 +73,7 @@ struct NET_EXPORT SSLContextConfig {
   // handshake, so that the server can serve a certificate that the client
   // trusts. The list is returned in wire format (a series of 8-bit length
   // prefixed non-empty strings) such that it can be passed into BoringSSL.
-  std::vector<uint8_t> SelectAllTrustAnchorIDs() const;
+  const std::vector<uint8_t>& SelectAllTrustAnchorIDs() const;
 
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
@@ -92,18 +101,14 @@ struct NET_EXPORT SSLContextConfig {
   // default.
   std::vector<SSLNamedGroupInfo> supported_named_groups;
 
-  // TLS Trust Anchor IDs that are configured as trusted, as a list of Trust
-  // Anchor IDs in binary representation.
-  absl::flat_hash_set<std::vector<uint8_t>> trust_anchor_ids;
+  // An optional, preferred, set of trusted TLS Trust Anchor IDs which should be
+  // used if the system time is not after the `max_usable_time`.
+  std::optional<TimeBoundTrustAnchorIDs> time_bound_trust_anchor_ids;
 
-  // MTC TLS Trust Anchor IDs that are configured as trusted, as a list of
-  // Trust Anchor IDs in binary representation.
-  std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids;
-
-  // The time (represented as seconds since the unix epoch) that the latest
-  // MtcMetadata was generated. See MtcMetadata.update_time_seconds in
-  // net/cert/root_store.proto.
-  int64_t mtc_update_time_seconds = 0;
+  // TLS Trust Anchor IDs that are configured as trusted, in TLS encoded form.
+  // This should be used if `time_bound_trust_anchor_ids` is not present or if
+  // the system time is after `time_bound_trust_anchor_ids->max_usable_time`.
+  std::vector<uint8_t> trust_anchor_ids;
 };
 
 // The interface for retrieving global SSL configuration.  This interface

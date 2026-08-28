@@ -173,15 +173,11 @@ TEST(SSLContextConfigTest, TrustAnchorIDsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kTLSTrustAnchorIDs);
 
-  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
-  const std::vector<uint8_t> id2 = {0x02, 0x02};
-
   SSLContextConfig config;
 
   EXPECT_FALSE(config.ShouldAdvertiseTrustAnchorIDs());
 
-  config.trust_anchor_ids.insert(id1);
-  config.mtc_trust_anchor_ids.push_back(id2);
+  config.trust_anchor_ids = {0x00, 0x02, 0x01, 0x11};
 
   EXPECT_FALSE(config.ShouldAdvertiseTrustAnchorIDs());
 }
@@ -213,118 +209,28 @@ TEST(SSLContextConfigTest, RequestServerPadding) {
   }
 }
 
-TEST(SSLContextConfigTest, SelectTrustAnchorIDsUnconditionalAllEnabled) {
-  base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kNonMtcTrustAnchorIDs,
-       features::kVerifyMTCs},
-      {});
-#else
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kNonMtcTrustAnchorIDs}, {});
-#endif
-
-  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
-  const std::vector<uint8_t> id2 = {0x02, 0x02};
-  const std::vector<uint8_t> id3 = {0x13};
-  const std::vector<uint8_t> mtc1 = {0x99, 0x02, 0x03};
-
+TEST(SSLContextConfigTest, TrustAnchorIDs) {
+  base::test::ScopedFeatureList feature_list{features::kTLSTrustAnchorIDs};
   SSLContextConfig config;
-  config.trust_anchor_ids.insert(id1);
-  config.trust_anchor_ids.insert(id2);
-  config.trust_anchor_ids.insert(id3);
-  config.mtc_trust_anchor_ids = {mtc1};
-
-  EXPECT_TRUE(config.ShouldAdvertiseTrustAnchorIDs());
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  EXPECT_THAT(
-      x509_util::ParseTlsTrustAnchorIDs(config.SelectAllTrustAnchorIDs()),
-      testing::UnorderedElementsAre(id1, id2, id3, mtc1));
-#else
-  EXPECT_THAT(
-      x509_util::ParseTlsTrustAnchorIDs(config.SelectAllTrustAnchorIDs()),
-      testing::UnorderedElementsAre(id1, id2, id3));
-#endif
-}
-
-TEST(SSLContextConfigTest, SelectTrustAnchorIDsUnconditionalNonMtcOnly) {
-  base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kNonMtcTrustAnchorIDs},
-      {features::kVerifyMTCs});
-#else
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kNonMtcTrustAnchorIDs}, {});
-#endif
-
-  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
-  const std::vector<uint8_t> id2 = {0x02, 0x02};
-  const std::vector<uint8_t> id3 = {0x13};
-  const std::vector<uint8_t> mtc1 = {0x99, 0x02, 0x03};
-
-  SSLContextConfig config;
-  config.trust_anchor_ids.insert(id1);
-  config.trust_anchor_ids.insert(id2);
-  config.trust_anchor_ids.insert(id3);
-  config.mtc_trust_anchor_ids = {mtc1};
-
-  EXPECT_TRUE(config.ShouldAdvertiseTrustAnchorIDs());
-  EXPECT_THAT(
-      x509_util::ParseTlsTrustAnchorIDs(config.SelectAllTrustAnchorIDs()),
-      testing::UnorderedElementsAre(id1, id2, id3));
-}
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-TEST(SSLContextConfigTest, SelectTrustAnchorIDsUnconditionalMtcOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kVerifyMTCs},
-      {features::kNonMtcTrustAnchorIDs});
-
-  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
-  const std::vector<uint8_t> id2 = {0x02, 0x02};
-  const std::vector<uint8_t> id3 = {0x13};
-  const std::vector<uint8_t> mtc1 = {0x99, 0x02, 0x03};
-
-  SSLContextConfig config;
-  config.trust_anchor_ids.insert(id1);
-  config.trust_anchor_ids.insert(id2);
-  config.trust_anchor_ids.insert(id3);
-  config.mtc_trust_anchor_ids = {mtc1};
-
-  EXPECT_TRUE(config.ShouldAdvertiseTrustAnchorIDs());
-  EXPECT_THAT(
-      x509_util::ParseTlsTrustAnchorIDs(config.SelectAllTrustAnchorIDs()),
-      testing::UnorderedElementsAre(mtc1));
-}
-#endif
-
-TEST(SSLContextConfigTest, SelectTrustAnchorIDsUnconditionalAllDisabled) {
-  base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs},
-      {features::kNonMtcTrustAnchorIDs, features::kVerifyMTCs});
-#else
-  feature_list.InitWithFeatures({features::kTLSTrustAnchorIDs},
-                                {features::kNonMtcTrustAnchorIDs});
-#endif
-
-  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
-  const std::vector<uint8_t> id2 = {0x02, 0x02};
-  const std::vector<uint8_t> id3 = {0x13};
-  const std::vector<uint8_t> mtc1 = {0x99, 0x02, 0x03};
-
-  SSLContextConfig config;
-  config.trust_anchor_ids.insert(id1);
-  config.trust_anchor_ids.insert(id2);
-  config.trust_anchor_ids.insert(id3);
-  config.mtc_trust_anchor_ids = {mtc1};
 
   EXPECT_FALSE(config.ShouldAdvertiseTrustAnchorIDs());
-  EXPECT_TRUE(config.SelectAllTrustAnchorIDs().empty());
+
+  const std::vector<uint8_t> kTaiList1 = {0x00, 0x02, 0x01, 0x11};
+  config.trust_anchor_ids = kTaiList1;
+  EXPECT_TRUE(config.ShouldAdvertiseTrustAnchorIDs());
+  EXPECT_EQ(config.SelectAllTrustAnchorIDs(), kTaiList1);
+
+  const std::vector<uint8_t> kTaiList2 = {0x00, 0x02, 0x01, 0x21};
+  config.time_bound_trust_anchor_ids = TimeBoundTrustAnchorIDs{
+      .max_usable_time = base::Time::Now() + base::Seconds(1000),
+      .trust_anchor_ids = kTaiList2};
+  EXPECT_TRUE(config.ShouldAdvertiseTrustAnchorIDs());
+  EXPECT_EQ(config.SelectAllTrustAnchorIDs(), kTaiList2);
+
+  config.time_bound_trust_anchor_ids->max_usable_time =
+      base::Time::Now() - base::Seconds(10);
+  EXPECT_TRUE(config.ShouldAdvertiseTrustAnchorIDs());
+  EXPECT_EQ(config.SelectAllTrustAnchorIDs(), kTaiList1);
 }
 
 }  // namespace net

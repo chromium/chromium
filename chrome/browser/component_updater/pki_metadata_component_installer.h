@@ -22,6 +22,8 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
+struct SSLConfigServiceMtcLandmarkInfo;
+
 namespace component_updater {
 
 // The service that does the heavy lifting to install the PKI metadata
@@ -129,6 +131,10 @@ class PKIMetadataComponentInstallerService final {
   void UpdateMtcMetadataOnUI(
       std::optional<mojo_base::ProtoWrapper> mtc_metadata);
 
+  // Returns the Trust Anchor IDs with trusted landmarks, if available.
+  std::optional<SSLConfigServiceMtcLandmarkInfo>
+  CalculateTrustAnchorIdsWithLandmarks();
+
   // Updates the network service with the Trust Anchor IDs, combining the
   // cached data from both the Chrome Root Store and the MTC Metadata.
   // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html)
@@ -184,9 +190,8 @@ class PKIMetadataComponentInstallerService final {
   std::vector<MtcCaIdAndLandmarkTrustAnchorIds>
       mtc_ca_id_landmark_trust_anchor_ids_;
 
-  // The time (as seconds since the unix epoch) that the latest MtcMetadata
-  // was generated.
-  int64_t mtc_metadata_update_time_seconds_ = 0;
+  // The time after which the MtcMetadata landmark info is no longer useful.
+  base::Time mtc_landmark_max_usable_time_;
 
   bool allow_old_ct_log_list_updates_for_testing_ = false;
 

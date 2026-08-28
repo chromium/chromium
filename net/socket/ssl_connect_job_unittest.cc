@@ -29,6 +29,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -1199,112 +1200,85 @@ TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
       MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
 
   SSLContextConfig config;
-  config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
-  config.mtc_trust_anchor_ids = {{0x07, 0x08, 0x09}, {0x06, 0x06}};
+  config.trust_anchor_ids =
+      x509_util::EncodeTlsRequestedTrustAnchorIDList({{0x01, 0x02, 0x03},
+                                                      {0x02, 0x02},
+                                                      {0x04, 0x04},
+                                                      {0x07, 0x08, 0x09},
+                                                      {0x06, 0x06}});
   ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
   for (bool trust_anchor_ids_enabled : {false, true}) {
     SCOPED_TRACE(trust_anchor_ids_enabled);
-    for (bool non_mtc_enabled : {false, true}) {
-      SCOPED_TRACE(non_mtc_enabled);
-      for (bool mtc_enabled : {false, true}) {
-        SCOPED_TRACE(mtc_enabled);
 
-        std::vector<base::test::FeatureRef> enabled_features;
-        std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
-        if (trust_anchor_ids_enabled) {
-          enabled_features.push_back(features::kTLSTrustAnchorIDs);
-        } else {
-          disabled_features.push_back(features::kTLSTrustAnchorIDs);
-        }
+    if (trust_anchor_ids_enabled) {
+      enabled_features.push_back(features::kTLSTrustAnchorIDs);
+    } else {
+      disabled_features.push_back(features::kTLSTrustAnchorIDs);
+    }
 
-        if (non_mtc_enabled) {
-          enabled_features.push_back(features::kNonMtcTrustAnchorIDs);
-        } else {
-          disabled_features.push_back(features::kNonMtcTrustAnchorIDs);
-        }
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-        if (mtc_enabled) {
-          enabled_features.push_back(features::kVerifyMTCs);
-        } else {
-          disabled_features.push_back(features::kVerifyMTCs);
-        }
-#endif
+    StaticSocketDataProvider data;
+    data.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+    data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+    socket_factory_.AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(ASYNC, OK);
 
-        base::test::ScopedFeatureList feature_list;
-        feature_list.InitWithFeatures(enabled_features, disabled_features);
+    std::vector<std::string> expected_strings;
+    bool expect_any = false;
+    if (trust_anchor_ids_enabled) {
+      std::vector<std::vector<uint8_t>> expected_ids;
+      expect_any = true;
+      expected_strings.push_back("1.2.3");
+      expected_strings.push_back("2.2");
+      expected_strings.push_back("4.4");
+      expected_ids.push_back({0x01, 0x02, 0x03});
+      expected_ids.push_back({0x02, 0x02});
+      expected_ids.push_back({0x04, 0x04});
+      expected_strings.push_back("7.8.9");
+      expected_strings.push_back("6.6");
+      expected_ids.push_back({0x07, 0x08, 0x09});
+      expected_ids.push_back({0x06, 0x06});
+      ssl.expected_trust_anchor_ids = expected_ids;
+    } else {
+      ssl.expect_no_trust_anchor_ids = true;
+    }
+    socket_factory_.AddSSLSocketDataProvider(&ssl);
 
-        StaticSocketDataProvider data;
-        data.set_expected_addresses(AddressList(endpoint.ip_endpoints));
-        data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
-        socket_factory_.AddSocketDataProvider(&data);
-        SSLSocketDataProvider ssl(ASYNC, OK);
-
-        bool expect_any = false;
-        std::vector<std::vector<uint8_t>> expected_ids;
-        std::vector<std::string> expected_strings;
-        if (trust_anchor_ids_enabled) {
-          if (non_mtc_enabled) {
-            expect_any = true;
-            expected_strings.push_back("1.2.3");
-            expected_strings.push_back("2.2");
-            expected_strings.push_back("4.4");
-            expected_ids.push_back({0x01, 0x02, 0x03});
-            expected_ids.push_back({0x02, 0x02});
-            expected_ids.push_back({0x04, 0x04});
-          }
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-          if (mtc_enabled) {
-            expect_any = true;
-            expected_strings.push_back("7.8.9");
-            expected_strings.push_back("6.6");
-            expected_ids.push_back({0x07, 0x08, 0x09});
-            expected_ids.push_back({0x06, 0x06});
-          }
-#endif
-        }
-
-        if (expect_any) {
-          ssl.expected_trust_anchor_ids = expected_ids;
-        } else {
-          ssl.expect_no_trust_anchor_ids = true;
-        }
-        socket_factory_.AddSSLSocketDataProvider(&ssl);
-
-        base::HistogramTester histogram_tester;
-        TestConnectJobDelegate test_delegate;
-        RecordingNetLogObserver net_log_observer(
-            common_connect_job_params_.net_log, NetLogCaptureMode::kDefault);
-        std::unique_ptr<ConnectJob> ssl_connect_job =
-            CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
-        EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
-        EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
-        histogram_tester.ExpectTotalCount(
-            "Net.SSL_Connection_Error_TrustAnchorIDs", 0);
-        histogram_tester.ExpectTotalCount(
-            "Net.SSL_Connection_Latency_TrustAnchorIDs", 0);
-        histogram_tester.ExpectUniqueSample(
-            "Net.SSL.TrustAnchorIDsResult",
-            SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);
-        auto events = net_log_observer.GetEntriesWithType(
-            NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
-        ASSERT_EQ(1u, events.size());
-        EXPECT_FALSE(
-            events[0].params.contains("selected_trust_anchor_ids_for_retry"));
-        EXPECT_FALSE(events[0].params.contains("trust_anchor_ids_from_dns"));
-        if (!expect_any) {
-          EXPECT_FALSE(events[0].params.contains("selected_trust_anchor_ids"));
-        } else {
-          EXPECT_THAT(
-              base::SplitString(GetStringValueFromParams(
-                                    events[0], "selected_trust_anchor_ids"),
-                                ", ", base::TRIM_WHITESPACE,
-                                base::SPLIT_WANT_NONEMPTY),
-              testing::UnorderedElementsAreArray(expected_strings));
-        }
-      }
+    base::HistogramTester histogram_tester;
+    TestConnectJobDelegate test_delegate;
+    RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
+                                             NetLogCaptureMode::kDefault);
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+    histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        "Net.SSL_Connection_Latency_TrustAnchorIDs", 0);
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSL.TrustAnchorIDsResult",
+        SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);
+    auto events = net_log_observer.GetEntriesWithType(
+        NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+    ASSERT_EQ(1u, events.size());
+    EXPECT_FALSE(
+        events[0].params.contains("selected_trust_anchor_ids_for_retry"));
+    EXPECT_FALSE(events[0].params.contains("trust_anchor_ids_from_dns"));
+    if (!expect_any) {
+      EXPECT_FALSE(events[0].params.contains("selected_trust_anchor_ids"));
+    } else {
+      EXPECT_THAT(
+          base::SplitString(
+              GetStringValueFromParams(events[0], "selected_trust_anchor_ids"),
+              ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
+          testing::UnorderedElementsAreArray(expected_strings));
     }
   }
 }

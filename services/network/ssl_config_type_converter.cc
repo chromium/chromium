@@ -55,14 +55,14 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
       break;
   }
 
-  for (const auto& tai : mojo_config->trust_anchor_ids) {
-    net_config.trust_anchor_ids.insert(tai);
+  if (mojo_config->time_bound_trust_anchor_ids) {
+    net_config.time_bound_trust_anchor_ids = net::TimeBoundTrustAnchorIDs{
+        .max_usable_time =
+            mojo_config->time_bound_trust_anchor_ids->max_usable_time,
+        .trust_anchor_ids =
+            mojo_config->time_bound_trust_anchor_ids->trust_anchor_ids};
   }
-
-  for (const auto& tai : mojo_config->mtc_trust_anchor_ids) {
-    net_config.mtc_trust_anchor_ids.push_back(tai);
-  }
-  net_config.mtc_update_time_seconds = mojo_config->mtc_update_time_seconds;
+  net_config.trust_anchor_ids = mojo_config->trust_anchor_ids;
 
   return net_config;
 }

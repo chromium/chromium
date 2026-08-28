@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/to_vector.h"
@@ -705,6 +706,17 @@ std::vector<uint8_t> CreateMtcLandmarkGroupTrustAnchorID(
   // CBB_len(cbb).
   return base::ToVector(UNSAFE_BUFFERS(
       base::span<const uint8_t>(CBB_data(cbb.get()), CBB_len(cbb.get()))));
+}
+
+std::vector<uint8_t> EncodeTlsRequestedTrustAnchorIDList(
+    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
+  std::vector<uint8_t> result;
+  std::sort(trust_anchor_ids.begin(), trust_anchor_ids.end());
+  for (const auto& tai : trust_anchor_ids) {
+    result.emplace_back(base::checked_cast<uint8_t>(tai.size()));
+    base::Extend(result, tai);
+  }
+  return result;
 }
 
 }  // namespace net::x509_util
