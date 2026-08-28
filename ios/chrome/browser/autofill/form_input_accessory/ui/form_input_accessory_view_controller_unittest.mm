@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
@@ -89,9 +90,9 @@ FormSuggestion* SimpleFormSuggestion(std::u16string value,
 NSArray<FormSuggestion*>* SimpleFormSuggestions(int count) {
   NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
   for (int i = 0; i < count; i++) {
-    [suggestions
-        addObject:SimpleFormSuggestion(
-                      u"", autofill::SuggestionType::kAutocompleteEntry)];
+    [suggestions addObject:SimpleFormSuggestion(
+                               base::NumberToString16(i),
+                               autofill::SuggestionType::kAutocompleteEntry)];
   }
   return suggestions;
 }
@@ -147,7 +148,7 @@ TEST_F(FormInputAccessoryViewControllerTest, ManualFillButtonPress) {
           view_controller_.view);
 
   NSArray<FormSuggestion*>* suggestions = @[ SimpleFormSuggestion(
-      u"", autofill::SuggestionType::kAutocompleteEntry) ];
+      u"value", autofill::SuggestionType::kAutocompleteEntry) ];
 
   for (autofill::FillingProduct filling_product :
        autofill::FillingProductSet::all()) {
@@ -181,7 +182,7 @@ TEST_F(FormInputAccessoryViewControllerTest, ManualFillButtonHiddenForOther) {
       base::apple::ObjCCastStrict<FormInputAccessoryView>(controller.view);
 
   NSArray<FormSuggestion*>* suggestions = @[ SimpleFormSuggestion(
-      u"", autofill::SuggestionType::kAutocompleteEntry) ];
+      u"value", autofill::SuggestionType::kAutocompleteEntry) ];
 
   controller.mainFillingProduct = autofill::FillingProduct::kAutocomplete;
   [controller showAccessorySuggestions:suggestions];
@@ -206,6 +207,63 @@ TEST_F(FormInputAccessoryViewControllerTest,
       }]]);
 
   [mock_view_controller showAccessorySuggestions:manySuggestions];
+
+  EXPECT_OCMOCK_VERIFY(mock_view_controller);
+}
+
+// Tests that empty suggestions with no value, no display description, and no
+// icon are filtered out.
+TEST_F(FormInputAccessoryViewControllerTest,
+       ShowAccessorySuggestions_FiltersEmptySuggestions) {
+  id mock_view_controller = OCMPartialMock(view_controller_);
+
+  FormSuggestion* emptySuggestion = [FormSuggestion
+      suggestionWithValue:@""
+       displayDescription:@""
+                     icon:nil
+                     type:autofill::SuggestionType::kSaveAndFillCreditCardEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+
+  FormSuggestion* validSuggestion = SimpleFormSuggestion(
+      u"Valid", autofill::SuggestionType::kAutocompleteEntry);
+
+  OCMExpect([mock_view_controller
+      updateFormSuggestionView:[OCMArg checkWithBlock:^BOOL(
+                                           NSArray* suggestions) {
+        return suggestions.count == 1 &&
+               [suggestions containsObject:validSuggestion];
+      }]]);
+
+  [mock_view_controller
+      showAccessorySuggestions:@[ emptySuggestion, validSuggestion ]];
+
+  EXPECT_OCMOCK_VERIFY(mock_view_controller);
+}
+
+// Tests that suggestions with an empty value but a non-empty display
+// description are not filtered out.
+TEST_F(FormInputAccessoryViewControllerTest,
+       ShowAccessorySuggestions_KeepsSuggestionsWithDisplayDescription) {
+  id mock_view_controller = OCMPartialMock(view_controller_);
+
+  FormSuggestion* suggestionWithDescription = [FormSuggestion
+      suggestionWithValue:@""
+       displayDescription:@"Description"
+                     icon:nil
+                     type:autofill::SuggestionType::kAddressEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+
+  OCMExpect([mock_view_controller
+      updateFormSuggestionView:[OCMArg checkWithBlock:^BOOL(
+                                           NSArray* suggestions) {
+        return suggestions.count == 1 &&
+               [suggestions containsObject:suggestionWithDescription];
+      }]]);
+
+  [mock_view_controller
+      showAccessorySuggestions:@[ suggestionWithDescription ]];
 
   EXPECT_OCMOCK_VERIFY(mock_view_controller);
 }

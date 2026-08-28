@@ -224,9 +224,25 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
-  BOOL hasSuggestions = suggestions.count > 0;
-  if (suggestions.count == 1 &&
-      suggestions.firstObject.type ==
+  NSMutableArray<FormSuggestion*>* validSuggestions = [[NSMutableArray alloc]
+      initWithCapacity:kKeyboardAccessorySuggestionsLimit];
+
+  for (FormSuggestion* suggestion in suggestions) {
+    // Skip suggestions that have neither text nor an icon to display.
+    if (!suggestion.value.length && !suggestion.displayDescription.length &&
+        !suggestion.icon &&
+        suggestion.suggestionIconType == SuggestionIconType::kNone) {
+      continue;
+    }
+    [validSuggestions addObject:suggestion];
+    if (validSuggestions.count == kKeyboardAccessorySuggestionsLimit) {
+      break;
+    }
+  }
+
+  BOOL hasSuggestions = validSuggestions.count > 0;
+  if (validSuggestions.count == 1 &&
+      validSuggestions.firstObject.type ==
           autofill::SuggestionType::kAutocompleteAtMemoryButton) {
     // If the only suggestion is kAutocompleteAtMemoryButton, the manual fill
     // buttons should be shown.
@@ -244,12 +260,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     self.formInputAccessoryView.manualFillButton.hidden = YES;
   }
 
-  if (suggestions.count > kKeyboardAccessorySuggestionsLimit) {
-    suggestions = [suggestions
-        subarrayWithRange:NSMakeRange(0, kKeyboardAccessorySuggestionsLimit)];
-  }
-
-  [self updateFormSuggestionView:suggestions];
+  [self updateFormSuggestionView:validSuggestions];
 }
 
 - (void)showNavigationButtons {

@@ -92,15 +92,6 @@ void OpenPaymentMethodManualFillView() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Matcher for the credit card tab in the manual fill view.
-id<GREYMatcher> CreditCardManualFillViewTab() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL)),
-      grey_ancestor(
-          grey_accessibilityID(manual_fill::kExpandedManualFillHeaderViewID)),
-      nil);
-}
 
 // Matcher for the overflow menu button shown in the payment method cells.
 id<GREYMatcher> OverflowMenuButton(NSInteger cell_index) {
@@ -242,16 +233,20 @@ void CheckChipButtonsOfLocalCard() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Matcher for the credit card manual fill view button on keyboard accessory.
+id<GREYMatcher> CreditCardManualFillViewButton() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_CREDIT_CARD_AUTOFILL_DATA)),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    nil);
+}
+
 // Opens the payment method manual fill view when there are no saved payment
 // methods and verifies that the card view controller is visible afterwards.
 void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
-  // Tap the button to open the expanded manual fill view.
-  [[EarlGrey
-      selectElementWithMatcher:manual_fill::KeyboardAccessoryManualFillButton()]
-      performAction:grey_tap()];
-
-  // Tap the payment method tab from the segmented control.
-  [[EarlGrey selectElementWithMatcher:CreditCardManualFillViewTab()]
+  // Tap the credit card manual fill button on the keyboard accessory bar.
+  [[EarlGrey selectElementWithMatcher:CreditCardManualFillViewButton()]
       performAction:grey_tap()];
 
   // Verify the card table view controller is visible.
@@ -392,9 +387,9 @@ void DismissPaymentBottomSheet() {
   GREYAssertNil(
       [MetricsAppInterface
           expectUniqueSampleWithCount:1
-                            forBucket:1
+                            forBucket:0
                          forHistogram:@"ManualFallback.VisibleSuggestions."
-                                      @"ExpandIcon.OpenPaymentMethods"],
+                                      @"OpenCreditCards"],
       @"Unexpected histogram error for number of visible suggestions.");
 }
 
