@@ -2593,19 +2593,15 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
         {"- Force hide ntp theme promo", kNtpThemePromoHideArm, nullptr},
 };
 
-const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExternalDrag[] = {
-    {"external_drag", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_IncognitoButton[] = {
     {"incognito_button", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
-    {"external_drag", "true"},
     {"group_hover_card", "true"},
     {"incognito_button", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
-    {"with external-drag", kAndroidVerticalTabs_ExternalDrag, nullptr},
     {"with incognito-button", kAndroidVerticalTabs_IncognitoButton, nullptr},
     {"with all experimental features", kAndroidVerticalTabs_All, nullptr},
     {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},

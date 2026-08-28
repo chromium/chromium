@@ -128,22 +128,6 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testIsExternalDragEnabled_DefaultDisabled() {
-        assertFalse(VerticalTabUtils.isExternalDragEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testIsExternalDragEnabled_EnabledViaOverride() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.EXTERNAL_DRAG_PARAM,
-                /* testValue= */ true);
-        assertTrue(VerticalTabUtils.isExternalDragEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testIsIncognitoButtonEnabled_DefaultDisabled() {
         assertFalse(VerticalTabUtils.isIncognitoButtonEnabled());
     }

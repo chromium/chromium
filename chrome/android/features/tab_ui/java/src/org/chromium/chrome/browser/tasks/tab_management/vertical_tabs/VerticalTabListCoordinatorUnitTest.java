@@ -357,11 +357,6 @@ public class VerticalTabListCoordinatorUnitTest {
                         })
                 .when(mIncognitoTabModel)
                 .addObserver(any(TabModelObserver.class));
-
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.EXTERNAL_DRAG_PARAM,
-                true);
     }
 
     @After
@@ -2329,43 +2324,6 @@ public class VerticalTabListCoordinatorUnitTest {
 
         getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
         verify(mMainTabSwitcherDragHandler).startTabDragAction(any(), eq(tab1), any(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void testSingleTabDragOut_DisabledParam() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.EXTERNAL_DRAG_PARAM,
-                /* testValue= */ false);
-        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
-        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
-        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(false);
-
-        createCoordinator();
-        PropertyModel model = createTabPropertyModel();
-        model.set(TabProperties.TAB_ID, TAB_ID_1);
-
-        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
-        verify(mMainTabSwitcherDragHandler, never()).startTabDragAction(any(), any(), any(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void testGroupHeaderDragOut_DisabledParam() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.EXTERNAL_DRAG_PARAM,
-                /* testValue= */ false);
-        createCoordinator();
-        Token tabGroupId = new Token(1L, 2L);
-        PropertyModel model = createTabPropertyModel();
-        model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
-
-        // Group header drag is disabled by default, so onDragOut returns early.
-        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
-        verify(mMainTabSwitcherDragHandler, never())
-                .startGroupDragAction(any(), any(), any(), any());
     }
 
     @Test

@@ -1206,10 +1206,6 @@ public class VerticalTabListCoordinator {
 
         touchHelperCallback.setOnDragOutListener(
                 (viewHolder, dX, dY) -> {
-                    if (!VerticalTabUtils.isExternalDragEnabled()) {
-                        return;
-                    }
-
                     if (dragHandler.isViewDraggingInProgress()) {
                         return;
                     }

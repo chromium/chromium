@@ -129,9 +129,6 @@ public class VerticalTabUtils {
     /** Feature parameter name for enabling Vertical Tabs by default. */
     public static final String ENABLE_BY_DEFAULT_PARAM = "enable_by_default";
 
-    /** Feature parameter name for enabling external drag. */
-    public static final String EXTERNAL_DRAG_PARAM = "external_drag";
-
     /** Feature parameter name for enabling the incognito button in the footer. */
     public static final String INCOGNITO_BUTTON_PARAM = "incognito_button";
 
@@ -249,14 +246,6 @@ public class VerticalTabUtils {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 "expand_on_hover",
-                /* defaultValue= */ false);
-    }
-
-    /** Returns whether external drag is enabled for Vertical Tabs. */
-    public static boolean isExternalDragEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                EXTERNAL_DRAG_PARAM,
                 /* defaultValue= */ false);
     }
 
