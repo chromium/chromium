@@ -87,6 +87,10 @@ bool OmniboxPopupAimPresenter::ShouldDetachWebContentsOnHide() const {
       omnibox::kOmniboxAimDetachWebContentsOnHide);
 }
 
+bool OmniboxPopupAimPresenter::ShouldEvictOnHide() const {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxAimEvictOnHide);
+}
+
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                          bool active) {
   if (active) {

@@ -105,3 +105,7 @@ bool OmniboxPopupPresenter::ShouldDetachWebContentsOnHide() const {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxWebUIDetachWebContentsOnHide);
 }
+
+bool OmniboxPopupPresenter::ShouldEvictOnHide() const {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIEvictOnHide);
+}

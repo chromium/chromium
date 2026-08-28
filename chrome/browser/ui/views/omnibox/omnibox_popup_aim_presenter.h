@@ -40,6 +40,7 @@ class OmniboxPopupAimPresenter
   bool ShouldDebounceResize() const override;
   bool ShouldApplyHeightWorkarounds() const override;
   bool ShouldDetachWebContentsOnHide() const override;
+  bool ShouldEvictOnHide() const override;
   // Triggered when a file selection dialog opened by this popup is closed,
   // initiating the focus restoration flow (only active when
   // `omnibox::kOmniboxKeepOpenOnFileSelection` is enabled).

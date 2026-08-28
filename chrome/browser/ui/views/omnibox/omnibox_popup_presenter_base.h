@@ -131,6 +131,10 @@ class OmniboxPopupPresenterBase
   // Returns if the WebContents should be detached when the popup is hidden.
   virtual bool ShouldDetachWebContentsOnHide() const = 0;
 
+  // Returns whether the popup should evict its saved compositor frame when
+  // hidden.
+  virtual bool ShouldEvictOnHide() const = 0;
+
   virtual std::string_view GetPopupMetricPrefix() const = 0;
 
   OmniboxPopupPresenterDelegate& delegate() const {

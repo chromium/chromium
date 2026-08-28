@@ -49,6 +49,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   bool ShouldDebounceResize() const override;
   bool ShouldApplyHeightWorkarounds() const override;
   bool ShouldDetachWebContentsOnHide() const override;
+  bool ShouldEvictOnHide() const override;
   bool ShouldHideForInitialLayout() const override;
 
   bool IsDeactivating() const override;

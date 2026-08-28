@@ -176,6 +176,10 @@ bool OmniboxPopupFullPresenter::ShouldDetachWebContentsOnHide() const {
       omnibox::kOmniboxFullWebUIDetachWebContentsOnHide);
 }
 
+bool OmniboxPopupFullPresenter::ShouldEvictOnHide() const {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxFullWebUIEvictOnHide);
+}
+
 bool OmniboxPopupFullPresenter::ShouldHideForInitialLayout() const {
   return false;
 }
