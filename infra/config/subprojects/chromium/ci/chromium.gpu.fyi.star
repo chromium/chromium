@@ -694,6 +694,12 @@ ci.thin_tester(
             "webgl_conformance_gles_passthrough_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
+            "webgl_conformance_validating_ganesh_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/552674540): Remove this once the feature no longer causes significant slowness.
+                    "--extra-browser-args=--disable-features=PartitionAllocSchedulerLoopQuarantine",
+                ],
+            ),
             "webrtc_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
