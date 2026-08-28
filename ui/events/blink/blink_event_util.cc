@@ -412,6 +412,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.scroll_begin.delta_hint_units = details.scroll_begin_units();
       gesture.data.scroll_begin.inertial_phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum;
+      gesture.data.scroll_begin.rails_mode = details.scroll_begin_rails_mode();
       break;
     case EventType::kGestureScrollUpdate:
       gesture.SetType(WebInputEvent::Type::kGestureScrollUpdate);
@@ -421,6 +422,8 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
           IfNanUseMaxFloat(details.scroll_x_unconstrained());
       gesture.data.scroll_update.delta_y_unconstrained =
           IfNanUseMaxFloat(details.scroll_y_unconstrained());
+      gesture.data.scroll_update.rails_mode =
+          details.scroll_update_rails_mode();
       gesture.data.scroll_update.delta_units = details.scroll_update_units();
       gesture.data.scroll_update.inertial_phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum;
@@ -804,6 +807,8 @@ blink::WebGestureEvent ScrollBeginFromScrollUpdate(
   scroll_begin.data.scroll_begin.synthetic = false;
   scroll_begin.data.scroll_begin.pointer_count = 0;
   scroll_begin.data.scroll_begin.scrollable_area_element_id = 0;
+  scroll_begin.data.scroll_begin.rails_mode =
+      gesture_update.data.scroll_update.rails_mode;
 
   return scroll_begin;
 }

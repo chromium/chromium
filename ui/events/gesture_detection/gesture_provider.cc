@@ -29,6 +29,16 @@ namespace {
 // Double-tap drag zoom sensitivity (speed).
 const float kDoubleTapDragZoomSpeed = 0.005f;
 
+GestureScrollRailsMode GetRailsMode(const SnapScrollController& controller) {
+  if (controller.IsSnapHorizontal()) {
+    return GestureScrollRailsMode::kHorizontal;
+  }
+  if (controller.IsSnapVertical()) {
+    return GestureScrollRailsMode::kVertical;
+  }
+  return GestureScrollRailsMode::kNone;
+}
+
 const char* GetMotionEventActionName(MotionEvent::Action action) {
   switch (action) {
     case MotionEvent::Action::NONE:
@@ -435,6 +445,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       // scroll deltas are in the opposite direction.
       GestureEventDetails scroll_details = CreateTouchGestureDetails(
           EventType::kGestureScrollBegin, -distance_x, -distance_y);
+      scroll_details.set_scroll_begin_rails_mode(
+          GetRailsMode(snap_scroll_controller_));
 
       // Scroll focus point always starts with the first touch down point.
       scroll_focus_point_.SetPoint(e1.GetX(), e1.GetY());
@@ -453,6 +465,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
     GestureEventDetails scroll_details = CreateTouchGestureDetails(
         EventType::kGestureScrollUpdate, -distance_x, -distance_y);
+    scroll_details.set_scroll_update_rails_mode(
+        GetRailsMode(snap_scroll_controller_));
     scroll_details.set_scroll_x_unconstrained(-unconstrained_distance_x);
     scroll_details.set_scroll_y_unconstrained(-unconstrained_distance_y);
     const gfx::RectF bounding_box = GetBoundingBox(e2, scroll_details.type());
@@ -491,6 +505,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       // The distance traveled in one second is a reasonable scroll start hint.
       GestureEventDetails scroll_details = CreateTouchGestureDetails(
           EventType::kGestureScrollBegin, velocity_x, velocity_y);
+      scroll_details.set_scroll_begin_rails_mode(
+          GetRailsMode(snap_scroll_controller_));
       Send(CreateGesture(scroll_details, e2));
     }
 

@@ -225,6 +225,16 @@ enum class GestureDeviceType : int {
   DEVICE_TOUCHSCREEN,
 };
 
+// Specifies the axis-locking (railing) mode for a gesture scroll. Gesture
+// scrolls, e.g. touchscreen scrolls or touchpad scrolls, may be locked to an
+// axis if the movement along one axis is significantly more than the other. See
+// SnapScrollController.
+enum class GestureScrollRailsMode {
+  kNone,
+  kHorizontal,
+  kVertical,
+};
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_EVENT_CONSTANTS_H_

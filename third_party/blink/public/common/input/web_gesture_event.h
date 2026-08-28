@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/input/gesture_event.mojom-shared.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -117,6 +118,9 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // Storing the EnumBitmask of cc::MainThreadHitTestReasons because
       // the class has a non-trivial constructor and is not allowed in a union.
       uint64_t main_thread_hit_tested_reasons;
+      // Represents the browser's scroll axis locking (railing) decision for a
+      // GestureScrollBegin event.
+      ui::GestureScrollRailsMode rails_mode;
     } scroll_begin;
 
     struct {
@@ -129,6 +133,9 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // scroll-axis-lock: none is active to allow diagonal scrolling.
       float delta_x_unconstrained;
       float delta_y_unconstrained;
+      // Represents the browser's scroll axis locking (railing) decision for a
+      // GestureScrollUpdate event.
+      ui::GestureScrollRailsMode rails_mode;
       InertialPhaseState inertial_phase;
       // Default initialized to kScrollByPrecisePixel.
       ui::ScrollGranularity delta_units;

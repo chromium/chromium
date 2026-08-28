@@ -1195,6 +1195,8 @@ TEST_F(GestureProviderTest, ScrollUpdateValues) {
     EXPECT_EQ(0, gesture.details.scroll_x());
   }
   EXPECT_EQ(-delta_y / 2, gesture.details.scroll_y());
+  EXPECT_EQ(GestureScrollRailsMode::kVertical,
+            gesture.details.scroll_update_rails_mode());
   EXPECT_EQ(primary_unique_touch_event_id,
             gesture.details.primary_unique_touch_event_id());
 }
@@ -1266,6 +1268,8 @@ TEST_F(GestureProviderTest, FractionalScroll) {
     // Verify unconstrained deltas are NOT zeroed.
     EXPECT_NEAR(delta_x, gesture.details.scroll_x_unconstrained(), 0.001f);
     EXPECT_NEAR(delta_y, gesture.details.scroll_y_unconstrained(), 0.001f);
+    EXPECT_EQ(GestureScrollRailsMode::kVertical,
+              gesture.details.scroll_update_rails_mode());
   }
 }
 
@@ -1317,6 +1321,8 @@ TEST_F(GestureProviderTest, ScrollBeginValues) {
     EXPECT_EQ(delta_x_hint, scroll_begin_gesture->details.scroll_x_hint());
   }
   EXPECT_EQ(delta_y_hint, scroll_begin_gesture->details.scroll_y_hint());
+  EXPECT_EQ(GestureScrollRailsMode::kVertical,
+            scroll_begin_gesture->details.scroll_begin_rails_mode());
   EXPECT_EQ(primary_unique_touch_event_id,
             scroll_begin_gesture->details.primary_unique_touch_event_id());
 }

@@ -22,6 +22,7 @@ using BlinkEventUtilTest = testing::Test;
 TEST(BlinkEventUtilTest, NoScalingWith1DSF) {
   ui::GestureEventDetails details(ui::EventType::kGestureScrollUpdate, 1, 1);
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+  details.set_scroll_update_rails_mode(ui::GestureScrollRailsMode::kHorizontal);
   auto event =
       CreateWebGestureEvent(details,
                             base::TimeTicks(),
@@ -29,6 +30,8 @@ TEST(BlinkEventUtilTest, NoScalingWith1DSF) {
                             gfx::PointF(1.f, 1.f),
                             0,
                             0U);
+  EXPECT_EQ(ui::GestureScrollRailsMode::kHorizontal,
+            event.data.scroll_update.rails_mode);
   EXPECT_FALSE(ScaleWebInputEvent(event, 1.f));
   EXPECT_TRUE(ScaleWebInputEvent(event, 2.f));
 }
@@ -78,6 +81,7 @@ TEST(BlinkEventUtilTest, PaginatedWebMouseWheelEvent) {
 TEST(BlinkEventUtilTest, NonPaginatedScrollBeginEvent) {
   ui::GestureEventDetails details(ui::EventType::kGestureScrollBegin, 1, 1);
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+  details.set_scroll_begin_rails_mode(ui::GestureScrollRailsMode::kVertical);
   auto event =
       CreateWebGestureEvent(details, base::TimeTicks(), gfx::PointF(1.f, 1.f),
                             gfx::PointF(1.f, 1.f), 0, 0U);
@@ -88,6 +92,8 @@ TEST(BlinkEventUtilTest, NonPaginatedScrollBeginEvent) {
       static_cast<blink::WebGestureEvent*>(webEvent.get());
   EXPECT_EQ(2.f, gestureEvent->data.scroll_begin.delta_x_hint);
   EXPECT_EQ(2.f, gestureEvent->data.scroll_begin.delta_y_hint);
+  EXPECT_EQ(ui::GestureScrollRailsMode::kVertical,
+            gestureEvent->data.scroll_begin.rails_mode);
 }
 
 TEST(BlinkEventUtilTest, PaginatedScrollBeginEvent) {

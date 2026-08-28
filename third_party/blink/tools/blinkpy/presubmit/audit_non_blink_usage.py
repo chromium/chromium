@@ -425,6 +425,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/public/common/input/',
+        ],
+        'allowed': [
+            'ui::GestureScrollRailsMode',
+        ],
+    },
+    {
         'paths': ['third_party/blink/common/indexeddb/indexeddb_key.cc'],
         'allowed': ['base::HexEncode'],
     },
