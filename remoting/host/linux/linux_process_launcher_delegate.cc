@@ -206,10 +206,10 @@ void LinuxWorkerProcessLauncherDelegate::LaunchProcess(
 
   base::LaunchOptions launch_options;
   if (!options_.working_dir.empty()) {
-    launch_options.current_directory = std::move(options_.working_dir);
+    launch_options.current_directory = options_.working_dir;
   }
   launch_options.clear_environment = true;
-  launch_options.environment = std::move(options_.environment_variables);
+  launch_options.environment = options_.environment_variables;
 
   RunAsUserPreExecDelegate pre_exec_delegate(options_.new_session, options_.uid,
                                              options_.gid,
