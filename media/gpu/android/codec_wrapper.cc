@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/android/device_info.h"
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
@@ -25,6 +26,9 @@
 #include "media/base/media_switches.h"
 
 namespace media {
+
+BASE_FEATURE(kFallbackToMediaFormatCodedSizeOnTV,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // CodecWrapperImpl is the implementation for CodecWrapper but is separate so
 // we can keep its refcounting as an implementation detail. CodecWrapper and
@@ -170,15 +174,33 @@ bool CodecOutputBuffer::ReleaseToSurface() {
 }
 
 bool CodecOutputBuffer::CanGuessCodedSize() const {
+  // We always have MediaFormat's coded size, so we can always use it for
+  // "guessing" if we're allowed to use it.
   if (base::FeatureList::IsEnabled(kUseMediaFormatCodedSize)) {
     return true;
   }
+
+  if (base::android::device_info::is_tv() &&
+      base::FeatureList::IsEnabled(kFallbackToMediaFormatCodedSizeOnTV)) {
+    return true;
+  }
+
   return coded_size_alignment_.has_value();
 }
 
 gfx::Size CodecOutputBuffer::GuessCodedSize() const {
   DCHECK(CanGuessCodedSize());
+  // If kUseMediaFormatCodedSize we only use MediaFormat's coded size.
   if (base::FeatureList::IsEnabled(kUseMediaFormatCodedSize)) {
+    return media_format_output_size_;
+  }
+
+  // Fallback to MediaFormat's coded size on TVs if coded_size_alignment is not
+  // available (which is mostly always the case). Data shows that on TVs this is
+  // quite accurate.
+  if (base::android::device_info::is_tv() &&
+      base::FeatureList::IsEnabled(kFallbackToMediaFormatCodedSizeOnTV) &&
+      !coded_size_alignment_) {
     return media_format_output_size_;
   }
 
