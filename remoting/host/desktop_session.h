@@ -48,9 +48,6 @@ class DesktopSession : public mojom::DesktopSession {
     return events_remote_.is_bound() ? events_remote_.get() : nullptr;
   }
 
-  // mojom::DesktopSession implementation.
-  void CloseDesktopSession() override;
-
  protected:
   // Creates a terminal and assigns a unique identifier to it. |daemon_process|
   // must outlive |this|.
@@ -59,6 +56,8 @@ class DesktopSession : public mojom::DesktopSession {
   DaemonProcess* daemon_process() const { return daemon_process_; }
 
  private:
+  void CloseDesktopSession();
+
   // The owner of |this|.
   const raw_ptr<DaemonProcess> daemon_process_;
 

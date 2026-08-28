@@ -147,9 +147,6 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
     DesktopConnection(DesktopConnection&&);
     DesktopConnection& operator=(DesktopConnection&&);
 
-    // If `persist_desktop_sessions_` is true, this will be nullptr whenever
-    // the client has disconnected.
-    //
     // DisableDanglingPtrDetection is needed because `DesktopSessionProxy` is
     // owned by `IpcDesktopEnvironment` (destructed on the UI thread), whereas
     // `DesktopConnection` lives in `Core` (destructed on the network thread
@@ -160,19 +157,13 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
     raw_ptr<DesktopSessionProxy, DisableDanglingPtrDetection>
         desktop_session_proxy;
 
-    // The identifier of the CRD client to ensure the correct desktop session
-    // is reused in case the host is configured to accept connections from
-    // multiple client users.
+    // The identifier of the CRD client.
     std::string client_id;
 
     // Remote for this specific desktop session.
     mojo::Remote<mojom::DesktopSession> desktop_session;
-
-    // A pipe that was received before the `desktop_session_proxy` was set.
-    mojo::ScopedMessagePipeHandle pending_desktop_pipe;
   };
 
-  void set_persist_desktop_sessions_for_testing(bool persistent);
   size_t active_desktop_sessions_count_for_testing() const;
   const DesktopConnection* GetConnectionForTesting(int terminal_id) const;
 

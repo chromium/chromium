@@ -198,10 +198,6 @@ class IpcDesktopEnvironmentFactory::Core : public mojom::DesktopSessionEvents {
       override;
 #endif
 
-  void set_persist_desktop_sessions_for_testing(bool persistent) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    persist_desktop_sessions_ = persistent;
-  }
   size_t active_desktop_sessions_count_for_testing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return connections_.size();
@@ -219,18 +215,6 @@ class IpcDesktopEnvironmentFactory::Core : public mojom::DesktopSessionEvents {
   ConnectionsList::iterator FindConnection(const DesktopSessionProxy* proxy);
   mojo::ReceiverSet<mojom::DesktopSessionEvents, int>& GetEventsReceivers();
   void OnDesktopSessionRemoteDisconnected(int terminal_id);
-
-  // If `persist_desktop_sessions_` is true, instead of closing the desktop
-  // session when the client disconnects, the session will remain active while
-  // the pipe to the desktop process is disconnected. When the client with
-  // the same email address reconnects, the desktop session will be reused and
-  // the desktop process will be requested to send a new desktop pipe.
-  // TODO: yuweih - see if it makes sense to enable it on Windows.
-#if BUILDFLAG(IS_LINUX)
-  bool persist_desktop_sessions_ = true;
-#else
-  bool persist_desktop_sessions_ = false;
-#endif
 
   ConnectionsList connections_;
 
@@ -289,41 +273,6 @@ void IpcDesktopEnvironmentFactory::Core::ConnectTerminal(
   options->required_username = required_username_;
   options->client_id = client_id;
 
-  if (persist_desktop_sessions_) {
-    auto it =
-        std::ranges::find_if(connections_, [&client_id](const auto& pair) {
-          return pair.second->client_id == client_id &&
-                 // Find an unused session.
-                 !pair.second->desktop_session_proxy;
-        });
-    if (it != connections_.end()) {
-      int id = it->first;
-      VLOG(1) << "Network: reconnecting desktop session " << id;
-      it->second->desktop_session_proxy = desktop_session_proxy;
-      if (it->second->pending_desktop_pipe.is_valid()) {
-        VLOG(1) << "Network: using buffered desktop pipe for session " << id;
-        desktop_session_proxy->AttachToDesktop(
-            std::move(it->second->pending_desktop_pipe));
-      } else {
-        it->second->desktop_session.reset();
-        mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote;
-        GetEventsReceivers().Add(
-            this, events_remote.InitWithNewPipeAndPassReceiver(), id);
-        if (get_desktop_session_callback_) {
-          get_desktop_session_callback_.Run(
-              it->second->desktop_session.BindNewPipeAndPassReceiver(),
-              std::move(events_remote), std::move(options));
-        }
-        if (it->second->desktop_session.is_bound()) {
-          it->second->desktop_session.set_disconnect_handler(
-              base::BindOnce(&Core::OnDesktopSessionRemoteDisconnected,
-                             base::Unretained(this), id));
-        }
-      }
-      return;
-    }
-  }
-
   int id = next_id_++;
   auto connection =
       std::make_unique<DesktopConnection>(desktop_session_proxy, client_id);
@@ -355,15 +304,7 @@ void IpcDesktopEnvironmentFactory::Core::DisconnectTerminal(
     return;
   }
 
-  if (persist_desktop_sessions_) {
-    it->second->desktop_session_proxy = nullptr;
-    return;
-  }
-
   int id = it->first;
-  if (it->second->desktop_session.is_bound()) {
-    it->second->desktop_session->CloseDesktopSession();
-  }
   connections_.erase(it);
 
   VLOG(1) << "Network: unregistered desktop session " << id;
@@ -430,11 +371,6 @@ void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionAgentAttached(
   auto it = connections_.find(terminal_id);
   if (it != connections_.end()) {
     DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
-    if (!proxy) {
-      VLOG(1) << "Network: buffering desktop pipe for session " << terminal_id;
-      it->second->pending_desktop_pipe = std::move(desktop_pipe);
-      return;
-    }
     proxy->DetachFromDesktop();
     proxy->AttachToDesktop(std::move(desktop_pipe));
   }
@@ -453,13 +389,11 @@ void IpcDesktopEnvironmentFactory::Core::OnTerminalDisconnected(
         it->second->desktop_session_proxy;
     connections_.erase(it);
 
-    if (desktop_session_proxy) {
-      // Disconnect the client session.
-      std::string details =
-          error_details.empty() ? "Terminal disconnected." : error_details;
-      desktop_session_proxy->DisconnectSession(error_code, details,
-                                               error_location);
-    }
+    // Disconnect the client session.
+    std::string details =
+        error_details.empty() ? "Terminal disconnected." : error_details;
+    desktop_session_proxy->DisconnectSession(error_code, details,
+                                             error_location);
   }
 }
 
@@ -472,12 +406,7 @@ void IpcDesktopEnvironmentFactory::Core::OnSessionServicesClientConnected(
   auto it = connections_.find(terminal_id);
   if (it != connections_.end()) {
     DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
-    if (proxy) {
-      proxy->OnSessionServicesClientConnected(std::move(receiver));
-    } else {
-      LOG(WARNING) << "ChromotingSessionServices bind request rejected: "
-                   << "Terminal is not connected to any client.";
-    }
+    proxy->OnSessionServicesClientConnected(std::move(receiver));
   } else {
     LOG(WARNING) << "ChromotingSessionServices bind request rejected: "
                  << "Invalid terminal ID " << terminal_id;
@@ -496,17 +425,11 @@ void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionRemoteDisconnected(
   LOG(WARNING) << "DesktopSession control remote disconnected for terminal "
                << terminal_id;
 
-  if (persist_desktop_sessions_) {
-    it->second->desktop_session.reset();
-  } else {
-    DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
-    connections_.erase(it);
-    if (proxy) {
-      proxy->DisconnectSession(ErrorCode::CHANNEL_CONNECTION_ERROR,
-                               "DesktopSession control remote disconnected.",
-                               FROM_HERE);
-    }
-  }
+  DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
+  connections_.erase(it);
+  proxy->DisconnectSession(ErrorCode::CHANNEL_CONNECTION_ERROR,
+                           "DesktopSession control remote disconnected.",
+                           FROM_HERE);
 }
 
 IpcDesktopEnvironmentFactory::Core::ConnectionsList::iterator
@@ -595,11 +518,6 @@ void IpcDesktopEnvironmentFactory::OnSessionServicesClientConnectedForTesting(
   core_->OnSessionServicesClientConnected(terminal_id, std::move(receiver));
 }
 #endif
-
-void IpcDesktopEnvironmentFactory::set_persist_desktop_sessions_for_testing(
-    bool persistent) {
-  core_->set_persist_desktop_sessions_for_testing(persistent);  // IN-TEST
-}
 
 size_t IpcDesktopEnvironmentFactory::active_desktop_sessions_count_for_testing()
     const {

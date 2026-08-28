@@ -278,17 +278,16 @@ struct DesktopSessionOptions {
 // control a specific desktop session.
 // The remote for this interface is owned by the session owner and the receiver
 // is bound in the high-privilege daemon process.
-// Note that closing or resetting the `DesktopSession` Mojo remote endpoint
-// disconnects host control without terminating the underlying desktop session,
-// allowing subsequent peer connection processes or clients to reconnect.
+// Note that closing or resetting the `DesktopSession` Mojo remote endpoint may
+// or may not terminate the underlying desktop session. The behavior is
+// platform-specific, since some platforms (such as Linux) may keep the session
+// alive and reuse it for future connections, while other platforms (such as
+// Windows) will tear down the session when the endpoint is closed or reset.
 [EnableIf=is_win|is_linux]
 interface DesktopSession {
   // Sends the updated screen resolution to the desktop agent running in this
   // session.
   SetScreenResolution(ScreenResolution screen_resolution);
-
-  // Closes this desktop session.
-  CloseDesktopSession();
 };
 
 // Provides a set of methods to allow the Daemon process to notify the session
