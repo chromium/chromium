@@ -20,12 +20,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
-import org.chromium.base.Log;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkEditMetrics;
+import org.chromium.chrome.browser.bookmarks.BookmarkEditMetrics.BookmarkEditOutcome;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
@@ -56,6 +57,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
+import java.util.Objects;
+
 /** The activity that enables the user to modify the title, url and parent folder of a bookmark. */
 // TODO(crbug.com/40269559): Separate the activity from its view.
 // TODO(crbug.com/40269559): Add a coordinator/mediator for business logic.
@@ -65,8 +68,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
 
     public static final int FOLDER_PICKER_REQUEST_CODE = 101;
-
-    private static final String TAG = "BookmarkEdit";
 
     private BookmarkModel mModel;
     private Profile mProfile;
@@ -81,6 +82,12 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private @Nullable MenuItem mDeleteButton;
     private @Nullable MenuItem mCloseButton;
     private FrameLayout mFolderPickerRowContainer;
+
+    private @Nullable String mInitialTitle;
+    private @Nullable String mInitialUrl;
+    private @Nullable BookmarkId mInitialParentId;
+    private boolean mIsFolder;
+    private boolean mOutcomeRecorded;
 
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
@@ -121,6 +128,11 @@ public class BookmarkEditActivity extends SnackbarActivity {
             finish();
             return;
         }
+
+        mInitialTitle = item.getTitle();
+        mInitialUrl = item.getUrl().getSpec();
+        mInitialParentId = item.getParentId();
+        mIsFolder = item.isFolder();
 
         boolean isDesktopLayout = BookmarkUtils.isDesktopBookmarksLayoutEnabled();
         int layoutId = isDesktopLayout ? R.layout.bookmark_edit_desktop : R.layout.bookmark_edit;
@@ -171,6 +183,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
             View removeButton = findViewById(R.id.remove_button);
             removeButton.setOnClickListener(
                     (v) -> {
+                        recordOutcome(BookmarkEditOutcome.DELETED);
                         mModel.deleteBookmark(mBookmarkId);
                         finish();
                     });
@@ -178,6 +191,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
             saveButton.setOnClickListener(
                     (v) -> {
                         saveBookmark();
+                        recordOutcome(BookmarkEditOutcome.SAVED);
                         finish();
                     });
         }
@@ -239,13 +253,12 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item == mDeleteButton) {
-            // Log added for detecting delete button double clicking.
-            Log.i(TAG, "Delete button pressed by user! isFinishing() == " + isFinishing());
-
+            recordOutcome(BookmarkEditOutcome.DELETED);
             mModel.deleteBookmark(mBookmarkId);
             finish();
             return true;
         } else if (item == mCloseButton) {
+            recordOutcome(BookmarkEditOutcome.CLOSED);
             finish();
             return true;
         } else if (item.getItemId() == android.R.id.home) {
@@ -275,9 +288,33 @@ public class BookmarkEditActivity extends SnackbarActivity {
         }
     }
 
+    private void recordOutcome(@BookmarkEditOutcome int outcome) {
+        if (mOutcomeRecorded) return;
+        mOutcomeRecorded = true;
+        BookmarkEditMetrics.recordOutcome(outcome, mIsFolder);
+    }
+
+    private boolean isBookmarkModified() {
+        BookmarkItem item = mModel.getBookmarkById(mBookmarkId);
+        if (item == null) return false;
+
+        boolean titleChanged = !Objects.equals(mInitialTitle, mTitleEditText.getTrimmedText());
+        boolean urlChanged =
+                item.isUrlEditable() && !Objects.equals(mInitialUrl, mUrlEditText.getTrimmedText());
+        boolean parentChanged = !Objects.equals(mInitialParentId, item.getParentId());
+
+        return titleChanged || urlChanged || parentChanged;
+    }
+
     @Override
     protected void onStop() {
         if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            if (isFinishing() && !mOutcomeRecorded) {
+                recordOutcome(
+                        isBookmarkModified()
+                                ? BookmarkEditOutcome.SAVED
+                                : BookmarkEditOutcome.DISMISSED);
+            }
             saveBookmark();
         }
 
@@ -286,6 +323,14 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     protected void onDestroy() {
+        if (!mOutcomeRecorded) {
+            recordOutcome(
+                    BookmarkUtils.isDesktopBookmarksLayoutEnabled()
+                            ? BookmarkEditOutcome.DISMISSED
+                            : (isBookmarkModified()
+                                    ? BookmarkEditOutcome.SAVED
+                                    : BookmarkEditOutcome.DISMISSED));
+        }
         mModel.removeObserver(mBookmarkModelObserver);
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
@@ -344,6 +389,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mFolderSelectRowModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
                 () -> {
+                    BookmarkEditMetrics.recordFolderPickerOpened();
                     setDialogContentVisible(false);
                     mBookmarkManagerOpener.startFolderPickerActivity(
                             /* context= */ this, mProfile, mBookmarkId);

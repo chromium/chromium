@@ -27,6 +27,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.bookmarks.BookmarkEditMetrics.BookmarkEditOutcome;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -167,6 +169,12 @@ public class BookmarkEditDesktopTest {
     @Test
     @MediumTest
     public void testSaveButton() throws ExecutionException, TimeoutException {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.Edit.BookmarkItem.Outcome", BookmarkEditOutcome.SAVED)
+                        .build();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity.getTitleEditText().getEditText().setText(TITLE_B);
@@ -177,6 +185,7 @@ public class BookmarkEditDesktopTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getSaveButton().performClick());
 
         mDestroyedCallback.waitForCallback(0);
+        histogramWatcher.assertExpected();
 
         BookmarkItem bookmarkItem = getBookmarkItem(mBookmarkId);
         Assert.assertEquals("Title should be updated", TITLE_B, bookmarkItem.getTitle());
@@ -186,10 +195,17 @@ public class BookmarkEditDesktopTest {
     @Test
     @MediumTest
     public void testRemoveButton() throws ExecutionException, TimeoutException {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.Edit.BookmarkItem.Outcome", BookmarkEditOutcome.DELETED)
+                        .build();
+
         Assert.assertEquals(View.VISIBLE, mActivity.getRemoveButton().getVisibility());
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getRemoveButton().performClick());
 
         mDestroyedCallback.waitForCallback(0);
+        histogramWatcher.assertExpected();
 
         BookmarkItem bookmarkItem = getBookmarkItem(mBookmarkId);
         Assert.assertNull("Bookmark should be deleted", bookmarkItem);
@@ -198,6 +214,12 @@ public class BookmarkEditDesktopTest {
     @Test
     @MediumTest
     public void testCloseButton() throws ExecutionException, TimeoutException {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.Edit.BookmarkItem.Outcome", BookmarkEditOutcome.CLOSED)
+                        .build();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity.getTitleEditText().getEditText().setText(TITLE_B);
@@ -210,10 +232,26 @@ public class BookmarkEditDesktopTest {
                 });
 
         mDestroyedCallback.waitForCallback(0);
+        histogramWatcher.assertExpected();
 
         BookmarkItem bookmarkItem = getBookmarkItem(mBookmarkId);
         Assert.assertEquals("Title should NOT be updated", TITLE_A, bookmarkItem.getTitle());
         Assert.assertEquals("URL should NOT be updated", URL_A, bookmarkItem.getUrl().getSpec());
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissed() throws ExecutionException, TimeoutException {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.Edit.BookmarkItem.Outcome",
+                                BookmarkEditOutcome.DISMISSED)
+                        .build();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.finish());
+        mDestroyedCallback.waitForCallback(0);
+        histogramWatcher.assertExpected();
     }
 
     @Test

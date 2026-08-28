@@ -499,6 +499,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Edit.{BookmarkType}.Outcome"
+    enum="BookmarkEditOutcome" expires_after="2027-01-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Recorded when a {BookmarkType} edit session completes, logging the terminal
+    outcome (saved, deleted, closed, or dismissed).
+  </summary>
+  <token key="BookmarkType">
+    <variant name="BookmarkFolder" summary="bookmark folder"/>
+    <variant name="BookmarkItem" summary="bookmark item"/>
+  </token>
+</histogram>
+
 <histogram name="Bookmarks.EditLocation" enum="BookmarkLaunchLocation"
     expires_after="2027-07-30">
   <owner>dfried@chromium.org</owner>
