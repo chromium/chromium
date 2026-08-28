@@ -18,6 +18,10 @@ const WEB_PERFORMANCE_METRICS_HANDLER_NAME = 'WebPerformanceMetricsHandler';
 let loadedFromCache = false;
 let inpObserver: PerformanceObserver|null = null;
 
+// TODO(crbug.com/525390779): Enable INP monitoring once bugs have been ironed
+// out.
+const isINPEnabled = false;
+
 // Manager to handle the Interaction To Next Paint (INP) metric.
 const interactionManager = new InteractionManager();
 
@@ -61,7 +65,7 @@ function processINPEvents(eventEntries: PerformanceObserverEntryList): void {
 // destroyed or the page is navigated away from. This only sends to the browser
 // the data needed to calculate the metric.
 function sendINPData(): void {
-  if (interactionManager.totalCount === 0) {
+  if (!isINPEnabled || interactionManager.totalCount === 0) {
     return;
   }
   const response = {
@@ -129,6 +133,9 @@ function registerPerformanceObserver(): void {
 
 // Register PerformanceObserver to observe 'event' timing entries for INP.
 function registerINPObserver(): void {
+  if (!isINPEnabled) {
+    return;
+  }
   try {
     inpObserver = new PerformanceObserver(processINPEvents);
     inpObserver.observe(
