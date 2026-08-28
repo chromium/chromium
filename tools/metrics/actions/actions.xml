@@ -35623,13 +35623,20 @@ should be able to be added at any place in this file.
 <action name="NewIncognitoWindow">
   <owner>rhalavati@chromium.org</owner>
   <description>
-    The user opened an off-the-record window (Incognito or Guest).
+    The user opened an off-the-record window (Incognito, Guest, or Enterprise
+    Isolated).
   </description>
 </action>
 
 <action name="NewIncognitoWindow2">
   <owner>rhalavati@chromium.org</owner>
   <description>The user opened an Incognito window.</description>
+</action>
+
+<action name="NewIsolatedWindow">
+  <owner>przybytniowska@google.com</owner>
+  <owner>chrome-enterprise@google.com</owner>
+  <description>The user opened an Enterprise Isolated window.</description>
 </action>
 
 <action name="NewProfileWindowByIndex">

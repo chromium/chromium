@@ -7,9 +7,11 @@
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -32,6 +34,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -864,5 +868,49 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
             tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, NewIncognitoWindowMetrics) {
+  base::UserActionTester action_tester;
+  chrome::NewIncognitoWindow(browser()->GetProfile());
+
+  EXPECT_EQ(1, action_tester.GetActionCount("NewIncognitoWindow"));
+  EXPECT_EQ(1, action_tester.GetActionCount("NewIncognitoWindow2"));
+  EXPECT_EQ(0, action_tester.GetActionCount("NewIsolatedWindow"));
+  EXPECT_EQ(0, action_tester.GetActionCount("NewGuestWindow"));
+}
+
+class BrowserCommandsIsolatedModeTest : public InProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsIsolatedModeTest,
+                       NewIsolatedWindowMetrics) {
+  base::UserActionTester action_tester;
+  chrome::NewIncognitoWindow(browser()->GetProfile());
+
+  EXPECT_EQ(1, action_tester.GetActionCount("NewIncognitoWindow"));
+  EXPECT_EQ(1, action_tester.GetActionCount("NewIsolatedWindow"));
+  EXPECT_EQ(0, action_tester.GetActionCount("NewIncognitoWindow2"));
+  EXPECT_EQ(0, action_tester.GetActionCount("NewGuestWindow"));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsIsolatedModeTest,
+                       NewEmptyWindowAllowedWhenIncognitoDisabled) {
+  IncognitoModePrefs::SetAvailability(
+      browser()->GetProfile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kDisabled);
+
+  base::UserActionTester action_tester;
+  chrome::NewIncognitoWindow(browser()->GetProfile());
+
+  EXPECT_EQ(1, action_tester.GetActionCount("NewIncognitoWindow"));
+  EXPECT_EQ(1, action_tester.GetActionCount("NewIsolatedWindow"));
+  EXPECT_EQ(0, action_tester.GetActionCount("NewIncognitoWindow2"));
+}
 
 }  // namespace chrome

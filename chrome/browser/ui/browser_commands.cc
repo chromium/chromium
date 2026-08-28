@@ -923,7 +923,8 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
   PrefService* prefs = profile->GetPrefs();
   if (off_the_record) {
     if (IncognitoModePrefs::GetAvailability(prefs) ==
-        policy::IncognitoModeAvailability::kDisabled) {
+            policy::IncognitoModeAvailability::kDisabled &&
+        !profile->IsEnterpriseIsolatedModeProfile()) {
       off_the_record = false;
     }
   } else if (profile->IsGuestSession() ||
@@ -933,16 +934,19 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
   }
 
   if (off_the_record) {
-    // This metric counts the Incognito and Off-The-Record Guest profiles
-    // together.
+    Profile* otr_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    // This metric counts the Incognito, Off-The-Record Guest, and Enterprise
+    // Isolated profiles together.
     base::RecordAction(UserMetricsAction("NewIncognitoWindow"));
     if (profile->IsGuestSession()) {
       base::RecordAction(UserMetricsAction("NewGuestWindow"));
+    } else if (otr_profile->IsEnterpriseIsolatedModeProfile()) {
+      base::RecordAction(UserMetricsAction("NewIsolatedWindow"));
     } else {
       base::RecordAction(UserMetricsAction("NewIncognitoWindow2"));
     }
-    OpenEmptyWindow(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-                    should_trigger_session_restore);
+    OpenEmptyWindow(otr_profile, should_trigger_session_restore);
   } else if (!should_trigger_session_restore) {
     base::RecordAction(UserMetricsAction("NewWindow"));
     OpenEmptyWindow(profile->GetOriginalProfile(),
