@@ -59,6 +59,7 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -479,10 +480,13 @@ class GlicActorPolicyCheckerBrowserTestManagedBrowser
     ActorTask* task = GetActorService().GetTask(task_id);
     ASSERT_TRUE(task);
 
-    base::test::TestFuture<actor::MayActOnUrlBlockReason> allowed;
-    task->GetExecutionEngine().IsAcceptableNavigationDestination(
-        url_to_check, allowed.GetCallback());
-    EXPECT_EQ(expected_result.may_act_on_url_block_reason, allowed.Get());
+    base::test::TestFuture<actor::MayActOnUrlBlockReason> future;
+    content::MockNavigationHandle navigation_handle(
+        url_to_check, web_contents()->GetPrimaryMainFrame());
+    navigation_handle.set_is_in_primary_main_frame(true);
+    task->GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
+                                                      future.GetCallback());
+    EXPECT_EQ(expected_result.may_act_on_url_block_reason, future.Get());
   }
 
  private:
