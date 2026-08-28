@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +34,7 @@ using password_manager::MockPasswordFormManagerForUI;
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
+using password_manager::PasswordString;
 using password_manager::StoredCredential;
 using ::testing::_;
 using ::testing::Contains;
@@ -73,7 +75,7 @@ class ManagePasswordsStateTest : public testing::Test {
     saved_match_.signon_realm = kTestOrigin;
     saved_match_.username_value = u"username";
     saved_match_.username_element = u"username_element";
-    saved_match_.password_value = u"12345";
+    saved_match_.password_value = PasswordString(u"12345");
     saved_match_.password_element = u"password_element";
     saved_match_.match_type = PasswordForm::MatchType::kExact;
 
@@ -156,7 +158,7 @@ void ManagePasswordsStateTest::TestNoisyUpdates() {
   StoredCredential cred;
   cred.url = GURL("http://3rdparty.com");
   cred.username_value = u"username";
-  cred.password_value = password_manager::PasswordString(u"12345");
+  cred.password_value = PasswordString(u"12345");
   PasswordStoreChange change(PasswordStoreChange::ADD, std::move(cred));
   PasswordStoreChangeList list(1, change);
   passwords_data().ProcessLoginsChanged(list);
@@ -168,7 +170,7 @@ void ManagePasswordsStateTest::TestNoisyUpdates() {
   StoredCredential updated_cred;
   updated_cred.url = GURL("http://3rdparty.com");
   updated_cred.username_value = u"username";
-  updated_cred.password_value = password_manager::PasswordString(u"password");
+  updated_cred.password_value = PasswordString(u"password");
   list[0] =
       PasswordStoreChange(PasswordStoreChange::UPDATE, std::move(updated_cred));
   passwords_data().ProcessLoginsChanged(list);
@@ -180,7 +182,7 @@ void ManagePasswordsStateTest::TestNoisyUpdates() {
   StoredCredential removed_cred;
   removed_cred.url = GURL("http://3rdparty.com");
   removed_cred.username_value = u"username";
-  removed_cred.password_value = password_manager::PasswordString(u"password");
+  removed_cred.password_value = PasswordString(u"password");
   list[0] =
       PasswordStoreChange(PasswordStoreChange::REMOVE, std::move(removed_cred));
   passwords_data().ProcessLoginsChanged(list);
@@ -203,7 +205,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
     c.url = origin.GetURL().ReplaceComponents(replace_path);
     c.signon_realm = c.url.DeprecatedGetOriginAsURL().spec();
     c.username_value = u"user15";
-    c.password_value = password_manager::PasswordString(u"12345");
+    c.password_value = PasswordString(u"12345");
     return c;
   };
 
@@ -230,7 +232,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
 
   // Update the form.
   StoredCredential cred = create_cred();
-  cred.password_value = password_manager::PasswordString(u"password");
+  cred.password_value = PasswordString(u"password");
   list[0] = PasswordStoreChange(PasswordStoreChange::UPDATE,
                                 CloneStoredCredential(cred));
   EXPECT_CALL(mock_client_, UpdateFormManagers()).Times(0);
@@ -573,7 +575,7 @@ TEST_F(ManagePasswordsStateTest, AndroidPasswordUpdateSubmitted) {
   android_form.signon_realm = "android://dHJhc2g=@com.example.android/";
   android_form.url = GURL(android_form.signon_realm);
   android_form.username_value = u"username";
-  android_form.password_value = u"old pass";
+  android_form.password_value = PasswordString(u"old pass");
   android_form.match_type = PasswordForm::MatchType::kAffiliated;
   std::vector<PasswordForm> best_matches = {android_form};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
@@ -691,7 +693,7 @@ TEST_F(ManagePasswordsStateTest, OnKeychainError) {
 TEST_F(ManagePasswordsStateTest, OpenPasswordDetailsBubble) {
   PasswordForm form;
   form.username_value = u"user";
-  form.password_value = u"passw0rd";
+  form.password_value = PasswordString(u"passw0rd");
   form.signon_realm = "https://google.com/";
   form.url = GURL("https://google.com");
 

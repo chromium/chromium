@@ -36,6 +36,7 @@
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
@@ -795,7 +796,7 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
                                 username:@"fake-username"]);
 
   password_manager::PasswordForm password_form;
-  password_form.password_value = u"password";
+  password_form.password_value = password_manager::PasswordString(u"password");
   password_form.username_value = u"fake-username";
   password_form.url = leak_url;
   password_form.signon_realm = leak_url.GetWithEmptyPath().spec();

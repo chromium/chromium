@@ -37,6 +37,7 @@
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -100,6 +101,7 @@ using password_manager::PasswordForm;
 using password_manager::PasswordFormManager;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordStoreConsumer;
+using password_manager::PasswordString;
 using password_manager::prefs::kPasswordLeakDetectionEnabled;
 using test_helpers::MakeSimpleFormData;
 using test_helpers::SetPasswordFormFillData;
@@ -188,7 +190,7 @@ PasswordForm CreatePasswordForm(const char* origin_url,
   form.url = GURL(origin_url);
   form.signon_realm = origin_url;
   form.username_value = ASCIIToUTF16(username_value);
-  form.password_value = ASCIIToUTF16(password_value);
+  form.password_value = PasswordString(ASCIIToUTF16(password_value));
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   form.match_type = PasswordForm::MatchType::kExact;
   return form;
@@ -202,8 +204,7 @@ ACTION_P2(InvokeConsumer, store, form) {
   cred.url = form.url;
   cred.signon_realm = form.signon_realm;
   cred.username_value = form.username_value;
-  cred.password_value =
-      password_manager::PasswordString(std::u16string(form.password_value));
+  cred.password_value = form.password_value;
   cred.scheme = form.scheme;
   cred.in_store = form.in_store;
   cred.match_type = form.match_type;
@@ -702,7 +703,7 @@ PasswordForm MakeSimpleForm() {
   form.username_element = u"Username";
   form.password_element = u"Passwd";
   form.username_value = u"googleuser";
-  form.password_value = u"p4ssword";
+  form.password_value = PasswordString(u"p4ssword");
   form.signon_realm = "http://www.google.com/";
   form.form_data = MakeSimpleFormData();
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;

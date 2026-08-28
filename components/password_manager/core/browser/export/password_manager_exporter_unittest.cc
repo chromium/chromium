@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,7 +60,7 @@ PasswordForm CreateTestPassword() {
   PasswordForm password_form;
   password_form.url = GURL("http://accounts.google.com/a/LoginAuth");
   password_form.username_value = u"test@gmail.com";
-  password_form.password_value = u"test1";
+  password_form.password_value = PasswordString(u"test1");
   password_form.in_store = PasswordForm::Store::kProfileStore;
   return password_form;
 }
@@ -264,7 +265,7 @@ TEST_F(PasswordManagerExporterTest, DeduplicatesAcrossPasswordStores) {
   password.in_store = PasswordForm::Store::kProfileStore;
   password.url = GURL("http://g.com/auth");
   password.username_value = u"user";
-  password.password_value = u"password";
+  password.password_value = PasswordString(u"password");
 
   PasswordForm password_duplicate = password;
   password_duplicate.in_store = PasswordForm::Store::kAccountStore;

@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -37,6 +38,7 @@ using autofill::LoyaltyCard;
 using autofill::TestPersonalDataManager;
 using autofill::TestValuablesDataManager;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using ::testing::_;
 
@@ -115,11 +117,11 @@ TEST_F(SavedInfoHandlerTest, HandleGetPasswordCount) {
   form.url = GURL("https://example.com");
   form.signon_realm = form.url.spec();
   form.username_value = u"username";
-  form.password_value = u"password";
+  form.password_value = PasswordString(u"password");
   form.in_store = PasswordForm::Store::kProfileStore;
   profile_store()->AddLogin(password_manager::FromPasswordForm(form));
   form.username_value = u"admin";
-  form.password_value = u"hunter2";
+  form.password_value = PasswordString(u"hunter2");
   form.in_store = PasswordForm::Store::kProfileStore;
   profile_store()->AddLogin(password_manager::FromPasswordForm(form));
 

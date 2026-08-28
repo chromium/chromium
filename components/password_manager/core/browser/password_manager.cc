@@ -729,7 +729,11 @@ void PasswordManager::OnPresaveGeneratedPassword(
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
                         !form_manager);
   if (form_manager) {
-    form_manager->PresaveGeneratedPassword(form_data, generated_password);
+    // TODO(crbug.com/513276101): Explicit construction of std::u16string
+    // R-Value to be removed once OnPresaveGeneratedPassword converted to take
+    // PasswordString
+    form_manager->PresaveGeneratedPassword(
+        form_data, PasswordString(std::u16string(generated_password)));
 #if BUILDFLAG(IS_IOS)
     // On iOS some field values are not propagated to PasswordManager timely.
     // Provisionally save entire |form_data| to make sure the form is parsed

@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -45,6 +46,7 @@ using password_manager::InsecureType;
 using password_manager::InsecurityMetadata;
 using password_manager::IsMuted;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TriggerBackendNotification;
 
 using testing::ElementsAre;
@@ -150,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
   GetPasswordStore(0)->AddLogin(password_manager::FromPasswordForm(form0));
 
   PasswordForm form1 = form0;
-  form1.password_value = u"new_password";
+  form1.password_value = PasswordString(u"new_password");
   GetPasswordStore(1)->AddLogin(password_manager::FromPasswordForm(form1));
 
   ASSERT_TRUE(SamePasswordFormsChecker(GetPasswordStoreType()).Wait());
@@ -242,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, Update) {
   // Wait for client 0 to commit and client 1 to receive the update.
   ASSERT_TRUE(SamePasswordFormsChecker(GetPasswordStoreType()).Wait());
 
-  form.password_value = u"new_password";
+  form.password_value = PasswordString(u"new_password");
   GetPasswordStore(1)->UpdateLogin(password_manager::FromPasswordForm(form));
 
   // Wait for client 1 to commit and client 0 to receive the update.
@@ -286,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, AddTwice) {
   ASSERT_EQ(1, GetPasswordCount(1, GetPasswordStoreType()));
 
   // Update the password and add it again to client 0.
-  form.password_value = u"new_password";
+  form.password_value = PasswordString(u"new_password");
   GetPasswordStore(0)->AddLogin(password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount(0, GetPasswordStoreType()));
 
@@ -709,7 +711,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
       ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 
   // Update the password in Client 1.
-  form.password_value = u"new_password";
+  form.password_value = PasswordString(u"new_password");
   GetPasswordStore(1)->UpdateLogin(password_manager::FromPasswordForm(form));
 
   // Wait until Client 0 picks up changes.

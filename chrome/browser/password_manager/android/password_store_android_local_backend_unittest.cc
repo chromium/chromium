@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,7 +51,7 @@ PasswordForm CreateEntry(
     PasswordForm::MatchType match_type = PasswordForm::MatchType::kExact) {
   PasswordForm form;
   form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16(password);
+  form.password_value = PasswordString(base::ASCIIToUTF16(password));
   form.url = origin_url;
   form.signon_realm = origin_url.GetWithEmptyPath().spec();
   form.match_type = match_type;

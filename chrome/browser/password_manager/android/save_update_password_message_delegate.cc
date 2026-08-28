@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/prefs/pref_service.h"
@@ -44,6 +45,7 @@
 namespace {
 
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;
@@ -496,7 +498,6 @@ void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
   const password_manager::PasswordForm& password_form =
       passwords_state_.form_manager()->GetPendingCredentials();
   const std::u16string& current_username = password_form.username_value;
-  const std::u16string& current_password = password_form.password_value;
 
   CreatePasswordEditDialog();
 
@@ -509,7 +510,8 @@ void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
   std::vector<std::u16string> usernames;
   GetDisplayUsernames(&usernames);
   password_edit_dialog_->ShowPasswordEditDialog(
-      usernames, current_username, current_password, account_email_);
+      usernames, current_username, password_form.password_value.value(),
+      account_email_);
 
   DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
 }
@@ -579,8 +581,11 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
 void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
     const std::u16string& username,
     const std::u16string& password) {
-  UpdatePasswordFormUsernameAndPassword(username, password,
-                                        passwords_state_.form_manager());
+  // TODO(crbug.com/513276101): Explicit construction of std::u16string
+  // R-Value to be removed once argument converted to PasswordString
+  UpdatePasswordFormUsernameAndPassword(
+      username, PasswordString(std::u16string(password)),
+      passwords_state_.form_manager());
   StartSavePasswordFlow();
 }
 

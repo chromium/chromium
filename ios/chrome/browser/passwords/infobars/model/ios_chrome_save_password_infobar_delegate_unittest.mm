@@ -25,6 +25,7 @@
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/stored_credential.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/trusted_vault/trusted_vault_client.h"
@@ -118,7 +119,8 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
     form_.url = url_;
     form_.signon_realm = "https://example.com/";
     form_.username_value = base::SysNSStringToUTF16(kUsernameValue);
-    form_.password_value = base::SysNSStringToUTF16(kPasswordValue);
+    form_.password_value = password_manager::PasswordString(
+        base::SysNSStringToUTF16(kPasswordValue));
     form_.scheme = password_manager::PasswordForm::Scheme::kHtml;
     form_.type = password_manager::PasswordForm::Type::kApi;
 
@@ -1219,9 +1221,9 @@ TEST_P(IOSChromeSavePasswordInfoBarDelegateRecoveryFlowTest,
   primary_form.type = password_manager::PasswordForm::Type::kChangeSubmission;
 
   password_manager::PasswordForm updated_form = form_;
-  updated_form.password_value = IsPasswordUpdatedWithBackup()
-                                    ? u"backup password"
-                                    : u"not backup password";
+  updated_form.password_value = password_manager::PasswordString(
+      IsPasswordUpdatedWithBackup() ? u"backup password"
+                                    : u"not backup password");
 
   std::vector<password_manager::StoredCredential> forms;
   forms.push_back(password_manager::FromPasswordForm(std::move(primary_form)));

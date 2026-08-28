@@ -85,6 +85,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
@@ -940,7 +941,7 @@ void ManagePasswordsUIController::OnPasswordsRevealed() {
 
 void ManagePasswordsUIController::HandlePasswordRecoveryFinished(
     const std::u16string& username,
-    const std::u16string& password,
+    const password_manager::PasswordString& password,
     const std::u16string& password_backup) const {
   auto pending_credentials = GetPendingPassword();
   if (pending_credentials.password_value != password ||
@@ -954,8 +955,9 @@ void ManagePasswordsUIController::HandlePasswordRecoveryFinished(
   }
 }
 
-void ManagePasswordsUIController::SavePassword(const std::u16string& username,
-                                               const std::u16string& password) {
+void ManagePasswordsUIController::SavePassword(
+    const std::u16string& username,
+    const password_manager::PasswordString& password) {
   if (const password_manager::StoredCredential*
           changed_password_form_with_backup =
               password_manager_util::FindChangedPasswordLoginWithBackup(

@@ -26,6 +26,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -60,6 +61,7 @@ using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;
 using password_manager::MockBulkLeakCheckService;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -96,8 +98,7 @@ password_manager::StoredCredential MakeSavedPassword(
   cred.url = GURL(signon_realm);
   cred.signon_realm = std::string(signon_realm);
   cred.username_value = std::u16string(username);
-  cred.password_value =
-      password_manager::PasswordString(std::u16string(password));
+  cred.password_value = PasswordString(std::u16string(password));
   cred.in_store = PasswordForm::Store::kProfileStore;
   cred.password_issues =
       base::flat_map<InsecureType, password_manager::InsecurityMetadata>();

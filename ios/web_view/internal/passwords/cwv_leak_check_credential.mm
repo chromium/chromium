@@ -21,7 +21,7 @@
       std::make_unique<password_manager::LeakCheckCredential>(
           password_manager::CanonicalizeUsername(
               password.internalPasswordForm->username_value),
-          password.internalPasswordForm->password_value);
+          password.internalPasswordForm->password_value.value());
 
   return [[CWVLeakCheckCredential alloc]
       initWithCredential:std::move(canonical_credential)];

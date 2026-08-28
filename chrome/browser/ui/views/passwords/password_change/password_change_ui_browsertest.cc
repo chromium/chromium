@@ -14,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,7 +84,7 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
     form.url = main_url;
     form.signon_realm = main_url.GetWithEmptyPath().spec();
     form.username_value = u"username";
-    form.password_value = u"password";
+    form.password_value = password_manager::PasswordString(u"password");
     form.change_password_url = password_change_url;
     CHECK(form.change_password_url.is_valid());
     ManagePasswordsUIController::FromWebContents(

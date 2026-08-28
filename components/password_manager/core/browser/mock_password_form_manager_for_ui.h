@@ -7,6 +7,7 @@
 
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
@@ -59,7 +60,7 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               (override));
   MOCK_METHOD(void,
               OnUpdatePasswordFromPrompt,
-              (const std::u16string&),
+              (const PasswordString&),
               (override));
   MOCK_METHOD(void, OnNopeUpdateClicked, (), (override));
   MOCK_METHOD(void, OnNeverClicked, (), (override));

@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -42,6 +43,7 @@ using autofill::mojom::FocusedFieldType;
 using base::test::RunOnceCallback;
 using device_reauth::MockDeviceAuthenticator;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using password_manager::UiCredential;
 
@@ -106,7 +108,7 @@ PasswordForm MakeSavedPassword(const std::string& signon_realm,
   form.signon_realm = signon_realm;
   form.url = GURL(signon_realm);
   form.username_value = username;
-  form.password_value = kPassword;
+  form.password_value = PasswordString(kPassword);
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }

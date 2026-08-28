@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -160,14 +161,15 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   http_form.signon_realm = "http://example.org/";
   http_form.scheme = test.http_form_scheme;
   http_form.username_value = username[1];
-  http_form.password_value = password[1];
+  http_form.password_value = PasswordString(std::u16string(password[1]));
   store_->AddLogin(password_manager::FromPasswordForm(http_form));
 
   PasswordForm https_form;
   https_form.url = GURL("https://example.org/");
   https_form.signon_realm = signon_realm[test.same_signon_realm];
   https_form.username_value = username[test.same_username];
-  https_form.password_value = password[test.same_password];
+  https_form.password_value =
+      PasswordString(std::u16string(password[test.same_password]));
   https_form.scheme = test.http_form_scheme;
   if (!test.same_scheme) {
     https_form.scheme = (http_form.scheme == PasswordForm::Scheme::kBasic

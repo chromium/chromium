@@ -62,7 +62,7 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromFormRecoveryFlagOn) {
   form.url = GURL(form.signon_realm);
   form.blocked_by_user = false;
   form.username_value = kUsername;
-  form.password_value = kPassword;
+  form.password_value = PasswordString(std::u16string(kPassword));
   form.in_store = PasswordForm::Store::kProfileStore;
   form.SetPasswordBackupNote(kBackupPassword);
   auto backup_creation_timestamp = form.GetPasswordBackupDateCreated();
@@ -96,7 +96,7 @@ TEST(CredentialUIEntryTest,
   form.url = GURL(form.signon_realm);
   form.blocked_by_user = false;
   form.username_value = kUsername;
-  form.password_value = kPassword;
+  form.password_value = PasswordString(std::u16string(kPassword));
   form.SetNoteWithEmptyUniqueDisplayName(kNote);
   form.in_store = PasswordForm::Store::kProfileStore;
   forms.push_back(std::move(form));
@@ -107,7 +107,7 @@ TEST(CredentialUIEntryTest,
   form2.url = GURL(form2.signon_realm);
   form2.blocked_by_user = false;
   form2.username_value = kUsername;
-  form2.password_value = kPassword;
+  form2.password_value = PasswordString(std::u16string(kPassword));
   form2.SetNoteWithEmptyUniqueDisplayName(kNote);
   form2.in_store = PasswordForm::Store::kAccountStore;
   form2.SetPasswordBackupNote(kBackupPassword);
@@ -120,7 +120,7 @@ TEST(CredentialUIEntryTest,
   form3.url = GURL(form3.signon_realm);
   form3.blocked_by_user = false;
   form3.username_value = kUsername;
-  form3.password_value = kPassword;
+  form3.password_value = PasswordString(std::u16string(kPassword));
   form3.in_store = PasswordForm::Store::kAccountStore;
   forms.push_back(std::move(form3));
 
@@ -215,7 +215,7 @@ TEST(CredentialUIEntryTest,
     PasswordForm form;
     form.signon_realm = "https://g.com/";
     form.url = GURL(form.signon_realm);
-    form.password_value = u"pwd";
+    form.password_value = PasswordString(u"pwd");
     form.SetNoteWithEmptyUniqueDisplayName(kNote);
     forms.push_back(std::move(form));
   }

@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,7 +60,7 @@ password_manager::StoredCredential CreateTestCredential() {
   form.url = url;
   form.signon_realm = url::Origin::Create(url).GetURL().spec();
   form.username_value = u"test_user@example.com";
-  form.password_value = u"test_password";
+  form.password_value = password_manager::PasswordString(u"test_password");
   return password_manager::FromPasswordForm(std::move(form));
 }
 

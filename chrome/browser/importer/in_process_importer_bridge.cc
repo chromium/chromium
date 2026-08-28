@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_parser.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -78,7 +79,11 @@ password_manager::PasswordForm ConvertImportedPasswordForm(
   result.username_element = form.username_element;
   result.username_value = form.username_value;
   result.password_element = form.password_element;
-  result.password_value = form.password_value;
+  // TODO(crbug.com/513276101): Explicit construction of std::u16string
+  // R-Value to be removed once ImportedPasswordForm converted to use
+  // PasswordString
+  result.password_value =
+      password_manager::PasswordString(std::u16string(form.password_value));
   result.blocked_by_user = form.blocked_by_user;
   return result;
 }

@@ -12,6 +12,7 @@
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/public/safety_check_constants.h"
@@ -37,6 +38,7 @@ using password_manager::InsecureType;
 using password_manager::InsecurityMetadata;
 using password_manager::PasswordCheckReferrer;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::WarningType;
 
 const char kTestUrl[] = "http://www.example.com/";
@@ -47,7 +49,7 @@ CredentialUIEntry CreateCredential(
     const std::vector<InsecureType>& issues = {}) {
   PasswordForm form;
   form.username_value = username;
-  form.password_value = u"password";
+  form.password_value = PasswordString(u"password");
   form.signon_realm = kTestUrl;
   form.url = GURL(kTestUrl);
   form.date_created = base::Time::Now();

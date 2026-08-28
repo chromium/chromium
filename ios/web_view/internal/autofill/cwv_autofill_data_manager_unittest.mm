@@ -17,6 +17,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
@@ -111,7 +112,8 @@ class CWVAutofillDataManagerTest : public PlatformTest {
     password_form.username_element = base::SysNSStringToUTF16(@"Email");
     password_form.username_value = base::SysNSStringToUTF16(@"test@egmail.com");
     password_form.password_element = base::SysNSStringToUTF16(@"Passwd");
-    password_form.password_value = base::SysNSStringToUTF16(@"test");
+    password_form.password_value =
+        password_manager::PasswordString(base::SysNSStringToUTF16(@"test"));
     password_form.submit_element = base::SysNSStringToUTF16(@"signIn");
     password_form.signon_realm = "http://www.example.com/";
     password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;

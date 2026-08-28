@@ -68,8 +68,8 @@ void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
 
 void GeneratedPasswordSavedMessageDelegate::ShowAddUsernameDialog(
     content::WebContents* web_contents) {
-  const std::u16string& password =
-      saved_form_->GetPendingCredentials().password_value;
+  std::u16string password =
+      saved_form_->GetPendingCredentials().password_value.value();
 
   add_username_dialog_bridge_ = add_username_dialog_factory_.Run();
   // The delegate owns the bridge, so binding callbacks unretained is fine here.

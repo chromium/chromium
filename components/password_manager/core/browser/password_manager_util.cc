@@ -40,12 +40,13 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "crypto/process_bound_string.h"
 #include "url/url_util.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
@@ -425,11 +426,14 @@ const StoredCredential* GetMatchForUpdating(
     return nullptr;
   }
 
+  crypto::SecureU16String submitted_form_password_value =
+      submitted_form.password_value.secure_value();
+
   if (IsEligibleForEmptyUsernameMatching(submitted_form)) {
     // Prioritize matching by password value.
     const StoredCredential* best_match = nullptr;
     for (const StoredCredential* stored_match : credentials) {
-      if (stored_match->password_value == submitted_form.password_value &&
+      if (stored_match->password_value == submitted_form_password_value &&
           (!best_match || IsBetterMatchStored(*stored_match, *best_match))) {
         best_match = stored_match;
       }

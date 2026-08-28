@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -60,7 +61,7 @@ PasswordForm CreateTestForm() {
   PasswordForm form;
   form.url = GURL("http://www.example.com/a/LoginAuth");
   form.username_value = u"Adam";
-  form.password_value = u"p4ssword";
+  form.password_value = PasswordString(u"p4ssword");
   form.signon_realm = "http://www.example.com/";
   return form;
 }
@@ -691,7 +692,7 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(Return(ByMove(std::move(check_instance2))));
   form.username_value = u"username";
-  form.password_value = u"password";
+  form.password_value = PasswordString(u"password");
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
                             GetTestUrl());
   ExpectPasswords({});

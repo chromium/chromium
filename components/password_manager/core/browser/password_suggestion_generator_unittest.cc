@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
@@ -371,7 +372,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
   CredentialUIEntry android_credential_ui_entry() const {
     PasswordForm form;
     form.username_value = u"username@example.com";
-    form.password_value = u"password";
+    form.password_value = PasswordString(u"password");
     const std::string url =
         "android://"
         "Jzj5T2E45Hb33D-lk-"

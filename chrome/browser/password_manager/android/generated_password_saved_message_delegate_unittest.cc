@@ -20,6 +20,7 @@
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -30,6 +31,7 @@
 
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::PasswordFormManagerForUI;
+using password_manager::PasswordString;
 
 namespace {
 constexpr char16_t kDefaultUrl[] = u"http://example.com";
@@ -136,7 +138,7 @@ void GeneratedPasswordSavedMessageDelegateTest::SetUsernameAndPassword(
     std::u16string username,
     std::u16string password) {
   form_.username_value = std::move(username);
-  form_.password_value = std::move(password);
+  form_.password_value = PasswordString(std::move(password));
 }
 
 void GeneratedPasswordSavedMessageDelegateTest::DismissMessage() {

@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/vote_uploads_test_matchers.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -128,8 +129,8 @@ class VotesUploaderTest : public testing::Test {
       test_api(submitted_form_.form_data).Append(field);
     }
     // Password attributes uploading requires a non-empty password value.
-    form_to_upload_.password_value = u"password_value";
-    submitted_form_.password_value = u"password_value";
+    form_to_upload_.password_value = PasswordString(u"password_value");
+    submitted_form_.password_value = PasswordString(u"password_value");
   }
 
  protected:
@@ -170,8 +171,8 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
       FieldRendererId(11);
   submitted_form_.confirmation_password_element_renderer_id =
       FieldRendererId(11);
-  form_to_upload_.new_password_value = u"new_password_value";
-  submitted_form_.new_password_value = u"new_password_value";
+  form_to_upload_.new_password_value = PasswordString(u"new_password_value");
+  submitted_form_.new_password_value = PasswordString(u"new_password_value");
   submitted_form_.submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
 
@@ -254,7 +255,7 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
       {AlternativeElement::Value(u"correct_username"),
        autofill::FieldRendererId(6),
        AlternativeElement::Name(GetFieldNameByIndex(6))}};
-  match_form.password_value = u"password_value";
+  match_form.password_value = PasswordString(u"password_value");
   match_form.times_used_in_html_form = 0;
 
   for (size_t i = 0; i < 10; ++i) {
@@ -452,7 +453,8 @@ TEST_F(VotesUploaderTest, UploadPasswordAttributes) {
         autofill_type == FieldType::PROBABLY_NEW_PASSWORD ||
         autofill_type == FieldType::NOT_NEW_PASSWORD) {
       form_to_upload_.new_password_element_renderer_id = FieldRendererId(11);
-      form_to_upload_.new_password_value = u"new_password_value";
+      form_to_upload_.new_password_value =
+          PasswordString(u"new_password_value");
     }
 
     const bool expect_password_attributes =

@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,7 +49,8 @@ class CommonSavedAccountManagerBubbleControllerTest : public ::testing::Test {
     pending_password_.url = GURL(kSiteOrigin);
     pending_password_.signon_realm = kSiteOrigin;
     pending_password_.username_value = kUsername;
-    pending_password_.password_value = kPassword;
+    pending_password_.password_value =
+        password_manager::PasswordString(kPassword);
   }
 
   ~CommonSavedAccountManagerBubbleControllerTest() override {
@@ -118,7 +120,8 @@ TEST_F(CommonSavedAccountManagerBubbleControllerTest, TextInputFieldsChanged) {
   PretendPasswordWaiting();
 
   const std::u16string kExpectedUsername = u"new_username";
-  const std::u16string kExpectedPassword = u"new_password";
+  const auto kExpectedPassword =
+      password_manager::PasswordString(u"new_password");
 
   controller()->OnCredentialEdited(kExpectedUsername, kExpectedPassword);
   EXPECT_EQ(kExpectedUsername, controller()->pending_password().username_value);

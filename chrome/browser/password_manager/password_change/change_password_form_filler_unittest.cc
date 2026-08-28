@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "content/public/test/web_contents_tester.h"
@@ -146,7 +147,8 @@ class ChangePasswordFormFillerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<ModelQualityLogsUploader>(web_contents(), GURL());
 
     existing_credential_.username_value = kUsername;
-    existing_credential_.password_value = kOldPassword;
+    existing_credential_.password_value =
+        password_manager::PasswordString(std::u16string(kOldPassword));
     existing_credential_.url = url();
     existing_credential_.match_type =
         password_manager::PasswordForm::MatchType::kExact;
@@ -254,7 +256,7 @@ TEST_F(ChangePasswordFormFillerTest, SucceededForExistingCredential) {
   EXPECT_TRUE(filling_future.Get().has_value());
   EXPECT_EQ(presaved_generated_password_form.username_value,
             existing_credential()->username_value);
-  EXPECT_EQ(presaved_generated_password_form.password_value.value(),
+  EXPECT_EQ(presaved_generated_password_form.password_value,
             existing_credential()->password_value);
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 
@@ -292,7 +294,8 @@ TEST_F(ChangePasswordFormFillerTest, SucceededNewCredential) {
 TEST_F(ChangePasswordFormFillerTest,
        PresaveGeneratedPasswordForDifferentInputPassword) {
   password_manager::PasswordForm* stored_form = existing_credential();
-  stored_form->password_value = u"stored_password";
+  stored_form->password_value =
+      password_manager::PasswordString(u"stored_password");
   auto* form_manager =
       CreateFormManager(/*credentials_to_seed=*/{*stored_form});
 

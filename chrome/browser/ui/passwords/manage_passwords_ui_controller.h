@@ -22,6 +22,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -187,7 +188,7 @@ class ManagePasswordsUIController
   void OnNotNowClicked() override;
   void OnPasswordsRevealed() override;
   void SavePassword(const std::u16string& username,
-                    const std::u16string& password) override;
+                    const password_manager::PasswordString& password) override;
   void MovePasswordToAccountStore() override;
   void MovePendingPasswordToAccountStoreUsingHelper(
       const password_manager::PasswordForm& form,
@@ -387,7 +388,7 @@ class ManagePasswordsUIController
   // because otherwise we cannot tell if the credentials were modified manually.
   void HandlePasswordRecoveryFinished(
       const std::u16string& username,
-      const std::u16string& password,
+      const password_manager::PasswordString& password,
       const std::u16string& password_backup) const;
 
   // Returns true if there exists a password manager bubble yet to be shown in

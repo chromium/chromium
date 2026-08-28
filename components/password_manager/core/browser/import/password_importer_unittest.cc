@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
@@ -375,7 +376,8 @@ TEST_F(PasswordImporterTest,
   form_profile_store.url = GURL("https://test.com");
   form_profile_store.signon_realm = form_profile_store.url.spec();
   form_profile_store.username_value = u"username_exists_in_profile_store";
-  form_profile_store.password_value = u"password_already_stored";
+  form_profile_store.password_value =
+      PasswordString(u"password_already_stored");
   form_profile_store.SetNoteWithEmptyUniqueDisplayName(local_note);
   form_profile_store.in_store = PasswordForm::Store::kProfileStore;
 
@@ -414,7 +416,8 @@ TEST_F(PasswordImporterTest, ExactMatchWithConflictingNotesValidConcatenation) {
   form_profile_store.url = GURL("https://test.com");
   form_profile_store.signon_realm = form_profile_store.url.spec();
   form_profile_store.username_value = u"username_exists_in_profile_store";
-  form_profile_store.password_value = u"password_already_stored";
+  form_profile_store.password_value =
+      PasswordString(u"password_already_stored");
   form_profile_store.SetNoteWithEmptyUniqueDisplayName(local_note);
   form_profile_store.in_store = PasswordForm::Store::kProfileStore;
 
@@ -453,7 +456,8 @@ TEST_F(PasswordImporterTest, ExactMatchImportedNoteIsSubstingOfLocalNote) {
   form_profile_store.url = GURL("https://test.com");
   form_profile_store.signon_realm = form_profile_store.url.spec();
   form_profile_store.username_value = u"username_exists_in_profile_store";
-  form_profile_store.password_value = u"password_already_stored";
+  form_profile_store.password_value =
+      PasswordString(u"password_already_stored");
   form_profile_store.SetNoteWithEmptyUniqueDisplayName(local_note);
   form_profile_store.in_store = PasswordForm::Store::kProfileStore;
 
@@ -486,7 +490,8 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileStore) {
   form_profile_store.url = GURL("https://test.com");
   form_profile_store.signon_realm = form_profile_store.url.spec();
   form_profile_store.username_value = u"username_exists_in_profile_store";
-  form_profile_store.password_value = u"password_already_stored";
+  form_profile_store.password_value =
+      PasswordString(u"password_already_stored");
   form_profile_store.SetNoteWithEmptyUniqueDisplayName(kTestNote);
   form_profile_store.in_store = PasswordForm::Store::kProfileStore;
 
@@ -528,7 +533,8 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchAccountStore) {
   form_account_store.url = GURL("https://test.com");
   form_account_store.signon_realm = form_account_store.url.spec();
   form_account_store.username_value = u"username_exists_in_account_store";
-  form_account_store.password_value = u"password_already_stored";
+  form_account_store.password_value =
+      PasswordString(u"password_already_stored");
   form_account_store.in_store = PasswordForm::Store::kAccountStore;
 
   ASSERT_TRUE(AddPasswordForm(form_account_store));
@@ -571,7 +577,8 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileAndAccountStore) {
       form_account_profile_store.url.spec();
   form_account_profile_store.username_value =
       u"username_exists_in_profile_and_account_store";
-  form_account_profile_store.password_value = u"password_already_stored";
+  form_account_profile_store.password_value =
+      PasswordString(u"password_already_stored");
 
   AddToProfileAndAccountStores(std::move(form_account_profile_store));
 
@@ -614,7 +621,8 @@ TEST_F(PasswordImporterTest, ImportReportsConflicts) {
   form_profile_store.url = GURL("https://test.com");
   form_profile_store.signon_realm = form_profile_store.url.spec();
   form_profile_store.username_value = u"username_exists_in_profile_store";
-  form_profile_store.password_value = u"password_does_not_match";
+  form_profile_store.password_value =
+      PasswordString(u"password_does_not_match");
   form_profile_store.in_store = PasswordForm::Store::kProfileStore;
 
   ASSERT_TRUE(AddPasswordForm(form_profile_store));
@@ -651,7 +659,8 @@ TEST_F(PasswordImporterTest, ContinueImportCanReplaceConflictingPassword) {
   form_profile_store.url = GURL("https://test.com");
   form_profile_store.signon_realm = form_profile_store.url.spec();
   form_profile_store.username_value = u"username_exists_in_profile_store";
-  form_profile_store.password_value = u"password_does_not_match";
+  form_profile_store.password_value =
+      PasswordString(u"password_does_not_match");
   form_profile_store.in_store = PasswordForm::Store::kProfileStore;
 
   ASSERT_TRUE(AddPasswordForm(form_profile_store));
@@ -704,7 +713,8 @@ TEST_F(PasswordImporterTest,
   form_profile_store.url = GURL("https://test.com");
   form_profile_store.signon_realm = form_profile_store.url.spec();
   form_profile_store.username_value = u"username_exists_in_profile_store";
-  form_profile_store.password_value = u"password_does_not_match";
+  form_profile_store.password_value =
+      PasswordString(u"password_does_not_match");
   form_profile_store.in_store = PasswordForm::Store::kProfileStore;
 
   ASSERT_TRUE(AddPasswordForm(form_profile_store));
@@ -1156,7 +1166,7 @@ TEST_F(PasswordImporterTest, VectorImportWithConflict) {
   existing_form.url = GURL(kTestOriginURL);
   existing_form.signon_realm = kTestSignonRealm;
   existing_form.username_value = kTestUsername;
-  existing_form.password_value = u"different_password";
+  existing_form.password_value = PasswordString(u"different_password");
   existing_form.in_store = PasswordForm::Store::kProfileStore;
   ASSERT_TRUE(AddPasswordForm(existing_form));
 
@@ -1194,7 +1204,7 @@ TEST_F(PasswordImporterTest, VectorImportWithDuplicate) {
   existing_form.url = GURL(kTestOriginURL);
   existing_form.signon_realm = kTestSignonRealm;
   existing_form.username_value = kTestUsername;
-  existing_form.password_value = kTestPassword;
+  existing_form.password_value = PasswordString(kTestPassword);
   existing_form.in_store = PasswordForm::Store::kProfileStore;
   ASSERT_TRUE(AddPasswordForm(existing_form));
 

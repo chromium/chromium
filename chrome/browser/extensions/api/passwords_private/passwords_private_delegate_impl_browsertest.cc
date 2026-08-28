@@ -80,6 +80,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/sharing/mock_password_sender_service.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -102,6 +103,7 @@
 using device_reauth::ReauthResult;
 using password_manager::PasswordForm;
 using password_manager::PasswordRecipient;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using ::testing::_;
 using ::testing::AllOf;
@@ -163,7 +165,7 @@ PasswordForm CreateSampleForm(
   form.signon_realm = "https://abc1.com";
   form.url = GURL("https://abc1.com");
   form.username_value = username;
-  form.password_value = u"test";
+  form.password_value = PasswordString(u"test");
   form.in_store = store;
   return form;
 }

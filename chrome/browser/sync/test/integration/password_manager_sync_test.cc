@@ -43,6 +43,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -296,7 +297,8 @@ class PasswordManagerSyncTest : public SyncTest {
     form.signon_realm = origin.spec();
     form.url = origin;
     form.username_value = base::UTF8ToUTF16(username);
-    form.password_value = base::UTF8ToUTF16(password);
+    form.password_value =
+        password_manager::PasswordString(base::UTF8ToUTF16(password));
     form.date_created = base::Time::Now();
     return form;
   }

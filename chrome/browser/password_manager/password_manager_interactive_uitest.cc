@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/password_manager/core/browser/password_manager.h"
+
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -26,9 +28,9 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
-#include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -108,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
   signin_form.username_value = u"temp";
-  signin_form.password_value = u"random";
+  signin_form.password_value = password_manager::PasswordString(u"random");
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
 
   // Load the page to have the saved credentials autofilled.
@@ -213,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
   signin_form.username_value = u"temp";
-  signin_form.password_value = u"random";
+  signin_form.password_value = password_manager::PasswordString(u"random");
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
 
   NavigateToFile("/password/password_form.html");
@@ -344,7 +346,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   admin_form.signon_realm = embedded_test_server()->base_url().spec();
   admin_form.url = embedded_test_server()->base_url();
   admin_form.username_value = u"admin";
-  admin_form.password_value = u"random_secret";
+  admin_form.password_value =
+      password_manager::PasswordString(u"random_secret");
   admin_form.date_last_used = base::Time::FromTimeT(1);
   password_store->AddLogin(password_manager::FromPasswordForm(admin_form));
 
@@ -462,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, ChangePwdFormCleared) {
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
-  signin_form.password_value = u"old_pw";
+  signin_form.password_value = password_manager::PasswordString(u"old_pw");
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
 
   NavigateToFile("/password/cleared_change_password_forms.html");
@@ -502,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
-  signin_form.password_value = u"old_pw";
+  signin_form.password_value = password_manager::PasswordString(u"old_pw");
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
 
   for (bool all_fields_cleared : {false, true}) {
@@ -558,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
-  signin_form.password_value = u"old_pw";
+  signin_form.password_value = password_manager::PasswordString(u"old_pw");
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
 
   for (bool relevant_fields_cleared : {false, true}) {

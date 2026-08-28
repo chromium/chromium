@@ -18,6 +18,7 @@
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/prefs/pref_service.h"
@@ -39,6 +40,7 @@
 
 using password_manager::FakeBulkLeakCheckService;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 
 namespace {
 
@@ -184,8 +186,8 @@ PasswordForm CreateSampleFormWithIndex(int index) {
   PasswordForm form;
   form.username_value =
       base::ASCIIToUTF16(base::StringPrintf("concrete username %02d", index));
-  form.password_value =
-      base::ASCIIToUTF16(base::StringPrintf("concrete password %02d", index));
+  form.password_value = PasswordString(
+      base::ASCIIToUTF16(base::StringPrintf("concrete password %02d", index)));
   form.url = GURL(base::StringPrintf("https://www%02d.example.com", index));
   form.signon_realm = form.url.spec();
   form.date_created = base::Time::Now();
@@ -250,7 +252,7 @@ bool ClearPasswordStores() {
                                    origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(username);
-  example.password_value = base::SysNSStringToUTF16(password);
+  example.password_value = PasswordString(base::SysNSStringToUTF16(password));
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
   example.date_created = base::Time::Now();
@@ -262,7 +264,7 @@ bool ClearPasswordStores() {
                                    origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(username);
-  example.password_value = base::SysNSStringToUTF16(password);
+  example.password_value = PasswordString(base::SysNSStringToUTF16(password));
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
   example.date_created = base::Time::Now();
@@ -275,7 +277,7 @@ bool ClearPasswordStores() {
                                origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(username);
-  example.password_value = base::SysNSStringToUTF16(password);
+  example.password_value = PasswordString(base::SysNSStringToUTF16(password));
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
   example.notes = {password_manager::PasswordNote(
@@ -288,7 +290,7 @@ bool ClearPasswordStores() {
                                        origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(username);
-  example.password_value = base::SysNSStringToUTF16(password);
+  example.password_value = PasswordString(base::SysNSStringToUTF16(password));
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
   example.password_issues.insert({password_manager::InsecureType::kLeaked,
@@ -301,7 +303,7 @@ bool ClearPasswordStores() {
                                             origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(userName);
-  example.password_value = base::SysNSStringToUTF16(password);
+  example.password_value = PasswordString(base::SysNSStringToUTF16(password));
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
   example.password_issues.insert(

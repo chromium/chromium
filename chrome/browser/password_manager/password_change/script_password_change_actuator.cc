@@ -126,7 +126,7 @@ ScriptPasswordChangeActuator::ScriptPasswordChangeActuator(
     ModelQualityLogsUploader* logs_uploader)
     : change_password_url_(std::move(change_password_url)),
       username_(std::move(password_form_info.username_value)),
-      original_password_(std::move(password_form_info.password_value)),
+      original_password_(password_form_info.password_value.value()),
       profile_(profile),
       logs_uploader_(logs_uploader) {}
 

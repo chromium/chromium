@@ -36,6 +36,7 @@
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -58,6 +59,7 @@ using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using password_manager::CredentialLeakFlags;
 using password_manager::CredentialLeakType;
+using password_manager::PasswordString;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Pointee;
@@ -73,12 +75,12 @@ constexpr std::u16string_view kSecondUsername = u"nancy@sinat.ra";
 password_manager::PasswordForm CreatePasswordForm(
     const GURL& url,
     const std::u16string& username,
-    const std::u16string& password) {
+    std::u16string password) {
   password_manager::PasswordForm password_form;
   password_form.url = url;
   password_form.signon_realm = url.GetWithEmptyPath().spec();
   password_form.username_value = username;
-  password_form.password_value = password;
+  password_form.password_value = PasswordString(std::move(password));
   return password_form;
 }
 
@@ -626,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   password_manager::PasswordForm form;
   form.url = origin;
   form.username_value = u"peter@pan.test";
-  form.password_value = u"I can fly!";
+  form.password_value = PasswordString(u"I can fly!");
   form.match_type = password_manager::PasswordForm::MatchType::kExact;
 
   // Successful login alone will not prompt:
@@ -689,7 +691,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     auto form1 = std::make_unique<password_manager::PasswordForm>();
     form1->url = GURL("https://terracottaand.co");
     form1->username_value = u"peter@pan.test";
-    form1->password_value = u"I can fly!";
+    form1->password_value = PasswordString(u"I can fly!");
     form1->match_type = password_manager::PasswordForm::MatchType::kExact;
     remote_actor_forms_.push_back(std::move(form1));
 
@@ -697,7 +699,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
       auto form2 = std::make_unique<password_manager::PasswordForm>();
       form2->url = GURL("https://terracottaand.co");
       form2->username_value = u"notpeter@pan.test";
-      form2->password_value = u"I cannot fly!";
+      form2->password_value = PasswordString(u"I cannot fly!");
       form2->match_type = password_manager::PasswordForm::MatchType::kExact;
       remote_actor_forms_.push_back(std::move(form2));
     }
@@ -1015,7 +1017,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   auto form = std::make_unique<password_manager::PasswordForm>();
   form->username_value = u"peter@pan.test";
-  form->password_value = u"I can fly!";
+  form->password_value = PasswordString(u"I can fly!");
   form->match_type = password_manager::PasswordForm::MatchType::kExact;
   forms.push_back(std::move(form));
 
@@ -1102,13 +1104,13 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   auto form1 = std::make_unique<password_manager::PasswordForm>();
   form1->username_value = u"peter@pan.test";
-  form1->password_value = u"I can fly!";
+  form1->password_value = PasswordString(u"I can fly!");
   form1->match_type = password_manager::PasswordForm::MatchType::kExact;
   forms.push_back(std::move(form1));
 
   auto form2 = std::make_unique<password_manager::PasswordForm>();
   form2->username_value = u"notpeter@pan.test";
-  form2->password_value = u"I cannot fly!";
+  form2->password_value = PasswordString(u"I cannot fly!");
   form2->match_type = password_manager::PasswordForm::MatchType::kExact;
   forms.push_back(std::move(form2));
 
@@ -1211,7 +1213,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   auto form = std::make_unique<password_manager::PasswordForm>();
   form->url = GURL("https://m.terracottaand.co");
   form->username_value = u"peter@pan.test";
-  form->password_value = u"I can fly!";
+  form->password_value = PasswordString(u"I can fly!");
   form->match_type = password_manager::PasswordForm::MatchType::kPSL;
   forms.push_back(std::move(form));
 

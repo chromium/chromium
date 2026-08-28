@@ -160,7 +160,7 @@ password_manager::StoredCredential CreateTestCredential() {
   form.url = url;
   form.signon_realm = url::Origin::Create(url).GetURL().spec();
   form.username_value = kTestUsername;
-  form.password_value = kTestPassword;
+  form.password_value = password_manager::PasswordString(kTestPassword);
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   form.match_type = password_manager::PasswordForm::MatchType::kExact;
   return password_manager::FromPasswordForm(std::move(form));
@@ -314,7 +314,7 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     form.url = GURL(kTestUrl);
     form.signon_realm = url::Origin::Create(form.url).GetURL().spec();
     form.username_value = kTestUsername;
-    form.password_value = kTestPassword;
+    form.password_value = password_manager::PasswordString(kTestPassword);
     form.in_store = password_manager::PasswordForm::Store::kProfileStore;
     form.match_type = password_manager::PasswordForm::MatchType::kExact;
     seed_credentials.push_back(form);

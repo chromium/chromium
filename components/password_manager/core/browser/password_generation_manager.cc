@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "crypto/random.h"
 
@@ -70,7 +71,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   bool IsPasswordUpdate() const override;
   bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const override;
   void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
-  void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
+  void OnUpdatePasswordFromPrompt(const PasswordString& new_password) override;
   void OnNopeUpdateClicked() override;
   void OnNeverClicked() override;
   void OnNoInteraction(bool is_update) override;
@@ -184,7 +185,7 @@ void PasswordDataForUI::OnUpdateUsernameFromPrompt(
 }
 
 void PasswordDataForUI::OnUpdatePasswordFromPrompt(
-    const std::u16string& new_password) {
+    const PasswordString& new_password) {
   // Ignore. The generated password can be edited in-place.
 }
 
@@ -384,7 +385,7 @@ void PasswordGenerationManager::GeneratedPasswordAccepted(
       return;
     }
   }
-  driver->GeneratedPasswordAccepted(generated.password_value);
+  driver->GeneratedPasswordAccepted(generated.password_value.value());
 }
 
 void PasswordGenerationManager::PresaveGeneratedPassword(
@@ -448,11 +449,11 @@ void PasswordGenerationManager::CommitGeneratedPassword(
   DCHECK(presaved_);
   generated.date_last_used = base::Time::Now();
   generated.date_created = base::Time::Now();
-  if (initial_generated_password_ != generated.password_value) {
+  if (initial_generated_password_ != generated.password_value.value()) {
     // If the generated password was edited, send UMA metrics on what kind of
     // changes were there.
     SendUmaHistogramsOnGeneratedPasswordAttributeChanges(
-        initial_generated_password_, generated.password_value);
+        initial_generated_password_.value(), generated.password_value.value());
   }
 
   if ((store_to_save & PasswordForm::Store::kAccountStore) ==
@@ -489,7 +490,7 @@ void PasswordGenerationManager::OnPresaveBubbleResult(
   }
 
   if (accepted) {
-    driver->GeneratedPasswordAccepted(pending.password_value);
+    driver->GeneratedPasswordAccepted(pending.password_value.value());
   } else {
     driver->ClearPreviewedForm();
   }

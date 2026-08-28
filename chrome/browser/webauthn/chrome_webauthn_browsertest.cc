@@ -60,6 +60,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
@@ -1421,7 +1422,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords;
   auto form = std::make_unique<password_manager::PasswordForm>();
   form->username_value = base::UTF8ToUTF16(std::string(kUsername1));
-  form->password_value = u"password";
+  form->password_value = password_manager::PasswordString(u"password");
   form->url = GURL("https://www.example.com");
   passwords.push_back(std::move(form));
   fetcher->SetPasswords(std::move(passwords));

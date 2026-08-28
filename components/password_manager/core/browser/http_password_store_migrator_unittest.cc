@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +42,7 @@ PasswordForm CreateTestForm() {
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.action = GURL("https://example.org/action.html");
   form.username_value = u"user";
-  form.password_value = u"password";
+  form.password_value = PasswordString(u"password");
   form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
@@ -53,7 +54,7 @@ PasswordForm CreateTestPSLForm() {
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.action = GURL(kTestSubdomainHttpURL);
   form.username_value = u"user2";
-  form.password_value = u"password2";
+  form.password_value = PasswordString(u"password2");
   form.match_type = PasswordForm::MatchType::kPSL;
   return form;
 }
@@ -62,7 +63,7 @@ PasswordForm CreateTestPSLForm() {
 PasswordForm CreateAndroidCredential() {
   PasswordForm form;
   form.username_value = u"user3";
-  form.password_value = u"password3";
+  form.password_value = PasswordString(u"password3");
   form.signon_realm = "android://hash@com.example.android/";
   form.url = GURL(form.signon_realm);
   form.action = GURL();

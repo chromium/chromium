@@ -187,7 +187,7 @@ std::u16string GetDisplayFederation(
 
 std::u16string GetDisplayPassword(const password_manager::PasswordForm& form) {
   return !form.IsFederatedCredential()
-             ? form.password_value
+             ? form.password_value.value()
              : l10n_util::GetStringFUTF16(IDS_PASSWORDS_VIA_FEDERATION,
                                           GetDisplayFederation(form));
 }

@@ -94,7 +94,7 @@
   if (self.blocked) {
     return nil;
   }
-  return base::SysUTF16ToNSString(_passwordForm.password_value);
+  return base::SysUTF16ToNSString(_passwordForm.password_value.value());
 }
 
 - (NSString*)keychainIdentifier {

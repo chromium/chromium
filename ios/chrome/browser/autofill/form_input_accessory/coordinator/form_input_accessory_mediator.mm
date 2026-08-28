@@ -27,6 +27,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -1233,7 +1234,11 @@ bool IsStateless() {
   if (const Suggestion::PasswordSuggestionDetails* details =
           std::get_if<Suggestion::PasswordSuggestionDetails>(&payload)) {
     form.username_value = details->username;
-    form.password_value = details->password;
+    // TODO(crbug.com/513276101): Explicit construction of std::u16string
+    // R-Value to be removed once PasswordSuggestionDetails converted to use
+    // PasswordString
+    form.password_value =
+        password_manager::PasswordString(std::u16string(details->password));
     form.signon_realm = details->signon_realm.value_or(
         password_manager::GetSignonRealm(page_url));
   } else {
@@ -1249,7 +1254,11 @@ bool IsStateless() {
                                           SuggestionType::kBackupPasswordEntry
                                forFrameId:_lastSeenParams.frame_id];
       if (fill_data_result.has_value()) {
-        form.password_value = fill_data_result.value()->password_value;
+        // TODO(crbug.com/513276101): Explicit construction of std::u16string
+        // R-Value to be removed once FillDataRetrievalResult converted to use
+        // PasswordString
+        form.password_value = password_manager::PasswordString(
+            std::u16string(fill_data_result.value()->password_value));
         std::string raw_realm = !fill_data_result.value()->realm.empty()
                                     ? fill_data_result.value()->realm
                                     : fill_data_result.value()->origin.spec();

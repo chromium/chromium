@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "password_string.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -45,7 +46,7 @@ std::string GetShownOrigin(const url::Origin& origin);
 // |password|.
 void UpdatePasswordFormUsernameAndPassword(
     const std::u16string& username,
-    const std::u16string& password,
+    const PasswordString& password,
     PasswordFormManagerForUI* form_manager);
 
 // Returns all the usernames for credentials saved for `signon_realm`. If

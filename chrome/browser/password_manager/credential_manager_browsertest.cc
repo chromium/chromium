@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -36,6 +37,7 @@
 namespace {
 
 using password_manager::MatchesFormExceptStore;
+using password_manager::PasswordString;
 using ::testing::ElementsAre;
 using ::testing::Pair;
 using ::testing::SizeIs;
@@ -273,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       GetDefaultPasswordStore(browser()->GetProfile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.password_value = u"password";
+  signin_form.password_value = PasswordString(u"password");
   signin_form.username_value = u"user";
   signin_form.url = embedded_test_server()->base_url();
   signin_form.skip_zero_click = true;
@@ -332,13 +334,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   form_1.signon_realm = url.spec();
   form_1.url = url;
   form_1.username_value = u"user1";
-  form_1.password_value = u"abcdef";
+  form_1.password_value = PasswordString(u"abcdef");
 
   password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.url = url;
   form_2.username_value = u"user2";
-  form_2.password_value = u"123456";
+  form_2.password_value = PasswordString(u"123456");
 
   password_store->AddLogin(password_manager::FromPasswordForm(form_1));
   password_store->AddLogin(password_manager::FromPasswordForm(form_2));
@@ -420,13 +422,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   form_1.signon_realm = url.spec();
   form_1.url = url;
   form_1.username_value = u"user1";
-  form_1.password_value = u"abcdef";
+  form_1.password_value = PasswordString(u"abcdef");
 
   password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.url = url;
   form_2.username_value = u"user2";
-  form_2.password_value = u"123456";
+  form_2.password_value = PasswordString(u"123456");
 
   password_store->AddLogin(password_manager::FromPasswordForm(form_1));
   password_store->AddLogin(password_manager::FromPasswordForm(form_2));
@@ -510,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   password_manager::PasswordForm form_1;
   form_1.signon_realm = url.spec();
   form_1.username_value = u"user1";
-  form_1.password_value = u"abcdef";
+  form_1.password_value = PasswordString(u"abcdef");
   form_1.username_element = u"user";
   form_1.password_element = u"pass";
   form_1.url = GURL(url.spec() + "/my/custom/path/");
@@ -518,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.username_value = u"user2";
-  form_2.password_value = u"123456";
+  form_2.password_value = PasswordString(u"123456");
   form_2.username_element = u"username";
   form_2.password_element = u"password";
   form_2.url = GURL(url.spec() + "/my/other/path/");
@@ -609,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = psl_url.spec();
-  signin_form.password_value = u"password";
+  signin_form.password_value = PasswordString(u"password");
   signin_form.username_value = u"user";
   signin_form.url = psl_url;
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
@@ -663,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = psl_url.spec();
-  signin_form.password_value = u"password";
+  signin_form.password_value = PasswordString(u"password");
   signin_form.username_value = u"user";
   signin_form.url = psl_url;
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
@@ -714,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   http_form.signon_realm = http_origin.spec();
   http_form.url = http_origin;
   http_form.username_value = u"user";
-  http_form.password_value = u"12345";
+  http_form.password_value = PasswordString(u"12345");
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       GetDefaultPasswordStore(browser()->GetProfile());
   password_store->AddLogin(password_manager::FromPasswordForm(http_form));
@@ -747,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       GetDefaultPasswordStore(browser()->GetProfile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.password_value = u"password";
+  signin_form.password_value = PasswordString(u"password");
   signin_form.username_value = u"user";
   signin_form.url = embedded_test_server()->base_url();
   signin_form.skip_zero_click = false;
@@ -919,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
       GetDefaultPasswordStore(browser()->GetProfile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.password_value = u"old_pass";
+  signin_form.password_value = PasswordString(u"old_pass");
   signin_form.username_value = u"user";
   signin_form.url = embedded_test_server()->base_url();
   signin_form.skip_zero_click = true;
@@ -956,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   signin_form.match_type = password_manager::PasswordForm::MatchType::kExact;
   signin_form.skip_zero_click = false;
   signin_form.times_used_in_html_form = 1;
-  signin_form.password_value = u"API";
+  signin_form.password_value = PasswordString(u"API");
   password_manager::TestPasswordStore::PasswordMap stored =
       GetAllLoginsSync(password_store.get());
   ASSERT_EQ(1u, stored.size());
@@ -1025,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerPrerenderBrowserTest,
       GetDefaultPasswordStore(browser()->GetProfile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.password_value = u"password123";
+  signin_form.password_value = PasswordString(u"password123");
   signin_form.username_value = u"user";
   signin_form.url = embedded_test_server()->base_url();
   signin_form.skip_zero_click = true;
@@ -1102,7 +1104,7 @@ void CredentialManagerAvatarTest::AddPasswordForURL(const GURL& url) {
   form.url = url;
   form.signon_realm = form.url.GetWithEmptyPath().spec();
   form.username_value = u"User";
-  form.password_value = u"12345";
+  form.password_value = PasswordString(u"12345");
   form.type = password_manager::PasswordForm::Type::kApi;
   form.skip_zero_click = true;
   form.icon_url = https_test_server().GetURL(kAvatarOrigin, kAvatarPath);
@@ -1118,7 +1120,7 @@ void CredentialManagerAvatarTest::AddFederatedCredentialForURL(
   form.url = url;
   form.signon_realm = form.url.GetWithEmptyPath().spec();
   form.username_value = u"User";
-  form.password_value = u"12345";
+  form.password_value = PasswordString(u"12345");
   form.type = password_manager::PasswordForm::Type::kApi;
   form.federation_origin = url::SchemeHostPort(GURL("https://google.com"));
   form.match_type = password_manager::PasswordForm::MatchType::kExact;

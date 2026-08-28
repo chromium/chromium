@@ -15,6 +15,7 @@
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/affiliations/core/browser/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/passwords/cwv_reuse_check_service_internal.h"
@@ -31,6 +32,7 @@ using affiliations::FacetURI;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 
 PasswordForm GenerateSavedPassword(
     std::string_view signon_realm,
@@ -42,7 +44,7 @@ PasswordForm GenerateSavedPassword(
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
-  form.password_value = std::u16string(password);
+  form.password_value = PasswordString(std::u16string(password));
   form.username_element = std::u16string(username_element);
   form.in_store = store;
   return form;

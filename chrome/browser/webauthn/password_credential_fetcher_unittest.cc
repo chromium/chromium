@@ -14,12 +14,14 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
@@ -33,7 +35,7 @@ PasswordForm CreatePasswordForm(std::u16string_view username,
   PasswordForm form;
   form.url = GURL(kTestURL);
   form.username_value = std::u16string(username);
-  form.password_value = std::u16string(password);
+  form.password_value = PasswordString(std::u16string(password));
   return form;
 }
 
@@ -47,7 +49,7 @@ PasswordForm CreateFederatedPasswordForm(std::u16string_view username,
 PasswordForm CreateEmptyUsernamePasswordForm(std::u16string_view password) {
   PasswordForm form;
   form.url = GURL(kTestURL);
-  form.password_value = std::u16string(password);
+  form.password_value = PasswordString(std::u16string(password));
   return form;
 }
 

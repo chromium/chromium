@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_string.h"
 
 // This controller provides common logic for bubbles that are used to add/update
 // credentials.
@@ -28,7 +29,7 @@ class CommonSavedAccountManagerBubbleController
   // Called by the view code when username or password is corrected using
   // the username correction or password selection features in PendingView.
   void OnCredentialEdited(std::u16string new_username,
-                          std::u16string new_password);
+                          password_manager::PasswordString new_password);
 
   // Called by the view code when the "Google Password Manager" link in the
   // bubble footer in clicked by the user.

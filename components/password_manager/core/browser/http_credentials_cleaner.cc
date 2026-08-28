@@ -67,7 +67,7 @@ void HttpCredentialCleaner::OnGetPasswordStoreResultsOrErrorFrom(
                          form_key));
       ++total_http_credentials_;
     } else {  // HTTPS
-      https_credentials_map_[form_key].insert(form.password_value);
+      https_credentials_map_[form_key].insert(form.password_value.value());
     }
   }
 
@@ -103,7 +103,7 @@ void HttpCredentialCleaner::OnHSTSQueryResult(PasswordForm form,
     return;
   }
 
-  if (user_it->second.contains(form.password_value)) {
+  if (user_it->second.contains(form.password_value.value())) {
     // The password store contains the same credentials (signon_realm, scheme,
     // username and password) on HTTPS version of the form.
     base::UmaHistogramEnumeration(

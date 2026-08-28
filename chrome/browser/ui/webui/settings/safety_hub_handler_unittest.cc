@@ -57,6 +57,7 @@
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -78,6 +79,7 @@
 #include "url/gurl.h"
 
 using extensions::mojom::ManifestLocation;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using safety_hub::SafetyHubCardState;
 
@@ -509,7 +511,7 @@ class SafetyHubHandlerTest : public testing::Test {
                                           bool is_leaked = false) {
     password_manager::PasswordForm form;
     form.username_value = username;
-    form.password_value = password;
+    form.password_value = PasswordString(std::u16string(password));
     form.signon_realm = origin;
     form.url = GURL(origin);
 

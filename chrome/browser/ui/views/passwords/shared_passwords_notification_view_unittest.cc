@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -48,7 +49,8 @@ void SharedPasswordsNotificationViewTest::SetUp() {
   shared_credentials->url = GURL("http://example.com/login");
   shared_credentials->signon_realm = shared_credentials->url.spec();
   shared_credentials->username_value = u"username";
-  shared_credentials->password_value = u"12345";
+  shared_credentials->password_value =
+      password_manager::PasswordString(u"12345");
   shared_credentials->type =
       password_manager::PasswordForm::Type::kReceivedViaSharing;
   current_forms_.push_back(std::move(shared_credentials));

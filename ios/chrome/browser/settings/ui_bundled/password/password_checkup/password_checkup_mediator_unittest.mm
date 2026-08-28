@@ -13,6 +13,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -36,13 +37,14 @@ namespace {
 using password_manager::InsecurePasswordCounts;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 
 // Creates a saved stored credential.
 password_manager::StoredCredential CreateStoredCredential() {
   password_manager::StoredCredential cred;
   cred.username_value = u"test@egmail.com";
-  cred.password_value = password_manager::PasswordString(u"strongPa55w0rd");
+  cred.password_value = PasswordString(u"strongPa55w0rd");
   cred.signon_realm = "http://www.example.com/";
   cred.in_store = PasswordForm::Store::kProfileStore;
   return cred;

@@ -627,7 +627,10 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     return;
   }
   auto copy_password_button_callback =
-      base::BindRepeating(&WriteToClipboard, password_form.password_value,
+      // TODO(crbug.com/513276101): Bind to PasswordString instead of
+      // plaintext password.
+      base::BindRepeating(&WriteToClipboard,
+                          password_form.password_value.value(),
                           /*is_confidential=*/true)
           .Then(on_activity_callback_)
           .Then(base::BindRepeating(

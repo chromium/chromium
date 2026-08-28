@@ -81,6 +81,85 @@ TEST_P(PasswordStringTest, EqualityRejectsDifferentValues) {
   EXPECT_FALSE(a == b);
 }
 
+// Moving must hand the password over completely: the moved-from object has to
+// be left empty and still readable, rather than retaining the password's length
+// or a buffer it can no longer decrypt.
+TEST_P(PasswordStringTest, MoveConstructionClearsSource) {
+  PasswordString source(u"hunter2");
+
+  PasswordString moved(std::move(source));
+
+  EXPECT_EQ(moved, u"hunter2");
+
+  // Intentional use-after-move to validate the password is wiped out on move.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(source.empty());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(0u, source.size());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(std::u16string(), source.value());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(source.secure_value().empty());
+}
+
+TEST_P(PasswordStringTest, MoveAssignmentClearsSource) {
+  PasswordString source(u"hunter2");
+  PasswordString moved(u"placeholder");
+
+  moved = std::move(source);
+
+  EXPECT_EQ(moved, u"hunter2");
+
+  // Intentional use-after-move to validate the password is wiped out on move.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(source.empty());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(0u, source.size());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(std::u16string(), source.value());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(source.secure_value().empty());
+}
+
+TEST_P(PasswordStringTest, MovedFromCanBeAssignedAgain) {
+  PasswordString source(u"hunter2");
+  PasswordString moved(std::move(source));
+
+  // Intentional use-after-move to validate the behavior of the password_value
+  // field being reassigned after being moved out of.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  source = PasswordString(u"reused");
+
+  EXPECT_EQ(source, u"reused");
+  EXPECT_EQ(6u, source.size());
+
+  EXPECT_EQ(moved, u"hunter2");
+}
+
+TEST_P(PasswordStringTest, SelfMoveAssignmentKeepsValue) {
+  PasswordString ps(u"hunter2");
+
+  // Indirect through a pointer so this is not diagnosed as a self-move.
+  PasswordString* alias = &ps;
+  ps = std::move(*alias);
+
+  EXPECT_EQ(ps, u"hunter2");
+  EXPECT_FALSE(ps.empty());
+}
+
+TEST_P(PasswordStringTest, CopyLeavesSourceIntactAndIsIndependent) {
+  PasswordString source(u"hunter2");
+
+  PasswordString copy(source);
+
+  EXPECT_EQ(copy, u"hunter2");
+  EXPECT_EQ(source, u"hunter2");
+
+  copy.clear();
+  EXPECT_TRUE(copy.empty());
+  EXPECT_EQ(source, u"hunter2");
+}
+
 INSTANTIATE_TEST_SUITE_P(FlagStates,
                          PasswordStringTest,
                          ::testing::Values(false, true));

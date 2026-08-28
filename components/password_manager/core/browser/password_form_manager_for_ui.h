@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 
 namespace password_manager {
 
@@ -87,7 +88,7 @@ class PasswordFormManagerForUI {
   // password selection dropdown and clicks the save button. Updates the
   // password and modifies internal state accordingly.
   virtual void OnUpdatePasswordFromPrompt(
-      const std::u16string& new_password) = 0;
+      const PasswordString& new_password) = 0;
 
   // Called when the user chose not to update password.
   virtual void OnNopeUpdateClicked() = 0;

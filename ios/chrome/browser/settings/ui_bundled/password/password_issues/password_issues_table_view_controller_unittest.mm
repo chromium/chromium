@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_constants.h"
@@ -34,7 +35,7 @@ PasswordIssue* CreateTestPasswordIssue() {
   form.username_element = u"Email";
   form.username_value = u"test@egmail.com";
   form.password_element = u"Passwd";
-  form.password_value = u"test";
+  form.password_value = password_manager::PasswordString(u"test");
   form.submit_element = u"signIn";
   form.signon_realm = "http://www.example.com/";
   form.scheme = password_manager::PasswordForm::Scheme::kHtml;
@@ -51,7 +52,7 @@ PasswordIssue* CreateTestPasswordIssue2() {
   form.username_element = u"Email";
   form.username_value = u"test@egmail.com";
   form.password_element = u"Passwd";
-  form.password_value = u"test";
+  form.password_value = password_manager::PasswordString(u"test");
   form.submit_element = u"signIn";
   form.signon_realm = "http://www.example2.com/";
   form.scheme = password_manager::PasswordForm::Scheme::kHtml;

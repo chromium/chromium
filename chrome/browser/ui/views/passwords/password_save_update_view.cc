@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -625,14 +626,15 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
     return;
   }
   std::u16string new_username = controller_.pending_password().username_value;
-  std::u16string new_password = controller_.pending_password().password_value;
   if (username_dropdown_) {
     new_username = username_dropdown_->GetText();
     base::TrimString(new_username, u" ", &new_username);
   }
-  if (password_dropdown_) {
-    new_password = password_dropdown_->GetText();
-  }
+  password_manager::PasswordString new_password =
+      password_dropdown_ ? password_manager::PasswordString(
+                               std::u16string(password_dropdown_->GetText()))
+                         : controller_.pending_password().password_value;
+
   controller_.OnCredentialEdited(std::move(new_username),
                                  std::move(new_password));
 }

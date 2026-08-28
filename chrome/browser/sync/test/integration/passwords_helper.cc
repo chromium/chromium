@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/crypto/key_derivation_params.h"
@@ -37,6 +38,7 @@
 
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;
+using password_manager::PasswordString;
 using sync_datatype_helper::test;
 
 namespace {
@@ -212,8 +214,8 @@ PasswordForm CreateTestPasswordForm(int index, PasswordForm::Store store) {
   form.url = GURL(base::StringPrintf(kIndexedFakeOrigin, index));
   form.username_value =
       base::ASCIIToUTF16(base::StringPrintf("username%d", index));
-  form.password_value =
-      base::ASCIIToUTF16(base::StringPrintf("password%d", index));
+  form.password_value = PasswordString(
+      base::ASCIIToUTF16(base::StringPrintf("password%d", index)));
   form.date_created = base::Time::Now();
   form.in_store = store;
   return form;

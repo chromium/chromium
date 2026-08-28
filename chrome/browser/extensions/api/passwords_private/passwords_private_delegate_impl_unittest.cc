@@ -51,6 +51,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/sharing/mock_password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
@@ -83,6 +84,7 @@ using api::passwords_private::UrlCollection;
 using device_reauth::ReauthResult;
 using password_manager::PasswordForm;
 using password_manager::PasswordRecipient;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using ::testing::_;
 using ::testing::AllOf;
@@ -123,7 +125,7 @@ PasswordForm CreateSampleForm(
   form.signon_realm = "https://abc1.com";
   form.url = GURL("https://abc1.com");
   form.username_value = username;
-  form.password_value = u"test";
+  form.password_value = PasswordString(u"test");
   form.in_store = store;
   return form;
 }
@@ -614,7 +616,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        ChangeCredential_PasswordInAccountStore) {
   PasswordForm profile_form = CreateSampleForm();
-  profile_form.password_value = u"different_pass";
+  profile_form.password_value = PasswordString(u"different_pass");
   PasswordForm account_form = CreateSampleForm();
   account_form.in_store = PasswordForm::Store::kAccountStore;
   SetUpPasswordStores({profile_form, account_form});

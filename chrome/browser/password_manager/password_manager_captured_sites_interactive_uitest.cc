@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/test/test_sync_service.h"
@@ -78,12 +79,12 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 password_manager::PasswordForm CreatePasswordForm(
     const GURL& url,
     const std::u16string& username,
-    const std::u16string& password) {
+    std::u16string password) {
   password_manager::PasswordForm form;
   form.url = GURL(url);
   form.signon_realm = url.GetWithEmptyPath().spec();
   form.username_value = username;
-  form.password_value = password;
+  form.password_value = password_manager::PasswordString(std::move(password));
   return form;
 }
 
@@ -134,7 +135,8 @@ class CapturedSitesPasswordManagerBrowserTest
     password_manager::PasswordForm signin_form;
     signin_form.url = GURL(origin);
     signin_form.signon_realm = origin;
-    signin_form.password_value = base::ASCIIToUTF16(password);
+    signin_form.password_value =
+        password_manager::PasswordString(base::ASCIIToUTF16(password));
     signin_form.username_value = base::ASCIIToUTF16(username);
     password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
     return true;

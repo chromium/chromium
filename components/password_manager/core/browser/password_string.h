@@ -28,8 +28,8 @@ class PasswordString {
   PasswordString(PasswordString&&) noexcept;
   PasswordString& operator=(PasswordString&&) noexcept;
 
-  PasswordString(const PasswordString&) = delete;
-  PasswordString& operator=(const PasswordString&) = delete;
+  PasswordString(const PasswordString&);
+  PasswordString& operator=(const PasswordString&);
 
   ~PasswordString();
 
@@ -48,10 +48,13 @@ class PasswordString {
   // Returns the length of the password. Does not decrypt.
   size_t size() const;
 
+  void clear();
+
   friend bool operator==(const PasswordString& lhs, const PasswordString& rhs);
   friend bool operator==(const PasswordString& lhs,
                          const crypto::SecureU16String& rhs);
   friend bool operator==(const PasswordString& lhs, const std::u16string& rhs);
+  friend bool operator==(const PasswordString& lhs, const char16_t* rhs);
 
  private:
   std::variant<std::u16string, crypto::ProcessBoundU16String> value_;

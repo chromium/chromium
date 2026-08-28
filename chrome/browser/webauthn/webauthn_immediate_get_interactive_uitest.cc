@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/test/browser_test.h"
@@ -109,7 +110,8 @@ class WebAuthnImmediateGetTest : public Fixture {
   void AddPassword(const std::string& username, const std::string& password) {
     password_manager::PasswordForm form;
     form.username_value = base::ASCIIToUTF16(username);
-    form.password_value = base::ASCIIToUTF16(password);
+    form.password_value =
+        password_manager::PasswordString(base::ASCIIToUTF16(password));
     form.signon_realm = GetHttpsURL().DeprecatedGetOriginAsURL().spec();
     form.url = GetHttpsURL().DeprecatedGetOriginAsURL();
     form.match_type = password_manager::PasswordForm::MatchType::kExact;

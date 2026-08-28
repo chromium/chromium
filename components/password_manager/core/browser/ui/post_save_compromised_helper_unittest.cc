@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -39,12 +40,12 @@ constexpr char16_t kPassword3[] = u"unsafe3";
 PasswordForm CreateForm(
     const std::string& signon_realm,
     const std::u16string& username,
-    const std::u16string& password,
+    std::u16string password,
     PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   PasswordForm form;
   form.signon_realm = signon_realm;
   form.username_value = username;
-  form.password_value = password;
+  form.password_value = PasswordString(std::move(password));
   form.in_store = store;
   return form;
 }

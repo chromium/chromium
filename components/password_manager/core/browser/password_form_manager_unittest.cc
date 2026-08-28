@@ -52,6 +52,7 @@
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -190,9 +191,9 @@ MATCHER_P(FormHasUsernameValue, username_value, "") {
 
 MATCHER_P(FormHasPassword, password_value, "") {
   if (arg.new_password_value.empty()) {
-    return arg.password_value == password_value;
+    return arg.password_value.value() == password_value;
   }
-  return arg.new_password_value == password_value;
+  return arg.new_password_value.value() == password_value;
 }
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -509,7 +510,7 @@ class PasswordFormManagerTestBase : public testing::Test {
     saved_match_.signon_realm = "https://accounts.google.com/";
     saved_match_.username_value = u"test@gmail.com";
     saved_match_.username_element = u"field1";
-    saved_match_.password_value = u"test1";
+    saved_match_.password_value = PasswordString(u"test1");
     saved_match_.password_element = u"field2";
     saved_match_.match_type = PasswordForm::MatchType::kExact;
     saved_match_.scheme = PasswordForm::Scheme::kHtml;
@@ -532,8 +533,8 @@ class PasswordFormManagerTestBase : public testing::Test {
     parsed_submitted_form_.form_data = submitted_form_;
     parsed_submitted_form_.username_value =
         submitted_form_.fields()[kUsernameFieldIndex].value();
-    parsed_submitted_form_.password_value =
-        submitted_form_.fields()[kPasswordFieldIndex].value();
+    parsed_submitted_form_.password_value = PasswordString(
+        std::u16string(submitted_form_.fields()[kPasswordFieldIndex].value()));
 
     EXPECT_CALL(client_, GetAutofillCrowdsourcingManager())
         .WillRepeatedly(Return(&crowdsourcing_manager()));
@@ -1142,7 +1143,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsAlreadySaved) {
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
 
   // Tests that depending on whether we fill on page load or account select that
   // correct user action is recorded. Fill on account select is simulated by
@@ -1177,7 +1178,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsPSLMatchSaved) {
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames_));
@@ -1190,14 +1191,15 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsPasswordOverridden) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   PasswordForm expected = saved_match_;
-  expected.password_value += u"1";
+  expected.password_value =
+      PasswordString(expected.password_value.value() + u"1");
 
   test_api(submitted_form_)
       .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(expected.password_value);
+      .set_value(expected.password_value.value());
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames_));
   CheckPendingCredentials(expected, form_manager_->GetPendingCredentials());
@@ -1213,7 +1215,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsUpdate) {
   test_api(submitted_form).field(1).set_value(u"verystrongpassword");
 
   PasswordForm expected = saved_match_;
-  expected.password_value = u"verystrongpassword";
+  expected.password_value = PasswordString(u"verystrongpassword");
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -1232,7 +1234,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsUpdateMultipleSaved) {
   test_api(submitted_form).field(1).set_value(u"verystrongpassword");
 
   PasswordForm expected = saved_match_;
-  expected.password_value = u"verystrongpassword";
+  expected.password_value = PasswordString(u"verystrongpassword");
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -1286,7 +1288,7 @@ TEST_P(PasswordFormManagerTest, IsEqualToSubmittedForm) {
       .set_value(saved_match_.username_value);
   test_api(submitted_form)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
 
   // No submitted form yet.
   EXPECT_FALSE(form_manager_->IsEqualToSubmittedForm(submitted_form));
@@ -1336,7 +1338,7 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
 
   FormData submitted_form = observed_form_;
   std::u16string new_username = saved_match_.username_value + u"1";
-  std::u16string new_password = saved_match_.password_value + u"1";
+  std::u16string new_password = saved_match_.password_value.value() + u"1";
   test_api(submitted_form).field(kUsernameFieldIndex).set_value(new_username);
   test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
 
@@ -1400,7 +1402,7 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
       .set_value(psl_saved_match_.username_value);
   test_api(submitted_form)
       .field(kPasswordFieldIndex)
-      .set_value(psl_saved_match_.password_value);
+      .set_value(psl_saved_match_.password_value.value());
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -1442,7 +1444,7 @@ TEST_P(PasswordFormManagerTest, OverridePassword) {
 
   FormData submitted_form = observed_form_;
   std::u16string username = saved_match_.username_value;
-  std::u16string new_password = saved_match_.password_value + u"1";
+  std::u16string new_password = saved_match_.password_value.value() + u"1";
   test_api(submitted_form).field(kUsernameFieldIndex).set_value(username);
   test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
 
@@ -1454,7 +1456,7 @@ TEST_P(PasswordFormManagerTest, OverridePassword) {
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
   PasswordForm updated_form;
   EXPECT_CALL(form_saver, Update(_, ElementsAre(Pointee(saved_match_)),
-                                 saved_match_.password_value))
+                                 saved_match_.password_value.value()))
       .WillOnce(SaveArg<0>(&updated_form));
 
   form_manager_->Save();
@@ -1475,8 +1477,10 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordOnChangePasswordForm) {
       {saved_match_, not_best_saved_match, saved_match_another_username});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).field(0).set_value(saved_match_.password_value);
-  std::u16string new_password = saved_match_.password_value + u"1";
+  test_api(submitted_form)
+      .field(0)
+      .set_value(saved_match_.password_value.value());
+  std::u16string new_password = saved_match_.password_value.value() + u"1";
   test_api(submitted_form).field(1).set_value(new_password);
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
@@ -1491,7 +1495,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordOnChangePasswordForm) {
                      UnorderedElementsAre(
                          Pointee(saved_match_), Pointee(not_best_saved_match),
                          Pointee(saved_match_another_username)),
-                     saved_match_.password_value))
+                     saved_match_.password_value.value()))
       .WillOnce(SaveArg<0>(&updated_form));
 
   form_manager_->Save();
@@ -1509,8 +1513,10 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
     SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
     FormData submitted_form = observed_form_only_password_fields_;
-    test_api(submitted_form).field(0).set_value(saved_match_.password_value);
-    auto new_password = saved_match_.password_value + u"1";
+    test_api(submitted_form)
+        .field(0)
+        .set_value(saved_match_.password_value.value());
+    auto new_password = saved_match_.password_value.value() + u"1";
     test_api(submitted_form).field(1).set_value(new_password);
 
     EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
@@ -1579,7 +1585,7 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
   // On a login form, the user uses the password value.
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
   // The username should be corrected. To intensify testing, simulate that the
   // user changes the username value many times.
   for (const std::u16string& new_username_value :
@@ -1653,7 +1659,7 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames_));
@@ -1740,9 +1746,10 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAlreadyExisting) {
                                    possible_usernames_);
 
   std::u16string new_username = saved_match_.username_value;
-  std::u16string expected_password = parsed_submitted_form_.password_value;
+  std::u16string expected_password =
+      parsed_submitted_form_.password_value.value();
   PasswordForm expected = saved_match_;
-  expected.password_value = expected_password;
+  expected.password_value = PasswordString(std::move(expected_password));
 
   form_manager_->OnUpdateUsernameFromPrompt(new_username);
 
@@ -1757,7 +1764,8 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueEmptyStore) {
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                    possible_usernames_);
 
-  std::u16string new_password = parsed_submitted_form_.password_value + u"1";
+  PasswordString new_password =
+      PasswordString(parsed_submitted_form_.password_value.value() + u"1");
   PasswordForm expected = parsed_submitted_form_;
   expected.password_value = new_password;
   expected.password_element.clear();
@@ -1784,7 +1792,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToAlreadyExisting) {
                                    possible_usernames_);
 
   // The user changes password to already saved one.
-  std::u16string password = saved_match_.password_value;
+  PasswordString password = saved_match_.password_value;
   form_manager_->OnUpdatePasswordFromPrompt(password);
 
   CheckPendingCredentials(saved_match_, form_manager_->GetPendingCredentials());
@@ -1809,7 +1817,8 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
                                    possible_usernames_);
 
   // The user changes password to a prevuiously unseen one.
-  form_manager_->OnUpdatePasswordFromPrompt(u"totally_unexpected_value");
+  form_manager_->OnUpdatePasswordFromPrompt(
+      PasswordString(u"totally_unexpected_value"));
   EXPECT_TRUE(form_manager_->IsPasswordUpdate());
 
   // Since the user has modified the password value, the password field was
@@ -1831,9 +1840,9 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
 
   CreateFormManager(form);
   fetcher_->NotifyFetchCompleted();
-  std::u16string password = u"password1";
+  PasswordString password = PasswordString(u"password1");
   std::u16string pin = u"pin";
-  test_api(form).field(0).set_value(password);
+  test_api(form).field(0).set_value(password.value());
   test_api(form).field(1).set_value(pin);
   form_manager_->ProvisionallySave(form, &driver_, possible_usernames_);
 
@@ -2042,10 +2051,11 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordEmptyStore) {
   Mock::VerifyAndClearExpectations(&form_saver);
 
   // Check that when the generated password is edited, then it's presaved.
-  form_with_generated_password.password_value += u"1";
+  form_with_generated_password.password_value = PasswordString(
+      form_with_generated_password.password_value.value() + u"1");
   test_api(form_data)
       .field(kPasswordFieldIndex)
-      .set_value(form_with_generated_password.password_value);
+      .set_value(form_with_generated_password.password_value.value());
   EXPECT_CALL(form_saver,
               UpdateReplace(_, IsEmpty(), testing::Eq(u""),
                             FormHasUniqueKey(form_with_generated_password)))
@@ -2130,7 +2140,8 @@ TEST_P(PasswordFormManagerTest, GeneratedPasswordWhichIsNotInFormData) {
   form_with_generated_password.form_data = submitted_form_;
   const std::u16string generated_password = u"gen_pw";
   // |password_value| should contain the generated password.
-  form_with_generated_password.password_value = generated_password;
+  form_with_generated_password.password_value =
+      PasswordString(std::u16string(generated_password));
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
@@ -2167,7 +2178,7 @@ TEST_P(PasswordFormManagerTest, PresaveGenerationWhenParsingFails) {
   // the form parser should fail. The url is required for LogFormData to work.
   PasswordForm form;
   const std::u16string generated_password = u"gen_pw";
-  form.password_value = generated_password;
+  form.password_value = PasswordString(std::u16string(generated_password));
   form.form_data.set_url(
       GURL("https://accounts.google.com/a/ServiceLoginAuth"));
 
@@ -2262,14 +2273,15 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordAsBackup) {
   input_form.url = url;
   input_form.signon_realm = signon_realm;
   input_form.username_value = username;
-  input_form.password_value = primary_password;
+  input_form.password_value = PasswordString(std::u16string(primary_password));
   PasswordForm expected_form(input_form);
   expected_form.SetPasswordBackupNote(backup_password);
   password_manager::StoredCredential saved_form;
 
   EXPECT_CALL(*mock_store.get(), AddLogin).WillOnce(MoveArg<0>(&saved_form));
   PasswordFormManager::PresaveGeneratedPasswordAsBackup(
-      form_manager, input_form, backup_password);
+      form_manager, input_form,
+      PasswordString(std::u16string(backup_password)));
 
   EXPECT_EQ(expected_form.username_value, saved_form.username_value);
   EXPECT_EQ(expected_form.password_value, saved_form.password_value);
@@ -2493,8 +2505,8 @@ TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
     test_api(form_data)
         .field(kPasswordFieldIndex)
         .set_value(form_data.fields()[kPasswordFieldIndex].value() + u"1");
-    submitted_form.password_value =
-        form_data.fields()[kPasswordFieldIndex].value();
+    submitted_form.password_value = PasswordString(
+        std::u16string(form_data.fields()[kPasswordFieldIndex].value()));
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);
     form_manager_.reset();
@@ -2511,8 +2523,8 @@ TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
     test_api(form_data)
         .field(kPasswordFieldIndex)
         .set_value(form_data.fields()[kPasswordFieldIndex].value() + u"2");
-    submitted_form.password_value =
-        form_data.fields()[kPasswordFieldIndex].value();
+    submitted_form.password_value = PasswordString(
+        std::u16string(form_data.fields()[kPasswordFieldIndex].value()));
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);
     form_manager_->PasswordNoLongerGenerated();
@@ -2748,7 +2760,7 @@ TEST_P(PasswordFormManagerTest, Update) {
 
   FormData submitted_form = observed_form_;
   std::u16string username = saved_match_.username_value;
-  std::u16string new_password = saved_match_.password_value + u"1";
+  std::u16string new_password = saved_match_.password_value.value() + u"1";
   test_api(submitted_form).field(kUsernameFieldIndex).set_value(username);
   test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
 
@@ -2761,7 +2773,7 @@ TEST_P(PasswordFormManagerTest, Update) {
                                  UnorderedElementsAre(
                                      Pointee(saved_match_),
                                      Pointee(saved_match_another_username)),
-                                 saved_match_.password_value))
+                                 saved_match_.password_value.value()))
       .WillOnce(SaveArg<0>(&updated_form));
   EXPECT_CALL(client_, UpdateFormManagers());
 
@@ -2785,7 +2797,7 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric) {
       .set_properties_mask(FieldPropertiesFlags::kAutofilledOnUserTrigger);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
       .set_properties_mask(FieldPropertiesFlags::kAutofilledOnUserTrigger);
@@ -2821,7 +2833,7 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric_ManualFallback) {
           FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
       .set_properties_mask(
@@ -3014,7 +3026,7 @@ TEST_P(PasswordFormManagerTest, SaveHttpAuthNoHttpAuthStored) {
     std::u16string username = u"user1";
     std::u16string password = u"pass1";
     http_auth_form.username_value = username;
-    http_auth_form.password_value = password;
+    http_auth_form.password_value = PasswordString(std::u16string(password));
 
     // Check that submitted credentials are saved.
     ASSERT_TRUE(form_manager_->ProvisionallySaveHttpAuthForm(http_auth_form));
@@ -3039,7 +3051,7 @@ TEST_P(PasswordFormManagerTest, HTTPAuthAlreadySaved) {
   const std::u16string username = u"user1";
   const std::u16string password = u"pass1";
   http_auth_form.username_value = username;
-  http_auth_form.password_value = password;
+  http_auth_form.password_value = PasswordString(std::u16string(password));
   EXPECT_CALL(client_, AutofillHttpAuth(http_auth_form, _)).Times(1);
   SetNonFederatedAndNotifyFetchCompleted({http_auth_form});
 
@@ -3061,7 +3073,8 @@ TEST_P(PasswordFormManagerTest, HTTPAuthPasswordOverridden) {
   const std::u16string username = u"user1";
   const std::u16string password = u"pass1";
   saved_http_auth_form.username_value = username;
-  saved_http_auth_form.password_value = password;
+  saved_http_auth_form.password_value =
+      PasswordString(std::u16string(password));
   EXPECT_CALL(client_, AutofillHttpAuth(saved_http_auth_form, _)).Times(1);
   SetNonFederatedAndNotifyFetchCompleted({saved_http_auth_form});
 
@@ -3069,7 +3082,8 @@ TEST_P(PasswordFormManagerTest, HTTPAuthPasswordOverridden) {
   // password overridden.
   PasswordForm submitted_http_auth_form = saved_http_auth_form;
   std::u16string new_password = password + u"1";
-  submitted_http_auth_form.password_value = new_password;
+  submitted_http_auth_form.password_value =
+      PasswordString(std::u16string(new_password));
   ASSERT_TRUE(
       form_manager_->ProvisionallySaveHttpAuthForm(submitted_http_auth_form));
   EXPECT_FALSE(form_manager_->IsNewLogin());
@@ -3098,7 +3112,7 @@ TEST_P(PasswordFormManagerTest, BlocklistHttpAuthCredentials) {
 
   // Simulate that the user submits http auth credentials.
   http_auth_form.username_value = u"user1";
-  http_auth_form.password_value = u"pass1";
+  http_auth_form.password_value = PasswordString(u"pass1");
   ASSERT_TRUE(form_manager_->ProvisionallySaveHttpAuthForm(http_auth_form));
 
   // Simulate that the user clicks never.
@@ -3128,7 +3142,8 @@ TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
   PasswordForm saved_form;
   EXPECT_CALL(form_saver, Save(_, IsEmpty(), std::u16string()))
       .WillOnce(SaveArg<0>(&saved_form));
-  form_manager_->PresaveGeneratedPassword(form_to_presave, generated_password);
+  form_manager_->PresaveGeneratedPassword(
+      form_to_presave, PasswordString(std::u16string(generated_password)));
   EXPECT_EQ(generated_password, saved_form.password_value);
 
   Mock::VerifyAndClearExpectations(&form_saver);
@@ -4287,7 +4302,7 @@ TEST_P(PasswordFormManagerTest, NotMovableToAccountStoreWhenBlocked) {
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
 
   form_manager_->Fill();
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
@@ -4316,7 +4331,7 @@ TEST_P(PasswordFormManagerTest, MovableToAccountStore) {
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
       .field(kPasswordFieldIndex)
-      .set_value(saved_match_.password_value);
+      .set_value(saved_match_.password_value.value());
 
   form_manager_->Fill();
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
@@ -4982,7 +4997,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                     scoped_refptr<PasswordFormMetricsRecorder>,
                     VotesUploader*));
   MOCK_CONST_METHOD0(GetPendingCredentials, const PasswordForm&());
-  MOCK_CONST_METHOD0(GetGeneratedPassword, const std::u16string&());
+  MOCK_CONST_METHOD0(GetGeneratedPassword, const PasswordString&());
   MOCK_CONST_METHOD0(GetProfileStoreFormSaverForTesting, FormSaver*());
   MOCK_METHOD5(CreatePendingCredentials,
                void(const PasswordForm&,
@@ -5097,7 +5112,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   FormData submitted_form = observed_form_;
   std::u16string new_username = saved_match_.username_value + u"1";
-  std::u16string new_password = saved_match_.password_value + u"1";
+  std::u16string new_password = saved_match_.password_value.value() + u"1";
   test_api(submitted_form).field(kUsernameFieldIndex).set_value(new_username);
   test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
@@ -5132,7 +5147,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
        SaveStartedAfterFormFetcherIsReady) {
   FormData submitted_form = observed_form_;
   std::u16string new_username = saved_match_.username_value + u"1";
-  std::u16string new_password = saved_match_.password_value + u"1";
+  std::u16string new_password = saved_match_.password_value.value() + u"1";
   test_api(submitted_form).field(kUsernameFieldIndex).set_value(new_username);
   test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
@@ -5194,9 +5209,10 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UpdateUsernameFromPrompt) {
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                    possible_usernames_);
   std::u16string new_username = saved_match_.username_value;
-  std::u16string expected_password = parsed_submitted_form_.password_value;
+  std::u16string expected_password =
+      parsed_submitted_form_.password_value.value();
   PasswordForm expected = saved_match_;
-  expected.password_value = expected_password;
+  expected.password_value = PasswordString(std::move(expected_password));
   EXPECT_CALL(
       *mock_password_save_manager(),
       CreatePendingCredentials(FormHasUsernameValue(new_username), _, _, _, _));
@@ -5208,13 +5224,14 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UpdatePasswordValueFromPrompt) {
   EXPECT_CALL(
       *mock_password_save_manager(),
       CreatePendingCredentials(
-          FormHasPassword(parsed_submitted_form_.password_value), _, _, _, _));
+          FormHasPassword(parsed_submitted_form_.password_value.value()), _, _,
+          _, _));
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                    possible_usernames_);
-  std::u16string new_password = u"new_password";
-  EXPECT_CALL(
-      *mock_password_save_manager(),
-      CreatePendingCredentials(FormHasPassword(new_password), _, _, _, _));
+  PasswordString new_password = PasswordString(u"new_password");
+  EXPECT_CALL(*mock_password_save_manager(),
+              CreatePendingCredentials(FormHasPassword(new_password.value()), _,
+                                       _, _, _));
   form_manager_->OnUpdatePasswordFromPrompt(new_password);
 }
 
@@ -5223,17 +5240,18 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   FormData form = observed_form_only_password_fields_;
   CreateFormManager(form);
   fetcher_->NotifyFetchCompleted();
-  std::u16string password = u"password1";
+  PasswordString password = PasswordString(u"password1");
   std::u16string pin = u"pin";
-  test_api(form).field(0).set_value(password);
+  test_api(form).field(0).set_value(password.value());
   test_api(form).field(1).set_value(pin);
   // Check that a second password field is chosen for saving.
   EXPECT_CALL(*mock_password_save_manager(),
               CreatePendingCredentials(FormHasPassword(pin), _, _, _, _));
   form_manager_->ProvisionallySave(form, &driver_, possible_usernames_);
   // Simulate that the user updates value to save for the first password
-  EXPECT_CALL(*mock_password_save_manager(),
-              CreatePendingCredentials(FormHasPassword(password), _, _, _, _));
+  EXPECT_CALL(
+      *mock_password_save_manager(),
+      CreatePendingCredentials(FormHasPassword(password.value()), _, _, _, _));
   form_manager_->OnUpdatePasswordFromPrompt(password);
 }
 
@@ -5328,7 +5346,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   form_with_generated_password.form_data = submitted_form_;
   const std::u16string generated_password = u"gen_pw";
   // |password_value| should contain the generated password.
-  form_with_generated_password.password_value = generated_password;
+  form_with_generated_password.password_value =
+      PasswordString(std::u16string(generated_password));
   // Check that the generated password is forwarded to the
   PasswordForm updated_form;
   EXPECT_CALL(*mock_password_save_manager(),
@@ -5366,7 +5385,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   // to work.
   PasswordForm form;
   const std::u16string generated_password = u"gen_pw";
-  form.password_value = generated_password;
+  form.password_value = PasswordString(std::u16string(generated_password));
   form.form_data.set_url(
       GURL("https://accounts.google.com/a/ServiceLoginAuth"));
 
@@ -5433,7 +5452,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {
     std::u16string username = u"user1";
     std::u16string password = u"pass1";
     http_auth_form.username_value = username;
-    http_auth_form.password_value = password;
+    http_auth_form.password_value = PasswordString(std::move(password));
     // Check that submitted credentials are forwarded to the password save
     // manager.
     EXPECT_CALL(*mock_password_save_manager(),
@@ -5452,7 +5471,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, HTTPAuthAlreadySaved) {
   const std::u16string username = u"user1";
   const std::u16string password = u"pass1";
   http_auth_form.username_value = username;
-  http_auth_form.password_value = password;
+  http_auth_form.password_value = PasswordString(std::u16string(password));
   EXPECT_CALL(client_, AutofillHttpAuth(http_auth_form, _)).Times(1);
   SetNonFederatedAndNotifyFetchCompleted({http_auth_form});
   EXPECT_CALL(*mock_password_save_manager(),

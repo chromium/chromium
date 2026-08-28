@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -35,7 +36,8 @@ std::optional<UiCredential> GetBackupCredential(const PasswordForm& form,
     return std::nullopt;
   }
   PasswordForm backup_form = form;
-  backup_form.password_value = backup_password.value();
+  backup_form.password_value =
+      PasswordString(std::move(backup_password.value()));
   UiCredential credential{backup_form, origin, IsBackupCredential(true)};
   return credential;
 #endif  // !BUILDFLAG(IS_ANDROID)

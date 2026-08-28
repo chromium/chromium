@@ -6,6 +6,7 @@
 
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +15,7 @@
 
 using password_manager::AffiliatedGroup;
 using password_manager::CredentialUIEntry;
+using password_manager::PasswordString;
 
 namespace {
 
@@ -25,7 +27,7 @@ password_manager::PasswordForm CreatePasswordForm(
   form.url = GURL(url_spec);
   form.signon_realm = signon_realm;
   form.username_value = username;
-  form.password_value = u"password";
+  form.password_value = PasswordString(u"password");
   return form;
 }
 

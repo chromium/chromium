@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -31,6 +32,7 @@ namespace {
 
 using browsing_data::BrowsingDataCounter;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 
 class PasswordsCounterTest : public InProcessBrowserTest {
  public:
@@ -147,7 +149,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     result.url = GURL(origin);
     if (!blocked_by_user) {
       result.username_value = base::ASCIIToUTF16(username);
-      result.password_value = u"hunter2";
+      result.password_value = PasswordString(u"hunter2");
     }
     result.blocked_by_user = blocked_by_user;
     result.date_created = time_;

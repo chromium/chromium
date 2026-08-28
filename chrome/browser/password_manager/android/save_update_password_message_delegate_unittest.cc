@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -56,6 +57,7 @@ using ::password_manager::MockPasswordFormManagerForUI;
 using ::password_manager::PasswordForm;
 using ::password_manager::PasswordFormManagerForUI;
 using ::password_manager::PasswordFormMetricsRecorder;
+using password_manager::PasswordString;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -363,7 +365,7 @@ void SaveUpdatePasswordMessageDelegateTest::SetPendingCredentials(
     bool is_account_store,
     url::SchemeHostPort federation_origin) {
   pending_credentials_.username_value = std::move(username);
-  pending_credentials_.password_value = std::move(password);
+  pending_credentials_.password_value = PasswordString(std::move(password));
   pending_credentials_.in_store =
       is_account_store ? password_manager::PasswordForm::Store::kAccountStore
                        : password_manager::PasswordForm::Store::kProfileStore;
@@ -377,7 +379,7 @@ PasswordForm SaveUpdatePasswordMessageDelegateTest::CreatePasswordForm(
     bool is_account_store) {
   PasswordForm password_form;
   password_form.username_value = std::move(username);
-  password_form.password_value = std::move(password);
+  password_form.password_value = PasswordString(std::move(password));
   password_form.match_type = PasswordForm::MatchType::kExact;
   password_form.in_store =
       is_account_store ? password_manager::PasswordForm::Store::kAccountStore

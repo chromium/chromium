@@ -13,6 +13,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -42,6 +43,7 @@
 using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using password_manager::WarningType;
 
@@ -152,7 +154,7 @@ class PasswordCheckupViewControllerTest
     cred.username_element = u"Email";
     cred.username_value = u"test@egmail.com";
     cred.password_element = u"Passwd";
-    cred.password_value = password_manager::PasswordString(u"test");
+    cred.password_value = PasswordString(u"test");
     cred.signon_realm = url;
     cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
     cred.in_store = password_manager::PasswordForm::Store::kProfileStore;
@@ -168,7 +170,7 @@ class PasswordCheckupViewControllerTest
     cred.username_element = u"Email";
     cred.username_value = u"test@egmail.com";
     cred.password_element = u"Passwd";
-    cred.password_value = password_manager::PasswordString(u"test");
+    cred.password_value = PasswordString(u"test");
     cred.signon_realm = url;
     cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
     cred.in_store = password_manager::PasswordForm::Store::kProfileStore;

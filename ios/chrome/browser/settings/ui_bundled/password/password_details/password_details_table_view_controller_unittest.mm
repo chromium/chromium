@@ -16,6 +16,7 @@
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/cells/table_view_stacked_details_item.h"
@@ -50,6 +51,7 @@ namespace {
 using ::password_manager::CredentialUIEntry;
 using ::password_manager::PasskeyCredential;
 using ::password_manager::PasswordForm;
+using ::password_manager::PasswordString;
 
 constexpr char kExampleCom[] = "http://www.example.com/";
 constexpr char kAndroid[] = "android://hash@com.example.my.app";
@@ -260,7 +262,7 @@ class PasswordDetailsTableViewControllerTest
       auto form = PasswordForm();
       form.signon_realm = website;
       form.username_value = base::ASCIIToUTF16(username);
-      form.password_value = base::ASCIIToUTF16(password);
+      form.password_value = PasswordString(base::ASCIIToUTF16(password));
       form.url = GURL(website);
       form.action = GURL(website + "/action");
       form.username_element = u"email";

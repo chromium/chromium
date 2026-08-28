@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "content/public/browser/background_tracing.h"
 #include "content/public/browser/browser_context.h"
@@ -178,7 +179,8 @@ TEST_F(SigninManagerAndroidTest, DontDeleteBookmarksWhenDeletingSWCaches) {
 TEST_F(SigninManagerAndroidTest, WipeLocalPasswords) {
   password_manager::PasswordForm profile_store_form;
   profile_store_form.username_value = u"username";
-  profile_store_form.password_value = u"password";
+  profile_store_form.password_value =
+      password_manager::PasswordString(u"password");
   profile_store_form.signon_realm = "https://local.com";
   password_manager::PasswordForm account_store_form = profile_store_form;
   account_store_form.signon_realm = "htts://account.com";

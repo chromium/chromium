@@ -42,6 +42,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -58,7 +59,7 @@ password_manager::StoredCredential CreateStoredCredential(const GURL& url) {
   form.url = url;
   form.signon_realm = url::Origin::Create(url).GetURL().spec();
   form.username_value = u"testuser";
-  form.password_value = u"testpass";
+  form.password_value = password_manager::PasswordString(u"testpass");
   return password_manager::FromPasswordForm(std::move(form));
 }
 

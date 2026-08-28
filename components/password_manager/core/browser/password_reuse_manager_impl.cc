@@ -694,12 +694,12 @@ void PasswordReuseManagerImpl::MaybeSavePasswordHash(
     username = gaia::CanonicalizeEmail(username);
   }
   bool is_password_change = !submitted_form->new_password_element.empty();
-  const std::u16string password = is_password_change
+  const PasswordString password = is_password_change
                                       ? submitted_form->new_password_value
                                       : submitted_form->password_value;
 
   if (should_save_enterprise_pw) {
-    SaveEnterprisePasswordHash(username, password);
+    SaveEnterprisePasswordHash(username, password.value());
     return;
   }
 
@@ -715,7 +715,7 @@ void PasswordReuseManagerImpl::MaybeSavePasswordHash(
                                       NOT_SYNC_PASSWORD_CHANGE
                                 : metrics_util::GaiaPasswordHashChange::
                                       SAVED_IN_CONTENT_AREA));
-  SaveGaiaPasswordHash(username, password,
+  SaveGaiaPasswordHash(username, password.value(),
                        /*is_sync_password_for_metrics=*/is_sync_account_email,
                        gaia_event);
 }

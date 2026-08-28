@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -49,7 +50,8 @@ password_manager::PasswordForm CreateTestForm(int index = 1) {
   form.url = GURL(kSiteOrigin);
   form.signon_realm = kSiteOrigin;
   form.username_value = u"User" + base::NumberToString16(index);
-  form.password_value = u"Password" + base::NumberToString16(index);
+  form.password_value = password_manager::PasswordString(
+      u"Password" + base::NumberToString16(index));
   return form;
 }
 

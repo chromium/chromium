@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -323,7 +324,7 @@ struct PasswordForm {
   // meant to be persisted to the password store.
   //
   // When parsing an HTML form, this is typically empty.
-  std::u16string password_value;
+  PasswordString password_value;
 
   // The current keychain identifier where the password is stored password. Only
   // non-empty on iOS for PasswordForm instances retrieved from the password
@@ -347,7 +348,7 @@ struct PasswordForm {
   autofill::FieldRendererId confirmation_password_element_renderer_id;
 
   // The new password. Optional, and not persisted.
-  std::u16string new_password_value;
+  PasswordString new_password_value;
 
   // When the login was last used by the user to login to the site (updated
   // after a successful form submission). Defaults to |date_created|, except for

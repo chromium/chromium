@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -41,7 +42,8 @@ class PasswordChangeToastBrowserTest : public UiBrowserTest {
     form.url = GURL(kTestChangePasswordUrl);
     form.signon_realm = GURL(kTestChangePasswordUrl).GetWithEmptyPath().spec();
     form.username_value = kTestUsername;
-    form.password_value = kTestPassword;
+    form.password_value =
+        password_manager::PasswordString(std::u16string(kTestPassword));
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
         GURL(kTestChangePasswordUrl), std::move(form), tab_interface);
 

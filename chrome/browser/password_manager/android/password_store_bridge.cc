@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -25,6 +26,7 @@
 
 namespace {
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using Store = password_manager::PasswordForm::Store;
 using std::ranges::count_if;
 
@@ -38,8 +40,8 @@ PasswordForm ConvertJavaObjectToPasswordForm(
   form.signon_realm = password_manager::GetSignonRealm(form.url);
   form.username_value = base::android::ConvertJavaStringToUTF16(
       env, Java_PasswordStoreCredential_getUsername(env, credential));
-  form.password_value = base::android::ConvertJavaStringToUTF16(
-      env, Java_PasswordStoreCredential_getPassword(env, credential));
+  form.password_value = PasswordString(base::android::ConvertJavaStringToUTF16(
+      env, Java_PasswordStoreCredential_getPassword(env, credential)));
 
   return form;
 }

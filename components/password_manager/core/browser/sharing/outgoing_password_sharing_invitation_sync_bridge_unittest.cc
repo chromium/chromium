@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
@@ -61,7 +62,8 @@ constexpr char kPasswordAvatarUrl[] = "http://avatar.url/";
 
 PasswordForm MakePasswordForm() {
   PasswordForm password_form;
-  password_form.password_value = base::UTF8ToUTF16(std::string(kPasswordValue));
+  password_form.password_value =
+      PasswordString(base::UTF8ToUTF16(std::string(kPasswordValue)));
   password_form.signon_realm = kSignonRealm;
   password_form.url = GURL(kOrigin);
   password_form.username_element =

@@ -44,7 +44,7 @@ Credential CreateTestCredential(const std::u16string& username,
 password_manager::PasswordForm CreateSavedPasswordForm(
     const GURL& url,
     const std::u16string& username,
-    const std::u16string& password = u"");
+    std::u16string password = u"");
 
 // Creates a `FormData` with two fields: username and password for the given
 // `url`.

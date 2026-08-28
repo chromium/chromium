@@ -53,6 +53,7 @@
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -81,6 +82,7 @@ using ReauthSucceeded =
 using InsecureType = password_manager::InsecureType;
 using password_manager::InsecurityMetadata;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::StoredCredential;
 using ::testing::_;
 using ::testing::AtLeast;
@@ -331,12 +333,12 @@ class MockPasswordChangeService : public ChromePasswordChangeService {
 password_manager::PasswordForm CreatePasswordForm(
     const std::string& url,
     const std::u16string& username,
-    const std::u16string& password) {
+    std::u16string password) {
   PasswordForm password_form;
   password_form.url = GURL(url);
   password_form.signon_realm = GURL(url).GetWithEmptyPath().spec();
   password_form.username_value = username;
-  password_form.password_value = password;
+  password_form.password_value = PasswordString(std::move(password));
   return password_form;
 }
 
@@ -391,7 +393,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
       test_local_form_.url.DeprecatedGetOriginAsURL().spec();
   test_local_form_.username_value = u"username";
   test_local_form_.username_element = u"username_element";
-  test_local_form_.password_value = u"12345";
+  test_local_form_.password_value = PasswordString(u"12345");
   test_local_form_.password_element = u"password_element";
   test_local_form_.match_type = PasswordForm::MatchType::kExact;
 
@@ -405,7 +407,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
 
   submitted_form_ = test_local_form_;
   submitted_form_.username_value = u"submitted_username";
-  submitted_form_.password_value = u"pass12345";
+  submitted_form_.password_value = PasswordString(u"pass12345");
 
   // We need to be on a "webby" URL for most tests.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
@@ -673,10 +675,11 @@ TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {
   const std::u16string backup_password = u"backup";
   PasswordForm submitted_form;
   submitted_form.username_value = kExampleUsername;
-  submitted_form.password_value = backup_password;
+  submitted_form.password_value =
+      PasswordString(std::u16string(backup_password));
   PasswordForm stored_matching_form;
   stored_matching_form.username_value = kExampleUsername;
-  stored_matching_form.password_value = kExamplePassword;
+  stored_matching_form.password_value = PasswordString(kExamplePassword);
   stored_matching_form.SetPasswordBackupNote(backup_password);
   stored_matching_form.type =
       password_manager::PasswordForm::Type::kChangeSubmission;
@@ -764,7 +767,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
                 OnUpdateUsernameFromPrompt(std::u16string(u"other_username")))
         .Times(test.edit_username);
     EXPECT_CALL(*test_form_manager,
-                OnUpdatePasswordFromPrompt(std::u16string(u"other_pwd")))
+                OnUpdatePasswordFromPrompt(PasswordString(u"other_pwd")))
         .Times(test.change_password);
     EXPECT_CALL(*test_form_manager, Save());
     controller()->OnPasswordSubmitted(std::move(test_form_manager));
@@ -772,7 +775,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
     controller()->SavePassword(
         test.edit_username ? u"other_username"
                            : submitted_form().username_value,
-        test.change_password ? u"other_pwd" : submitted_form().password_value);
+        test.change_password ? PasswordString(u"other_pwd")
+                             : submitted_form().password_value);
     EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
 
     // Fake navigation so that the old form manager gets destroyed and
@@ -1522,7 +1526,7 @@ TEST_F(ManagePasswordsUIControllerTest,
       CreateFormManagerWithBestMatches(matches, &submitted_form());
   PasswordForm pending = test_local_form();
   pending.username_value = u"manual_username";
-  pending.password_value = u"manual_pass1234";
+  pending.password_value = PasswordString(u"manual_pass1234");
   EXPECT_CALL(*test_form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(pending));
 
@@ -1539,7 +1543,7 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   // Automatic form submission detected.
   submitted_form().username_value = u"new_username";
-  submitted_form().password_value = u"12345";
+  submitted_form().password_value = PasswordString(u"12345");
   test_form_manager =
       CreateFormManagerWithBestMatches(matches, &submitted_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -1570,7 +1574,7 @@ TEST_F(ManagePasswordsUIControllerTest,
       CreateFormManagerWithBestMatches(best_matches, &test_local_form());
   PasswordForm pending = test_local_form();
   pending.username_value = u"manual_username";
-  pending.password_value = u"manual_pass1234";
+  pending.password_value = PasswordString(u"manual_pass1234");
   EXPECT_CALL(*test_form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(pending));
   controller()->OnShowManualFallbackForSaving(
@@ -1619,7 +1623,7 @@ TEST_F(ManagePasswordsUIControllerTest,
       controller()->BypassUserAuthtForTesting();
   password_manager::PasswordForm form;
   form.username_value = u"user";
-  form.password_value = u"passw0rd";
+  form.password_value = PasswordString(u"passw0rd");
   controller()->OnOpenPasswordDetailsBubble(form);
 
   EXPECT_EQ(
@@ -1634,7 +1638,7 @@ TEST_F(ManagePasswordsUIControllerTest,
       controller()->BypassUserAuthtForTesting();
   password_manager::PasswordForm details_form;
   details_form.username_value = u"user";
-  details_form.password_value = u"passw0rd";
+  details_form.password_value = PasswordString(u"passw0rd");
   controller()->OnOpenPasswordDetailsBubble(details_form);
   ASSERT_EQ(
       controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
@@ -1660,7 +1664,7 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   password_manager::PasswordForm details_form;
   details_form.username_value = u"user";
-  details_form.password_value = u"passw0rd";
+  details_form.password_value = PasswordString(u"passw0rd");
   controller()->OnOpenPasswordDetailsBubble(details_form);
   ASSERT_EQ(
       controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
@@ -1689,7 +1693,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordDetails_IsntShownIfAuthFailed) {
 
   password_manager::PasswordForm form;
   form.username_value = u"user";
-  form.password_value = u"passw0rd";
+  form.password_value = PasswordString(u"passw0rd");
   controller()->OnOpenPasswordDetailsBubble(form);
 
   EXPECT_EQ(
@@ -1965,7 +1969,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   submitted_form() = test_local_form();
-  submitted_form().password_value = u"new_password";
+  submitted_form().password_value = PasswordString(u"new_password");
 
   std::vector<PasswordForm> best_matches = {test_local_form()};
   auto test_form_manager =
@@ -2011,7 +2015,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   submitted_form() = test_local_form();
-  submitted_form().password_value = u"new_password";
+  submitted_form().password_value = PasswordString(u"new_password");
 
   std::vector<PasswordForm> best_matches = {test_local_form()};
   auto test_form_manager =
@@ -2061,7 +2065,7 @@ TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   submitted_form() = test_local_form();
-  submitted_form().password_value = u"new_password";
+  submitted_form().password_value = PasswordString(u"new_password");
 
   std::vector<PasswordForm> best_matches = {test_local_form()};
   auto test_form_manager =

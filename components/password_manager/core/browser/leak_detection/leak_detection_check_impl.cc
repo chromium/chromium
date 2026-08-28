@@ -216,7 +216,7 @@ void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
   }
   payload_helper_->PreparePayload(
       initiator, base::UTF16ToUTF8(credentials_.username_value),
-      base::UTF16ToUTF8(credentials_.password_value),
+      base::UTF16ToUTF8(credentials_.password_value.value()),
       base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

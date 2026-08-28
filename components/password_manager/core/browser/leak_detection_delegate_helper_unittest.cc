@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +55,7 @@ PasswordForm CreateForm(
   PasswordForm form;
   form.url = GURL(origin);
   form.username_value = std::u16string(username);
-  form.password_value = std::u16string(password);
+  form.password_value = PasswordString(std::u16string(password));
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.in_store = PasswordForm::Store::kProfileStore;
   if (backup_password) {

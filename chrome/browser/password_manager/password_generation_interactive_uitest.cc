@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
-  signin_form.password_value = u"random123";
+  signin_form.password_value = password_manager::PasswordString(u"random123");
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
   WaitForPasswordStore();
   NavigateToFile("/password/signup_form_new_password.html");
@@ -364,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
-  signin_form.password_value = u"random123";
+  signin_form.password_value = password_manager::PasswordString(u"random123");
   password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
   WaitForPasswordStore();
 

@@ -4,12 +4,14 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credential+PasswordForm.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using ManualFillCredentialFormPasswordiOSTest = PlatformTest;
 
 namespace {
@@ -21,7 +23,8 @@ constexpr NSString* kUrl = @"http://www.alpha.example.com/path/";
 // Creates a password form for the given `url`.
 PasswordForm CreatePasswordForm(NSString* url) {
   PasswordForm password_form = PasswordForm();
-  password_form.password_value = base::SysNSStringToUTF16(kPassword);
+  password_form.password_value =
+      PasswordString(base::SysNSStringToUTF16(kPassword));
   password_form.username_value = base::SysNSStringToUTF16(kUsername);
   password_form.url = GURL(base::SysNSStringToUTF16(url));
   return password_form;

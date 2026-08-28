@@ -503,8 +503,8 @@ bool VotesUploader::UploadPasswordVote(
       DCHECK_EQ(form_to_upload.times_used_in_html_form, 0);
       password_attributes = GeneratePasswordAttributesMetadata(
           autofill_type == autofill::PASSWORD
-              ? form_to_upload.password_value
-              : form_to_upload.new_password_value);
+              ? form_to_upload.password_value.value()
+              : form_to_upload.new_password_value.value());
     }
   } else {  // User overwrites username.
     SetFieldType(form_to_upload.username_element_renderer_id,
@@ -740,7 +740,7 @@ void VotesUploader::SetKnownValueFlag(
     }
     known_password = match->password_value.value();
   } else {
-    known_password = pending_credentials.password_value;
+    known_password = pending_credentials.password_value.value();
   }
 
   // If we are updating a password, the known value is the old password, not

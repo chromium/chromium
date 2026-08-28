@@ -19,6 +19,7 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/base/data_type.h"
@@ -55,6 +56,7 @@
 
 using password_manager::CredentialUIEntry;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 
 namespace {
 
@@ -547,7 +549,8 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
         passwordForm.GetPasswordBackup();
     if (backupPassword) {
       PasswordForm tempPasswordForm = passwordForm;
-      tempPasswordForm.password_value = backupPassword.value();
+      tempPasswordForm.password_value =
+          PasswordString(std::move(backupPassword.value()));
       ManualFillCredential* backupManualFillCredential =
           [[ManualFillCredential alloc] initWithPasswordForm:tempPasswordForm
                                                     isBackup:YES];

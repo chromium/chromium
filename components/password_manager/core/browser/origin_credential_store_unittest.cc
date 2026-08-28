@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -48,7 +49,8 @@ password_manager::PasswordForm CreateTestPasswordForm(int index = 0) {
   form.url = GURL("https://test" + base::NumberToString(index) + ".com");
   form.signon_realm = form.url.spec();
   form.username_value = u"username" + base::NumberToString16(index);
-  form.password_value = u"password" + base::NumberToString16(index);
+  form.password_value = password_manager::PasswordString(
+      u"password" + base::NumberToString16(index));
   return form;
 }
 
@@ -169,7 +171,8 @@ TEST_F(OriginCredentialStoreTest, NeverBlocklistedStaysTheSame) {
 TEST_F(OriginCredentialStoreTest, SaveSharedPasswords) {
   password_manager::PasswordForm shared_password;
   shared_password.username_value = u"username";
-  shared_password.password_value = u"password";
+  shared_password.password_value =
+      password_manager::PasswordString(u"password");
   shared_password.signon_realm = kExampleSite;
   shared_password.match_type =
       password_manager::PasswordForm::MatchType::kExact;

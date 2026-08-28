@@ -14,6 +14,7 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -119,7 +120,7 @@ CreateCredentialsListWithNoInsecurePasswords() {
   password_manager::PasswordForm password_form;
   password_form.url = GURL("http://accounts.google.com/a/LoginAuth");
   password_form.username_value = u"test@testmail.com";
-  password_form.password_value = u"test1";
+  password_form.password_value = password_manager::PasswordString(u"test1");
 
   return {password_manager::CredentialUIEntry(password_form)};
 }

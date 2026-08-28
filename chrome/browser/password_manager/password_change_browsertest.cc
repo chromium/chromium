@@ -61,6 +61,7 @@
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/prefs/pref_service.h"
@@ -158,13 +159,13 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   password_manager::PasswordForm CreatePasswordForm(
       const GURL& url,
       const std::u16string& username,
-      const std::u16string& password,
+      std::u16string password,
       const std::string& change_pwd_path = "") {
     password_manager::PasswordForm form;
     form.url = GURL(url);
     form.signon_realm = url.GetWithEmptyPath().spec();
     form.username_value = username;
-    form.password_value = password;
+    form.password_value = password_manager::PasswordString(std::move(password));
     if (!change_pwd_path.empty()) {
       form.change_password_url =
           embedded_test_server()->GetURL(url.host(), change_pwd_path);
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       base::UTF16ToUTF8(form.username_value),
       base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
                             ->generated_password()),
-      base::UTF16ToUTF8(form.password_value),
+      base::UTF16ToUTF8(form.password_value.value()),
       password_manager::PasswordForm::Type::kChangeSubmission);
 }
 

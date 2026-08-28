@@ -15,6 +15,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -61,6 +62,7 @@ using password_manager::CredentialUIEntry;
 using password_manager::FormatElapsedTimeSinceLastCheck;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 using password_manager::WarningType;
 
@@ -70,7 +72,7 @@ PasswordForm MakeSavedPassword(std::string_view signon_realm,
   form.url = GURL(signon_realm);
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(kUsername116);
-  form.password_value = std::u16string(password);
+  form.password_value = PasswordString(std::u16string(password));
   form.in_store = PasswordForm::Store::kProfileStore;
   // TODO(crbug.com/40774419): Once all places that operate changes on forms
   // via UpdateLogin properly set `password_issues`, setting them to an empty

@@ -318,6 +318,7 @@ source_set("password_form") {
     "password_form_digest.h",
   ]
   public_deps = [
+    ":password_string",
     "//base",
     "//components/affiliations/core/browser:match_type",
     "//components/autofill/core/browser",

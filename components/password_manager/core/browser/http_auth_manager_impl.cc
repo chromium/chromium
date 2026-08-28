@@ -102,7 +102,7 @@ void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
   // Biometric filling is disabled, notify observers and invoke callback.
   if (!client_->IsReauthBeforeFillingRequired(authenticator.get())) {
     observer_->OnAutofillDataAvailable(preferred_match.username_value,
-                                       preferred_match.password_value);
+                                       preferred_match.password_value.value());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_filling_complete));
     return;
@@ -110,7 +110,7 @@ void HttpAuthManagerImpl::Autofill(const PasswordForm& preferred_match,
 
   auto filling_callback = base::BindOnce(
       &HttpAuthManagerImpl::OnReauthCompleted, weak_ptr_factory_.GetWeakPtr(),
-      preferred_match.username_value, preferred_match.password_value,
+      preferred_match.username_value, preferred_match.password_value.value(),
       url::Origin::Create(preferred_match.url), std::move(on_filling_complete));
   if (authenticator_) {
     authenticator_->Cancel();

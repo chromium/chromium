@@ -28,6 +28,7 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/stored_credential.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -46,6 +47,7 @@
 namespace {
 
 using ::password_manager::PasswordFormManagerForUI;
+using ::password_manager::PasswordString;
 using ::password_manager::features_util::ComputePasswordAccountStorageUserState;
 using ::password_manager::features_util::PasswordAccountStorageUserState;
 using ::password_manager::sync_util::GetAccountForSaving;
@@ -285,7 +287,7 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetUserNameText() const {
 
 NSString* IOSChromeSavePasswordInfoBarDelegate::GetPasswordText() const {
   return base::SysUTF16ToNSString(
-      form_to_save_->GetPendingCredentials().password_value);
+      form_to_save_->GetPendingCredentials().password_value.value());
 }
 
 NSString* IOSChromeSavePasswordInfoBarDelegate::GetURLHostText() const {
@@ -386,7 +388,7 @@ void IOSChromeSavePasswordInfoBarDelegate::SavePassword() {
                     *form_to_save_)) {
       const password_manager::PasswordForm& pending_credentials =
           form_to_save_->GetPendingCredentials();
-      if (changed_credential_with_backup->GetPasswordBackup().value() ==
+      if (changed_credential_with_backup->GetPasswordBackup() ==
           pending_credentials.password_value) {
         password_manager::metrics_util::LogPrimaryPasswordUpdatedWithBackup(
             ukm_source_id_);
@@ -416,7 +418,8 @@ void IOSChromeSavePasswordInfoBarDelegate::UpdateCredentials(
     NSString* username,
     NSString* password) {
   const std::u16string username_string = base::SysNSStringToUTF16(username);
-  const std::u16string password_string = base::SysNSStringToUTF16(password);
+  const PasswordString password_string =
+      PasswordString(base::SysNSStringToUTF16(password));
   UpdatePasswordFormUsernameAndPassword(username_string, password_string,
                                         form_to_save_.get());
 }

@@ -25,7 +25,7 @@ namespace password_manager {
 struct CanonicalizedCredential {
   CanonicalizedCredential(const PasswordForm& form)  // NOLINT
       : canonicalized_username(CanonicalizeUsername(form.username_value)),
-        password(form.password_value) {}
+        password(form.password_value.value()) {}
 
   CanonicalizedCredential(const CredentialUIEntry& credential)  // NOLINT
       : canonicalized_username(CanonicalizeUsername(credential.username)),

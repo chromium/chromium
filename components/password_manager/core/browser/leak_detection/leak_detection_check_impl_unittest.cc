@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_request_factory.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "crypto/sha2.h"
@@ -124,12 +125,12 @@ class LeakDetectionCheckImplTest : public testing::TestWithParam<bool> {
 
 PasswordForm CreatePasswordForm(const std::string& url,
                                 const std::u16string& username,
-                                const std::u16string& password) {
+                                std::u16string password) {
   PasswordForm password_form;
   password_form.url = GURL(url);
   password_form.signon_realm = url;
   password_form.username_value = username;
-  password_form.password_value = password;
+  password_form.password_value = PasswordString(std::move(password));
   return password_form;
 }
 

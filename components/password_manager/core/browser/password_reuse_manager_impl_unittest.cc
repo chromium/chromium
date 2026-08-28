@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -56,7 +57,7 @@ PasswordForm CreateForm(
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
-  form.password_value = std::u16string(password);
+  form.password_value = PasswordString(std::u16string(password));
   form.url = GURL(signon_realm);
   form.date_last_used = base::Time::FromSecondsSinceUnixEpoch(
       1546300800);  // 00:00 Jan 1 2019 UTC
@@ -75,8 +76,7 @@ StoredCredential CreateStoredCredential(
   cred.signon_realm = std::string(signon_realm);
   cred.url = GURL(signon_realm);
   cred.username_value = std::u16string(username);
-  cred.password_value =
-      password_manager::PasswordString(std::u16string(password));
+  cred.password_value = PasswordString(std::u16string(password));
   cred.date_last_used = base::Time::FromSecondsSinceUnixEpoch(1546300800);
   cred.date_created = base::Time::FromSecondsSinceUnixEpoch(1546300800);
   cred.in_store = store;

@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -169,7 +170,7 @@ PasswordForm CreateHTMLForm(const std::string& origin_url,
   form.url = GURL(origin_url);
   form.signon_realm = origin_url;
   form.username_value = ASCIIToUTF16(username_value);
-  form.password_value = ASCIIToUTF16(password_value);
+  form.password_value = PasswordString(ASCIIToUTF16(password_value));
   form.date_last_used = date_last_used;
   form.match_type = PasswordForm::MatchType::kExact;
   return form;

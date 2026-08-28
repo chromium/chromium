@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/sync/test/test_sync_service.h"
 
 namespace {
@@ -48,7 +49,8 @@ MockIOSChromeSavePasswordInfoBarDelegate::Create(
   std::unique_ptr<password_manager::PasswordForm> form =
       std::make_unique<password_manager::PasswordForm>();
   form->username_value = base::SysNSStringToUTF16(username);
-  form->password_value = base::SysNSStringToUTF16(password);
+  form->password_value =
+      password_manager::PasswordString(base::SysNSStringToUTF16(password));
   auto url_ptr = std::make_unique<GURL>(url);
   std::unique_ptr<password_manager::MockPasswordFormManagerForUI> form_manager =
       CreateFormManager(form.get(), url_ptr.get(), metrics_recorder);

@@ -30,6 +30,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -209,7 +210,8 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
     form.url = GURL(kChangePasswordURL);
     form.signon_realm = GURL(kChangePasswordURL).GetWithEmptyPath().spec();
     form.username_value = kTestEmail;
-    form.password_value = kPassword;
+    form.password_value =
+        password_manager::PasswordString(std::u16string(kPassword));
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
         GURL(kChangePasswordURL), std::move(form), tab_interface_.get());
     delegate_->SetCustomUIController(

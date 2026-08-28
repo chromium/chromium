@@ -11,10 +11,12 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetAccountPasswordStoreInterface;
 using passwords_helper::GetPasswordCount;
@@ -83,7 +85,7 @@ void PasswordsSyncPerfTest::UpdateLogins(int profile) {
   std::vector<std::unique_ptr<PasswordForm>> logins =
       passwords_helper::GetLogins(GetAccountPasswordStoreInterface(profile));
   for (std::unique_ptr<PasswordForm>& login : logins) {
-    login->password_value = base::ASCIIToUTF16(NextPassword());
+    login->password_value = PasswordString(base::ASCIIToUTF16(NextPassword()));
     GetAccountPasswordStoreInterface(profile)->UpdateLogin(
         password_manager::FromPasswordForm(std::move(*login)));
   }

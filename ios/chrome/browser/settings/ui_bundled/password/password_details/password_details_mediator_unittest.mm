@@ -12,6 +12,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -32,6 +33,7 @@ namespace {
 using ::password_manager::CredentialUIEntry;
 using ::password_manager::InsecureType;
 using ::password_manager::PasswordForm;
+using ::password_manager::PasswordString;
 using ::password_manager::TestPasswordStore;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
@@ -50,7 +52,7 @@ std::unique_ptr<PasswordForm> CreatePasswordForm(std::string url,
                                                  std::u16string password) {
   auto form = std::make_unique<PasswordForm>();
   form->username_value = u"test@gmail.com";
-  form->password_value = password;
+  form->password_value = PasswordString(std::move(password));
   form->url = GURL(url);
   form->signon_realm = kExampleSignonRealm;
   form->in_store = PasswordForm::Store::kProfileStore;

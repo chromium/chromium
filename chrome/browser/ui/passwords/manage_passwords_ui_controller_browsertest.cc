@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
@@ -54,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
   forms[0].url = GURL("http://example.com");
   forms[0].signon_realm = "http://example.com/";
   forms[0].username_value = u"user";
-  forms[0].password_value = u"pass";
+  forms[0].password_value = password_manager::PasswordString(u"pass");
 
   // Triggering OnPasswordAutofilled will call UpdateBubbleAndIconVisibility.
   // In the buggy version, this would use browser->GetActiveTabInterface()
@@ -79,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
   non_shared_credentials.url = GURL("http://example.com/login");
   non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
   non_shared_credentials.username_value = u"username";
-  non_shared_credentials.password_value = u"12345";
+  non_shared_credentials.password_value =
+      password_manager::PasswordString(u"12345");
   non_shared_credentials.match_type =
       password_manager::PasswordForm::MatchType::kExact;
 
@@ -115,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
   non_shared_credentials.url = GURL("http://example.com/login");
   non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
   non_shared_credentials.username_value = u"username";
-  non_shared_credentials.password_value = u"12345";
+  non_shared_credentials.password_value =
+      password_manager::PasswordString(u"12345");
   non_shared_credentials.match_type =
       password_manager::PasswordForm::MatchType::kExact;
 

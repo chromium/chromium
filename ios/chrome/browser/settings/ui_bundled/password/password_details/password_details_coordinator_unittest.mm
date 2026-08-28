@@ -10,6 +10,7 @@
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/device_reauth/model/fake_reauthentication_service_util.h"
@@ -44,7 +45,7 @@ password_manager::AffiliatedGroup GetTestAffiliatedGroup() {
   password_manager::PasswordForm form;
   form.url = GURL("https://example.com");
   form.username_value = u"user";
-  form.password_value = u"password";
+  form.password_value = password_manager::PasswordString(u"password");
   password_manager::CredentialUIEntry credential(form);
   return password_manager::AffiliatedGroup(
       /*credentials=*/{credential},

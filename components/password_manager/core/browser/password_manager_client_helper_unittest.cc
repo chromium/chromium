@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -56,7 +57,7 @@ PasswordForm CreateForm(std::string username,
                         GURL origin) {
   PasswordForm form;
   form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16(password);
+  form.password_value = PasswordString(base::ASCIIToUTF16(password));
   form.url = origin;
   form.signon_realm = origin.spec();
   return form;

@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
@@ -63,7 +64,7 @@ void CommonSavedAccountManagerBubbleController::OnNoThanksClicked() {
 
 void CommonSavedAccountManagerBubbleController::OnCredentialEdited(
     std::u16string new_username,
-    std::u16string new_password) {
+    password_manager::PasswordString new_password) {
   CHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
         state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
         state_ == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);

@@ -7,6 +7,7 @@
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/password_exporter/coordinator/password_exporter_for_testing.h"
@@ -106,7 +107,7 @@ class PasswordExporterTest : public PlatformTest {
     password_manager::PasswordForm password_form;
     password_form.url = GURL("http://accounts.google.com/a/LoginAuth");
     password_form.username_value = u"test@testmail.com";
-    password_form.password_value = u"test1";
+    password_form.password_value = password_manager::PasswordString(u"test1");
 
     return {password_manager::CredentialUIEntry(password_form)};
   }

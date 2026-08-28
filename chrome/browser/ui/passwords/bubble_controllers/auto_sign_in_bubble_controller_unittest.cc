@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +36,8 @@ class AutoSignInBubbleControllerTest : public ::testing::Test {
     pending_password_.url = GURL(kSiteOrigin);
     pending_password_.signon_realm = kSiteOrigin;
     pending_password_.username_value = kUsername;
-    pending_password_.password_value = kPassword;
+    pending_password_.password_value =
+        password_manager::PasswordString(kPassword);
   }
   ~AutoSignInBubbleControllerTest() override = default;
 

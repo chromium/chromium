@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -126,7 +127,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.url = kUrl;
   form1.signon_realm = kSignonRealm;
   form1.username_value = kExcludeUser;
-  form1.password_value = u"pass1";
+  form1.password_value = password_manager::PasswordString(u"pass1");
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kExact;
   store()->AddLogin(password_manager::FromPasswordForm(form1));
@@ -135,7 +136,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.url = kUrl;
   form2.signon_realm = kSignonRealm;
   form2.username_value = u"user2";
-  form2.password_value = u"pass2";
+  form2.password_value = password_manager::PasswordString(u"pass2");
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kExact;
   store()->AddLogin(password_manager::FromPasswordForm(form2));
@@ -225,7 +226,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.url = kUrl;
   form1.signon_realm = kSignonRealm;
   form1.username_value = kExcludedUser;
-  form1.password_value = u"pass1";
+  form1.password_value = password_manager::PasswordString(u"pass1");
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kExact;
   store()->AddLogin(password_manager::FromPasswordForm(form1));
@@ -234,7 +235,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.url = kAffiliatedUrl;
   form2.signon_realm = kAffiliatedRealm;
   form2.username_value = kExcludedUser;
-  form2.password_value = u"pass2";
+  form2.password_value = password_manager::PasswordString(u"pass2");
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
   store()->AddLogin(password_manager::FromPasswordForm(form2));
@@ -310,7 +311,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.url = kUrl;
   form1.signon_realm = kAffiliatedRealm;
   form1.username_value = kExcludedUser;
-  form1.password_value = u"pass1";
+  form1.password_value = password_manager::PasswordString(u"pass1");
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
   store()->AddLogin(password_manager::FromPasswordForm(form1));
@@ -388,7 +389,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.url = GURL("https://affiliated.com/login");
   form2.signon_realm = kOtherSignonRealm;
   form2.username_value = kExcludeUser;
-  form2.password_value = u"pass2";
+  form2.password_value = password_manager::PasswordString(u"pass2");
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
   store()->AddLogin(password_manager::FromPasswordForm(form2));

@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -32,7 +33,7 @@ const char16_t kPassword[] = u"password123";
 PasswordForm GetLocalForm() {
   PasswordForm form;
   form.username_value = kUsername;
-  form.password_value = kPassword;
+  form.password_value = PasswordString(std::u16string(kPassword));
   form.url = GURL("https://example.com");
   return form;
 }

@@ -38,6 +38,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -59,6 +60,7 @@ using ::autofill::password_generation::PasswordGenerationType;
 using ::device_reauth::MockDeviceAuthenticator;
 using ::password_manager::ActionableError;
 using ::password_manager::PasswordForm;
+using ::password_manager::PasswordString;
 using ::password_manager::StoredCredential;
 using ::password_manager::UnorderedPasswordFormElementsAre;
 using ::testing::_;
@@ -104,7 +106,7 @@ PasswordForm GetTestAndroidCredential() {
   form.url = GURL(kTestAndroidRealm);
   form.signon_realm = kTestAndroidRealm;
   form.username_value = kTestUsername;
-  form.password_value = kTestPassword;
+  form.password_value = PasswordString(kTestPassword);
   return form;
 }
 
@@ -114,7 +116,7 @@ PasswordForm GetTestCredential() {
   form.url = GURL(kTestURL);
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = kTestUsername;
-  form.password_value = kTestPassword;
+  form.password_value = PasswordString(kTestPassword);
   form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
@@ -125,7 +127,7 @@ PasswordForm GetTestProxyCredential() {
   form.url = GURL(kTestProxyOrigin);
   form.signon_realm = kTestProxySignonRealm;
   form.username_value = kTestUsername;
-  form.password_value = kTestPassword;
+  form.password_value = PasswordString(kTestPassword);
   return form;
 }
 
@@ -409,8 +411,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   // Add the same credentials in account and profile stores.
   StoredCredential account_form1(password_manager::CloneStoredCredential(form));
   account_form1.username_value = kUsername1;
-  account_form1.password_value =
-      password_manager::PasswordString(std::u16string(kPassword1));
+  account_form1.password_value = PasswordString(std::u16string(kPassword1));
   account_form1.in_store = PasswordForm::Store::kAccountStore;
 
   StoredCredential profile_form1(
@@ -421,14 +422,12 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   // with different passwords.
   StoredCredential account_form2(password_manager::CloneStoredCredential(form));
   account_form2.username_value = kUsername2;
-  account_form2.password_value =
-      password_manager::PasswordString(std::u16string(kPassword1));
+  account_form2.password_value = PasswordString(std::u16string(kPassword1));
   account_form2.in_store = PasswordForm::Store::kAccountStore;
 
   StoredCredential profile_form2(
       password_manager::CloneStoredCredential(account_form2));
-  profile_form2.password_value =
-      password_manager::PasswordString(std::u16string(kPassword2));
+  profile_form2.password_value = PasswordString(std::u16string(kPassword2));
   profile_form2.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm expected_account_form1 =
@@ -471,7 +470,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
       password_manager::FromPasswordForm(GetTestCredential());
   stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
-  parsed.password_value = u"new_password";
+  parsed.password_value = PasswordString(u"new_password");
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
 }
@@ -491,7 +490,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
       password_manager::FromPasswordForm(GetTestCredential());
   stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
-  parsed.password_value.clear();
+  parsed.password_value = PasswordString(std::u16string());
   parsed.federation_origin = url::SchemeHostPort(GURL(kTestFederationURL));
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
@@ -511,7 +510,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
       password_manager::FromPasswordForm(GetTestCredential());
   stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
-  parsed.password_value = u"new_password";
+  parsed.password_value = PasswordString(u"new_password");
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
 }
@@ -522,7 +521,7 @@ TEST(PasswordManagerUtil,
       password_manager::FromPasswordForm(GetTestCredential());
   stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
-  parsed.password_value = u"new_password";
+  parsed.password_value = PasswordString(u"new_password");
   parsed.type = PasswordForm::Type::kChangeSubmission;
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
@@ -534,7 +533,7 @@ TEST(PasswordManagerUtil,
       password_manager::FromPasswordForm(GetTestCredential());
   stored.match_type = PasswordForm::MatchType::kGrouped;
   PasswordForm parsed = GetTestCredential();
-  parsed.password_value = u"new_password";
+  parsed.password_value = PasswordString(u"new_password");
   parsed.type = PasswordForm::Type::kChangeSubmission;
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
@@ -558,7 +557,7 @@ TEST(PasswordManagerUtil,
       password_manager::FromPasswordForm(GetTestCredential());
   stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
-  parsed.new_password_value = u"new_password";
+  parsed.new_password_value = PasswordString(u"new_password");
   parsed.password_value.clear();
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
@@ -599,15 +598,15 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
   StoredCredential stored1 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored1.username_value = u"Adam";
-  stored1.password_value = password_manager::PasswordString(u"Adam_password");
+  stored1.password_value = PasswordString(u"Adam_password");
   StoredCredential stored2 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored2.username_value = u"Ben";
-  stored2.password_value = password_manager::PasswordString(u"Ben_password");
+  stored2.password_value = PasswordString(u"Ben_password");
   StoredCredential stored3 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored3.username_value = u"Cindy";
-  stored3.password_value = password_manager::PasswordString(u"Cindy_password");
+  stored3.password_value = PasswordString(u"Cindy_password");
 
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
@@ -625,27 +624,27 @@ TEST(PasswordManagerUtil,
   StoredCredential stored1 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored1.username_value = u"MyUsername";
-  stored1.password_value = password_manager::PasswordString(u"MyPassword2");
+  stored1.password_value = PasswordString(u"MyPassword2");
   stored1.date_last_used = kYesterday;
   stored1.match_type = PasswordForm::MatchType::kExact;
 
   StoredCredential stored2 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored2.username_value = u"";
-  stored2.password_value = password_manager::PasswordString(u"MyPassword1");
+  stored2.password_value = PasswordString(u"MyPassword1");
   stored2.date_last_used = kYesterday;
   stored2.match_type = PasswordForm::MatchType::kExact;
 
   StoredCredential stored3 =
       password_manager::FromPasswordForm(GetTestCredential());
   stored3.username_value = u"OtherUsername";
-  stored3.password_value = password_manager::PasswordString(u"MyPassword2");
+  stored3.password_value = PasswordString(u"MyPassword2");
   stored3.date_last_used = kNow;
   stored3.match_type = PasswordForm::MatchType::kExact;
 
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
-  parsed.password_value = u"MyPassword2";
+  parsed.password_value = PasswordString(u"MyPassword2");
 
   // stored3 has same match type as stored1 but is newer.
   EXPECT_EQ(&stored3,
@@ -665,7 +664,7 @@ TEST(PasswordManagerUtil,
   StoredCredential stored =
       password_manager::FromPasswordForm(GetTestCredential());
   stored.username_value = u"Adam";
-  stored.password_value = password_manager::PasswordString(u"Adam_password");
+  stored.password_value = PasswordString(u"Adam_password");
 
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
@@ -768,7 +767,7 @@ TEST(PasswordManagerUtil, GetSignonRealm) {
 TEST(PasswordManagerUtil, FindLoginWithChangedPassword) {
   PasswordForm submitted_form;
   submitted_form.username_value = u"username";
-  submitted_form.password_value = u"password";
+  submitted_form.password_value = PasswordString(u"password");
   PasswordForm backup_password_match(submitted_form);
   backup_password_match.SetPasswordBackupNote(u"backup_password");
   backup_password_match.type =

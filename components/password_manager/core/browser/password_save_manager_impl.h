@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 
 namespace password_manager {
 
@@ -56,7 +57,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   ~PasswordSaveManagerImpl() override;
 
   const PasswordForm& GetPendingCredentials() const override;
-  const std::u16string& GetGeneratedPassword() const override;
+  const PasswordString& GetGeneratedPassword() const override;
   FormSaver* GetProfileStoreFormSaverForTesting() const override;
 
   // `client`: must be non-null and outlive this object.

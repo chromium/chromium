@@ -43,6 +43,7 @@
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -54,6 +55,7 @@
 
 using base::ASCIIToUTF16;
 using password_manager::PasswordFormManager;
+using password_manager::PasswordString;
 using password_manager::PossibleUsernameData;
 using password_manager::PossibleUsernameFieldIdentifier;
 using testing::Return;
@@ -81,7 +83,7 @@ void ManagePasswordsTest::SetUpOnMainThread() {
   password_form_.signon_realm = test_url.GetWithEmptyPath().spec();
   password_form_.url = test_url;
   password_form_.username_value = kTestUsername;
-  password_form_.password_value = u"test_password";
+  password_form_.password_value = PasswordString(u"test_password");
   password_form_.match_type = password_manager::PasswordForm::MatchType::kExact;
   ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
 }

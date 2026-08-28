@@ -266,7 +266,7 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
   DCHECK(!form.IsFederatedCredential());
   std::vector<std::u16string> passwords =
       form.all_alternative_passwords.empty()
-          ? std::vector<std::u16string>(/*n=*/1, form.password_value)
+          ? std::vector<std::u16string>(/*n=*/1, form.password_value.value())
           : ToValues(form.all_alternative_passwords);
   std::erase_if(passwords, [](const std::u16string& password) {
     return password.empty();
@@ -278,7 +278,7 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
                                                      passwords.end())),
       views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY_MONOSPACED,
       kDisplayArrow, std::move(reveal_password_callback));
-  combobox->SetText(form.password_value);
+  combobox->SetText(form.password_value.value());
   combobox->SetPasswordIconTooltips(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD),
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));

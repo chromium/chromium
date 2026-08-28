@@ -145,14 +145,14 @@ void PasswordFormToJSON(const PasswordForm& form, base::DictValue& target) {
              base::NumberToString(form.username_element_renderer_id.value()));
   target.Set("username_value", form.username_value);
   target.Set("password_element", form.password_element);
-  target.Set("password_value", form.password_value);
+  target.Set("password_value", form.password_value.value());
   target.Set("password_element_renderer_id",
              base::NumberToString(form.password_element_renderer_id.value()));
   target.Set("new_password_element", form.new_password_element);
   target.Set(
       "new_password_element_renderer_id",
       base::NumberToString(form.new_password_element_renderer_id.value()));
-  target.Set("new_password_value", form.new_password_value);
+  target.Set("new_password_value", form.new_password_value.value());
   target.Set("confirmation_password_element",
              form.confirmation_password_element);
   target.Set("confirmation_password_element_renderer_id",

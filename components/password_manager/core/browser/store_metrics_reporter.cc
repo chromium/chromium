@@ -437,7 +437,7 @@ void ReportDuplicateCredentialsMetrics(const std::vector<PasswordForm>& forms) {
   for (const auto& form : forms) {
     passwords_by_realm_and_user[std::make_pair(form.signon_realm,
                                                form.username_value)]
-        .push_back(form.password_value);
+        .push_back(form.password_value.value());
   }
   // Now go over the passwords by [realm, username] - typically there should
   // be only one password each.
@@ -634,7 +634,7 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
          profile_store_results.value().store_results) {
       profile_store_passwords_per_signon_and_username->insert(
           std::make_pair(std::make_pair(form.signon_realm, form.username_value),
-                         form.password_value));
+                         form.password_value.value()));
     }
   }
 
@@ -645,7 +645,7 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
          account_store_results.value().store_results) {
       account_store_passwords_per_signon_and_username->insert(
           std::make_pair(std::make_pair(form.signon_realm, form.username_value),
-                         form.password_value));
+                         form.password_value.value()));
     }
   }
 

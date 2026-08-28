@@ -75,6 +75,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -4455,7 +4456,7 @@ class EnclaveAuthenticatorConditionalCreateBrowserTest
     saved_form.url = https_server_.GetURL("example.com",
                                           "/password/prefilled_username.html");
     saved_form.username_value = base::UTF8ToUTF16(std::string(kSyncEmail));
-    saved_form.password_value = u"hunter1";
+    saved_form.password_value = password_manager::PasswordString(u"hunter1");
     saved_form.date_last_used = last_used;
     password_store()->AddLogin(password_manager::FromPasswordForm(saved_form));
   }

@@ -35,6 +35,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -338,7 +339,7 @@ class RemoteActorCredentialSharingImplTest
     form.signon_realm = "https://google.com/";
     form.url = GURL("https://google.com");
     form.username_value = u"user";
-    form.password_value = u"pass";
+    form.password_value = PasswordString(u"pass");
     form.in_store = PasswordForm::Store::kProfileStore;
     profile_store_->AddLogin(FromPasswordForm(form));
 
@@ -643,7 +644,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
   form.signon_realm = "https://google.com/";
   form.url = GURL("https://google.com");
   form.username_value = u"user";
-  form.password_value = u"pass";
+  form.password_value = PasswordString(u"pass");
   form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(form));
 
@@ -724,7 +725,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, FailureFlow_SharingFailed) {
   form.signon_realm = "https://google.com/";
   form.url = GURL("https://google.com");
   form.username_value = u"user";
-  form.password_value = u"pass";
+  form.password_value = PasswordString(u"pass");
   form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(form));
 
@@ -772,7 +773,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_CancelDialog) {
   form.signon_realm = "https://google.com/";
   form.url = GURL("https://google.com");
   form.username_value = u"user";
-  form.password_value = u"pass";
+  form.password_value = PasswordString(u"pass");
   form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(form));
 
@@ -819,7 +820,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   profile_form.signon_realm = "https://google.com/";
   profile_form.url = GURL("https://google.com");
   profile_form.username_value = u"profile_user";
-  profile_form.password_value = u"pass";
+  profile_form.password_value = PasswordString(u"pass");
   profile_form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(profile_form));
 
@@ -828,7 +829,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   account_form.signon_realm = "https://google.com/";
   account_form.url = GURL("https://google.com");
   account_form.username_value = u"account_user";
-  account_form.password_value = u"pass";
+  account_form.password_value = PasswordString(u"pass");
   account_form.in_store = PasswordForm::Store::kAccountStore;
   account_store_->AddLogin(FromPasswordForm(account_form));
 
@@ -870,7 +871,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   profile_form.signon_realm = "https://google.com/";
   profile_form.url = GURL("https://google.com");
   profile_form.username_value = u"profile_user";
-  profile_form.password_value = u"pass";
+  profile_form.password_value = PasswordString(u"pass");
   profile_form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(profile_form));
 
@@ -880,7 +881,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   account_form.signon_realm = "https://google.com/";
   account_form.url = GURL("https://google.com");
   account_form.username_value = u"account_user";
-  account_form.password_value = u"pass";
+  account_form.password_value = PasswordString(u"pass");
   account_form.in_store = PasswordForm::Store::kAccountStore;
   account_store_->AddLogin(FromPasswordForm(account_form));
 
@@ -953,7 +954,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   exact_form.signon_realm = "https://example.com/";
   exact_form.url = GURL("https://example.com");
   exact_form.username_value = u"exact_user";
-  exact_form.password_value = u"pass";
+  exact_form.password_value = PasswordString(u"pass");
   exact_form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(exact_form));
 
@@ -961,7 +962,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   affiliated_form.signon_realm = "https://affiliated.com/";
   affiliated_form.url = GURL("https://affiliated.com");
   affiliated_form.username_value = u"affiliated_user";
-  affiliated_form.password_value = u"pass";
+  affiliated_form.password_value = PasswordString(u"pass");
   affiliated_form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(affiliated_form));
 
@@ -969,7 +970,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   psl_form.signon_realm = "https://m.example.com/";
   psl_form.url = GURL("https://m.example.com");
   psl_form.username_value = u"psl_user";
-  psl_form.password_value = u"pass";
+  psl_form.password_value = PasswordString(u"pass");
   psl_form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(psl_form));
 
@@ -977,7 +978,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   grouped_form.signon_realm = "https://grouped.com/";
   grouped_form.url = GURL("https://grouped.com");
   grouped_form.username_value = u"grouped_user";
-  grouped_form.password_value = u"pass";
+  grouped_form.password_value = PasswordString(u"pass");
   grouped_form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(grouped_form));
 
@@ -1030,7 +1031,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   form.signon_realm = "https://google.com/";
   form.url = GURL("https://google.com");
   form.username_value = u"user";
-  form.password_value = u"pass";
+  form.password_value = PasswordString(u"pass");
   form.in_store = PasswordForm::Store::kProfileStore;
   profile_store_->AddLogin(FromPasswordForm(form));
 

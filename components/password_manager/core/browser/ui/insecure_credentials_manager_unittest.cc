@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,7 +71,7 @@ PasswordForm MakeSavedPassword(
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
-  form.password_value = std::u16string(password);
+  form.password_value = PasswordString(std::u16string(password));
   form.username_element = std::u16string(username_element);
   form.in_store = store;
   return form;
@@ -184,7 +185,7 @@ TEST_F(InsecureCredentialsManagerTest,
   RunUntilIdle();
 
   // Updating a saved password should notify observers.
-  saved_password.password_value = kPassword216;
+  saved_password.password_value = PasswordString(kPassword216);
   EXPECT_CALL(observer, OnInsecureCredentialsChanged);
   store().UpdateLogin(FromPasswordForm(saved_password));
   RunUntilIdle();

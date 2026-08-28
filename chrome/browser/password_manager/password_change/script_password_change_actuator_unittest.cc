@@ -100,7 +100,8 @@ class ScriptPasswordChangeActuatorTest
     form.url = GURL(kChangePasswordURL);
     form.signon_realm = GURL(kChangePasswordURL).GetWithEmptyPath().spec();
     form.username_value = kTestEmail;
-    form.password_value = kPassword;
+    form.password_value =
+        password_manager::PasswordString(std::u16string(kPassword));
     return form;
   }
 

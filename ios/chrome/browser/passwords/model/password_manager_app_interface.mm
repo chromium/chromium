@@ -14,6 +14,7 @@
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -31,6 +32,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreConsumer;
 using password_manager::PasswordStoreInterface;
+using password_manager::PasswordString;
 
 namespace {
 
@@ -107,7 +109,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   // Store a PasswordForm representing a PasswordCredential.
   PasswordForm passwordCredentialForm;
   passwordCredentialForm.username_value = base::SysNSStringToUTF16(username);
-  passwordCredentialForm.password_value = base::SysNSStringToUTF16(password);
+  passwordCredentialForm.password_value =
+      PasswordString(base::SysNSStringToUTF16(password));
   if (backupPassword) {
     passwordCredentialForm.SetPasswordBackupNote(
         base::SysNSStringToUTF16(backupPassword));

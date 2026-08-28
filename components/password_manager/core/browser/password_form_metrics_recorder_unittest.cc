@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -619,7 +620,7 @@ PasswordForm ConvertToPasswordForm(
     std::u16string value =
         ASCIIToUTF16(field.user_input.empty() ? field.value : field.user_input);
     if (field.is_password) {
-      password_form.password_value = value;
+      password_form.password_value = PasswordString(std::move(value));
     } else {
       password_form.username_value = value;
     }

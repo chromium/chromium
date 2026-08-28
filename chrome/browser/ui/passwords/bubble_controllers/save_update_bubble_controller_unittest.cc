@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/test/test_sync_service.h"
@@ -122,7 +123,8 @@ class SaveUpdateBubbleControllerTest : public ChromeRenderViewHostTestHarness {
     pending_password_.url = GURL(kSiteOrigin);
     pending_password_.signon_realm = kSiteOrigin;
     pending_password_.username_value = kUsername;
-    pending_password_.password_value = kPassword;
+    pending_password_.password_value =
+        password_manager::PasswordString(kPassword);
   }
 
   void TearDown() override {
@@ -237,7 +239,8 @@ void SaveUpdateBubbleControllerTest::PretendUpdatePasswordWaiting() {
       GetCurrentForms();
   auto current_form =
       std::make_unique<password_manager::PasswordForm>(pending_password());
-  current_form->password_value = u"old_password";
+  current_form->password_value =
+      password_manager::PasswordString(u"old_password");
   forms.push_back(std::move(current_form));
   EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
   SetUpWithState(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE,
@@ -281,11 +284,11 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>>
 SaveUpdateBubbleControllerTest::GetCurrentForms() const {
   password_manager::PasswordForm form(pending_password());
   form.username_value = kUsernameExisting;
-  form.password_value = u"123456";
+  form.password_value = password_manager::PasswordString(u"123456");
 
   password_manager::PasswordForm preferred_form(pending_password());
   preferred_form.username_value = u"preferred_username";
-  preferred_form.password_value = u"654321";
+  preferred_form.password_value = password_manager::PasswordString(u"654321");
 
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   forms.push_back(std::make_unique<password_manager::PasswordForm>(form));
@@ -393,7 +396,8 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInUpdateState) {
   PretendUpdatePasswordWaiting();
 
   // Edit username, now it's a new credential.
-  controller()->OnCredentialEdited(kUsernameNew, kPasswordEdited);
+  controller()->OnCredentialEdited(
+      kUsernameNew, password_manager::PasswordString(kPasswordEdited));
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
@@ -450,7 +454,8 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateInSaveState) {
   PretendPasswordWaiting();
 
   // Edit username, now it's an existing credential.
-  controller()->OnCredentialEdited(kUsernameExisting, kPasswordEdited);
+  controller()->OnCredentialEdited(
+      kUsernameExisting, password_manager::PasswordString(kPasswordEdited));
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
@@ -485,7 +490,7 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWhenCredentialsExisted) {
   password_manager::PasswordStoreWaiter add_waiter(GetStore());
   password_manager::PasswordForm form;
   form.username_value = u"user";
-  form.password_value = u"password";
+  form.password_value = password_manager::PasswordString(u"password");
   form.signon_realm = "https://google.com";
   form.url = GURL(form.signon_realm);
   GetStore()->AddLogin(password_manager::FromPasswordForm(form));
@@ -720,7 +725,7 @@ TEST_F(SaveUpdateBubbleControllerTest,
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   auto form =
       std::make_unique<password_manager::PasswordForm>(pending_password());
-  form->password_value = u"old_password";
+  form->password_value = password_manager::PasswordString(u"old_password");
   form->in_store = password_manager::PasswordForm::Store::kAccountStore;
   forms.push_back(std::move(form));
   EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
@@ -739,7 +744,7 @@ TEST_F(SaveUpdateBubbleControllerTest,
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   auto form =
       std::make_unique<password_manager::PasswordForm>(pending_password());
-  form->password_value = u"old_password";
+  form->password_value = password_manager::PasswordString(u"old_password");
   form->in_store = password_manager::PasswordForm::Store::kProfileStore;
   forms.push_back(std::move(form));
   EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
@@ -757,13 +762,15 @@ TEST_F(SaveUpdateBubbleControllerTest, UpdateBothStoresAffectsTheAccountStore) {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   auto profile_form =
       std::make_unique<password_manager::PasswordForm>(pending_password());
-  profile_form->password_value = u"old_password";
+  profile_form->password_value =
+      password_manager::PasswordString(u"old_password");
   profile_form->in_store = password_manager::PasswordForm::Store::kProfileStore;
   forms.push_back(std::move(profile_form));
 
   auto account_form =
       std::make_unique<password_manager::PasswordForm>(pending_password());
-  account_form->password_value = u"old_password";
+  account_form->password_value =
+      password_manager::PasswordString(u"old_password");
   account_form->in_store = password_manager::PasswordForm::Store::kAccountStore;
   forms.push_back(std::move(account_form));
 

@@ -14,11 +14,13 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using password_manager::TestPasswordStore;
 
 constexpr char kExampleCom[] = "https://example.com";
@@ -33,7 +35,7 @@ PasswordForm MakeSavedPassword(std::string_view signon_realm,
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
-  form.password_value = kPassword;
+  form.password_value = PasswordString(kPassword);
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }

@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -190,7 +191,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthNotRequired) {
 
   PasswordForm stored_form = observed_form;
   stored_form.username_value = u"user";
-  stored_form.password_value = u"1234";
+  stored_form.password_value = PasswordString(u"1234");
 
   MockHttpAuthObserver observer;
 
@@ -240,7 +241,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthSuccess) {
 
   PasswordForm stored_form = observed_form;
   stored_form.username_value = u"user";
-  stored_form.password_value = u"1234";
+  stored_form.password_value = PasswordString(u"1234");
 
   MockHttpAuthObserver observer;
 
@@ -290,7 +291,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthFailure) {
 
   PasswordForm stored_form = observed_form;
   stored_form.username_value = u"user";
-  stored_form.password_value = u"1234";
+  stored_form.password_value = PasswordString(u"1234");
 
   MockHttpAuthObserver observer;
 
@@ -344,7 +345,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthOriginMismatch) {
 
   PasswordForm stored_form = observed_form;
   stored_form.username_value = u"user";
-  stored_form.password_value = u"1234";
+  stored_form.password_value = PasswordString(u"1234");
 
   MockHttpAuthObserver observer;
 
@@ -405,7 +406,7 @@ TEST_P(HttpAuthManagerTest, CrossOriginLeakViaStaleBiometricObserver) {
 
   PasswordForm victim_creds = victim_form;
   victim_creds.username_value = u"victim_user";
-  victim_creds.password_value = u"victim_secret";
+  victim_creds.password_value = PasswordString(u"victim_secret");
 
   testing::StrictMock<MockHttpAuthObserver> victim_observer;
 
@@ -490,7 +491,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthMessageUsesChallengerOrigin) {
 
   PasswordForm stored_form = observed_form;
   stored_form.username_value = u"user";
-  stored_form.password_value = u"1234";
+  stored_form.password_value = PasswordString(u"1234");
 
   MockHttpAuthObserver observer;
 
@@ -539,7 +540,7 @@ TEST_P(HttpAuthManagerTest, HttpAuthSaving) {
     // Emulate that http auth credentials submitted.
     PasswordForm submitted_form = observed_form;
     submitted_form.username_value = u"user";
-    submitted_form.password_value = u"1234";
+    submitted_form.password_value = PasswordString(u"1234");
     httpauth_manager()->OnPasswordFormSubmitted(submitted_form);
     httpauth_manager()->OnPasswordFormDismissed();
 
@@ -563,7 +564,7 @@ TEST_P(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
 
   PasswordForm stored_form = observed_form;
   stored_form.username_value = u"user";
-  stored_form.password_value = u"1234";
+  stored_form.password_value = PasswordString(u"1234");
   stored_form.in_store = PasswordForm::Store::kProfileStore;
   stored_form.date_last_used = base::Time::Now() - base::Days(1);
   stored_form.match_type = PasswordForm::MatchType::kExact;
@@ -611,7 +612,7 @@ TEST_P(HttpAuthManagerTest, DontSaveEmptyPasswords) {
   // Emulate that http auth credentials submitted with an empty password.
   PasswordForm submitted_form = observed_form;
   submitted_form.username_value = u"user";
-  submitted_form.password_value = std::u16string();
+  submitted_form.password_value = PasswordString(std::u16string());
   httpauth_manager()->OnPasswordFormSubmitted(submitted_form);
   httpauth_manager()->OnPasswordFormDismissed();
 
@@ -662,7 +663,7 @@ TEST_P(HttpAuthManagerTest, NavigationWhenMatchingNotReady) {
 
   PasswordForm submitted_form = observed_form;
   submitted_form.username_value = u"user";
-  submitted_form.password_value = u"1234";
+  submitted_form.password_value = PasswordString(u"1234");
   httpauth_manager()->OnPasswordFormSubmitted(submitted_form);
   httpauth_manager()->OnPasswordFormDismissed();
 
@@ -689,7 +690,7 @@ TEST_P(HttpAuthManagerTest, FillingDisabled) {
 
   PasswordForm submitted_form = observed_form;
   submitted_form.username_value = u"user";
-  submitted_form.password_value = u"1234";
+  submitted_form.password_value = PasswordString(u"1234");
   httpauth_manager()->OnPasswordFormSubmitted(submitted_form);
   httpauth_manager()->OnPasswordFormDismissed();
 

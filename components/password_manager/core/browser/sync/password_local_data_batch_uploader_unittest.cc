@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/test_matchers.h"
@@ -55,7 +56,7 @@ PasswordForm CreatePasswordForm(const std::string& url) {
   form.signon_realm = url;
   form.url = GURL(form.signon_realm);
   form.username_value = u"username";
-  form.password_value = u"password";
+  form.password_value = PasswordString(u"password");
   return form;
 }
 
@@ -428,14 +429,14 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
   PasswordForm old_local_password = CreatePasswordForm("http://conflict.com");
-  old_local_password.password_value = u"older version";
+  old_local_password.password_value = PasswordString(u"older version");
   old_local_password.date_last_used = kDate;
   profile_store()->AddLogin(
       password_manager::FromPasswordForm(old_local_password),
       wait_add.GetCallback());
   ASSERT_TRUE(wait_add.WaitAndClear());
   PasswordForm new_account_password = old_local_password;
-  new_account_password.password_value = u"newer version";
+  new_account_password.password_value = PasswordString(u"newer version");
   new_account_password.date_last_used = kDate + base::Days(1);
   account_store()->AddLogin(
       password_manager::FromPasswordForm(new_account_password),
@@ -461,14 +462,14 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
   PasswordForm old_account_password = CreatePasswordForm("http://conflict.com");
-  old_account_password.password_value = u"older version";
+  old_account_password.password_value = PasswordString(u"older version");
   old_account_password.date_last_used = kDate;
   account_store()->AddLogin(
       password_manager::FromPasswordForm(old_account_password),
       wait_add.GetCallback());
   ASSERT_TRUE(wait_add.WaitAndClear());
   PasswordForm new_local_password = old_account_password;
-  new_local_password.password_value = u"newer version";
+  new_local_password.password_value = PasswordString(u"newer version");
   new_local_password.date_last_used = kDate + base::Days(1);
   profile_store()->AddLogin(
       password_manager::FromPasswordForm(new_local_password),
@@ -495,14 +496,14 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
   PasswordForm old_account_password = CreatePasswordForm("http://conflict.com");
-  old_account_password.password_value = u"older version";
+  old_account_password.password_value = PasswordString(u"older version");
   old_account_password.date_created = kDate;
   account_store()->AddLogin(
       password_manager::FromPasswordForm(old_account_password),
       wait_add.GetCallback());
   ASSERT_TRUE(wait_add.WaitAndClear());
   PasswordForm new_local_password = old_account_password;
-  new_local_password.password_value = u"newer version";
+  new_local_password.password_value = PasswordString(u"newer version");
   new_local_password.date_password_modified = kDate + base::Days(1);
   profile_store()->AddLogin(
       password_manager::FromPasswordForm(new_local_password),

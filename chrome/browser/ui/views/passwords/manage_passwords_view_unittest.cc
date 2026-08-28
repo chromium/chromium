@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,7 +29,8 @@ password_manager::PasswordForm CreateTestPasswordForm(int index = 0) {
   form.url = GURL("https://test" + base::NumberToString(index) + ".com");
   form.signon_realm = form.url.spec();
   form.username_value = u"username" + base::NumberToString16(index);
-  form.password_value = u"password" + base::NumberToString16(index);
+  form.password_value = password_manager::PasswordString(
+      u"password" + base::NumberToString16(index));
   return form;
 }
 
@@ -167,7 +169,7 @@ TEST_F(ManagePasswordsViewTest,
        PasswordDetailsFromListAllowsEmptyUsernameEdit) {
   password_manager::PasswordForm form;
   form.username_value = u"";
-  form.password_value = u"pa$$w0rd";
+  form.password_value = password_manager::PasswordString(u"pa$$w0rd");
   CreateViewAndShow();
   view()->DisplayDetailsOfPasswordForTesting(form);
 
@@ -177,7 +179,7 @@ TEST_F(ManagePasswordsViewTest,
 TEST_F(ManagePasswordsViewTest, DetailsOnlyBubbleDoesntAllowEmptyUsernameEdit) {
   password_manager::PasswordForm form;
   form.username_value = u"";
-  form.password_value = u"pa$$w0rd";
+  form.password_value = password_manager::PasswordString(u"pa$$w0rd");
   std::optional details_bubble_credentail(form);
   ON_CALL(*model_delegate_mock(),
           GetManagePasswordsSingleCredentialDetailsModeCredential)

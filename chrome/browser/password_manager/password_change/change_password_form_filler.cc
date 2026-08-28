@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -56,8 +57,13 @@ void ChangePasswordFormFiller::FillForm(
   CHECK(form_manager->GetDriver());
 
   username_ = username;
-  login_password_ = login_password;
-  generated_password_ = generated_password;
+  // TODO(crbug.com/513276101): Explicit construction of std::u16string
+  // R-Value to be removed once FillForm converted to take PasswordString
+  // argument for login_password
+  login_password_ =
+      password_manager::PasswordString(std::u16string(login_password));
+  generated_password_ =
+      password_manager::PasswordString(std::u16string(generated_password));
   callback_ = std::move(callback);
 
   const password_manager::PasswordForm& parsed_form =
@@ -72,8 +78,7 @@ void ChangePasswordFormFiller::FillForm(
   const password_manager::StoredCredential* best_match =
       password_manager_util::FindCredentialByUsername(
           form_manager_->GetBestMatches(), username_);
-  stored_password_ =
-      best_match ? best_match->password_value.value() : login_password_;
+  stored_password_ = best_match ? best_match->password_value : login_password_;
 
   TriggerFilling(parsed_form, form_manager->GetDriver());
 }
@@ -111,8 +116,9 @@ void ChangePasswordFormFiller::TriggerFilling(
           &password_manager::PasswordManagerDriver::FillChangePasswordForm,
           driver, form.password_element_renderer_id,
           form.new_password_element_renderer_id,
-          form.confirmation_password_element_renderer_id, login_password_,
-          generated_password_, std::move(filling_callback)));
+          form.confirmation_password_element_renderer_id,
+          login_password_.value(), generated_password_.value(),
+          std::move(filling_callback)));
 
   password_manager::PasswordForm form_to_save(form);
   form_to_save.username_value = username_;
@@ -157,9 +163,9 @@ void ChangePasswordFormFiller::ChangePasswordFormFilled(
     return;
   }
 
-  CHECK_EQ(form_manager_->GetPendingCredentials().password_value,
-           generated_password_);
-  form_manager_->UpdateBackupPassword(stored_password_);
+  CHECK(form_manager_->GetPendingCredentials().password_value ==
+        generated_password_);
+  form_manager_->UpdateBackupPassword(stored_password_.value());
 
   std::move(callback_).Run(std::move(form_manager_));
 }
