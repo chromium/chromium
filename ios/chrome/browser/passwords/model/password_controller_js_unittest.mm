@@ -89,7 +89,6 @@ base::DictValue ParsedField(std::string renderer_id,
                               .Set("aria_description", "")
                               .Set("should_autocomplete", true)
                               .Set("is_focusable", true)
-                              .Set("is_user_edited_deprecated", false)
                               .Set("value", value)
                               .Set("label", label)
                               .Set("pattern_attribute", "")

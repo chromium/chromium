@@ -1684,7 +1684,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
         @"is_focusable" : @true,
-        @"is_user_edited_deprecated" : @false,
         @"value" : @"John",
         @"label" : @"* First name:"
       },
@@ -1701,7 +1700,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
         @"is_focusable" : @true,
-        @"is_user_edited_deprecated" : @false,
         @"value" : @"John",
         @"label" : @"* First name:"
       },
@@ -1718,7 +1716,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"placeholder_attribute" : @"",
         @"should_autocomplete" : @true,
         @"is_focusable" : @true,
-        @"is_user_edited_deprecated" : @false,
         @"value" : @"john@example.com",
         @"label" : @"Email:"
       },
@@ -1736,7 +1733,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"autocomplete_attribute" : @"off",
         @"should_autocomplete" : @false,
         @"is_focusable" : @true,
-        @"is_user_edited_deprecated" : @false,
         @"value" : @"",
         @"label" : @"* Password:"
       },
@@ -1753,7 +1749,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"placeholder_attribute" : @"",
         @"max_length" : @0,
         @"is_focusable" : @1,
-        @"is_user_edited_deprecated" : @false,
         @"option_values" : @[ @"CA", @"TX" ],
         @"option_texts" : @[ @"California", @"Texas" ],
         @"should_autocomplete" : @1,
@@ -1812,46 +1807,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   [expected enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL* stop) {
     EXPECT_NSEQ(form[key], obj);
   }];
-}
-
-// Test that the is_user_edited_deprecated bit is correctly set in the extracted
-// fields when the fix is enabled. This test is limited as it can't test if
-// is_user_edited_deprecated can be set to true because there is no way to
-// emulate an input from the user in the unittest (i.e. Event.isTrusted set to
-// true) - this would required popping up a keyboard.
-TEST_F(AutofillControllerJsTest, ExtractForms_UserEdited_FixEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAutofillCorrectUserEditedBitInParsedField);
-
-  // Load html form that consist of 2 plain text inputs that the user can type
-  // in.
-  NSString* html = @"<html><body>"
-                    "<form id='form1'>"
-                    "<input type='text' id='input1' />"
-                    "<input type='text' id='input2' />"
-                    "</form>"
-                    "</body></html>";
-  web::test::LoadHtml(html, web_state());
-
-  // Emulate a user input on the first input element.
-  EXPECT_NSEQ(@YES, ExecuteJavaScript(
-                        @"document.getElementById('input1').dispatchEvent(new "
-                        @"Event('input', { bubbles: true }))"));
-
-  // Verify that the first <input> element that received the scripted input
-  // event has is_user_edited_deprecated still set to false because the user
-  // input wasn't trusted, and that the second <input> has
-  // is_user_edited_deprecated set to false because it didn't receive any user
-  // input event.
-  NSString* verifying_javascript =
-      @"!forms[0].fields[0].is_user_edited_deprecated && "
-      @"!forms[0].fields[1].is_user_edited_deprecated;";
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScript([NSString
-                  stringWithFormat:@"var forms = "
-                                    "__gCrWeb.getRegisteredApi('autofill')."
-                                    "getFunction('extractNewForms')(false); %@",
-                                   verifying_javascript]));
 }
 
 // Test that, when xframes is enabled, forms that do not have input fields but
