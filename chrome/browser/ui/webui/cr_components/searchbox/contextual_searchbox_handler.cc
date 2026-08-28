@@ -1723,7 +1723,8 @@ void ContextualSearchboxHandler::DeleteContext(
 }
 
 void ContextualSearchboxHandler::DeleteTabContext(int32_t tab_id) {
-  if (!omnibox::IsTabDeselectionInComposeboxEnabled()) {
+  if (!omnibox::IsTabDeselectionInComposeboxEnabled() ||
+      !SessionID::IsValidValue(tab_id)) {
     return;
   }
 

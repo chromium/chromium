@@ -572,3 +572,10 @@ export function mapUploadErrorToProcessFilesError(errorType: ContextUploadErrorT
       return ProcessFilesError.NONE;
   }
 }
+
+/**
+ * Returns whether a given tab ID represents a valid browser tab.
+ */
+export function isValidTabId(tabId: number|undefined|null): boolean {
+  return typeof tabId === 'number' && tabId > 0;
+}

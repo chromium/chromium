@@ -21,7 +21,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, hasOnlyAutoAddedTabs, isContextUploadStatusTerminal, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, hasOnlyAutoAddedTabs, isContextUploadStatusTerminal, isValidTabId, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
 import type {ComposeboxFuseboxActionRequest, ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -1262,7 +1262,8 @@ export const ComposeboxEmbedderMixin =
           if (token) {
             this.deleteFile(token, e.detail.fromUserAction);
           } else {
-            if (this.tabSuggestions.some(t => t.tabId === tabId)) {
+            if (isValidTabId(tabId) &&
+                this.tabSuggestions.some(t => t.tabId === tabId)) {
               this.getSearchboxHandler().deleteTabContext(tabId);
             }
           }
@@ -2556,7 +2557,7 @@ export const ComposeboxEmbedderMixin =
                     return !currentTab || currentTab.url !== tab.url;
                   });
               closedOrNavigatedRestoredTabs.forEach(tab => {
-                if (tab.tabId) {
+                if (isValidTabId(tab.tabId)) {
                   this.getSearchboxHandler().deleteTabContext(tab.tabId);
                 }
               });

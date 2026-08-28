@@ -5,7 +5,7 @@
 import 'chrome://contextual-tasks/strings.m.js';
 import './test_composebox_mixin.js';
 
-import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, isValidTabId, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import type {ComposeboxEmbedderMixinInterface} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
@@ -368,6 +368,60 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(1, element.aimThreadRestoredTabs.length);
         assertEquals(10, element.aimThreadRestoredTabs[0]!.tabId);
       });
+
+  test(
+      'refreshTabSuggestions() does not call deleteTabContext for historical tabs with non-positive tabId',
+      async () => {
+        const openTab = {
+          tabId: 10,
+          title: 'Open Tab',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const historicalTab1 = {
+          tabId: 0,
+          title: 'Historical Tab 1',
+          url: 'https://example.com/hist1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const historicalTab2 = {
+          tabId: -1,
+          title: 'Historical Tab 2',
+          url: 'https://example.com/hist2',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: [openTab]}));
+
+        element.tabDeselectionEnabled = true;
+        element.aimThreadRestoredTabs =
+            [openTab, historicalTab1, historicalTab2];
+
+        await element.refreshTabSuggestions();
+
+        // Verify: deleteTabContext is NOT called for historical tabs with tabId
+        // <= 0.
+        const deleteTabContextCalls =
+            searchboxHandler.getCallCount('deleteTabContext');
+        assertEquals(0, deleteTabContextCalls);
+      });
+
+  test('isValidTabId() validates tab IDs correctly', () => {
+    assertTrue(isValidTabId(1));
+    assertTrue(isValidTabId(42));
+    assertFalse(isValidTabId(0));
+    assertFalse(isValidTabId(-1));
+    assertFalse(isValidTabId(-100));
+    assertFalse(isValidTabId(undefined));
+    assertFalse(isValidTabId(null));
+  });
 
   test(
       'onDeleteTabContext() does not call deleteTabContext if tab is not in ' +
