@@ -21,6 +21,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrCurvedMeshGenerator;
 import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrCurvedMeshHolder;
 import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrCustomMeshHolder;
+import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrPlanarMeshGenerator;
+import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrPlanarMeshHolder;
+import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrRoundedQuadMeshGenerator;
 import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrSeamlessSphereMeshGenerator;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrFloatSize3d;
@@ -220,6 +223,23 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
                 sphereHolder.updateMesh();
                 mCustomMeshHolder = sphereHolder;
                 break;
+            case XrSurfaceEntityShape.ROUNDED_QUAD:
+                var quadConfig =
+                        new XrPlanarMeshGenerator.Config(
+                                getSurfaceStereoMode(),
+                                mCurrentSurfaceDimensions.getWidth(),
+                                mCurrentSurfaceDimensions.getHeight());
+                var quadGenerator = new XrRoundedQuadMeshGenerator(quadConfig);
+                var quadHolder =
+                        new XrPlanarMeshHolder(
+                                mXrSession,
+                                mEntity,
+                                mInteractableComponent,
+                                XrSurfaceEntityShape.ROUNDED_QUAD,
+                                quadGenerator);
+                quadHolder.updateMesh();
+                mCustomMeshHolder = quadHolder;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid surface shape: " + shape);
         }
@@ -251,6 +271,9 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     @Override
     public SizeF getEntitySize() {
         assertDisposed();
+        if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
+            return ((XrPlanarMeshHolder) mCustomMeshHolder).getSize();
+        }
         FloatSize3d dimensions = mEntity.getDimensions();
         return new SizeF(dimensions.getWidth(), dimensions.getHeight());
     }
@@ -260,7 +283,10 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         assertDisposed();
         if (width <= 0f || height <= 0f) return;
         if (mEntity.getShape() instanceof Shape.Quad) {
-            mEntity.setShape(new Shape.Quad(new FloatSize2d(width, height)));
+            float cornerRadius = ((Shape.Quad) mEntity.getShape()).getCornerRadius();
+            mEntity.setShape(new Shape.Quad(new FloatSize2d(width, height), cornerRadius));
+        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
+            ((XrPlanarMeshHolder) mCustomMeshHolder).setDimensions(width, height);
         }
         mMovableComponent.setSize(width, height, 0f);
 
@@ -278,6 +304,29 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
                             maxSize.getWidth(),
                             maxSize.getWidth() / aspectRatio,
                             maxSize.getDepth()));
+        }
+    }
+
+    @Override
+    public float getCornerRadius() {
+        assertDisposed();
+        if (mEntity.getShape() instanceof Shape.Quad) {
+            return ((Shape.Quad) mEntity.getShape()).getCornerRadius();
+        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
+            return ((XrPlanarMeshHolder) mCustomMeshHolder).getCornerRadius();
+        }
+        return 0f;
+    }
+
+    @Override
+    public void setCornerRadius(float radius) {
+        assertDisposed();
+        if (radius < 0f) return;
+        if (mEntity.getShape() instanceof Shape.Quad) {
+            FloatSize2d extents = ((Shape.Quad) mEntity.getShape()).getExtents();
+            mEntity.setShape(new Shape.Quad(extents, radius));
+        } else if (mCustomMeshHolder instanceof XrPlanarMeshHolder) {
+            ((XrPlanarMeshHolder) mCustomMeshHolder).setCornerRadius(radius);
         }
     }
 

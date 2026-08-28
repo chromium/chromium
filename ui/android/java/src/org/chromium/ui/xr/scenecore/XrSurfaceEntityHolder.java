@@ -72,6 +72,16 @@ public interface XrSurfaceEntityHolder<EntityType> extends XrTransformableEntity
      */
     void setSurfacePixelDimensions(int width, int height);
 
+    /** Returns the corner radius of the quad surface in spatial units (meters). */
+    float getCornerRadius();
+
+    /**
+     * Sets the corner radius of the quad surface in spatial units (meters).
+     *
+     * @param radius The new corner radius.
+     */
+    void setCornerRadius(float radius);
+
     /**
      * Sets rectangular edge feathering parameters for the surface entity.
      *

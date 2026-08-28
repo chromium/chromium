@@ -62,6 +62,7 @@ public class XrFactoryImpl implements XrFactory {
         Shape entityShape;
         switch (shape) {
             case XrSurfaceEntityShape.QUAD:
+            case XrSurfaceEntityShape.ROUNDED_QUAD:
                 entityShape = new Shape.Quad(new FloatSize2d(1f, 1f));
                 break;
             case XrSurfaceEntityShape.SPHERE:

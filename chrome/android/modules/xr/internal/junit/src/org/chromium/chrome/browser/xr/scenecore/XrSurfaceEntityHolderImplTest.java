@@ -126,6 +126,8 @@ public class XrSurfaceEntityHolderImplTest {
         assertEquals(XrSurfaceEntityShape.HEMISPHERE, mHolder.getSurfaceShape());
         mHolder.setSurfaceShape(XrSurfaceEntityShape.QUAD);
         assertEquals(XrSurfaceEntityShape.QUAD, mHolder.getSurfaceShape());
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.ROUNDED_QUAD);
+        assertEquals(XrSurfaceEntityShape.ROUNDED_QUAD, mHolder.getSurfaceShape());
     }
 
     @Test
@@ -143,6 +145,40 @@ public class XrSurfaceEntityHolderImplTest {
         Shape shape = mSurfaceEntity.getShape();
         assertTrue(shape instanceof Shape.Quad);
         assertEquals(10f, ((Shape.Quad) shape).getExtents().getWidth(), DELTA);
+        assertEquals(20f, ((Shape.Quad) shape).getExtents().getHeight(), DELTA);
+    }
+
+    @Test
+    public void testSetEntitySize_RoundedQuad() {
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.ROUNDED_QUAD);
+        mHolder.setEntitySize(10f, 20f);
+
+        assertEquals(10f, mHolder.getEntitySize().getWidth(), DELTA);
+        assertEquals(20f, mHolder.getEntitySize().getHeight(), DELTA);
+        assertTrue(mSurfaceEntity.getShape() instanceof Shape.CustomMesh);
+    }
+
+    @Test
+    public void testSetSurfaceShape_WithCornerRadius() {
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.ROUNDED_QUAD);
+        mHolder.setCornerRadius(0.08f);
+        assertEquals(XrSurfaceEntityShape.ROUNDED_QUAD, mHolder.getSurfaceShape());
+        assertEquals(0.08f, mHolder.getCornerRadius(), DELTA);
+    }
+
+    @Test
+    public void testCornerRadius_Quad() {
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.QUAD);
+        mHolder.setCornerRadius(0.05f);
+
+        assertEquals(0.05f, mHolder.getCornerRadius(), DELTA);
+        Shape shape = mSurfaceEntity.getShape();
+        assertTrue(shape instanceof Shape.Quad);
+        assertEquals(0.05f, ((Shape.Quad) shape).getCornerRadius(), DELTA);
+
+        // Verify corner radius is preserved when resizing
+        mHolder.setEntitySize(15f, 25f);
+        assertEquals(0.05f, mHolder.getCornerRadius(), DELTA);
     }
 
     @Test
@@ -291,6 +327,10 @@ public class XrSurfaceEntityHolderImplTest {
         mHolder.setSurfaceShape(XrSurfaceEntityShape.QUAD);
         assertEquals(XrSurfaceEntityShape.QUAD, mHolder.getSurfaceShape());
         assertTrue(mSurfaceEntity.getShape() instanceof Shape.Quad);
+
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.ROUNDED_QUAD);
+        assertEquals(XrSurfaceEntityShape.ROUNDED_QUAD, mHolder.getSurfaceShape());
+        assertTrue(mSurfaceEntity.getShape() instanceof Shape.CustomMesh);
     }
 
     @Test

@@ -129,5 +129,10 @@ public class XrFactoryImplTest {
                 mFactory.createSurfaceEntity(mSession, XrSurfaceEntityShape.SEAMLESS_SPHERE);
         assertNotNull(seamlessSphereHolder);
         assertEquals(XrSurfaceEntityShape.SEAMLESS_SPHERE, seamlessSphereHolder.getSurfaceShape());
+
+        XrSurfaceEntityHolder roundedQuadHolder =
+                mFactory.createSurfaceEntity(mSession, XrSurfaceEntityShape.ROUNDED_QUAD);
+        assertNotNull(roundedQuadHolder);
+        assertEquals(XrSurfaceEntityShape.ROUNDED_QUAD, roundedQuadHolder.getSurfaceShape());
     }
 }

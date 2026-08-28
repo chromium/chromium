@@ -76,6 +76,9 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrCurvedMeshHolder.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrCustomMeshGenerator.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrCustomMeshHolder.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrPlanarMeshGenerator.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrPlanarMeshHolder.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrRoundedQuadMeshGenerator.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrSeamlessSphereMeshGenerator.java",
   ]
   deps = [
@@ -184,6 +187,8 @@ robolectric_binary("xr_junit_tests") {
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityUtilsTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrCurvedMeshGeneratorTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrCustomMeshHolderTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrPlanarMeshGeneratorTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrRoundedQuadMeshGeneratorTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrSeamlessSphereMeshGeneratorTest.java",
   ]
   deps = [

@@ -17,7 +17,8 @@ import java.lang.annotation.RetentionPolicy;
     XrSurfaceEntityShape.SPHERE,
     XrSurfaceEntityShape.HEMISPHERE,
     XrSurfaceEntityShape.CUSTOM,
-    XrSurfaceEntityShape.SEAMLESS_SPHERE
+    XrSurfaceEntityShape.SEAMLESS_SPHERE,
+    XrSurfaceEntityShape.ROUNDED_QUAD
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -42,6 +43,9 @@ public @interface XrSurfaceEntityShape {
      */
     int SEAMLESS_SPHERE = 4;
 
+    /** A custom rounded quad mesh surface. */
+    int ROUNDED_QUAD = 5;
+
     /** Helper utilities for {@link XrSurfaceEntityShape}. */
     final class Utils {
         private Utils() {}
@@ -49,6 +53,11 @@ public @interface XrSurfaceEntityShape {
         /** Returns true if the shape is curved. */
         public static boolean isCurved(@XrSurfaceEntityShape int shape) {
             return shape == SPHERE || shape == HEMISPHERE || shape == SEAMLESS_SPHERE;
+        }
+
+        /** Returns true if the shape is planar. */
+        public static boolean isPlanar(@XrSurfaceEntityShape int shape) {
+            return shape == QUAD || shape == ROUNDED_QUAD;
         }
     }
 }
