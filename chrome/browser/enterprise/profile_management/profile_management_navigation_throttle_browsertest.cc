@@ -25,7 +25,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -38,16 +37,10 @@ namespace profile_management {
 namespace {
 
 constexpr char kSwitchDomain[] = "switch.test";
-constexpr char kGoogleServiceLoginUrl[] =
-    "https://www.google.com/a/%s/ServiceLogin";
-
-constexpr char kValidDomain[] = "host.test";
-constexpr char kInvalidDomain[] = "host";
-constexpr char kValidEmail[] = "user@host.test";
-constexpr char kInvalidEmail[] = "user@host";
+constexpr char kValidToken[] = "token-value";
 
 constexpr char kJSONAttributesTemplate[] = R"({"%s":{"name":"placeholderName",
-"domain":"placeholderDomain","token":"placeholderToken"}})";
+"token":"placeholderToken"}})";
 
 constexpr char kHTMLTemplate[] = R"(<html><body><form>
       <input name="SAMLResponse" value="%s"/></form></body></html>)";
@@ -56,9 +49,6 @@ constexpr char kSAMLResponse[] = R"(
 <samlp:Response>
   <Assertion>
     <AttributeStatement>
-      <Attribute Name="placeholderDomain">
-        <AttributeValue>%s</AttributeValue>
-      </Attribute>
       <Attribute Name="placeholderToken">
         <AttributeValue>%s</AttributeValue>
       </Attribute>
@@ -66,10 +56,9 @@ constexpr char kSAMLResponse[] = R"(
   </Assertion>
 </samlp:Response>)";
 
-std::string BuildSAMLResponse(const std::string& domain,
-                              const std::string& token = "token-value") {
-  std::string encoded_saml_response = base::Base64Encode(
-      base::StringPrintf(kSAMLResponse, domain.c_str(), token.c_str()));
+std::string BuildSAMLResponse(const std::string& token = kValidToken) {
+  std::string encoded_saml_response =
+      base::Base64Encode(base::StringPrintf(kSAMLResponse, token.c_str()));
   return base::StringPrintf(kHTMLTemplate, encoded_saml_response.c_str());
 }
 
@@ -89,8 +78,8 @@ class ProfileManagementNavigationThrottleTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Default to a valid email.
-    SetSAMLResponse(kValidEmail);
+    // Default to a valid token.
+    SetSAMLResponse(kValidToken);
   }
 
   content::WebContents* web_contents() const {
@@ -104,15 +93,12 @@ class ProfileManagementNavigationThrottleTest : public InProcessBrowserTest {
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
-    response->set_content(
-        BuildSAMLResponse(current_saml_domain_, current_saml_token_));
+    response->set_content(BuildSAMLResponse(current_saml_token_));
     response->set_content_type("text/html");
     return response;
   }
 
-  void SetSAMLResponse(const std::string& domain,
-                       const std::string& token = "token-value") {
-    current_saml_domain_ = domain;
+  void SetSAMLResponse(const std::string& token = kValidToken) {
     current_saml_token_ = token;
   }
 
@@ -121,7 +107,6 @@ class ProfileManagementNavigationThrottleTest : public InProcessBrowserTest {
   }
 
  private:
-  std::string current_saml_domain_;
   std::string current_saml_token_;
 };
 
@@ -131,8 +116,7 @@ class ProfileManagementNavigationThrottleDisabledTest
   ProfileManagementNavigationThrottleDisabledTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kEnableProfileTokenManagement,
-                               features::kThirdPartyProfileManagement});
+        /*disabled_features=*/{features::kEnableProfileTokenManagement});
   }
 
  private:
@@ -144,8 +128,7 @@ class ProfileManagementNavigationThrottleEnabledTest
  public:
   ProfileManagementNavigationThrottleEnabledTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEnableProfileTokenManagement,
-                              features::kThirdPartyProfileManagement},
+        /*enabled_features=*/{features::kEnableProfileTokenManagement},
         /*disabled_features=*/{});
   }
 
@@ -208,8 +191,7 @@ class ProfileManagementNavigationThrottleRedirectTest
  public:
   ProfileManagementNavigationThrottleRedirectTest() {
     features_.InitWithFeatures(
-        /*enabled_features=*/{features::kEnableProfileTokenManagement,
-                              features::kThirdPartyProfileManagement},
+        /*enabled_features=*/{features::kEnableProfileTokenManagement},
         /*disabled_features=*/{});
   }
   ~ProfileManagementNavigationThrottleRedirectTest() override = default;
@@ -227,103 +209,14 @@ class ProfileManagementNavigationThrottleRedirectTest
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileManagementNavigationThrottleRedirectTest,
-                       InvalidEmail) {
-  SetSAMLResponse(kInvalidEmail);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSAMLUrl()));
-
-  // The throttle does not navigate away from its current URL if the provided
-  // domain is invalid.
-  EXPECT_EQ(GetSAMLUrl(), web_contents()->GetURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileManagementNavigationThrottleRedirectTest,
-                       ValidEmail) {
-  GURL expected_url(base::StringPrintf(kGoogleServiceLoginUrl, kValidDomain));
-  content::TestNavigationObserver observer(expected_url);
-  observer.WatchExistingWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSAMLUrl()));
-  observer.Wait();
-
-  // The throttle navigates to the Google sign-in URL for the domain
-  // corresponding to the parsed email address.
-  EXPECT_EQ(expected_url, web_contents()->GetURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileManagementNavigationThrottleRedirectTest,
-                       EmptyDomain) {
+                       EmptyToken) {
   SetSAMLResponse(std::string());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSAMLUrl()));
 
-  // The throttle does not navigate away from its current URL if no domain is
+  // The throttle does not navigate away from its current URL if no token is
   // found in the response.
   EXPECT_EQ(GetSAMLUrl(), web_contents()->GetURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileManagementNavigationThrottleRedirectTest,
-                       EmptyDomainAndToken) {
-  SetSAMLResponse(std::string(), std::string());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSAMLUrl()));
-
-  // The throttle does not navigate away from its current URL if neither a
-  // domain nor a token are found in the response.
-  EXPECT_EQ(GetSAMLUrl(), web_contents()->GetURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileManagementNavigationThrottleRedirectTest,
-                       InvalidDomain) {
-  SetSAMLResponse(kInvalidDomain);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSAMLUrl()));
-
-  // The throttle does not navigate away from its current URL if the provided
-  // domain is invalid.
-  EXPECT_EQ(GetSAMLUrl(), web_contents()->GetURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileManagementNavigationThrottleRedirectTest,
-                       ValidDomain) {
-  SetSAMLResponse(kValidDomain);
-
-  GURL expected_url(base::StringPrintf(kGoogleServiceLoginUrl, kValidDomain));
-  content::TestNavigationObserver observer(expected_url);
-  observer.WatchExistingWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSAMLUrl()));
-  observer.Wait();
-
-  // The throttle navigates to the Google sign-in URL corresponding to the
-  // parsed domain when the domain is valid.
-  EXPECT_EQ(expected_url, web_contents()->GetURL());
-}
-
-class ProfileManagementNavigationThrottleSwitchTest
-    : public ProfileManagementNavigationThrottleRedirectTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ProfileManagementNavigationThrottleRedirectTest::SetUpCommandLine(
-        command_line);
-    command_line->AppendSwitchASCII(
-        switches::kProfileManagementAttributes,
-        base::StringPrintf(kJSONAttributesTemplate, kSwitchDomain));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ProfileManagementNavigationThrottleSwitchTest,
-                       Switch_ValidDomain) {
-  SetSAMLResponse(kValidDomain);
-
-  GURL switch_url = embedded_test_server()->GetURL(kSwitchDomain, "/saml");
-  GURL expected_url(base::StringPrintf(kGoogleServiceLoginUrl, kValidDomain));
-  content::TestNavigationObserver observer(expected_url);
-  observer.WatchExistingWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), switch_url));
-  observer.Wait();
-
-  // The throttle navigates to the Google sign-in URL corresponding to the
-  // parsed domain when the domain is valid.
-  EXPECT_EQ(expected_url, web_contents()->GetURL());
 }
 
 }  // namespace profile_management

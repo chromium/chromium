@@ -426,8 +426,6 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kSigninInterceptionEnabled, true);
   registry->RegisterStringPref(prefs::kManagedAccountsSigninRestriction,
                                std::string());
-  registry->RegisterStringPref(prefs::kSigninInterceptionIDPCookiesUrl,
-                               std::string());
   registry->RegisterBooleanPref(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, false);
   registry->RegisterIntegerPref(prefs::kProfileSeparationSettings, 0);

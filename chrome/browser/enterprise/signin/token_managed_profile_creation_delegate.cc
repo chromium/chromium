@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/signin/token_managed_profile_creation_delegate.h"
 
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 
@@ -36,9 +35,5 @@ void TokenManagedProfileCreationDelegate::OnManagedProfileInitialized(
     Profile* source_profile,
     Profile* new_profile,
     ProfileCreationCallback callback) {
-  // base::Unretained is fine because `cookies_mover_` is owned by this.
-  cookies_mover_ = std::make_unique<signin_util::CookiesMover>(
-      source_profile->GetWeakPtr(), new_profile->GetWeakPtr(),
-      base::BindOnce(std::move(callback), new_profile->GetWeakPtr()));
-  cookies_mover_->StartMovingCookies();
+  std::move(callback).Run(new_profile->GetWeakPtr());
 }

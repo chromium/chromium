@@ -185,10 +185,6 @@ const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
 // next startup.
 const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
 
-// String that represent the url for which cookies will have to be moved to a
-// newly created profile via signin interception.
-const char kSigninInterceptionIDPCookiesUrl[] =
-    "signin.interception.idp_cookies.url";
 
 // Integer pref to store the number of times the address bubble signin promo
 // has been shown per profile while the user is signed out used for

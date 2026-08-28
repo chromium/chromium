@@ -25,13 +25,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
@@ -40,19 +38,14 @@ namespace profile_management {
 
 namespace {
 
-constexpr char kGoogleServiceLoginUrl[] =
-    "https://www.google.com/a/%s/ServiceLogin";
-
-// Utility struct used to store SAML attributes related to third-party profile
+// Utility struct used to store SAML attributes related to profile
 // management.
 struct SAMLProfileAttributes {
   std::string name;
-  std::string domain;
   std::string token;
 };
 
 constexpr char kNameAttributeKey[] = "name";
-constexpr char kDomainAttributeKey[] = "domain";
 constexpr char kTokenAttributeKey[] = "token";
 
 base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
@@ -66,8 +59,7 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
   // TODO(crbug.com/40267996): Add actual domains with attribute names.
   profile_attributes->insert(std::make_pair(
       "supported.test",
-      SAMLProfileAttributes("placeholderName", "placeholderDomain",
-                            "placeholderToken")));
+      SAMLProfileAttributes("placeholderName", "placeholderToken")));
 
   // Extract domains and attributes from the command line switch.
   const base::CommandLine& command_line =
@@ -97,10 +89,6 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
         name_attribute) {
       new_attributes.name = *name_attribute;
     }
-    if (auto* domain_attribute = attributes.FindString(kDomainAttributeKey);
-        domain_attribute) {
-      new_attributes.domain = *domain_attribute;
-    }
     if (auto* token_attribute = attributes.FindString(kTokenAttributeKey);
         token_attribute) {
       new_attributes.token = *token_attribute;
@@ -112,26 +100,6 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
 
   VLOG(1) << "[Profile management] Successfully parsed attributes JSON.";
   return *profile_attributes;
-}
-
-std::optional<std::string> GetDomainFromAttributeValue(
-    const std::string& domain_attribute_value) {
-  // Exclude empty and and dotless domains as they are not supported by the
-  // Google identity service.
-  if (domain_attribute_value.empty() ||
-      domain_attribute_value.find(".") == std::string::npos) {
-    return std::nullopt;
-  }
-
-  // If '@' is found in the domain value, treat it as an email address and
-  // extract the domain from it.
-  if (domain_attribute_value.find("@") != std::string::npos) {
-    std::string email_domain = gaia::ExtractDomainName(domain_attribute_value);
-    return email_domain.empty() ? std::nullopt
-                                : std::make_optional(email_domain);
-  }
-
-  return domain_attribute_value;
 }
 
 // Used to scope posted navigation tasks to the lifetime of `web_contents`.
@@ -169,9 +137,7 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(ProfileManagementWebContentsLifetimeHelper);
 // static
 void ProfileManagementNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  if ((!base::FeatureList::IsEnabled(features::kThirdPartyProfileManagement) &&
-       !base::FeatureList::IsEnabled(
-           features::kEnableProfileTokenManagement)) ||
+  if (!base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement) ||
       !g_browser_process->local_state() ||
       !profiles::IsProfileCreationAllowed()) {
     return;
@@ -225,7 +191,6 @@ void ProfileManagementNavigationThrottle::OnResponseBodyReady(
       GetAttributeMap().at(navigation_handle()->GetURL().GetHost());
   saml_response_parser_ = std::make_unique<SAMLResponseParser>(
       std::vector<std::string>{profile_attributes.name,
-                               profile_attributes.domain,
                                profile_attributes.token},
       body,
       base::BindOnce(
@@ -239,16 +204,6 @@ void ProfileManagementNavigationThrottle::OnManagementDataReceived(
   DCHECK(GetAttributeMap().contains(navigation_host));
   const auto profile_attributes = GetAttributeMap().at(navigation_host);
 
-  if (base::FeatureList::IsEnabled(features::kThirdPartyProfileManagement) &&
-      attributes.contains(profile_attributes.domain)) {
-    RegisterWithDomain(attributes.at(profile_attributes.domain));
-    // DO NOT ADD CODE AFTER THIS, as the NavigationThrottle might have been
-    // deleted by the previous call.
-    return;
-  }
-
-  // If the third-party domain-based profile management feature is disabled, or
-  // no domain is found in the response, fall back to token-based management.
   if (base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement) &&
       attributes.contains(profile_attributes.token)) {
     RegisterWithToken(attributes.contains(profile_attributes.name)
@@ -312,30 +267,6 @@ void ProfileManagementNavigationThrottle::NavigateTo(const GURL& url) {
   }
 }
 
-void ProfileManagementNavigationThrottle::RegisterWithDomain(
-    const std::string& domain) {
-  std::optional<std::string> management_domain =
-      GetDomainFromAttributeValue(domain);
-  if (management_domain) {
-    auto* prefs =
-        Profile::FromBrowserContext(
-            navigation_handle()->GetWebContents()->GetBrowserContext())
-            ->GetPrefs();
-    prefs->SetString(prefs::kSigninInterceptionIDPCookiesUrl,
-                     navigation_handle()->GetURL().spec());
-    PostNavigateTo(GURL(base::StringPrintf(kGoogleServiceLoginUrl,
-                                           management_domain.value().c_str())));
-    return;
-  }
-
-  // Only call `Resume()` outside of testing since it crashes unit tests.
-  if (token_url_for_testing_.empty() && unmanaged_url_for_testing_.empty()) {
-    Resume();
-    // DO NOT ADD CODE AFTER THIS, as the NavigationThrottle might have been
-    // deleted by the previous call.
-  }
-}
-
 void ProfileManagementNavigationThrottle::RegisterWithToken(
     const std::string& name,
     const std::string& token) {
@@ -344,11 +275,6 @@ void ProfileManagementNavigationThrottle::RegisterWithToken(
     PostNavigateTo(GURL(token_url_for_testing_));
     return;
   }
-  auto* prefs = Profile::FromBrowserContext(
-                    navigation_handle()->GetWebContents()->GetBrowserContext())
-                    ->GetPrefs();
-  prefs->SetString(prefs::kSigninInterceptionIDPCookiesUrl,
-                   navigation_handle()->GetURL().spec());
 
   auto* interceptor = ProfileTokenWebSigninInterceptorFactory::GetForProfile(
       Profile::FromBrowserContext(

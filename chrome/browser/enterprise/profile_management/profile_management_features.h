@@ -11,9 +11,6 @@
 
 namespace profile_management::features {
 
-// Controls whether third-party profile management is enabled.
-BASE_DECLARE_FEATURE(kThirdPartyProfileManagement);
-
 // Controls whether token-based profile management is enabled.
 BASE_DECLARE_FEATURE(kEnableProfileTokenManagement);
 

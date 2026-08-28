@@ -8,8 +8,6 @@
 
 namespace profile_management::features {
 
-BASE_FEATURE(kThirdPartyProfileManagement, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableProfileTokenManagement, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOidcAuthProfileManagement, base::FEATURE_ENABLED_BY_DEFAULT);

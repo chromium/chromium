@@ -68,7 +68,6 @@ class ProfileManagementNavigationThrottle : public content::NavigationThrottle {
   // Don't use directly. Use `PostNavigateTo()` instead.
   void NavigateTo(const GURL& url);
 
-  void RegisterWithDomain(const std::string& domain);
   void RegisterWithToken(const std::string& name, const std::string& token);
 
   std::string token_url_for_testing_;

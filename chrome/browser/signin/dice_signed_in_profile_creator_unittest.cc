@@ -4,20 +4,18 @@
 
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 
-#include <tuple>
+#include <memory>
+#include <string>
+#include <utility>
 
-#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
-#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -28,48 +26,15 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 const char16_t kProfileTestName[] = u"profile_test_name";
-
-void CreateCookies(
-    Profile* profile,
-    const std::map<std::string, std::string> cookie_url_and_name) {
-  network::mojom::CookieManager* cookie_manager =
-      profile->GetDefaultStoragePartition()
-          ->GetCookieManagerForBrowserProcess();
-
-  base::RunLoop run_loop;
-  base::RepeatingClosure barrier = base::BarrierClosure(
-      cookie_url_and_name.size(),
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-
-  for (const auto& url_name : cookie_url_and_name) {
-    GURL url(url_name.first);
-    std::unique_ptr<net::CanonicalCookie> cookie =
-        net::CanonicalCookie::CreateSanitizedCookie(
-            url, url_name.second, "A=" + url_name.second, url.GetHost(),
-            url.GetPath(), base::Time::Now(), base::Time::Max(),
-            base::Time::Now(), url.SchemeIsCryptographic(), false,
-            net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-            std::nullopt, /*status=*/nullptr);
-    cookie_manager->SetCanonicalCookie(
-        *cookie, url, net::CookieOptions::MakeAllInclusive(),
-        base::BindLambdaForTesting(
-            [&](net::CookieAccessResult access_result) { barrier.Run(); }));
-  }
-
-  run_loop.Run();
-}
 
 std::unique_ptr<TestingProfile> BuildTestingProfile(
     const base::FilePath& path,
@@ -113,19 +78,10 @@ class UnittestProfileManager : public FakeProfileManager {
 
 }  // namespace
 
-// Testing params:
-// - bool enable_third_party_management_feature
-// - bool setup_cookies_to_move
-class DiceSignedInProfileCreatorTest
-    : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>>,
-      public ProfileManagerObserver {
+class DiceSignedInProfileCreatorTest : public testing::Test,
+                                       public ProfileManagerObserver {
  public:
   DiceSignedInProfileCreatorTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        profile_management::features::kThirdPartyProfileManagement,
-        enable_third_party_management_feature());
-
     auto profile_manager_unique = std::make_unique<UnittestProfileManager>(
         base::CreateUniqueTempDirectoryScopedToTest());
     profile_manager_ = profile_manager_unique.get();
@@ -140,12 +96,6 @@ class DiceSignedInProfileCreatorTest
   }
 
   ~DiceSignedInProfileCreatorTest() override { DeleteProfiles(); }
-
-  bool enable_third_party_management_feature() {
-    return std::get<0>(GetParam());
-  }
-
-  bool setup_cookies_to_move() { return std::get<1>(GetParam()); }
 
   UnittestProfileManager* profile_manager() { return profile_manager_; }
 
@@ -188,78 +138,16 @@ class DiceSignedInProfileCreatorTest
   void OnProfileCreated(base::OnceClosure quit_closure, Profile* profile) {
     creator_callback_called_ = true;
     signed_in_profile_ = profile;
-    if (quit_closure)
+    if (quit_closure) {
       std::move(quit_closure).Run();
+    }
   }
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override {
     added_profile_ = profile;
-    if (profile_added_closure_)
+    if (profile_added_closure_) {
       std::move(profile_added_closure_).Run();
-  }
-
-  void SetupCookiesToMove() {
-    if (!setup_cookies_to_move()) {
-      return;
-    }
-    // Add some cookies
-    CreateCookies(profile_.get(), {{"https://google.com", "oldgoogle0"},
-                                   {"https://example.com", "oldexample0"}});
-    CreateCookies(profile_.get(), {{"https://google.com", "validgoogle1"},
-                                   {"https://example.com", "validexample1"}});
-    CreateCookies(profile_.get(), {{"https://google.com", "newgoogle2"},
-                                   {"https://example.com", "newexample2"}});
-
-    profile_->GetPrefs()->SetString(prefs::kSigninInterceptionIDPCookiesUrl,
-                                    "https://www.google.com/");
-  }
-
-  void VerifyCookiesMoved() {
-    if (!setup_cookies_to_move()) {
-      return;
-    }
-    GURL url("https://www.google.com/");
-    net::CookieList cookies_source_profile;
-    net::CookieList cookies_new_profile;
-    {
-      network::mojom::CookieManager* cookie_manager =
-          profile_->GetDefaultStoragePartition()
-              ->GetCookieManagerForBrowserProcess();
-      base::RunLoop loop;
-      cookie_manager->GetAllCookies(
-          base::BindLambdaForTesting([&](const net::CookieList& cookies) {
-            cookies_source_profile = cookies;
-            loop.Quit();
-          }));
-      loop.Run();
-    }
-    {
-      network::mojom::CookieManager* cookie_manager =
-          added_profile_->GetDefaultStoragePartition()
-              ->GetCookieManagerForBrowserProcess();
-      base::RunLoop loop;
-      cookie_manager->GetAllCookies(
-          base::BindLambdaForTesting([&](const net::CookieList& cookies) {
-            cookies_new_profile = cookies;
-            loop.Quit();
-          }));
-      loop.Run();
-    }
-
-    if (!enable_third_party_management_feature()) {
-      EXPECT_EQ(6u, cookies_source_profile.size());
-      EXPECT_TRUE(cookies_new_profile.empty());
-      return;
-    }
-
-    EXPECT_EQ(3u, cookies_source_profile.size());
-    EXPECT_EQ(3u, cookies_new_profile.size());
-
-    for (const auto& cookie : cookies_new_profile) {
-      EXPECT_TRUE(cookie.IsDomainMatch(url.GetHost()));
-      EXPECT_THAT(cookie.Name(),
-                  testing::AnyOf("oldgoogle0", "validgoogle1", "newgoogle2"));
     }
   }
 
@@ -273,15 +161,13 @@ class DiceSignedInProfileCreatorTest
   raw_ptr<Profile, DanglingUntriaged> added_profile_ = nullptr;
   base::OnceClosure profile_added_closure_;
   bool creator_callback_called_ = false;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
+TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
 
-  SetupCookiesToMove();
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
@@ -317,10 +203,9 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   ASSERT_TRUE(entry);
   EXPECT_EQ(kProfileTestName, entry->GetLocalProfileName());
   EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());
-  VerifyCookiesMoved();
 }
 
-TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
+TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   profile_manager()->set_tokens_loaded_at_creation(false);
@@ -328,7 +213,6 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   base::RunLoop creator_loop;
   base::RunLoop profile_added_loop;
   set_profile_added_closure(profile_added_loop.QuitClosure());
-  SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
           profile(), account_info.GetAccountId(), std::vector<CoreAccountId>{},
@@ -359,14 +243,12 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
                     .size());
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(signed_in_profile())
                   ->HasAccountWithRefreshToken(account_info.GetAccountId()));
-  VerifyCookiesMoved();
 }
 
 // Deleting the creator while it is running does not crash.
-TEST_P(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
+TEST_F(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
-  SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
           profile(), account_info.GetAccountId(), std::vector<CoreAccountId>{},
@@ -379,7 +261,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
 }
 
 // Deleting the profile while waiting for the tokens.
-TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
+TEST_F(DiceSignedInProfileCreatorTest, DeleteProfile) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   profile_manager()->set_tokens_loaded_at_creation(false);
@@ -387,7 +269,6 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   base::RunLoop creator_loop;
   base::RunLoop profile_added_loop;
   set_profile_added_closure(profile_added_loop.QuitClosure());
-  SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
           profile(), account_info.GetAccountId(), std::vector<CoreAccountId>{},
@@ -402,7 +283,6 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   EXPECT_FALSE(creator_callback_called());
   EXPECT_TRUE(added_profile());
   EXPECT_NE(profile(), added_profile());
-  VerifyCookiesMoved();
 
   DeleteProfiles();
   creator_loop.Run();
@@ -412,7 +292,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   EXPECT_FALSE(signed_in_profile());
 }
 
-TEST_P(DiceSignedInProfileCreatorTest, CreateWithMultipleTokensLoaded) {
+TEST_F(DiceSignedInProfileCreatorTest, CreateWithMultipleTokensLoaded) {
   AccountInfo initiator_info =
       identity_test_env()->MakeAccountAvailable("initiator@example.com");
   AccountInfo secondary_info1 =
@@ -429,7 +309,6 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMultipleTokensLoaded) {
 
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
 
-  SetupCookiesToMove();
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
@@ -476,10 +355,9 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMultipleTokensLoaded) {
   ASSERT_TRUE(entry);
   EXPECT_EQ(kProfileTestName, entry->GetLocalProfileName());
   EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());
-  VerifyCookiesMoved();
 }
 
-TEST_P(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
+TEST_F(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
   AccountInfo initiator_info =
       identity_test_env()->MakeAccountAvailable("initiator@example.com");
   AccountInfo secondary_info_with_token =
@@ -499,7 +377,6 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
 
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
 
-  SetupCookiesToMove();
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
@@ -525,8 +402,3 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
   EXPECT_FALSE(new_identity_manager->HasAccountWithRefreshToken(
       secondary_info_no_token.GetAccountId()));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DiceSignedInProfileCreatorTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool()));
