@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,6 +28,15 @@ TEST(HeaderUtilTest, IsRequestHeaderSafe) {
       {"Upgrade", "websocket", false},
       {"Upgrade", "webbedsocket", false},
       {"hOsT", "foo.test", false},
+
+      {net::HttpRequestHeaders::kAcceptEncoding, "gzip", true},
+      {net::HttpRequestHeaders::kAcceptEncoding, "identity;q=1, *;q=0", true},
+      {net::HttpRequestHeaders::kAcceptEncoding, "gzip, identity;q=1, *;q=0",
+       true},
+      {net::HttpRequestHeaders::kAcceptEncoding, "dcb", false},
+      {net::HttpRequestHeaders::kAcceptEncoding, "dcz", false},
+      {net::HttpRequestHeaders::kAcceptEncoding, "gzip, dcb", false},
+      {net::HttpRequestHeaders::kAcceptEncoding, "dcz;q=1", false},
 
       {net::HttpRequestHeaders::kConnection, "Upgrade", false},
       {net::HttpRequestHeaders::kConnection, "Close", true},
@@ -91,6 +101,15 @@ TEST(HeaderUtilTest, AreRequestHeadersSafe) {
       {"Keep-Alive", "timeout=5, max=1000", false},
       {net::HttpRequestHeaders::kTransferEncoding, "gzip", false},
       {"Set-Cookie", "foo=bar", false},
+
+      {net::HttpRequestHeaders::kAcceptEncoding, "gzip", true},
+      {net::HttpRequestHeaders::kAcceptEncoding, "identity;q=1, *;q=0", true},
+      {net::HttpRequestHeaders::kAcceptEncoding, "gzip, identity;q=1, *;q=0",
+       true},
+      {net::HttpRequestHeaders::kAcceptEncoding, "dcb", false},
+      {net::HttpRequestHeaders::kAcceptEncoding, "dcz", false},
+      {net::HttpRequestHeaders::kAcceptEncoding, "gzip, dcb", false},
+      {net::HttpRequestHeaders::kAcceptEncoding, "dcz;q=1", false},
 
       {net::HttpRequestHeaders::kConnection, "Upgrade", false},
       {net::HttpRequestHeaders::kConnection, "Close", true},
