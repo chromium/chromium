@@ -1306,12 +1306,16 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
 
   network::ResourceRequest resource_request;
   resource_request.url = gurl;
-  // TODO(caseq): this preserves behavior of URLFetcher-based implementation.
-  // We really need to pass proper first party origin from the front-end.
-  resource_request.site_for_cookies = net::SiteForCookies::FromUrl(gurl);
   resource_request.headers.AddHeadersFromString(headers);
 
   content::WebContents* target_tab = delegate_->GetInspectedWebContents();
+  if (target_tab) {
+    const url::Origin& inspected_origin =
+        target_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    resource_request.request_initiator = inspected_origin;
+    resource_request.site_for_cookies =
+        net::SiteForCookies::FromOrigin(inspected_origin);
+  }
 
   NetworkResourceLoader::URLLoaderFactoryHolder url_loader_factory;
   if (gurl.SchemeIsFile()) {

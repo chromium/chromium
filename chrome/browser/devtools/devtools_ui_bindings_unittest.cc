@@ -31,10 +31,12 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 using testing::_;
 
@@ -232,6 +234,44 @@ TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
               "Local file loading is restricted for remote DevTools. Use "
               "--allow-unsafe-devtools-remote-file-loading to enable it.");
   }
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       UsesInspectedPageAsRequestInitiator) {
+  const GURL inspected_url("http://a.test/page.html");
+  const GURL resource_url("http://b.test/source.map");
+
+  content::WebContents* inspected_web_contents =
+      web_contents_factory_.CreateWebContents(profile_.get());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      inspected_web_contents, inspected_url);
+  auto delegate =
+      std::make_unique<MockDevToolsUIBindingsDelegate>(inspected_web_contents);
+  bindings()->SetDelegate(delegate.release());
+
+  std::optional<network::ResourceRequest> captured_request;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        captured_request = params->url_request;
+        content::URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n\n", "{}", params->client.get());
+        return true;
+      }));
+
+  base::RunLoop run_loop;
+  CallLoadNetworkResource(
+      resource_url.spec(), "", 0,
+      base::BindLambdaForTesting(
+          [&](const base::Value*) { run_loop.Quit(); }));
+  run_loop.Run();
+
+  ASSERT_TRUE(captured_request.has_value());
+  EXPECT_EQ(captured_request->url, resource_url);
+  const url::Origin inspected_origin = url::Origin::Create(inspected_url);
+  EXPECT_EQ(captured_request->request_initiator, inspected_origin);
+  EXPECT_TRUE(captured_request->site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromOrigin(inspected_origin)));
+  EXPECT_FALSE(captured_request->site_for_cookies.IsFirstParty(resource_url));
 }
 
 TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
