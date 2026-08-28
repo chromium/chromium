@@ -261,9 +261,7 @@ void ActionChipsHandler::NavigateToAim(
 
   GURL aim_url = GetUrlForAim(
       template_url_service,
-      // TODO(crbug.com/540050449): This is a temporary placeholder that needs
-      // to be updated to the new Action Chips entry point.
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_NTP_ACTION_CHIPS_ENTRY_POINT,
       base::Time::Now(), base::UTF8ToUTF16(query_text),
       lens::LensOverlayInvocationSource::kNtpActionChips,
       /*additional_params=*/{});

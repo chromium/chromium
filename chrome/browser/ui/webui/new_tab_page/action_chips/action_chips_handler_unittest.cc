@@ -790,6 +790,7 @@ TEST_F(ActionChipsHandlerTest, NavigateToAimOpensCorrectUrl) {
   EXPECT_THAT(opened_url.query(),
               testing::HasSubstr("source=chrome.crn.ntpac"));
   EXPECT_THAT(opened_url.query(), testing::HasSubstr("test+query"));
+  EXPECT_THAT(opened_url.query(), testing::HasSubstr("aep=198"));
 
   web_contents()->SetDelegate(nullptr);
 }
