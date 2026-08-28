@@ -6,15 +6,15 @@
 
 set -e
 
-# Change directory to the git repository root so the script works from any directory
-cd "$(git rev-parse --show-toplevel)"
+# Change directory to the package root so the script works from any directory
+cd "$(cd "$(dirname "$0")/.." && pwd)"
 
 # Default parameters (matching workflow inputs)
 SPEC_REPO="w3c/webdriver-bidi"
 SPEC_REF="main"
 
 # Check cargo / cddlconv dependency
-REQUIRED_CDDLCONV_VERSION="0.1.9"
+REQUIRED_CDDLCONV_VERSION="0.1.10"
 if ! command -v cddlconv &> /dev/null; then
   echo "Error: 'cddlconv' is required but not installed." >&2
   echo "Please install it using cargo: 'cargo install cddlconv@$REQUIRED_CDDLCONV_VERSION'" >&2
@@ -28,24 +28,19 @@ if [ "$CDDLCONV_VERSION" != "$REQUIRED_CDDLCONV_VERSION" ]; then
   exit 1
 fi
 
-# Check pre-commit for formatting
-if ! command -v pre-commit &> /dev/null; then
-  echo "Warning: 'pre-commit' is not installed. Code formatting might fail or be skipped." >&2
+# Check parse5 dependency (required by webdriver-bidi cddl generator)
+if command -v npm &> /dev/null; then
+  GLOBAL_NODE_MODULES="$(npm root -g 2>/dev/null || true)"
+  if [ -n "$GLOBAL_NODE_MODULES" ]; then
+    export NODE_PATH="$GLOBAL_NODE_MODULES:${NODE_PATH:-}"
+  fi
 fi
 
-CURRENT_BRANCH=$(git branch --show-current)
-if [ -z "$CURRENT_BRANCH" ]; then
-  echo "Error: Could not detect current git branch." >&2
+if ! node -e "require('parse5')" &> /dev/null; then
+  echo "Error: 'parse5' is required but not installed." >&2
+  echo "Please install it using npm: 'npm install -g parse5'" >&2
   exit 1
 fi
-
-# Make sure there are no uncommitted changes
-if [ -n "$(git status --porcelain)" ]; then
-  echo "Error: You have uncommitted changes on branch '$CURRENT_BRANCH'." >&2
-  echo "Please commit, stash, or discard them before running this script." >&2
-  exit 1
-fi
-
 
 # Setup temporary build directory
 BUILD_DIR=$(mktemp -d -t bidi-types-build-XXXXXX)
@@ -64,9 +59,7 @@ git clone --depth 1 "https://github.com/$SPEC_REPO.git" "$BUILD_DIR/webdriver-bi
 (
   cd "$BUILD_DIR/webdriver-bidi"
   git checkout "$SPEC_REF" 2>/dev/null || true
-  echo "Installing dependencies and generating main spec CDDL..."
-  npm install parse5
-  ./scripts/test.sh
+  node ./scripts/cddl/generate.js
 )
 cp "$BUILD_DIR/webdriver-bidi/all.cddl" ./all.cddl
 
@@ -115,11 +108,7 @@ git clone --depth 1 https://github.com/w3c-fedid/digital-credentials.git "$BUILD
 )
 cp "$BUILD_DIR/digital-credentials/digital-credentials.cddl" ./digital-credentials.cddl
 
-# 7. Install chromium-bidi dependencies
-echo "Installing npm dependencies for chromium-bidi..."
-npm run build
-
-# 8. Generate TypeScript and Zod types from CDDL files
+# 7. Generate TypeScript and Zod types from CDDL files
 echo "Generating types..."
 node tools/generate-bidi-types.mjs --cddl-file all.cddl
 node tools/generate-bidi-types.mjs --cddl-file permissions.cddl --ts-file src/protocol/generated/webdriver-bidi-permissions.ts --zod-file src/protocol-parser/generated/webdriver-bidi-permissions.ts
@@ -131,6 +120,7 @@ node tools/generate-bidi-types.mjs --cddl-file digital-credentials.cddl --ts-fil
 # Remove the temporary CDDL files that we copied to the root (as they are gitignored)
 rm -f all.cddl permissions.cddl web-bluetooth.cddl nav-speculation.cddl ua-client-hints.cddl digital-credentials.cddl
 
-# 9. Run formatters
+# 8. Run formatters
 echo "Running code formatting..."
-npm run format
+./tools/node.py node_modules/prettier/bin/prettier.cjs --cache --write .
+./tools/node.py node_modules/eslint/bin/eslint.js --cache --fix .

@@ -176,15 +176,6 @@ The project uses Chromium build toolchains (`gn` and `ninja`/`autoninja`) for co
    autoninja -C ../../out/Default third_party/chromium-bidi:webdriver_bidi_unittests third_party/chromium-bidi:webdriver_bidi_e2e_tests
    ```
 
-### `cargo`
-
-<!-- TODO(jrandolf): Remove after binaries get published -->
-
-We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverBiDi types before building.
-
-1.  Install [Rust](https://rustup.rs/).
-2.  Run `cargo install cddlconv@0.1.9`
-
 ### Code Formatting & Linting
 
 We use a suite of tools to format and lint the codebase:
@@ -519,6 +510,32 @@ TODO(crbug.com/549520316): Automate the sync process.
    copybara third_party/chromium-bidi/copy.bara.sky default
    ```
 
+## Update CDDL types
+
+### Prerequisites
+
+- **cddlconv**: We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverBiDi types.
+  1. Install [Rust](https://rustup.rs/).
+  2. Run `cargo install cddlconv@0.1.10`
+- **parse5**: [parse5](https://github.com/inikulin/parse5) is required by the `webdriver-bidi` specification repository to extract CDDL definitions from specifications.
+  1. Run `npm install -g parse5`
+
+Run the following steps from the `third_party/chromium-bidi` directory:
+
+1. (Optional) If you want to add a new specification, add it to the `tools/update-bidi-types.sh` script.
+2. Run the `tools/update-bidi-types.sh` script.
+3. Build the project (`autoninja -C ../../out/Default third_party/chromium-bidi:default`). If a new WebDriver BiDi command was added, compilation will fail with `Switch is not exhaustive. Cases not matched ...`.
+4. Add the new BiDi command to `CommandProcessor.#processCommand` in `src/bidiMapper/CommandProcessor.ts`. For now, just have it throw an UnknownErrorException.
+
+```typescript
+case '{NEW_COMMAND_NAME}':
+  throw new UnknownErrorException(
+    `Method ${command.method} is not implemented.`,
+  );
+```
+
+5. Upload a CL and have it reviewed and landed via Gerrit.
+
 ## Adding new command
 
 Want to add a shiny new command to WebDriver BiDi for Chromium? Here's the playbook:
@@ -539,20 +556,7 @@ Make sure Chromium already has the CDP methods your command will rely on.
 
 ### Update CDDL types
 
-1. Checkout a new branch in Chromium `src/`.
-2. If your command lives in a separate spec, add a link to that spec in the `tools/update-bidi-types.sh` script.
-3. Run the `tools/update-bidi-types.sh` script.
-4. Build the project (`autoninja -C ../../out/Default third_party/chromium-bidi:default`). If a new WebDriver BiDi command was added, compilation will fail with `Switch is not exhaustive. Cases not matched ...`.
-5. Add the new BiDi command to `CommandProcessor.#processCommand` in `src/bidiMapper/CommandProcessor.ts`. For now, just have it throw an UnknownErrorException.
-
-```typescript
-case '{NEW_COMMAND_NAME}':
-  throw new UnknownErrorException(
-    `Method ${command.method} is not implemented.`,
-  );
-```
-
-6. Upload a CL and have it reviewed and landed via Gerrit.
+Follow the steps in [Update CDDL types](#update-cddl-types) to update the protocol types before implementing the command.
 
 ### Implement the new command
 

@@ -59,7 +59,7 @@ sh scripts/build.sh
 ```
 
 ### Generate CDDL
-Generate the CDDL by running this command:
+Generate the CDDL by running this command (refer to [chromium-bidi README](../../third_party/chromium-bidi/README.md#prerequisites) for prerequisites):
 ```shell
 scripts/cddl/generate.js
 ```
@@ -86,31 +86,24 @@ This will generate `bluetooth.cddl` in the `web-bluetooth` folder. Let its path
 implementation of the WebDriver BiDi protocol for Chromium, located under `third_party/chromium-bidi`.
 
 ### Regenerate BiDi types
-The TypeScript types and zod schemes are generated based on the WebDriver BiDi
-CDDL. Run from `third_party/chromium-bidi`:
+Generate the TypeScript types and zod schemes from the local CDDL file (refer to [chromium-bidi README](../../third_party/chromium-bidi/README.md#prerequisites) for prerequisites). Run from `third_party/chromium-bidi`:
 ```shell
 ./tools/node.py tools/generate-bidi-types.mjs --cddl-file ${LOCAL_CDDL}
 ./tools/node.py node_modules/prettier/bin/prettier.cjs --cache --write .
 ```
 
-### Fix the build
-If a new BiDi command is added, add it to the
-[`CommandProcessor`](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi/src/bidiMapper/CommandProcessor.ts).
+### Implement the new command
+After regenerating types, implement the new commands, parameters, and events. Refer to the [chromium-bidi README](../../third_party/chromium-bidi/README.md#implement-the-new-command) for detailed instructions on:
+- Handling the command in `CommandProcessor`
+- Parsing command parameters
+- Implementing domain processor logic
+
+As a temporary workaround for local prototyping before your CDP changes are landed, cast any new CDP calls or event handlers to `any` to allow compilation.
+
 Verify the build works:
 ```shell
 autoninja -C out/Default third_party/chromium-bidi:default
 ```
-
-### Implement BiDi command parameters parsing
-This is another manual step requiring implementation effort.
-
-### Implement the command and event
-Now, implement the logic for your new BiDi command or event. This means calling
-the new CDP methods or listening for events you added earlier. Since the
-TypeScript types for CDP in "Chromium BiDi" aren't automatically updated with
-your local changes, you'll encounter TypeScript errors. As a temporary workaround
-for prototyping, you'll need to cast your new CDP calls or event handlers to
-`any` to allow compilation.
 
 ### Add e2e tests
 Add e2e tests verifying the new BiDi command works as expected. This is expected to fail with
