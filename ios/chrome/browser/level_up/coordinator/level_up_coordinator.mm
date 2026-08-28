@@ -27,6 +27,18 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+void RunPendingAction(TaskInfo::NavigationAction pending_action,
+                      base::WeakPtr<Browser> weak_browser) {
+  if (weak_browser && !pending_action.is_null()) {
+    pending_action.Run(weak_browser->GetCommandDispatcher(),
+                       weak_browser.get());
+  }
+}
+
+}  // namespace
+
 @interface LevelUpCoordinator () <LevelUpAllTasksViewControllerDelegate,
                                   LevelUpMediatorDelegate,
                                   LevelUpViewControllerDelegate>
@@ -88,15 +100,13 @@
 
 - (void)stop {
   TaskInfo::NavigationAction pendingAction = _pendingNavigationAction;
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  base::WeakPtr<Browser> weakBrowser =
+      self.browser ? self.browser->AsWeakPtr() : nullptr;
 
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{
-                           // Execute the previously saved task if there is one.
-                           if (!pendingAction.is_null()) {
-                             pendingAction.Run(dispatcher);
-                           }
+                           RunPendingAction(pendingAction, weakBrowser);
                          }];
   self.viewController = nil;
   self.mediator.delegate = nil;

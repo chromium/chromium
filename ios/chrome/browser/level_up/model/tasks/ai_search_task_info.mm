@@ -36,11 +36,12 @@ class AISearchTaskInfo : public TaskInfo {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_AI_SEARCH);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<NewTabPageCommands> handler =
-          HandlerForProtocol(dispatcher, NewTabPageCommands);
-      [handler presentAIModeBubble];
-    });
+    return base::BindRepeating(
+        ^(CommandDispatcher* dispatcher, Browser* browser) {
+          id<NewTabPageCommands> handler =
+              HandlerForProtocol(dispatcher, NewTabPageCommands);
+          [handler presentAIModeBubble];
+        });
   }
 };
 

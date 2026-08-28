@@ -36,11 +36,12 @@ class QuickDeleteTaskInfo : public TaskInfo {
         IDS_IOS_LEVEL_UP_TASK_COMPLETED_QUICK_DELETE);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<PopupMenuCommands> handler =
-          HandlerForProtocol(dispatcher, PopupMenuCommands);
-      [handler showLevelUpQuickDeleteWalkthroughIPH];
-    });
+    return base::BindRepeating(
+        ^(CommandDispatcher* dispatcher, Browser* browser) {
+          id<PopupMenuCommands> handler =
+              HandlerForProtocol(dispatcher, PopupMenuCommands);
+          [handler showLevelUpQuickDeleteWalkthroughIPH];
+        });
   }
 };
 

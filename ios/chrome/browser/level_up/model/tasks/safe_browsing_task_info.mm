@@ -36,11 +36,12 @@ class SafeBrowsingTaskInfo : public TaskInfo {
         IDS_IOS_LEVEL_UP_TASK_COMPLETED_SAFE_BROWSING);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<BrowserCoordinatorCommands> handler =
-          HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-      [handler showEnhancedSafeBrowsingPromo];
-    });
+    return base::BindRepeating(
+        ^(CommandDispatcher* dispatcher, Browser* browser) {
+          id<BrowserCoordinatorCommands> handler =
+              HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+          [handler showEnhancedSafeBrowsingPromo];
+        });
   }
 };
 

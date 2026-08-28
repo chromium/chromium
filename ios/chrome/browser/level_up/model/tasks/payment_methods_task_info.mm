@@ -36,11 +36,12 @@ class PaymentMethodsTaskInfo : public TaskInfo {
         IDS_IOS_LEVEL_UP_TASK_COMPLETED_PAYMENT_METHODS);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<PopupMenuCommands> handler =
-          HandlerForProtocol(dispatcher, PopupMenuCommands);
-      [handler showLevelUpPaymentMethodsWalkthroughIPH];
-    });
+    return base::BindRepeating(
+        ^(CommandDispatcher* dispatcher, Browser* browser) {
+          id<PopupMenuCommands> handler =
+              HandlerForProtocol(dispatcher, PopupMenuCommands);
+          [handler showLevelUpPaymentMethodsWalkthroughIPH];
+        });
   }
 };
 

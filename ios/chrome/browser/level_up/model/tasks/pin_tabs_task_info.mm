@@ -36,15 +36,16 @@ class PinTabsTaskInfo : public TaskInfo {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_PIN_TABS);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<SceneCommands> sceneHandler =
-          HandlerForProtocol(dispatcher, SceneCommands);
-      [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+    return base::BindRepeating(
+        ^(CommandDispatcher* dispatcher, Browser* browser) {
+          id<SceneCommands> sceneHandler =
+              HandlerForProtocol(dispatcher, SceneCommands);
+          [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
 
-      id<TabGridCommands> tabGridHandler =
-          HandlerForProtocol(dispatcher, TabGridCommands);
-      [tabGridHandler presentPinTabBubble];
-    });
+          id<TabGridCommands> tabGridHandler =
+              HandlerForProtocol(dispatcher, TabGridCommands);
+          [tabGridHandler presentPinTabBubble];
+        });
   }
 };
 

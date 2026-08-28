@@ -49,7 +49,8 @@ class GeminiTaskInfo : public TaskInfo {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_GEMINI);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
+    return base::BindRepeating(^(CommandDispatcher* dispatcher,
+                                 Browser* browser) {
       id<HelpCommands> handler = HandlerForProtocol(dispatcher, HelpCommands);
       [handler presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
     });

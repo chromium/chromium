@@ -22,11 +22,17 @@ source_set("tasks") {
     "//base",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/lens_overlay/public:entrypoint",
     "//ios/chrome/browser/level_up/model:task_info",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/web/public",
     "//ui/base",
+    "//url",
   ]
 }

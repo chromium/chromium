@@ -35,11 +35,12 @@ class LensCameraSearchTaskInfo : public TaskInfo {
         IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<NewTabPageCommands> handler =
-          HandlerForProtocol(dispatcher, NewTabPageCommands);
-      [handler presentLensIconBubble];
-    });
+    return base::BindRepeating(
+        ^(CommandDispatcher* dispatcher, Browser* browser) {
+          id<NewTabPageCommands> handler =
+              HandlerForProtocol(dispatcher, NewTabPageCommands);
+          [handler presentLensIconBubble];
+        });
   }
 };
 

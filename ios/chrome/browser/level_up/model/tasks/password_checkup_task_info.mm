@@ -39,11 +39,12 @@ class PasswordCheckupTaskInfo : public TaskInfo {
         IDS_IOS_LEVEL_UP_TASK_COMPLETED_PASSWORD_CHECKUP);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<PopupMenuCommands> handler =
-          HandlerForProtocol(dispatcher, PopupMenuCommands);
-      [handler showLevelUpPasswordCheckupWalkthroughIPH];
-    });
+    return base::BindRepeating(
+        ^(CommandDispatcher* dispatcher, Browser* browser) {
+          id<PopupMenuCommands> handler =
+              HandlerForProtocol(dispatcher, PopupMenuCommands);
+          [handler showLevelUpPasswordCheckupWalkthroughIPH];
+        });
   }
 };
 
