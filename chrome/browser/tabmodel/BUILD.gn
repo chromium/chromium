@@ -69,6 +69,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabOrchestratorType.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabPersistenceUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabPersistentStore.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabRemover.java",

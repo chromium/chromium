@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.HEADLESS_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
@@ -27,10 +26,10 @@ import org.chromium.chrome.browser.tabmodel.RecordingTabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -80,7 +79,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                 new PersistentStoreMigrationManagerImpl(windowTag);
         mTabPersistentStore =
                 buildAuthoritativeStore(
-                        TabPersistentStoreImpl.CLIENT_TAG_HEADLESS,
+                        TabOrchestratorType.HEADLESS,
                         migrationManager,
                         policy,
                         mTabModelSelector,
@@ -105,7 +104,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         mTabPersistentStore,
                         windowTag,
                         sCipherInstance,
-                        HEADLESS_TAG,
+                        TabOrchestratorType.HEADLESS,
                         /* isNonOtrOnly= */ true,
                         /* isFromRecreating= */ false);
 

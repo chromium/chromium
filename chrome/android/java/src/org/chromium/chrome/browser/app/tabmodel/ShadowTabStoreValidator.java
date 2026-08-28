@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 
@@ -27,13 +28,6 @@ import java.util.List;
  */
 @NullMarked
 public class ShadowTabStoreValidator {
-    // LINT.IfChange(TabModelOrchestratorType)
-    public static final String TABBED_TAG = "Tabbed";
-    public static final String HEADLESS_TAG = "Headless";
-    public static final String CUSTOM_TAG = "Custom";
-    public static final String ARCHIVED_TAG = "Archived";
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabModelOrchestratorType)
-
     private final Profile mProfile;
     private final TabPersistentStore mAuthoritativeStore;
     private final TabPersistentStore mShadowStore;
@@ -43,8 +37,7 @@ public class ShadowTabStoreValidator {
     private final StoreMetricsObserver mAuthoritativeObserver;
     private final StoreMetricsObserver mShadowObserver;
     private final String mWindowTag;
-    private final String mOrchestratorTag;
-    private final boolean mIsShadowStoreCaughtUpAtStart;
+    private final @TabOrchestratorType int mOrchestratorType;
 
     /**
      * @param profile The profile associated with this validator.
@@ -56,7 +49,7 @@ public class ShadowTabStoreValidator {
      * @param persistentStoreMigrationManager The {@link PersistentStoreMigrationManager} for
      *     migration.
      * @param windowTag The tag identifying the window.
-     * @param orchestratorTag The type of tab model orchestrator this validator is for.
+     * @param orchestratorType The type of tab model orchestrator this validator is for.
      */
     public ShadowTabStoreValidator(
             Profile profile,
@@ -66,7 +59,7 @@ public class ShadowTabStoreValidator {
             AccumulatingTabCreator shadowTabCreator,
             PersistentStoreMigrationManager persistentStoreMigrationManager,
             String windowTag,
-            String orchestratorTag) {
+            @TabOrchestratorType int orchestratorType) {
         mProfile = profile;
         mAuthoritativeStore = authoritativeStore;
         mShadowStore = shadowStore;
@@ -74,16 +67,13 @@ public class ShadowTabStoreValidator {
         mShadowTabCreator = shadowTabCreator;
         mPersistentStoreMigrationManager = persistentStoreMigrationManager;
         mWindowTag = windowTag;
-        mOrchestratorTag = orchestratorTag;
+        mOrchestratorType = orchestratorType;
 
         mAuthoritativeObserver = new StoreMetricsObserver(this);
         mShadowObserver = new StoreMetricsObserver(this);
 
         authoritativeStore.addObserver(mAuthoritativeObserver);
         shadowStore.addObserver(mShadowObserver);
-
-        // Retrieve shadow store catch up state prior to any clearing operation.
-        mIsShadowStoreCaughtUpAtStart = mPersistentStoreMigrationManager.isShadowStoreCaughtUp();
 
         if (!isTabStateStoreShadowing()) {
             shadowTabCreator.stopRecording();
@@ -118,11 +108,8 @@ public class ShadowTabStoreValidator {
     }
 
     private void recordDiffMetrics() {
-        if (!mIsShadowStoreCaughtUpAtStart || !isTabStateStoreShadowing()) return;
-        if (mShadowStore instanceof TabStateStore tabStateStore
-                && tabStateStore.hasLoadWarnings()) {
-            return;
-        }
+        boolean isShadowStoreCaughtUp = mPersistentStoreMigrationManager.isShadowStoreCaughtUp();
+        if (!isShadowStoreCaughtUp || !isTabStateStoreShadowing()) return;
 
         List<TabCreationData> authoritativeFrozenData =
                 mAuthoritativeTabCreator.getFrozenTabCreationData();
@@ -131,12 +118,13 @@ public class ShadowTabStoreValidator {
                 mAuthoritativeTabCreator.getNewTabCreationData();
 
         TabStoreMetricsService.getForBucket(
-                        new MetricsBucket(mProfile, mWindowTag, mOrchestratorTag))
+                        new MetricsBucket(mProfile, mWindowTag, mOrchestratorType))
                 .recordDiffMetrics(
                         authoritativeFrozenData,
                         authoritativeNewTabData,
                         mShadowTabCreator.createFrozenTabArgumentsList,
                         mShadowTabCreator.createNewTabArgumentsList,
+                        isShadowStoreCaughtUp,
                         mAuthoritativeTabCreator.getRegularFallbackTabs());
     }
 

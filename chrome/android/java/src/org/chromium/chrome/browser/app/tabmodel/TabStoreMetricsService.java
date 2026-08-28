@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateNewTabArguments;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,36 +52,49 @@ public class TabStoreMetricsService {
     /** Histogram name prefix for recording total pinned tab count delta. */
     public static final String HISTOGRAM_PINNED_TAB_COUNT = "Tabs.TabStateStore.PinnedTabCount";
 
+    private static final String HISTOGRAM_TAG_TABBED = "Tabbed";
+    private static final String HISTOGRAM_TAG_CUSTOM = "Custom";
+    private static final String HISTOGRAM_TAG_ARCHIVED = "Archived";
+    private static final String HISTOGRAM_TAG_HEADLESS = "Headless";
+
     /** A bucket of metrics for a specific profile, window tag, and orchestrator type. */
     public static class MetricsBucket {
-        public MetricsBucket(Profile profile, String windowTag, String orchestratorTag) {
+        /**
+         * Constructs a new {@link MetricsBucket}.
+         *
+         * @param profile The profile associated with these metrics.
+         * @param windowTag The window tag identifying the instance.
+         * @param orchestratorType The orchestrator type for this bucket.
+         */
+        public MetricsBucket(
+                Profile profile, String windowTag, @TabOrchestratorType int orchestratorType) {
             this.profile = profile;
             this.windowTag = windowTag;
-            this.orchestratorTag = orchestratorTag;
+            this.orchestratorType = orchestratorType;
         }
 
-        public Profile profile;
-        public String windowTag;
-        public String orchestratorTag;
+        public final Profile profile;
+        public final String windowTag;
+        public final @TabOrchestratorType int orchestratorType;
 
         /** Returns a tag combining profile, window tag, and orchestrator tag for key generation. */
         public String getTag() {
             String profileTag = profile.isOffTheRecord() ? "Incognito" : "Regular";
-            return profileTag + "." + windowTag + "." + orchestratorTag;
+            return profileTag + "." + windowTag + "." + toHistogramTag(orchestratorType);
         }
 
         @Override
         public boolean equals(Object o) {
             if (o == this) return true;
             if (!(o instanceof MetricsBucket other)) return false;
-            return profile.equals(other.profile)
-                    && windowTag.equals(other.windowTag)
-                    && orchestratorTag.equals(other.orchestratorTag);
+            return orchestratorType == other.orchestratorType
+                    && profile.equals(other.profile)
+                    && windowTag.equals(other.windowTag);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(profile, windowTag, orchestratorTag);
+            return Objects.hash(profile, windowTag, orchestratorType);
         }
     }
 
@@ -91,6 +105,27 @@ public class TabStoreMetricsService {
 
     /** Private constructor to prevent direct instantiation. */
     private TabStoreMetricsService() {}
+
+    /**
+     * Converts a {@link TabOrchestratorType} to its histogram tag.
+     *
+     * @param type The {@link TabOrchestratorType} value.
+     * @return The histogram tag string (e.g., "Tabbed", "Custom", "Archived", "Headless").
+     */
+    public static String toHistogramTag(@TabOrchestratorType int type) {
+        switch (type) {
+            case TabOrchestratorType.TABBED:
+                return HISTOGRAM_TAG_TABBED;
+            case TabOrchestratorType.CUSTOM:
+                return HISTOGRAM_TAG_CUSTOM;
+            case TabOrchestratorType.ARCHIVED:
+                return HISTOGRAM_TAG_ARCHIVED;
+            case TabOrchestratorType.HEADLESS:
+                return HISTOGRAM_TAG_HEADLESS;
+            default:
+                throw new IllegalStateException();
+        }
+    }
 
     /**
      * Retrieve the WindowMetricsTracker associated with a specific profile and window tag.
@@ -146,13 +181,13 @@ public class TabStoreMetricsService {
 
         private final Profile mProfile;
         private final String mWindowTag;
-        private final String mOrchestratorTagSuffix;
+        private final String mHistogramSuffix;
         private final String mBucketTag;
 
         private WindowMetricsTracker(MetricsBucket bucket) {
             mProfile = bucket.profile;
             mWindowTag = bucket.windowTag;
-            mOrchestratorTagSuffix = "." + bucket.orchestratorTag;
+            mHistogramSuffix = "." + toHistogramTag(bucket.orchestratorType);
             mBucketTag = bucket.getTag();
         }
 
@@ -287,6 +322,7 @@ public class TabStoreMetricsService {
          * @param authNewTabData The list of new tabs in the authoritative store.
          * @param shadowFrozenData The list of frozen tabs in the shadow store.
          * @param shadowNewTabData The list of new tabs in the shadow store.
+         * @param shadowStoreCaughtUp Whether the shadow store has caught up.
          * @param regularFallbackTabs The map of tab IDs to URLs of regular fallback tabs created
          *     during restoration for the legacy store.
          */
@@ -295,7 +331,10 @@ public class TabStoreMetricsService {
                 List<TabCreationData> authNewTabData,
                 List<CreateFrozenTabArguments> shadowFrozenData,
                 List<CreateNewTabArguments> shadowNewTabData,
+                boolean shadowStoreCaughtUp,
                 Map<@TabId Integer, String> regularFallbackTabs) {
+            if (!shadowStoreCaughtUp) return;
+
             int authTabCount = authFrozenData.size() + authNewTabData.size();
             Set<Token> groupIds = new HashSet<>();
             int authPinnedCount = countPinnedTabsAndCollectGroupIds(authFrozenData, groupIds);
@@ -330,17 +369,16 @@ public class TabStoreMetricsService {
 
             if (tabCountDelta > 0) {
                 RecordHistogram.recordCount1000Histogram(
-                        "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher"
-                                + mOrchestratorTagSuffix,
+                        "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher" + mHistogramSuffix,
                         tabCountDelta);
 
             } else if (tabCountDelta < 0) {
                 RecordHistogram.recordCount1000Histogram(
-                        "Tabs.TabStateStore.TabCountDelta.ShadowHigher" + mOrchestratorTagSuffix,
+                        "Tabs.TabStateStore.TabCountDelta.ShadowHigher" + mHistogramSuffix,
                         -tabCountDelta);
             } else {
                 RecordHistogram.recordBooleanHistogram(
-                        "Tabs.TabStateStore.TabCountDelta.Equal" + mOrchestratorTagSuffix, true);
+                        "Tabs.TabStateStore.TabCountDelta.Equal" + mHistogramSuffix, true);
             }
 
             int filteredFallbackTabCount =
@@ -378,12 +416,11 @@ public class TabStoreMetricsService {
             if (timeDelta > 0) {
                 RecordHistogram.recordTimesHistogram(
                         "Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer"
-                                + mOrchestratorTagSuffix,
+                                + mHistogramSuffix,
                         timeDelta);
             } else if (timeDelta < 0) {
                 RecordHistogram.recordTimesHistogram(
-                        "Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer"
-                                + mOrchestratorTagSuffix,
+                        "Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer" + mHistogramSuffix,
                         -timeDelta);
             }
         }

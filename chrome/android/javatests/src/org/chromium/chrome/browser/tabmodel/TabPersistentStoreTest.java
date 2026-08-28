@@ -177,7 +177,7 @@ public class TabPersistentStoreTest {
                                     persistencePolicy.setTabContentManager(mMockTabContentManager);
                                     TabPersistentStoreImpl tabPersistentStore =
                                             new TabPersistentStoreImpl(
-                                                    TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
+                                                    TabOrchestratorType.TABBED,
                                                     persistencePolicy,
                                                     TestTabModelSelector.this,
                                                     getTabCreatorManager(),
@@ -440,7 +440,7 @@ public class TabPersistentStoreTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new TabPersistentStoreImpl(
-                            TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
+                            TabOrchestratorType.TABBED,
                             persistencePolicy,
                             modelSelector,
                             creatorManager,
@@ -1599,7 +1599,7 @@ public class TabPersistentStoreTest {
                             shadowTabCreator,
                             migrationManager,
                             /* windowTag= */ "0",
-                            "Tabbed");
+                            TabOrchestratorType.TABBED);
                 });
 
         verify(shadowStore).addObserver(shadowObserverCaptor.capture());

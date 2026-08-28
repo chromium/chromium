@@ -34,8 +34,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ActorUtils;
-import org.chromium.chrome.browser.actor.BackgroundTabRestorationHelper;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -78,7 +76,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -172,7 +169,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private final Set<Integer> mSeenTabIds = new HashSet<>();
     // Counts distinct URLs.
     private final Map<String, Integer> mSeenTabUrlMap = new HashMap<>();
-    private final String mClientTag;
+    private final @TabOrchestratorType int mOrchestratorType;
     private final TabPersistencePolicy mPersistencePolicy;
     private final TabModelSelector mTabModelSelector;
     private final TabCreatorManager mTabCreatorManager;
@@ -206,7 +203,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     // Keys are the original tab indexes, values are the tab ids.
     private @Nullable SparseIntArray mNormalTabsRestored;
     private @Nullable SparseIntArray mIncognitoTabsRestored;
-    private Set<@TabId Integer> mBackgroundTabIds = Collections.emptySet();
     private @Nullable AsyncTask<@Nullable DataInputStream> mPrefetchTabListTask;
     private @Nullable TabModelSelectorMetadata mLastSavedMetadata;
     // Tracks whether this TabPersistentStore's tabs are being loaded.
@@ -217,7 +213,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     /**
      * Creates an instance of a TabPersistentStore.
      *
-     * @param clientTag The client tag used to record metrics.
+     * @param orchestratorType The orchestrator type used to record metrics.
      * @param policy Abstraction around activity specific behaviors.
      * @param modelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
      *     mode this store is in, this will be the real selector with real models. This should be
@@ -231,7 +227,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      * @param recordLegacyTabCountMetrics Whether to record legacy tab count metrics.
      */
     public TabPersistentStoreImpl(
-            String clientTag,
+            @TabOrchestratorType int orchestratorType,
             TabPersistencePolicy policy,
             TabModelSelector modelSelector,
             TabCreatorManager tabCreatorManager,
@@ -239,7 +235,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             CipherFactory cipherFactory,
             boolean isAuthoritative,
             boolean recordLegacyTabCountMetrics) {
-        mClientTag = clientTag;
+        mOrchestratorType = orchestratorType;
         mPersistencePolicy = policy;
         mTabModelSelector = modelSelector;
         mTabCreatorManager = tabCreatorManager;
@@ -421,7 +417,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             if (mSaveListTask != null) mSaveListTask.cancel(true);
             try {
                 RecordHistogram.recordBooleanHistogram(
-                        "Tabs.Metadata.SyncSave." + mClientTag, true);
+                        "Tabs.Metadata.SyncSave." + toClientTag(mOrchestratorType), true);
                 saveListToFile(extractTabMetadata());
             } catch (IOException e) {
                 Log.w(TAG, "Error while saving tabs state; will attempt to continue...", e);
@@ -529,10 +525,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
         initializeRestoreVars(ignoreIncognitoFiles, ignoreRegularFiles);
 
-        mBackgroundTabIds =
-                BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        mTabModelSelector, ignoreRegularFiles);
-
         try {
             mTabRestoreStartTime = SystemClock.elapsedRealtime();
             if (mIsAuthoritative) {
@@ -632,11 +624,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void restoreTabs(boolean setActiveTab) {
-        if (mBackgroundTabIds.isEmpty()) {
-            mBackgroundTabIds =
-                    BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                            mTabModelSelector, mCancelNormalTabLoads);
-        }
         if (setActiveTab) {
             // Restore and select the active tab, which is first in the restore list.
             // If the active tab can't be restored, restore and select another tab. Otherwise, the
@@ -810,10 +797,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     tabToRestore.url, mSeenTabUrlMap.getOrDefault(tabToRestore.url, 0) + 1);
         }
 
-        if (maybeRestoreBackgroundTab(
-                tabToRestore, restoredIndex, tabState, isIncognito, setAsActive)) {
-            // Handled as a background tab.
-        } else if (tabState != null) {
+        if (tabState != null) {
             if (tabState.contentsState != null) {
                 tabState.contentsState.setFallbackUrlForRestorationFailure(tabToRestore.url);
             }
@@ -834,7 +818,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                             .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
             if (tab == null) return;
             if (setAsActive) {
-                notifyActiveTabLoaded(isIncognito);
+                for (TabPersistentStoreObserver observer : mObservers) {
+                    observer.onActiveTabLoaded(isIncognito);
+                }
             }
 
             if (tabState.shouldMigrate) {
@@ -874,7 +860,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             }
 
             if (setAsActive) {
-                notifyActiveTabLoaded(isIncognito);
+                for (TabPersistentStoreObserver observer : mObservers) {
+                    observer.onActiveTabLoaded(isIncognito);
+                }
             }
 
             RecordHistogram.recordEnumeratedHistogram(
@@ -1020,40 +1008,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         return null;
     }
 
-    private boolean maybeRestoreBackgroundTab(
-            TabRestoreDetails tabToRestore,
-            int restoredIndex,
-            @Nullable TabState tabState,
-            boolean isIncognito,
-            boolean setAsActive) {
-        if (!ActorUtils.isBackgroundActuationEnabled()
-                || !mBackgroundTabIds.contains(tabToRestore.id)) {
-            return false;
-        }
-
-        Tab tab =
-                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        mTabModelSelector, tabToRestore.id, restoredIndex, tabState);
-        if (tab == null) return false;
-
-        if (setAsActive) {
-            notifyActiveTabLoaded(isIncognito);
-        }
-        mSeenTabIds.add(tabToRestore.id);
-        return true;
-    }
-
-    private void notifyActiveTabLoaded(boolean isIncognito) {
-        for (TabPersistentStoreObserver observer : mObservers) {
-            observer.onActiveTabLoaded(isIncognito);
-        }
-    }
-
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         mDestroyed = true;
-        mBackgroundTabIds = Collections.emptySet();
         if (mTabModelObserver != null) {
             mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
             mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
@@ -1282,7 +1240,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         // For headless mode only save after initialization is complete to prevent tabs from
         // possibly ending up in a shuffled order. Keep regular mode behavior as is for now. We
         // should try to reduce saving during restoration, but that is a riskier change.
-        if (CLIENT_TAG_HEADLESS.equals(mClientTag) && !mTabModelSelector.isTabStateInitialized()) {
+        if (mOrchestratorType == TabOrchestratorType.HEADLESS
+                && !mTabModelSelector.isTabStateInitialized()) {
             return;
         }
         if (ChromeFeatureList.sAndroidTabSkipSaveTabsKillswitch.isEnabled()
@@ -1432,7 +1391,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         @Override
         protected Void doInBackground() {
             if (mMetadata == null || isCancelled()) return null;
-            RecordHistogram.recordBooleanHistogram("Tabs.Metadata.SyncSave." + mClientTag, false);
+            RecordHistogram.recordBooleanHistogram(
+                    "Tabs.Metadata.SyncSave." + toClientTag(mOrchestratorType), false);
             saveListToFile(mMetadata);
             return null;
         }
@@ -1575,8 +1535,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     private void recordDuplicateTabIdMetrics() {
+        String clientTag = toClientTag(mOrchestratorType);
         RecordHistogram.recordCount1000Histogram(
-                "Tabs.Startup.TabCount2." + mClientTag + ".DuplicateTabIds", mDuplicateTabIdsSeen);
+                "Tabs.Startup.TabCount2." + clientTag + ".DuplicateTabIds", mDuplicateTabIdsSeen);
     }
 
     protected void recordLegacyTabCountMetrics() {
@@ -1588,20 +1549,22 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     private void recordTabCountMetrics() {
+        String clientTag = toClientTag(mOrchestratorType);
         RecordHistogram.recordCount1MHistogram(
-                "Tabs.Startup.TabCount2." + mClientTag + ".Regular",
+                "Tabs.Startup.TabCount2." + clientTag + ".Regular",
                 mTabModelSelector.getModel(false).getCount());
         RecordHistogram.recordCount1MHistogram(
-                "Tabs.Startup.TabCount2." + mClientTag + ".Incognito",
+                "Tabs.Startup.TabCount2." + clientTag + ".Incognito",
                 mTabModelSelector.getModel(true).getCount());
     }
 
     private void recordPinnedTabCountMetrics() {
+        String clientTag = toClientTag(mOrchestratorType);
         RecordHistogram.recordCount1MHistogram(
-                "Tabs.Startup.PinnedTabCount." + mClientTag + ".Regular",
+                "Tabs.Startup.PinnedTabCount." + clientTag + ".Regular",
                 mTabModelSelector.getModel(false).getPinnedTabsCount());
         RecordHistogram.recordCount1MHistogram(
-                "Tabs.Startup.PinnedTabCount." + mClientTag + ".Incognito",
+                "Tabs.Startup.PinnedTabCount." + clientTag + ".Incognito",
                 mTabModelSelector.getModel(true).getPinnedTabsCount());
     }
 
@@ -1609,21 +1572,23 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mTabRestoreStartTime == INVALID_TIME) return;
 
         long duration = SystemClock.elapsedRealtime() - mTabRestoreStartTime;
+        String clientTag = toClientTag(mOrchestratorType);
         RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Tabs.Startup.RestoreDuration." + mClientTag, duration);
+                "Tabs.Startup.RestoreDuration." + clientTag, duration);
         int tabCount = mTabModelSelector.getTotalTabCount();
         if (tabCount != 0) {
             RecordHistogram.recordTimesHistogram(
-                    "Tabs.Startup.RestoreDurationPerTab." + mClientTag,
+                    "Tabs.Startup.RestoreDurationPerTab." + clientTag,
                     Math.round((float) duration / tabCount));
         }
         mTabRestoreStartTime = INVALID_TIME;
     }
 
     private void recordUniqueTabUrlMetrics() {
+        String clientTag = toClientTag(mOrchestratorType);
         for (Entry<String, Integer> entry : mSeenTabUrlMap.entrySet()) {
             RecordHistogram.recordCount1000Histogram(
-                    "Tabs.Startup.UniqueUrlCount." + mClientTag, entry.getValue());
+                    "Tabs.Startup.UniqueUrlCount." + clientTag, entry.getValue());
         }
         mSeenTabUrlMap.clear();
     }
@@ -1866,7 +1831,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     int size = (int) stateFile.length();
                     int sizeInKb = size / ConversionUtils.BYTES_PER_KILOBYTE;
                     RecordHistogram.recordMemoryKBHistogram(
-                            "Tabs.Metadata.FileSizeOnRead." + mClientTag, sizeInKb);
+                            "Tabs.Metadata.FileSizeOnRead." + toClientTag(mOrchestratorType),
+                            sizeInKb);
                     data = new byte[size];
                     stream.read(data);
                 } catch (IOException exception) {
@@ -2293,6 +2259,21 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     persistencePolicy.setMergeInProgress(false);
                 }
             }
+        }
+    }
+
+    private static String toClientTag(@TabOrchestratorType int type) {
+        switch (type) {
+            case TabOrchestratorType.TABBED:
+                return CLIENT_TAG_REGULAR;
+            case TabOrchestratorType.CUSTOM:
+                return CLIENT_TAG_CUSTOM;
+            case TabOrchestratorType.ARCHIVED:
+                return CLIENT_TAG_ARCHIVED;
+            case TabOrchestratorType.HEADLESS:
+                return CLIENT_TAG_HEADLESS;
+            default:
+                throw new IllegalStateException();
         }
     }
 }

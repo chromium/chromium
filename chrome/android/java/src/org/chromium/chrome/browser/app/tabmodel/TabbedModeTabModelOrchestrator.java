@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.TABBED_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
@@ -46,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -209,7 +209,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                         mIsRecreatingSupplier);
         mTabPersistentStore =
                 buildAuthoritativeStore(
-                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
+                        TabOrchestratorType.TABBED,
                         mMigrationManager,
                         mTabPersistencePolicy,
                         mTabModelSelector,
@@ -299,7 +299,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             mTabPersistentStore,
                             windowTag,
                             mCipherFactory,
-                            TABBED_TAG,
+                            TabOrchestratorType.TABBED,
                             /* isNonOtrOnly= */ false,
                             mIsFromRecreating);
             if (mShadowTabPersistentStore != null) {

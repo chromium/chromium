@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
                condition"/>
 </variants>
 
-<!-- LINT.IfChange(TabModelOrchestratorType) -->
+<!-- LINT.IfChange(TabOrchestratorType) -->
 
 <variants name="TabModelOrchestratorType">
   <variant name="Archived" summary="ArchivedTabModelOrchestrator"/>
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Tabbed" summary="TabbedModeTabModelOrchestrator"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ShadowTabStoreValidator.java:TabModelOrchestratorType) -->
+<!-- LINT.ThenChange(//chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabOrchestratorType.java:TabOrchestratorType) -->
 
 <variants name="TabModelSelectorType">
   <variant name="Archived" summary="The archived tab model selector"/>

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 
@@ -35,7 +36,7 @@ public class ShadowTabStoreValidatorUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private TabPersistentStore mAuthoritativeStore;
-    @Mock private TabStateStore mShadowStore;
+    @Mock private TabPersistentStore mShadowStore;
     @Mock private PersistentStoreMigrationManager mPersistentStoreMigrationManager;
 
     @Captor private ArgumentCaptor<TabPersistentStoreObserver> mAuthoritativeObserverCaptor;
@@ -56,8 +57,8 @@ public class ShadowTabStoreValidatorUnitTest {
 
     @Test
     public void testRecordDiffMetrics_SuppressesMetrics_WhenShadowStoreNotCaughtUp() {
-        // Not caught up at construction time.
-        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(false);
+        // Initially caught up at construction time.
+        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(true);
 
         new ShadowTabStoreValidator(
                 mProfile,
@@ -67,10 +68,14 @@ public class ShadowTabStoreValidatorUnitTest {
                 mShadowTabCreator,
                 mPersistentStoreMigrationManager,
                 "window_1",
-                ShadowTabStoreValidator.TABBED_TAG);
+                TabOrchestratorType.TABBED);
 
         verify(mAuthoritativeStore).addObserver(mAuthoritativeObserverCaptor.capture());
         verify(mShadowStore).addObserver(mShadowObserverCaptor.capture());
+
+        // Simulate shadow store being razed during asynchronous loading,
+        // causing migration manager to report that the shadow store is no longer caught up.
+        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(false);
 
         // Authoritative store has 1 tab, shadow store has 0 tabs.
         TabCreationData tabData =
@@ -81,7 +86,8 @@ public class ShadowTabStoreValidatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(
                                 "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher."
-                                        + ShadowTabStoreValidator.TABBED_TAG)
+                                        + TabStoreMetricsService.toHistogramTag(
+                                                TabOrchestratorType.TABBED))
                         .build();
 
         // Trigger completion for both stores.
@@ -92,44 +98,8 @@ public class ShadowTabStoreValidatorUnitTest {
     }
 
     @Test
-    public void testRecordDiffMetrics_SuppressesMetrics_WhenShadowStoreHasLoadWarnings() {
-        when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(true);
-        when(mShadowStore.hasLoadWarnings()).thenReturn(true);
-
-        new ShadowTabStoreValidator(
-                mProfile,
-                mAuthoritativeStore,
-                mShadowStore,
-                mAuthoritativeTabCreator,
-                mShadowTabCreator,
-                mPersistentStoreMigrationManager,
-                "window_1",
-                ShadowTabStoreValidator.TABBED_TAG);
-
-        verify(mAuthoritativeStore).addObserver(mAuthoritativeObserverCaptor.capture());
-        verify(mShadowStore).addObserver(mShadowObserverCaptor.capture());
-
-        TabCreationData tabData =
-                new TabCreationData(1, "https://www.google.com", 1000L, false, null);
-        mAuthoritativeTabCreator.getFrozenTabCreationData().add(tabData);
-
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(
-                                "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher."
-                                        + ShadowTabStoreValidator.TABBED_TAG)
-                        .build();
-
-        mAuthoritativeObserverCaptor.getValue().onStateLoaded();
-        mShadowObserverCaptor.getValue().onStateLoaded();
-
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
     public void testRecordDiffMetrics_RecordsMetrics_WhenShadowStoreCaughtUp() {
         when(mPersistentStoreMigrationManager.isShadowStoreCaughtUp()).thenReturn(true);
-        when(mShadowStore.hasLoadWarnings()).thenReturn(false);
 
         new ShadowTabStoreValidator(
                 mProfile,
@@ -139,7 +109,7 @@ public class ShadowTabStoreValidatorUnitTest {
                 mShadowTabCreator,
                 mPersistentStoreMigrationManager,
                 "window_1",
-                ShadowTabStoreValidator.TABBED_TAG);
+                TabOrchestratorType.TABBED);
 
         verify(mAuthoritativeStore).addObserver(mAuthoritativeObserverCaptor.capture());
         verify(mShadowStore).addObserver(mShadowObserverCaptor.capture());
@@ -151,7 +121,7 @@ public class ShadowTabStoreValidatorUnitTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher."
-                                + ShadowTabStoreValidator.TABBED_TAG,
+                                + TabStoreMetricsService.toHistogramTag(TabOrchestratorType.TABBED),
                         1);
 
         mAuthoritativeObserverCaptor.getValue().onStateLoaded();

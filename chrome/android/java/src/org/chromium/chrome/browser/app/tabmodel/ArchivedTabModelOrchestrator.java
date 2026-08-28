@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.ARCHIVED_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
@@ -56,8 +55,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -409,7 +408,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         mMigrationManager = new PersistentStoreMigrationManagerImpl(ARCHIVED_WINDOW_TAG);
         mTabPersistentStore =
                 buildAuthoritativeStore(
-                        TabPersistentStoreImpl.CLIENT_TAG_ARCHIVED,
+                        TabOrchestratorType.ARCHIVED,
                         mMigrationManager,
                         mTabPersistencePolicy,
                         mTabModelSelector,
@@ -572,7 +571,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
                             mTabPersistentStore,
                             ARCHIVED_WINDOW_TAG,
                             mCipherFactory,
-                            ARCHIVED_TAG,
+                            TabOrchestratorType.ARCHIVED,
                             /* isNonOtrOnly= */ true,
                             /* isFromRecreating= */ false);
             if (mShadowTabPersistentStore != null) {
