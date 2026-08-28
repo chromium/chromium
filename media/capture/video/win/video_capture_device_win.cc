@@ -532,14 +532,19 @@ void VideoCaptureDeviceWin::AllocateAndStart(
 
   base::UmaHistogramEnumeration(
       "Media.VideoCapture.Win.Device.InternalPixelFormat",
-      capture_format_.pixel_format, media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+      capture_format_.pixel_format,
+      static_cast<media::VideoPixelFormat>(
+          media::VideoPixelFormat::PIXEL_FORMAT_MAX + 1));
   base::UmaHistogramEnumeration(
       "Media.VideoCapture.Win.Device.CapturePixelFormat",
-      capture_format_.pixel_format, media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+      capture_format_.pixel_format,
+      static_cast<media::VideoPixelFormat>(
+          media::VideoPixelFormat::PIXEL_FORMAT_MAX + 1));
   base::UmaHistogramEnumeration(
       "Media.VideoCapture.Win.Device.RequestedPixelFormat",
       params.requested_format.pixel_format,
-      media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+      static_cast<media::VideoPixelFormat>(
+          media::VideoPixelFormat::PIXEL_FORMAT_MAX + 1));
 
   {
     base::AutoLock lock(lock_);

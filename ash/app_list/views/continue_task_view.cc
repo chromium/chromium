@@ -405,7 +405,7 @@ void ContinueTaskView::LogMetricsOnResultRemoved() {
   RecordCumulativeContinueSectionResultRemovedNumber();
 
   base::UmaHistogramEnumeration("Apps.AppList.Search.ContinueResultRemoved",
-                                GetTaskResultType(), TaskResultType::kMaxValue);
+                                GetTaskResultType());
 }
 
 BEGIN_METADATA(ContinueTaskView)

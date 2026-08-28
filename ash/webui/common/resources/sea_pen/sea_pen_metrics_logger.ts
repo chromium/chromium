@@ -121,7 +121,7 @@ export function logSuggestionShuffleClicked() {
 export function logSamplePromptClicked(id: SeaPenSamplePromptId) {
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.SEA_PEN_SAMPLE_PROMPT_CLICKED, id,
-      SeaPenSamplePromptId.MAX_VALUE);
+      SeaPenSamplePromptId.MAX_VALUE + 1);
 }
 
 export function logSamplePromptShuffleClicked() {

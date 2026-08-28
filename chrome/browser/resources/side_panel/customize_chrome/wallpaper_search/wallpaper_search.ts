@@ -121,7 +121,7 @@ function getRandomDescriptorA(groups: Group[]): string {
 function recordStatusChange(status: WallpaperSearchStatus) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.WallpaperSearch.Status', status,
-      WallpaperSearchStatus.MAX_VALUE);
+      WallpaperSearchStatus.MAX_VALUE + 1);
 }
 
 function getEventTargetIndex(e: Event): number {

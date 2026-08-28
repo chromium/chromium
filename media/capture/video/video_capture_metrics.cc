@@ -164,7 +164,8 @@ void LogCaptureDeviceMetrics(
       if (inserted) {
         base::UmaHistogramEnumeration(
             "Media.VideoCapture.Device.SupportedPixelFormat", pixel_format,
-            media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+            static_cast<media::VideoPixelFormat>(
+                media::VideoPixelFormat::PIXEL_FORMAT_MAX + 1));
       }
       if (!resolutions.contains(format.frame_size)) {
         resolutions.insert(format.frame_size);
@@ -180,7 +181,8 @@ void LogCaptureCurrentDevicePixelFormat(
     const media::VideoPixelFormat pixel_format) {
   base::UmaHistogramEnumeration("Media.VideoCapture.Device.Opened.PixelFormat",
                                 pixel_format,
-                                media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+                                static_cast<media::VideoPixelFormat>(
+                                    media::VideoPixelFormat::PIXEL_FORMAT_MAX + 1));
 }
 
 }  // namespace media

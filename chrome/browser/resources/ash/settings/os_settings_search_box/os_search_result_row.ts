@@ -576,7 +576,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     const settingsSearchResult = this.searchResult;
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.SearchResultTypeSelected', settingsSearchResult.type,
-        SearchResultType.MAX_VALUE);
+        SearchResultType.MAX_VALUE + 1);
 
     interface MetricArg {
       metricName: string;
