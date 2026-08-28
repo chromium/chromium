@@ -739,6 +739,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       enterprise_reporting::kLastSignalsUploadSucceededTimestamp, base::Time());
   registry->RegisterStringPref(
       enterprise_reporting::kLastSignalsUploadSucceededConfig, std::string());
+  registry->RegisterListPref(
+      enterprise_reporting::kSecuritySignalsClientCertificatesSelectors);
 
   // Register prefs related to Enterprise Isolated Mode.
   enterprise_isolated_mode::RegisterProfilePrefs(registry);
