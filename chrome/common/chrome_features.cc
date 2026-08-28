@@ -186,6 +186,9 @@ BASE_FEATURE(kRemoteActorCredentialSharing, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string>
     kRemoteActorCredentialSharingAllowedHostForTesting{
         &kRemoteActorCredentialSharing, "allowed_host_for_testing", ""};
+const base::FeatureParam<std::string> kRemoteActorOAuthClientId{
+    &kRemoteActorCredentialSharing, "oauth_client_id",
+    "320695880279-gnq6the97ga85scn208u5jctnk82qelk.apps.googleusercontent.com"};
 #endif
 
 bool RemoteActorCredentialSharingEnabled() {

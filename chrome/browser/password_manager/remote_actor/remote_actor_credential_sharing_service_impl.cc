@@ -37,7 +37,7 @@ void RemoteActorCredentialSharingServiceImpl::SharePassword(
     SharePasswordCallback callback) {
   CHECK(!callback.is_null());
 
-  if (params.agent_oauth_client_id.empty() || params.web_origin.empty() ||
+  if (params.task_id.empty() || params.web_origin.empty() ||
       params.password_client_tag_hash.empty() ||
       params.obfuscated_gaia_id.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -63,7 +63,7 @@ void RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted(
     return;
   }
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
-  permission.agent_oauth_client_id = params.agent_oauth_client_id;
+  permission.task_id = params.task_id;
   permission.web_origin = params.web_origin;
   permission.password_client_tag_hash = params.password_client_tag_hash;
 

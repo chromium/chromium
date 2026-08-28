@@ -83,7 +83,7 @@ class RemoteActorCredentialSharingImpl
   void RequestAgentAuthentication(
       const std::string& gaia_id,
       const std::string& domain,
-      const std::string& remote_actor_id,
+      const std::string& task_id,
       RequestAgentAuthenticationCallback callback) override;
 
  private:
@@ -101,8 +101,8 @@ class RemoteActorCredentialSharingImpl
     std::string gaia_id;
     // The credential domain for which credentials are requested.
     std::string domain;
-    // The ID of the remote actor requesting credentials.
-    std::string remote_actor_id;
+    // The ID of the remote actor task requesting credentials.
+    std::string task_id;
     // The callback to return the result to the Mojo caller.
     RequestAgentAuthenticationCallback callback;
     // The number of password store queries started.
@@ -126,7 +126,7 @@ class RemoteActorCredentialSharingImpl
   // gesture).
   bool ValidateRequestPreconditions(const std::string& gaia_id,
                                     const std::string& domain,
-                                    const std::string& remote_actor_id);
+                                    const std::string& task_id);
 
   // Verifies the GAIA ID matches the signed-in user and sync is not in error.
   bool VerifyUserIdentityAndSyncState(Profile* profile,
@@ -136,7 +136,7 @@ class RemoteActorCredentialSharingImpl
   void QueryPasswordStores(Profile* profile,
                            const std::string& gaia_id,
                            const std::string& domain,
-                           const std::string& remote_actor_id,
+                           const std::string& task_id,
                            RequestAgentAuthenticationCallback callback);
 
   // Callback triggered when the user selects a credential or cancels the

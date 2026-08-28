@@ -10,10 +10,12 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
+#include "chrome/common/chrome_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -49,7 +51,7 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
 
   base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
-  permission.agent_oauth_client_id = "agent_client_id";
+  permission.task_id = "test_task_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
@@ -74,7 +76,20 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   const base::DictValue* agent = body_dict.FindDict("agent");
   ASSERT_TRUE(agent);
   EXPECT_EQ(*agent->FindString("type"), "AGENT_TYPE_PERSONAL_ASSISTANT");
-  EXPECT_EQ(*agent->FindString("agentOauthClientId"), "agent_client_id");
+  EXPECT_EQ(*agent->FindString("agentOauthClientId"),
+            "320695880279-gnq6the97ga85scn208u5jctnk82qelk.apps."
+            "googleusercontent.com");
+
+  const base::DictValue* delegation_context =
+      body_dict.FindDict("delegationContext");
+  ASSERT_TRUE(delegation_context);
+  const base::DictValue* task_constraint =
+      delegation_context->FindDict("taskConstraint");
+  ASSERT_TRUE(task_constraint);
+  const base::DictValue* task_id = task_constraint->FindDict("taskId");
+  ASSERT_TRUE(task_id);
+  EXPECT_EQ(task_id->FindInt("namespaceId").value_or(0), 30);
+  EXPECT_EQ(*task_id->FindString("id"), "test_task_id");
 
   const base::DictValue* saved_passwords = body_dict.FindDict("savedPasswords");
   ASSERT_TRUE(saved_passwords);
@@ -97,6 +112,44 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
 }
 
 TEST_F(RemoteActorCredentialPermissionClientTest,
+       GrantPasswordPermissionWithCustomOAuthClientId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRemoteActorCredentialSharing,
+      {{"oauth_client_id", "custom_client_id"}});
+
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<bool> future;
+  RemoteActorCredentialPermissionClient::PasswordPermission permission;
+  permission.task_id = "test_task_id";
+  permission.web_origin = "https://nike.com";
+  permission.password_client_tag_hash = "tag_hash";
+
+  client_->GrantPasswordPermission(permission, future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "token", base::Time::Max());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+
+  std::string upload_data = network::GetUploadData(pending_request->request);
+  auto body_value = base::test::ParseJson(upload_data);
+  ASSERT_TRUE(body_value.is_dict());
+  const base::DictValue* agent = body_value.GetDict().FindDict("agent");
+  ASSERT_TRUE(agent);
+  EXPECT_EQ(*agent->FindString("agentOauthClientId"), "custom_client_id");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), "{}");
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(RemoteActorCredentialPermissionClientTest,
        GrantPasswordPermissionWithSwitchOverride) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
@@ -111,7 +164,7 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
 
   base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
-  permission.agent_oauth_client_id = "agent_client_id";
+  permission.task_id = "test_task_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
@@ -140,7 +193,7 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
 
   base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
-  permission.agent_oauth_client_id = "agent_client_id";
+  permission.task_id = "test_task_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
@@ -159,7 +212,7 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
 
   base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
-  permission.agent_oauth_client_id = "agent_client_id";
+  permission.task_id = "test_task_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
@@ -186,7 +239,7 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
 
   base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
-  permission.agent_oauth_client_id = "agent_client_id";
+  permission.task_id = "test_task_id";
   permission.web_origin = "";  // Opaque origin
   permission.password_client_tag_hash = "tag_hash";
 
@@ -197,13 +250,34 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
 }
 
 TEST_F(RemoteActorCredentialPermissionClientTest,
-       GrantPasswordPermissionEmptyClientId) {
+       GrantPasswordPermissionEmptyTaskId) {
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
   base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
-  permission.agent_oauth_client_id = "";
+  permission.task_id = "";
+  permission.web_origin = "https://nike.com";
+  permission.password_client_tag_hash = "tag_hash";
+
+  client_->GrantPasswordPermission(permission, future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+TEST_F(RemoteActorCredentialPermissionClientTest,
+       GrantPasswordPermissionEmptyClientId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRemoteActorCredentialSharing, {{"oauth_client_id", ""}});
+
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<bool> future;
+  RemoteActorCredentialPermissionClient::PasswordPermission permission;
+  permission.task_id = "test_task_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 

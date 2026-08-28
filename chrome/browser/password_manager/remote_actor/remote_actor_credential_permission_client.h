@@ -34,7 +34,7 @@ class RemoteActorCredentialPermissionClient {
   // Struct containing the permission details. Populated by the coordinator
   // (RemoteActorCredentialSharingServiceImpl).
   struct PasswordPermission {
-    std::string agent_oauth_client_id;
+    std::string task_id;
     std::string web_origin;
     // TODO(crbug.com/532483845): Use this to grant permission for a specific
     // credential instead of all affiliated passwords.
@@ -52,7 +52,7 @@ class RemoteActorCredentialPermissionClient {
       const RemoteActorCredentialPermissionClient&) = delete;
   ~RemoteActorCredentialPermissionClient();
 
-  // Grants permission to `agent_oauth_client_id` to access the credential
+  // Grants permission to the remote actor agent to access the credential
   // identified by `password_client_tag_hash` for `web_origin`.
   void GrantPasswordPermission(const PasswordPermission& permission,
                                GrantPasswordPermissionCallback callback);

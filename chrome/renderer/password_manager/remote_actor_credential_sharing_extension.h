@@ -42,7 +42,7 @@ class RemoteActorCredentialSharingExtension
   // Handles the Javascript call to requestAgentAuthentication.
   void RequestAgentAuthentication(const std::string& gaia_id,
                                   const std::string& domain,
-                                  const std::string& remote_actor_id,
+                                  const std::string& task_id,
                                   v8::Local<v8::Function> callback_function);
 
   // Runs the Javascript callback on completion.

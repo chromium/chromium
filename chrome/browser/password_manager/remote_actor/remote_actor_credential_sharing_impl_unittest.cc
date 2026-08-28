@@ -438,7 +438,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<bool> result;
   remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
                                      /*domain=*/"google.com",
-                                     /*remote_actor_id=*/"actor_id",
+                                     /*task_id=*/"actor_id",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
 }
@@ -464,7 +464,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<bool> result;
   remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
                                      /*domain=*/"google.com",
-                                     /*remote_actor_id=*/"actor_id",
+                                     /*task_id=*/"actor_id",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
 }
@@ -487,7 +487,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> result;
   remote->RequestAgentAuthentication(/*gaia_id=*/"", /*domain=*/"google.com",
-                                     /*remote_actor_id=*/"actor_id",
+                                     /*task_id=*/"actor_id",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
 }
@@ -519,7 +519,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   remote->RequestAgentAuthentication(/*gaia_id=*/long_string,
                                      /*domain=*/"google.com",
-                                     /*remote_actor_id=*/long_string,
+                                     /*task_id=*/long_string,
                                      base::DoNothing());
   EXPECT_THAT(
       bad_message_future.Get(),
@@ -545,7 +545,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, RequestWithSpecialCharacters) {
   base::test::TestFuture<bool> result;
   remote->RequestAgentAuthentication(/*gaia_id=*/"gaia\0id",
                                      /*domain=*/"google.com",
-                                     /*remote_actor_id=*/"actor\nhack",
+                                     /*task_id=*/"actor\nhack",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
 }
@@ -584,8 +584,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
                                      /*domain=*/"google.com",
-                                     /*remote_actor_id=*/"actor_id",
-                                     base::DoNothing());
+                                     /*task_id=*/"actor_id", base::DoNothing());
   EXPECT_THAT(bad_message_future.Get(),
               testing::HasSubstr(
                   "RemoteActorCredentialSharing: Request from subframe"));
@@ -616,8 +615,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
                                      /*domain=*/"google.com",
-                                     /*remote_actor_id=*/"actor_id",
-                                     base::DoNothing());
+                                     /*task_id=*/"actor_id", base::DoNothing());
   EXPECT_THAT(
       bad_message_future.Get(),
       testing::HasSubstr(
@@ -654,8 +652,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
-      result.GetCallback());
+      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
 
   // Wait for the dialog to be shown (factory called).
   dialog_shown_future.Get();
@@ -687,7 +684,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
                           web_origin,
                       "https://google.com"),
                 Field(&RemoteActorCredentialSharingService::ShareParameters::
-                          agent_oauth_client_id,
+                          task_id,
                       "actor_id"),
                 Field(&RemoteActorCredentialSharingService::ShareParameters::
                           password_client_tag_hash,
@@ -735,8 +732,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, FailureFlow_SharingFailed) {
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
-      result.GetCallback());
+      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
 
   dialog_shown_future.Get();
 
@@ -783,8 +779,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_CancelDialog) {
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
-      result.GetCallback());
+      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
 
   dialog_shown_future.Get();
 
@@ -839,8 +834,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
-      result.GetCallback());
+      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
 
   dialog_shown_future.Get();
 
@@ -891,8 +885,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
-      result.GetCallback());
+      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
 
   dialog_shown_future.Get();
 
@@ -994,8 +987,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"example.com", /*remote_actor_id=*/"actor_id",
-      result.GetCallback());
+      /*domain=*/"example.com", /*task_id=*/"actor_id", result.GetCallback());
 
   dialog_shown_future.Get();
 
@@ -1041,7 +1033,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
+      /*domain=*/"google.com", /*task_id=*/"actor_id",
       first_result.GetCallback());
 
   dialog_shown_future.Get();
@@ -1052,7 +1044,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<bool> second_result;
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*remote_actor_id=*/"actor_id_2",
+      /*domain=*/"google.com", /*task_id=*/"actor_id_2",
       second_result.GetCallback());
 
   EXPECT_FALSE(second_result.Get());

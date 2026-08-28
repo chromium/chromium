@@ -101,7 +101,7 @@ void RemoteActorCredentialSharingExtension::Install(
 void RemoteActorCredentialSharingExtension::RequestAgentAuthentication(
     const std::string& gaia_id,
     const std::string& domain,
-    const std::string& remote_actor_id,
+    const std::string& task_id,
     v8::Local<v8::Function> callback_function) {
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
@@ -121,7 +121,7 @@ void RemoteActorCredentialSharingExtension::RequestAgentAuthentication(
   }
 
   GetRemoteInterface().RequestAgentAuthentication(
-      gaia_id, domain, remote_actor_id,
+      gaia_id, domain, task_id,
       base::BindOnce(
           &RemoteActorCredentialSharingExtension::RunCompletionCallback,
           weak_ptr_factory_.GetWeakPtr(), std::move(global_callback)));

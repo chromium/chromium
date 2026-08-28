@@ -19,8 +19,7 @@ namespace password_manager {
 class RemoteActorCredentialSharingService : public KeyedService {
  public:
   struct ShareParameters {
-    // The obfuscated GAIA ID of the remote actor with whom the credential is
-    // shared.
+    // The obfuscated GAIA ID of the user sharing the credential.
     std::string obfuscated_gaia_id;
 
     // The string representation of the target site's origin (e.g.
@@ -37,8 +36,8 @@ class RemoteActorCredentialSharingService : public KeyedService {
     // The duration for which the shared credential remains valid.
     base::TimeDelta time_to_live;
 
-    // The OAuth2 client ID of the agent receiving the credential.
-    std::string agent_oauth_client_id;
+    // The task ID of the remote actor requesting the credential.
+    std::string task_id;
   };
 
   using SharePasswordCallback = base::OnceCallback<void(bool)>;

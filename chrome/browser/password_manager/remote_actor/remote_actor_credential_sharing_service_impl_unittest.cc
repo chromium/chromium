@@ -79,7 +79,7 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordSuccess) {
   params.password_data.set_username_value("alice");
   params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
-  params.agent_oauth_client_id = "agent_client_id";
+  params.task_id = "task_id_123";
 
   service_->SharePassword(params, future.GetCallback());
 
@@ -138,7 +138,7 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest,
   params.password_data.set_username_value("alice");
   params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
-  params.agent_oauth_client_id = "agent_client_id";
+  params.task_id = "task_id_123";
 
   service_->SharePassword(params, future.GetCallback());
 
@@ -175,7 +175,7 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordAPSFailure) {
   params.password_data.set_username_value("alice");
   params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
-  params.agent_oauth_client_id = "agent_client_id";
+  params.task_id = "task_id_123";
 
   service_->SharePassword(params, future.GetCallback());
 
@@ -223,7 +223,7 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest,
   params.password_data.set_username_value("alice");
   params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
-  params.agent_oauth_client_id = "agent_client_id";
+  params.task_id = "task_id_123";
 
   service_->SharePassword(params, future.GetCallback());
 
@@ -235,7 +235,7 @@ struct InvalidParamsTestCase {
   std::string obfuscated_gaia_id;
   std::string web_origin;
   std::string password_client_tag_hash;
-  std::string agent_oauth_client_id;
+  std::string task_id;
 };
 
 class RemoteActorCredentialSharingServiceImplInvalidParamsTest
@@ -258,7 +258,7 @@ TEST_P(RemoteActorCredentialSharingServiceImplInvalidParamsTest,
   params.password_data.set_username_value("alice");
   params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
-  params.agent_oauth_client_id = tc.agent_oauth_client_id;
+  params.task_id = tc.task_id;
 
   service_->SharePassword(params, future.GetCallback());
 
@@ -269,16 +269,15 @@ TEST_P(RemoteActorCredentialSharingServiceImplInvalidParamsTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     RemoteActorCredentialSharingServiceImplInvalidParamsTest,
-    testing::Values(
-        InvalidParamsTestCase{"EmptyAgentClientId", "12345", "https://nike.com",
-                              "tag_hash", ""},
-        InvalidParamsTestCase{"EmptyWebOrigin", "12345", "", "tag_hash",
-                              "agent_client_id"},
-        InvalidParamsTestCase{"EmptyClientTagHash", "12345", "https://nike.com",
-                              "", "agent_client_id"},
-        InvalidParamsTestCase{"EmptyGaiaId", "", "https://nike.com", "tag_hash",
-                              "agent_client_id"}
-    ),
+    testing::Values(InvalidParamsTestCase{"EmptyTaskId", "12345",
+                                          "https://nike.com", "tag_hash", ""},
+                    InvalidParamsTestCase{"EmptyWebOrigin", "12345", "",
+                                          "tag_hash", "task_id_123"},
+                    InvalidParamsTestCase{"EmptyClientTagHash", "12345",
+                                          "https://nike.com", "",
+                                          "task_id_123"},
+                    InvalidParamsTestCase{"EmptyGaiaId", "", "https://nike.com",
+                                          "tag_hash", "task_id_123"}),
     [](const testing::TestParamInfo<InvalidParamsTestCase>& info) {
       return info.param.test_name;
     });

@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
+#include "chrome/common/chrome_features.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -48,6 +49,7 @@ constexpr net::NetworkTrafficAnnotationTag kRemotePermissionTrafficAnnotation =
           " - Web origin of the target site\n"
           " - Boolean indicating if all affiliated passwords permission is "
           "granted\n"
+          " - Task ID constraint (task ID and namespace ID)\n"
         user_data {
           type: ACCESS_TOKEN
           type: SENSITIVE_URL
@@ -58,7 +60,7 @@ constexpr net::NetworkTrafficAnnotationTag kRemotePermissionTrafficAnnotation =
             email: "anki-team@google.com"
           }
         }
-        last_reviewed: "2026-07-17"
+        last_reviewed: "2026-08-27"
       }
       policy {
         cookies_allowed: NO
@@ -73,12 +75,27 @@ constexpr net::NetworkTrafficAnnotationTag kRemotePermissionTrafficAnnotation =
         }
       })");
 
+// Namespace ID for Spark conversations.
+constexpr int kSparkConversationIdNamespace = 30;
+
 std::string CreateGrantPasswordRequestBody(
     const RemoteActorCredentialPermissionClient::PasswordPermission&
         permission) {
   base::DictValue agent_dict;
   agent_dict.Set("type", "AGENT_TYPE_PERSONAL_ASSISTANT");
-  agent_dict.Set("agentOauthClientId", permission.agent_oauth_client_id);
+  agent_dict.Set("agentOauthClientId",
+                 features::kRemoteActorOAuthClientId.Get());
+
+  base::DictValue task_id_dict;
+  task_id_dict.Set("namespaceId", kSparkConversationIdNamespace);
+  task_id_dict.Set("id", permission.task_id);
+
+  base::DictValue task_constraint_dict;
+  task_constraint_dict.Set("taskId", std::move(task_id_dict));
+
+  base::DictValue delegation_context_dict;
+  delegation_context_dict.Set("taskConstraint",
+                              std::move(task_constraint_dict));
 
   // TODO(crbug.com/532483845): Use passwordClientTagHash to grant permission
   // for a specific credential instead of all affiliated passwords.
@@ -95,6 +112,7 @@ std::string CreateGrantPasswordRequestBody(
 
   base::DictValue request_dict;
   request_dict.Set("agent", std::move(agent_dict));
+  request_dict.Set("delegationContext", std::move(delegation_context_dict));
   request_dict.Set("savedPasswords", std::move(saved_passwords_dict));
 
   std::string post_data;
@@ -131,7 +149,8 @@ void RemoteActorCredentialPermissionClient::GrantPasswordPermission(
     GrantPasswordPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   url::Origin origin = url::Origin::Create(GURL(permission.web_origin));
-  if (permission.agent_oauth_client_id.empty() || origin.opaque()) {
+  if (permission.task_id.empty() ||
+      features::kRemoteActorOAuthClientId.Get().empty() || origin.opaque()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;

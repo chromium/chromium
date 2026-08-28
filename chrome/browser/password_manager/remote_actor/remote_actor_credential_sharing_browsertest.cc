@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingBrowserTest,
   // call
   EXPECT_EQ(false, content::EvalJs(GetWebContents(), R"(
     new Promise((resolve) => {
-      chrome.requestAgentAuthentication('gaia_id_123', 'google.com', 'actor_id_456', (success) => {
+      chrome.requestAgentAuthentication('gaia_id_123', 'google.com', 'task_id_456', (success) => {
         resolve(success);
       });
     });

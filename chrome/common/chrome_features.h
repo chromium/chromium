@@ -155,6 +155,10 @@ BASE_DECLARE_FEATURE(kRemoteActorCredentialSharing);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kRemoteActorCredentialSharingAllowedHostForTesting;
+
+// The OAuth2 client ID used when requesting remote actor permissions from APS.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kRemoteActorOAuthClientId;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
