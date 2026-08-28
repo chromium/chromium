@@ -245,15 +245,13 @@ export function createBiDiServerProcess() {
     );
   }
 
-  const options = CHROMEDRIVER
-    ? runParams.options
-    : {
-        ...runParams.options,
-        env: {
-          ...process.env,
-          ...runParams.options.env,
-        },
-      };
+  const options = {
+    ...runParams.options,
+    env: {
+      ...process.env,
+      ...runParams.options.env,
+    },
+  };
 
   return child_process.spawn(runParams.file, runParams.args, options);
 }
