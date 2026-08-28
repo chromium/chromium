@@ -79,6 +79,8 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
   html_source->AddResourcePath(
       "notes", IDR_AI_OVERLAY_DIALOG_UNTRUSTED_NOTES_NOTES_HTML);
 
+  html_source->AddBoolean("isAndroidBackend", BUILDFLAG(IS_ANDROID));
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,

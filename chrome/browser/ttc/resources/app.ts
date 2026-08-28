@@ -315,11 +315,16 @@ export class AppElement extends CrLitElement {
         this.toolsRemote.$.bindNewPipeAndPassReceiver());
   }
 
+  private isAndroidBackend(): boolean {
+    return loadTimeData.valueExists('isAndroidBackend') &&
+        loadTimeData.getBoolean('isAndroidBackend');
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     document.addEventListener('visibilitychange', this.onVisibilityChange);
     window.addEventListener('focus', this.onWindowFocus);
-    if (document.visibilityState === 'visible') {
+    if (document.visibilityState === 'visible' || this.isAndroidBackend()) {
       this.startConversation();
     }
   }
@@ -354,6 +359,9 @@ export class AppElement extends CrLitElement {
   }
 
   private onVisibilityChange = () => {
+    if (this.isAndroidBackend()) {
+      return;
+    }
     if (document.visibilityState === 'visible') {
       this.startConversation();
     } else {
@@ -445,18 +453,29 @@ export class AppElement extends CrLitElement {
 
     this.pageHandler.updateAudioEnergy(energy);
 
-    this.energyAnimationId = requestAnimationFrame(this.energyAnimationLoop);
+    if (!this.isAndroidBackend()) {
+      this.energyAnimationId = requestAnimationFrame(this.energyAnimationLoop);
+    }
   };
 
   private startEnergyAnimation() {
     if (this.energyAnimationId === null) {
-      this.energyAnimationId = requestAnimationFrame(this.energyAnimationLoop);
+      // On Android, this runs in a background/offscreen WebContents without
+      // active rendering, so requestAnimationFrame does not tick. Fallback to
+      // setInterval to pump audio energy updates to the native toolbar.
+      this.energyAnimationId = this.isAndroidBackend() ?
+          window.setInterval(this.energyAnimationLoop, 50) :
+          requestAnimationFrame(this.energyAnimationLoop);
     }
   }
 
   private stopEnergyAnimation() {
     if (this.energyAnimationId !== null) {
-      cancelAnimationFrame(this.energyAnimationId);
+      if (this.isAndroidBackend()) {
+        window.clearInterval(this.energyAnimationId);
+      } else {
+        cancelAnimationFrame(this.energyAnimationId);
+      }
       this.energyAnimationId = null;
       this.pageHandler.updateAudioEnergy(0.0);
     }
@@ -702,6 +721,7 @@ export class AppElement extends CrLitElement {
     } catch (e) {
       this.initializationState = InitializationState.ERROR;
       errorLog(FILE, 'startConversation failed: ', e);
+      this.stopConversation();
     }
   }
 
