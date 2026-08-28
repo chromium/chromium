@@ -437,4 +437,22 @@ TEST_F(ScrollTimelineTest, Activeness) {
       active_timeline->IsActive(scroll_tree(), true /*is_active_tree*/));
 }
 
+TEST_F(ScrollTimelineTest, ToScrollTimeline) {
+  ScrollTimeline::ScrollOffsets scroll_offsets(0, 100);
+  scoped_refptr<ScrollTimeline> scroll_timeline = ScrollTimeline::Create(
+      scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
+  scoped_refptr<AnimationTimeline> plain_timeline =
+      AnimationTimeline::Create(1);
+
+  EXPECT_EQ(ToScrollTimeline(scroll_timeline.get()), scroll_timeline.get());
+  const AnimationTimeline* const_scroll_timeline = scroll_timeline.get();
+  EXPECT_EQ(ToScrollTimeline(const_scroll_timeline), scroll_timeline.get());
+
+#if GTEST_HAS_DEATH_TEST
+  EXPECT_DEATH_IF_SUPPORTED(ToScrollTimeline(plain_timeline.get()), "");
+  const AnimationTimeline* const_plain_timeline = plain_timeline.get();
+  EXPECT_DEATH_IF_SUPPORTED(ToScrollTimeline(const_plain_timeline), "");
+#endif
+}
+
 }  // namespace cc

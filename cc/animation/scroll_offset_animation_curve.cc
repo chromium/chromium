@@ -412,13 +412,13 @@ void ScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta t,
 const ScrollOffsetAnimationCurve*
 ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
     const AnimationCurve* c) {
-  DCHECK_EQ(ScrollOffsetAnimationCurve::SCROLL_OFFSET, c->Type());
+  CHECK_EQ(ScrollOffsetAnimationCurve::SCROLL_OFFSET, c->Type());
   return static_cast<const ScrollOffsetAnimationCurve*>(c);
 }
 
 ScrollOffsetAnimationCurve*
 ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(AnimationCurve* c) {
-  DCHECK_EQ(ScrollOffsetAnimationCurve::SCROLL_OFFSET, c->Type());
+  CHECK_EQ(ScrollOffsetAnimationCurve::SCROLL_OFFSET, c->Type());
   return static_cast<ScrollOffsetAnimationCurve*>(c);
 }
 

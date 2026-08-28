@@ -4,6 +4,7 @@
 
 #include "cc/animation/filter_animation_curve.h"
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve-inl.h"
 
@@ -30,13 +31,13 @@ const char* FilterAnimationCurve::TypeName() const {
 
 const FilterAnimationCurve* FilterAnimationCurve::ToFilterAnimationCurve(
     const gfx::AnimationCurve* c) {
-  DCHECK_EQ(gfx::AnimationCurve::FILTER, c->Type());
+  CHECK_EQ(gfx::AnimationCurve::FILTER, c->Type());
   return static_cast<const FilterAnimationCurve*>(c);
 }
 
 FilterAnimationCurve* FilterAnimationCurve::ToFilterAnimationCurve(
     gfx::AnimationCurve* c) {
-  DCHECK_EQ(AnimationCurve::FILTER, c->Type());
+  CHECK_EQ(AnimationCurve::FILTER, c->Type());
   return static_cast<FilterAnimationCurve*>(c);
 }
 
