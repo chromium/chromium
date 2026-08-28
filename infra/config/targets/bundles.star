@@ -1005,25 +1005,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_webview_gpu_telemetry_tests",
-    targets = [
-        "android_webview_pixel_skia_gold_test",
-    ],
-    per_test_modifications = {
-        "android_webview_pixel_skia_gold_test": [
-            targets.mixin(
-                args = [
-                    "--dont-restore-color-profile-after-test",
-                    "--test-machine-name",
-                    "${buildername}",
-                ],
-            ),
-            "gpu_integration_test_common_args",
-        ],
-    },
-)
-
-targets.bundle(
     name = "ash_pixel_gtests",
     targets = [
         "ash_pixeltests",
@@ -4296,7 +4277,7 @@ targets.bundle(
         # Android/ARM only runs Ganesh tests since older devices that we
         # typically use for 32-bit testing do not have good Vulkan support
         # for Graphite.
-        "android_webview_gpu_telemetry_tests",
+        "android_webview_pixel_skia_gold_test",
         "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
