@@ -6,31 +6,30 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Extensions Menu dimensions -->
+    <!-- go/keep-sorted start group_start_regex=<dimen -->
     <dimen name="extension_menu_max_width">480dp</dimen>
-    <dimen name="extensions_menu_horizontal_padding">24dp</dimen>
-    <dimen name="extensions_menu_vertical_padding">14dp</dimen>
-    <dimen name="extensions_menu_header_vertical_padding">10dp</dimen>
-    <dimen name="extensions_menu_toggle_vertical_padding">8dp</dimen>
-    <dimen name="extensions_menu_header_spacing">12dp</dimen>
-    <dimen name="extensions_menu_extension_icon_size">20dp</dimen>
-    <dimen name="extensions_menu_site_permissions_icon_size">20dp </dimen>
-    <dimen name="extensions_menu_request_access_padding">12dp</dimen>
-    <dimen name="extensions_menu_containment_corner_radius">12dp</dimen>
-    <dimen name="extensions_menu_header_icon_size">24dp</dimen>
-    <dimen name="extensions_menu_header_button_size">@dimen/min_touch_target_size</dimen>
-    <dimen name="extensions_menu_divider_vertical_margin">0dp</dimen>
-    <dimen name="extensions_menu_footer_min_height">40dp</dimen>
-    <dimen name="extensions_menu_footer_icon_size">20dp</dimen>
-    <dimen name="extensions_menu_containment_top_padding">26dp</dimen>
     <dimen name="extensions_menu_containment_bottom_padding">8dp</dimen>
+    <dimen name="extensions_menu_containment_corner_radius">12dp</dimen>
+    <dimen name="extensions_menu_containment_top_padding">26dp</dimen>
     <dimen name="extensions_menu_containment_vertical_margin">8dp</dimen>
-
-    <!-- Extensions Toolbar dimensions -->
-    <dimen name="extensions_toolbar_icon_size">24dp</dimen>
+    <dimen name="extensions_menu_divider_vertical_margin">0dp</dimen>
+    <dimen name="extensions_menu_extension_icon_size">20dp</dimen>
+    <dimen name="extensions_menu_footer_icon_size">20dp</dimen>
+    <dimen name="extensions_menu_footer_min_height">40dp</dimen>
+    <dimen name="extensions_menu_header_button_size">@dimen/min_touch_target_size</dimen>
+    <dimen name="extensions_menu_header_icon_size">24dp</dimen>
+    <dimen name="extensions_menu_header_spacing">12dp</dimen>
+    <dimen name="extensions_menu_header_vertical_padding">10dp</dimen>
+    <dimen name="extensions_menu_horizontal_padding">24dp</dimen>
+    <dimen name="extensions_menu_request_access_padding">12dp</dimen>
+    <dimen name="extensions_menu_site_permissions_icon_size">20dp </dimen>
+    <dimen name="extensions_menu_toggle_vertical_padding">8dp</dimen>
+    <dimen name="extensions_menu_vertical_padding">14dp</dimen>
+    <dimen name="extensions_request_access_button_margin_end">2dp</dimen>
+    <dimen name="extensions_request_access_button_padding_end">8dp</dimen>
+    <dimen name="extensions_request_access_button_padding_start">16dp</dimen>
     <dimen name="extensions_toolbar_button_radius_inner">4dp</dimen>
     <dimen name="extensions_toolbar_button_radius_outer">20dp</dimen>
-    <dimen name="extensions_request_access_button_margin_end">2dp</dimen>
-    <dimen name="extensions_request_access_button_padding_start">16dp</dimen>
-    <dimen name="extensions_request_access_button_padding_end">8dp</dimen>
+    <dimen name="extensions_toolbar_icon_size">24dp</dimen>
+    <!-- go/keep-sorted end -->
 </resources>
