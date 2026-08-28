@@ -939,7 +939,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 }
 
 TEST_F(RemoteActorCredentialSharingImplTest,
-       ExactAndStrongAffiliationsAllowed_PSLAndWeakIgnored) {
+       ExactAffiliatedAndPSLAllowed_GroupedIgnored) {
   mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
       SetUpAndBindFlow();
 
@@ -960,8 +960,8 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   profile_store_->AddLogin(FromPasswordForm(affiliated_form));
 
   PasswordForm psl_form;
-  psl_form.signon_realm = "https://m.example.com/";
-  psl_form.url = GURL("https://m.example.com");
+  psl_form.signon_realm = "https://www.example.com/";
+  psl_form.url = GURL("https://www.example.com");
   psl_form.username_value = u"psl_user";
   psl_form.password_value = PasswordString(u"pass");
   psl_form.in_store = PasswordForm::Store::kProfileStore;
@@ -991,14 +991,16 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   dialog_shown_future.Get();
 
-  // Only exact_user and affiliated_user should be included in the dialog;
-  // psl_user and grouped_user must be ignored.
+  // exact_user, affiliated_user, and psl_user should be included in the dialog;
+  // grouped_user must be ignored.
   EXPECT_THAT(last_dialog_credentials_,
               testing::UnorderedElementsAre(
                   testing::Pointee(testing::Field(&PasswordForm::username_value,
                                                   u"exact_user")),
                   testing::Pointee(testing::Field(&PasswordForm::username_value,
-                                                  u"affiliated_user"))));
+                                                  u"affiliated_user")),
+                  testing::Pointee(testing::Field(&PasswordForm::username_value,
+                                                  u"psl_user"))));
 
   SimulateDialogSelection(std::nullopt);
 }

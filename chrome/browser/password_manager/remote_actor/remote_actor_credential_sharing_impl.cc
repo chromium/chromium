@@ -167,7 +167,8 @@ void RemoteActorCredentialSharingImpl::OnGetPasswordStoreResultsOrErrorFrom(
       password_manager_util::GetLoginMatchType match_type =
           password_manager_util::GetMatchType(login);
       if (match_type != password_manager_util::GetLoginMatchType::kExact &&
-          match_type != password_manager_util::GetLoginMatchType::kAffiliated) {
+          match_type != password_manager_util::GetLoginMatchType::kAffiliated &&
+          match_type != password_manager_util::GetLoginMatchType::kPSL) {
         continue;
       }
       PasswordForm form = ToPasswordForm(std::move(login));
