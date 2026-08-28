@@ -1087,15 +1087,12 @@ void StyleResolver::SetZoomedInitialLineWidths(float zoom,
       ComputedStyleInitialValues::InitialBorderLeftWidth() * zoom));
   builder.SetOutlineWidth(StyleBuilderConverter::ClampLineWidth(
       ComputedStyleInitialValues::InitialOutlineWidth() * zoom));
-  builder.SetColumnRuleWidthInternal(
-      GapDataList<int>(StyleBuilderConverter::ClampLineWidth(
-          ComputedStyleInitialValues::InitialColumnRuleWidth()
-              .GetLegacyValue() *
-          zoom)));
-  builder.SetRowRuleWidthInternal(
-      GapDataList<int>(StyleBuilderConverter::ClampLineWidth(
-          ComputedStyleInitialValues::InitialRowRuleWidth().GetLegacyValue() *
-          zoom)));
+  const int initial_gap_rule_width =
+      ComputedStyleInitialValues::InitialGapRuleWidth();
+  builder.SetColumnRuleWidthInternal(GapDataList<int>(
+      StyleBuilderConverter::ClampLineWidth(initial_gap_rule_width * zoom)));
+  builder.SetRowRuleWidthInternal(GapDataList<int>(
+      StyleBuilderConverter::ClampLineWidth(initial_gap_rule_width * zoom)));
 }
 
 template <typename Functor>

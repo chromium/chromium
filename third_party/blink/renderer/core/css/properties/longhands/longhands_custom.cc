@@ -2624,7 +2624,7 @@ const blink::Color ColumnRuleColor::ColorIncludingFallback(
     bool* is_current_color) const {
   DCHECK(!visited_link);
   const StyleColor& column_rule_color =
-      style.ColumnRuleColor().GetLegacyValue();
+      style.ColumnRuleColor().GetSingleValue();
   if (style.ShouldForceColor(column_rule_color)) {
     return style.GetInternalForcedCurrentColor(is_current_color);
   }
@@ -2663,21 +2663,6 @@ const CSSValue* RowRuleColor::ParseSingleValue(
     CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeGapDecorationPropertyList(
       stream, context, local_context, CSSGapDecorationPropertyType::kColor);
-}
-
-const blink::Color RowRuleColor::ColorIncludingFallback(
-    bool visited_link,
-    const ComputedStyle& style,
-    bool* is_current_color) const {
-  DCHECK(!visited_link);
-  const StyleColor& row_rule_color = style.RowRuleColor().GetLegacyValue();
-  // TODO(crbug.com/357648037): Update to force any colors that appear in a list
-  // value.
-  if (style.ShouldForceColor(row_rule_color)) {
-    return style.GetInternalForcedCurrentColor(is_current_color);
-  }
-  return row_rule_color.Resolve(style.GetCurrentColor(),
-                                style.UsedColorScheme(), is_current_color);
 }
 
 const CSSValue* RowRuleColor::CSSValueFromComputedStyleInternal(
@@ -2731,7 +2716,7 @@ const CSSValue* RowRuleStyle::CSSValueFromComputedStyleInternal(
 
 void ColumnRuleWidth::ApplyInitial(StyleResolverState& state) const {
   int width = state.CssToLengthConversionData().ZoomedComputedPixels(
-      ComputedStyleInitialValues::InitialColumnRuleWidth().GetSingleValue(),
+      ComputedStyleInitialValues::InitialGapRuleWidth(),
       CSSPrimitiveValue::UnitType::kPixels);
   state.StyleBuilder().SetColumnRuleWidth(GapDataList<int>(width));
 }
@@ -2766,7 +2751,7 @@ const CSSValue* ColumnRuleWidth::CSSValueFromComputedStyleInternal(
 
 void RowRuleWidth::ApplyInitial(StyleResolverState& state) const {
   int width = state.CssToLengthConversionData().ZoomedComputedPixels(
-      ComputedStyleInitialValues::InitialRowRuleWidth().GetLegacyValue(),
+      ComputedStyleInitialValues::InitialGapRuleWidth(),
       CSSPrimitiveValue::UnitType::kPixels);
   state.StyleBuilder().SetRowRuleWidth(GapDataList<int>(width));
 }
@@ -5841,8 +5826,12 @@ const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(
     const ComputedStyle& style,
     bool* is_current_color) const {
   DCHECK(visited_link);
+  // Visited column rule colors only support a single value. For multi-value
+  // lists inside links, style resolution uses the default color instead.
+  // TODO(crbug.com/411367099): Remove this restriction once visited styles
+  // support multiple values.
   const StyleColor& visited_column_rule_color =
-      style.InternalVisitedColumnRuleColor().GetLegacyValue();
+      style.InternalVisitedColumnRuleColor().GetSingleValue();
   if (style.ShouldForceColor(visited_column_rule_color)) {
     return style.GetInternalForcedVisitedCurrentColor(is_current_color);
   }

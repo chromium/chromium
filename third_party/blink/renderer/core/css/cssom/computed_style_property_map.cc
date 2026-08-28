@@ -261,11 +261,12 @@ void ComputedStylePropertyMap::RecordUseCounterForWidthStyleValues(
         out_style_value = style.OutlineStyle();
         break;
       case CSSPropertyID::kColumnRuleWidth:
-        if (!style.ColumnRuleWidth().HasSingleValue()) {
+        if (!style.ColumnRuleWidth().HasSingleValue() ||
+            !style.ColumnRuleStyle().HasSingleValue()) {
           break;
         }
-        out_width_value = style.ColumnRuleWidth().GetLegacyValue();
-        out_style_value = style.ColumnRuleStyle().GetLegacyValue();
+        out_width_value = style.ColumnRuleWidth().GetSingleValue();
+        out_style_value = style.ColumnRuleStyle().GetSingleValue();
         break;
       default:
         // Not a width/style longhand property, so return false.

@@ -94,11 +94,6 @@ class CORE_EXPORT GapDataList {
     return GapDataList(StyleColor::CurrentColor());
   }
 
-  static GapDataList DefaultGapWidthDataList() {
-    constexpr int kDefaultWidth = 3;
-    return GapDataList(kDefaultWidth);
-  }
-
   static GapDataList DefaultGapStyleDataList() {
     return GapDataList(EBorderStyle::kNone);
   }
@@ -157,8 +152,6 @@ class CORE_EXPORT GapDataList {
     DCHECK(HasSingleValue());
     return gap_data_list_[0].GetValue();
   }
-
-  const T GetLegacyValue() const { return gap_data_list_[0].GetValue(); }
 
   bool operator==(const GapDataList& o) const {
     return gap_data_list_ == o.gap_data_list_;

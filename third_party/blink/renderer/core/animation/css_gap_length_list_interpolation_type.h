@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_GAP_LENGTH_LIST_INTERPOLATION_TYPE_H_
 
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
-#include "third_party/blink/renderer/core/animation/length_property_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -57,10 +56,6 @@ class CORE_EXPORT CSSGapLengthListInterpolationType
 
   static GapDataList<int> GetList(const CSSProperty& property,
                                   const ComputedStyle& style);
-
-  void GetInitialLengthList(const CSSProperty& property,
-                            const ComputedStyle& style,
-                            Vector<Length>& result) const;
 
  private:
   InterpolationValue MaybeConvertNeutral(

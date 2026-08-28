@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/animation/css_gap_color_list_interpolation_type.h"
 
 #include "base/memory/raw_ref.h"
-#include "third_party/blink/renderer/core/animation/color_property_functions.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/gap_data_list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
@@ -15,7 +14,8 @@
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 
 namespace blink {
@@ -253,10 +253,12 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSGapColorListInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  HeapVector<StyleColor, 1> initial_list;
-  GetInitialStyleColorList(
-      CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle(),
-      initial_list);
+  GapDataList<StyleColor> initial_list =
+      property_id_ == CSSPropertyID::kColumnRuleColor
+          ? ComputedStyleInitialValues::InitialColumnRuleColor()
+          : ComputedStyleInitialValues::InitialRowRuleColor();
+  CHECK(initial_list.HasSingleValue());
+  const StyleColor initial_color = initial_list.GetSingleValue();
 
   mojom::blink::ColorScheme color_scheme =
       state.StyleBuilder().UsedColorScheme();
@@ -264,11 +266,10 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertInitial(
       state.GetDocument().GetColorProviderForPainting(color_scheme);
 
   return ListInterpolationFunctions::CreateList(
-      initial_list.size(),
-      [&initial_list, &color_scheme, &color_provider](wtf_size_t index) {
+      1, [&initial_color, &color_scheme, &color_provider](wtf_size_t) {
         return InterpolationValue(
             CSSColorInterpolationType::CreateBaseInterpolableColor(
-                initial_list[index], color_scheme, color_provider));
+                initial_color, color_scheme, color_provider));
       });
 }
 
@@ -481,20 +482,6 @@ GapDataList<StyleColor> CSSGapColorListInterpolationType::GetProperty(
   }
   CHECK(property_id_ == CSSPropertyID::kRowRuleColor);
   return style.RowRuleColor();
-}
-
-void CSSGapColorListInterpolationType::GetInitialStyleColorList(
-    const CSSProperty& property,
-    const ComputedStyle& style,
-    HeapVector<StyleColor, 1>& result) const {
-  CHECK(property_id_ == CSSPropertyID::kColumnRuleColor ||
-        property_id_ == CSSPropertyID::kRowRuleColor);
-  OptionalStyleColor initial_color =
-      ColorPropertyFunctions::GetInitialColor(CssProperty(), style);
-  if (!initial_color.has_value()) {
-    return;
-  }
-  result.push_back(initial_color.value());
 }
 
 }  // namespace blink

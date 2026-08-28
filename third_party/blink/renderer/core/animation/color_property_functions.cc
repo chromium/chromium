@@ -42,12 +42,6 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
       return OptionalStyleColor(style.Color());
     case CSSPropertyID::kOutlineColor:
       return OptionalStyleColor(style.OutlineColor());
-    case CSSPropertyID::kColumnRuleColor:
-      // TODO(crbug.com/357648037): Look into supporting multiple colors and
-      // deprecating the legacy method.
-      return OptionalStyleColor(style.ColumnRuleColor().GetLegacyValue());
-    case CSSPropertyID::kRowRuleColor:
-      return OptionalStyleColor(style.RowRuleColor().GetLegacyValue());
     case CSSPropertyID::kTextEmphasisColor:
       return OptionalStyleColor(style.TextEmphasisColor());
     case CSSPropertyID::kWebkitTextFillColor:
@@ -103,12 +97,6 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
       return OptionalStyleColor(style.InternalVisitedColor());
     case CSSPropertyID::kOutlineColor:
       return OptionalStyleColor(style.InternalVisitedOutlineColor());
-    case CSSPropertyID::kColumnRuleColor:
-      return OptionalStyleColor(
-          style.InternalVisitedColumnRuleColor().GetLegacyValue());
-    case CSSPropertyID::kRowRuleColor:
-      // TODO(crbug.com/357648037): Update to use multiple values.
-      return OptionalStyleColor(style.RowRuleColor().GetLegacyValue());
     case CSSPropertyID::kTextEmphasisColor:
       return OptionalStyleColor(style.InternalVisitedTextEmphasisColor());
     case CSSPropertyID::kWebkitTextFillColor:

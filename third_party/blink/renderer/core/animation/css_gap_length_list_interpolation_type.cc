@@ -10,12 +10,13 @@
 #include "third_party/blink/renderer/core/animation/interpolable_gap_data_auto_repeater.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/length_list_property_functions.h"
+#include "third_party/blink/renderer/core/animation/length_property_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 
 namespace blink {
@@ -250,16 +251,18 @@ InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertInitial(
-    const StyleResolverState& state,
+    const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
-  Vector<Length> initial_list;
-  GetInitialLengthList(CssProperty(),
-                       state.GetDocument().GetStyleResolver().InitialStyle(),
-                       initial_list);
+  GapDataList<int> initial_list =
+      property_id_ == CSSPropertyID::kColumnRuleWidth
+          ? ComputedStyleInitialValues::InitialColumnRuleWidth()
+          : ComputedStyleInitialValues::InitialRowRuleWidth();
+  CHECK(initial_list.HasSingleValue());
+  const int initial_width = initial_list.GetSingleValue();
   return ListInterpolationFunctions::CreateList(
-      initial_list.size(), [this, &initial_list](wtf_size_t index) {
+      1, [this, initial_width](wtf_size_t) {
         return InterpolationValue(InterpolableLength::MaybeConvertLength(
-            initial_list[index], CssProperty(), /*zoom=*/1,
+            Length::Fixed(initial_width), CssProperty(), /*zoom=*/1,
             /*interpolate_size=*/std::nullopt));
       });
 }
@@ -421,15 +424,6 @@ GapDataList<int> CSSGapLengthListInterpolationType::GetProperty(
     return style.ColumnRuleWidth();
   }
   return style.RowRuleWidth();
-}
-
-void CSSGapLengthListInterpolationType::GetInitialLengthList(
-    const CSSProperty& property,
-    const ComputedStyle& style,
-    Vector<Length>& result) const {
-  Length initial_length;
-  LengthPropertyFunctions::GetInitialLength(property, style, initial_length);
-  result.push_back(initial_length);
 }
 
 }  // namespace blink
