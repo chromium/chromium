@@ -214,7 +214,8 @@ operations.**
   - `base::ToVector(span)` instead of `vector.assign(span.begin(), span.end())`.
   - `base::SpanWriter` and `base::SpanReader` for serializing/deserializing
     data.
-  - `base::Contains(container, element)` instead of `.find(...) != .npos`.
+  - `std::ranges::contains(container, element)` instead of
+    `.find(...) != .npos`.
   - `base::wcslcpy` instead of platform-specific APIs like `lstrcpynW`.
 - **Use Modern C++ & Ranges:** Prefer modern C++ features and standard
   algorithms for clarity and safety.
