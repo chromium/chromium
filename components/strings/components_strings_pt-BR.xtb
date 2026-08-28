@@ -840,7 +840,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2400263725572336749">Adicionar passaporte</translation>
 <translation id="2400271059665846158">Gerencie seus cartões fidelidade na Carteira do Google</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
-<translation id="2403474027143565107">Preciso</translation>
+<translation id="2403474027143565107">Exato</translation>
 <translation id="240450251994300576">Logotipo secundário do cabeçalho</translation>
 <translation id="2404715426538856682">Crédito e débito · IBANs · Fidelidade</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
@@ -2324,7 +2324,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="494701040141924538">Entendi, fechar aviso</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
-<translation id="4954505713046251871">Para o recurso dar sugestões e ser aprimorado, o URL e o conteúdo da página são compartilhados com o Google</translation>
+<translation id="4954505713046251871">Para o envio de sugestões e a melhoria deste recurso, o URL e o conteúdo da página são compartilhados com o Google</translation>
 <translation id="4954891067389874142">Salve seu cartão para pagar mais rápido. Os detalhes do cartão são criptografados na Carteira do Google.</translation>
 <translation id="4957080528849277028">Botão "Ver seu histórico do Chrome". Ative para abrir e gerenciar seu histórico de navegação nas configurações do Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{e mais 1 site}one{e mais # site}other{e mais # sites}}</translation>

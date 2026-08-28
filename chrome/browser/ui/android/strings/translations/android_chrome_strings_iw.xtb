@@ -1162,7 +1162,7 @@
 <translation id="5763514718066511291">לחיצה מעתיקה את כתובת האתר של האפליקציה הזו</translation>
 <translation id="5765517223145864268">נשמח לשמוע על החוויה שלך. אפשר גם <ph name="BEGIN_LINK" />לשנות את ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">נתונים לא חשובים</translation>
-<translation id="5793665092639000975"><ph name="SPACE_USED" /> מתוך <ph name="SPACE_AVAILABLE" /> נמצאים בשימוש</translation>
+<translation id="5793665092639000975">‫<ph name="SPACE_USED" /> מתוך <ph name="SPACE_AVAILABLE" /> נמצאים בשימוש</translation>
 <translation id="580893287573699959">ניהול הנושאים והאתרים שמעניינים אותך</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{לפני שעה}one{לפני # שעות}two{לפני שעתיים}other{לפני # שעות}}</translation>
 <translation id="5810288467834065221">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
