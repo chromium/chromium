@@ -906,16 +906,8 @@ targets.legacy_basic_suite(
     tests = {
         "context_lost_metal_passthrough_graphite_tests": targets.legacy_test_config(),
         "expected_color_pixel_metal_passthrough_graphite_test": targets.legacy_test_config(),
-        "gpu_process_launch_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
-        "hardware_accelerated_feature_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
+        "gpu_process_launch_tests": targets.legacy_test_config(),
+        "hardware_accelerated_feature_tests": targets.legacy_test_config(),
         "pixel_skia_gold_metal_passthrough_graphite_test": targets.legacy_test_config(),
         "screenshot_sync_metal_passthrough_graphite_tests": targets.legacy_test_config(),
     },
@@ -955,16 +947,8 @@ targets.legacy_basic_suite(
     tests = {
         "context_lost_passthrough_tests": targets.legacy_test_config(),
         "expected_color_pixel_passthrough_test": targets.legacy_test_config(),
-        "gpu_process_launch_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
-        "hardware_accelerated_feature_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
+        "gpu_process_launch_tests": targets.legacy_test_config(),
+        "hardware_accelerated_feature_tests": targets.legacy_test_config(),
         "pixel_skia_gold_passthrough_test": targets.legacy_test_config(),
         "screenshot_sync_passthrough_tests": targets.legacy_test_config(),
     },
@@ -997,16 +981,8 @@ targets.legacy_basic_suite(
     tests = {
         "context_lost_validating_tests": targets.legacy_test_config(),
         "expected_color_pixel_validating_test": targets.legacy_test_config(),
-        "gpu_process_launch_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
-        "hardware_accelerated_feature_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
+        "gpu_process_launch_tests": targets.legacy_test_config(),
+        "hardware_accelerated_feature_tests": targets.legacy_test_config(),
         "pixel_skia_gold_validating_test": targets.legacy_test_config(),
         "screenshot_sync_validating_tests": targets.legacy_test_config(),
     },

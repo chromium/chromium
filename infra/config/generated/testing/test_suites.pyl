@@ -1684,25 +1684,21 @@
         'test_common': {
           'mixins': [
             'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
           ],
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
       },
       'hardware_accelerated_feature_tests': {
         'test_common': {
           'mixins': [
             'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
           ],
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
       },
       'pixel_skia_gold_metal_passthrough_graphite_test': {
         'test_common': {
@@ -1832,25 +1828,21 @@
         'test_common': {
           'mixins': [
             'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
           ],
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
       },
       'hardware_accelerated_feature_tests': {
         'test_common': {
           'mixins': [
             'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
           ],
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
       },
       'pixel_skia_gold_passthrough_test': {
         'test_common': {
@@ -1934,25 +1926,21 @@
         'test_common': {
           'mixins': [
             'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
           ],
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'gpu_process',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
       },
       'hardware_accelerated_feature_tests': {
         'test_common': {
           'mixins': [
             'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
           ],
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'hardware_accelerated_feature',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
       },
       'pixel_skia_gold_validating_test': {
         'test_common': {
