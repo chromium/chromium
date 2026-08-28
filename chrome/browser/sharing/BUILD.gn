@@ -82,7 +82,10 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "sharing_device_registration_impl_unittest.cc" ]
+  sources = [
+    "sharing_device_registration_impl_unittest.cc",
+    "sharing_handler_registry_impl_unittest.cc",
+  ]
 
   deps = [
     ":impl",
@@ -95,10 +98,12 @@ source_set("unit_tests") {
     "//components/gcm_driver/instance_id",
     "//components/prefs",
     "//components/sharing_message",
+    "//components/sharing_message:unit_tests",
     "//components/sync:test_support",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
     "//components/sync_preferences:test_support",
+    "//content/test:test_support",
     "//google_apis/gcm",
     "//testing/gmock",
     "//testing/gtest",
