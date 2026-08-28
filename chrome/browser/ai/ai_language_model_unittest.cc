@@ -193,6 +193,28 @@ blink::mojom::AILanguageModelPromptPtr MakePrompt(Role role,
                                                   is_prefix);
 }
 
+std::vector<blink::mojom::AILanguageModelPromptPtr> MakeToolCallInput(
+    base::DictValue tool_call) {
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  prompts.push_back(blink::mojom::AILanguageModelPrompt::New(
+      Role::kAssistant,
+      ToVector(blink::mojom::AILanguageModelPromptContent::NewToolCall(
+          std::move(tool_call))),
+      /*is_prefix=*/false));
+  return prompts;
+}
+
+std::vector<blink::mojom::AILanguageModelPromptPtr> MakeToolCallInput(
+    const std::string& call_id,
+    const std::string& name,
+    base::DictValue arguments) {
+  base::DictValue tool_call;
+  tool_call.Set("callID", call_id);
+  tool_call.Set("name", name);
+  tool_call.Set("arguments", std::move(arguments));
+  return MakeToolCallInput(std::move(tool_call));
+}
+
 // Build a vector with a single prompt that has multiple user text contents.
 std::vector<blink::mojom::AILanguageModelPromptPtr> MakeInput(
     std::initializer_list<std::string> texts) {
@@ -1946,6 +1968,31 @@ class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
     return tool;
   }
 
+  blink::mojom::AILanguageModelCreateOptionsPtr
+  CreateOptionsWithInitialToolCallHistory(const std::string& call_id,
+                                          base::DictValue arguments,
+                                          base::DictValue result) {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->tools.emplace();
+    options->tools->push_back(CreateWeatherTool());
+    options->initial_prompts.push_back(MakePrompt(Role::kSystem, "System"));
+
+    auto tool_call =
+        MakeToolCallInput(call_id, "get_weather", std::move(arguments));
+    options->initial_prompts.push_back(std::move(tool_call.front()));
+
+    base::DictValue tool_response;
+    tool_response.Set("callID", call_id);
+    tool_response.Set("name", "get_weather");
+    tool_response.Set("result", std::move(result));
+    options->initial_prompts.push_back(blink::mojom::AILanguageModelPrompt::New(
+        Role::kUser,
+        ToVector(blink::mojom::AILanguageModelPromptContent::NewToolResponse(
+            std::move(tool_response))),
+        /*is_prefix=*/false));
+    return options;
+  }
+
   // Helper to configure simulated tool call.
   void SetupSimulatedToolCall(const std::string& call_id,
                               const std::string& tool_name,
@@ -2009,6 +2056,106 @@ TEST_F(AILanguageModelOpenLoopToolTest, ToolsEmbeddedInSystemPrompt) {
   std::string full_response = base::JoinString(responses, "");
   // Verify tool declaration content was embedded in context.
   EXPECT_THAT(full_response, testing::HasSubstr("<tool name=get_weather>"));
+}
+
+TEST_F(AILanguageModelOpenLoopToolTest, ToolCallInputHandled) {
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+
+  base::DictValue options;
+  options.Set("units", "celsius");
+  base::ListValue days;
+  days.Append("today");
+  days.Append("tomorrow");
+
+  base::DictValue arguments;
+  arguments.Set("location", "Seattle");
+  arguments.Set("options", std::move(options));
+  arguments.Set("days", std::move(days));
+
+  std::string response = base::JoinString(
+      Prompt(*session, MakeToolCallInput("call_input", "get_weather",
+                                         std::move(arguments))),
+      "");
+  EXPECT_THAT(response,
+              testing::HasSubstr("<tool-call id=call_input name=get_weather"));
+  EXPECT_THAT(response, testing::HasSubstr("\"location\":\"Seattle\""));
+  EXPECT_THAT(response, testing::HasSubstr("\"units\":\"celsius\""));
+  EXPECT_THAT(response,
+              testing::HasSubstr("\"days\":[\"today\",\"tomorrow\"]"));
+}
+
+TEST_F(AILanguageModelOpenLoopToolTest, InitialToolCallHistoryPreservedInFork) {
+  base::DictValue arguments;
+  arguments.Set("location", "Paris");
+  base::DictValue result;
+  result.Set("temperature", 18);
+  auto options = CreateOptionsWithInitialToolCallHistory(
+      "call_history", std::move(arguments), std::move(result));
+
+  auto session = CreateSession(std::move(options));
+  auto fork = Fork(*session);
+  // The fake service generates by echoing its accumulated context, allowing
+  // this prompt to expose the initial history retained by the fork.
+  std::string response =
+      base::JoinString(Prompt(*fork, MakeInput("Continue")), "");
+  EXPECT_THAT(response, testing::HasSubstr(
+                            "<tool-call id=call_history name=get_weather"));
+  EXPECT_THAT(response, testing::HasSubstr(
+                            "<tool-response id=call_history name=get_weather"));
+  EXPECT_THAT(response, testing::HasSubstr("\"temperature\":18"));
+}
+
+TEST_F(AILanguageModelOpenLoopToolTest, InstanceInfoAdvertisesToolInputTypes) {
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->tools.emplace();
+  options->tools->push_back(CreateWeatherTool());
+
+  TestCreateLanguageModelClient client;
+  GetAIManagerRemote()->CreateLanguageModel(client.BindNewPipeAndPassRemote(),
+                                            std::move(options),
+                                            /*monitor=*/mojo::NullRemote());
+  auto result = client.result().Take();
+  ASSERT_OK(result);
+  ASSERT_TRUE(result.value().info->input_types);
+  EXPECT_THAT(*result.value().info->input_types,
+              testing::UnorderedElementsAre(
+                  blink::mojom::AILanguageModelPromptType::kText,
+                  blink::mojom::AILanguageModelPromptType::kToolCall,
+                  blink::mojom::AILanguageModelPromptType::kToolResponse));
+}
+
+TEST_F(AILanguageModelOpenLoopToolTest, RejectMalformedToolCallInput) {
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+
+  base::DictValue tool_call;
+  tool_call.Set("callID", "call_missing_arguments");
+  tool_call.Set("name", "get_weather");
+
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(MakeToolCallInput(std::move(tool_call)),
+                  /*constraint=*/nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+}
+
+TEST_F(AILanguageModelOpenLoopToolTest, RejectToolCallWithoutCapability) {
+  // A session without tool declarations does not have the tool use capability.
+  auto session = CreateSession();
+  base::DictValue arguments;
+  arguments.Set("location", "Seattle");
+
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(MakeToolCallInput("call_without_tool", "get_weather",
+                                    std::move(arguments)),
+                  /*constraint=*/nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
 }
 
 // Test that empty tools array doesn't break session creation or prompting.

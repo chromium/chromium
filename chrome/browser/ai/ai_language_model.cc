@@ -53,10 +53,23 @@ namespace {
 
 using ::on_device_model::mojom::InputPiece;
 using ::on_device_model::mojom::InputPiecePtr;
+using ::on_device_model::mojom::ToolCall;
+using ::on_device_model::mojom::ToolCallPtr;
 using ::on_device_model::mojom::ToolDeclaration;
 using ::on_device_model::mojom::ToolResponse;
 using ::on_device_model::mojom::ToolResponsePtr;
 using ::optimization_guide::proto::PromptApiMetadata;
+
+ToolCallPtr GetToolCallFromDict(const base::DictValue& dict) {
+  const std::string* call_id = dict.FindString("callID");
+  const std::string* name = dict.FindString("name");
+  const base::DictValue* arguments = dict.FindDict("arguments");
+  if (!call_id || !name || !arguments) {
+    return nullptr;
+  }
+
+  return ToolCall::New(*call_id, *name, arguments->Clone());
+}
 
 ToolResponsePtr GetToolResponseFromDict(const base::DictValue& dict) {
   const std::string* call_id = dict.FindString("callID");
@@ -134,9 +147,17 @@ on_device_model::mojom::InputPtr ConvertToInput(
               InputPiece::NewAudio(content->get_audio().Clone()));
           break;
         }
-        case blink::mojom::AILanguageModelPromptContent::Tag::kToolCall:
-          // TODO(crbug.com/422803232): Support on_device_model tool use.
-          return nullptr;
+        case blink::mojom::AILanguageModelPromptContent::Tag::kToolCall: {
+          if (!capabilities.Has(on_device_model::CapabilityFlags::kToolUse)) {
+            return nullptr;
+          }
+          auto call = GetToolCallFromDict(content->get_tool_call());
+          if (!call) {
+            return nullptr;
+          }
+          input->pieces.push_back(InputPiece::NewToolCall(std::move(call)));
+          break;
+        }
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolResponse: {
           if (!capabilities.Has(on_device_model::CapabilityFlags::kToolUse)) {
             return nullptr;
@@ -844,6 +865,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
       case on_device_model::CapabilityFlags::kToolUse:
         // TODO(crbug.com/422803232): Expose tool support as a dedicated
         // bool field on AILanguageModelInstanceInfo instead of an input type.
+        input_types.insert(blink::mojom::AILanguageModelPromptType::kToolCall);
         input_types.insert(
             blink::mojom::AILanguageModelPromptType::kToolResponse);
         break;
