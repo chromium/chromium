@@ -1648,6 +1648,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "AsyncDnsQuicJobFastFail": "true"
+                    },
                     "enable_features": [
                         "AsyncDnsQuicJob"
                     ]

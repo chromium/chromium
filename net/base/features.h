@@ -425,6 +425,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAsyncQuicSession);
 // HostResolver::ServiceEndpointRequest, for direct QUIC sessions.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncDnsQuicJob);
 
+// Whether AsyncDnsJob notifies waiting requests immediately on the first
+// attempt's session creation failure instead of holding the error.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kAsyncDnsQuicJobFastFail);
+
 // Makes the QUIC slow timer delay configurable.
 // How long to wait before starting a second connection attempt
 // if one is already in flight.

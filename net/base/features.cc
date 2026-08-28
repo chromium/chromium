@@ -343,6 +343,8 @@ BASE_FEATURE(kAsyncQuicSession,
 // HostResolver::ServiceEndpointRequest, for direct QUIC sessions.
 BASE_FEATURE(kAsyncDnsQuicJob, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool, kAsyncDnsQuicJobFastFail, &kAsyncDnsQuicJob, false);
+
 BASE_FEATURE(kAdjustQuicSlowTimerDelay, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kQuicSlowTimerDelay,

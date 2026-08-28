@@ -4537,6 +4537,149 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   request_.reset();
 }
 
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnConnectionInitializedResumesMainJobImmediatelyWithFastFail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAsyncDnsQuicJob, {{"AsyncDnsQuicJobFastFail", "true"}}}},
+      {});
+
+  session_deps_.alternate_host_resolver =
+      std::make_unique<HangingHostResolver>();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com");
+
+  Initialize(request_info);
+
+  // Enable delayed TCP and set time delay for waiting job.
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_has_quic_ever_worked_on_current_network(true);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(100);
+  session_->http_server_properties()->SetServerNetworkStats(
+      url::SchemeHostPort(GURL("https://www.google.com")),
+      NetworkAnonymizationKey(), stats);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_TRUE(job_controller_->main_job());
+  EXPECT_TRUE(job_controller_->alternative_job());
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  base::RunLoop run_loop;
+  // With fast fail enabled, the main job should be resumed with 0 delay.
+  EXPECT_CALL(*job_factory_.main_job(), Resume())
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  run_loop.Run();
+  EXPECT_TRUE(job_controller_->main_job());
+}
+
+TEST_F(
+    HttpStreamFactoryJobControllerTest,
+    OnConnectionInitializedDnsAlpnH3JobResumesMainJobImmediatelyWithFastFail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAsyncDnsQuicJob, {{"AsyncDnsQuicJobFastFail", "true"}}}},
+      {});
+
+  session_deps_.alternate_host_resolver =
+      std::make_unique<HangingHostResolver>();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com");
+
+  Initialize(request_info);
+
+  // Enable delayed TCP and set time delay for waiting job.
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_has_quic_ever_worked_on_current_network(true);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(100);
+  session_->http_server_properties()->SetServerNetworkStats(
+      url::SchemeHostPort(GURL("https://www.google.com")),
+      NetworkAnonymizationKey(), stats);
+
+  request_ = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_TRUE(job_controller_->main_job());
+  EXPECT_FALSE(job_controller_->alternative_job());
+  EXPECT_TRUE(job_controller_->dns_alpn_h3_job());
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  base::RunLoop run_loop;
+  // With fast fail enabled, the main job should be resumed with 0 delay.
+  EXPECT_CALL(*job_factory_.main_job(), Resume())
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  job_controller_->OnConnectionInitialized(job_factory_.dns_alpn_h3_job(),
+                                           ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  run_loop.Run();
+  EXPECT_TRUE(job_controller_->main_job());
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnConnectionInitializedResumesMainJobWithDelayByDefault) {
+  session_deps_.alternate_host_resolver =
+      std::make_unique<HangingHostResolver>();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com");
+
+  Initialize(request_info);
+
+  // Enable delayed TCP and set time delay for waiting job.
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_has_quic_ever_worked_on_current_network(true);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(100);
+  session_->http_server_properties()->SetServerNetworkStats(
+      url::SchemeHostPort(GURL("https://www.google.com")),
+      NetworkAnonymizationKey(), stats);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_TRUE(job_controller_->main_job());
+  EXPECT_TRUE(job_controller_->alternative_job());
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  // By default, Resume() should not be called at 0 delay.
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+
+  // Resume() should be called after main_job_wait_time_ (srtt * 1.5 = 150ms).
+  base::RunLoop run_loop;
+  EXPECT_CALL(*job_factory_.main_job(), Resume())
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  FastForwardBy(base::Milliseconds(150));
+  run_loop.Run();
+  EXPECT_TRUE(job_controller_->main_job());
+}
+
 // Test that main job is blocked for kMaxDelayTimeForMainJob(3s) if
 // http_server_properties cached an inappropriate large srtt for the server,
 // which would potentially delay the main job for a extremely long time in

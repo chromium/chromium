@@ -3759,6 +3759,9 @@ TEST_P(QuicSessionPoolAsyncDnsJobRTTBasedTest, UsesRTTForSlowTimer) {
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
+  ipv6_data.ExpectAllReadDataConsumed();
+  ipv6_data.ExpectAllWriteDataConsumed();
+
   ipv4_data.ExpectAllReadDataConsumed();
   ipv4_data.ExpectAllWriteDataConsumed();
 }
@@ -3966,6 +3969,105 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest,
   }
 
   pool_.reset();
+}
+
+class QuicSessionPoolAsyncDnsJobFastFailTest
+    : public QuicSessionPoolAsyncDnsJobTest {
+ protected:
+  QuicSessionPoolAsyncDnsJobFastFailTest()
+      : QuicSessionPoolAsyncDnsJobTest(
+            EnabledFeatures(),
+            DisabledFeatures(),
+            {{features::kAsyncDnsQuicJob,
+              {{"AsyncDnsQuicJobFastFail", "true"}}}}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         QuicSessionPoolAsyncDnsJobFastFailTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AsyncQuicSession"
+                                             : "SyncQuicSession";
+                         });
+
+TEST_P(QuicSessionPoolAsyncDnsJobFastFailTest, SessionCreationSignalFastFail) {
+  if (!async_quic_session()) {
+    // Requests wait for the session creation signal only when session
+    // creation is asynchronous.
+    GTEST_SKIP();
+  }
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // The first attempt of the primary connector fails to create its session.
+  MockQuicData first_ipv6_data(version_);
+  first_ipv6_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
+  first_ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // The next attempt of the primary connector never finishes creating its
+  // session.
+  MockConnectCompleter second_ipv6_connect_completer;
+  MockQuicData second_ipv6_data(version_);
+  second_ipv6_data.AddConnect(&second_ipv6_connect_completer);
+  second_ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData ipv4_data(version_);
+  ipv4_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  ipv4_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  ipv4_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback;
+  EXPECT_TRUE(
+      builder.request.WaitForQuicSessionCreation(creation_callback.callback()));
+
+  endpoint_request->add_endpoint(MakeUsableV6Endpoint(kIpv6Addr1));
+  endpoint_request->add_endpoint(MakeUsableV6Endpoint(kIpv6Addr2));
+  endpoint_request->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  // With fast-fail enabled, the failed session creation of the primary
+  // connector is notified immediately instead of being held.
+  EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
+
+  FastForwardBy(SlowTimerDelay());
+
+  // Finish the handshake of the attempt the secondary connector started.
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 1u);
+  crypto_client_stream_factory_.streams()[0]->NotifySessionZeroRttComplete();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_EQ(ToIPEndPoint(GetActiveSession(kDefaultDestination)->peer_address()),
+            MakeIPEndPoint(kIpv4Addr1));
+
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  ipv4_data.ExpectAllReadDataConsumed();
+  ipv4_data.ExpectAllWriteDataConsumed();
+
+  EXPECT_TRUE(net_log_observer_
+                  .GetEntriesWithType(
+                      NetLogEventType::
+                          QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_HELD)
+                  .empty());
+  EXPECT_FALSE(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::
+                  QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_SIGNALED)
+          .empty());
 }
 
 }  // namespace net::test

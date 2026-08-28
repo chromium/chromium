@@ -431,6 +431,10 @@ void QuicSessionPool::AsyncDnsJob::OnSessionCreationDecided(
     return;
   }
   if (rv != OK && rv != ERR_IO_PENDING) {
+    if (features::kAsyncDnsQuicJobFastFail.Get()) {
+      NotifyRequestsOfSessionCreation(rv);
+      return;
+    }
     // A failure signal makes the waiting requests give up on QUIC, but this
     // job may still try another candidate. Hold the result until the job's
     // outcome is known.
