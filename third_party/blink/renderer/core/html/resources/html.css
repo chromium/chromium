@@ -1665,13 +1665,14 @@ button[interestfor] {
 }
 
 [interestfor]::interest-button {
-  display: inline-block;
+  position: absolute;
+  position-anchor: auto;
+  position-area: inline-end;
   color: inherit;
   background-color: transparent;
   box-sizing: border-box;
   min-inline-size: 24px;
   min-block-size: max(24px, 1lh);
-  margin-inline-start: 0.25em;
   margin-block: min(-24px, -1lh);
   align-content: center;
   text-align: center;
