@@ -6,34 +6,34 @@ found in the LICENSE file.
 -->
 
 <resources>
-
-    <dimen name="message_banner_main_content_height">72dp</dimen>
-    <dimen name="message_peeking_layer_height">8dp</dimen>
-    <dimen name="message_banner_radius">12dp</dimen>
-    <dimen name="message_banner_vertical_padding">12dp</dimen>
-    <dimen name="message_banner_elevation">6dp</dimen>
+    <!-- go/keep-sorted start group_start_regex=<dimen -->
     <!-- For messages below the front messages, used in stacking animation. -->
     <dimen name="message_banner_back_elevation">5dp</dimen>
-    <dimen name="message_primary_button_max_width">112dp</dimen>
-    <dimen name="message_progress_indicator_size">32dp</dimen>
-    <dimen name="message_progress_indicator_thickness">3dp</dimen>
+    <dimen name="message_banner_elevation">6dp</dimen>
+    <dimen name="message_banner_main_content_height">72dp</dimen>
+    <dimen name="message_banner_radius">12dp</dimen>
+    <dimen name="message_banner_vertical_padding">12dp</dimen>
+    <dimen name="message_close_button_padding">4dp</dimen>
+    <dimen name="message_close_button_size">24dp</dimen>
+    <dimen name="message_close_button_top_margin">3dp</dimen>
+    <dimen name="message_close_button_translation">12dp</dimen>
+    <dimen name="message_description_icon_padding">8dp</dimen>
+    <dimen name="message_description_icon_size">18dp</dimen>
+    <dimen name="message_divider_margin">12dp</dimen>
+    <dimen name="message_horizontal_hide_threshold">10dp</dimen>
     <dimen name="message_icon_margin">12dp</dimen>
     <dimen name="message_icon_size">24dp</dimen>
     <dimen name="message_icon_size_large">36dp</dimen>
-    <dimen name="message_description_icon_size">18dp</dimen>
-    <dimen name="message_description_icon_padding">8dp</dimen>
-    <dimen name="message_divider_margin">12dp</dimen>
-    <dimen name="message_shadow_lateral_margin">12dp</dimen>
-    <dimen name="message_shadow_bottom_margin">16dp</dimen>
-    <dimen name="message_vertical_hide_threshold">16dp</dimen>
-    <dimen name="message_horizontal_hide_threshold">10dp</dimen>
     <dimen name="message_max_width">380dp</dimen>
-    <dimen name="message_secondary_menu_max_size_small">180dp</dimen>
-    <dimen name="message_secondary_menu_max_size_medium">250dp</dimen>
+    <dimen name="message_peeking_layer_height">8dp</dimen>
+    <dimen name="message_primary_button_max_width">112dp</dimen>
+    <dimen name="message_progress_indicator_size">32dp</dimen>
+    <dimen name="message_progress_indicator_thickness">3dp</dimen>
     <dimen name="message_secondary_menu_max_size_large">300dp</dimen>
-    <dimen name="message_close_button_size">24dp</dimen>
-    <dimen name="message_close_button_padding">4dp</dimen>
-    <dimen name="message_close_button_translation">12dp</dimen>
-    <dimen name="message_close_button_top_margin">3dp</dimen>
-
+    <dimen name="message_secondary_menu_max_size_medium">250dp</dimen>
+    <dimen name="message_secondary_menu_max_size_small">180dp</dimen>
+    <dimen name="message_shadow_bottom_margin">16dp</dimen>
+    <dimen name="message_shadow_lateral_margin">12dp</dimen>
+    <dimen name="message_vertical_hide_threshold">16dp</dimen>
+    <!-- go/keep-sorted end -->
 </resources>
