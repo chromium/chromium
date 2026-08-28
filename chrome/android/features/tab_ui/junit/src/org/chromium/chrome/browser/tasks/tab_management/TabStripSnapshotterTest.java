@@ -21,7 +21,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
@@ -35,7 +34,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabStripSnapshotter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabStripSnapshotterTest {
     private static final PropertyKey[] PROPERTY_KEYS =
             new PropertyKey[] {

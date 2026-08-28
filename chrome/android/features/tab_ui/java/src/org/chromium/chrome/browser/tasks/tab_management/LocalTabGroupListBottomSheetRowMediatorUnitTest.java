@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,7 +33,6 @@ import java.util.List;
 
 /** Unit tests for {@link LocalTabGroupListBottomSheetRowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
     private static final int TEST_COLOR = 0;
     private static final String TEST_TITLE = "testTitle";

@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -41,7 +40,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * inputs. It only tests the logic and properties of the dialog.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CloseAllTabsDialogUnitTest {
     private static class MockModalDialogManager extends ModalDialogManager {
         private PropertyModel mDialogModel;

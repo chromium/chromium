@@ -73,7 +73,6 @@ import java.util.function.Supplier;
 /** Unit tests for {@link VerticalTabListItemTouchHelperCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })

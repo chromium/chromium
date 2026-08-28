@@ -55,7 +55,6 @@ import java.util.List;
 /** Unit tests for {@link VerticalExternalViewDragDropReorderStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })

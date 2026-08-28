@@ -47,7 +47,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 /** Unit tests for {@link BaseVerticalTabDropIndicatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })

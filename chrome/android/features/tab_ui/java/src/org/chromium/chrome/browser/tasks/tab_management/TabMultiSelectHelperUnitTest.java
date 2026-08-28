@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -31,7 +30,6 @@ import java.util.Set;
 
 /** Unit tests for {@link TabMultiSelectHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabMultiSelectHelperUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab1;

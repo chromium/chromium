@@ -50,7 +50,6 @@ import java.util.function.Supplier;
 /** Unit tests for {@link PinnedTabStripItemTouchHelperCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })

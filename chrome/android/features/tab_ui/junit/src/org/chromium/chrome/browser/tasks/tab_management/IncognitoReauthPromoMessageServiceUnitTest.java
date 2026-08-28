@@ -62,7 +62,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** Robolectric tests for {@link IncognitoReauthPromoMessageService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = VERSION_CODES.R)
+@Config(sdk = VERSION_CODES.R)
 public class IncognitoReauthPromoMessageServiceUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

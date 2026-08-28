@@ -27,7 +27,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -55,7 +54,6 @@ import java.util.List;
 
 /** Unit tests for {@link UndoGroupSnackbarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @NullMarked
 public class UndoGroupSnackbarControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

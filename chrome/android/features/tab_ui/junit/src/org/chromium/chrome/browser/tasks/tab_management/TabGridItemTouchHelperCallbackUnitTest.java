@@ -83,7 +83,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings({"ResultOfMethodCallIgnored", "DirectInvocationOnMock"})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })

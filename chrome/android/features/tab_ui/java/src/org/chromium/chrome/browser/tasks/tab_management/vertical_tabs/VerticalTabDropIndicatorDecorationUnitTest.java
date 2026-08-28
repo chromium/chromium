@@ -45,7 +45,6 @@ import org.chromium.ui.base.LocalizationUtils;
 /** Unit tests for {@link VerticalTabDropIndicatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })

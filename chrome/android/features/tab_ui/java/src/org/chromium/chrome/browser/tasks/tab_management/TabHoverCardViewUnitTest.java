@@ -64,7 +64,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabHoverCardView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 public class TabHoverCardViewUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
