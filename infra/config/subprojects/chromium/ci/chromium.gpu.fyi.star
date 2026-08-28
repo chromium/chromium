@@ -1658,7 +1658,8 @@ ci.thin_tester(
         # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
         # should be running the same tests as 'Linux FYI Release (NVIDIA)'.
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_all_linux_release_gtests",
+            "gpu_all_linux_release_vulkan_telemetry_tests",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -1670,10 +1671,10 @@ ci.thin_tester(
         os_type = targets.os_type.LINUX,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Linux|Nvidia",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|Nvidia",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
