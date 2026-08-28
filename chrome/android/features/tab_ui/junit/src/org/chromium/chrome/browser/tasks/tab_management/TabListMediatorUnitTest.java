@@ -4646,6 +4646,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = List.of(mTab1, tab3);
         createTabGroup(tabs, TAB_GROUP_ID);
 
+        mMediator.resetWithListOfTabs(null, null, false);
         mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, true);
 
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
@@ -4655,6 +4656,7 @@ public class TabListMediatorUnitTest {
 
         // Change what the title editor will return after closure.
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("1 tab");
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
 
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(tab3);
 

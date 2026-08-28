@@ -87,6 +87,13 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     abstract int getInsertionIndexOfTab(Tab tab);
 
     /**
+     * Returns the index in {@link #mModelList} of the group with {@code tabGroupId} and the {@link
+     * Tab} representing the group. Will be null if the entry is not present, the tab cannot be
+     * found, or the tab is not part of a tab group.
+     */
+    abstract @Nullable Pair<Integer, Tab> getIndexAndTabForTabGroupId(@Nullable Token tabGroupId);
+
+    /**
      * Handles tab insertion into {@link #mModelList} by resolving the target insertion index,
      * placing the tab after any leading archived message card, and delegating model creation to
      * {@link TabListMediator#addTabCardToModel}. If the tab is already present in the list, returns

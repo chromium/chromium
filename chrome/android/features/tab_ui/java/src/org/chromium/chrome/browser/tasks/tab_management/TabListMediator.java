@@ -2777,31 +2777,6 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
-     * Returns the index in {@link mModelList} of the group with {@code tabGroupId} and the {@link
-     * Tab} representing the group. Will be null if the entry is not present, the tab cannot be
-     * found, or the tab is not part of a tab group.
-     */
-    @Nullable Pair<Integer, Tab> getIndexAndTabForTabGroupId(@Nullable Token tabGroupId) {
-        if (tabGroupId == null) return null;
-
-        TabModel tabModel = getCurrentTabModelChecked();
-        @TabId int lastShownTabId = tabModel.getGroupLastShownTabId(tabGroupId);
-
-        int index = getIndexForTabIdWithRelatedTabs(lastShownTabId);
-        if (index == TabModel.INVALID_TAB_INDEX) return null;
-
-        Tab tab = getTabForIndex(index);
-        // If the found tab has a different group ID from the tabGroupId set in the args then the
-        // update is likely for a group that no longer exists so we should drop the update.
-        if (tab == null
-                || !tabGroupId.equals(tab.getTabGroupId())
-                || !tabModel.isTabInTabGroup(tab)) {
-            return null;
-        }
-        return Pair.create(index, tab);
-    }
-
-    /**
      * If the specified tab is part of a tab group, returns the UI index of the corresponding group
      * header.
      *
@@ -2833,7 +2808,7 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private @Nullable Tab getTabForIndex(int index) {
+    @Nullable Tab getTabForIndex(int index) {
         return getCurrentTabModelChecked()
                 .getTabById(mModelList.get(index).model.get(TabProperties.TAB_ID));
     }
@@ -3433,7 +3408,8 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param tabGroupId The {@link Token} of the tab group to update.
      */
     void updateTabGroupTitle(Token tabGroupId) {
-        @Nullable Pair<Integer, Tab> headerIndexAndTab = getIndexAndTabForTabGroupId(tabGroupId);
+        @Nullable Pair<Integer, Tab> headerIndexAndTab =
+                mTabListLayoutDelegate.getIndexAndTabForTabGroupId(tabGroupId);
         if (headerIndexAndTab == null) return;
         PropertyModel headerModel = mModelList.get(headerIndexAndTab.first).model;
         Tab tab = headerIndexAndTab.second;

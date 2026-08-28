@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -305,6 +306,12 @@ public class FlatLayoutDelegateUnitTest {
         // Flat layout does not display tab group headers, so no updates should occur.
         verifyNoInteractions(mMediator);
         verifyNoInteractions(mTabGridDialogHandler);
+    }
+
+    @Test
+    public void testGetIndexAndTabForTabGroupId_ReturnsNull() {
+        assertNull(mDelegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID));
+        assertNull(mDelegate.getIndexAndTabForTabGroupId(null));
     }
 
     @Test

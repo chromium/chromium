@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -21,6 +23,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
+import android.util.Pair;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -240,6 +243,35 @@ public class NestedLayoutDelegateUnitTest {
         mDelegate.tabClosureUndone(mTab1);
 
         verify(mMediator).addTabInfoToModelForTab(eq(mTab1), eq(0), anyBoolean());
+    }
+
+    @Test
+    public void testGetIndexAndTabForTabGroupId_NullGroupId() {
+        assertNull(mDelegate.getIndexAndTabForTabGroupId(null));
+    }
+
+    @Test
+    public void testGetIndexAndTabForTabGroupId_HeaderNotFound() {
+        assertNull(mDelegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testGetIndexAndTabForTabGroupId_EmptyTabsInGroup() {
+        addGroupHeaderToModelList(TAB1_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+
+        assertNull(mDelegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testGetIndexAndTabForTabGroupId_Success() {
+        addGroupHeaderToModelList(TAB1_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+
+        Pair<Integer, Tab> result = mDelegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID);
+        assertNotNull(result);
+        assertEquals(0, result.first.intValue());
+        assertEquals(mTab1, result.second);
     }
 
     @Test
