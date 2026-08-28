@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("window_management") {
   public = [
@@ -58,6 +59,7 @@ if (toolkit_views) {
       "//chrome/browser/notifications",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -71,6 +73,8 @@ if (toolkit_views) {
       "//components/webapps/services/web_app_origin_association/test:test_support",
       "//content/public/browser",
       "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
       "//ui/base",
       "//ui/views:test_support",
 
@@ -81,6 +85,10 @@ if (toolkit_views) {
       # suppression. Remove once crbug.com/527094632 is fixed.
       "//third_party/fuzztest",
     ]
+
+    if (enable_extensions) {
+      sources += [ "isolated_web_apps_close_window_browsertest.cc" ]
+    }
 
     # Excluded on Mac: cannot reliably check window focus on this platform.
     if (!is_mac) {

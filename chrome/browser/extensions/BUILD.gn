@@ -2700,8 +2700,6 @@ source_set("browser_tests") {
   # These tests don't run on desktop Android.
   if (enable_extensions) {
     sources += [
-      # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
-      "//chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
       "ai_language_model_browsertest.cc",
       "api/activity_log_private/activity_log_private_apitest.cc",
       "api/autofill_private/autofill_private_api_browsertest.cc",
