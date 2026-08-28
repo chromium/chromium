@@ -676,7 +676,8 @@ bool RenderWidgetHostViewAura::IsSurfaceAvailableForCopy() {
 }
 
 bool RenderWidgetHostViewAura::IsShowing() {
-  return window_->IsVisible();
+  // window_ may be null for popup widgets during initialization.
+  return window_ && window_->IsVisible();
 }
 
 void RenderWidgetHostViewAura::ShowImpl(PageVisibilityState page_visibility) {
