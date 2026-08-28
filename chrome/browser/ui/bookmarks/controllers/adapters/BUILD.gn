@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("adapters") {
-  sources = [ "bookmark_bar_prefs_adapter.h" ]
+  sources = [
+    "bookmark_bar_action_adapter.h",
+    "bookmark_bar_prefs_adapter.h",
+  ]
   public_deps = [ "//base" ]
 }
 
@@ -16,6 +19,8 @@ source_set("impl") {
 
   if (!is_android) {
     sources += [
+      "desktop_bookmark_bar_action_adapter.cc",
+      "desktop_bookmark_bar_action_adapter.h",
       "desktop_bookmark_bar_prefs_adapter.cc",
       "desktop_bookmark_bar_prefs_adapter.h",
     ]

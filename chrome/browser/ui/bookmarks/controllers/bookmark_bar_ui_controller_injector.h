@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_INJECTOR_H_
 #define CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_INJECTOR_H_
 
+class BookmarkBarActionAdapter;
 class BookmarkBarPrefsAdapter;
 
 class BookmarkBarUIControllerInjector {
@@ -13,6 +14,9 @@ class BookmarkBarUIControllerInjector {
 
   // Returns the preference adapter. The injector retains ownership.
   virtual BookmarkBarPrefsAdapter* GetPrefsAdapter() = 0;
+
+  // Returns the action adapter. The injector retains ownership.
+  virtual BookmarkBarActionAdapter* GetActionAdapter() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_INJECTOR_H_

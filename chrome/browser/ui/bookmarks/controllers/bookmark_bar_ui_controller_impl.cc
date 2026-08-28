@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_impl.h"
 
 #include "base/check.h"
+#include "chrome/browser/ui/bookmarks/controllers/adapters/bookmark_bar_action_adapter.h"
 #include "chrome/browser/ui/bookmarks/controllers/adapters/bookmark_bar_prefs_adapter.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_client.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_injector.h"

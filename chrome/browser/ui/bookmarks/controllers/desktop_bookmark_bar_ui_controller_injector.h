@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_injector.h"
 
 class BrowserWindowInterface;
+class DesktopBookmarkBarActionAdapter;
 class DesktopBookmarkBarPrefsAdapter;
 
 class DesktopBookmarkBarUIControllerInjector
@@ -24,10 +25,12 @@ class DesktopBookmarkBarUIControllerInjector
 
   // BookmarkBarUIControllerInjector overrides:
   BookmarkBarPrefsAdapter* GetPrefsAdapter() override;
+  BookmarkBarActionAdapter* GetActionAdapter() override;
 
  private:
   raw_ptr<BrowserWindowInterface> browser_;
   std::unique_ptr<DesktopBookmarkBarPrefsAdapter> prefs_adapter_;
+  std::unique_ptr<DesktopBookmarkBarActionAdapter> action_adapter_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_DESKTOP_BOOKMARK_BAR_UI_CONTROLLER_INJECTOR_H_
