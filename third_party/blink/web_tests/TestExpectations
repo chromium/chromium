@@ -1267,6 +1267,7 @@ crbug.com/494341468 external/wpt/quirks/tables-inherit-color-from-body-quirk-004
 crbug.com/494341468 external/wpt/quirks/tables-inherit-color-from-body-quirk-005.html [ Failure ]
 
 crbug.com/537801217 external/wpt/css/selectors/active-observable.html [ Failure Pass Timeout ]
+crbug.com/553155260 [ Win ] external/wpt/css/css-values/acos-asin-atan-atan2-computed.html [ Pass Timeout ]
 
 # var() argument grammar
 crbug.com/491166375 external/wpt/css/css-variables/variable-declaration-29.html [ Failure ]
@@ -2658,7 +2659,6 @@ crbug.com/550484948 virtual/webcrypto-pqc/external/wpt/WebCryptoAPI/derive_bits_
 crbug.com/550484948 virtual/webcrypto-pqc/external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.worker.html [ Timeout ]
 crbug.com/548482066 external/wpt/css/css-inline/text-box-trim/text-box-trim-first-line-pseudo-002.html [ Failure ]
 crbug.com/546159614 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
-crbug.com/545692281 [ Win ] external/wpt/css/css-values/acos-asin-atan-atan2-computed.html [ Pass Timeout ]
 crbug.com/545676304 [ Win ] external/wpt/html/semantics/popovers/popover-top-layer-nesting-hints.html [ Pass Timeout ]
 crbug.com/545718484 external/wpt/mathml/relations/html5-tree/href-target-base.html [ Failure Pass Timeout ]
 crbug.com/543836267 [ Win ] external/wpt/WebCryptoAPI/generateKey/failures_kmac.tentative.https.any.html [ Pass Timeout ]
