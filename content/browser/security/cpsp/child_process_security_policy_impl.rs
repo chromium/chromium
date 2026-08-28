@@ -86,7 +86,7 @@ mod ffi {
             process_lock_origin: UniquePtr<Origin>,
             result: &mut bool,
         ) -> bool;
-        fn erase_v8_optimization_state(browsing_instance_id: BrowsingInstanceId);
+        fn remove_v8_optimization_state(browsing_instance_id: BrowsingInstanceId);
 
         fn register_file_system_permission_policy(file_system_type: FileSystemType, policy: i32);
         fn find_permissions_for_file_system_type(
@@ -124,7 +124,7 @@ mod ffi {
             oac_state: OriginAgentClusterIsolationState,
             is_global_walk_or_frame_removal: bool,
         );
-        fn erase_origin_agent_cluster_state(browsing_instance_id: BrowsingInstanceId);
+        fn remove_origin_agent_cluster_state(browsing_instance_id: BrowsingInstanceId);
 
         fn grant_file_for_browser_upload(owner_token: UnguessableToken, file: &FilePath);
         fn revoke_file_for_browser_upload(owner_token: UnguessableToken);
@@ -289,7 +289,7 @@ fn lookup_are_v8_optimizations_disabled(
     false
 }
 
-fn erase_v8_optimization_state(browsing_instance_id: BrowsingInstanceId) {
+fn remove_v8_optimization_state(browsing_instance_id: BrowsingInstanceId) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.v8_optimization_verdict_map.remove(&browsing_instance_id);
 }
@@ -461,7 +461,7 @@ fn record_default_origin_agent_cluster_origin_if_new(
     states.insert(origin, oac_state);
 }
 
-fn erase_origin_agent_cluster_state(browsing_instance_id: BrowsingInstanceId) {
+fn remove_origin_agent_cluster_state(browsing_instance_id: BrowsingInstanceId) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.origin_agent_cluster_states_by_browsing_instance.remove(&browsing_instance_id);
 }

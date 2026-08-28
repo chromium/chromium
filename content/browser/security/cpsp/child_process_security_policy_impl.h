@@ -347,6 +347,27 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       bool requests_origin_keyed_process,
       url::Origin* result);
 
+  // A version of GetMatchingProcessIsolatedOrigin that takes in both the
+  // |origin| and the |site_url| that |origin| corresponds to.  |site_url| is
+  // the key by which |origin| will be looked up in |isolated_origins_| within
+  // |isolation_context|; this function allows it to be passed in when it is
+  // already known to avoid recomputing it internally.
+  bool GetMatchingProcessIsolatedOrigin(
+      const IsolationContext& isolation_context,
+      const url::Origin& origin,
+      bool requests_origin_keyed_process,
+      const GURL& site_url,
+      url::Origin* result);
+
+  // A version of GetMatchingProcessIsolatedOrigin that only checks the
+  // list of isolated origins (e.g. command-line or dynamically registered
+  // ones) and bypasses any checks for origin-keyed agent clusters (OAC).
+  std::optional<url::Origin>
+  GetMatchingProcessIsolatedOriginFromLegacyOriginList(
+      const IsolationContext& isolation_context,
+      const url::Origin& origin,
+      const GURL& site_url);
+
   // Removes any state associated with `browsing_instance_id`.
   void RemoveAllStateForBrowsingInstance(
       const BrowsingInstanceId& browsing_instance_id);
@@ -407,27 +428,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                             const url::Origin& origin);
   bool RecordOriginAgentClusterRequestIfNew_Cpp(BrowserContext* browser_context,
                                                 const url::Origin& origin);
-
-  // A version of GetMatchingProcessIsolatedOrigin that takes in both the
-  // |origin| and the |site_url| that |origin| corresponds to.  |site_url| is
-  // the key by which |origin| will be looked up in |isolated_origins_| within
-  // |isolation_context|; this function allows it to be passed in when it is
-  // already known to avoid recomputing it internally.
-  bool GetMatchingProcessIsolatedOrigin(
-      const IsolationContext& isolation_context,
-      const url::Origin& origin,
-      bool requests_origin_keyed_process,
-      const GURL& site_url,
-      url::Origin* result);
-
-  // A version of GetMatchingProcessIsolatedOrigin that only checks the
-  // list of isolated origins (e.g. command-line or dynamically registered
-  // ones) and bypasses any checks for origin-keyed agent clusters (OAC).
-  bool GetMatchingProcessIsolatedOriginFromLegacyOriginList(
-      const IsolationContext& isolation_context,
-      const url::Origin& origin,
-      const GURL& site_url,
-      url::Origin* result);
 
   // Stores the v8-optimization state for the passed-in `browsing_instance_id`
   // and `process_lock_origin` if the state isn't already cached.
@@ -1127,13 +1127,16 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RemoveAllStateForBrowsingInstanceInternal(
       const BrowsingInstanceId browsing_instance_id);
 
-  // Helper for RemoveAllStateForBrowsingInstanceInternal().
-  void EraseV8OptimizationState(const BrowsingInstanceId& browsing_instance_id);
-  void EraseV8OptimizationState_Cpp(
+  // Helpers for RemoveAllStateForBrowsingInstanceInternal().
+  void RemoveV8OptimizationState(
       const BrowsingInstanceId& browsing_instance_id);
-  void EraseOriginAgentClusterState(
+  void RemoveV8OptimizationState_Cpp(
       const BrowsingInstanceId& browsing_instance_id);
-  void EraseOriginAgentClusterState_Cpp(
+  void RemoveOriginAgentClusterState(
+      const BrowsingInstanceId& browsing_instance_id);
+  void RemoveOriginAgentClusterState_Cpp(
+      const BrowsingInstanceId& browsing_instance_id);
+  void RemoveIsolatedOriginsForBrowsingInstance(
       const BrowsingInstanceId& browsing_instance_id);
 
   // Creates the value to place in the "killed_process_origin_lock" crash key
@@ -1212,6 +1215,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // process.
   bool CanCommitSchemeInAnyProcess(const std::string& scheme);
   bool CanCommitSchemeInAnyProcess_Cpp(const std::string& scheme);
+
+  // Helper to remove all isolated origins corresponding to a particular
+  // BrowsingContext.
+  void RemoveIsolatedOriginsForBrowserContext(
+      const base::UnguessableToken& browser_context_id);
 
   // Helpers to remove all origins that have ever requested a particular OAC
   // state in `browser_context`.

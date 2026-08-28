@@ -1156,9 +1156,12 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForNonOpaqueOrigin(
         isolation_context, origin, /*requests_origin_keyed_process=*/false,
         site_url, &isolated_origin);
   } else {
-    has_matching_isolated_origin =
-        policy->GetMatchingProcessIsolatedOriginFromLegacyOriginList(
-            isolation_context, origin, site_url, &isolated_origin);
+    if (std::optional<url::Origin> match =
+            policy->GetMatchingProcessIsolatedOriginFromLegacyOriginList(
+                isolation_context, origin, site_url)) {
+      has_matching_isolated_origin = true;
+      isolated_origin = *match;
+    }
   }
   if (has_matching_isolated_origin) {
     return AgentClusterKey::CreateSiteKeyed(isolated_origin.GetURL(),

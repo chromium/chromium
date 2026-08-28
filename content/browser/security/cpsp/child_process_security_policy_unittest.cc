@@ -3573,7 +3573,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(oac_opt_in, result.value());
 
-  p->EraseOriginAgentClusterState(browsing_instance_id);
+  p->RemoveOriginAgentClusterState(browsing_instance_id);
 }
 
 TEST_P(ChildProcessSecurityPolicyTest,
@@ -3616,7 +3616,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(oac_default, result.value());
 
-  p->EraseOriginAgentClusterState(browsing_instance_id);
+  p->RemoveOriginAgentClusterState(browsing_instance_id);
 }
 
 TEST_P(ChildProcessSecurityPolicyTest,
