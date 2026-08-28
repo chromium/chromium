@@ -101,13 +101,15 @@ class AtMemoryHandler {
   // Returns true if the trigger string occurs before the caret in `field`.
   bool HasTriggerStringNextToCaret(const blink::WebElement& field) const;
 
-  bool DidReceiveKeyDownForAtMemoryShortcut(
+  bool DidReceiveKeyDownForTriggerShortcut(
       const blink::WebElement& field,
       const blink::WebKeyboardEvent& event);
 
-  void DidReceiveKeyDownForAtMemoryTriggerString(
-      const blink::WebElement& field,
-      const blink::WebKeyboardEvent& event);
+  void DidReceiveKeyDownForTriggerString(const blink::WebElement& field,
+                                         const blink::WebKeyboardEvent& event);
+
+  void DidReceiveKeyDownForDoubleCtrl(const blink::WebElement& field,
+                                      const blink::WebKeyboardEvent& event);
 
   void WaitForFocusAndReplaceSelectionForAtMemory(AskForValuesToFillInfo info,
                                                   std::u16string value,
@@ -146,6 +148,22 @@ class AtMemoryHandler {
     // <input type=number>.
     size_t last_offset = std::string::npos;
   } trigger_state_;
+
+  // State for observing the double Ctrl sequence.
+  struct {
+    // Represents the last-pressed physical Ctrl key. We use
+    // WebKeyboardEvent::dom_code because WebKeyboardEvent::windows_key_code
+    // normally uses the same enum value for the left and right Ctrl keys (even
+    // though it also has enum values for the left and right Ctrl keys).
+    int last_ctrl_dom_code = 0;
+    // The time of the last keydown event. Only events that happen in a certain
+    // timespan are considered coherent.
+    base::TimeTicks last_time;
+    // The target of the last keydown event.
+    FieldRendererId last_field_id{};
+    // The caret offset at the time of the previous keydown event.
+    size_t last_offset = std::string::npos;
+  } ctrl_state_;
 
   // State for the "@@" UKM metric.
   struct {

@@ -537,6 +537,9 @@ BASE_FEATURE(kAutofillAndroidUseGlobalIdForFormComparison,
 // Feature flag for kAutofillAtMemory.
 BASE_FEATURE(kAutofillAtMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, AtMemory can be triggered by pressing Ctrl twice.
+BASE_FEATURE(kAutofillAtMemoryDoubleCtrl, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The subscription tiers for which AtMemory is eligible. Comma-separated list
 // of subscription tier integers. If empty/not defined, no tier restrictions
 // are applied.

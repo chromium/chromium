@@ -36,6 +36,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace autofill {
@@ -1120,6 +1121,212 @@ TEST_F(AtMemoryHandlerContentEditableTest, AtMemoryShortcutTrigger) {
   SendWebKeyboardEvent(event);
 
   task_environment_.RunUntilIdle();
+}
+
+class AtMemoryHandlerDoubleCtrlTest : public AtMemoryHandlerTest {
+ public:
+  AtMemoryHandlerDoubleCtrlTest() {
+    feature_list_.InitAndEnableFeature(features::kAutofillAtMemoryDoubleCtrl);
+  }
+
+  void SendCtrlKeyDown(ui::DomCode dom_code = ui::DomCode::CONTROL_LEFT,
+                       ui::KeyboardCode key_code = ui::VKEY_CONTROL,
+                       int modifiers = blink::WebInputEvent::kControlKey) {
+    blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kRawKeyDown,
+                                  modifiers, base::TimeTicks::Now());
+    event.windows_key_code = key_code;
+    event.dom_code = static_cast<int>(dom_code);
+    SendWebKeyboardEvent(event);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that pressing Ctrl twice triggers AtMemory in an <input>.
+TEST_F(AtMemoryHandlerDoubleCtrlTest, DoubleCtrlTriggersAtMemoryInInput) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _,
+                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that pressing Ctrl twice triggers AtMemory in a <textarea>.
+TEST_F(AtMemoryHandlerDoubleCtrlTest, DoubleCtrlTriggersAtMemoryInTextArea) {
+  LoadHTML(R"(<textarea id="f"></textarea>)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _,
+                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that pressing Ctrl twice triggers AtMemory in a contenteditable.
+TEST_F(AtMemoryHandlerDoubleCtrlTest,
+       DoubleCtrlTriggersAtMemoryInContentEditable) {
+  LoadHTML(R"(<div contenteditable id="f"></div>)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _,
+                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that typing an intervening character cancels the double Ctrl sequence.
+TEST_F(AtMemoryHandlerDoubleCtrlTest, InterveningKeyCancelsDoubleCtrl) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(AnyNumber());
+
+  SendCtrlKeyDown();
+  SimulateUserTypingAsciiCharacter('a', /*flush_message_loop=*/true);
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that exceeding the timeout cancels the double Ctrl sequence.
+TEST_F(AtMemoryHandlerDoubleCtrlTest, TimeoutCancelsDoubleCtrl) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(AnyNumber());
+
+  SendCtrlKeyDown();
+  task_environment_.FastForwardBy(base::Milliseconds(600));
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that an auto-repeat Ctrl keydown event does not trigger AtMemory.
+TEST_F(AtMemoryHandlerDoubleCtrlTest, AutoRepeatDoesNotTrigger) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(AnyNumber());
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown(
+      ui::DomCode::CONTROL_LEFT, ui::VKEY_CONTROL,
+      blink::WebInputEvent::kControlKey | blink::WebInputEvent::kIsAutoRepeat);
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that changing focus cancels the double Ctrl sequence.
+TEST_F(AtMemoryHandlerDoubleCtrlTest, FocusChangeCancelsDoubleCtrl) {
+  LoadHTML(R"(<input id="f1"><input id="f2">)");
+  WaitForFormsSeen();
+  Focus("f1");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(AnyNumber());
+
+  SendCtrlKeyDown();
+  Focus("f2");
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that Left Ctrl followed by Right Ctrl does not trigger AtMemory, but
+// Left Ctrl followed by two Right Ctrls does.
+TEST_F(AtMemoryHandlerDoubleCtrlTest, LeftCtrlFollowedByRightCtrl) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  testing::MockFunction<void(int)> check_point;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl),
+            _))
+        .Times(0);
+    EXPECT_CALL(check_point, Call(1));
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl),
+            _))
+        .Times(1);
+    EXPECT_CALL(check_point, Call(2));
+  }
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(AnyNumber());
+
+  // 1. Left Ctrl followed by Right Ctrl does not trigger.
+  SendCtrlKeyDown(ui::DomCode::CONTROL_LEFT);
+  SendCtrlKeyDown(ui::DomCode::CONTROL_RIGHT);
+  task_environment_.RunUntilIdle();
+  check_point.Call(1);
+
+  // 2. A second Right Ctrl completes the Right Ctrl pair and triggers.
+  SendCtrlKeyDown(ui::DomCode::CONTROL_RIGHT);
+  task_environment_.RunUntilIdle();
+  check_point.Call(2);
 }
 
 class AtMemoryHandlerInactivityNudgeTest : public AtMemoryHandlerTest {

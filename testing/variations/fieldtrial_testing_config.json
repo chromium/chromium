@@ -1763,6 +1763,7 @@
                     "enable_features": [
                         "AtMemoryMqlsLogging",
                         "AutofillAtMemory",
+                        "AutofillAtMemoryDoubleCtrl",
                         "AutofillAtMemorySupportContenteditableOnAndroid",
                         "AutofillAtMemoryTriggerShortcut",
                         "AutofillEnableKeyboardAccessoryOnSearchFields",
