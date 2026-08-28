@@ -38,19 +38,16 @@ enum ScrollGranularity {
 interface AiOverlayTools {
   // Browser tools
 
-  // Open a URL. Use when the user wants to go to a page by providing the URL
-  // directly.
+  // Opens a URL in the browser.
   //
-  // Use FollowLink to navigate when the link is visible on the
-  // current page.
-  //
-  // url: Exact URL. Use PerformSearch to find a page instead of guessing a URL.
+  // url: The complete URL to open (e.g. "https://example.com").
+  // new_tab: If true, opens the URL in a new tab; otherwise, navigates the
+  // current tab.
   OpenUrl(string url, bool new_tab) => result<mojo_base.mojom.Empty, string>;
 
-  // Follow/click a link by its ID.
+  // Follows or navigates to a link on the active webpage by its identifier.
   //
-  // id: The ID of the link to follow, as represented in the
-  // markdown (e.g. `{#9821}`).
+  // id: The identifier or token of the link to follow (e.g. "9821" or "101").
   FollowLink(string id) => result<mojo_base.mojom.Empty, string>;
 
   // Search using the default search engine.
@@ -129,19 +126,20 @@ interface AiOverlayTools {
   OpenPage(string query)
       => result<string, string>;
 
-  // Replace text in an input field, textarea, or editable element on the page.
+  // Replaces the entire text content of an input field, textarea, search box,
+  // or editable element on the active webpage. Use this whenever the user asks
+  // to write, type, fill in, or enter text into a field or form on the page.
   //
-  // dom_node_id: The numeric DOM node ID of the target field from the Page
-  // Content Summary (e.g. 101).
-  // text: The text to set into the element.
+  // dom_node_id: The numeric DOM node ID of the target input field or editable
+  // element (e.g. 101).
+  // text: The complete replacement text to set into the element.
   SetText(blink.mojom.DOMNodeId dom_node_id, string text)
       => result<mojo_base.mojom.Empty, string>;
 
   // Click or toggle an interactive element (such as a button, radio button,
-  // or checkbox) on the page.
+  // or checkbox) on the active webpage.
   //
-  // dom_node_id: The numeric DOM node ID of the target element from the Page
-  // Content Summary (e.g. 101).
+  // dom_node_id: The numeric DOM node ID of the target element (e.g. 101).
   ClickElement(blink.mojom.DOMNodeId dom_node_id)
       => result<mojo_base.mojom.Empty, string>;
 
@@ -151,19 +149,20 @@ interface AiOverlayTools {
   SetFullscreen(bool fullscreen)
       => result<mojo_base.mojom.Empty, string>;
 
-  // Select an option from a dropdown (<select>) element on the page.
+  // Selects an option from a dropdown (<select>) element on the active webpage.
   //
-  // dom_node_id: The numeric DOM node ID of the target dropdown element from
-  // the Page Content Summary (e.g. 101).
+  // dom_node_id: The numeric DOM node ID of the target dropdown element
+  // (e.g. 101).
   // value: The value of the <option> element to select.
   SelectOption(blink.mojom.DOMNodeId dom_node_id, string value)
       => result<mojo_base.mojom.Empty, string>;
 
   // @NON_BLOCKING
-  // Use for tasks taking >1s to process, email, or to generate images, audio,
-  // video, or long text. Prefer direct voice replies for quick (<1s) tasks.
+  // Opens the Gemini in Chrome side panel to handle complex multi-step browser
+  // tasks, autonomous actuation (e.g. multi-step workflows, shopping, booking,
+  // filling multi-page forms), image generation, or conversational queries.
   //
-  // prompt: The request to send to Gemini in the side panel.
+  // prompt: The request or instruction to send to Gemini in the side panel.
   InvokeGlic(string prompt) => result<string, string>;
 };
 
