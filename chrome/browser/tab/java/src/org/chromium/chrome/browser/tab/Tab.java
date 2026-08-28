@@ -376,6 +376,9 @@ public interface Tab extends TabLifecycle {
      */
     boolean isTabInBrowser();
 
+    /** Returns true if the {@link Tab} is hosted in a popup window. */
+    boolean isTabInPopup();
+
     /**
      * Returns the last time this tab was shown or the time of its initialization if it wasn't yet
      * shown.

@@ -954,9 +954,15 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         return true;
     }
 
+    private boolean handleTabInPopup(ExternalNavigationParams params) {
+        if (!params.isTabInPopup()) return false;
+        if (debug()) Log.i(TAG, "Navigation in a popup window is not overridden.");
+        return true;
+    }
+
     /**
-     * Trigger a UI affordance that will ask the user to grant file access.  After the access
-     * has been granted or denied, continue loading the specified file URL.
+     * Trigger a UI affordance that will ask the user to grant file access. After the access has
+     * been granted or denied, continue loading the specified file URL.
      *
      * @param params The {@link ExternalNavigationParams} for the navigation.
      * @param permissionNeeded The name of the Android permission needed to access the file.
@@ -1861,7 +1867,10 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         // All cases where a navigation that starts in a PWA should cause a Tab reparenting towards
         // the Chrome browser.
         // TODO(crbug.com/416562397): consider in-scope PWAs in the reparenting process.
-        // TODO(crbug.com/415926894): do not override navigations with WindowOpenDisposition POPUP
+        if (handleTabInPopup(params)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
         if (shouldReparentTab(
                 params.getUrl(),
                 params.isTabInPWA(),

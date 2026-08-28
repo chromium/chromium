@@ -70,6 +70,11 @@ class ActorTabDelegateFactory implements TabDelegateFactory {
         return false;
     }
 
+    @Override
+    public boolean isTabInPopup() {
+        return false;
+    }
+
     private static class ActorTabWebContentsDelegate extends TabWebContentsDelegateAndroid {
         @Override
         public boolean shouldResumeRequestsForCreatedWindow() {

@@ -769,4 +769,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     public boolean isTabInBrowser() {
         return false;
     }
+
+    @Override
+    public boolean isTabInPopup() {
+        return mIntentDataProvider != null
+                && mIntentDataProvider.getUiType() == CustomTabsUiType.POPUP;
+    }
 }

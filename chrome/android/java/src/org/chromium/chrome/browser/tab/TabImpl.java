@@ -2852,6 +2852,11 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
+    public boolean isTabInPopup() {
+        return mDelegateFactory != null && mDelegateFactory.isTabInPopup();
+    }
+
+    @Override
     public long getTimestampMillis() {
         return mTimestampMillis;
     }

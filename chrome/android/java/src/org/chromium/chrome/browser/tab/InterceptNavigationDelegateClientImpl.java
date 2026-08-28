@@ -202,6 +202,11 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
+    public boolean isTabInPopup() {
+        return mTab.isTabInPopup();
+    }
+
+    @Override
     public boolean isTabDetached() {
         return mTab.isDetachedFromActivity();
     }

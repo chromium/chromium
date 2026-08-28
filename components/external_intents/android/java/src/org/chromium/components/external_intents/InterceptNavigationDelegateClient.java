@@ -64,6 +64,9 @@ public interface InterceptNavigationDelegateClient {
     /* Returns true if the client hosting this tab is a Browser. */
     boolean isTabInBrowser();
 
+    /* Returns true if the client hosting this tab is a popup window. */
+    boolean isTabInPopup();
+
     /* Returns true if the tab is currently detached because of an executing reparenting task. */
     boolean isTabDetached();
 

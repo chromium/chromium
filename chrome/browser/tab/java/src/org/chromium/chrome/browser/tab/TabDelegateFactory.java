@@ -79,4 +79,7 @@ public interface TabDelegateFactory {
 
     /** Returns whether the tab is running in a standard tabbed browser environment. */
     boolean isTabInBrowser();
+
+    /** Returns whether the tab is running in a popup window. */
+    boolean isTabInPopup();
 }

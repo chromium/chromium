@@ -78,4 +78,9 @@ public class HeadlessTabDelegateFactory implements TabDelegateFactory {
     public boolean isTabInBrowser() {
         return true;
     }
+
+    @Override
+    public boolean isTabInPopup() {
+        return false;
+    }
 }

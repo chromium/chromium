@@ -15,6 +15,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -166,6 +167,9 @@ public class WebAppHeaderUtils {
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public static boolean isWebAppHeaderEnabled(
             BrowserServicesIntentDataProvider intentDataProvider) {
+        if (intentDataProvider.getUiType() == CustomTabsUiType.POPUP) {
+            return false;
+        }
         return isMinimalUiEnabled(intentDataProvider)
                 || isStandaloneEnabled(intentDataProvider)
                 || isWindowControlsOverlayEnabled(intentDataProvider);

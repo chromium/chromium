@@ -30,6 +30,7 @@ public class MockTab extends TabImpl {
     private boolean mIsCustomTab;
     private boolean mIsTabInPwa;
     private boolean mIsTabInBrowser;
+    private boolean mIsTabInPopup;
 
     private Integer mParentId;
 
@@ -206,6 +207,15 @@ public class MockTab extends TabImpl {
     @Override
     public boolean isTabInBrowser() {
         return mIsTabInBrowser;
+    }
+
+    public void setIsTabInPopup(boolean isTabInPopup) {
+        mIsTabInPopup = isTabInPopup;
+    }
+
+    @Override
+    public boolean isTabInPopup() {
+        return mIsTabInPopup;
     }
 
     @Override

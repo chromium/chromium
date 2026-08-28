@@ -103,6 +103,7 @@ public class ExternalNavigationParams {
     private final boolean mIsTabInPWA;
     private final boolean mIsInDesktopWindowingMode;
     private final boolean mIsTabInBrowser;
+    private final boolean mIsTabInPopup;
 
     // Populated when an async action is taken, ensuring the callback gets called.
     private @Nullable RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
@@ -128,7 +129,8 @@ public class ExternalNavigationParams {
             long navigationId,
             boolean isTabInPWA,
             boolean isInDesktopWindowingMode,
-            boolean isTabInBrowser) {
+            boolean isTabInBrowser,
+            boolean isTabInPopup) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -154,6 +156,7 @@ public class ExternalNavigationParams {
         mIsTabInPWA = isTabInPWA;
         mIsInDesktopWindowingMode = isInDesktopWindowingMode;
         mIsTabInBrowser = isTabInBrowser;
+        mIsTabInPopup = isTabInPopup;
     }
 
     public void onAsyncActionStarted() {
@@ -302,6 +305,13 @@ public class ExternalNavigationParams {
         return mIsTabInBrowser;
     }
 
+    /**
+     * @return whether the tab is a popup window.
+     */
+    public boolean isTabInPopup() {
+        return mIsTabInPopup;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         private final GURL mUrl;
@@ -325,6 +335,7 @@ public class ExternalNavigationParams {
         private boolean mIsTabInPWA;
         private boolean mIsInDesktopWindowingMode;
         private boolean mIsTabInBrowser;
+        private boolean mIsTabInPopup;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -439,6 +450,12 @@ public class ExternalNavigationParams {
             return this;
         }
 
+        /** Sets whether the tab is a popup window. */
+        public Builder setIsTabInPopup(boolean v) {
+            mIsTabInPopup = v;
+            return this;
+        }
+
         /**
          * @return A fully constructed {@link ExternalNavigationParams} object.
          */
@@ -464,7 +481,8 @@ public class ExternalNavigationParams {
                     mNavigationId,
                     mIsTabInPWA,
                     mIsInDesktopWindowingMode,
-                    mIsTabInBrowser);
+                    mIsTabInBrowser,
+                    mIsTabInPopup);
         }
     }
 }
