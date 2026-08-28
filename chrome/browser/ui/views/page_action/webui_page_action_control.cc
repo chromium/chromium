@@ -283,6 +283,7 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   state->identifier = tracked_element::mojom::TrackedElementIdentifier::New(
       std::move(identifier_name),
       /*secondary_identifier=*/std::string());
+  state->is_active = model->GetActionActive();
 
   return state;
 }

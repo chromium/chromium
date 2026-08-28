@@ -153,6 +153,7 @@ suite('PageActionIconTest', function() {
         nativeIdentifier: '',
         secondaryIdentifier: '',
       },
+      isActive: false,
     };
   }
 
@@ -569,5 +570,23 @@ suite('PageActionIconTest', function() {
     assertEquals(
         'Translate this page',
         icon.adjustTooltipForHelpBubble('Translate this page'));
+  });
+
+  test('isActive in state updates is-menu-open', async () => {
+    assertFalse(icon.$.button.hasAttribute('is-menu-open'));
+
+    icon.state = {
+      ...icon.state,
+      isActive: true,
+    };
+    await microtasksFinished();
+    assertTrue(icon.$.button.hasAttribute('is-menu-open'));
+
+    icon.state = {
+      ...icon.state,
+      isActive: false,
+    };
+    await microtasksFinished();
+    assertFalse(icon.$.button.hasAttribute('is-menu-open'));
   });
 });

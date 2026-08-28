@@ -13,7 +13,7 @@ export function getHtml(this: PageActionIconElement) {
 <toolbar-chip-button outset-focus-ring id="button"
     style="${this.chipStyleOverride_ ?? nothing}"
     .buttonTabIndex="${0}"
-    ?is-menu-open="${this.isHighlighted}"
+    ?is-menu-open="${this.state.isActive || this.isHighlighted}"
     ?animates-label="${this.shouldAnimate_()}"
     ?has-label="${this.shouldShowLabel_()}"
     .tooltip="${this.getTooltip_()}"

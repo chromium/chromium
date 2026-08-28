@@ -1,10 +1,10 @@
-#include "content/public/test/test_navigation_observer.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/clipboard/scoped_clipboard_writer.h"
-#include "ui/base/clipboard/test/test_clipboard.h"
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+
+#include <utility>
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -19,7 +19,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -29,7 +31,6 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -43,11 +44,16 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/find_in_page/find_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -624,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   }));
 
   // Click the bookmark star button in WebUI.
-  const int kBookmarkMojomId = static_cast<int>(
+  const int kBookmarkMojomId = std::to_underlying(
       webui_toolbar::ActionIdToMojomPageActionId(kActionBookmarkThisTab));
   const std::string kClickBookmarkScript = content::JsReplace(R"(
       (() => {
@@ -634,12 +640,10 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
             shadowRoot?.querySelector('page-action-icons')?.
             shadowRoot?.querySelectorAll('page-action-icon') || []
         ).find(icon => icon.state && icon.state.pageActionId === $1);
-        const button = bookmarkIcon?.shadowRoot?.
-          querySelector('#button');
-        if (!button) {
+        if (!bookmarkIcon) {
           return false;
         }
-        button.click();
+        bookmarkIcon.$$.button.click();
         return true;
       })()
   )",
@@ -876,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   bookmark_controller->URLStarredChanged(web_contents, /*starred=*/true);
   GetLocationBar()->Update(web_contents);
 
-  constexpr int kBookmarkMojomId = static_cast<int>(
+  constexpr int kBookmarkMojomId = std::to_underlying(
       toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab);
 
   const std::string check_bookmark_exists_script =
@@ -910,12 +914,11 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
             shadowRoot?.querySelectorAll('page-action-icon') || []
         );
         const bookmarkIcon = pageActions.find(
-          icon => icon.state.pageActionId === $1);
+          icon => icon.state && icon.state.pageActionId === $1);
         if (!bookmarkIcon) {
           return false;
         }
-        const button = bookmarkIcon.shadowRoot?.querySelector('#button');
-        return button ? button.hasAttribute('is-menu-open') : false;
+        return bookmarkIcon.$$.button.hasAttribute('is-menu-open');
       })()
   )",
                          kBookmarkMojomId);
@@ -932,6 +935,57 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
     return content::EvalJs(GetWebUIToolbarWebContents(),
                            check_bookmark_is_menu_open_script)
                .ExtractBool() == true;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       PageActionFindBarHighlight) {
+  WaitForInitialWebUIToolbar(browser());
+
+  const int find_mojom_id =
+      std::to_underlying(toolbar_ui_api::mojom::PageActionId::kActionFind);
+
+  const std::string check_find_is_menu_open_script =
+      content::JsReplace(R"(
+      (() => {
+        const pageActions = Array.from(
+          document.querySelector('toolbar-app')?.
+            shadowRoot?.querySelector('location-bar')?.
+            shadowRoot?.querySelector('page-action-icons')?.
+            shadowRoot?.querySelectorAll('page-action-icon') || []
+        );
+        const findIcon = pageActions.find(
+          icon => icon.state && icon.state.pageActionId === $1);
+        if (!findIcon) {
+          return false;
+        }
+        return findIcon.$$.button.hasAttribute('is-menu-open');
+      })()
+  )",
+                         find_mojom_id);
+
+  EXPECT_FALSE(content::EvalJs(GetWebUIToolbarWebContents(),
+                               check_find_is_menu_open_script)
+                   .ExtractBool());
+
+  // Show find bar.
+  auto* find_bar_controller = browser()->GetFeatures().GetFindBarController();
+  find_bar_controller->Show();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           check_find_is_menu_open_script)
+               .ExtractBool() == true;
+  }));
+
+  // Hide find bar.
+  find_bar_controller->EndFindSession(find_in_page::SelectionAction::kKeep,
+                                      find_in_page::ResultAction::kKeep);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           check_find_is_menu_open_script)
+               .ExtractBool() == false;
   }));
 }
 

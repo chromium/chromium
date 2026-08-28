@@ -71,6 +71,7 @@ export class PageActionIconElement extends PageActionIconElementBase {
       nativeIdentifier: '',
       secondaryIdentifier: '',
     },
+    isActive: false,
   };
 
   accessor forceFocusRing: boolean = false;

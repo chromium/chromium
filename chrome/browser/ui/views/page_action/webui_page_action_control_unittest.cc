@@ -181,6 +181,22 @@ TEST_F(WebUIPageActionControlTest, StateMapping) {
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
   EXPECT_FALSE(states[0]->icon.is_null());
+  EXPECT_FALSE(states[0]->is_active);
+
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .Times(testing::AtLeast(1));
+  std::optional<page_actions::ScopedPageActionActivity> activity =
+      controller->AddActivity(target_action_id);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_TRUE(states[0]->is_active);
+
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .Times(testing::AtLeast(1));
+  activity.reset();
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_FALSE(states[0]->is_active);
 
   EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
       .Times(testing::AtLeast(1));
