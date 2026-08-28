@@ -99,17 +99,28 @@ subagents to scan the codebase holistically, guided by past lessons:
    - **Concurrency & Deferral**: Defer non-critical work to idle tasks or worker
      threads (e.g. sweeping, lazy state initialization).
 
-2. **Learning from Past Attempts**: Study all previously attempted CLs on
-   Gerrit:
+2. **Learning from Past Attempts & Non-Duplication**: Query and study all
+   previously attempted CLs on Gerrit:
 
    ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py
+   # Query all accepted winners and rejected attempts:
+   vpython3 .agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py
+
+   # Search for a specific file, class, or subsystem to verify novelty:
+   vpython3 .agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py --search <target_file_or_subsystem>
+
+   # Or inspect accepted winning optimizations specifically:
+   vpython3 .agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py --accepted-only
    ```
 
-   - **`topic:chrome-perf-opt-accepted`**: Study why these succeeded and explore
-     generalizing their architectural principles.
-   - **`topic:chrome-perf-opt-rejected`**: Study what failed or vanished in
-     noise. **NEVER repeat any rejected pattern or variation.**
+   - **`topic:chrome-perf-opt-rejected`**: CLs that failed Pinpoint evaluation
+     ($p > 0.05$). You **MUST NOT** repeat or re-propose any of these changes or
+     micro-variations of them.
+   - **`topic:chrome-perf-opt-accepted`**: Validated benchmark winners. Check
+     this list to avoid duplicating changes that have already been developed and
+     accepted on Gerrit. Each optimization must be developed and evaluated on
+     its own focused, independent CL. Do NOT combine multiple distinct
+     optimizations into a single compound/aggregate CL.
 
 3. **Subagent Fan-Out via `invoke_subagent`**: Launch general Opportunity
    Explorer subagents (see [Agent Roles Guide](references/agent_roles.md) for
@@ -120,9 +131,17 @@ ______________________________________________________________________
 
 ## Step 2: Formulate Macro Hypothesis & Isolated Worktree Implementation
 
-> [!IMPORTANT] **Mandatory High-Impact Standard**:
+> [!IMPORTANT] **Mandatory High-Impact & Novelty Standard**:
 >
-> - **No Duplication**: Verify candidate against `fetch_tried_cls.py`.
+> - **Mandatory Novelty Pre-Check with `--search`**: Before writing code for any
+>   candidate, run
+>   `vpython3 .agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py --search <target_file_or_symbol>`
+>   to verify that neither an accepted winner nor a rejected attempt already
+>   exists for that code path.
+> - **No Duplication & No Combining**: NEVER repeat changes listed under
+>   `topic:chrome-perf-opt-rejected` or `topic:chrome-perf-opt-accepted`. Do NOT
+>   combine multiple separate optimizations into a single CL; each optimization
+>   must stand on its own merits as an independent CL.
 > - **No Micro-Tweaks**: Do NOT propose single variable renames, isolated
 >   trivial bound checks, or micro-helpers that produce `< 0.1%` change and
 >   vanish in Pinpoint noise.
@@ -180,7 +199,7 @@ Verify correctness locally in the worktree before uploading to Gerrit:
 
 ______________________________________________________________________
 
-## Step 4: Submit CL to Gerrit
+## Step 4: Submit CL to Gerrit (Work In Progress)
 
 1. Commit all modified files with descriptive rationale:
    ```bash
@@ -191,9 +210,10 @@ ______________________________________________________________________
    TAG=agy
    CONV=<conversation_id>"
    ```
-2. Upload the CL to Gerrit:
+2. Upload the CL to Gerrit as **Work In Progress (WIP)** to avoid notifying
+   reviewers before Pinpoint validation:
    ```bash
-   git cl upload -m "Performance optimization for Speedometer 3" --cq-dry-run
+   git cl upload -o wip --no-autocc --bypass-hooks -f -m "Performance optimization for Speedometer 3"
    ```
 3. Retrieve the Gerrit Issue ID:
    ```bash
@@ -239,9 +259,22 @@ ______________________________________________________________________
    pp s <JOB_ID>
    ```
 
-2. **Decision Rules**:
+2. **Metric Direction Interpretation**:
+
+   - **Subtest Workloads (e.g. `TodoMVC-*`, `Editor-*`, `NewsSite-*`)**:
+     Direction is `smaller-better` (duration/latency in ms).
+     - **Negative change (`-X.X%`)**: Faster / Improvement (Win).
+     - **Positive change (`+X.X%`)**: Slower / Regression (Loss).
+   - **Composite Score (`Score`)**: Direction is `larger-better` (higher score =
+     faster).
+     - **Positive change (`+X.X%`)**: Improvement (Win).
+     - **Negative change (`-X.X%`)**: Regression (Loss).
+
+3. **Decision Rules**:
 
    - ✅ **Statistically Significant Improvement ($p < 0.05$)**:
+     - Significant reduction in subtest durations (`-X%` on `smaller-better`) or
+       increase in composite `Score` with zero significant regressions.
      - Set Gerrit topic to `chrome-perf-opt-accepted`:
        ```bash
        vpython3 -c "import sys; sys.path.insert(0, 'third_party/depot_tools'); import gerrit_util; gerrit_util.CallGerritApi('chromium-review.googlesource.com', f'/changes/{$(git cl issue)}/topic', reqtype='PUT', body={'topic': 'chrome-perf-opt-accepted'})"
@@ -252,6 +285,8 @@ ______________________________________________________________________
        ```
      - Propose the change to the user and reviewers.
    - ❌ **Neutral or Regressed**:
+     - Positive delta (`+X%`) on `smaller-better` metrics indicates a
+       **regression**, or no metric reaches $p < 0.05$.
      - Set Gerrit topic to `chrome-perf-opt-rejected` before abandoning:
        ```bash
        vpython3 -c "import sys; sys.path.insert(0, 'third_party/depot_tools'); import gerrit_util; gerrit_util.CallGerritApi('chromium-review.googlesource.com', f'/changes/{$(git cl issue)}/topic', reqtype='PUT', body={'topic': 'chrome-perf-opt-rejected'})"

@@ -5,12 +5,13 @@ significance, and managing asynchronous try job pipelining.
 
 ______________________________________________________________________
 
-## 1. Uploading CL to Gerrit
+## 1. Uploading CL to Gerrit (Work In Progress)
 
-Ensure the change is committed with clean descriptions and tags:
+Ensure the change is committed with clean descriptions and tags, and upload as
+**WIP** to prevent notifying reviewers:
 
 ```bash
-git cl upload -m "Optimization summary" --cq-dry-run
+git cl upload -o wip --no-autocc -m "Optimization summary"
 ```
 
 Verify the Gerrit Change ID / Issue number via:
@@ -67,26 +68,29 @@ pp s <JOB_ID>
 
 ### Evaluation Criteria:
 
-1. **Statistical Significance**: Pinpoint highlights significant changes with
-   `p < 0.05` and confidence intervals.
-2. **Overall Geometric Mean**: Check if the top-level benchmark score increased
-   (`+X.X%`).
-3. **Sub-story Regressions**: Ensure no major sub-story regresses significantly.
+1. **Metric Direction (`smaller-better` vs `larger-better`)**:
+   - **Subtests (`TodoMVC-*`, `Editor-*`, `NewsSite-*`)**: Measure
+     duration/latency in milliseconds where **smaller is better**.
+     - **`-X.X%` (Negative Change)**: Speedup / Improvement (Win).
+     - **`+X.X%` (Positive Change)**: Slowdown / Regression (Loss).
+   - **Overall `Score`**: Measures operations/second where **larger is better**.
+     - **`+X.X%`**: Improvement.
+     - **`-X.X%`**: Regression.
+2. **Statistical Significance**: Look for $p < 0.05$ (marked with `*` in
+   Pinpoint output).
+3. **No Regressions**: Any statistically significant positive delta (`+X%` on
+   `smaller-better`) indicates a real performance regression.
 
 ### Decision Actions:
 
-- **Winner (Keep & Propose)**: If overall score is improved with statistically
-  significant sub-metrics and no critical regressions:
-  - Set Gerrit topic to `chrome-perf-opt-accepted`
-  - Post results in the CL description:
-    ```bash
-    git cl upload -m "Add Pinpoint M1 benchmark results (+X.X% improvement)"
-    ```
-  - Send to reviewers.
+- **Winner (Keep & Propose)**: If overall score is improved or sub-workload
+  durations significantly decrease (`-X%`) with $p < 0.05$ and zero regressions:
+  - Set Gerrit topic to `chrome-perf-opt-accepted`.
+  - Add benchmark results to CL description and propose to reviewers.
 - **Neutral / Regressed (Abandon)**: If the change shows no measurable
-  improvement or causes regressions:
-  - Set Gerrit topic to `chrome-perf-opt-rejected`
+  improvement or triggers statistically significant regressions:
+  - Set Gerrit topic to `chrome-perf-opt-rejected`.
   - Abandon the CL:
     ```bash
-    git cl abandon -m "Pinpoint try job (150 iterations on M1) showed no statistically significant speedup."
+    git cl abandon -m "Pinpoint try job showed statistically significant regression / no speedup."
     ```

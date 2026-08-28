@@ -10,6 +10,8 @@ Queries Gerrit for CLs under:
 - topic:chrome-perf-opt-accepted (significant winners - BUILD UPON)
 """
 
+import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -46,48 +48,120 @@ def fetch_cls_by_topic(topic: str, limit: int = 100):
 
 
 def main():
-    print("=" * 80)
-    print("CHROME PERFORMANCE OPTIMIZER - PREVIOUSLY ATTEMPTED CL TRACKER")
-    print("=" * 80)
-
-    # 1. Accepted Winning CLs
-    accepted_changes = fetch_cls_by_topic('chrome-perf-opt-accepted')
-    print(f"\n🏆 ACCEPTED WINNING OPTIMIZATIONS ({len(accepted_changes)} CLs):")
-    print("These changes delivered verified statistically significant wins.")
-    print("-" * 80)
-    if not accepted_changes:
-        print("  (None found)")
-    for c in accepted_changes:
-        num = c.get('_number')
-        subj = c.get('subject', 'No Subject')
-        status = c.get('status', '')
-        print(f"  • CL {num} [{status}]: {subj}")
-        print(f"    Link: https://crrev.com/c/{num}")
-
-    # 2. Rejected / Neutral CLs
-    rejected_changes = fetch_cls_by_topic('chrome-perf-opt-rejected')
-    print(
-        f"\n❌ REJECTED ATTEMPTS ({len(rejected_changes)} CLs) - DO NOT REPEAT:"
+    parser = argparse.ArgumentParser(
+        description="Fetch and search tried optimization CLs from Gerrit."
     )
-    print("These optimizations were tested with 150 Pinpoint iterations and")
-    print("showed NO statistically significant improvement ($p > 0.05$).")
-    print("-" * 80)
-    if not rejected_changes:
-        print("  (None found)")
-    for c in rejected_changes:
-        num = c.get('_number')
-        subj = c.get('subject', 'No Subject')
-        updated = c.get('updated', '')[:10]
-        print(f"  • CL {num} ({updated}): {subj}")
-        print(f"    Link: https://crrev.com/c/{num}")
-
-    print("\n" + "=" * 80)
-    print("SUMMARY OF EXCLUDED PATTERNS:")
-    print("  1. Do not repeat micro-optimizations that yielded < 0.1% change.")
-    print(
-        "  2. Focus on macro-architectural levers in optimization_patterns.md."
+    parser.add_argument(
+        '--accepted-only', action='store_true', help="Only fetch accepted CLs"
     )
-    print("=" * 80 + "\n")
+    parser.add_argument(
+        '--rejected-only', action='store_true', help="Only fetch rejected CLs"
+    )
+    parser.add_argument(
+        '--search',
+        type=str,
+        default="",
+        help="Search query to filter CL subjects, files, or commit messages",
+    )
+    parser.add_argument(
+        '--json', action='store_true', help="Output as structured JSON"
+    )
+    args = parser.parse_args()
+
+    accepted = (
+        []
+        if args.rejected_only
+        else fetch_cls_by_topic('chrome-perf-opt-accepted')
+    )
+    rejected = (
+        []
+        if args.accepted_only
+        else fetch_cls_by_topic('chrome-perf-opt-rejected')
+    )
+
+    def matches_search(change, query):
+        if not query:
+            return True
+        query_lower = query.lower()
+        subject = change.get('subject', '').lower()
+        if query_lower in subject:
+            return True
+        # Check files in current revision if available
+        rev_id = change.get('current_revision')
+        if rev_id:
+            files = (
+                change.get('revisions', {})
+                .get(rev_id, {})
+                .get('files', {})
+                .keys()
+            )
+            for f in files:
+                if query_lower in f.lower():
+                    return True
+        return False
+
+    if args.search:
+        accepted = [c for c in accepted if matches_search(c, args.search)]
+        rejected = [c for c in rejected if matches_search(c, args.search)]
+
+    if args.json:
+        result = {
+            'accepted': [
+                {
+                    'number': c.get('_number'),
+                    'subject': c.get('subject'),
+                    'status': c.get('status'),
+                    'updated': c.get('updated'),
+                    'url': f"https://crrev.com/c/{c.get('_number')}",
+                }
+                for c in accepted
+            ],
+            'rejected': [
+                {
+                    'number': c.get('_number'),
+                    'subject': c.get('subject'),
+                    'status': c.get('status'),
+                    'updated': c.get('updated'),
+                    'url': f"https://crrev.com/c/{c.get('_number')}",
+                }
+                for c in rejected
+            ],
+        }
+        print(json.dumps(result, indent=2))
+        return
+
+    print("=" * 80)
+    query_str = f" [Search: '{args.search}']" if args.search else ""
+    print(
+        f"CHROME PERFORMANCE OPTIMIZER - TRIED CLs{query_str} (Accepted:"
+        f" {len(accepted)}, Rejected: {len(rejected)})"
+    )
+    print("=" * 80)
+
+    if not args.rejected_only:
+        print(f"\n🏆 ACCEPTED WINNING OPTIMIZATIONS ({len(accepted)} CLs):")
+        print("-" * 80)
+        if not accepted:
+            print("  (None found)")
+        for c in accepted:
+            num = c.get('_number')
+            subj = c.get('subject', 'No Subject')
+            print(f"  • CL {num}: {subj} (https://crrev.com/c/{num})")
+
+    if not args.accepted_only:
+        print(f"\n❌ REJECTED ATTEMPTS ({len(rejected)} CLs) - DO NOT REPEAT:")
+        print("-" * 80)
+        if not rejected:
+            print("  (None found)")
+        for c in rejected:
+            num = c.get('_number')
+            subj = c.get('subject', 'No Subject')
+            updated = c.get('updated', '')[:10]
+            print(
+                f"  • CL {num} ({updated}): {subj} (https://crrev.com/c/{num})"
+            )
+
+    print("\n" + "=" * 80 + "\n")
 
 
 if __name__ == '__main__':

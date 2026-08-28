@@ -69,34 +69,69 @@ def fetch_results(job_id: str) -> Optional[str]:
 
 def evaluate_results(stdout: str) -> Dict[str, Any]:
     """Analyzes Pinpoint result output for improvements and regressions."""
-    has_significant_improvement = False
-    has_significant_regression = False
+    significant_improvements = []
+    significant_regressions = []
     overall_score_delta = 0.0
 
     lines = stdout.splitlines()
     for line in lines:
-        lower = line.lower()
-        if "score" in lower or "geometric" in lower or "average" in lower:
-            # Check for positive/negative % deltas
-            match_delta = re.search(r"([+-]?\d+\.?\d*)\s*%", line)
-            if match_delta:
-                try:
-                    overall_score_delta = float(match_delta.group(1))
-                except ValueError:
-                    pass
-
-        # Look for significant improvements / regressions indicators
+        line_clean = line.strip()
         if (
-            "improvement" in lower
-            or "faster" in lower
-            or "(+)" in line
-            or "p <" in lower
-            or "p=" in lower
+            not line_clean
+            or line_clean.startswith("metric")
+            or "───" in line_clean
+            or line_clean.startswith("bot:")
+            or line_clean.startswith("base:")
+            or line_clean.startswith("patch:")
+            or line_clean.startswith("(")
         ):
-            if "+" in line or "faster" in lower or "improvement" in lower:
-                has_significant_improvement = True
-        if "regression" in lower or "slower" in lower or "(-)" in line:
-            has_significant_regression = True
+            continue
+
+        # Match table rows:
+        # e.g.: TodoMVC-Pr… 11.82 ±0.24 11.90 ±0.23 +0.67% 0.0044 * smaller-b…
+        pattern = (
+            r"([A-Za-z0-9_\-…]+)\s+[\d\.]+\s*±[\d\.]+\s+[\d\.]+\s*±[\d\.]+\s+"
+            r"([+-]?\d+\.?\d*)\s*%\s+([\d\.]+)\s+(\*?)\s+([A-Za-z\-]+)"
+        )
+        match = re.search(pattern, line_clean)
+        if match:
+            metric_name = match.group(1)
+            chg_pct = float(match.group(2))
+            p_val = float(match.group(3))
+            is_sig = (match.group(4) == "*") or (p_val < 0.05)
+            direction = match.group(5).lower()
+
+            if "score" in metric_name.lower():
+                overall_score_delta = chg_pct
+
+            if is_sig:
+                if direction.startswith("smaller"):
+                    # Smaller is better (e.g. execution duration/latency in ms).
+                    # Negative chg% -> Faster / Improvement
+                    # Positive chg% -> Slower / Regression
+                    if chg_pct < 0:
+                        significant_improvements.append(
+                            (metric_name, chg_pct, p_val)
+                        )
+                    elif chg_pct > 0:
+                        significant_regressions.append(
+                            (metric_name, chg_pct, p_val)
+                        )
+                elif direction.startswith("larger"):
+                    # Larger is better (e.g. overall benchmark Score).
+                    # Positive chg% -> Improvement
+                    # Negative chg% -> Regression
+                    if chg_pct > 0:
+                        significant_improvements.append(
+                            (metric_name, chg_pct, p_val)
+                        )
+                    elif chg_pct < 0:
+                        significant_regressions.append(
+                            (metric_name, chg_pct, p_val)
+                        )
+
+    has_significant_improvement = len(significant_improvements) > 0
+    has_significant_regression = len(significant_regressions) > 0
 
     should_keep = (
         has_significant_improvement
@@ -107,6 +142,8 @@ def evaluate_results(stdout: str) -> Dict[str, Any]:
         "keep": should_keep,
         "improved": has_significant_improvement,
         "regressed": has_significant_regression,
+        "improvements": significant_improvements,
+        "regressions": significant_regressions,
         "delta": overall_score_delta,
         "raw_output": stdout,
     }
@@ -165,17 +202,32 @@ def main():
             print(f"Results not ready or error fetching job {args.job_id}")
             sys.exit(2)
         eval_res = evaluate_results(raw)
-        msg = (
-            f"Evaluation: Keep={eval_res['keep']}, "
-            f"Improved={eval_res['improved']}, "
-            f"Regressed={eval_res['regressed']}, "
-            f"Delta={eval_res['delta']}%"
-        )
-        print(msg)
-        if not eval_res["keep"]:
-            print("Decision: Abandon CL")
+        print("=" * 80)
+        print("PINPOINT EVALUATION SUMMARY")
+        print("=" * 80)
+        print(f"Overall Score Delta: {eval_res['delta']:+.2f}%")
+        print(f"Significant Improvements ({len(eval_res['improvements'])}):")
+        for name, chg, p in eval_res['improvements']:
+            print(f"  ✓ {name}: {chg:+.2f}% (p={p:.4f})")
+        if not eval_res['improvements']:
+            print("  (None)")
+        print(f"Significant Regressions ({len(eval_res['regressions'])}):")
+        for name, chg, p in eval_res['regressions']:
+            print(f"  ✗ {name}: {chg:+.2f}% (p={p:.4f}) [REGRESSION]")
+        if not eval_res['regressions']:
+            print("  (None)")
+        print("-" * 80)
+        if eval_res["keep"]:
+            print(
+                "Decision: Propose / Keep CL (Statistically significant"
+                " improvement with no regressions)"
+            )
         else:
-            print("Decision: Propose / Keep CL")
+            print(
+                "Decision: Abandon CL (No speedup, or statistically"
+                " significant regressions detected)"
+            )
+        print("=" * 80)
     elif args.action == "abandon":
         abandon_cl()
 
