@@ -17,7 +17,3 @@ TBD.
 *   We may elect to freshen files when we need to use new `//base`
     functionality in PA.
 
-## Augmentation Policy
-
-Prefer not to directly modify contents here. Add them into
-`augmentations/`, documenting the usage and provenance of each addition.

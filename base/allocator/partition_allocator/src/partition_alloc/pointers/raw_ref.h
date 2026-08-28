@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/pointers/raw_ptr.h"
@@ -196,8 +195,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
     return *inner_.get();
   }
 
-  PA_ALWAYS_INLINE constexpr T* operator->() const
-      PA_ATTRIBUTE_RETURNS_NONNULL {
+  PA_RETURNS_NONNULL PA_ALWAYS_INLINE constexpr T* operator->() const {
     PA_RAW_PTR_CHECK(inner_);  // Catch use-after-move.
     return inner_.operator->();
   }

@@ -16,7 +16,7 @@
 #include <optional>
 #include <utility>
 
-#include "partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/types/to_address.h"
 #include "partition_alloc/pointers/raw_ptr_exclusion.h"

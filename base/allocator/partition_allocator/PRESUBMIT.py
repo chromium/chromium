@@ -261,7 +261,7 @@ def CheckNoCpp23Features(input_api, output_api):
         affected_file,
         # compiler_specific.h may use these headers in guarded ways.
         files_to_skip=[
-            r'.*partition_alloc_base/augmentations/compiler_specific\.h'
+            r'.*partition_alloc_base/compiler_specific\.h'
         ],
         files_to_check=[_SOURCE_FILE_PATTERN])
 
