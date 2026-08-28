@@ -119,18 +119,9 @@ std::u16string GetDisplayNameForLocaleInternal(
   // Use the Foundation API to get the localized display name, removing the need
   // for the ICU data file to include this data.
   return GetDisplayNameForLocale(locale, display_locale);
-#else
-#if BUILDFLAG(IS_ANDROID)
-  // Use Java API to get locale display name so it would be possible to remove
-  // most of the lang data from icu data to reduce binary size, except for
-  // zh-Hans and zh-Hant because the current Android Java API doesn't support
-  // scripts.
-  // TODO(wangxianzhu): remove the special handling of zh-Hans and zh-Hant once
-  // Android Java API supports scripts.
-  if (locale.language_subtag() != "zh") {
-    return GetDisplayNameForLocale(locale, display_locale);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
+  return GetDisplayNameForLocale(locale, display_locale);
+#else   // BUILDFLAG(IS_ANDROID)
   icu::UnicodeString display_name_unicode;
   IcuLocaleConverter::GetInstance().FromLanguageTag(locale).getDisplayName(
       IcuLocaleConverter::GetInstance().FromLanguageTag(display_locale),

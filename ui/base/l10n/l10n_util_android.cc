@@ -64,14 +64,8 @@ namespace {
 static ScopedJavaLocalRef<jobject> JNI_LocalizationUtils_NewJavaLocale(
     JNIEnv* env,
     const base::i18n::LanguageTag& locale) {
-  // TODO(wangxianzhu): Use new Locale API once Android supports scripts.
-  std::string_view language = locale.language_subtag();
-  std::string_view country = locale.region_subtag();
-  std::string variant_subtags = base::JoinString(locale.variant_subtags(), "-");
-  return Java_LocalizationUtils_getJavaLocale(
-      env, base::android::ConvertUTF8ToJavaString(env, language),
-      base::android::ConvertUTF8ToJavaString(env, country),
-      base::android::ConvertUTF8ToJavaString(env, variant_subtags));
+  return Java_LocalizationUtils_getJavaLocaleForBcp47Tag(
+      env, base::android::ConvertUTF8ToJavaString(env, locale.tag_string()));
 }
 
 }  // namespace

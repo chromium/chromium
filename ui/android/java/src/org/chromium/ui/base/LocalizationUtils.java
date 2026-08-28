@@ -36,8 +36,8 @@ public class LocalizationUtils {
     }
 
     @CalledByNative
-    private static Locale getJavaLocale(String language, String country, String variant) {
-        return new Locale(language, country, variant);
+    static Locale getJavaLocaleForBcp47Tag(String bcp47tag) {
+        return Locale.forLanguageTag(bcp47tag);
     }
 
     @CalledByNative
