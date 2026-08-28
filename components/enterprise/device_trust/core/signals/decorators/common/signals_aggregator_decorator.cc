@@ -86,6 +86,8 @@ void AddOsSignals(const device_signals::OsSignalsResponse& os_signals,
 
   signals_dict.Set(device_signals::names::kDisplayName,
                    os_signals.display_name.value_or(std::string()));
+  signals_dict.Set(device_signals::names::kDeviceAffiliationIds,
+                   ToListValue(os_signals.device_affiliation_ids));
   signals_dict.Set(device_signals::names::kMacAddresses,
                    ToListValueOrEmpty(os_signals.mac_addresses));
   signals_dict.Set(device_signals::names::kSystemDnsServers,
@@ -126,6 +128,8 @@ void AddProfileSignals(
 
   signals_dict.Set(device_signals::names::kBuiltInDnsClientEnabled,
                    profile_signals.built_in_dns_client_enabled);
+  signals_dict.Set(device_signals::names::kProfileAffiliationIds,
+                   ToListValue(profile_signals.profile_affiliation_ids));
   signals_dict.Set(device_signals::names::kChromeRemoteDesktopAppBlocked,
                    profile_signals.chrome_remote_desktop_app_blocked);
   signals_dict.Set(

@@ -49,6 +49,8 @@ constexpr char kWindowsUserDomain[] = "win-user.com";
 constexpr char kUserEnrollmentDomain[] = "example.com";
 constexpr char kMacAddress[] = "00:00:00:00:00:00";
 constexpr char kDnsServer[] = "8.8.8.8";
+constexpr char kDeviceAffiliationId[] = "device-affiliation-id";
+constexpr char kProfileAffiliationId[] = "profile-affiliation-id";
 
 device_signals::SignalsAggregationResponse CreateSuccessResponse() {
   device_signals::SignalsAggregationResponse response{};
@@ -75,6 +77,8 @@ device_signals::SignalsAggregationResponse CreateSuccessResponse() {
   os_signals.verified_apps_enabled = false;
   os_signals.mac_addresses = std::vector<std::string>{kMacAddress};
   os_signals.system_dns_servers = std::vector<std::string>{kDnsServer};
+  os_signals.device_affiliation_ids =
+      std::vector<std::string>{kDeviceAffiliationId};
   response.os_signals_response = std::move(os_signals);
 
   device_signals::ProfileSignalsResponse profile_signals{};
@@ -89,6 +93,8 @@ device_signals::SignalsAggregationResponse CreateSuccessResponse() {
   profile_signals.password_protection_warning_trigger =
       safe_browsing::PASSWORD_REUSE;
   profile_signals.profile_enrollment_domain = kUserEnrollmentDomain;
+  profile_signals.profile_affiliation_ids =
+      std::vector<std::string>{kProfileAffiliationId};
   response.profile_signals_response = std::move(profile_signals);
 
   return response;
@@ -229,6 +235,19 @@ TEST_F(SignalsAggregatorDecoratorTest, DecorateSuccess) {
   ASSERT_NE(dns_servers, nullptr);
   ASSERT_EQ(dns_servers->size(), 1u);
   EXPECT_EQ(dns_servers->front().GetString(), kDnsServer);
+
+  const base::ListValue* device_affiliation_ids =
+      actual_dict.FindList(device_signals::names::kDeviceAffiliationIds);
+  ASSERT_NE(device_affiliation_ids, nullptr);
+  ASSERT_EQ(device_affiliation_ids->size(), 1u);
+  EXPECT_EQ(device_affiliation_ids->front().GetString(), kDeviceAffiliationId);
+
+  const base::ListValue* profile_affiliation_ids =
+      actual_dict.FindList(device_signals::names::kProfileAffiliationIds);
+  ASSERT_NE(profile_affiliation_ids, nullptr);
+  ASSERT_EQ(profile_affiliation_ids->size(), 1u);
+  EXPECT_EQ(profile_affiliation_ids->front().GetString(),
+            kProfileAffiliationId);
 }
 
 // Verifies that if the OS bundle encounters a collection error,
@@ -316,6 +335,8 @@ TEST_F(SignalsAggregatorDecoratorTest, DecorateEmptyAndMissingValues) {
   response.os_signals_response->display_name = std::nullopt;
   response.os_signals_response->mac_addresses = std::nullopt;
   response.os_signals_response->system_dns_servers = std::nullopt;
+  response.os_signals_response->device_affiliation_ids = {};
+  response.profile_signals_response->profile_affiliation_ids = {};
 
   base::DictValue actual_dict = DecorateSignals(std::move(response));
 
@@ -331,6 +352,16 @@ TEST_F(SignalsAggregatorDecoratorTest, DecorateEmptyAndMissingValues) {
       actual_dict.FindList(device_signals::names::kSystemDnsServers);
   ASSERT_NE(dns_servers, nullptr);
   EXPECT_TRUE(dns_servers->empty());
+
+  const base::ListValue* device_affiliation_ids =
+      actual_dict.FindList(device_signals::names::kDeviceAffiliationIds);
+  ASSERT_NE(device_affiliation_ids, nullptr);
+  EXPECT_TRUE(device_affiliation_ids->empty());
+
+  const base::ListValue* profile_affiliation_ids =
+      actual_dict.FindList(device_signals::names::kProfileAffiliationIds);
+  ASSERT_NE(profile_affiliation_ids, nullptr);
+  EXPECT_TRUE(profile_affiliation_ids->empty());
 }
 
 }  // namespace enterprise_connectors
