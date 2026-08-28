@@ -174,19 +174,13 @@ class ProfileResetterTest : public extensions::ExtensionServiceTestBase,
  private:
 #if BUILDFLAG(IS_WIN)
   base::ScopedPathOverride user_desktop_override_;
-  base::ScopedPathOverride app_dir_override_;
-  base::ScopedPathOverride start_menu_override_;
-  base::ScopedPathOverride taskbar_pins_override_;
   base::win::ScopedCOMInitializer com_init_;
 #endif
 };
 
 ProfileResetterTest::ProfileResetterTest()
 #if BUILDFLAG(IS_WIN)
-    : user_desktop_override_(base::DIR_USER_DESKTOP),
-      app_dir_override_(base::DIR_ROAMING_APP_DATA),
-      start_menu_override_(base::DIR_START_MENU),
-      taskbar_pins_override_(base::DIR_TASKBAR_PINS)
+    : user_desktop_override_(base::DIR_USER_DESKTOP)
 #endif
 {}
 
