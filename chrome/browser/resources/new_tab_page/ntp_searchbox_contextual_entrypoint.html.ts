@@ -38,7 +38,9 @@ export function getHtml(this: NtpSearchboxElement) {
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
         .smartTabSharingVisible="${this.smartTabSharingVisible}"
         .smartTabSharingActive="${this.smartTabSharingActive}"
+        .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
         @smart-tab-sharing-active-changed="${this.onSmartTabSharingActiveChanged_}"
+        @share-tabs-flyout-open-changed="${this.onShareTabsFlyoutOpenChanged_}"
       >
     </cr-composebox-contextual-entrypoint-and-menu>
   </div>

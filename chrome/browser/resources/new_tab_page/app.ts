@@ -983,6 +983,10 @@ export class AppElement extends AppElementBase {
       return;
     }
     this.pageHandler_.onContextualSearchIPHEngaged();
+    if (this.hasRealboxOverride(detail.fuseboxAction)) {
+      this.$.searchbox.handleFuseboxAction(detail.fuseboxAction);
+      return;
+    }
     this.openComposeboxForActionChip_(detail);
   }
 
@@ -993,7 +997,7 @@ export class AppElement extends AppElementBase {
     if (!action || action.searchboxOverride === null) {
       return false;
     }
-    return action.searchboxOverride !== SearchboxOverride.kComposebox;
+    return action.searchboxOverride === SearchboxOverride.kUnspecified;
   }
 
   protected onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
@@ -1852,6 +1856,10 @@ export class AppElement extends AppElementBase {
         element.removeAttribute('inert');
       }
     });
+  }
+
+  private hasRealboxOverride(action?: FuseboxAction): boolean {
+    return !!action && action?.searchboxOverride === SearchboxOverride.kRealbox;
   }
 }
 

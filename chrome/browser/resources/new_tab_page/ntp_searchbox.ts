@@ -28,6 +28,8 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {FuseboxAction} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import {InputSource} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {DriveDisclaimerStatus, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -88,6 +90,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       showComposeButton_: {type: Boolean},
 
       cyclingPlaceholders: {type: Boolean},
+
+      shareTabsFlyoutOpen: {type: Boolean},
 
       isDraggingFile: {
         reflect: true,
@@ -217,6 +221,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   accessor composeButtonEnabled: boolean = false;
   protected accessor showComposeButton_: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
+  accessor shareTabsFlyoutOpen: boolean = false;
   accessor isDraggingFile: boolean = false;
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
@@ -385,6 +390,18 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     }
   }
 
+  async handleFuseboxAction(action?: FuseboxAction) {
+    if (action?.preselectedInputSource) {
+      switch (action.preselectedInputSource) {
+        case InputSource.kInputSourceTabPicker:
+          await this.openTabPicker();
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   protected shouldShowVoiceLens_(isEnabled: boolean): boolean {
     return isEnabled && this.isInputEmpty() &&
         !(this.dropdownIsVisible && this.composeButtonEnabled);
@@ -538,6 +555,10 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       this.openComposebox_();
     }
     // </if>
+  }
+
+  protected onShareTabsFlyoutOpenChanged_(e: CustomEvent<{open: boolean}>) {
+    this.shareTabsFlyoutOpen = e.detail.open;
   }
 
   protected onAddTabContext_(e: CustomEvent<{
@@ -870,6 +891,26 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   protected computePlaceholderText_(placeholderText: string): string {
     return placeholderText || '';
+  }
+
+  protected async openTabPicker() {
+    this.shareTabsFlyoutOpen = true;
+    await this.refreshTabSuggestions_(/*forceRefresh=*/ true);
+    await this.updateComplete;
+
+    const context =
+        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context');
+    if (context) {
+      await context.updateComplete;
+      const entrypointButton =
+          context.shadowRoot?.querySelector<CrLitElement>('#entrypointButton');
+      if (entrypointButton) {
+        await entrypointButton.updateComplete;
+      }
+      entrypointButton?.shadowRoot?.querySelector<HTMLElement>('#entrypoint')
+          ?.click();
+    }
   }
 }
 

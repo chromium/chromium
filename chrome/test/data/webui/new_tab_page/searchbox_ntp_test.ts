@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {NtpSearchboxElement, SearchboxIconElement, SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {BrowserProxyImpl, InputSource, MetricsReporterImpl, SearchboxBrowserProxy, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -1331,4 +1331,31 @@ suite('SearchboxTest', () => {
     realbox.closeContextMenu();
     assertTrue(closeMenuCalled);
   });
+
+  test(
+      'handleFuseboxAction opens tab picker for kInputSourceTabPicker',
+      async () => {
+        const realbox = await createAndAppendRealbox({
+          ntpRealboxNextEnabled: true,
+        });
+        const context =
+            realbox.shadowRoot
+                .querySelector<ContextualEntrypointAndMenuElement>('#context');
+        assertTrue(!!context);
+
+        assertFalse(realbox.shareTabsFlyoutOpen);
+
+        await realbox.handleFuseboxAction({
+          preselectedTool: null,
+          preferredInventory: null,
+          preselectedModel: null,
+          queryActionOverride: null,
+          preselectedInputSource: InputSource.kInputSourceTabPicker,
+          searchboxOverride: SearchboxOverride.kRealbox,
+        });
+        await microtasksFinished();
+
+        assertTrue(realbox.shareTabsFlyoutOpen);
+      });
+
 });
