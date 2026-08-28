@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
@@ -23,7 +25,7 @@
 namespace ios::provider {
 
 void ConfigureWithStartupConfiguration(
-    GeminiStartupConfiguration* gemini_startup_configuration) {}
+    GeminiStartupConfiguration* startup_configuration) {}
 
 void StartGeminiOverlay(GeminiConfiguration* gemini_configuration) {}
 
@@ -50,10 +52,17 @@ void CheckGeminiEligibility(AuthenticationService* auth_service,
 
 static GeminiViewState g_current_view_state = GeminiViewState::kUnknown;
 static GeminiViewMode g_current_mode = GeminiViewMode::kUnknown;
+static std::optional<gemini::EntryPoint>
+    g_last_update_prompt_action_entry_point;
+static NSString* g_last_update_prompt_action_prompt = nil;
+static BOOL g_last_update_prompt_action_should_auto_submit = NO;
 
 void ResetGemini() {
   g_current_mode = GeminiViewMode::kUnknown;
   g_current_view_state = GeminiViewState::kUnknown;
+  g_last_update_prompt_action_entry_point.reset();
+  g_last_update_prompt_action_prompt = nil;
+  g_last_update_prompt_action_should_auto_submit = NO;
 }
 
 void UpdatePageAttachmentState(
@@ -98,7 +107,24 @@ void UpdateGeminiViewState(GeminiViewState view_state, bool animated) {
 }
 
 void UpdatePromptAction(gemini::EntryPoint entry_point,
-                        NSString* prepopulated_prompt) {}
+                        NSString* prepopulated_prompt,
+                        bool should_auto_submit) {
+  g_last_update_prompt_action_entry_point = entry_point;
+  g_last_update_prompt_action_prompt = [prepopulated_prompt copy];
+  g_last_update_prompt_action_should_auto_submit = should_auto_submit;
+}
+
+std::optional<gemini::EntryPoint> GetLastUpdatePromptActionEntryPoint() {
+  return g_last_update_prompt_action_entry_point;
+}
+
+NSString* GetLastUpdatePromptActionPrompt() {
+  return g_last_update_prompt_action_prompt;
+}
+
+BOOL GetLastUpdatePromptActionShouldAutoSubmit() {
+  return g_last_update_prompt_action_should_auto_submit;
+}
 
 GeminiViewState GetCurrentGeminiViewState() {
   return g_current_view_state;

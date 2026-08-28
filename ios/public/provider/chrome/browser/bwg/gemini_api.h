@@ -193,7 +193,8 @@ void UpdatePageAttachmentState(
 
 // Updates the prompt action of the floaty if it's invoked.
 void UpdatePromptAction(gemini::EntryPoint entry_point,
-                        NSString* prepopulated_prompt);
+                        NSString* prepopulated_prompt,
+                        bool should_auto_submit = false);
 
 // Returns true if a URL is protected.
 bool IsProtectedUrl(std::string url);

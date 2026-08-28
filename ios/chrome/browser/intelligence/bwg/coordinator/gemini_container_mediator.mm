@@ -380,8 +380,11 @@
 - (void)geminiZeroStateViewController:
             (GeminiZeroStateViewController*)viewController
                   didSelectSuggestion:(ZeroStateSuggestion*)suggestion {
-  // TODO(crbug.com/546118728): Handle suggestion selection (e.g. forward query
-  // text to Gemini session).
+  if (!_startupState || !suggestion.query.length) {
+    return;
+  }
+  ios::provider::UpdatePromptAction(_startupState.entryPoint, suggestion.query,
+                                    YES);
 }
 
 #pragma mark - Private

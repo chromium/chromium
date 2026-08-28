@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -65,6 +66,12 @@
   _dismissKeyboardCalled = YES;
 }
 @end
+
+namespace ios::provider {
+std::optional<gemini::EntryPoint> GetLastUpdatePromptActionEntryPoint();
+NSString* GetLastUpdatePromptActionPrompt();
+BOOL GetLastUpdatePromptActionShouldAutoSubmit();
+}  // namespace ios::provider
 
 namespace {
 
@@ -813,6 +820,57 @@ TEST_F(GeminiContainerMediatorTest,
 
   [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
   EXPECT_FALSE(dismissed);
+}
+
+// Tests that didSelectSuggestion calls UpdatePromptAction with the entry point
+// from startupState, the suggestion's query, and shouldAutoSubmit set to YES.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidSelectSuggestionUpdatesPromptAction) {
+  ios::provider::ResetGemini();
+  mediator_.startupState = startup_state_;
+
+  ZeroStateSuggestion* suggestion = [[ZeroStateSuggestion alloc] init];
+  suggestion.query = @"What is this page about?";
+
+  [mediator_ geminiZeroStateViewController:nil didSelectSuggestion:suggestion];
+
+  EXPECT_THAT(ios::provider::GetLastUpdatePromptActionEntryPoint(),
+              testing::Optional(gemini::EntryPoint::Promo));
+  EXPECT_NSEQ(@"What is this page about?",
+              ios::provider::GetLastUpdatePromptActionPrompt());
+  EXPECT_TRUE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
+}
+
+// Tests that didSelectSuggestion does not call UpdatePromptAction when
+// startupState is nil.
+TEST_F(GeminiContainerMediatorTest, TestDidSelectSuggestionNoStartupState) {
+  ios::provider::ResetGemini();
+  mediator_.startupState = nil;
+
+  ZeroStateSuggestion* suggestion = [[ZeroStateSuggestion alloc] init];
+  suggestion.query = @"What is this page about?";
+
+  [mediator_ geminiZeroStateViewController:nil didSelectSuggestion:suggestion];
+
+  EXPECT_EQ(std::nullopt, ios::provider::GetLastUpdatePromptActionEntryPoint());
+  EXPECT_EQ(nil, ios::provider::GetLastUpdatePromptActionPrompt());
+  EXPECT_FALSE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
+}
+
+// Tests that didSelectSuggestion does not call UpdatePromptAction when the
+// suggestion query is empty.
+TEST_F(GeminiContainerMediatorTest, TestDidSelectSuggestionEmptyQuery) {
+  ios::provider::ResetGemini();
+  mediator_.startupState = startup_state_;
+
+  ZeroStateSuggestion* suggestion = [[ZeroStateSuggestion alloc] init];
+  suggestion.query = @"";
+
+  [mediator_ geminiZeroStateViewController:nil didSelectSuggestion:suggestion];
+
+  EXPECT_EQ(std::nullopt, ios::provider::GetLastUpdatePromptActionEntryPoint());
+  EXPECT_EQ(nil, ios::provider::GetLastUpdatePromptActionPrompt());
+  EXPECT_FALSE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
 }
 
 }  // namespace
