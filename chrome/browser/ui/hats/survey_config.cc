@@ -121,6 +121,11 @@ constexpr char kHatsSurveyTriggerFirstRunDesktopRevampCompleted[] =
 constexpr char
     kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted[] =
         "identity-revamp-no-feature-showcase-first-run-completed";
+constexpr char kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted[] =
+    "identity-pre-first-run-desktop-refresh-completed";
+constexpr char
+    kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted[] =
+        "identity-pre-first-run-desktop-refresh-no-feature-showcase-completed";
 constexpr char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[] =
     "identity-signin-intercept-profile-separation";
 constexpr char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[] =
@@ -697,6 +702,28 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey,
       kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted,
       "o1LKfYgQ60ugnJ3q1cK0Ny2XhLRU",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Channel"},
+      /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false,
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
+
+  survey_configs.emplace_back(
+      &switches::kPreFirstRunDesktopRefreshSurvey,
+      kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted,
+      "rgsmp9eR40ugnJ3q1cK0W7736JPw",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Channel"},
+      /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false,
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
+
+  survey_configs.emplace_back(
+      &switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey,
+      kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted,
+      "ogAXyULef0ugnJ3q1cK0PYjDMTYs",
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{"Channel"},

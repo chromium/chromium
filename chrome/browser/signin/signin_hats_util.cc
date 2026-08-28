@@ -180,7 +180,11 @@ bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
            {kHatsSurveyTriggerFirstRunDesktopRevampCompleted,
             &switches::kFirstRunDesktopRevampSurvey},
            {kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted,
-            &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey}});
+            &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey},
+           {kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted,
+            &switches::kPreFirstRunDesktopRefreshSurvey},
+           {kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted,
+            &switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey}});
   // Map of HaTS features that are conflicting with each other. Keys are
   // features that are suppressed if one of the corresponding value features is
   // enabled.
@@ -191,7 +195,9 @@ bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
             {&switches::kBeforeFirstRunDesktopRefreshSurvey,
              &switches::kFirstRunDesktopRefreshSurvey,
              &switches::kFirstRunDesktopRevampSurvey,
-             &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey}}});
+             &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey,
+             &switches::kPreFirstRunDesktopRefreshSurvey,
+             &switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey}}});
 
   const auto* feature = base::FindPtrOrNull(*kHatsTriggerFeatureMap, trigger);
 

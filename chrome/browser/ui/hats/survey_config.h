@@ -56,6 +56,9 @@ extern const char kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted[];
 extern const char kHatsSurveyTriggerFirstRunDesktopRevampCompleted[];
 extern const char
     kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted[];
+extern const char kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted[];
+extern const char
+    kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted[];
 extern const char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[];
 extern const char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[];
 extern const char kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu[];

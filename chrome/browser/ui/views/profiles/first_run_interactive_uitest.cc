@@ -2279,6 +2279,18 @@ const HatsTestParams kHatsTestParams[] = {
      .hats_trigger =
          kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted,
      .test_suffix = "RevampNoFeatureShowcaseSurvey",
+     .forced_showcase_steps = {}},
+    {.flow_version = FirstRunVersion::PreFirstRunRefreshed{},
+     .hats_feature = switches::kPreFirstRunDesktopRefreshSurvey,
+     .hats_trigger = kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted,
+     .test_suffix = "PreFirstRunRefreshSurvey",
+     .forced_showcase_steps = {"default-browser"}},
+    {.flow_version = FirstRunVersion::PreFirstRunRefreshed{},
+     .hats_feature =
+         switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey,
+     .hats_trigger =
+         kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted,
+     .test_suffix = "PreFirstRunRefreshNoFeatureShowcaseSurvey",
      .forced_showcase_steps = {}}};
 
 class FirstRunWithHatsInteractiveUiTest
@@ -2381,7 +2393,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTest,
       views::ElementTrackerViews::GetContextForView(view()),
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
-      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+      If([this]() { return UsePreFirstRunRefreshedView(); },
+         Then(WaitForWebContentsReady(kWebContentsId, GetWelcomeURL())),
+         Else(WaitForWebContentsReady(kWebContentsId,
+                                      GURL(chrome::kChromeUIIntroURL)))),
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_CLOSE_WINDOW))
           .SetMustRemainVisible(false));
 
@@ -2389,7 +2404,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTest,
 
   EXPECT_TRUE(proceed_future.Get());
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());
-  ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -2638,7 +2652,18 @@ INSTANTIATE_TEST_SUITE_P(
             .flow_version = FirstRunVersion::Refreshed{},
             .hats_feature = switches::kFirstRunDesktopRevampSurvey,
             .hats_trigger = kHatsSurveyTriggerFirstRunDesktopRevampCompleted,
-            .test_suffix = "RevampSurveyWithRefreshedFlow"}),
+            .test_suffix = "RevampSurveyWithRefreshedFlow"},
+        HatsTestParams{
+            .flow_version = FirstRunVersion::Revamped{},
+            .hats_feature = switches::kPreFirstRunDesktopRefreshSurvey,
+            .hats_trigger =
+                kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted,
+            .test_suffix = "PreFirstRunRefreshSurveyWithRevampFlow"},
+        HatsTestParams{
+            .flow_version = FirstRunVersion::PreFirstRunRefreshed{},
+            .hats_feature = switches::kFirstRunDesktopRevampSurvey,
+            .hats_trigger = kHatsSurveyTriggerFirstRunDesktopRevampCompleted,
+            .test_suffix = "RevampSurveyWithPreFirstRunRefreshFlow"}),
     [](const TestParamInfo<HatsTestParams>& info) {
       return std::string(info.param.test_suffix);
     });

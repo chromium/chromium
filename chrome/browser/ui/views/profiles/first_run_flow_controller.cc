@@ -1157,6 +1157,12 @@ void FirstRunFlowController::RunFinishFlowCallback() {
 }
 
 std::string FirstRunFlowController::GetHatsSurveyTrigger() const {
+  if (switches::IsPreFirstRunDesktopRefreshEnabled()) {
+    return is_feature_showcase_eligible()
+               ? kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted
+               : kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted;
+  }
+
   const bool is_in_search_engine_choice_region =
       IsProfileInSearchEngineChoiceRegion(profile_);
 
