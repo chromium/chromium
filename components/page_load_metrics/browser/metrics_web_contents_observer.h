@@ -17,7 +17,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
-#include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"

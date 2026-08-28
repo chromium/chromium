@@ -4,7 +4,7 @@
 
 #include "components/page_load_metrics/common/page_load_timing.h"
 
-#include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 
 namespace page_load_metrics {

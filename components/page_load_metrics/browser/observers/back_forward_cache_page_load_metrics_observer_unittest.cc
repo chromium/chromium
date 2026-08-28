@@ -15,6 +15,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 const char kTestUrl1[] = "https://www.google.com";
 

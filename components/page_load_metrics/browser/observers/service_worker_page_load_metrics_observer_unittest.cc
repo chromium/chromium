@@ -14,7 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-
+#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 namespace {
 

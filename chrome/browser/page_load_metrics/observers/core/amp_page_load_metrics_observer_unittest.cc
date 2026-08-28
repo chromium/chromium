@@ -21,6 +21,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "url/gurl.h"
 
 using content::NavigationSimulator;
