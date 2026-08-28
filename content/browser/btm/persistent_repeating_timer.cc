@@ -46,11 +46,11 @@ void PersistentRepeatingTimer::StartWithLastFired(
                  base::BindRepeating(&PersistentRepeatingTimer::OnTimerFired,
                                      base::Unretained(this)));
   }
-  DCHECK(timer_.IsRunning());
+  CHECK(timer_.IsRunning(), base::NotFatalUntil::M158);
 }
 
 void PersistentRepeatingTimer::OnTimerFired() {
-  DCHECK(!timer_.IsRunning());
+  CHECK(!timer_.IsRunning(), base::NotFatalUntil::M158);
   const base::Time now = base::Time::Now();
   storage_->SetLastFired(now);
   user_task_.Run();

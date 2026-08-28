@@ -580,7 +580,7 @@ void OnTokenRequestParsed(
   TokenResult token_result;
 
   bool parse_succeeded = fetch_status.parse_status == ParseStatus::kSuccess;
-  DCHECK(!parse_succeeded || result.has_value());
+  CHECK(!parse_succeeded || result.has_value(), base::NotFatalUntil::M158);
 
   // We need to handle a number of cases, in order:
   // 1) Result has a custom error field - return error
@@ -643,7 +643,7 @@ void OnTokenRequestParsed(
     std::move(callback).Run(fetch_status, std::move(token_result));
     return;
   }
-  DCHECK(response);
+  CHECK(response, base::NotFatalUntil::M158);
 
   if (issuance_token && IsDelegationEnabled()) {
     token_result.token = base::Value(*issuance_token);
@@ -832,7 +832,7 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
                             std::move(initiator_document)),
       rp_embedding_origin_(rp_embedding_origin),
       permission_delegate_(permission_delegate) {
-  DCHECK(client_security_state_);
+  CHECK(client_security_state_, base::NotFatalUntil::M158);
   // If COEP:credentialless was used, this would break FedCM credentialled
   // requests. We clear the Cross-Origin-Embedder-Policy because FedCM responses
   // are not really embedded in the page. They do not enter the renderer
@@ -1044,7 +1044,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
 
   if (idp_blindness) {
     // IdP blindness can only be used when the feature is enabled.
-    DCHECK(IsDelegationEnabled());
+    CHECK(IsDelegationEnabled(), base::NotFatalUntil::M158);
     // We have to set this to a Origin: null because the underlying loader
     // will  not let us send a request without Origin header if the request
     // method is POST.
@@ -1419,7 +1419,7 @@ IdpNetworkRequestManager::CreateCachedAccountPictureRequest(
       /*frame_origin=*/url::Origin::Create(target_url), net::SiteForCookies(),
       /*nonce=*/std::nullopt,
       net::NetworkIsolationPartition::kFedCmUncredentialedRequests);
-  DCHECK(client_security_state_);
+  CHECK(client_security_state_, base::NotFatalUntil::M158);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();
 

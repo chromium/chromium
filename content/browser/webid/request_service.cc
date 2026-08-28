@@ -783,8 +783,9 @@ void RequestService::SetIdpSigninStatus(
         if (account.picture.has_value()) {
           // Guaranteed by Mojo deserialization traits (StructTraits::Read in
           // federated_request_mojom_traits.cc).
-          DCHECK(account.picture->is_valid());
-          DCHECK(network::IsUrlPotentiallyTrustworthy(account.picture.value()));
+          CHECK(account.picture->is_valid(), base::NotFatalUntil::M158);
+          CHECK(network::IsUrlPotentiallyTrustworthy(account.picture.value()),
+                base::NotFatalUntil::M158);
           picture_urls.emplace_back(account.picture.value());
         }
       }

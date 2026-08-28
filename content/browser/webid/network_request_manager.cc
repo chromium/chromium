@@ -362,7 +362,7 @@ NetworkRequestManager::CreateUncredentialedResourceRequest(
   if (send_origin) {
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kOrigin,
                                         relying_party_origin_.Serialize());
-    DCHECK(!follow_redirects);
+    CHECK(!follow_redirects, base::NotFatalUntil::M158);
   }
   if (follow_redirects &&
       content::FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
@@ -393,7 +393,7 @@ NetworkRequestManager::CreateUncredentialedResourceRequest(
       /*frame_origin=*/url::Origin::Create(target_url), net::SiteForCookies(),
       /*nonce=*/std::nullopt,
       net::NetworkIsolationPartition::kFedCmUncredentialedRequests);
-  DCHECK(client_security_state_);
+  CHECK(client_security_state_, base::NotFatalUntil::M158);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();
   return resource_request;
@@ -440,7 +440,7 @@ NetworkRequestManager::CreateCredentialedResourceRequest(
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
       request_type, /*top_frame_origin=*/target_origin,
       /*frame_origin=*/target_origin, site_for_cookies);
-  DCHECK(client_security_state_);
+  CHECK(client_security_state_, base::NotFatalUntil::M158);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();
   return resource_request;

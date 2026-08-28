@@ -97,7 +97,7 @@ bool FakeIdentityRequestDialogController::ShowErrorDialog(
     DismissCallback dismiss_callback,
     MoreDetailsCallback more_details_callback) {
   if (!is_interception_enabled_) {
-    DCHECK(dismiss_callback);
+    CHECK(dismiss_callback, base::NotFatalUntil::M158);
     // We don't need to call PostTask here because we're returning false.
     std::move(dismiss_callback).Run(DismissReason::kOther);
     return false;

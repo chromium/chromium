@@ -71,7 +71,7 @@ std::string FederatedSdJwtHandler::ComputeUrlEncodedTokenPostDataForIssuers(
 
 void FederatedSdJwtHandler::ProcessSdJwt(const std::string& token) {
   // Checked previously.
-  DCHECK(webid::IsDelegationEnabled());
+  CHECK(webid::IsDelegationEnabled(), base::NotFatalUntil::M158);
 
   auto value = sdjwt::SdJwt::Parse(token);
   if (!value) {

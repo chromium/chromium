@@ -771,7 +771,8 @@ void EmailVerificationRequest::CompleteVerifyRequest(
 
 void EmailVerificationRequest::MaybeAddDevToolsIssue(
     EmailVerificationRequestResult status) {
-  DCHECK_NE(status, EmailVerificationRequestResult::kSuccess);
+  CHECK_NE(status, EmailVerificationRequestResult::kSuccess,
+           base::NotFatalUntil::M158);
 
   if (!render_frame_host_) {
     return;

@@ -23,7 +23,7 @@ SandboxHostLinux* SandboxHostLinux::GetInstance() {
 }
 
 void SandboxHostLinux::Init() {
-  DCHECK(!initialized_);
+  CHECK(!initialized_, base::NotFatalUntil::M158);
   initialized_ = true;
 
   int fds[2];

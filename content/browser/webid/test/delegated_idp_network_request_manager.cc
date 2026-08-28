@@ -9,7 +9,7 @@ namespace content {
 DelegatedIdpNetworkRequestManager::DelegatedIdpNetworkRequestManager(
     IdpNetworkRequestManager* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M158);
 }
 
 DelegatedIdpNetworkRequestManager::~DelegatedIdpNetworkRequestManager() =

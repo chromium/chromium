@@ -539,7 +539,7 @@ void Metrics::RecordAccountsDialogShown(
       SetUkm(fedcm_idp_builder,
              accounts_dialog_shown_[provider->idp_metadata.config_url]);
     } else {
-      DCHECK(provider->has_login_status_mismatch);
+      CHECK(provider->has_login_status_mismatch, base::NotFatalUntil::M158);
       ++mismatch_dialog_shown_[provider->idp_metadata.config_url];
       fedcm_idp_builder->SetMismatchDialogShown2(
           mismatch_dialog_shown_[provider->idp_metadata.config_url]);
@@ -572,7 +572,7 @@ void Metrics::RecordSingleIdpMismatchDialogShown(
 
   SetUkm(GetOrCreateFedCmBuilder(), GetSumOfAllValues(mismatch_dialog_shown_));
 
-  DCHECK(provider.has_login_status_mismatch);
+  CHECK(provider.has_login_status_mismatch, base::NotFatalUntil::M158);
   SetUkm(GetOrCreateFedCmIdpBuilder(provider.idp_metadata.config_url),
          mismatch_dialog_shown_[provider.idp_metadata.config_url]);
 
@@ -853,8 +853,8 @@ void RecordAccountFieldsType(
   } else if (has_name && has_email && !has_phone_or_username) {
     type = AccountFieldsType::kNameAndEmailAndNoOther;
   } else {
-    DCHECK(has_name ^ has_email);
-    DCHECK(!has_phone_or_username);
+    CHECK(has_name ^ has_email, base::NotFatalUntil::M158);
+    CHECK(!has_phone_or_username, base::NotFatalUntil::M158);
     type = AccountFieldsType::kOneOfNameAndEmailAndNoOther;
   }
   base::UmaHistogramEnumeration("Blink.FedCm.AccountFieldsType", type);

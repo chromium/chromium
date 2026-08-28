@@ -83,7 +83,7 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
                                               const BtmRedirectChain& chain);
 
   void SetStorageClockForTesting(base::Clock* clock) {
-    DCHECK(storage_);
+    CHECK(storage_, base::NotFatalUntil::M158);
     storage_.AsyncCall(&BtmStorage::SetClockForTesting).WithArgs(clock);
   }
 

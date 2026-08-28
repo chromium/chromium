@@ -56,7 +56,7 @@ DisconnectRequest::DisconnectRequest(
       start_time_(base::TimeTicks::Now()),
       perfetto_track_(CreatePerfettoTrackForFedCM(this)) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
-  DCHECK(main_frame->IsInPrimaryMainFrame());
+  CHECK(main_frame->IsInPrimaryMainFrame(), base::NotFatalUntil::M158);
   embedding_origin_ = main_frame->GetLastCommittedOrigin();
 }
 
@@ -126,7 +126,7 @@ void DisconnectRequest::SetCallbackAndStart(
 void DisconnectRequest::OnAllConfigAndWellKnownFetched(
     std::vector<ConfigFetcher::FetchResult> fetch_results) {
   config_fetcher_.reset();
-  DCHECK_EQ(fetch_results.size(), 1u);
+  CHECK_EQ(fetch_results.size(), 1u, base::NotFatalUntil::M158);
   const ConfigFetcher::FetchResult& fetch_result = fetch_results[0];
   if (fetch_result.error) {
     const ConfigFetcher::FetchError& fetch_error = *fetch_result.error;

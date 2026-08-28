@@ -185,7 +185,7 @@ void AccountsFetcher::FetchAccountsForIdps(
 void AccountsFetcher::SendAllFailedTokenRequestMetrics(
     blink::mojom::FederatedRequestResult result,
     bool did_show_ui) {
-  DCHECK(IsMetricsEndpointEnabled());
+  CHECK(IsMetricsEndpointEnabled(), base::NotFatalUntil::M158);
   for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
     SendFailedTokenRequestMetrics(metrics_endpoint_kv.second, result,
                                   did_show_ui);

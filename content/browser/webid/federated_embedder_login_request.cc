@@ -36,7 +36,7 @@ FederatedEmbedderLoginRequest::FederatedEmbedderLoginRequest(
 }
 
 FederatedEmbedderLoginRequest::~FederatedEmbedderLoginRequest() {
-  DCHECK(completion_callbacks_.empty());
+  CHECK(completion_callbacks_.empty(), base::NotFatalUntil::M158);
 }
 
 void FederatedEmbedderLoginRequest::OnFederatedResultReceived(
