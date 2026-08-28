@@ -85,6 +85,9 @@ export class PostMessageHandler {
   sendMessage(message: Uint8Array) {
     if (!this.handshakeComplete_) {
       this.pendingMessages_.push(message);
+      if (this.handshakeIntervalId_ === null) {
+        this.restartHandshake_();
+      }
       return;
     }
 
@@ -106,6 +109,9 @@ export class PostMessageHandler {
   sendObjectMessage(message: object) {
     if (!this.handshakeComplete_) {
       this.pendingMessages_.push(message);
+      if (this.handshakeIntervalId_ === null) {
+        this.restartHandshake_();
+      }
       return;
     }
 

@@ -542,6 +542,55 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         'Pending message content should match');
   });
 
+  test(
+      'restarts handshake when sendMessage is called after attempts exhaust',
+      function() {
+        simulateLoadStart();
+        simulateLoadCommit();
+
+        // Exhaust all TEST_MAX_HANDSHAKE_ATTEMPTS (3)
+        mockTimer.tick(
+            HANDSHAKE_INTERVAL_MS * (TEST_MAX_HANDSHAKE_ATTEMPTS + 1));
+        assertEquals(
+            TEST_MAX_HANDSHAKE_ATTEMPTS, postMessageSpy.calls.length,
+            'Should have sent max handshake attempts');
+        assertFalse(
+            postMessageHandler.isHandshakeCompleteForTesting(),
+            'Handshake should not be complete');
+
+        // Reset spy calls to track new handshake attempts
+        postMessageSpy.reset();
+
+        // Queue a message when handshake is inactive
+        const pendingMsg = new Uint8Array([1, 2, 3]);
+        postMessageHandler.sendMessage(pendingMsg);
+        assertEquals(
+            1, postMessageHandler.getPendingMessagesLengthForTesting(),
+            'Message should be queued');
+
+        // Verify that a new handshake cycle was started
+        mockTimer.tick(HANDSHAKE_INTERVAL_MS);
+        assertEquals(
+            1, postMessageSpy.calls.length,
+            'Handshake should restart after sendMessage');
+
+        // Simulate receiving handshake response
+        simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
+
+        assertTrue(
+            postMessageHandler.isHandshakeCompleteForTesting(),
+            'Handshake should now be complete');
+        assertEquals(
+            0, postMessageHandler.getPendingMessagesLengthForTesting(),
+            'Pending messages queue should be flushed');
+        assertEquals(
+            2, postMessageSpy.calls.length,
+            'Handshake and pending message should be sent');
+        assertDeepEquals(
+            pendingMsg.buffer, postMessageSpy.calls[1].args[0],
+            'Pending message content should match');
+      });
+
   test('ignores non-top level loadstart events', () => {
     // Initialize and complete handshake
     simulateLoadStart();
