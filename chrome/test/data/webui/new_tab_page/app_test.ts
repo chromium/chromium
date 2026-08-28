@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
-import type {ActionChipClickDetail, FuseboxActionRequest, Module} from 'chrome://new-tab-page/lazy_load.js';
+import type {ActionChipClickDetail, ComposeboxFuseboxActionRequest, Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsRetrievalState, ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
@@ -3104,11 +3104,11 @@ suite('NewTabPageAppTest', () => {
     test(
         'action chip click opens composebox and passes fuseboxAction',
         async () => {
-          const handledRequests: FuseboxActionRequest[] = [];
+          const handledRequests: ComposeboxFuseboxActionRequest[] = [];
           const originalHandleFuseboxAction =
               NtpComposeboxElement.prototype.handleFuseboxAction;
           NtpComposeboxElement.prototype.handleFuseboxAction = function(
-              request: FuseboxActionRequest) {
+              request: ComposeboxFuseboxActionRequest) {
             handledRequests.push(request);
             return originalHandleFuseboxAction.call(this, request);
           };
@@ -3539,11 +3539,12 @@ suite('NewTabPageAppTest', () => {
         'Explicit hint and composebox click passes the action and suggestion',
         async () => {
           let handleFuseboxActionCallCount = 0;
-          let handleFuseboxActionRequest: FuseboxActionRequest|null = null;
+          let handleFuseboxActionRequest: ComposeboxFuseboxActionRequest|null =
+              null;
           const originalHandleFuseboxAction =
               NtpComposeboxElement.prototype.handleFuseboxAction;
           NtpComposeboxElement.prototype.handleFuseboxAction = function(
-              request: FuseboxActionRequest) {
+              request: ComposeboxFuseboxActionRequest) {
             handleFuseboxActionCallCount++;
             handleFuseboxActionRequest = request;
             return originalHandleFuseboxAction.call(this, request);
@@ -3639,11 +3640,12 @@ suite('NewTabPageAppTest', () => {
               let setInputTextCallCount = 0;
               searchbox.setInputText = () => setInputTextCallCount++;
               let handleFuseboxActionCallCount = 0;
-              let handleFuseboxActionRequest: FuseboxActionRequest|null = null;
+              let handleFuseboxActionRequest: ComposeboxFuseboxActionRequest|
+                  null = null;
               const originalHandleFuseboxAction =
                   NtpComposeboxElement.prototype.handleFuseboxAction;
               NtpComposeboxElement.prototype.handleFuseboxAction = function(
-                  request: FuseboxActionRequest) {
+                  request: ComposeboxFuseboxActionRequest) {
                 handleFuseboxActionCallCount++;
                 handleFuseboxActionRequest = request;
                 return originalHandleFuseboxAction.call(this, request);
@@ -3687,7 +3689,7 @@ suite('NewTabPageAppTest', () => {
       const originalHandleFuseboxAction =
           NtpComposeboxElement.prototype.handleFuseboxAction;
       NtpComposeboxElement.prototype.handleFuseboxAction = function(
-          request: FuseboxActionRequest) {
+          request: ComposeboxFuseboxActionRequest) {
         handleFuseboxActionCallCount++;
         return originalHandleFuseboxAction.call(this, request);
       };
@@ -3737,7 +3739,7 @@ suite('NewTabPageAppTest', () => {
           const originalHandleFuseboxAction =
               NtpComposeboxElement.prototype.handleFuseboxAction;
           NtpComposeboxElement.prototype.handleFuseboxAction = function(
-              request: FuseboxActionRequest) {
+              request: ComposeboxFuseboxActionRequest) {
             handleFuseboxActionCallCount++;
             return originalHandleFuseboxAction.call(this, request);
           };
