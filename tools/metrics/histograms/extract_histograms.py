@@ -9,7 +9,6 @@ tools/metrics/histograms/metadata/uma/histograms.xml
 """
 
 import bisect
-import copy
 import datetime
 import itertools
 import logging
@@ -858,7 +857,7 @@ def UpdateHistogramsWithSuffixes(
             if histogram_name not in histograms:
               # This can happen if a previous suffix operation renamed it.
               continue
-            new_histogram = copy.deepcopy(histograms[histogram_name])
+            new_histogram = histograms[histogram_name].copy()
             histograms[new_histogram_name] = new_histogram
 
           histogram_entry = histograms[new_histogram_name]
@@ -951,7 +950,7 @@ def _AddHistogramOrExpandedVariants(
   # Each |token_assignment| contains one of the cross-product combinations and
   # corresponds to one new generated histogram.
   for token_assignment in token_assignments:
-    new_histogram_node = copy.deepcopy(histogram_node)
+    new_histogram_node = histogram_node.copy()
     new_obsolete_reason = ''
     new_owners = []
     # Dictionaries of pairings used for string formatting of histogram name and
