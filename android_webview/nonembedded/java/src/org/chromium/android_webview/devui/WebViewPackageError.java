@@ -13,6 +13,7 @@ import android.provider.Settings;
 
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 
@@ -178,6 +179,11 @@ public class WebViewPackageError {
 
     /** Check if the user can open the settings activity to change WebView providers or not. */
     public static boolean canAccessWebViewProviderDeveloperSetting() {
+        if (DeviceInfo.isTV()) {
+            // TODO(crbug.com/549206935): Remove this restriction if Android TV platform adds
+            // support for the setting in the future.
+            return false;
+        }
         // Switching WebView providers is possible from API >= 24.
         // The activity to change WebView provider is only enabled for admin user, see
         // https://crbug.com/1347418#comment8.
