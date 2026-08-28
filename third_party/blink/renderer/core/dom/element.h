@@ -1201,6 +1201,7 @@ class CORE_EXPORT Element : public ContainerNode {
   const gfx::Transform* GetUsedCanvasTransform() const;
   const gfx::Transform* GetCanvasTransformInternal() const;
   void SetCanvasTransformInternal(const gfx::Transform& transform);
+  void ClearCanvasTransform();
 
   bool IsDefined() const {
     // An element whose custom element state is "uncustomized" or "custom"

@@ -41,6 +41,8 @@
     [RuntimeEnabled=CanvasDrawElement] void requestPaint();
     [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform((Element or ElementImage) element, DOMMatrix draw_transform);
     [RuntimeEnabled=CanvasDrawElement, RaisesException] ElementImage captureElementImage(Element element);
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] void updateElementGeometry((Element or ElementImage) element, optional UpdateElementGeometryOptions options = {});
+    [RuntimeEnabled=CanvasDrawElement] void clearElementGeometry((Element or ElementImage) element);
 
     [MeasureAs=CanvasToDataURL, RaisesException] DOMString toDataURL(optional DOMString type = "image/png", optional any quality);
 

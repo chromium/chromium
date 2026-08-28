@@ -588,6 +588,7 @@ html element camera
 html element canvas
     property captureElementImage
     property captureStream
+    property clearElementGeometry
     property configureHighDynamicRange
     property getContext
     property getElementTransform
@@ -598,6 +599,7 @@ html element canvas
     property toBlob
     property toDataURL
     property transferControlToOffscreen
+    property updateElementGeometry
     property width
 html element caption
     property align

@@ -30,6 +30,7 @@ namespace blink {
 
 class CanvasContextCreationAttributesCore;
 class DOMMatrix;
+class UpdateElementGeometryOptions;
 class ImageBitmap;
 class ImageEncodeOptions;
 class
@@ -84,6 +85,10 @@ class CORE_EXPORT OffscreenCanvas final
   DOMMatrix* getElementTransform(const V8UnionElementOrElementImage* element,
                                  DOMMatrix* draw_transform,
                                  ExceptionState&);
+  void updateElementGeometry(const V8UnionElementOrElementImage*,
+                             const UpdateElementGeometryOptions*,
+                             ExceptionState&);
+  void clearElementGeometry(const V8UnionElementOrElementImage*);
 
   void SetSize(gfx::Size);
   void RecordTransfer();
@@ -148,6 +153,8 @@ class CORE_EXPORT OffscreenCanvas final
   void UpdateDrawnElementGeometry(ElementImage&,
                                   const gfx::Transform*,
                                   bool update_hit_test_order) override;
+  void ClearDrawnElementGeometry(Element&) override;
+  void ClearDrawnElementGeometry(ElementImage&) override;
 
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource>&& frame);

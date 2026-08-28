@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_update_element_geometry_options.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -151,6 +152,24 @@ void UpdateDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
           placeholder_canvas_id)) {
     placeholder->UpdateDrawnElementGeometry(element_image, transform,
                                             update_hit_test_order);
+  }
+}
+
+void ClearDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
+                                           Element& element) {
+  DCHECK(IsMainThread());
+  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
+          placeholder_canvas_id)) {
+    placeholder->ClearDrawnElementGeometry(element);
+  }
+}
+
+void ClearDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
+                                           ElementImage& element_image) {
+  DCHECK(IsMainThread());
+  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
+          placeholder_canvas_id)) {
+    placeholder->ClearDrawnElementGeometry(element_image);
   }
 }
 
@@ -452,6 +471,40 @@ DOMMatrix* OffscreenCanvas::getElementTransform(
   }
 
   return DOMMatrix::Create();
+}
+
+void OffscreenCanvas::updateElementGeometry(
+    const V8UnionElementOrElementImage* element_or_element_image,
+    const UpdateElementGeometryOptions* options,
+    ExceptionState& exception_state) {
+  const gfx::Transform* transform_ptr = nullptr;
+  gfx::Transform transform;
+  if (options->hasCanvasTransform()) {
+    DOMMatrix* matrix =
+        DOMMatrix::fromMatrix(options->canvasTransform(), exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    CHECK(matrix);
+    transform = matrix->Matrix();
+    transform_ptr = &transform;
+  }
+  if (element_or_element_image->IsElement()) {
+    UpdateDrawnElementGeometry(*element_or_element_image->GetAsElement(),
+                               transform_ptr, !options->preserveHitTestOrder());
+  } else if (element_or_element_image->IsElementImage()) {
+    UpdateDrawnElementGeometry(*element_or_element_image->GetAsElementImage(),
+                               transform_ptr, !options->preserveHitTestOrder());
+  }
+}
+
+void OffscreenCanvas::clearElementGeometry(
+    const V8UnionElementOrElementImage* element_or_element_image) {
+  if (element_or_element_image->IsElement()) {
+    ClearDrawnElementGeometry(*element_or_element_image->GetAsElement());
+  } else if (element_or_element_image->IsElementImage()) {
+    ClearDrawnElementGeometry(*element_or_element_image->GetAsElementImage());
+  }
 }
 
 ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
@@ -908,6 +961,19 @@ void OffscreenCanvas::UpdateDrawnElementGeometry(
     UpdateDrawnElementGeometryOnMainThread(placeholder_canvas_id_,
                                            element_image, transform,
                                            update_hit_test_order);
+  } else {
+    // TODO(paint-dev): queue update for event dispatch to main thread
+  }
+}
+
+void OffscreenCanvas::ClearDrawnElementGeometry(Element& element) {
+  ClearDrawnElementGeometryOnMainThread(placeholder_canvas_id_, element);
+}
+
+void OffscreenCanvas::ClearDrawnElementGeometry(ElementImage& element_image) {
+  if (IsMainThread()) {
+    ClearDrawnElementGeometryOnMainThread(placeholder_canvas_id_,
+                                          element_image);
   } else {
     // TODO(paint-dev): queue update for event dispatch to main thread
   }

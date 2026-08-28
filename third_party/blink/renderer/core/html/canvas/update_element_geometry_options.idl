@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary UpdateElementGeometryOptions {
+  // Controls how the canvas's hit testing order stack should be modified.
+  // If this is true *and* the element is already in the canvas's hit
+  // testing stack, do nothing. In all other cases, place the element
+  // at the top of the canvas's hit testing stack.
+  boolean preserveHitTestOrder = false;
+
+  // Sets the element's canvas transform. If omitted, the pre-existing
+  // value of the element's canvas transform is preserved.
+  DOMMatrixInit canvasTransform;
+};

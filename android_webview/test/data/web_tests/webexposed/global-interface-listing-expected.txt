@@ -3762,6 +3762,7 @@ interface HTMLCanvasElement : HTMLElement
     getter width
     method captureElementImage
     method captureStream
+    method clearElementGeometry
     method configureHighDynamicRange
     method constructor
     method getContext
@@ -3770,6 +3771,7 @@ interface HTMLCanvasElement : HTMLElement
     method toBlob
     method toDataURL
     method transferControlToOffscreen
+    method updateElementGeometry
     setter height
     setter layoutSubtree
     setter onpaint
@@ -6937,11 +6939,13 @@ interface OffscreenCanvas : EventTarget
     getter oncontextlost
     getter oncontextrestored
     getter width
+    method clearElementGeometry
     method constructor
     method convertToBlob
     method getContext
     method getElementTransform
     method transferToImageBitmap
+    method updateElementGeometry
     setter height
     setter oncontextlost
     setter oncontextrestored

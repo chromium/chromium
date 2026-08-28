@@ -174,6 +174,8 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual void UpdateDrawnElementGeometry(ElementImage&,
                                           const gfx::Transform*,
                                           bool update_hit_test_order) = 0;
+  virtual void ClearDrawnElementGeometry(Element&) = 0;
+  virtual void ClearDrawnElementGeometry(ElementImage&) = 0;
 
  protected:
   ~CanvasRenderingContextHost() override;

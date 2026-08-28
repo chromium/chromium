@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_update_element_geometry_options.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -761,7 +762,7 @@ void HTMLCanvasElement::UpdateDrawnElementGeometry(
   if (element.CanvasForDrawing() != this) {
     return;
   }
-  if (update_hit_test_order) {
+  if (update_hit_test_order || !hit_testable_descendants_.Contains(&element)) {
     hit_testable_descendants_.AppendOrMoveToLast(&element);
   }
   if (transform) {
@@ -779,6 +780,18 @@ void HTMLCanvasElement::UpdateDrawnElementGeometry(
   if (Element* element = DynamicTo<Element>(
           DOMNodeIds::NodeForId(element_image.GetNodeId()))) {
     UpdateDrawnElementGeometry(*element, transform, update_hit_test_order);
+  }
+}
+
+void HTMLCanvasElement::ClearDrawnElementGeometry(Element& element) {
+  hit_testable_descendants_.erase(&element);
+  element.ClearCanvasTransform();
+}
+
+void HTMLCanvasElement::ClearDrawnElementGeometry(ElementImage& element_image) {
+  if (Element* element = DynamicTo<Element>(
+          DOMNodeIds::NodeForId(element_image.GetNodeId()))) {
+    ClearDrawnElementGeometry(*element);
   }
 }
 
@@ -1038,6 +1051,56 @@ ElementImage* HTMLCanvasElement::captureElementImage(
   }
   return MakeGarbageCollected<ElementImage>(
       std::make_unique<CanvasChildPaintRecord>(std::move(*child_paint_record)));
+}
+
+void HTMLCanvasElement::updateElementGeometry(
+    const V8UnionElementOrElementImage* element_or_element_image,
+    const UpdateElementGeometryOptions* options,
+    ExceptionState& exception_state) {
+  Element* element = nullptr;
+  if (element_or_element_image->IsElement()) {
+    element = element_or_element_image->GetAsElement();
+  } else if (element_or_element_image->IsElementImage()) {
+    element = DynamicTo<Element>(DOMNodeIds::NodeForId(
+        element_or_element_image->GetAsElementImage()->GetNodeId()));
+    if (!element) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Could not find live Element associated with the given "
+          "ElementImage.");
+      return;
+    }
+  }
+
+  if (!VerifyDrawElementImageEligibility(element, "updateElementGeometry",
+                                         exception_state)) {
+    return;
+  }
+
+  const gfx::Transform* transform_ptr = nullptr;
+  gfx::Transform transform;
+  if (options->hasCanvasTransform()) {
+    DOMMatrix* matrix =
+        DOMMatrix::fromMatrix(options->canvasTransform(), exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    CHECK(matrix);
+    transform = matrix->Matrix();
+    transform_ptr = &transform;
+  }
+
+  UpdateDrawnElementGeometry(*element, transform_ptr,
+                             !options->preserveHitTestOrder());
+}
+
+void HTMLCanvasElement::clearElementGeometry(
+    const V8UnionElementOrElementImage* element_or_element_image) {
+  if (element_or_element_image->IsElement()) {
+    ClearDrawnElementGeometry(*element_or_element_image->GetAsElement());
+  } else if (element_or_element_image->IsElementImage()) {
+    ClearDrawnElementGeometry(*element_or_element_image->GetAsElementImage());
+  }
 }
 
 bool HTMLCanvasElement::PaintsIntoCanvasBuffer() const {

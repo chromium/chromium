@@ -390,6 +390,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/canvas/predefined_color_space.idl",
   "//third_party/blink/renderer/core/html/canvas/text_cluster.idl",
   "//third_party/blink/renderer/core/html/canvas/text_metrics.idl",
+  "//third_party/blink/renderer/core/html/canvas/update_element_geometry_options.idl",
   "//third_party/blink/renderer/core/html/closewatcher/close_watcher.idl",
   "//third_party/blink/renderer/core/html/closewatcher/close_watcher_options.idl",
   "//third_party/blink/renderer/core/html/custom/attach_internals_options.idl",

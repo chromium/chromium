@@ -143,6 +143,8 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   virtual void UpdateDrawnElementGeometry(ElementImage&,
                                           const gfx::Transform*,
                                           bool update_hit_test_order) {}
+  virtual void ClearDrawnElementGeometry(Element&) {}
+  virtual void ClearDrawnElementGeometry(ElementImage&) {}
 
   AnimationState GetAnimationStateForTesting() const {
     return current_animation_state_;
