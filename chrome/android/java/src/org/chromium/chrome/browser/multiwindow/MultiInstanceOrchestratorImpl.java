@@ -242,9 +242,10 @@ import java.util.Set;
         // Reparent tabs to the activity associated with the specified instance if it is alive. If
         // the instance does not have a live activity, restore it in a new activity to reparent the
         // tabs into.
-        if (destActivity != null) {
+        if (destActivity instanceof ChromeTabbedActivity tabbedActivity
+                && !tabbedActivity.isActivityFinishingOrDestroyed()) {
             mTabReparentingDelegate.reparentTabsToExistingWindow(
-                    (ChromeTabbedActivity) destActivity,
+                    tabbedActivity,
                     tabs,
                     destTabIndex,
                     destGroupTabId,
@@ -345,9 +346,10 @@ import java.util.Set;
 
         Activity sourceActivity = MultiWindowUtils.getActivityById(tabGroupMetadata.sourceWindowId);
         Activity destActivity = MultiWindowUtils.getActivityById(destWindowId);
-        if (destActivity != null) {
+        if (destActivity instanceof ChromeTabbedActivity tabbedActivity
+                && !tabbedActivity.isActivityFinishingOrDestroyed()) {
             mTabReparentingDelegate.reparentTabGroupToExistingWindow(
-                    (ChromeTabbedActivity) destActivity,
+                    tabbedActivity,
                     tabGroupMetadata,
                     destTabIndex,
                     bringToFront);

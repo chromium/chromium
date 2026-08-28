@@ -351,6 +351,41 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testTabGroupIntent_EmptyList() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClass(mActivity, ChromeTabbedActivity.class);
+        TabGroupMetadata metadata =
+                new TabGroupMetadata(
+                        /* selectedTabId= */ 1,
+                        /* sourceWindowId= */ 1,
+                        TAB_GROUP_ID,
+                        /* tabIdsToUrls= */ new ArrayList<>(),
+                        /* tabGroupColor= */ 0,
+                        TAB_GROUP_TITLE,
+                        /* mhtmlTabTitle= */ null,
+                        /* tabGroupCollapsed= */ true,
+                        /* isGroupShared= */ false,
+                        /* isIncognito= */ false);
+        IntentHandler.setTabGroupMetadata(intent, metadata);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(intent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testExplicitViewIntent_OpensInExistingLiveActivity() {
         int initialWindowCount = MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY);
         Intent intent =
@@ -1159,6 +1194,49 @@ public class ChromeTabbedActivityTest {
                             "Tab count should not change for mismatched lists",
                             tabModel.getCount(),
                             Matchers.is(initialTabCount.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow_missingTabsInTabWindowManager() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
+        dragIntent.putExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, 9999);
+
+        // Tab IDs 101, 102 do not exist in window 9999 (TabWindowManager returns null).
+        // maybeLaunchDraggedMultiTabInWindow filters out null tabs, detects tabs.isEmpty(), returns
+        // false, and falls back to URL reparenting which opens the 2 URLs.
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(101, 102)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount.get()).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount.get() + 1).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_2));
                 });
     }
 

@@ -251,6 +251,19 @@ public class TabReparentingDelegateUnitTest {
     }
 
     @Test
+    public void testReparentTabsToExistingWindow_emptyTabs() {
+        mDelegate.reparentTabsToExistingWindow(
+                mDestActivity,
+                new ArrayList<>(),
+                /* destTabIndex= */ 0,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
+                /* bringToFront= */ true);
+
+        verify(mDestActivity, never()).onNewIntent(any());
+        verify(mReparentingTabsTask, never()).setupIntent(any(), any());
+    }
+
+    @Test
     public void testReparentTabsToExistingWindow_validDestTabIndex() {
         // Setup.
         List<Tab> tabs = List.of(mTab1, mTab2);
@@ -322,6 +335,54 @@ public class TabReparentingDelegateUnitTest {
                                 /* destTabIndex= */ 2,
                                 /* destGroupTabId= */ 3,
                                 /* bringToFront= */ true));
+    }
+
+    @Test
+    public void testReparentTabsToExistingWindow_targetActivityFinishingOrDestroyed() {
+        when(mDestActivity.isActivityFinishingOrDestroyed()).thenReturn(true);
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        mDelegate.reparentTabsToExistingWindow(
+                mDestActivity,
+                tabs,
+                /* destTabIndex= */ 0,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
+                /* bringToFront= */ true);
+
+        verify(mDestActivity, never()).onNewIntent(any());
+        verify(mReparentingTabsTask, never()).setupIntent(any(), any());
+    }
+
+    @Test
+    public void testReparentTabGroupToExistingWindow_targetActivityFinishingOrDestroyed() {
+        when(mDestActivity.isActivityFinishingOrDestroyed()).thenReturn(true);
+        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(/* isGroupShared= */ false);
+
+        mDelegate.reparentTabGroupToExistingWindow(
+                mDestActivity, tabGroupMetadata, /* destTabIndex= */ 3, /* bringToFront= */ true);
+
+        verify(mDestActivity, never()).onNewIntent(any());
+        verify(mReparentingTabGroupTask, never()).setupIntent(any(), any());
+        verify(mTabPersistentStore, never()).pauseSaveTabList();
+    }
+
+    @Test
+    public void testReparentTabGroupToExistingWindow_targetActivityDestroyedDuringAsyncSave() {
+        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(/* isGroupShared= */ true);
+
+        mDelegate.reparentTabGroupToExistingWindow(
+                mDestActivity, tabGroupMetadata, /* destTabIndex= */ 3, /* bringToFront= */ true);
+
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges= */ false);
+        verify(mTabPersistentStore).resumeSaveTabList(mOnSaveTabListRunnableCaptor.capture());
+
+        // Target activity is destroyed before resumeSaveTabList callback executes.
+        when(mDestActivity.isActivityFinishingOrDestroyed()).thenReturn(true);
+        mOnSaveTabListRunnableCaptor.getValue().run();
+
+        // onNewIntent is NOT called, but sync service observation is resumed.
+        verify(mDestActivity, never()).onNewIntent(any());
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges= */ true);
     }
 
     @Test

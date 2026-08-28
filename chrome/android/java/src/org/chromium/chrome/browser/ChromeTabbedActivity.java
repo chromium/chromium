@@ -2146,11 +2146,22 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             assert !url.isEmpty() : "URL is empty";
 
             Tab tab = processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
+            if (tab == null) {
+                continue;
+            }
+
             if (isPinned[i] && !tab.getIsPinned()) {
                 tabModel.pinTab(tab.getId(), /* showUngroupDialog= */ false);
             }
             tabs.add(tab);
         }
+
+        if (tabs.isEmpty()) {
+            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
+            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
+            return false;
+        }
+
         int destTabId = IntentHandler.getDestTabId(intent);
         if (destTabId != Tab.INVALID_TAB_ID) {
             TabGroupUtils.mergeTabsToDest(
@@ -2181,11 +2192,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             assert !url.isEmpty() : "URL is empty";
 
             Tab tab = processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
+            if (tab == null) {
+                continue;
+            }
 
             // Restores the correct tab order by adding the tab to the front. `tabIdsToUrls` were
             // stored in reverse to preserve open positions (see {@link
             // TabGroupMetadataExtractor#extractTabGroupMetadata}).
             tabs.add(0, tab);
+        }
+
+        if (tabs.isEmpty()) {
+            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_REPARENT_START_TIME);
+            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_TAB_GROUP_METADATA);
+            return false;
         }
 
         // 4. Regroup tabs and restore the original group properties(e.g. color, title, collapsed
@@ -2229,7 +2249,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
      * @param tabOpenType The {@link TabOpenType} to use for the new tab.
      * @return The newly created and loaded {@link Tab}, or {@code null} if creation failed.
      */
-    private Tab processTabIntentAndLoadTab(
+    private @Nullable Tab processTabIntentAndLoadTab(
             Intent intent, int tabId, String url, @TabOpenType int tabOpenType) {
         // 1. Set intent tabId and url for each iteration.
         IntentHandler.setTabId(intent, tabId);
@@ -3217,7 +3237,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         for (int draggedTabId : draggedTabIds) {
             Tab tab = tabWindowManager.getTabById(draggedTabId, windowId);
-            tabs.add(tab);
+            if (tab != null) {
+                tabs.add(tab);
+            }
+        }
+
+        if (tabs.isEmpty()) {
+            return false;
         }
 
         MultiInstanceOrchestratorFactory.getInstance()

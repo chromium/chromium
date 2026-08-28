@@ -506,6 +506,33 @@ public class MultiInstanceOrchestratorImplUnitTest {
     }
 
     @Test
+    public void testMoveTabsToWindowByIdChecked_withFinishingActivity() {
+        // Setup.
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        when(mTabbedActivity2.isActivityFinishingOrDestroyed()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
+                DEST_WINDOW_ID,
+                tabs,
+                /* destTabIndex= */ 0,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* bringToFront= */ true);
+
+        // Verify.
+        verify(mTabReparentingDelegate, never())
+                .reparentTabsToExistingWindow(any(), any(), anyInt(), anyInt(), anyBoolean());
+        verify(mTabReparentingDelegate)
+                .reparentTabsToNewWindow(
+                        eq(mTabbedActivity1),
+                        eq(tabs),
+                        eq(DEST_WINDOW_ID),
+                        eq(true),
+                        eq(null),
+                        eq(NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY));
+    }
+
+    @Test
     public void testMoveTabsToWindowByIdChecked_withDestroyedActivity() {
         // Setup.
         List<Tab> tabs = List.of(mTab1, mTab2);
@@ -702,6 +729,26 @@ public class MultiInstanceOrchestratorImplUnitTest {
         verify(mTabReparentingDelegate)
                 .reparentTabGroupToExistingWindow(
                         eq(mTabbedActivity2), eq(mTabGroupMetadata), eq(destTabIndex), eq(true));
+    }
+
+    @Test
+    public void testMoveTabGroupToWindowByIdChecked_withFinishingActivity() {
+        // Setup.
+        when(mTabbedActivity2.isActivityFinishingOrDestroyed()).thenReturn(true);
+
+        // Act.
+        mMultiInstanceOrchestrator.moveTabGroupToWindowByIdChecked(
+                DEST_WINDOW_ID, mTabGroupMetadata, /* destTabIndex= */ 0, /* bringToFront= */ true);
+
+        // Verify that it falls back to moveTabGroupToNewWindow.
+        verify(mTabReparentingDelegate, never())
+                .reparentTabGroupToExistingWindow(any(), any(), anyInt(), anyBoolean());
+        verify(mTabReparentingDelegate)
+                .reparentTabGroupToNewWindow(
+                        mTabGroupMetadata,
+                        DEST_WINDOW_ID,
+                        /* openAdjacently= */ true,
+                        NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
     }
 
     @Test

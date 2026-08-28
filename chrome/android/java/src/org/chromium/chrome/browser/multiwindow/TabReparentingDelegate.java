@@ -98,7 +98,7 @@ import java.util.List;
             int destTabIndex,
             int destGroupTabId,
             boolean bringToFront) {
-        if (tabs.isEmpty()) return;
+        if (targetActivity.isActivityFinishingOrDestroyed() || tabs.isEmpty()) return;
         Context context = tabs.get(0).getContext();
         Intent intent =
                 createIntentToReparentToExistingWindow(
@@ -159,6 +159,7 @@ import java.util.List;
             TabGroupMetadata tabGroupMetadata,
             int destTabIndex,
             boolean bringToFront) {
+        if (targetActivity.isActivityFinishingOrDestroyed()) return;
         long startTime = SystemClock.elapsedRealtime();
 
         Activity sourceActivity = MultiWindowUtils.getActivityById(tabGroupMetadata.sourceWindowId);
@@ -191,10 +192,12 @@ import java.util.List;
         if (tabPersistentStore != null) {
             tabPersistentStore.resumeSaveTabList(
                     () -> {
-                        targetActivity.onNewIntent(intent);
-                        if (bringToFront) {
-                            ApiCompatibilityUtils.moveTaskToFront(
-                                    targetActivity, targetActivity.getTaskId(), 0);
+                        if (!targetActivity.isActivityFinishingOrDestroyed()) {
+                            targetActivity.onNewIntent(intent);
+                            if (bringToFront) {
+                                ApiCompatibilityUtils.moveTaskToFront(
+                                        targetActivity, targetActivity.getTaskId(), 0);
+                            }
                         }
                         // Re-enable sync service observation after re-parenting is completed to
                         // resume normal sync behavior.
