@@ -64,7 +64,12 @@ import java.util.concurrent.TimeoutException;
  * ruleset publishing), prefer to limit the number of test cases where possible.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
+// compatible with the test.
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "disable-features=Prewarm",
+})
 @Batch(Batch.PER_CLASS)
 public final class SubresourceFilterTest {
     @Rule

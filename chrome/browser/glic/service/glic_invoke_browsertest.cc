@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -65,8 +66,12 @@ mojom::AdditionalContextPtr CreateMockAdditionalContext(
 class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
  public:
   GlicInvokeBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kGlicDefaultToLastActiveConversation);
+    // TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
+    // compatible with the test.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicDefaultToLastActiveConversation,
+                               features::kPrewarm});
   }
   ~GlicInvokeBrowserTest() override = default;
 

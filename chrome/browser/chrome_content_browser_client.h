@@ -429,6 +429,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool AreThirdPartyCookiesGenerallyAllowed(
       content::BrowserContext* browser_context,
       content::WebContents* web_contents) override;
+  static GURL GetPrewarmUrl();
   void PrewarmServiceWorkerRegistrationForDSE(
       content::BrowserContext* browser_context,
       content::ServiceWorkerContext& service_worker_context) override;

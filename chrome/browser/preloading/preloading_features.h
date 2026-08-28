@@ -13,7 +13,7 @@ namespace features {
 // DSE Prewarm tracked at https://crbug.com/406378765.
 BASE_DECLARE_FEATURE(kPrewarm);
 BASE_DECLARE_FEATURE(kPrewarmZeroSuggestTrigger);
-BASE_DECLARE_FEATURE_PARAM(std::string, kPrewarmUrl);
+BASE_DECLARE_FEATURE_PARAM(std::string, kPrewarmUrlOverride);
 BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmRevalidate);
 BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmThrottlePrefetch);
 BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmThrottleUserNavigation);

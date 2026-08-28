@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -30,7 +31,7 @@ const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
 // LINT.ThenChange()
 
 bool IsPrewarmUrl(const GURL& url, const url::Origin& dse_origin) {
-  const GURL prewarm_url = GURL(features::kPrewarmUrl.Get());
+  const GURL prewarm_url = ChromeContentBrowserClient::GetPrewarmUrl();
   return prewarm_url.is_valid() && url == prewarm_url &&
          dse_origin.IsSameOriginWith(prewarm_url);
 }

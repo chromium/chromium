@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -241,6 +242,8 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
  public:
   WebUIToolbarPixelInteractiveUiTest() {
     // All features for Webium Production should be included here.
+    // TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
+    // compatible with the test.
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
          features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
@@ -248,7 +251,7 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
          features::kWebUILocationBar, features::kWebUIAppMenuButton,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2},
-        {});
+        {features::kPrewarm});
   }
 
   void SetUp() override {
@@ -1279,11 +1282,13 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
     : public WebUIAndViewsToolbarInteractiveUiTestBase {
  public:
   WebUIToolbarViewsLocationBarInteractiveUiTest() {
+    // TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
+    // compatible with the test.
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIBackForwardButton,
          features::kWebUIReloadButton, features::kWebUIHomeButton,
          features::kWebUISplitTabsButton, features::kWebUILocationBar},
-        {});
+        {features::kPrewarm});
   }
 
   ~WebUIToolbarViewsLocationBarInteractiveUiTest() override = default;

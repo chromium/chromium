@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -539,8 +540,8 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
     // is implemented in the CDP.
     return PrewarmDecision::kDebuggerAttached;
   }
-  prewarm_url =
-      prewarm_url_for_testing_.value_or(GURL(features::kPrewarmUrl.Get()));
+  prewarm_url = prewarm_url_for_testing_.value_or(
+      ChromeContentBrowserClient::GetPrewarmUrl());
   if (!prewarm_url.is_valid()) {
     // A valid URL would not be provided if the feature is enabled from
     // chrome://flags, or arbitrary command line options.

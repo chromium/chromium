@@ -1402,6 +1402,7 @@ if (is_android) {
       "//chrome/browser/policy:android_browsertests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
+      "//chrome/browser/preloading",
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/preloading/prerender:browser_tests",
       "//chrome/browser/privacy_sandbox:browser_tests",

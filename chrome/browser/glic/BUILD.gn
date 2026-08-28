@@ -890,6 +890,7 @@ source_set("browser_tests") {
     "//chrome/browser/glic/test_support",
     "//chrome/browser/performance_manager",
     "//chrome/browser/permissions:test_support",
+    "//chrome/browser/preloading",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",

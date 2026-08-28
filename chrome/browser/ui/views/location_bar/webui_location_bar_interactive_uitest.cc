@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -250,18 +251,20 @@ class WebUILocationBarInteractiveUiTest
       public testing::WithParamInterface<Mode> {
  public:
   WebUILocationBarInteractiveUiTest() {
+    // TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
+    // compatible with the test.
     if (mode() == Mode::kCutout) {
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIReloadButton,
            features::kWebUILocationBar,
            omnibox::internal::kWebUIOmniboxAimPopup},
-          {omnibox::kAimServerEligibilityEnabled});
+          {omnibox::kAimServerEligibilityEnabled, features::kPrewarm});
     } else {
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIReloadButton,
            features::kWebUILocationBar, omnibox::kWebUIOmniboxFullPopup,
            omnibox::internal::kWebUIOmniboxAimPopup},
-          {omnibox::kAimServerEligibilityEnabled});
+          {omnibox::kAimServerEligibilityEnabled, features::kPrewarm});
     }
   }
   ~WebUILocationBarInteractiveUiTest() override = default;

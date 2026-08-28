@@ -1502,6 +1502,17 @@ bool ShouldGrantWindowManagementPrivilegesToIwaChildWindow(
 }  // namespace
 
 // static
+GURL ChromeContentBrowserClient::GetPrewarmUrl() {
+  const std::string override_url = features::kPrewarmUrlOverride.Get();
+  if (!override_url.empty()) {
+    return GURL(override_url);
+  }
+  static const base::NoDestructor<GURL> kDefaultUrl(
+      "https://www.google.com/search/warmup.html");
+  return *kDefaultUrl;
+}
+
+// static
 ChromeContentBrowserClient::PopupNavigationDelegateFactory&
 ChromeContentBrowserClient::GetPopupNavigationDelegateFactoryForTesting() {
   return g_popup_navigation_delegate_factory;

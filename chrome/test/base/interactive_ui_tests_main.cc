@@ -7,10 +7,12 @@
 #include "base/command_line.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/test/launcher/test_launcher.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/base/chrome_test_suite.h"
@@ -87,6 +89,11 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::TimeDelta());
 #endif
 
+    // Prewarming the default search engine background page causes significant
+    // latency and timeouts in interactive UI tests (especially on Mac due to
+    // Cocoa event queue processing). Disable it for interactive_ui_tests.
+    scoped_feature_list_.InitAndDisableFeature(features::kPrewarm);
+
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator_);
   }
@@ -102,6 +109,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {

@@ -155,6 +155,7 @@ if (!is_android) {
           "//base",
           "//base/test:test_support",
           "//chrome/app:command_ids",
+          "//chrome/browser/preloading",
           "//chrome/browser/profiles:profile",
           "//chrome/browser/search_engines",
           "//chrome/browser/ui",

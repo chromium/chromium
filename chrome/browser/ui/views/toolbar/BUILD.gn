@@ -488,6 +488,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/bookmarks",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
+      "//chrome/browser/preloading",
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_actions",
