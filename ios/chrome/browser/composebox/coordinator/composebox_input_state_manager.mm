@@ -883,6 +883,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   _prefService->SetInteger(
       contextual_search::kDriveConsentState,
       static_cast<int>(ConsentStateFromDisclaimerStatus(status)));
+  [self.delegate inputStateManagerDidUpdateUIState:self];
 }
 
 #pragma mark Observation
@@ -991,13 +992,20 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     return NO;
   }
 
-  // Enforce signed-in status check for the Drive option before evaluating
-  // server-side or local rules.
+  // Enforce signed-in status and restriction check for the Drive option before
+  // evaluating server-side or local rules.
   if (attachmentOption == ComposeboxAttachmentOption::kDrive) {
     BOOL hasPrimaryAccount =
         _identityManager &&
         _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
     if (!hasPrimaryAccount) {
+      return NO;
+    }
+
+    if (_prefService &&
+        _prefService->GetInteger(contextual_search::kDriveConsentState) ==
+            static_cast<int>(
+                contextual_search::DriveConsentState::kRestricted)) {
       return NO;
     }
   }

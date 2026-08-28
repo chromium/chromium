@@ -1414,8 +1414,8 @@ TEST_F(ComposeboxInputStateManagerTest,
 // Tests that Drive attachment option is not allowed in Incognito mode.
 TEST_F(ComposeboxInputStateManagerTest, TestDriveNotAllowedInIncognito) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kComposeboxDriveContextMenuOption}, {});
+  feature_list.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                {});
 
   ComposeboxInputStateManager* incognitoManager =
       [[ComposeboxInputStateManager alloc]
@@ -1433,4 +1433,26 @@ TEST_F(ComposeboxInputStateManagerTest, TestDriveNotAllowedInIncognito) {
   EXPECT_FALSE([incognitoManager
       isAttachmentAllowed:ComposeboxAttachmentOption::kDrive]);
   [incognitoManager disconnect];
+}
+
+// Tests that Drive attachment is disallowed and excluded from UI state when the
+// account is restricted.
+TEST_F(ComposeboxInputStateManagerTest, TestDriveDisallowedWhenRestricted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  identity_test_env_.MakePrimaryAccountAvailable("user@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  // Set Drive consent state to restricted.
+  [manager_ onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                         DisclaimerStatus::kRestricted];
+  EXPECT_EQ(
+      pref_service_.GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kRestricted));
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  EXPECT_FALSE(
+      state.allowedAttachments.contains(ComposeboxAttachmentOption::kDrive));
 }
