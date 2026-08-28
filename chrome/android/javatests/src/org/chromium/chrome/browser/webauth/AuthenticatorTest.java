@@ -52,9 +52,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
-    "enable-experimental-web-platform-features",
-    "enable-features=WebAuthentication",
-    "ignore-certificate-errors"
+    "ignore-certificate-errors",
 })
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
