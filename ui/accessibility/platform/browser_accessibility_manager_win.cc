@@ -19,6 +19,8 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/assistive_tech.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -1025,6 +1027,67 @@ bool BrowserAccessibilityManagerWin::CanFireEvents() const {
 
   AXPlatformTreeManagerDelegate* delegate = GetDelegateForNativeView();
   return delegate && delegate->AccessibilityGetAcceleratedWidget();
+}
+
+void BrowserAccessibilityManagerWin::SetLocationChangeEventCallbackForTesting(
+    const LocationChangeEventCallbackForTesting& callback) {
+  location_change_event_callback_for_testing_ = callback;
+}
+
+void BrowserAccessibilityManagerWin::SendLocationChangeEvents(
+    const std::vector<AXLocationChange>& changes) {
+  if (!features::IsAccessibilityGroupLocationChangeByCommonAncestorEnabled()) {
+    BrowserAccessibilityManager::SendLocationChangeEvents(changes);
+    return;
+  }
+
+  if (changes.empty()) {
+    return;
+  } else if (changes.size() == 1) {
+    BrowserAccessibility* obj = GetFromID(changes.front().id);
+    if (obj) {
+      obj->OnLocationChanged();
+      if (!location_change_event_callback_for_testing_.is_null()) {
+        location_change_event_callback_for_testing_.Run(obj);
+      }
+    }
+    return;
+  }
+
+  // Track changed subtrees per node, updating the least common ancestor of the
+  // set of nodes each iteration.
+  absl::flat_hash_map<BrowserAccessibility*, size_t> changed_children;
+  BrowserAccessibility* least_ancestor = nullptr;
+  for (const auto& change : changes) {
+    BrowserAccessibility* obj = GetFromID(change.id);
+    BrowserAccessibility* obj_least_ancestor = nullptr;
+    size_t max_changed_children = 0;
+
+    // Search upward, finding the lowest parent with the most changed children.
+    while (obj) {
+      size_t obj_changed_children = ++changed_children[obj];
+      if (obj_changed_children > max_changed_children) {
+        obj_least_ancestor = obj;
+        max_changed_children = obj_changed_children;
+      }
+      obj = obj->PlatformGetParent();
+    }
+
+    // The least ancestor of the whole set will always be an ancestor of this
+    // node.
+    if (obj_least_ancestor != nullptr) {
+      least_ancestor = obj_least_ancestor;
+    }
+  }
+
+  // At this point, `least_ancestor` is the lowest common ancestor of all the
+  // nodes with location changes; fire a single location changed event on it.
+  if (least_ancestor) {
+    least_ancestor->OnLocationChanged();
+    if (!location_change_event_callback_for_testing_.is_null()) {
+      location_change_event_callback_for_testing_.Run(least_ancestor);
+    }
+  }
 }
 
 void BrowserAccessibilityManagerWin::OnSubtreeWillBeDeleted(AXTree* tree,

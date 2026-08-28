@@ -1,5 +1,6 @@
 AriaProperties changed on role=gridcell, name=Grid, GridCell1
 AriaProperties changed on role=gridcell, name=Grid, GridCell3
+LayoutInvalidated on role=grid
 Name changed on role=row, name=Grid, GridCell1 Grid, GridCell2 Grid, GridCell3
 SelectionItemIsSelected changed on role=gridcell, name=Grid, GridCell1
 SelectionItemIsSelected changed on role=gridcell, name=Grid, GridCell3
@@ -26,6 +27,7 @@ ValueValue changed on role=combobox
 === Start Continuation ===
 AriaProperties changed on role=option, name=DivSelect, Option1
 AriaProperties changed on role=option, name=DivSelect, Option3
+LayoutInvalidated on role=document
 SelectionItemIsSelected changed on role=option, name=DivSelect, Option1
 SelectionItemIsSelected changed on role=option, name=DivSelect, Option3
 SelectionItem_ElementSelected on role=option, name=DivSelect, Option3

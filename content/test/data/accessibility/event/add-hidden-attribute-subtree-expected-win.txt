@@ -1,3 +1,4 @@
 EVENT_OBJECT_HIDE on <li#item3> role=ROLE_SYSTEM_LISTITEM level=1 PosInSet=3 SetSize=3
+EVENT_OBJECT_LOCATIONCHANGE on <#document> role=ROLE_SYSTEM_DOCUMENT value~=[doc-url] FOCUSED,FOCUSABLE
 EVENT_OBJECT_REORDER on <ul> role=ROLE_SYSTEM_LIST SetSize=2
 IA2_EVENT_TEXT_REMOVED on <ul> role=ROLE_SYSTEM_LIST SetSize=2 old_text={'<obj>' start=2 end=3}

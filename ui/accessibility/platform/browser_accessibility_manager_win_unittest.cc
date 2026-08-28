@@ -4,9 +4,17 @@
 
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 
+#include <vector>
+
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -39,6 +47,7 @@ class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
 
   raw_ptr<ui::BrowserAccessibilityManager> browser_accessibility_manager_;
 };
+
 }  // namespace
 
 namespace ui {
@@ -582,6 +591,172 @@ TEST_F(BrowserAccessibilityPlatformNodeWinTest,
   node->UpdatePlatformNode();
 
   EXPECT_EQ(first, node->GetAXPlatformNode());
+}
+
+TEST_F(BrowserAccessibilityManagerWinTest,
+       LocationChangeGroupedByCommonAncestor) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAccessibilityGroupLocationChangeByCommonAncestor);
+
+  // Tree structure:
+  // ++Root (ID 1)
+  // ++++Container 1 (ID 2)
+  // ++++++Child 1A (ID 3)
+  // ++++++Child 1B (ID 4)
+  // ++++Container 2 (ID 5)
+  // ++++++Child 2A (ID 6)
+  // ++++++Child 2B (ID 7)
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.relative_bounds.bounds = gfx::RectF(0, 0, 800, 600);
+  root.child_ids = {2, 5};
+
+  AXNodeData container1;
+  container1.id = 2;
+  container1.role = ax::mojom::Role::kGenericContainer;
+  container1.relative_bounds.offset_container_id = 1;
+  container1.relative_bounds.bounds = gfx::RectF(10, 10, 100, 100);
+  container1.child_ids = {3, 4};
+
+  AXNodeData child1a;
+  child1a.id = 3;
+  child1a.role = ax::mojom::Role::kStaticText;
+  child1a.relative_bounds.offset_container_id = 2;
+  child1a.relative_bounds.bounds = gfx::RectF(0, 0, 50, 10);
+
+  AXNodeData child1b;
+  child1b.id = 4;
+  child1b.role = ax::mojom::Role::kStaticText;
+  child1b.relative_bounds.offset_container_id = 2;
+  child1b.relative_bounds.bounds = gfx::RectF(0, 10, 50, 10);
+
+  AXNodeData container2;
+  container2.id = 5;
+  container2.role = ax::mojom::Role::kGenericContainer;
+  container2.relative_bounds.offset_container_id = 1;
+  container2.relative_bounds.bounds = gfx::RectF(200, 10, 100, 100);
+  container2.child_ids = {6, 7};
+
+  AXNodeData child2a;
+  child2a.id = 6;
+  child2a.role = ax::mojom::Role::kStaticText;
+  child2a.relative_bounds.offset_container_id = 5;
+  child2a.relative_bounds.bounds = gfx::RectF(0, 0, 50, 10);
+
+  AXNodeData child2b;
+  child2b.id = 7;
+  child2b.role = ax::mojom::Role::kStaticText;
+  child2b.relative_bounds.offset_container_id = 5;
+  child2b.relative_bounds.bounds = gfx::RectF(0, 10, 50, 10);
+
+  // Build the initial tree update.
+  AXTreeUpdate initial_tree;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.focused_tree_id = tree_data.tree_id;
+  tree_data.parent_tree_id = AXTreeIDUnknown();
+  initial_tree.tree_data = tree_data;
+  initial_tree.has_tree_data = true;
+  initial_tree.root_id = 1;
+  initial_tree.nodes = {root,       container1, child1a, child1b,
+                        container2, child2a,    child2b};
+
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          initial_tree, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  std::vector<AXNodeID> fired_location_change_node_ids;
+  manager->ToBrowserAccessibilityManagerWin()
+      ->SetLocationChangeEventCallbackForTesting(
+          base::BindLambdaForTesting([&](BrowserAccessibility* node) {
+            fired_location_change_node_ids.push_back(node->GetId());
+          }));
+
+  // 1. Single node location change (Child 1A, ID 3).
+  // A single location change fires a location change event on that node.
+  {
+    fired_location_change_node_ids.clear();
+    AXLocationAndScrollUpdates updates;
+    AXRelativeBounds bounds;
+    bounds.offset_container_id = 2;
+    bounds.bounds = gfx::RectF(10, 0, 50, 10);
+    updates.location_changes.emplace_back(3, bounds);
+
+    manager->OnLocationChanges(updates);
+
+    EXPECT_THAT(fired_location_change_node_ids, testing::ElementsAre(3));
+  }
+
+  // 2. Multiple location changes under the same container (Child 1A ID 3 &
+  // Child 1B ID 4). The lowest common ancestor is Container 1 (ID 2).
+  {
+    fired_location_change_node_ids.clear();
+    AXLocationAndScrollUpdates updates;
+    AXRelativeBounds bounds1;
+    bounds1.offset_container_id = 2;
+    bounds1.bounds = gfx::RectF(20, 0, 50, 10);
+    updates.location_changes.emplace_back(3, bounds1);
+
+    AXRelativeBounds bounds2;
+    bounds2.offset_container_id = 2;
+    bounds2.bounds = gfx::RectF(20, 10, 50, 10);
+    updates.location_changes.emplace_back(4, bounds2);
+
+    manager->OnLocationChanges(updates);
+
+    EXPECT_THAT(fired_location_change_node_ids, testing::ElementsAre(2));
+  }
+
+  // 3. Multiple location changes across different branches (Child 1A ID 3 &
+  // Child 2A ID 6). The lowest common ancestor is Root (ID 1).
+  {
+    fired_location_change_node_ids.clear();
+    AXLocationAndScrollUpdates updates;
+    AXRelativeBounds bounds1;
+    bounds1.offset_container_id = 2;
+    bounds1.bounds = gfx::RectF(30, 0, 50, 10);
+    updates.location_changes.emplace_back(3, bounds1);
+
+    AXRelativeBounds bounds2;
+    bounds2.offset_container_id = 5;
+    bounds2.bounds = gfx::RectF(30, 0, 50, 10);
+    updates.location_changes.emplace_back(6, bounds2);
+
+    manager->OnLocationChanges(updates);
+
+    EXPECT_THAT(fired_location_change_node_ids, testing::ElementsAre(1));
+  }
+
+  // 4. Ensure LCA algorithm goes upward from first common ancestor found to
+  // lowest overall common ancestor (Container 2 ID 5, Child 1B ID 4, and Child
+  // 1A ID 3). The lowest common ancestor is Root (ID 1).
+  {
+    fired_location_change_node_ids.clear();
+    AXLocationAndScrollUpdates updates;
+    AXRelativeBounds bounds1;
+    bounds1.offset_container_id = 1;
+    bounds1.bounds = gfx::RectF(40, 10, 100, 100);
+    updates.location_changes.emplace_back(5, bounds1);
+
+    AXRelativeBounds bounds2;
+    bounds2.offset_container_id = 2;
+    bounds2.bounds = gfx::RectF(40, 10, 50, 10);
+    updates.location_changes.emplace_back(4, bounds2);
+
+    AXRelativeBounds bounds3;
+    bounds2.offset_container_id = 2;
+    bounds2.bounds = gfx::RectF(40, 0, 50, 10);
+    updates.location_changes.emplace_back(3, bounds3);
+
+    manager->OnLocationChanges(updates);
+
+    EXPECT_THAT(fired_location_change_node_ids, testing::ElementsAre(1));
+  }
 }
 
 }  // namespace ui

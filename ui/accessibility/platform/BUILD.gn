@@ -91,6 +91,7 @@ component("platform") {
   ]
 
   deps = [
+    "//third_party/abseil-cpp:absl",
     "//ui/strings:auto_image_annotation_strings",
     "//ui/strings:ax_strings",
   ]

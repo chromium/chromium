@@ -222,6 +222,13 @@ BASE_FEATURE(kUiaMathMlSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsUiaMathMlSupportEnabled() {
   return base::FeatureList::IsEnabled(::features::kUiaMathMlSupport);
 }
+
+BASE_FEATURE(kAccessibilityGroupLocationChangeByCommonAncestor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsAccessibilityGroupLocationChangeByCommonAncestorEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityGroupLocationChangeByCommonAncestor);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

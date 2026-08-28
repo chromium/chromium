@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/browser_accessibility_win.h"
 
 #include "base/memory/ptr_util.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
@@ -108,6 +109,14 @@ void BrowserAccessibilityWin::OnLocationChanged() {
     return;
   }
   GetCOM()->FireNativeEvent(EVENT_OBJECT_LOCATIONCHANGE);
+
+  if (features::IsAccessibilityGroupLocationChangeByCommonAncestorEnabled()) {
+    auto* manager_win = manager()->ToBrowserAccessibilityManagerWin();
+    if (!manager_win) {
+      return;
+    }
+    manager_win->FireUiaAccessibilityEvent(UIA_LayoutInvalidatedEventId, this);
+  }
 }
 
 std::u16string BrowserAccessibilityWin::GetHypertext() const {

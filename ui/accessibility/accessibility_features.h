@@ -191,6 +191,14 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaEventOptimization);
 // technologies.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaMathMlSupport);
 AX_BASE_EXPORT bool IsUiaMathMlSupportEnabled();
+
+// Group location-changed events by sending a single location changed event
+// on the root of the subtree containing all location-change events. This
+// feature-flag is enabled by default as a kill-switch for the event semantics
+// change.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityGroupLocationChangeByCommonAncestor);
+AX_BASE_EXPORT bool IsAccessibilityGroupLocationChangeByCommonAncestorEnabled();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
