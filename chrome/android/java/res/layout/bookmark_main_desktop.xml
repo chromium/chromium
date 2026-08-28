@@ -13,6 +13,7 @@ found in the LICENSE file.
     android:orientation="horizontal"
     android:baselineAligned="false"
     android:animateLayoutChanges="true"
+    android:focusable="false"
     tools:ignore="NestedWeights">
 
     <!-- Left Navigation Pane -->
@@ -59,6 +60,7 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:orientation="vertical"
         android:animateLayoutChanges="true"
+        android:focusable="false"
         android:background="@macro/bookmark_desktop_content_pane_bg">
 
         <include
