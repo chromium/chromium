@@ -169,8 +169,8 @@ void ContentAnalysisDelegate::Data::AddClipboardData(
     text.push_back(clipboard_paste_data.rtf);
   }
   if (!clipboard_paste_data.png.empty()) {
-      image = std::string(clipboard_paste_data.png.begin(),
-                          clipboard_paste_data.png.end());
+    image = std::string(clipboard_paste_data.png.begin(),
+                        clipboard_paste_data.png.end());
   }
   if (!clipboard_paste_data.custom_data.empty()) {
     for (const auto& entry : clipboard_paste_data.custom_data) {
@@ -422,10 +422,11 @@ void ContentAnalysisDelegate::CreateForWebContents(
   // 1. work is ongoing in the background and that the user must wait for a
   // verdict.
   // 2. work is done and fail-closed conditions are met.
-  // For COPY trigger operations, we don't show a dialog. Instead, we communicate
-  // with the user via the content of the clipboard and using toasts. UI toast
-  // elements are handled separately since the copy trigger is the only DLP rule
-  // showing toasts in the context of Chrome Enterprise Premium (CEP).
+  // For COPY trigger operations, we don't show a dialog. Instead, we
+  // communicate with the user via the content of the clipboard and using
+  // toasts. UI toast elements are handled separately since the copy trigger is
+  // the only DLP rule showing toasts in the context of Chrome Enterprise
+  // Premium (CEP).
   bool show_in_progress_ui =
       upload_data_status == UploadDataStatus::kInProgress && wait_for_verdict &&
       (*UIEnabledStorage()) && access_point != DeepScanAccessPoint::COPY;
@@ -653,6 +654,8 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
   // dialog.
   if (access_point_ == DeepScanAccessPoint::COPY) {
 #if !BUILDFLAG(IS_ANDROID)
+    bool wait_for_verdict =
+        data_.settings.block_until_verdict == BlockUntilVerdict::kBlock;
     switch (final_result_) {
       case FinalContentAnalysisResult::WARNING:
         if (web_contents_) {
@@ -661,7 +664,7 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
           CopyWarningDelegateTracker::SetDelegate(web_contents_.get(), this);
           auto* toast_controller =
               ToastController::MaybeGetForWebContents(web_contents_.get());
-          if (toast_controller) {
+          if (toast_controller && wait_for_verdict) {
             toast_controller->MaybeShowToast(
                 ToastParams(ToastId::kEnterpriseCopyWarning));
           }
@@ -690,7 +693,7 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
         if (web_contents_) {
           auto* toast_controller =
               ToastController::MaybeGetForWebContents(web_contents_.get());
-          if (toast_controller) {
+          if (toast_controller && wait_for_verdict) {
             toast_controller->MaybeShowToast(
                 ToastParams(ToastId::kEnterpriseCopyBlocked));
           }
@@ -1007,9 +1010,11 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   }
 
   // The callback can synchronously tear down the WebContents acting as the
-  // context for this analysis, which deletes `this`. Check if we were destroyed.
-  if (!weak_this)
+  // context for this analysis, which deletes `this`. Check if we were
+  // destroyed.
+  if (!weak_this) {
     return;
+  }
 
   AckAllRequests();
 
