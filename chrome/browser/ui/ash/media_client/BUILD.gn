@@ -29,7 +29,6 @@ static_library("media_client") {
     "//chrome/browser/ash/camera_mic",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/tab_contents",
@@ -43,7 +42,7 @@ static_library("media_client") {
     "//extensions/browser",
     "//media/capture/video/chromeos/public",
     "//services/media_session/public/mojom",
-    "//ui/message_center/public/cpp",
+    "//ui/message_center",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
@@ -64,7 +63,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
@@ -75,5 +73,6 @@ source_set("browser_tests") {
     "//media/capture:capture_base",
     "//testing/gmock",
     "//ui/base",
+    "//ui/message_center",
   ]
 }

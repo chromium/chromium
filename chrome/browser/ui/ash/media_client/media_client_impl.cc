@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/extensions/media_player_event_router.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -61,6 +60,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
@@ -569,14 +569,14 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
   }
 
   // Creating/updating the notification.
-  SystemNotificationHelper::GetInstance()->Display(
+  message_center::MessageCenter::Get()->AddNotification(
       notification_.builder()
           .SetId(PrivacySwitchOnNotificationIdForDevice(device_id))
           .SetTitleWithArgs(IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE,
                             {device_name_u16})
           .SetMessageWithArgs(IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE,
                               {device_name_u16})
-          .Build(false));
+          .BuildPtr(false));
   devices_having_visible_notification_.insert(device_id);
 }
 
@@ -585,8 +585,9 @@ MediaClientImpl::RemoveCameraOffNotificationForDevice(
     const std::string& device_id) {
   auto it = devices_having_visible_notification_.find(device_id);
   if (it != devices_having_visible_notification_.end()) {
-    SystemNotificationHelper::GetInstance()->Close(
-        PrivacySwitchOnNotificationIdForDevice(device_id));
+    message_center::MessageCenter::Get()->RemoveNotification(
+        PrivacySwitchOnNotificationIdForDevice(device_id),
+        /*by_user=*/false);
     return devices_having_visible_notification_.erase(it);
   }
   return it;

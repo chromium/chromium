@@ -16,8 +16,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -35,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+#include "ui/message_center/message_center.h"
 
 // Gmock matchers and actions that are used below.
 using ::testing::AnyOf;
@@ -64,65 +63,16 @@ class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
   std::optional<ui::Accelerator> last_media_key_;
 };
 
-class FakeNotificationDisplayService : public NotificationDisplayService {
- public:
-  void Display(
-      NotificationHandler::Type notification_type,
-      const message_center::Notification& notification,
-      std::unique_ptr<NotificationCommon::Metadata> metadata) override {
-    show_called_times_++;
-    active_notifications_.insert_or_assign(notification.id(), notification);
-  }
-
-  void Close(NotificationHandler::Type notification_type,
-             const std::string& notification_id) override {
-    active_notifications_.erase(notification_id);
-  }
-
-  void GetDisplayed(DisplayedNotificationsCallback callback) override {}
-  void GetDisplayedForOrigin(const GURL& origin,
-                             DisplayedNotificationsCallback callback) override {
-  }
-
-  void AddObserver(NotificationDisplayService::Observer* observer) override {}
-  void RemoveObserver(NotificationDisplayService::Observer* observer) override {
-  }
-
-  // Returns true if any existing notification contains `keywords` as a
-  // substring.
-  bool HasNotificationMessageContaining(const std::string& keywords) const {
-    const std::u16string keywords_u16 = base::UTF8ToUTF16(keywords);
-    for (const auto& [notification_id, notification] : active_notifications_) {
-      if (notification.message().find(keywords_u16) != std::u16string::npos) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  size_t NumberOfActiveNotifications() const {
-    return active_notifications_.size();
-  }
-
-  size_t show_called_times() const { return show_called_times_; }
-
-  void SimulateClick(const std::string& id, std::optional<int> button_idx) {
-    auto notification_iter = active_notifications_.find(id);
-    ASSERT_TRUE(notification_iter != active_notifications_.end());
-
-    message_center::Notification notification = notification_iter->second;
-
-    notification.delegate()->Click(button_idx, std::nullopt);
-
-    if (notification.rich_notification_data().remove_on_click) {
-      active_notifications_.erase(id);
+bool HasNotificationMessageContaining(const std::string& keywords) {
+  const std::u16string keywords_u16 = base::UTF8ToUTF16(keywords);
+  for (const message_center::Notification* notification :
+       message_center::MessageCenter::Get()->GetNotifications()) {
+    if (notification->message().find(keywords_u16) != std::u16string::npos) {
+      return true;
     }
   }
-
- private:
-  std::map<std::string, message_center::Notification> active_notifications_;
-  size_t show_called_times_ = 0;
-};
+  return false;
+}
 
 // TODO(crbug.com/480103891): We should not be faking browser activation state
 // via indirect means (such as direct calls to `DidBecomeActive()`). We should
@@ -231,18 +181,6 @@ class MediaClientAppUsingCameraTest : public InProcessBrowserTest {
     client()->ShowCameraOffNotification(device_id, device_name);
   }
 
-  FakeNotificationDisplayService* SetSystemNotificationService() const {
-    std::unique_ptr<FakeNotificationDisplayService>
-        fake_notification_display_service =
-            std::make_unique<FakeNotificationDisplayService>();
-    FakeNotificationDisplayService* fake_notification_display_service_ptr =
-        fake_notification_display_service.get();
-    SystemNotificationHelper::GetInstance()->SetSystemServiceForTesting(
-        std::move(fake_notification_display_service));
-
-    return fake_notification_display_service_ptr;
-  }
-
  protected:
   std::vector<media::VideoCaptureDeviceInfo> video_capture_devices_;
 };
@@ -315,14 +253,11 @@ IN_PROC_BROWSER_TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
 IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
                        NotificationRemovedWhenSWSwitchChangedToON) {
-  const FakeNotificationDisplayService* notification_display_service =
-      SetSystemNotificationService();
-
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 0u);
 
   // Launch an app. The notification shouldn't be displayed yet.
   LaunchAppUsingCamera(/*active_client_count=*/1);
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 0u);
 
   // Showing the camera notification, e.g. because the hardware privacy switch
   // was toggled.
@@ -331,21 +266,18 @@ IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
   MakeDeviceActive("device_id");
   ShowCameraOffNotification("device_id", "device_name");
   // One notification should be displayed.
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 1u);
 
   // Setting the software privacy switch to ON. The existing hardware switch
   // notification should be removed.
   client()->OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState::ON);
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
                        LearnMoreButtonInteraction) {
-  FakeNotificationDisplayService* notification_display_service =
-      SetSystemNotificationService();
-
-  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 0u);
 
   LaunchAppUsingCamera(/*active_client_count=*/1);
 
@@ -356,21 +288,18 @@ IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
   MakeDeviceActive("device_id");
   ShowCameraOffNotification("device_id", "device_name");
 
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 1u);
 
-  notification_display_service->SimulateClick(
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
       "ash.media.camera.activity_with_privacy_switch_on.device_id", 0);
 
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
                        NotificationRemovedWhenCameraDetachedOrInactive) {
-  FakeNotificationDisplayService* notification_display_service =
-      SetSystemNotificationService();
-
   // No notification initially.
-  EXPECT_EQ(0u, notification_display_service->NumberOfActiveNotifications());
+  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 
   const std::string camera1 = "camera1";
   const std::string camera1_name = "Fake camera 1";
@@ -387,34 +316,31 @@ IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
                                 cros::mojom::CameraPrivacySwitchState::ON);
 
   // Still no notification.
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+  EXPECT_EQ(message_center::MessageCenter::Get()->NotificationCount(), 0u);
 
   // `CHROME` client starts accessing camera1. A hardware switch notification
   // for camera1 should be displayed.
   OnActiveClientChange(cros::mojom::CameraClientType::CHROME, {camera1}, 1);
-  EXPECT_EQ(1u, notification_display_service->NumberOfActiveNotifications());
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      camera1_name));
+  EXPECT_EQ(1u, message_center::MessageCenter::Get()->NotificationCount());
+  EXPECT_TRUE(HasNotificationMessageContaining(camera1_name));
 
   // `CHROME` client starts accessing camera2 as well. A hardware switch
   // notification for camera2 should be displayed.
   OnActiveClientChange(cros::mojom::CameraClientType::CHROME,
                        {camera1, camera2}, 1);
-  EXPECT_EQ(2u, notification_display_service->NumberOfActiveNotifications());
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      camera2_name));
+  EXPECT_EQ(2u, message_center::MessageCenter::Get()->NotificationCount());
+  EXPECT_TRUE(HasNotificationMessageContaining(camera2_name));
 
   // `CHROME` client stops accessing camera1. The respective notification should
   // be removed.
   OnActiveClientChange(cros::mojom::CameraClientType::CHROME, {camera2}, 1);
-  EXPECT_EQ(1u, notification_display_service->NumberOfActiveNotifications());
-  EXPECT_FALSE(notification_display_service->HasNotificationMessageContaining(
-      camera1_name));
+  EXPECT_EQ(1u, message_center::MessageCenter::Get()->NotificationCount());
+  EXPECT_FALSE(HasNotificationMessageContaining(camera1_name));
 
   // Detach camera2.
   DetachCamera();
   // `CHROME` client stops accessing camera2 as the camera is detached. The
   // respective notification should be removed.
   OnActiveClientChange(cros::mojom::CameraClientType::CHROME, {}, 0);
-  EXPECT_EQ(0u, notification_display_service->NumberOfActiveNotifications());
+  EXPECT_EQ(0u, message_center::MessageCenter::Get()->NotificationCount());
 }
