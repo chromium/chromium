@@ -35,6 +35,7 @@ struct AXNodeData;
 namespace pdf {
 
 class PdfAccessibilityTreeBuilder;
+enum class HeadingClassifier;
 
 // Heuristic-based accessibility tree building for untagged PDFs.
 //
@@ -48,24 +49,6 @@ class PdfAccessibilityTreeBuilder;
 //    lines) by analyzing visual layout properties like font sizes, line
 //    spacing, and spatial relationships.
 //
-
-// Heuristic rules used to classify a text block as a heading.
-enum class HeadingClassifier {
-  // Not classified as a heading.
-  kNone,
-  // Classified based on font size.
-  kFontSize,
-  // Classified based on bold styling.
-  kBoldStyle,
-  // Classified because all characters are uppercase.
-  kAllUppercase,
-  // Classified due to semi-bold font weight (600).
-  kSemiBoldWeight,
-  // Classified by looking at the font name to determine styling.
-  kFontName,
-  // Classified by looking at text color when it differs from body text color.
-  kTextColor,
-};
 
 // Bundles raw page layout data (text runs, characters, start indices) used by
 // the heuristic tree builder.
