@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -227,6 +228,8 @@ TEST_F(AtMemorySearchViewControllerTest, TestNoticeVisibleInInitialState) {
                   tableView:view_controller_.tableView
       cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
   EXPECT_EQ(cell.selectionStyle, UITableViewCellSelectionStyleNone);
+  EXPECT_NSEQ(cell.backgroundConfiguration.backgroundColor,
+              [UIColor colorNamed:kGroupedSecondaryBackgroundColor]);
 
   AtMemoryInlineNoticeConfiguration* config =
       base::apple::ObjCCastStrict<AtMemoryInlineNoticeConfiguration>(

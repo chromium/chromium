@@ -116,6 +116,8 @@ enum class ItemIdentifier {
   self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE);
 
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
+  self.tableView.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   [self loadModel];
 }
 
@@ -717,7 +719,12 @@ enum class ItemIdentifier {
   UITableViewCell* cell =
       [AtMemoryInlineNoticeConfiguration dequeueTableViewCell:tableView];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  UIBackgroundConfiguration* backgroundConfiguration =
+      [UIBackgroundConfiguration listCellConfiguration];
+  backgroundConfiguration.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  cell.backgroundConfiguration = backgroundConfiguration;
 
   AtMemoryInlineNoticeConfiguration* config =
       [[AtMemoryInlineNoticeConfiguration alloc] init];
