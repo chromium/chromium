@@ -296,12 +296,18 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
        base::BindRepeating(to_css_id, &ChromeColorIdName)},
 #if BUILDFLAG(IS_CHROMEOS)
       {"ref", cros_tokens::kCrosRefColorsStart, cros_tokens::kCrosRefColorsEnd,
-       base::BindRepeating(cros_tokens::ColorIdName)},
+       base::BindRepeating([](ui::ColorId id) {
+         return std::string(cros_tokens::ColorIdName(id));
+       })},
       {"sys", cros_tokens::kCrosSysColorsStart, cros_tokens::kCrosSysColorsEnd,
-       base::BindRepeating(cros_tokens::ColorIdName)},
+       base::BindRepeating([](ui::ColorId id) {
+         return std::string(cros_tokens::ColorIdName(id));
+       })},
       {"legacy", cros_tokens::kLegacySemanticColorsStart,
        cros_tokens::kLegacySemanticColorsEnd,
-       base::BindRepeating(cros_tokens::ColorIdName)},
+       base::BindRepeating([](ui::ColorId id) {
+         return std::string(cros_tokens::ColorIdName(id));
+       })},
 #elif BUILDFLAG(IS_ANDROID)
       {"ref", ui::kColorRefPrimary0, ui::kColorRefNeutralVariant100,
        base::BindRepeating(to_css_id, ui::ColorIdName)},

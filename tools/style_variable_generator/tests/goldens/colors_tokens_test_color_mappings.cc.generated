@@ -8,6 +8,8 @@
 
 #include "None"
 
+#include <string_view>
+
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_recipe.h"
@@ -61,7 +63,7 @@ void AddCrosSysColorsToMixer(ui::ColorMixer& mixer, bool dark_mode) {
 
 
 
-std::string ColorIdName(ui::ColorId id) {
+std::string_view ColorIdName(ui::ColorId id) {
   switch(id) {
     case kCrosRefPrimary50:
       return "--cros-ref-primary50";
