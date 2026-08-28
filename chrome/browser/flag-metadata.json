@@ -9500,6 +9500,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "symphonia-demuxing",
+    "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
+    "expiry_milestone": 177
+  },
+  {
     "name": "sync-account-settings",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160

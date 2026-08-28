@@ -5,7 +5,7 @@
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
-if (media_use_symphonia) {
+if (media_use_symphonia_decoder) {
   rust_static_library("symphonia_decoder_bridge") {
     # Needed because CXX generates unsafe code, for example using export_name
     # is inherently unsafe.
@@ -154,7 +154,7 @@ source_set("filters") {
     ]
   }
 
-  if (media_use_symphonia) {
+  if (media_use_symphonia_decoder) {
     sources += [
       "symphonia_audio_decoder.cc",
       "symphonia_audio_decoder.h",
@@ -464,7 +464,7 @@ source_set("unit_tests") {
 # NOTE: if more rust tests that are not gated on Symphonia being enabled are
 # added to filters, this conditional can more tightly scoped to Symphonia source
 # files.
-if (media_use_symphonia) {
+if (media_use_symphonia_decoder) {
   rust_static_library("rust_unittests") {
     testonly = true
     is_gtest_unittests = true

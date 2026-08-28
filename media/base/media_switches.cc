@@ -1246,6 +1246,20 @@ BASE_FEATURE(kSymphoniaPcmDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSymphoniaVorbisDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_SYMPHONIA)
 
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+// Enables the use of Symphonia for container demuxing.
+// Owner: jophba@chromium.org
+// TODO(crbug.com/550619039, jophba): Consider for removal in M177.
+BASE_FEATURE(kSymphoniaDemuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaAacDemuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaFlacDemuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaIsomDemuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaMkvDemuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaMp3Demuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaOggDemuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaRiffDemuxing, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+
 #if BUILDFLAG(IS_ANDROID)
 // Allows audio playback capture on Android.
 BASE_FEATURE(kAllowAudioPlaybackCapture, base::FEATURE_ENABLED_BY_DEFAULT);

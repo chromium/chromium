@@ -145,6 +145,14 @@ declare_args() {
 
 # Use another declare_args() to allow dependence on args defined above.
 declare_args() {
+  # Enable usage of Symphonia audio decoder within the media library.
+  media_use_symphonia_decoder = media_use_symphonia
+
+  # Enable usage of Symphonia demuxer within the media library. Disabled on
+  # Android and Fuchsia by default to avoid binary bloat during development.
+  media_use_symphonia_demuxer =
+      media_use_symphonia && !is_android && !is_fuchsia
+
   # If overriding this to false, possibly via its component values,
   # `enable_libaom` should likely also be overriddent to false.
   enable_av1_decoder = enable_dav1d_decoder
