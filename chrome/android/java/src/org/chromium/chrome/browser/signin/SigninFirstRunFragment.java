@@ -435,6 +435,7 @@ public class SigninFirstRunFragment extends Fragment
     public void onInitialLoadCompleted() {
         if (!isAdded()) return;
         if (mCenteredLayoutInflated) return;
+        if (mFragmentView == null) return;
 
         if (useCenteredLayout()) {
             // TODO(crbug.com/537826242): This scene transition is only needed to support
@@ -443,7 +444,6 @@ public class SigninFirstRunFragment extends Fragment
             // into a single ConstraintLayout file and move this transition back to the view binder
             // (reusing beginDelayedTransition) to remove this scene transition code.
             mCenteredLayoutInflated = true;
-            assumeNonNull(mFragmentView);
             final FrameLayout fragmentView = mFragmentView;
             boolean useLandscapeLayout =
                     SigninUtils.shouldShowDualPanesHorizontalLayout(getActivity());
