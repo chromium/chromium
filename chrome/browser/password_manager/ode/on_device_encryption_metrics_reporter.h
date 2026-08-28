@@ -89,6 +89,11 @@ class OnDeviceEncryptionMetricsReporter
                           OnDeviceEncryptionStateTracker::Observer>
       password_observation_{this};
 
+  std::optional<OnDeviceEncryptionStateHistogramBucket>
+      last_published_passkey_bucket_;
+  std::optional<OnDeviceEncryptionStateHistogramBucket>
+      last_published_password_bucket_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OnDeviceEncryptionMetricsReporter> weak_ptr_factory_{

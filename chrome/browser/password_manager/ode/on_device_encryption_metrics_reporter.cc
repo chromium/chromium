@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace password_manager {
@@ -83,9 +84,11 @@ void OnDeviceEncryptionMetricsReporter::
 
 void OnDeviceEncryptionMetricsReporter::MaybeRecordPasskeyReadiness(
     OnDeviceEncryptionState current_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<OnDeviceEncryptionStateHistogramBucket> bucket =
       ToOnDeviceEncryptionStateHistogramBucket(current_state);
-  if (bucket.has_value()) {
+  if (bucket.has_value() && bucket != last_published_passkey_bucket_) {
+    last_published_passkey_bucket_ = bucket;
     base::UmaHistogramEnumeration(kPasskeyOnDeviceEncryptionStateHistogram,
                                   *bucket);
   }
@@ -93,9 +96,11 @@ void OnDeviceEncryptionMetricsReporter::MaybeRecordPasskeyReadiness(
 
 void OnDeviceEncryptionMetricsReporter::MaybeRecordPasswordReadiness(
     OnDeviceEncryptionState current_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<OnDeviceEncryptionStateHistogramBucket> bucket =
       ToOnDeviceEncryptionStateHistogramBucket(current_state);
-  if (bucket.has_value()) {
+  if (bucket.has_value() && bucket != last_published_password_bucket_) {
+    last_published_password_bucket_ = bucket;
     base::UmaHistogramEnumeration(kPasswordOnDeviceEncryptionStateHistogram,
                                   *bucket);
   }

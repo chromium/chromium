@@ -146,6 +146,77 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest,
       OnDeviceEncryptionStateHistogramBucket::kDeviceReady, 1);
 }
 
+// Not all OnDeviceEncryptionState values are published to UMA (e.g.,
+// kOnDeviceEncryptionStateNotAvailable is omitted). In case of a state
+// transition A -> B -> A, where B is a state that is not published to UMA,
+// the state A should only be published to UMA once.
+TEST_F(OnDeviceEncryptionMetricsReporterTest,
+       DoesNotPublishDuplicateMetricWhenCyclingThroughNotAvailable) {
+  auto passkey_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
+  OnDeviceEncryptionStateTracker* raw_passkey_tracker = passkey_tracker.get();
+
+  auto password_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
+  OnDeviceEncryptionStateTracker* raw_password_tracker = password_tracker.get();
+
+  raw_passkey_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+  raw_password_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+
+  OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
+                                             std::move(password_tracker));
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+
+  histogram_tester_.ExpectUniqueSample(
+      kPasskeyOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kOnDeviceEncryptionNotEnabled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kPasswordOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kOnDeviceEncryptionNotEnabled, 1);
+
+  // Transition to kOnDeviceEncryptionStateNotAvailable (not published to UMA).
+  raw_passkey_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
+  raw_password_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
+
+  histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
+                                     1);
+  histogram_tester_.ExpectTotalCount(kPasswordOnDeviceEncryptionStateHistogram,
+                                     1);
+
+  // Transition back to kOnDeviceEncryptionNotEnabled (same bucket as before).
+  raw_passkey_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+  raw_password_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+
+  // Should not publish duplicate metrics; counts remain 1.
+  histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
+                                     1);
+  histogram_tester_.ExpectTotalCount(kPasswordOnDeviceEncryptionStateHistogram,
+                                     1);
+
+  // Transition to a different bucket (kDeviceReady).
+  raw_passkey_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kDeviceReady);
+  raw_password_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kDeviceReady);
+
+  // Should publish since the bucket changed.
+  histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
+                                     2);
+  histogram_tester_.ExpectBucketCount(
+      kPasskeyOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kDeviceReady, 1);
+  histogram_tester_.ExpectTotalCount(kPasswordOnDeviceEncryptionStateHistogram,
+                                     2);
+  histogram_tester_.ExpectBucketCount(
+      kPasswordOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kDeviceReady, 1);
+}
+
 }  // namespace
 
 }  // namespace password_manager
