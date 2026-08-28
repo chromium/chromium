@@ -259,7 +259,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   NSArray<UITrait>* traits = @[
     UITraitUserInterfaceStyle.class, UITraitHorizontalSizeClass.class,
-    UITraitPreferredContentSizeCategory.class
+    UITraitVerticalSizeClass.class, UITraitPreferredContentSizeCategory.class
   ];
   __weak __typeof(self) weakSelf = self;
   UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
@@ -1162,6 +1162,27 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
          arm != AimButtonRefactorArm::kNoChips;
 }
 
+// Applies the horizontal constraints for the quick actions row.
+- (void)applyQuickActionsConstraints {
+  if (IsNewTabPageUICleanupEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_quickActionsViewController.view.leadingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
+      [_quickActionsViewController.view.trailingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
+    ]];
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [_quickActionsViewController.view.leadingAnchor
+          constraintEqualToAnchor:self.headerView.fakeOmniboxView
+                                      .leadingAnchor],
+      [_quickActionsViewController.view.trailingAnchor
+          constraintEqualToAnchor:self.headerView.fakeOmniboxView
+                                      .trailingAnchor],
+    ]];
+  }
+}
+
 - (BOOL)shouldSkipScrollToFocusOmnibox {
   return self.scrolledToMinimumHeight || [self shouldPinFakeOmnibox];
 }
@@ -1629,23 +1650,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   if (self.quickActionsVisible) {
     _quickActionsViewController.view.translatesAutoresizingMaskIntoConstraints =
         NO;
-    if (IsNewTabPageUICleanupEnabled()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [_quickActionsViewController.view.leadingAnchor
-            constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
-        [_quickActionsViewController.view.trailingAnchor
-            constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [_quickActionsViewController.view.leadingAnchor
-            constraintEqualToAnchor:self.headerView.fakeOmniboxView
-                                        .leadingAnchor],
-        [_quickActionsViewController.view.trailingAnchor
-            constraintEqualToAnchor:self.headerView.fakeOmniboxView
-                                        .trailingAnchor],
-      ]];
-    }
+    [self applyQuickActionsConstraints];
   }
 
   // Anchor each module except the one directly below the header, since it will
@@ -1802,8 +1807,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   CGFloat oldWidth = _moduleWidth.constant;
   CGFloat width;
   if (IsNewTabPageUICleanupEnabled()) {
-    width = MIN(viewWidth - (2 * kNewTabPageHorizontalMargin),
-                kDiscoverFeedContentMaxWidth);
+    CGFloat maxWidth = (IsRegularXRegularSizeClass(self))
+                           ? kDiscoverFeedContentMaxWidthUICleanup
+                           : kDiscoverFeedContentMaxWidth;
+    width = MIN(viewWidth - (2 * kNewTabPageHorizontalMargin), maxWidth);
   } else {
     CGFloat widthMultiplier = (100 - kHomeModuleMinimumPadding) / 100;
     width = MIN(viewWidth * widthMultiplier, kDiscoverFeedContentMaxWidth);

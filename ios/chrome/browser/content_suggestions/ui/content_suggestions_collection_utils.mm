@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
+#import "ios/chrome/browser/ntp/ui_bundled/discover_feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
@@ -263,7 +264,9 @@ CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state) {
 
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
   if (IsRegularXRegularSizeClass(trait_collection)) {
-    return kSearchFieldLarge;
+    return IsNewTabPageUICleanupEnabled()
+               ? kDiscoverFeedContentMaxWidthUICleanup
+               : kSearchFieldLarge;
   }
 
   if (IsNewTabPageUICleanupEnabled()) {
