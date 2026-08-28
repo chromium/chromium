@@ -153,7 +153,8 @@ void AutoConnectHandler::LoggedInStateChanged() {
   DisconnectWiFiIfPolicyRequires();
   DisconnectCellularIfPolicyRequires();
 
-  RequestBestConnection(AutoConnectReason::AUTO_CONNECT_REASON_LOGGED_IN);
+  AddBestConnectionRequest(AutoConnectReason::AUTO_CONNECT_REASON_LOGGED_IN);
+  ProcessPendingBestConnectionRequests();
 }
 
 ConnectToNetworkRequestVerdict AutoConnectHandler::ConnectToNetworkRequested(
@@ -186,11 +187,11 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
   // Request to connect to the best network only if there is at least one
   // managed network. Otherwise only process existing requests.
   if (managed_configuration_handler_->HasAnyPolicyNetwork(userhash)) {
-    RequestBestConnection(
+    AddBestConnectionRequest(
         AutoConnectReason::AUTO_CONNECT_REASON_POLICY_APPLIED);
-  } else {
-    CheckBestConnection();
   }
+
+  ProcessPendingBestConnectionRequests();
 }
 
 void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
@@ -238,11 +239,10 @@ void AutoConnectHandler::ResolveRequestCompleted(
   // Only request to connect to the best network if network properties were
   // actually changed. Otherwise only process existing requests.
   if (network_properties_changed) {
-    RequestBestConnection(
+    AddBestConnectionRequest(
         AutoConnectReason::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED);
-  } else {
-    CheckBestConnection();
   }
+  ProcessPendingBestConnectionRequests();
 }
 
 void AutoConnectHandler::AddObserver(Observer* observer) {
@@ -270,14 +270,13 @@ void AutoConnectHandler::NotifyAutoConnectInitiated(int auto_connect_reasons) {
   }
 }
 
-void AutoConnectHandler::RequestBestConnection(
+void AutoConnectHandler::AddBestConnectionRequest(
     AutoConnectReason auto_connect_reason) {
   request_best_connection_pending_ = true;
   auto_connect_reasons_ |= auto_connect_reason;
-  CheckBestConnection();
 }
 
-void AutoConnectHandler::CheckBestConnection() {
+void AutoConnectHandler::ProcessPendingBestConnectionRequests() {
   // Return immediately if there is currently no request pending to change to
   // the best network.
   if (!request_best_connection_pending_)
