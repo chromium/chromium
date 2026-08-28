@@ -12,9 +12,11 @@ import static org.chromium.ui.animation.AnimationListeners.onAnimationStart;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.graphics.Path;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.animation.PathAnimationUtils.ArcDirection;
 
 /** A factory for creating commonly used animations. */
 @NullMarked
@@ -47,5 +49,27 @@ public class CommonAnimationsFactory {
                             view.setAlpha(1f);
                         }));
         return fadeOut;
+    }
+
+    /**
+     * Creates an animator that translates a view along an arc path.
+     *
+     * @param view The view to animate.
+     * @param startX Starting X coordinate.
+     * @param startY Starting Y coordinate.
+     * @param endX Ending X coordinate.
+     * @param endY Ending Y coordinate.
+     * @param direction The {@link ArcDirection} (clockwise or counter-clockwise).
+     * @return An {@link Animator} animating {@link View#X} and {@link View#Y}.
+     */
+    public static Animator createViewArcAnimation(
+            View view,
+            float startX,
+            float startY,
+            float endX,
+            float endY,
+            @ArcDirection int direction) {
+        Path path = PathAnimationUtils.createArcPath(startX, startY, endX, endY, direction);
+        return ObjectAnimator.ofFloat(view, View.X, View.Y, path);
     }
 }

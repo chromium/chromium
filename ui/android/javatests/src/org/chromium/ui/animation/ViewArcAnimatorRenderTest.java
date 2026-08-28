@@ -6,7 +6,8 @@ package org.chromium.ui.animation;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
-import android.animation.ObjectAnimator;
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
@@ -36,7 +37,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
-/** Render tests for {@link PathAnimationUtils#createViewArcAnimator}. */
+/** Render tests for {@link CommonAnimationsFactory#createViewArcAnimation}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ViewArcAnimatorRenderTest {
@@ -99,10 +100,10 @@ public class ViewArcAnimatorRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantI_CounterClockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MAX,
                                         COORD_MAX,
@@ -114,7 +115,7 @@ public class ViewArcAnimatorRenderTest {
                 "quadrant_i_counterclockwise",
                 mRenderTestRule,
                 mRootView,
-                animator,
+                (ValueAnimator) animator,
                 ANIMATION_STEPS);
     }
 
@@ -122,10 +123,10 @@ public class ViewArcAnimatorRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantI_Clockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MIN,
                                         COORD_MIN,
@@ -134,17 +135,21 @@ public class ViewArcAnimatorRenderTest {
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
-                "quadrant_i_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);
+                "quadrant_i_clockwise",
+                mRenderTestRule,
+                mRootView,
+                (ValueAnimator) animator,
+                ANIMATION_STEPS);
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantII_CounterClockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MAX,
                                         COORD_MIN,
@@ -156,7 +161,7 @@ public class ViewArcAnimatorRenderTest {
                 "quadrant_ii_counterclockwise",
                 mRenderTestRule,
                 mRootView,
-                animator,
+                (ValueAnimator) animator,
                 ANIMATION_STEPS);
     }
 
@@ -164,10 +169,10 @@ public class ViewArcAnimatorRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantII_Clockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MIN,
                                         COORD_MAX,
@@ -176,17 +181,21 @@ public class ViewArcAnimatorRenderTest {
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
-                "quadrant_ii_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);
+                "quadrant_ii_clockwise",
+                mRenderTestRule,
+                mRootView,
+                (ValueAnimator) animator,
+                ANIMATION_STEPS);
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantIII_CounterClockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MIN,
                                         COORD_MIN,
@@ -198,7 +207,7 @@ public class ViewArcAnimatorRenderTest {
                 "quadrant_iii_counterclockwise",
                 mRenderTestRule,
                 mRootView,
-                animator,
+                (ValueAnimator) animator,
                 ANIMATION_STEPS);
     }
 
@@ -206,10 +215,10 @@ public class ViewArcAnimatorRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantIII_Clockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MAX,
                                         COORD_MAX,
@@ -218,17 +227,21 @@ public class ViewArcAnimatorRenderTest {
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
-                "quadrant_iii_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);
+                "quadrant_iii_clockwise",
+                mRenderTestRule,
+                mRootView,
+                (ValueAnimator) animator,
+                ANIMATION_STEPS);
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantIV_CounterClockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MIN,
                                         COORD_MAX,
@@ -240,7 +253,7 @@ public class ViewArcAnimatorRenderTest {
                 "quadrant_iv_counterclockwise",
                 mRenderTestRule,
                 mRootView,
-                animator,
+                (ValueAnimator) animator,
                 ANIMATION_STEPS);
     }
 
@@ -248,10 +261,10 @@ public class ViewArcAnimatorRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantIV_Clockwise() throws IOException {
-        ObjectAnimator animator =
+        Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                PathAnimationUtils.createViewArcAnimator(
+                                CommonAnimationsFactory.createViewArcAnimation(
                                         mView,
                                         COORD_MAX,
                                         COORD_MIN,
@@ -260,6 +273,10 @@ public class ViewArcAnimatorRenderTest {
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
-                "quadrant_iv_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);
+                "quadrant_iv_clockwise",
+                mRenderTestRule,
+                mRootView,
+                (ValueAnimator) animator,
+                ANIMATION_STEPS);
     }
 }

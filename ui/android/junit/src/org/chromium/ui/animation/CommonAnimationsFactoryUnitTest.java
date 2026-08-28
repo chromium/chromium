@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.view.View;
 
 import org.junit.Rule;
@@ -22,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.animation.PathAnimationUtils.ArcDirection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,5 +83,14 @@ public class CommonAnimationsFactoryUnitTest {
         }
         assertEquals(1f, alphas.get(alphas.size() - 1), DELTA);
         verify(mView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void testCreateViewArcAnimation() {
+        Animator animator =
+                CommonAnimationsFactory.createViewArcAnimation(
+                        mView, 10f, 20f, 50f, 80f, ArcDirection.CLOCKWISE);
+        assertTrue(animator instanceof ObjectAnimator);
+        assertEquals(mView, ((ObjectAnimator) animator).getTarget());
     }
 }

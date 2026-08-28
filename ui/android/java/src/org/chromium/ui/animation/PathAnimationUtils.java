@@ -4,9 +4,7 @@
 
 package org.chromium.ui.animation;
 
-import android.animation.ObjectAnimator;
 import android.graphics.Path;
-import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -38,28 +36,6 @@ public class PathAnimationUtils {
     private static final int START_ANGLE_TOP = 270;
 
     /**
-     * Creates an {@link ObjectAnimator} to translate a {@link View} along an arc path.
-     *
-     * @param view The view to animate.
-     * @param startX Starting X coordinate.
-     * @param startY Starting Y coordinate.
-     * @param endX Ending X coordinate.
-     * @param endY Ending Y coordinate.
-     * @param direction The {@link ArcDirection} (clockwise or counter-clockwise).
-     * @return An {@link ObjectAnimator} animating {@link View#X} and {@link View#Y}.
-     */
-    public static ObjectAnimator createViewArcAnimator(
-            View view,
-            float startX,
-            float startY,
-            float endX,
-            float endY,
-            @ArcDirection int direction) {
-        Path path = createArcPath(startX, startY, endX, endY, direction);
-        return ObjectAnimator.ofFloat(view, View.X, View.Y, path);
-    }
-
-    /**
      * Creates a {@link Path} containing an arc or straight movement between two points.
      *
      * @param startX Starting X coordinate.
@@ -69,7 +45,7 @@ public class PathAnimationUtils {
      * @param direction The {@link ArcDirection} (clockwise or counter-clockwise).
      * @return The {@link Path} with the arc or linear contour.
      */
-    public static Path createArcPath(
+    static Path createArcPath(
             float startX, float startY, float endX, float endY, @ArcDirection int direction) {
         Path path = new Path();
         if (MathUtils.areFloatsEqual(startX, endX) || MathUtils.areFloatsEqual(startY, endY)) {
