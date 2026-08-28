@@ -29,7 +29,6 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
     private final Runnable mSnapScrollRunnable;
     private final Runnable mUpdateSearchBoxOnScrollRunnable;
     private final int mToolbarHeight;
-    private final int mSearchBoxTransitionStartOffset;
     private final int mSearchBoxTransitionEndOffset;
 
     private @Nullable View mView;
@@ -60,8 +59,6 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
                     res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                             + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
         }
-        mSearchBoxTransitionStartOffset =
-                res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
         mSearchBoxTransitionEndOffset =
                 res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset);
     }
@@ -146,10 +143,15 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
             // Snap scroll to prevent resting in the middle of the omnibox transition.
             View fakeBox = mNewTabPageCoordinator.getSearchBoxView();
             int fakeBoxUpperBound = fakeBox.getTop() + fakeBox.getPaddingTop();
+            // Use the dynamic transition start offset from NewTabPageCoordinator which includes the
+            // top status bar inset when NTP is edge-to-edge at top, ensuring the snap region start
+            // aligns with SearchBoxMediator's visual transition start point.
+            int transitionStartOffset =
+                    mNewTabPageCoordinator.getCurrentNtpFakeSearchBoxTransitionStartOffset();
             scrollPosition =
                     calculateSnapPositionForRegion(
                             scrollPosition,
-                            fakeBoxUpperBound - mSearchBoxTransitionStartOffset,
+                            fakeBoxUpperBound - transitionStartOffset,
                             fakeBoxUpperBound + mSearchBoxTransitionEndOffset);
         }
 

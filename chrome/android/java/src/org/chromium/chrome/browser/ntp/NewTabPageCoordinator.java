@@ -148,6 +148,16 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final SideUiObserver mSideUiObserver;
     private final SearchEngineService mSearchEngineService;
     private final BackPressManager mBackPressManager;
+    /**
+     * The predefined baseline vertical scroll distance before the fake search box reaches the top
+     * toolbar at which the transition animation into the omnibox begins.
+     *
+     * <p>Loaded from resources and excludes top insets. Increased by {@link #mTopInset} when
+     * Edge-to-Edge on top is active.
+     *
+     * <p>Note: For runtime scroll calculations, please reference {@link
+     * #mCurrentNtpFakeSearchBoxTransitionStartOffset}.
+     */
     private final int mNtpSearchBoxTransitionStartOffset;
     private final int mNtpSearchBoxTopMarginWithoutLogo;
     private final boolean mEnableLogs;
@@ -216,6 +226,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     // Previous visibility states for metrics.
     private @Nullable Boolean mPreviousVoiceSearchButtonVisible;
     private @Nullable Boolean mPreviousLensButtonVisible;
+    /**
+     * The current runtime vertical scroll distance before the fake search box reaches the top
+     * toolbar at which the transition animation into the omnibox begins.
+     *
+     * <p>Includes {@link #mTopInset} when Edge-to-Edge on top is active; otherwise equals {@link
+     * #getNtpSearchBoxTransitionStartOffset(boolean)}.
+     */
     private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
     private int mTopInset;
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
@@ -950,6 +967,21 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
     }
 
+    /**
+     * Calculates and returns the baseline static fake search box transition start offset (excluding
+     * top insets).
+     *
+     * <p>On Large Form Factor (LFF) devices where the default search engine does not provide a
+     * logo, this returns {@code 0} to prevent the fake search box alpha from becoming transparent.
+     * Otherwise, it returns the static {@link #mNtpSearchBoxTransitionStartOffset} dimension from
+     * resources.
+     *
+     * <p>Note: This baseline value excludes top insets. When Edge-to-Edge at top is enabled,
+     * callers should reference {@link #getCurrentNtpFakeSearchBoxTransitionStartOffset()} instead.
+     *
+     * @param showFakeSearchBoxWithoutLogo Whether the fake search box is displayed without a logo.
+     * @return The baseline transition start offset in pixels, excluding top insets.
+     */
     private int getNtpSearchBoxTransitionStartOffset(boolean showFakeSearchBoxWithoutLogo) {
         if (mIsLff && showFakeSearchBoxWithoutLogo) {
             // On large form factor (LFF) devices, it is possible to show fake search box if DSE
@@ -962,6 +994,23 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         } else {
             return mNtpSearchBoxTransitionStartOffset;
         }
+    }
+
+    /**
+     * Returns the current runtime transition start offset of the fake search box, which represents
+     * the vertical scroll distance before the fake search box reaches the toolbar where the visual
+     * morphing animation into the top omnibox begins.
+     *
+     * <p>When Edge-to-Edge at top is enabled (e.g. with a customized NTP background), this offset
+     * includes {@link #mTopInset} to compensate for the top padding added to {@link
+     * NewTabPageLayout}, ensuring that both the visual transition and the snap scroll region align
+     * at the same scroll position.
+     *
+     * @return The current transition start offset in pixels, including top insets when Edge-to-Edge
+     *     at top is active.
+     */
+    public int getCurrentNtpFakeSearchBoxTransitionStartOffset() {
+        return mCurrentNtpFakeSearchBoxTransitionStartOffset;
     }
 
     @VisibleForTesting
