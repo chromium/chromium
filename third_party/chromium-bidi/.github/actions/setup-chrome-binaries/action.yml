@@ -5,6 +5,19 @@ inputs:
     description: 'Set up working directory if not default'
     required: false
     default: 'false'
+outputs:
+  executablePath:
+    description: 'Path to Chrome executable'
+    value: ${{ steps.install-custom.outputs.executablePath || steps.install.outputs.executablePath }}
+  chrome:
+    description: 'Path to Chrome executable'
+    value: ${{ steps.install-custom.outputs.chrome || steps.install.outputs.chrome }}
+  chromedriver:
+    description: 'Path to ChromeDriver executable'
+    value: ${{ steps.install-custom.outputs.chromedriver || steps.install.outputs.chromedriver }}
+  chrome-headless-shell:
+    description: 'Path to Chrome Headless Shell executable'
+    value: ${{ steps.install-custom.outputs.chrome-headless-shell || steps.install.outputs.chrome-headless-shell }}
 runs:
   using: 'composite'
   steps:
@@ -15,18 +28,15 @@ runs:
         key: ${{ runner.os }}-browser-binaries-${{ hashFiles('.browser') }}
 
     - name: Install all chrome binaries if needed
-      shell: bash
-      run: echo ${INPUTS_WORKING_DIRECTORY}
-      env:
-        INPUTS_WORKING_DIRECTORY: ${{ inputs.working-directory }}
-
-    - name: Install all chrome binaries if needed
+      id: install-custom
       # Run in a custom working directory if required.
       if: inputs.working-directory != 'false'
-      working-directory: ${{inputs.working-directory}}
+      working-directory: ${{ inputs.working-directory }}
       shell: bash
-      run: node tools/install-browser.mjs --all
+      run: node tools/install-browser.mjs --all --github
+
     - name: Install all chrome binaries if needed
+      id: install
       if: inputs.working-directory == 'false'
       shell: bash
-      run: node tools/install-browser.mjs --all
+      run: node tools/install-browser.mjs --all --github

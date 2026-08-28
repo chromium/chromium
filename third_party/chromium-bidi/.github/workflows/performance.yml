@@ -164,6 +164,7 @@ jobs:
 
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
+        id: browser
         uses: ./.github/actions/setup-chrome-binaries
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -177,6 +178,7 @@ jobs:
       - name: Run E2E performance tests
         timeout-minutes: 20
         env:
+          BROWSER_BIN: ${{ matrix.head == 'old-headless' && steps.browser.outputs.chrome-headless-shell || steps.browser.outputs.chrome }}
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           METRICS_JSON_FILE: e2e_perf_metrics.json
           # Reduce runs on macOS to balance execution time and flakiness,

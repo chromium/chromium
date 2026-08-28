@@ -64,13 +64,10 @@ jobs:
         run: npx playwright install-deps chromium
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
+        id: browser
         uses: ./bidi/.github/actions/setup-chrome-binaries
         with:
           working-directory: bidi
-      - name: Install pinned browser
-        id: browser
-        working-directory: bidi
-        run: ./tools/node.py tools/install-browser.mjs --github
       - name: Run tests
         working-directory: playwright
         env:

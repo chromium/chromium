@@ -33,9 +33,9 @@
  * If `--all` is set, Chrome, Chromedriver and Headless Shell is installed.
  * Same as using `--chrome --chromedriver --chrome-headless-shell`.
  *
- * If `--github` is set, the executable path is written to the
- * `executablePath` output param for GitHub actions. Otherwise, the executable
- * is written to stdout. Can be used with at most one product argument.
+ * If `--github` is set, the executable path is written to GitHub action
+ * outputs and environment variables (`BROWSER_BIN`, `CHROMEDRIVER_BIN`).
+ * Otherwise, the executable is written to stdout.
  *
  * Examples:
  *  - `node tools/install-browser.mjs`
@@ -48,7 +48,7 @@ import {readFile} from 'fs/promises';
 import {homedir} from 'os';
 import {resolve} from 'path';
 
-import {setOutput, setFailed} from '@actions/core';
+import {setOutput, setFailed, exportVariable} from '@actions/core';
 import {install, computeExecutablePath} from '@puppeteer/browsers';
 
 const GITHUB_SHELL_ARG = '--github';
@@ -123,12 +123,20 @@ try {
 
   console.log(paths.join('\n'));
   if (process.argv.includes(GITHUB_SHELL_ARG)) {
-    if (paths.length === 1) {
+    for (let i = 0; i < products.length; i++) {
+      setOutput(products[i], paths[i]);
+    }
+    const chromeIndex = products.indexOf('chrome');
+    if (chromeIndex !== -1) {
+      setOutput('executablePath', paths[chromeIndex]);
+      exportVariable('BROWSER_BIN', paths[chromeIndex]);
+    } else if (paths.length === 1) {
       setOutput('executablePath', paths[0]);
-    } else {
-      setFailed(
-        `${GITHUB_SHELL_ARG} flag cannot be used for more then one product`,
-      );
+      exportVariable('BROWSER_BIN', paths[0]);
+    }
+    const chromeDriverIndex = products.indexOf('chromedriver');
+    if (chromeDriverIndex !== -1) {
+      exportVariable('CHROMEDRIVER_BIN', paths[chromeDriverIndex]);
     }
   }
 } catch (err) {
