@@ -41,7 +41,6 @@ public class ToastManagerTest {
 
     private static final String TOAST_MSG = "now";
     private static final String TOAST_MSG_NEXT = "next";
-    private static final long DURATION_BETWEEN_TOASTS_MS = 500;
     private static final long DURATION_SHORT_MS = 2000;
 
     @Test

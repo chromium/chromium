@@ -26,7 +26,6 @@ public class BitmapUtilsTest {
     private static final int VALID_WIDTH = 1;
     private static final int VALID_HEIGHT = 1;
     private static final int INVALID_WIDTH = 0;
-    private static final long NUM_BYTES = VALID_WIDTH * VALID_HEIGHT * 4;
     private static final byte[] EMPTY_DATA = new byte[0];
 
     public BitmapUtilsTest() {}

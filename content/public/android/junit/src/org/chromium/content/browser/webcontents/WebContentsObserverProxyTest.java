@@ -32,9 +32,6 @@ public class WebContentsObserverProxyTest {
     @Mock private WebContentsObserver mWebContentsObserver2;
     @Mock private WebContentsObserverProxy.Natives mWebContentsObserverProxyJni;
 
-    private WebContentsImpl mWebContentsImpl;
-    private static final long M_NATIVE_WEB_CONTENTS_ANDROID = 1;
-
     @Before
     public void setUp() {
         WebContentsObserverProxyJni.setInstanceForTesting(mWebContentsObserverProxyJni);
