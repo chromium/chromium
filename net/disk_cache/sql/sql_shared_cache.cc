@@ -209,6 +209,15 @@ void SqlSharedCache::OnEntryOpenedForSharedCache(
     OnCopyEntryFailed();
     return;
   }
+
+  // If the entry already has a `shared_cache_resource_id`, its blob data in the
+  // persistent store has already been moved to the shared cache. Attempting to
+  // copy it again would read zero-filled body data and create an all-zero
+  // duplicate entry in the isolated database.
+  if (result->shared_cache_resource_id) {
+    OnCopyEntryFailed();
+    return;
+  }
   auto info = std::move(*result);
   if (info.body_end >
       net::features::kSqlDiskCacheMaxSharedCacheCopyEntrySize.Get()) {

@@ -4722,13 +4722,10 @@ TEST_F(SqlBackendImplSharedCacheTest,
   // 2. Test t2 > t1 case for kKey2.
   base::Time t2 = now + base::Seconds(10);
 
-  // Register kKey1 again.
-  GURL url1{net::HttpCache::GetResourceURLFromHttpCacheKey(kKey1)};
-  auto info1 = std::make_unique<net::HttpResponseInfo>();
-  info1->response_time = t1;
-  info1->headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n\n");
-  backend->OnEntryEligibleForSharedCache(kKey1, url1, std::move(info1), kNik1);
+  // Register a new entry kKey3 instead of re-registering kKey1, because
+  // kKey1 was already copied to the shared cache and will be skipped.
+  const std::string kKey3 = "0/0/https://example3.test";
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey3, "Data 3", kNik1, t1);
 
   base::RunLoop process_run_loop2;
   backend->ProcessSharedCacheEligibleEntriesForTest(
