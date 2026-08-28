@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "dcheck_always_on": true,
     "debuggable_apks": false,
     "is_desktop_android": true,
     "is_official_build": true,

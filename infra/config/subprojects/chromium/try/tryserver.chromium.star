@@ -42,13 +42,7 @@ try_.builder(
     mirrors = [
         "ci/android-official",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-official",
-            # TODO(crbug.com/41490911): Restore DCHECKs when the build is fixed.
-            #"dcheck_always_on",
-        ],
-    ),
+    gn_args = "ci/android-official",
     builderless = False,
     contact_team_email = "clank-engprod@google.com",
 )
@@ -59,12 +53,7 @@ try_.builder(
     mirrors = [
         "ci/android-desktop-arm64-official",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-desktop-arm64-official",
-            "dcheck_always_on",
-        ],
-    ),
+    gn_args = "ci/android-desktop-arm64-official",
     builderless = False,
     contact_team_email = "clank-engprod@google.com",
 )
@@ -75,12 +64,7 @@ try_.builder(
     mirrors = [
         "ci/android-desktop-x64-official",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-desktop-x64-official",
-            "dcheck_always_on",
-        ],
-    ),
+    gn_args = "ci/android-desktop-x64-official",
     builderless = False,
     contact_team_email = "clank-engprod@google.com",
 )
@@ -132,7 +116,6 @@ try_.builder(
         configs = [
             "ci/mac-official",
             "minimal_symbols",
-            "dcheck_always_on",
         ],
     ),
     cores = None,
@@ -157,7 +140,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/win-official",
-            "dcheck_always_on",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -175,7 +157,6 @@ try_.builder(
         configs = [
             "ci/win32-official",
             "minimal_symbols",
-            "dcheck_always_on",
         ],
     ),
     os = os.WINDOWS_DEFAULT,

@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "dcheck_always_on": true,
     "is_official_build": true,
     "save_reproducers_on_lld_crash": true,
     "symbol_level": 1,
