@@ -41,6 +41,9 @@ main {
 
 #avatarContainer {
   --avatar-size: 92px;
+  --badge-size: 36px;
+  --badge-icon-size: 24px;
+  --badge-offset: -4px;
   height: var(--avatar-size);
   width: var(--avatar-size);
   z-index: 1;
@@ -75,20 +78,20 @@ main {
   border-radius: 50%;
   box-sizing: border-box;
   display: flex;
-  height: 36px;
-  width: 36px;
+  height: var(--badge-size);
+  width: var(--badge-size);
   justify-content: center;
   position: absolute;
-  right: -4px;
-  bottom: -4px;
+  inset-inline-end: var(--badge-offset);
+  bottom: var(--badge-offset);
 }
 
 .work-badge > cr-icon {
   border-radius: 50%;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.25);
-  height: 24px;
-  width: 24px;
-  padding: 6px;
+  height: var(--badge-icon-size);
+  width: var(--badge-icon-size);
+  padding: calc((var(--badge-size) - var(--badge-icon-size)) / 2);
 }
 
 #textContainer {
@@ -168,6 +171,9 @@ main {
 @media screen and ((max-width: 1024px) or (max-height: 750px)) {
   #avatarContainer {
     --avatar-size: 64px;
+    --badge-size: 24px;
+    --badge-icon-size: 16px;
+    --badge-offset: -2px;
   }
 
   :host([revamp-enabled][app-mode='first-run']) #headerContainer {
