@@ -45,7 +45,7 @@ bool StructTraits<
   }
 
   out->raw.timestamp = data.timestamp();
-  std::ranges::copy(raw_values, out->raw.values);
+  std::ranges::copy(raw_values, out->raw.values.begin());
 
   return true;
 }

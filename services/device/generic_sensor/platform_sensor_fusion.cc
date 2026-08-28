@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <limits>
+#include <ranges>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -236,14 +236,11 @@ bool PlatformSensorFusion::IsSignificantlyDifferent(
     const SensorReading& reading1,
     const SensorReading& reading2,
     mojom::SensorType) {
-  for (size_t i = 0; i < SensorReadingRaw::kValuesCount; ++i) {
-    if (std::fabs(UNSAFE_TODO(reading1.raw.values[i]) -
-                  UNSAFE_TODO(reading2.raw.values[i])) >=
-        fusion_algorithm_->threshold()) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      std::views::zip(reading1.raw.values, reading2.raw.values),
+      [threshold = fusion_algorithm_->threshold()](const auto& pair) {
+        return std::fabs(std::get<0>(pair) - std::get<1>(pair)) >= threshold;
+      });
 }
 
 }  // namespace device
