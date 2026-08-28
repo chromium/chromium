@@ -636,7 +636,7 @@ BASE_FEATURE(kAccountForSuppressedKeyboardInsets, base::FEATURE_ENABLED_BY_DEFAU
 BASE_FEATURE(kAccountPickerDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLiveNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorNotificationIntentRouting, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kActorStepProgressNotification, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActorStepProgressNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAllocInstanceIdIncreasedDefaultRange, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAllowMultipleMediaNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAlwaysDrawCompositedToolbarHairline, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -1686,7 +1686,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sActorNotificationIntentRouting =
             newMutableFlagWithSafeDefault(ACTOR_NOTIFICATION_INTENT_ROUTING, false);
     public static final MutableFlagWithSafeDefault sActorStepProgressNotification =
-            newMutableFlagWithSafeDefault(ACTOR_STEP_PROGRESS_NOTIFICATION, false);
+            newMutableFlagWithSafeDefault(ACTOR_STEP_PROGRESS_NOTIFICATION, true);
     public static final MutableFlagWithSafeDefault sAlwaysDrawCompositedToolbarHairline =
             newMutableFlagWithSafeDefault(ALWAYS_DRAW_COMPOSITED_TOOLBAR_HAIRLINE, true);
     public static final MutableFlagWithSafeDefault sAndroidActorTaskTimeout =
