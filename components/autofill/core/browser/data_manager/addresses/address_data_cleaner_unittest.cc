@@ -352,7 +352,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
 
   AutofillProfile local_profile(AddressCountryCode{"CA"});
   test::SetProfileInfo(&local_profile, test::SetProfileInfoOptionsBuilder()
-                                           .with_address1("6543 CH BACON")
+                                           .with_address1("6543 Chemin Bacon")
                                            .with_address2("APP 3")
                                            .with_city("Montreal")
                                            .with_state("QUÉBEC")
@@ -366,7 +366,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
 
   AutofillProfile account_profile(AddressCountryCode{"CA"});
   test::SetProfileInfo(&account_profile, test::SetProfileInfoOptionsBuilder()
-                                             .with_address1("6543, Bacon Rd")
+                                             .with_address1("6543, CH BACON")
                                              .with_city("Montreal")
                                              .with_state("QC")
                                              .with_zipcode("hhh 999")
@@ -382,7 +382,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
   MaybeCleanupAddressData();
   AutofillProfile expected(AddressCountryCode("CA"));
   expected.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_LINE1, u"6543 CH BACON", VerificationStatus::kObserved);
+      ADDRESS_HOME_LINE1, u"6543 Chemin Bacon", VerificationStatus::kObserved);
   expected.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LINE2, u"APP 3",
                                             VerificationStatus::kObserved);
   expected.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Montreal",

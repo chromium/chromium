@@ -85,8 +85,8 @@ TEST(AddressRewriterTest, BE) {
       AddressRewriter::ForCountryCode(AddressCountryCode("be"));
   EXPECT_EQ(be.Rewrite(u"brussels hoofdstedelijk gewest"),
             be.Rewrite(u"region de bruxelles capitale"));
-  EXPECT_EQ(be.Rewrite(u"arrondissement administratif de foo"),
-            be.Rewrite(u"foo"));
+  EXPECT_EQ(be.Rewrite(u"berchem sainte agathe"),
+            be.Rewrite(u"st agatha berchem"));
 }
 
 TEST(AddressRewriterTest, BR) {
@@ -102,7 +102,7 @@ TEST(AddressRewriterTest, CA) {
   EXPECT_EQ(ca.Rewrite(u"prince edward island"), ca.Rewrite(u"pei"));
   EXPECT_EQ(ca.Rewrite(u"prince edward island"),
             ca.Rewrite(u"ile du prince edouard"));
-  EXPECT_EQ(ca.Rewrite(u"cul-de-sac"), ca.Rewrite(u"cul de sac"));
+  EXPECT_EQ(ca.Rewrite(u"cul de sac"), ca.Rewrite(u"cds"));
   EXPECT_EQ(ca.Rewrite(u"st"), ca.Rewrite(u"street"));
   EXPECT_EQ(ca.Rewrite(u"sainte"), ca.Rewrite(u"saint"));
 }
@@ -280,7 +280,7 @@ TEST(AddressRewriterTest, RU) {
       AddressRewriter::ForCountryCode(AddressCountryCode("ru"));
   EXPECT_EQ(ru.Rewrite(u"россия"), ru.Rewrite(u"russia"));
   EXPECT_EQ(ru.Rewrite(u"набережная"), ru.Rewrite(u"наб"));
-  EXPECT_EQ(ru.Rewrite(u"булв"), ru.Rewrite(u"б-р"));
+  EXPECT_EQ(ru.Rewrite(u"булв"), ru.Rewrite(u"б р"));
 }
 
 TEST(AddressRewriterTest, SE) {

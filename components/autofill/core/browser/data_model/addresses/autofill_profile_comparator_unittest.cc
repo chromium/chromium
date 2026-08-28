@@ -807,14 +807,14 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithStructure) {
 
 TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewrite) {
   AutofillProfile p1 = CreateProfileWithAddress(
-      "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "CA");
+      "6543 Chemin Bacon", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "CA");
   AutofillProfile p2 = CreateProfileWithAddress(
-      "6543, Bacon Rd", "", "Montreal", "QC", "hhh 999", "CA");
+      "6543, CH BACON", "", "Montreal", "QC", "hhh 999", "CA");
   p2.usage_history().set_use_date(p1.usage_history().use_date() +
                                   base::Minutes(1));
 
   Address expected(AddressCountryCode("CA"));
-  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 CH BACON");
+  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 Chemin Bacon");
   expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
   expected.SetRawInfo(ADDRESS_HOME_CITY, u"Montreal");
   expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
