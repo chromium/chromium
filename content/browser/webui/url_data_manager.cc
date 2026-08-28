@@ -58,21 +58,21 @@ URLDataManager::URLDataManager(BrowserContext* browser_context)
 URLDataManager::~URLDataManager() = default;
 
 void URLDataManager::AddDataSource(URLDataSourceImpl* source) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   URLDataManagerBackend::GetForBrowserContext(browser_context_)
       ->AddDataSource(source);
 }
 
 void URLDataManager::UpdateWebUIDataSource(const std::string& source_name,
                                            const base::DictValue& update) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   URLDataManagerBackend::GetForBrowserContext(browser_context_)
       ->UpdateWebUIDataSource(source_name, update);
 }
 
 // static
 void URLDataManager::DeleteDataSources() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   URLDataSources sources;
   {
     base::AutoLock lock(GetDeleteLock());

@@ -16,7 +16,7 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(quota_manager_proxy);
+  CHECK(quota_manager_proxy, base::NotFatalUntil::M158);
 
   // QuotaManagerProxy::RegisterClient() must be called during construction
   // until crbug.com/1182630 is fixed.

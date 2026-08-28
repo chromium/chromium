@@ -40,7 +40,7 @@ void BackgroundFetchServiceImpl::CreateForWorker(
     mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver) {
   // TODO(rayankans): Remove `network_isolation_key` parameter since it's no
   // longer used.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(info.process_id);
 
@@ -77,8 +77,8 @@ void BackgroundFetchServiceImpl::CreateForWorker(
 void BackgroundFetchServiceImpl::CreateForFrame(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(render_frame_host);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  CHECK(render_frame_host, base::NotFatalUntil::M158);
 
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     // The renderer should have checked and disallowed the request for fenced
@@ -95,7 +95,7 @@ void BackgroundFetchServiceImpl::CreateForFrame(
 
   auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host);
   RenderProcessHost* render_process_host = rfhi->GetProcess();
-  DCHECK(render_process_host);
+  CHECK(render_process_host, base::NotFatalUntil::M158);
 
   scoped_refptr<BackgroundFetchContext> context =
       WrapRefCounted(static_cast<StoragePartitionImpl*>(
@@ -119,9 +119,9 @@ BackgroundFetchServiceImpl::BackgroundFetchServiceImpl(
       isolation_info_(std::move(isolation_info)),
       rph_id_(rph->GetDeprecatedID()),
       rfh_id_(rfh ? rfh->GetGlobalId() : GlobalRenderFrameHostId()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(background_fetch_context_);
+  CHECK(background_fetch_context_, base::NotFatalUntil::M158);
 }
 
 BackgroundFetchServiceImpl::~BackgroundFetchServiceImpl() {

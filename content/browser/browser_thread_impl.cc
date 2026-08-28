@@ -98,20 +98,20 @@ BrowserThreadImpl::BrowserThreadImpl(
     ID identifier,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : identifier_(identifier) {
-  DCHECK_GE(identifier_, 0);
-  DCHECK_LT(identifier_, ID_COUNT);
-  DCHECK(task_runner);
+  CHECK_GE(identifier_, 0, base::NotFatalUntil::M158);
+  CHECK_LT(identifier_, ID_COUNT, base::NotFatalUntil::M158);
+  CHECK(task_runner, base::NotFatalUntil::M158);
 
   BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
 
   DCHECK_CALLED_ON_VALID_THREAD(globals.main_thread_checker_);
 
-  DCHECK_EQ(globals.states[identifier_].load(std::memory_order_relaxed),
-            BrowserThreadState::UNINITIALIZED);
+  CHECK_EQ(globals.states[identifier_].load(std::memory_order_relaxed),
+           BrowserThreadState::UNINITIALIZED, base::NotFatalUntil::M158);
   globals.states[identifier_].store(BrowserThreadState::RUNNING,
                                     std::memory_order_relaxed);
 
-  DCHECK(!globals.task_runners[identifier_]);
+  CHECK(!globals.task_runners[identifier_], base::NotFatalUntil::M158);
   globals.task_runners[identifier_] = std::move(task_runner);
 
   if (identifier_ == BrowserThread::ID::UI) {
@@ -133,15 +133,15 @@ BrowserThreadImpl::~BrowserThreadImpl() {
   BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
   DCHECK_CALLED_ON_VALID_THREAD(globals.main_thread_checker_);
 
-  DCHECK_EQ(globals.states[identifier_].load(std::memory_order_relaxed),
-            BrowserThreadState::RUNNING);
+  CHECK_EQ(globals.states[identifier_].load(std::memory_order_relaxed),
+           BrowserThreadState::RUNNING, base::NotFatalUntil::M158);
   globals.states[identifier_].store(BrowserThreadState::SHUTDOWN,
                                     std::memory_order_relaxed);
 
   // The mapping is kept alive after shutdown to avoid requiring a lock only for
   // shutdown (the SingleThreadTaskRunner itself may stop accepting tasks at any
   // point -- usually soon before/after destroying the BrowserThreadImpl).
-  DCHECK(globals.task_runners[identifier_]);
+  CHECK(globals.task_runners[identifier_], base::NotFatalUntil::M158);
 }
 
 // static
@@ -149,8 +149,8 @@ void BrowserThreadImpl::ResetGlobalsForTesting(BrowserThread::ID identifier) {
   BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
   DCHECK_CALLED_ON_VALID_THREAD(globals.main_thread_checker_);
 
-  DCHECK_EQ(globals.states[identifier].load(std::memory_order_relaxed),
-            BrowserThreadState::SHUTDOWN);
+  CHECK_EQ(globals.states[identifier].load(std::memory_order_relaxed),
+           BrowserThreadState::SHUTDOWN, base::NotFatalUntil::M158);
   globals.states[identifier].store(BrowserThreadState::UNINITIALIZED,
                                    std::memory_order_relaxed);
 
@@ -174,8 +174,8 @@ const char* BrowserThreadImpl::GetThreadName(BrowserThread::ID thread) {
 
 // static
 bool BrowserThread::IsThreadInitialized(ID identifier) {
-  DCHECK_GE(identifier, 0);
-  DCHECK_LT(identifier, ID_COUNT);
+  CHECK_GE(identifier, 0, base::NotFatalUntil::M158);
+  CHECK_LT(identifier, ID_COUNT, base::NotFatalUntil::M158);
 
   BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
   return globals.states[identifier].load(std::memory_order_relaxed) ==
@@ -184,8 +184,8 @@ bool BrowserThread::IsThreadInitialized(ID identifier) {
 
 // static
 bool BrowserThread::CurrentlyOn(ID identifier) {
-  DCHECK_GE(identifier, 0);
-  DCHECK_LT(identifier, ID_COUNT);
+  CHECK_GE(identifier, 0, base::NotFatalUntil::M158);
+  CHECK_LT(identifier, ID_COUNT, base::NotFatalUntil::M158);
 
   BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
 
@@ -234,8 +234,8 @@ bool BrowserThread::GetCurrentThreadIdentifier(ID* identifier) {
 // static
 scoped_refptr<base::SingleThreadTaskRunner>
 BrowserThread::GetTaskRunnerForThread(ID identifier) {
-  DCHECK_GE(identifier, 0);
-  DCHECK_LT(identifier, ID_COUNT);
+  CHECK_GE(identifier, 0, base::NotFatalUntil::M158);
+  CHECK_LT(identifier, ID_COUNT, base::NotFatalUntil::M158);
   switch (identifier) {
     case UI:
       return GetUIThreadTaskRunner({});

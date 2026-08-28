@@ -79,11 +79,11 @@ void CacheStorageContextImpl::Init(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
-  DCHECK(!dispatcher_host_);
+  CHECK(!dispatcher_host_, base::NotFatalUntil::M158);
   dispatcher_host_ =
       std::make_unique<CacheStorageDispatcherHost>(this, quota_manager_proxy_);
 
-  DCHECK(!cache_manager_);
+  CHECK(!cache_manager_, base::NotFatalUntil::M158);
   cache_manager_ = CacheStorageManager::Create(
       user_data_directory, std::move(cache_task_runner),
       base::SequencedTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
@@ -121,7 +121,7 @@ void CacheStorageContextImpl::AddReceiver(
                      std::move(receiver));
 
   if (bucket_locator.is_default) {
-    DCHECK_EQ(storage::BucketId(), bucket_locator.id);
+    CHECK_EQ(storage::BucketId(), bucket_locator.id, base::NotFatalUntil::M158);
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
         base::SequencedTaskRunner::GetCurrentDefault(),

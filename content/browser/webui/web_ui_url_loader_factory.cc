@@ -277,7 +277,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
     if (browser_context_.WasInvalidated()) {
       DVLOG(1) << "Context has been destroyed";
       webui::CallOnError(std::move(client), net::ERR_FAILED);

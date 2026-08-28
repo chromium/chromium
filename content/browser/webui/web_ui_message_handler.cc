@@ -31,7 +31,7 @@ void WebUIMessageHandler::DisallowJavascript() {
     return;
 
   javascript_allowed_ = false;
-  DCHECK(!IsJavascriptAllowed());
+  CHECK(!IsJavascriptAllowed(), base::NotFatalUntil::M158);
 
   OnJavascriptDisallowed();
 }

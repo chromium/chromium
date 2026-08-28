@@ -84,7 +84,7 @@ void GetDataResourceBytesOnWorkerThread(
           base::BindOnce(
               [](int resource_id, URLDataSource::GotDataCallback callback) {
                 ContentClient* content_client = GetContentClient();
-                DCHECK(content_client);
+                CHECK(content_client, base::NotFatalUntil::M158);
                 std::move(callback).Run(
                     content_client->GetDataResourceBytes(resource_id));
               },

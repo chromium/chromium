@@ -36,7 +36,7 @@ mojo::PendingRemote<blink::mojom::BackgroundFetchRegistrationService>
 BackgroundFetchRegistrationServiceImpl::CreateInterfaceInfo(
     BackgroundFetchRegistrationId registration_id,
     base::WeakPtr<BackgroundFetchContext> background_fetch_context) {
-  DCHECK(background_fetch_context);
+  CHECK(background_fetch_context, base::NotFatalUntil::M158);
 
   mojo::PendingRemote<blink::mojom::BackgroundFetchRegistrationService>
       mojo_interface;
@@ -54,8 +54,8 @@ BackgroundFetchRegistrationServiceImpl::BackgroundFetchRegistrationServiceImpl(
     base::WeakPtr<BackgroundFetchContext> background_fetch_context)
     : registration_id_(std::move(registration_id)),
       background_fetch_context_(std::move(background_fetch_context)) {
-  DCHECK(background_fetch_context_);
-  DCHECK(!registration_id_.is_null());
+  CHECK(background_fetch_context_, base::NotFatalUntil::M158);
+  CHECK(!registration_id_.is_null(), base::NotFatalUntil::M158);
 }
 
 BackgroundFetchRegistrationServiceImpl::
@@ -66,7 +66,7 @@ void BackgroundFetchRegistrationServiceImpl::MatchRequests(
     blink::mojom::CacheQueryOptionsPtr cache_query_options,
     bool match_all,
     MatchRequestsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   if (!background_fetch_context_) {
     // Return without running the callback because this case happens only when
     // the browser is shutting down.
@@ -85,7 +85,7 @@ void BackgroundFetchRegistrationServiceImpl::UpdateUI(
     const std::optional<std::string>& title,
     const SkBitmap& icon,
     UpdateUICallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   if (!background_fetch_context_) {
     // Return without running the callback because this case happens only when
     // the browser is shutting down.
@@ -107,7 +107,7 @@ void BackgroundFetchRegistrationServiceImpl::UpdateUI(
 }
 
 void BackgroundFetchRegistrationServiceImpl::Abort(AbortCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   if (!background_fetch_context_) {
     // Return without running the callback because this case happens only when
     // the browser is shutting down.
@@ -119,7 +119,7 @@ void BackgroundFetchRegistrationServiceImpl::Abort(AbortCallback callback) {
 void BackgroundFetchRegistrationServiceImpl::AddRegistrationObserver(
     mojo::PendingRemote<blink::mojom::BackgroundFetchRegistrationObserver>
         observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   if (!background_fetch_context_)
     return;
   background_fetch_context_->AddRegistrationObserver(
