@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -111,26 +113,23 @@ void EsParserH264Test::GetAccessUnits() {
 }
 
 void EsParserH264Test::InsertAUD() {
-  uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};
+  constexpr auto kAud = std::to_array<uint8_t>({0x00, 0x00, 0x01, 0x09});
 
   std::vector<uint8_t> stream_with_aud(stream_.size() +
-                                       access_units_.size() * sizeof(aud));
+                                       access_units_.size() * kAud.size());
   std::vector<EsParserTestBase::Packet> access_units_with_aud(
       access_units_.size());
 
-  size_t offset = 0;
+  auto writer = base::SpanWriter(base::span(stream_with_aud));
   for (size_t k = 0; k < access_units_.size(); k++) {
-    access_units_with_aud[k].offset = offset;
-    access_units_with_aud[k].size = access_units_[k].size + sizeof(aud);
+    access_units_with_aud[k].offset = writer.num_written();
+    access_units_with_aud[k].size = access_units_[k].size + kAud.size();
 
-    UNSAFE_TODO(memcpy(&stream_with_aud[offset], aud, sizeof(aud)));
-    offset += sizeof(aud);
-
-    UNSAFE_TODO(memcpy(&stream_with_aud[offset],
-                       &stream_[access_units_[k].offset],
-                       access_units_[k].size));
-    offset += access_units_[k].size;
+    CHECK(writer.Write(kAud));
+    CHECK(writer.Write(base::span(stream_).subspan(access_units_[k].offset,
+                                                   access_units_[k].size)));
   }
+  stream_with_aud.resize(writer.num_written());
 
   // Update the stream and access units used for the test.
   stream_ = stream_with_aud;
