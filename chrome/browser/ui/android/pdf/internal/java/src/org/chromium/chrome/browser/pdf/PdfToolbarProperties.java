@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.pdf;
 
 import android.view.View;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -51,8 +50,8 @@ class PdfToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     /** The callback for page number submission. */
-    static final WritableObjectPropertyKey<Callback<Integer>> PAGE_NUMBER_EDIT_LISTENER =
-            new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<org.chromium.base.Callback<Integer>>
+            PAGE_NUMBER_EDIT_LISTENER = new WritableObjectPropertyKey<>();
 
     /** Whether the download button is visible. */
     static final WritableBooleanPropertyKey DOWNLOAD_BUTTON_VISIBLE =

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.printing;
 
 import static org.chromium.components.embedder_support.util.UrlConstants.CONTENT_SCHEME;
-import static org.chromium.components.embedder_support.util.UrlConstants.FILE_SCHEME;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -21,13 +20,13 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -43,7 +42,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 
 /**
  * Wraps printing related functionality of a {@link Tab} object.
@@ -155,17 +153,7 @@ public class TabPrinter implements Printable {
         if (tab == null || !tab.isInitialized()) return mDefaultTitle;
 
         String title = tab.getTitle();
-        if (!TextUtils.isEmpty(title)) {
-            if (tab.isNativePage()
-                    && tab.getNativePage() != null
-                    && tab.getNativePage().isPdf()
-                    && !title.toLowerCase(Locale.ROOT).endsWith(".pdf")) {
-                // Ensure the document title has a .pdf extension so that print destinations
-                // (such as "Save as PDF") suggest a valid PDF file name.
-                title = title + ".pdf";
-            }
-            return title;
-        }
+        if (!TextUtils.isEmpty(title)) return title;
 
         String url = tab.getUrl().getSpec();
         if (!TextUtils.isEmpty(url)) return url;
@@ -216,22 +204,21 @@ public class TabPrinter implements Printable {
             return null;
         }
 
-        if (tab.isNativePage() && tab.getNativePage() != null && tab.getNativePage().isPdf()) {
-            NativePage pdfPage = tab.getNativePage();
-            String filepath = pdfPage.getCanonicalFilepath();
-            if (filepath == null) {
+        if (tab.isNativePage() && tab.getNativePage() instanceof PdfPage) {
+            String pdfFilePath = tab.getNativePage().getCanonicalFilepath();
+            if (pdfFilePath == null) {
                 return null;
             }
-            Uri pdfUri = Uri.parse(filepath);
+
             try {
-                if (CONTENT_SCHEME.equals(pdfUri.getScheme())) {
+                if (pdfFilePath.startsWith(CONTENT_SCHEME)) {
                     return ContextUtils.getApplicationContext()
                             .getContentResolver()
-                            .openInputStream(pdfUri);
+                            .openInputStream(Uri.parse(pdfFilePath));
                 } else if (tab.isIncognito()) {
                     Uri uri =
                             PdfUtils.getContentUri(
-                                    filepath,
+                                    pdfFilePath,
                                     tab.getTitle(),
                                     String.valueOf(tab.getId()),
                                     /* isIncognito= */ true);
@@ -242,11 +229,8 @@ public class TabPrinter implements Printable {
                     }
                     return null;
                 } else {
-                    String path =
-                            (FILE_SCHEME.equals(pdfUri.getScheme()) && pdfUri.getPath() != null)
-                                    ? pdfUri.getPath()
-                                    : filepath;
-                    return new FileInputStream(new File(path));
+                    File file = new File(pdfFilePath);
+                    return new FileInputStream(file);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Failed to open PDF input stream.", e);

@@ -63,25 +63,4 @@ public interface PdfCoordinatorInterface {
      * @return True if the PDF page was zoomed to the default zoom level, false otherwise.
      */
     boolean resetZoomLevel();
-
-    /** Observer for PDF coordinator events. */
-    interface Observer {
-        /** Called when the "has changes" state of the PDF changes. */
-        void onHasChangesChanged();
-    }
-
-    /** Adds an observer. */
-    void addObserver(Observer observer);
-
-    /** Removes an observer. */
-    void removeObserver(Observer observer);
-
-    /** Print the pdf document. */
-    void print();
-
-    /** Download the pdf document. */
-    void download();
-
-    /** Exits edit mode and applies any draft edits. */
-    void exitEditMode();
 }

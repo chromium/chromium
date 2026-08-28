@@ -21,8 +21,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.printing.PrintDocumentAdapterWrapper.PdfGenerator;
@@ -457,64 +455,38 @@ public class PrintingControllerImpl
     private void onWriteForPdfPage(
             final InputStream inputStream, final CancellationSignal cancellationSignal) {
         mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
-        final ParcelFileDescriptor pfd = mFileDescriptor;
-        if (pfd == null) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(assumeNonNull(mFileDescriptor).getFileDescriptor());
+
+            int count;
+            byte[] data = new byte[BUFFER_SIZE];
+            while ((count = inputStream.read(data)) != -1 && !cancellationSignal.isCanceled()) {
+                outputStream.write(data, 0, count);
+            }
+
+            if (cancellationSignal.isCanceled()) {
+                assumeNonNull(mOnWriteCallback).onWriteCancelled();
+            } else {
+                mPrintingState = PRINTING_STATE_READY;
+                closeFileDescriptor();
+                assumeNonNull(mOnWriteCallback)
+                        .onWriteFinished(new PageRange[] {PageRange.ALL_PAGES});
+            }
+        } catch (Exception e) {
             assumeNonNull(mOnWriteCallback).onWriteFailed(mErrorMessage);
-            resetCallbacks();
-            return;
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to close input or output stream.");
+            }
         }
-
-        PostTask.postTask(
-                TaskTraits.USER_BLOCKING_MAY_BLOCK,
-                () -> {
-                    OutputStream outputStream = null;
-                    boolean success = false;
-                    boolean canceled = false;
-                    try {
-                        outputStream = new FileOutputStream(pfd.getFileDescriptor());
-
-                        int count;
-                        byte[] data = new byte[BUFFER_SIZE];
-                        while ((count = inputStream.read(data)) != -1
-                                && !cancellationSignal.isCanceled()) {
-                            outputStream.write(data, 0, count);
-                        }
-                        outputStream.flush();
-                        canceled = cancellationSignal.isCanceled();
-                        success = !canceled;
-                    } catch (Exception e) {
-                        Log.e(TAG, "Failed to write PDF for printing", e);
-                    } finally {
-                        try {
-                            if (inputStream != null) {
-                                inputStream.close();
-                            }
-                            if (outputStream != null) {
-                                outputStream.close();
-                            }
-                        } catch (IOException e) {
-                            Log.w(TAG, "Failed to close input or output stream.");
-                        }
-                    }
-
-                    final boolean finalSuccess = success;
-                    final boolean finalCanceled = canceled;
-                    ThreadUtils.postOnUiThread(
-                            () -> {
-                                if (mPrintingState != PRINTING_STATE_STARTED_FROM_ONWRITE) return;
-                                closeFileDescriptor();
-                                if (finalCanceled) {
-                                    assumeNonNull(mOnWriteCallback).onWriteCancelled();
-                                } else if (finalSuccess) {
-                                    mPrintingState = PRINTING_STATE_READY;
-                                    assumeNonNull(mOnWriteCallback)
-                                            .onWriteFinished(new PageRange[] {PageRange.ALL_PAGES});
-                                } else {
-                                    assumeNonNull(mOnWriteCallback).onWriteFailed(mErrorMessage);
-                                    resetCallbacks();
-                                }
-                            });
-                });
     }
 
     private void resetCallbacks() {
