@@ -863,10 +863,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [
-      "reporting/saas_usage/saas_usage_browsertest.cc",
-      "util/managed_browser_utils_browsertest.cc",
-    ]
+    sources = [ "util/managed_browser_utils_browsertest.cc" ]
 
     deps = [
       ":impl",
