@@ -48,6 +48,8 @@ namespace extensions {
 namespace {
 
 constexpr char kTestEventName[] = "testapi.onEvent";
+constexpr SimpleFeatureData kTestEventFeatureData = {
+    .feature = {.name = kTestEventName}};
 
 // A simple mock to keep track of listener additions and removals.
 class MockEventRouterObserver : public EventRouter::Observer {
@@ -60,7 +62,7 @@ class MockEventRouterObserver : public EventRouter::Observer {
   MockEventRouterObserver(const MockEventRouterObserver&) = delete;
   MockEventRouterObserver& operator=(const MockEventRouterObserver&) = delete;
 
-  ~MockEventRouterObserver() override {}
+  ~MockEventRouterObserver() override = default;
 
   int listener_added_count() const { return listener_added_count_; }
   int listener_removed_count() const { return listener_removed_count_; }
@@ -480,11 +482,14 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
 
   // Create a SimpleFeature to allow this API call to be routed to our test URL.
   FeatureProvider provider;
-  auto feature = std::make_unique<SimpleFeature>();
-  feature->set_name(StaticStringView(kTestEventName));
   static constexpr auto kMatches =
       std::to_array<std::string_view>({"chrome://settings/*"});
-  feature->set_matches(StaticSpan(kMatches));
+  static constexpr SimpleFeatureData kFeatureData = {
+      .feature = {.name = kTestEventName},
+      .config = {.match_patterns = StaticSpan(kMatches)},
+  };
+  auto feature =
+      std::make_unique<SimpleFeature>(StaticFeatureData(kFeatureData));
   provider.AddFeature(kTestEventName, std::move(feature));
 
   ExtensionAPI api;
@@ -1058,14 +1063,9 @@ class EventRouterDispatchTest : public ExtensionsTest {
   EventRouter* event_router() { return EventRouter::Get(browser_context()); }
 
  protected:
-  void RegisterTestApiFeature(StaticStringView event_name,
-                              StaticSpan<std::string_view> matches = {}) {
-    auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(event_name);
-    if (!matches.span().empty()) {
-      feature->set_matches(matches);
-    }
-    provider_.AddFeature(event_name.string_view(), std::move(feature));
+  void RegisterTestApiFeature(StaticFeatureData<SimpleFeatureData> data) {
+    auto feature = std::make_unique<SimpleFeature>(data);
+    provider_.AddFeature(data.get()->feature.name, std::move(feature));
     api_.RegisterDependencyProvider("api", &provider_);
     api_scope_ =
         std::make_unique<ExtensionAPI::OverrideSharedInstanceForTest>(&api_);
@@ -1085,8 +1085,11 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   GURL webui2("chrome-untrusted://two");
   static constexpr auto kMatches = std::to_array<std::string_view>(
       {"chrome-untrusted://one/", "chrome-untrusted://two/"});
-  RegisterTestApiFeature(StaticStringView(kTestEventName),
-                         StaticSpan(kMatches));
+  static constexpr SimpleFeatureData kFeatureData = {
+      .feature = {.name = kTestEventName},
+      .config = {.match_patterns = StaticSpan(kMatches)},
+  };
+  RegisterTestApiFeature(StaticFeatureData(kFeatureData));
 
   TestEventRouterObserver observer(event_router());
   auto add_extension = [&](const std::string& id) {
@@ -1138,7 +1141,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
 // reaches exactly the identified worker.
 TEST_F(EventRouterDispatchTest, ActiveDispatchTargetRestrictsToWorker) {
   std::string ext1 = "ext1";
-  RegisterTestApiFeature(StaticStringView(kTestEventName));
+  RegisterTestApiFeature(StaticFeatureData(kTestEventFeatureData));
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test extension").SetID(ext1).Build();
@@ -1209,7 +1212,7 @@ TEST_F(EventRouterDispatchTest, ActiveDispatchTargetRestrictsToWorker) {
 TEST_F(EventRouterDispatchTest,
        ActiveDispatchTargetMissingFiresCannotDispatch) {
   std::string ext1 = "ext1";
-  RegisterTestApiFeature(StaticStringView(kTestEventName));
+  RegisterTestApiFeature(StaticFeatureData(kTestEventFeatureData));
 
   TestEventRouterObserver observer(event_router());
   scoped_refptr<const Extension> extension =
@@ -1241,7 +1244,7 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   std::string ext1 = "ext1";
   std::string ext2 = "ext2";
   std::string ext3 = "ext3";
-  RegisterTestApiFeature(StaticStringView(kTestEventName));
+  RegisterTestApiFeature(StaticFeatureData(kTestEventFeatureData));
 
   auto add_extension = [&](const std::string& id) {
     scoped_refptr<const Extension> extension =
@@ -1373,7 +1376,7 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback_NoListeners) {
 TEST_F(EventRouterDispatchTest, TestDispatchCallback_OtherExtensionListener) {
   std::string ext1 = "ext1";
   std::string ext2 = "ext2";
-  RegisterTestApiFeature(StaticStringView(kTestEventName));
+  RegisterTestApiFeature(StaticFeatureData(kTestEventFeatureData));
 
   auto add_extension = [&](const std::string& id) {
     scoped_refptr<const Extension> extension =

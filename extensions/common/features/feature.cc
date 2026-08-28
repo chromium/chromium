@@ -5,8 +5,10 @@
 #include "extensions/common/features/feature.h"
 
 #include <map>
+#include <memory>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"
@@ -42,21 +44,12 @@ Feature::Availability Feature::IsAvailableToExtension(
       extension->manifest_version(), kUnspecifiedContextId);
 }
 
-Feature::Feature() = default;
+Feature::Feature(const FeatureData* feature_data)
+    : feature_data_(feature_data) {
+  CHECK(feature_data_);
+}
 
 Feature::~Feature() = default;
-
-void Feature::set_name(StaticStringView name) {
-  name_ = name.string_view();
-}
-
-void Feature::set_alias(StaticCString alias) {
-  alias_ = alias;
-}
-
-void Feature::set_source(StaticCString source) {
-  source_ = source;
-}
 
 bool Feature::HasDelegatedAvailabilityCheckHandlerForTesting() const {
   return HasDelegatedAvailabilityCheckHandler();

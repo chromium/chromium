@@ -10,9 +10,11 @@
 
 namespace extensions {
 
+class ComplexFeature;
+
 class ManifestFeature : public SimpleFeature {
  public:
-  ManifestFeature();
+  explicit ManifestFeature(StaticFeatureData<SimpleFeatureData> data);
   ~ManifestFeature() override;
 
   // TODO(crbug.com/40689631): This should also override IsAvailableToManifest
@@ -28,6 +30,11 @@ class ManifestFeature : public SimpleFeature {
       int context_id,
       bool check_developer_mode,
       const ContextData& context_data) const override;
+
+ private:
+  friend class ComplexFeature;
+
+  explicit ManifestFeature(const SimpleFeatureData* data);
 };
 
 }  // namespace extensions

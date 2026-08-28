@@ -414,6 +414,13 @@ SIMPLE_FEATURE_CPP_CLASSES = {
   'BehaviorFeature': 'SimpleFeature',
 }
 
+COMPLEX_FEATURE_TYPES = {
+  'APIFeature': 'ComplexFeatureType::kSimple',
+  'ManifestFeature': 'ComplexFeatureType::kManifest',
+  'PermissionFeature': 'ComplexFeatureType::kPermission',
+  'BehaviorFeature': 'ComplexFeatureType::kSimple',
+}
+
 VALIDATION = {
   'all': [
     (
@@ -579,37 +586,123 @@ STATIC_SPAN_LIST_KEYS = {
 
 STATIC_CSTRING_KEYS = {'alias', 'command_line_switch', 'feature_flag', 'source'}
 
+FEATURE_DATA_KEYS = {
+    'alias': 'alias',
+    'noparent': 'no_parent',
+    'source': 'source',
+}
+
+SIMPLE_FEATURE_CONFIG_KEYS = {
+    'internal': 'is_internal',
+    'matches': 'match_patterns',
+}
+
+# Generated descriptors use C++20 designated initializers, so these lists must
+# match the member order of `extensions::FeatureData` and
+# `extensions::SimpleFeatureConfig`. Changing the members there requires the
+# same edit here.
+FEATURE_DATA_FIELD_ORDER = ['name', 'alias', 'source', 'no_parent']
+
+SIMPLE_FEATURE_CONFIG_FIELD_ORDER = [
+    'blocklist',
+    'allowlist',
+    'dependencies',
+    'extension_types',
+    'session_types',
+    'contexts',
+    'platforms',
+    'match_patterns',
+    'location',
+    'min_manifest_version',
+    'max_manifest_version',
+    'command_line_switch',
+    'feature_flag',
+    'channel',
+    'component_extensions_auto_granted',
+    'is_internal',
+    'requires_delegated_availability_check',
+    'developer_mode_only',
+    'disallow_for_service_workers',
+]
+
 # By default, if an error is encountered, assert to stop the compilation. This
 # can be disabled for testing.
 ENABLE_ASSERTIONS = True
 
 
-def GetCodeForFeatureValues(feature_values):
-  """Gets the Code object for setting feature values for this object."""
+def _FieldOrderKey(field_order, field_order_name, struct_name):
+  """Returns a sort key ordering fields by C++ member declaration order."""
+
+  def key(field):
+    name = field[0]
+    if name not in field_order:
+      raise ValueError(
+        'Feature field "%s" has no position in %s. Add it at the same '
+        'position it is declared at in the C++ %s struct; designated '
+        'initializers must be written in member declaration order.'
+        % (name, field_order_name, struct_name)
+      )
+    return field_order.index(name)
+
+  return key
+
+
+def GetCodeForSimpleFeatureData(name,
+                                feature_values,
+                                descriptor_name='kData',
+                                array_name_suffix=''):
+  """Gets code declaring the static descriptor for a simple feature."""
   c = Code()
+  feature_fields = [('name', '"%s"' % name)]
+  config_fields = []
+
   for key in sorted(feature_values.keys()):
     if key in IGNORED_KEYS:
       continue
 
+    value = feature_values[key]
     if key in STATIC_SPAN_LIST_KEYS:
       spec = STATIC_SPAN_LIST_KEYS[key]
-      values = feature_values[key]
-      if values.strip() == '{}':
+      if value.strip() == '{}':
         if spec.emit_empty_setter:
-          c.Append(
-            'feature->set_%s(StaticSpan<%s>());' % (key, spec.element_type)
-          )
+          config_fields.append((SIMPLE_FEATURE_CONFIG_KEYS.get(key, key),
+                                'StaticSpan<%s>()' % spec.element_type))
         continue
-      c.Append('static constexpr auto %s =' % spec.array_name)
+      array_name = spec.array_name + array_name_suffix
+      c.Append('static constexpr auto %s =' % array_name)
       c.Append('    std::to_array<%s>(' % spec.element_type)
-      c.Append('        %s);' % values)
-      c.Append('feature->set_%s(StaticSpan(%s));' % (key, spec.array_name))
+      c.Append('        %s);' % value)
+      config_fields.append(
+          (SIMPLE_FEATURE_CONFIG_KEYS.get(key,
+                                          key), 'StaticSpan(%s)' % array_name))
+    elif key in FEATURE_DATA_KEYS:
+      if key in STATIC_CSTRING_KEYS:
+        value = 'StaticCString(%s)' % value
+      feature_fields.append((FEATURE_DATA_KEYS[key], value))
     elif key in STATIC_CSTRING_KEYS:
-      c.Append(
-        'feature->set_%s(StaticCString(%s));' % (key, feature_values[key])
-      )
+      config_fields.append((key, 'StaticCString(%s)' % value))
     else:
-      c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
+      config_fields.append((SIMPLE_FEATURE_CONFIG_KEYS.get(key, key), value))
+
+  feature_fields.sort(key=_FieldOrderKey(
+      FEATURE_DATA_FIELD_ORDER, 'FEATURE_DATA_FIELD_ORDER', 'FeatureData'))
+  config_fields.sort(key=_FieldOrderKey(SIMPLE_FEATURE_CONFIG_FIELD_ORDER,
+                                        'SIMPLE_FEATURE_CONFIG_FIELD_ORDER',
+                                        'SimpleFeatureConfig'))
+
+  c.Append('static constexpr SimpleFeatureData %s = {' % descriptor_name)
+  c.Append('    .feature =')
+  c.Append('        {')
+  for field, value in feature_fields:
+    c.Append('            .%s = %s,' % (field, value))
+  c.Append('        },')
+  if config_fields:
+    c.Append('    .config =')
+    c.Append('        {')
+    for field, value in config_fields:
+      c.Append('            .%s = %s,' % (field, value))
+    c.Append('        },')
+  c.Append('};')
   return c
 
 
@@ -798,9 +891,9 @@ class Feature(object):
     """Returns the Code object for generating this feature."""
     c = Code()
     cpp_feature_class = SIMPLE_FEATURE_CPP_CLASSES[feature_type]
-    c.Append('%s* feature = new %s();' % (cpp_feature_class, cpp_feature_class))
-    c.Append('feature->set_name(StaticStringView("%s"));' % self.name)
-    c.Concat(GetCodeForFeatureValues(self.GetAllFeatureValues()))
+    c.Concat(GetCodeForSimpleFeatureData(self.name, self.GetAllFeatureValues()))
+    c.Append('%s* feature =' % cpp_feature_class)
+    c.Append('    new %s(StaticFeatureData(kData));' % cpp_feature_class)
     return c
 
   def AsParent(self):
@@ -836,18 +929,36 @@ class ComplexFeature(Feature):
 
   def GetCode(self, feature_type):
     c = Code()
-    c.Append('std::vector<Feature*> features;')
-    for f in self.feature_list:
+    descriptor_names = []
+    for index, f in enumerate(self.feature_list):
       # Sanity check that components of complex features have no shared values
       # set.
       assert not f.shared_values
-      c.Sblock('{')
-      c.Concat(f.GetCode(feature_type))
-      c.Append('features.push_back(feature);')
-      c.Eblock('}')
-    c.Append('ComplexFeature* feature(new ComplexFeature(&features));')
-    c.Append('feature->set_name(StaticStringView("%s"));' % self.name)
-    c.Concat(GetCodeForFeatureValues(self.shared_values))
+      descriptor_name = 'kFeature%d' % index
+      descriptor_names.append(descriptor_name)
+      c.Concat(
+          GetCodeForSimpleFeatureData(self.name, f.GetAllFeatureValues(),
+                                      descriptor_name, str(index)))
+    c.Append('static constexpr auto kFeatures =')
+    c.Append('    std::to_array<SimpleFeatureData>({%s});' %
+             ', '.join(descriptor_names))
+    c.Append('static constexpr ComplexFeatureData kData = {')
+    c.Append('    .feature =')
+    c.Append('        {')
+    c.Append('            .name = "%s",' % self.name)
+    for key in ('alias', 'source'):
+      if key in self.shared_values:
+        c.Append('            .%s = StaticCString(%s),' %
+                 (key, self.shared_values[key]))
+    no_parent = self.feature_list[0].GetValue('noparent')
+    if no_parent:
+      c.Append('            .no_parent = %s,' % no_parent)
+    c.Append('        },')
+    c.Append('    .features = StaticSpan(kFeatures),')
+    c.Append('    .feature_type = %s,' % COMPLEX_FEATURE_TYPES[feature_type])
+    c.Append('};')
+    c.Append('ComplexFeature* feature =')
+    c.Append('    new ComplexFeature(StaticFeatureData(kData));')
     return c
 
   def AsParent(self):

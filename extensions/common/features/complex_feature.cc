@@ -4,30 +4,51 @@
 
 #include "extensions/common/features/complex_feature.h"
 
-#include "base/functional/callback.h"
+#include <stddef.h>
+
+#include <utility>
+
+#include "base/check_op.h"
+#include "base/memory/ptr_util.h"
+#include "extensions/common/features/manifest_feature.h"
+#include "extensions/common/features/permission_feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+
 namespace extensions {
 
-ComplexFeature::ComplexFeature(std::vector<Feature*>* features) {
-  DCHECK_GT(features->size(), 1UL);
-  for (Feature* f : *features) {
-    features_.push_back(std::unique_ptr<Feature>(f));
+ComplexFeature::ComplexFeature(StaticFeatureData<ComplexFeatureData> data)
+    : ComplexFeature(data.get()) {}
+
+ComplexFeature::ComplexFeature(const ComplexFeatureData* data)
+    : Feature(&data->feature) {
+  CHECK_GT(data->features.span().size(), 1u);
+  features_.reserve(data->features.span().size());
+  for (const auto& feature_data : data->features.span()) {
+    std::unique_ptr<Feature> feature;
+    switch (data->feature_type) {
+      case ComplexFeatureType::kSimple:
+        feature = base::WrapUnique(new SimpleFeature(&feature_data));
+        break;
+      case ComplexFeatureType::kManifest:
+        feature = base::WrapUnique(new ManifestFeature(&feature_data));
+        break;
+      case ComplexFeatureType::kPermission:
+        feature = base::WrapUnique(new PermissionFeature(&feature_data));
+        break;
+    }
+    CHECK(feature);
     requires_delegated_availability_check_ |=
-        f->RequiresDelegatedAvailabilityCheck();
+        feature->RequiresDelegatedAvailabilityCheck();
+    features_.push_back(std::move(feature));
   }
-  features->clear();
-  no_parent_ = features_[0]->no_parent();
 
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-  // Verify IsInternal and no_parent are consistent across all features.
-  bool first_is_internal = features_[0]->IsInternal();
-  for (FeatureList::const_iterator it = features_.begin() + 1;
-       it != features_.end();
-       ++it) {
-    DCHECK(first_is_internal == (*it)->IsInternal())
+  const bool first_is_internal = features_.front()->IsInternal();
+  for (const auto& feature : features_) {
+    DCHECK_EQ(first_is_internal, feature->IsInternal())
         << "Complex feature must have consistent values of "
            "internal across all sub features.";
-    DCHECK(no_parent_ == (*it)->no_parent())
+    DCHECK_EQ(no_parent(), feature->no_parent())
         << "Complex feature must have consistent values of "
            "no_parent across all sub features.";
   }
@@ -36,6 +57,16 @@ ComplexFeature::ComplexFeature(std::vector<Feature*>* features) {
 
 ComplexFeature::~ComplexFeature() = default;
 
+bool ComplexFeature::VisitFeatures(
+    base::FunctionRef<bool(Feature&)> visitor) const {
+  for (const auto& feature : features_) {
+    if (!visitor(*feature)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 Feature::Availability ComplexFeature::IsAvailableToManifest(
     const HashedExtensionId& hashed_id,
     Manifest::Type type,
@@ -43,20 +74,19 @@ Feature::Availability ComplexFeature::IsAvailableToManifest(
     int manifest_version,
     Platform platform,
     int context_id) const {
-  Feature::Availability first_availability =
-      features_[0]->IsAvailableToManifest(
-          hashed_id, type, location, manifest_version, platform, context_id);
-  if (first_availability.is_available())
+  Availability first_availability = features_.front()->IsAvailableToManifest(
+      hashed_id, type, location, manifest_version, platform, context_id);
+  if (first_availability.is_available()) {
     return first_availability;
-
-  for (auto it = features_.cbegin() + 1; it != features_.cend(); ++it) {
-    Availability availability = (*it)->IsAvailableToManifest(
-        hashed_id, type, location, manifest_version, platform, context_id);
-    if (availability.is_available())
-      return availability;
   }
-  // If none of the SimpleFeatures are available, we return the availability
-  // info of the first SimpleFeature that was not available.
+
+  for (size_t i = 1; i < features_.size(); ++i) {
+    Availability availability = features_[i]->IsAvailableToManifest(
+        hashed_id, type, location, manifest_version, platform, context_id);
+    if (availability.is_available()) {
+      return availability;
+    }
+  }
   return first_availability;
 }
 
@@ -68,54 +98,56 @@ Feature::Availability ComplexFeature::IsAvailableToContextImpl(
     int context_id,
     bool check_developer_mode,
     const ContextData& context_data) const {
-  Feature::Availability first_availability =
-      features_[0]->IsAvailableToContextImpl(extension, context, url, platform,
-                                             context_id, check_developer_mode,
-                                             context_data);
-  if (first_availability.is_available())
+  Availability first_availability = features_.front()->IsAvailableToContextImpl(
+      extension, context, url, platform, context_id, check_developer_mode,
+      context_data);
+  if (first_availability.is_available()) {
     return first_availability;
+  }
 
-  for (auto it = features_.cbegin() + 1; it != features_.cend(); ++it) {
-    Availability availability = (*it)->IsAvailableToContextImpl(
+  for (size_t i = 1; i < features_.size(); ++i) {
+    Availability availability = features_[i]->IsAvailableToContextImpl(
         extension, context, url, platform, context_id, check_developer_mode,
         context_data);
-    if (availability.is_available())
+    if (availability.is_available()) {
       return availability;
+    }
   }
-  // If none of the SimpleFeatures are available, we return the availability
-  // info of the first SimpleFeature that was not available.
   return first_availability;
 }
 
 Feature::Availability ComplexFeature::IsAvailableToEnvironment(
     int context_id) const {
-  Feature::Availability first_availability =
-      features_[0]->IsAvailableToEnvironment(context_id);
-  if (first_availability.is_available())
+  Availability first_availability =
+      features_.front()->IsAvailableToEnvironment(context_id);
+  if (first_availability.is_available()) {
     return first_availability;
-
-  for (auto iter = features_.cbegin() + 1; iter != features_.cend(); ++iter) {
-    Availability availability = (*iter)->IsAvailableToEnvironment(context_id);
-    if (availability.is_available())
-      return availability;
   }
-  // If none of the SimpleFeatures are available, we return the availability
-  // info of the first SimpleFeature that was not available.
+
+  for (size_t i = 1; i < features_.size(); ++i) {
+    Availability availability =
+        features_[i]->IsAvailableToEnvironment(context_id);
+    if (availability.is_available()) {
+      return availability;
+    }
+  }
   return first_availability;
 }
 
 bool ComplexFeature::IsIdInBlocklist(const HashedExtensionId& hashed_id) const {
-  for (auto it = features_.cbegin(); it != features_.cend(); ++it) {
-    if ((*it)->IsIdInBlocklist(hashed_id))
+  for (const auto& feature : features_) {
+    if (feature->IsIdInBlocklist(hashed_id)) {
       return true;
+    }
   }
   return false;
 }
 
 bool ComplexFeature::IsIdInAllowlist(const HashedExtensionId& hashed_id) const {
-  for (auto it = features_.cbegin(); it != features_.cend(); ++it) {
-    if ((*it)->IsIdInAllowlist(hashed_id))
+  for (const auto& feature : features_) {
+    if (feature->IsIdInAllowlist(hashed_id)) {
       return true;
+    }
   }
   return false;
 }
@@ -123,7 +155,7 @@ bool ComplexFeature::IsIdInAllowlist(const HashedExtensionId& hashed_id) const {
 bool ComplexFeature::IsInternal() const {
   // Constructor verifies that composed features are consistent, thus we can
   // return just the first feature's value.
-  return features_[0]->IsInternal();
+  return features_.front()->IsInternal();
 }
 
 bool ComplexFeature::RequiresDelegatedAvailabilityCheck() const {
@@ -135,10 +167,7 @@ void ComplexFeature::SetDelegatedAvailabilityCheckHandler(
   DCHECK(RequiresDelegatedAvailabilityCheck());
   DCHECK(!HasDelegatedAvailabilityCheckHandler());
 
-  // Set the given handler on all of the sub-feature that need a delegated
-  // availability check handler and set
-  // |has_delegated_availability_check_handler_| to true.
-  for (auto& feature : features_) {
+  for (const auto& feature : features_) {
     if (feature->RequiresDelegatedAvailabilityCheck()) {
       feature->SetDelegatedAvailabilityCheckHandler(handler);
     }

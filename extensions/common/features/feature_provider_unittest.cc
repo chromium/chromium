@@ -171,20 +171,29 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
 TEST(FeatureProviderTest, GetChildren) {
   FeatureProvider provider;
+  static constexpr SimpleFeatureData kParent = {.feature = {.name = "parent"}};
+  static constexpr SimpleFeatureData kChild = {
+      .feature = {.name = "parent.child"}};
+  static constexpr SimpleFeatureData kGrandchild = {
+      .feature = {.name = "parent.child.grandchild"}};
+  static constexpr SimpleFeatureData kOtherGrandchild = {
+      .feature = {.name = "parent.other_child.other_grandchild"}};
+  static constexpr SimpleFeatureData kUnparentedChild = {
+      .feature = {.name = "parent.unparented_child", .no_parent = true}};
 
-  auto add_feature = [&provider](StaticStringView name,
-                                 bool no_parent = false) {
-    auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(name);
-    feature->set_noparent(no_parent);
-    provider.AddFeature(name.string_view(), std::move(feature));
-  };
-
-  add_feature(StaticStringView("parent"));
-  add_feature(StaticStringView("parent.child"));
-  add_feature(StaticStringView("parent.child.grandchild"));
-  add_feature(StaticStringView("parent.other_child.other_grandchild"));
-  add_feature(StaticStringView("parent.unparented_child"), true);
+  provider.AddFeature(kParent.feature.name, std::make_unique<SimpleFeature>(
+                                                StaticFeatureData(kParent)));
+  provider.AddFeature(kChild.feature.name, std::make_unique<SimpleFeature>(
+                                               StaticFeatureData(kChild)));
+  provider.AddFeature(
+      kGrandchild.feature.name,
+      std::make_unique<SimpleFeature>(StaticFeatureData(kGrandchild)));
+  provider.AddFeature(
+      kOtherGrandchild.feature.name,
+      std::make_unique<SimpleFeature>(StaticFeatureData(kOtherGrandchild)));
+  provider.AddFeature(
+      kUnparentedChild.feature.name,
+      std::make_unique<SimpleFeature>(StaticFeatureData(kUnparentedChild)));
 
   const Feature* parent = provider.GetFeature("parent");
   ASSERT_TRUE(parent);
@@ -217,13 +226,20 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
       std::move(map));
 
   FeatureProvider provider;
+  static constexpr SimpleFeatureData kDelegatedFeature = {
+      .feature = {.name = kDelegatedFeatureName},
+      .config = {.requires_delegated_availability_check = true},
+  };
+  static constexpr SimpleFeatureData kNondelegatedFeature = {
+      .feature = {.name = kNondelgatedFeatureName}};
+  static constexpr SimpleFeatureData kMissingRequiresDelegatedCheckFeature = {
+      .feature = {.name = kMissingRequiresDelegatedCheckFeatureName}};
 
   // Verify that the delegated check handler is installed for a feature that
   // requires it and has a handler in the map.
   {
-    auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(StaticStringView(kDelegatedFeatureName));
-    feature->set_requires_delegated_availability_check(true);
+    auto feature =
+        std::make_unique<SimpleFeature>(StaticFeatureData(kDelegatedFeature));
     provider.AddFeature(kDelegatedFeatureName, std::move(feature));
 
     const auto* delegated_feature = provider.GetFeature(kDelegatedFeatureName);
@@ -234,8 +250,8 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
   // Verify that a delegated check handler is not installed for a feature that
   // doesn't require it.
   {
-    auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(StaticStringView(kNondelgatedFeatureName));
+    auto feature = std::make_unique<SimpleFeature>(
+        StaticFeatureData(kNondelegatedFeature));
     provider.AddFeature(kNondelgatedFeatureName, std::move(feature));
 
     const auto* nondelegated_feature =
@@ -247,9 +263,8 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
   // Verify that a delegated check handler is not installed for a feature that
   // doesn't require it but has a handler in the map.
   {
-    auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(
-        StaticStringView(kMissingRequiresDelegatedCheckFeatureName));
+    auto feature = std::make_unique<SimpleFeature>(
+        StaticFeatureData(kMissingRequiresDelegatedCheckFeature));
     provider.AddFeature(kMissingRequiresDelegatedCheckFeatureName,
                         std::move(feature));
 

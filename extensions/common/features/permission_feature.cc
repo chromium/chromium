@@ -10,11 +10,13 @@
 
 namespace extensions {
 
-PermissionFeature::PermissionFeature() {
-}
+PermissionFeature::PermissionFeature(StaticFeatureData<SimpleFeatureData> data)
+    : SimpleFeature(data) {}
 
-PermissionFeature::~PermissionFeature() {
-}
+PermissionFeature::PermissionFeature(const SimpleFeatureData* data)
+    : SimpleFeature(data) {}
+
+PermissionFeature::~PermissionFeature() = default;
 
 Feature::Availability PermissionFeature::IsAvailableToContextImpl(
     const Extension* extension,

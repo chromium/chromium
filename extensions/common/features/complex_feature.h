@@ -6,27 +6,38 @@
 #define EXTENSIONS_COMMON_FEATURES_COMPLEX_FEATURE_H_
 
 #include <memory>
-#include <set>
-#include <string>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 
+enum class ComplexFeatureType {
+  kSimple,
+  kManifest,
+  kPermission,
+};
+
+struct ComplexFeatureData {
+  FeatureData feature;
+  StaticSpan<SimpleFeatureData> features;
+  ComplexFeatureType feature_type;
+};
+
 // A ComplexFeature is composed of one or many Features. A ComplexFeature
 // is available if any Feature (i.e. permission rule) that composes it is
 // available, but not if only some combination of Features is available.
 class ComplexFeature : public Feature {
  public:
-  // Takes ownership of Feature*s contained in `features`.
-  explicit ComplexFeature(std::vector<Feature*>* features);
+  explicit ComplexFeature(StaticFeatureData<ComplexFeatureData> data);
 
   ComplexFeature(const ComplexFeature&) = delete;
   ComplexFeature& operator=(const ComplexFeature&) = delete;
@@ -45,6 +56,8 @@ class ComplexFeature : public Feature {
   bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const override;
 
  protected:
+  explicit ComplexFeature(const ComplexFeatureData* data);
+
   // Feature:
   Availability IsAvailableToContextImpl(
       const Extension* extension,
@@ -67,8 +80,9 @@ class ComplexFeature : public Feature {
   FRIEND_TEST_ALL_PREFIXES(ComplexFeatureTest,
                            RequiresDelegatedAvailabilityCheck);
 
-  using FeatureList = std::vector<std::unique_ptr<Feature>>;
-  FeatureList features_;
+  bool VisitFeatures(base::FunctionRef<bool(Feature&)> visitor) const;
+
+  std::vector<std::unique_ptr<Feature>> features_;
 
   // If any of the Features comprising this class requires a delegated
   // availability check, then this flag is set to true.

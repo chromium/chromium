@@ -7,10 +7,9 @@
 #include <array>
 #include <string>
 #include <string_view>
-#include <utility>
 
 #include "base/test/bind.h"
-#include "content/public/common/content_features.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/features/simple_feature_test_constants.h"
@@ -25,8 +24,7 @@ namespace extensions {
 
 namespace {
 
-// Single-element backing arrays for the StaticSpan setters, which bind only to
-// static storage.
+// Single-element backing arrays for statically stored descriptors.
 constexpr auto kPrivilegedExtensionOnly = std::to_array<mojom::ContextType>(
     {mojom::ContextType::kPrivilegedExtension});
 constexpr auto kExtensionOnly =
@@ -36,6 +34,68 @@ constexpr auto kLegacyPackagedAppOnly =
 
 }  // namespace
 
+TEST(ComplexFeatureTest, ConstructsEachStaticChildType) {
+  static constexpr SimpleFeatureData kSimpleChildren[] = {
+      {.feature = {.name = "missing"}},
+      {.feature = {.name = "missing"}},
+  };
+  static constexpr SimpleFeatureData kManifestChildren[] = {
+      {.feature = {.name = "test_key"}},
+      {.feature = {.name = "test_key"}},
+  };
+  static constexpr SimpleFeatureData kPermissionChildren[] = {
+      {.feature = {.name = "storage"}},
+      {.feature = {.name = "storage"}},
+  };
+  static constexpr ComplexFeatureData kSimpleData{
+      .feature = {.name = "simple"},
+      .features = StaticSpan(kSimpleChildren),
+      .feature_type = ComplexFeatureType::kSimple,
+  };
+  static constexpr ComplexFeatureData kManifestData{
+      .feature = {.name = "manifest"},
+      .features = StaticSpan(kManifestChildren),
+      .feature_type = ComplexFeatureType::kManifest,
+  };
+  static constexpr ComplexFeatureData kPermissionData{
+      .feature = {.name = "permission"},
+      .features = StaticSpan(kPermissionChildren),
+      .feature_type = ComplexFeatureType::kPermission,
+  };
+
+  ComplexFeature simple_feature{StaticFeatureData(kSimpleData)};
+  ComplexFeature manifest_feature{StaticFeatureData(kManifestData)};
+  ComplexFeature permission_feature{StaticFeatureData(kPermissionData)};
+
+  scoped_refptr<const Extension> bare_extension =
+      ExtensionBuilder("bare").Build();
+  scoped_refptr<const Extension> manifest_extension =
+      ExtensionBuilder("manifest").SetManifestKey("test_key", true).Build();
+  scoped_refptr<const Extension> permission_extension =
+      ExtensionBuilder("permission").AddAPIPermission("storage").Build();
+  auto availability = [](const ComplexFeature& feature,
+                         const Extension* extension) {
+    return feature
+        .IsAvailableToContext(extension,
+                              mojom::ContextType::kPrivilegedExtension, GURL(),
+                              kUnspecifiedContextId, TestContextData())
+        .result();
+  };
+
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            availability(simple_feature, bare_extension.get()));
+  EXPECT_EQ(Feature::AvailabilityResult::kNotPresent,
+            availability(manifest_feature, bare_extension.get()));
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            availability(manifest_feature, manifest_extension.get()));
+  EXPECT_EQ(Feature::AvailabilityResult::kNotPresent,
+            availability(manifest_feature, permission_extension.get()));
+  EXPECT_EQ(Feature::AvailabilityResult::kNotPresent,
+            availability(permission_feature, manifest_extension.get()));
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            availability(permission_feature, permission_extension.get()));
+}
+
 TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
   const HashedExtensionId kIdFoo{ExtensionId(kFooId)};
   const HashedExtensionId kIdBar{ExtensionId(kBarId)};
@@ -43,41 +103,33 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
       std::to_array<std::string_view>({kHashedFooId});
   static constexpr auto kBarAllowlist =
       std::to_array<std::string_view>({kHashedBarId});
-  std::vector<Feature*> features;
-
-  {
-    // Rule: "extension", allowlist "foo".
-    std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    simple_feature->set_allowlist(StaticSpan(kFooAllowlist));
-    simple_feature->set_extension_types(StaticSpan(kExtensionOnly));
-    features.push_back(simple_feature.release());
-  }
-
-  {
-    // Rule: "legacy_packaged_app", allowlist "bar".
-    std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    simple_feature->set_allowlist(StaticSpan(kBarAllowlist));
-    simple_feature->set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
-    features.push_back(simple_feature.release());
-  }
-
-  std::unique_ptr<ComplexFeature> feature(new ComplexFeature(&features));
+  static constexpr auto kFeatures = std::to_array<SimpleFeatureData>({
+      {.config = {.allowlist = StaticSpan(kFooAllowlist),
+                  .extension_types = StaticSpan(kExtensionOnly)}},
+      {.config = {.allowlist = StaticSpan(kBarAllowlist),
+                  .extension_types = StaticSpan(kLegacyPackagedAppOnly)}},
+  });
+  static constexpr ComplexFeatureData kData = {
+      .features = StaticSpan(kFeatures),
+      .feature_type = ComplexFeatureType::kSimple,
+  };
+  ComplexFeature feature{StaticFeatureData(kData)};
 
   // Test match 1st rule.
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
-                ->IsAvailableToManifest(kIdFoo, Manifest::Type::kExtension,
-                                        ManifestLocation::kInvalidLocation,
-                                        Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform(),
-                                        kUnspecifiedContextId)
+                .IsAvailableToManifest(kIdFoo, Manifest::Type::kExtension,
+                                       ManifestLocation::kInvalidLocation,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       Feature::GetCurrentPlatform(),
+                                       kUnspecifiedContextId)
                 .result());
 
   // Test match 2nd rule.
   EXPECT_EQ(
       Feature::AvailabilityResult::kIsAvailable,
       feature
-          ->IsAvailableToManifest(
+          .IsAvailableToManifest(
               kIdBar, Manifest::Type::kLegacyPackagedApp,
               ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
               Feature::GetCurrentPlatform(), kUnspecifiedContextId)
@@ -86,16 +138,16 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
   // Test allowlist with wrong extension type.
   EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
             feature
-                ->IsAvailableToManifest(kIdBar, Manifest::Type::kExtension,
-                                        ManifestLocation::kInvalidLocation,
-                                        Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform(),
-                                        kUnspecifiedContextId)
+                .IsAvailableToManifest(kIdBar, Manifest::Type::kExtension,
+                                       ManifestLocation::kInvalidLocation,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       Feature::GetCurrentPlatform(),
+                                       kUnspecifiedContextId)
                 .result());
   EXPECT_NE(
       Feature::AvailabilityResult::kIsAvailable,
       feature
-          ->IsAvailableToManifest(
+          .IsAvailableToManifest(
               kIdFoo, Manifest::Type::kLegacyPackagedApp,
               ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
               Feature::GetCurrentPlatform(), kUnspecifiedContextId)
@@ -104,81 +156,64 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
 
 // Tests that dependencies are correctly checked.
 TEST(ComplexFeatureTest, Dependencies) {
-  std::vector<Feature*> features;
-
-  {
-    // Rule which depends on an extension-only feature
-    // (content_security_policy).
-    std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    static constexpr auto kCspDependency =
-        std::to_array<std::string_view>({"manifest:content_security_policy"});
-    simple_feature->set_dependencies(StaticSpan(kCspDependency));
-    features.push_back(simple_feature.release());
-  }
-
-  {
-    // Rule which depends on an platform-app-only feature (videoCapture).
-    std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
-    static constexpr auto kVideoCaptureDependency =
-        std::to_array<std::string_view>({"permission:videoCapture"});
-    simple_feature->set_dependencies(StaticSpan(kVideoCaptureDependency));
-    features.push_back(simple_feature.release());
-  }
-
-  std::unique_ptr<ComplexFeature> feature(new ComplexFeature(&features));
+  static constexpr auto kCspDependency =
+      std::to_array<std::string_view>({"manifest:content_security_policy"});
+  static constexpr auto kVideoCaptureDependency =
+      std::to_array<std::string_view>({"permission:videoCapture"});
+  static constexpr auto kFeatures = std::to_array<SimpleFeatureData>({
+      {.config = {.dependencies = StaticSpan(kCspDependency)}},
+      {.config = {.dependencies = StaticSpan(kVideoCaptureDependency)}},
+  });
+  static constexpr ComplexFeatureData kData = {
+      .features = StaticSpan(kFeatures),
+      .feature_type = ComplexFeatureType::kSimple,
+  };
+  ComplexFeature feature{StaticFeatureData(kData)};
 
   // Available to extensions because of the content_security_policy rule.
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
-                ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'a')),
-                                        Manifest::Type::kExtension,
-                                        ManifestLocation::kInvalidLocation,
-                                        Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform(),
-                                        kUnspecifiedContextId)
+                .IsAvailableToManifest(HashedExtensionId(std::string(32, 'a')),
+                                       Manifest::Type::kExtension,
+                                       ManifestLocation::kInvalidLocation,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       Feature::GetCurrentPlatform(),
+                                       kUnspecifiedContextId)
                 .result());
 
   // Available to platform apps because of the videoCapture rule.
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
-                ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'b')),
-                                        Manifest::Type::kPlatformApp,
-                                        ManifestLocation::kInvalidLocation,
-                                        Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform(),
-                                        kUnspecifiedContextId)
+                .IsAvailableToManifest(HashedExtensionId(std::string(32, 'b')),
+                                       Manifest::Type::kPlatformApp,
+                                       ManifestLocation::kInvalidLocation,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       Feature::GetCurrentPlatform(),
+                                       kUnspecifiedContextId)
                 .result());
 
   // Not available to hosted apps.
   EXPECT_EQ(Feature::AvailabilityResult::kInvalidType,
             feature
-                ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'c')),
-                                        Manifest::Type::kHostedApp,
-                                        ManifestLocation::kInvalidLocation,
-                                        Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform(),
-                                        kUnspecifiedContextId)
+                .IsAvailableToManifest(HashedExtensionId(std::string(32, 'c')),
+                                       Manifest::Type::kHostedApp,
+                                       ManifestLocation::kInvalidLocation,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       Feature::GetCurrentPlatform(),
+                                       kUnspecifiedContextId)
                 .result());
 }
 
 TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
-  std::vector<Feature*> features;
-
   // Test a complex feature where |requires_delegated_availability_check| hasn't
   // been set on any of its simple features.
   {
-    {
-      // Feature which doesn't set |requires_delegated_availability_check|.
-      auto simple_feature = std::make_unique<SimpleFeature>();
-      features.push_back(simple_feature.release());
-    }
-    {
-      // Feature which doesn't set |requires_delegated_availability_check|.
-      auto simple_feature = std::make_unique<SimpleFeature>();
-      features.push_back(simple_feature.release());
-    }
-
-    ComplexFeature complex_feature(&features);
+    static constexpr std::array<SimpleFeatureData, 2> kFeatures = {};
+    static constexpr ComplexFeatureData kData = {
+        .features = StaticSpan(kFeatures),
+        .feature_type = ComplexFeatureType::kSimple,
+    };
+    ComplexFeature complex_feature{StaticFeatureData(kData)};
     EXPECT_FALSE(complex_feature.RequiresDelegatedAvailabilityCheck());
     EXPECT_FALSE(complex_feature.HasDelegatedAvailabilityCheckHandler());
   }
@@ -200,25 +235,16 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
   // In this case, the delegated availability check handler should be called
   // twice.
   {
-    {
-      // Feature which doesn't set |requires_delegated_availability_check|.
-      auto simple_feature = std::make_unique<SimpleFeature>();
-      simple_feature->set_contexts(StaticSpan(kPrivilegedExtensionOnly));
-      features.push_back(simple_feature.release());
-    }
-    // Two features which set |requires_delegated_availability_check| to true.
-    {
-      auto simple_feature = std::make_unique<SimpleFeature>();
-      simple_feature->set_requires_delegated_availability_check(true);
-      features.push_back(simple_feature.release());
-    }
-    {
-      auto simple_feature = std::make_unique<SimpleFeature>();
-      simple_feature->set_requires_delegated_availability_check(true);
-      features.push_back(simple_feature.release());
-    }
-
-    ComplexFeature complex_feature(&features);
+    static constexpr auto kFeatures = std::to_array<SimpleFeatureData>({
+        {.config = {.contexts = StaticSpan(kPrivilegedExtensionOnly)}},
+        {.config = {.requires_delegated_availability_check = true}},
+        {.config = {.requires_delegated_availability_check = true}},
+    });
+    static constexpr ComplexFeatureData kData = {
+        .features = StaticSpan(kFeatures),
+        .feature_type = ComplexFeatureType::kSimple,
+    };
+    ComplexFeature complex_feature{StaticFeatureData(kData)};
     EXPECT_TRUE(complex_feature.RequiresDelegatedAvailabilityCheck());
     EXPECT_FALSE(complex_feature.HasDelegatedAvailabilityCheckHandler());
 
@@ -238,6 +264,101 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
                   .result());
     EXPECT_EQ(2u, delegated_availability_check_call_count);
   }
+
+  delegated_availability_check_call_count = 0;
+  static constexpr auto kDescriptorFeatures = std::to_array<SimpleFeatureData>({
+      {
+          .feature = {.name = "descriptor"},
+          .config =
+              {
+                  .contexts = StaticSpan(kPrivilegedExtensionOnly),
+              },
+      },
+      {
+          .feature = {.name = "descriptor"},
+          .config =
+              {
+                  .requires_delegated_availability_check = true,
+              },
+      },
+      {
+          .feature = {.name = "descriptor"},
+          .config =
+              {
+                  .requires_delegated_availability_check = true,
+              },
+      },
+  });
+  static constexpr ComplexFeatureData kDescriptor = {
+      .feature = {.name = "descriptor"},
+      .features = StaticSpan(kDescriptorFeatures),
+      .feature_type = ComplexFeatureType::kSimple,
+  };
+  ComplexFeature descriptor_feature{StaticFeatureData(kDescriptor)};
+  EXPECT_TRUE(descriptor_feature.RequiresDelegatedAvailabilityCheck());
+  descriptor_feature.SetDelegatedAvailabilityCheckHandler(
+      base::BindLambdaForTesting(delegated_availability_check));
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            descriptor_feature
+                .IsAvailableToContext(
+                    /*extension=*/nullptr, mojom::ContextType::kUnspecified,
+                    GURL(), kUnspecifiedContextId, TestContextData())
+                .result());
+  EXPECT_EQ(2u, delegated_availability_check_call_count);
+}
+
+TEST(ComplexFeatureTest, DescriptorChildTypes) {
+  static constexpr auto kDescriptorFeatures = std::to_array<SimpleFeatureData>({
+      {
+          .feature = {.name = "alarms"},
+          .config =
+              {
+                  .extension_types = StaticSpan(kExtensionOnly),
+                  .contexts = StaticSpan(kPrivilegedExtensionOnly),
+              },
+      },
+      {
+          .feature = {.name = "alarms"},
+          .config =
+              {
+                  .extension_types = StaticSpan(kExtensionOnly),
+                  .contexts = StaticSpan(kPrivilegedExtensionOnly),
+              },
+      },
+  });
+  static constexpr ComplexFeatureData kSimpleData = {
+      .feature = {.name = "alarms"},
+      .features = StaticSpan(kDescriptorFeatures),
+      .feature_type = ComplexFeatureType::kSimple,
+  };
+  static constexpr ComplexFeatureData kManifestData = {
+      .feature = {.name = "alarms"},
+      .features = StaticSpan(kDescriptorFeatures),
+      .feature_type = ComplexFeatureType::kManifest,
+  };
+  static constexpr ComplexFeatureData kPermissionData = {
+      .feature = {.name = "alarms"},
+      .features = StaticSpan(kDescriptorFeatures),
+      .feature_type = ComplexFeatureType::kPermission,
+  };
+  const auto extension = ExtensionBuilder("test").Build();
+
+  auto get_availability = [&](ComplexFeature& feature) {
+    return feature
+        .IsAvailableToContext(extension.get(),
+                              mojom::ContextType::kPrivilegedExtension, GURL(),
+                              kUnspecifiedContextId, TestContextData())
+        .result();
+  };
+  ComplexFeature simple_feature{StaticFeatureData(kSimpleData)};
+  ComplexFeature manifest_feature{StaticFeatureData(kManifestData)};
+  ComplexFeature permission_feature{StaticFeatureData(kPermissionData)};
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            get_availability(simple_feature));
+  EXPECT_EQ(Feature::AvailabilityResult::kNotPresent,
+            get_availability(manifest_feature));
+  EXPECT_EQ(Feature::AvailabilityResult::kNotPresent,
+            get_availability(permission_feature));
 }
 
 }  // namespace extensions

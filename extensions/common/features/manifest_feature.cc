@@ -10,11 +10,13 @@
 
 namespace extensions {
 
-ManifestFeature::ManifestFeature() {
-}
+ManifestFeature::ManifestFeature(StaticFeatureData<SimpleFeatureData> data)
+    : SimpleFeature(data) {}
 
-ManifestFeature::~ManifestFeature() {
-}
+ManifestFeature::ManifestFeature(const SimpleFeatureData* data)
+    : SimpleFeature(data) {}
+
+ManifestFeature::~ManifestFeature() = default;
 
 Feature::Availability ManifestFeature::IsAvailableToContextImpl(
     const Extension* extension,
