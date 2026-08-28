@@ -126,6 +126,8 @@ class OmniboxPopupPresenterBase
   // Returns whether resize events should be debounced.
   virtual bool ShouldDebounceResize() const = 0;
 
+  // Returns whether height workarounds should be applied.
+  virtual bool ShouldApplyHeightWorkarounds() const = 0;
   // Returns if the WebContents should be detached when the popup is hidden.
   virtual bool ShouldDetachWebContentsOnHide() const = 0;
 

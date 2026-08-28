@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -75,11 +76,26 @@ class OmniboxPopupFullPresenterTest : public views::ViewsTestBase {
   std::unique_ptr<OmniboxController> controller_;
 };
 
-TEST_F(OmniboxPopupFullPresenterTest, ResetsContentHeightOnHide) {
+TEST_F(OmniboxPopupFullPresenterTest, ResetsContentHeightOnHideWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kOmniboxFullWebUIHeightWorkarounds);
+
   presenter_->set_content_height(400);
   EXPECT_EQ(presenter_->content_height(), 400);
 
   presenter_->Hide();
   EXPECT_EQ(presenter_->content_height(), 1);
+}
+
+TEST_F(OmniboxPopupFullPresenterTest,
+       PreservesContentHeightOnHideWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kOmniboxFullWebUIHeightWorkarounds);
+
+  presenter_->set_content_height(400);
+  EXPECT_EQ(presenter_->content_height(), 400);
+
+  presenter_->Hide();
+  EXPECT_EQ(presenter_->content_height(), 400);
 }
 }  // namespace

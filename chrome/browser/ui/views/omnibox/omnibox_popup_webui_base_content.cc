@@ -482,5 +482,9 @@ void OmniboxPopupWebUIBaseContent::OnFileChooserClosed() {
   file_chooser_deactivation_blocker_.reset();
 }
 
+bool OmniboxPopupWebUIBaseContent::ShouldApplyHeightWorkarounds() const {
+  return !popup_presenter_ || popup_presenter_->ShouldApplyHeightWorkarounds();
+}
+
 BEGIN_METADATA(OmniboxPopupWebUIBaseContent)
 END_METADATA

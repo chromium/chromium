@@ -84,6 +84,9 @@ inline constexpr base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kOmniboxWebUIDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxAimDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIDebounceResize);
+BASE_DECLARE_FEATURE(kOmniboxWebUIHeightWorkarounds);
+BASE_DECLARE_FEATURE(kOmniboxAimHeightWorkarounds);
+BASE_DECLARE_FEATURE(kOmniboxFullWebUIHeightWorkarounds);
 BASE_DECLARE_FEATURE(kOmniboxWebUIPopupStabilizeStartupShow);
 BASE_DECLARE_FEATURE(kOmniboxAimDetachWebContentsOnHide);
 BASE_DECLARE_FEATURE(kOmniboxWebUIDetachWebContentsOnHide);

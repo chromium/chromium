@@ -229,6 +229,12 @@ BASE_FEATURE(kOmniboxWebUIDebounceResize, ENABLED);
 BASE_FEATURE(kOmniboxAimDebounceResize, DISABLED);
 // When enabled, the Omnibox Full WebUI popup will debounce auto-resize events.
 BASE_FEATURE(kOmniboxFullWebUIDebounceResize, ENABLED);
+// When enabled, height workarounds are applied for the Omnibox WebUI popup.
+BASE_FEATURE(kOmniboxWebUIHeightWorkarounds, ENABLED);
+// When enabled, height workarounds are applied for the AIM WebUI popup.
+BASE_FEATURE(kOmniboxAimHeightWorkarounds, ENABLED);
+// When enabled, height workarounds are applied for the Omnibox Full WebUI popup.
+BASE_FEATURE(kOmniboxFullWebUIHeightWorkarounds, ENABLED);
 // If enabled, stabilizes the popup showing behavior on startup by forcing
 // layout with a 1px height and hiding it initially to avoid visual artifacts.
 BASE_FEATURE(kOmniboxWebUIPopupStabilizeStartupShow, ENABLED);

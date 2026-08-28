@@ -78,6 +78,10 @@ bool OmniboxPopupAimPresenter::ShouldDebounceResize() const {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxAimDebounceResize);
 }
 
+bool OmniboxPopupAimPresenter::ShouldApplyHeightWorkarounds() const {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxAimHeightWorkarounds);
+}
+
 bool OmniboxPopupAimPresenter::ShouldDetachWebContentsOnHide() const {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxAimDetachWebContentsOnHide);

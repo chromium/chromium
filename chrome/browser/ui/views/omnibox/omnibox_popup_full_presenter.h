@@ -47,6 +47,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
       const override;
   bool ShouldDebounceResize() const override;
+  bool ShouldApplyHeightWorkarounds() const override;
   bool ShouldDetachWebContentsOnHide() const override;
   bool ShouldHideForInitialLayout() const override;
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -397,7 +398,10 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
   // the widget active while making the artifact unnoticeable.
   // TODO(crbug.com/460908495) WebUI should not be sending min height resize
   // requests.
-  if (results_bounds.height() <= 1) {
+  auto* content = GetOmniboxPopupWebUIBaseContent();
+  const bool should_apply_workarounds =
+      !content || content->ShouldApplyHeightWorkarounds();
+  if (should_apply_workarounds && results_bounds.height() <= 1) {
     results_bounds.ClampToCenteredSize(gfx::Size(1, 1));
   }
   contents_->SetBoundsRect(results_bounds);
