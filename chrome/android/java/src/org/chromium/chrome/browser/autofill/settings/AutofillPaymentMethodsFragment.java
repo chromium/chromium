@@ -164,7 +164,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         return manager.getMaskedBankAccounts().length != 0;
     }
 
-    private void rebuildPage() {
+    @VisibleForTesting
+    void rebuildPage() {
         getPreferenceScreen().removeAll();
         getPreferenceScreen().setOrderingAsAdded(true);
 
@@ -198,6 +199,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 PersonalDataManagerFactory.getForProfile(getProfile());
         ChromeSwitchPreference autofillSwitch =
                 new ChromeSwitchPreference(getStyledContext(), null);
+        // Do not persist this toggle to Android's SharedPreferences. Chrome natively
+        // persists this state across platforms via PersonalDataManager and UserPrefs.
+        // Failing to set this to false causes Android's PreferenceManager to override
+        // setChecked() with cached SharedPreferences values upon binding.
+        autofillSwitch.setPersistent(false);
         autofillSwitch.setKey(PREF_SAVE_AND_FILL_PAYMENT_METHODS);
         autofillSwitch.setTitle(R.string.autofill_enable_credit_cards_toggle_label);
         autofillSwitch.setSummary(R.string.autofill_enable_credit_cards_toggle_sublabel);
