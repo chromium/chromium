@@ -5,15 +5,40 @@
 assert(!is_android)
 
 source_set("location_bar") {
-  public = [ "location_bar.h" ]
-  sources = [ "location_bar.cc" ]
+  public = [
+    "location_bar.h",
+    "location_bar_override_data.h",
+  ]
+  sources = [
+    "location_bar.cc",
+    "location_bar_override_data.cc",
+  ]
 
   public_deps = [
     "//base",
+    "//content/public/browser",
     "//ui/base",
     "//ui/base:types",
     "//url",
   ]
 
-  deps = [ "//chrome/browser/ui:layout_constants" ]
+  deps = [
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/browser_window",
+    "//components/tabs:public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "location_bar_override_data_unittest.cc" ]
+  deps = [
+    ":location_bar",
+    "//chrome/browser/ui/views:bubble_anchor_util_views",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
 }

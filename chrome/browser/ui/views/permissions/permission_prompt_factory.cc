@@ -10,10 +10,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
@@ -65,25 +65,13 @@ bool IsFullScreenMode(content::WebContents* web_contents) {
     return false;
   }
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
-    return false;
-  }
-
-  LocationBar* location_bar = browser_view->GetLocationBar();
+  LocationBar* location_bar =
+      location_bar::GetLocationBarForWebContents(web_contents);
 
   return !location_bar || !location_bar->IsDrawn() ||
          location_bar->IsFullscreen();
 }
 
-LocationBar* GetLocationBar(content::WebContents* web_contents) {
-  BrowserWindowInterface* browser = GetBrowser(web_contents);
-  if (!browser) {
-    return nullptr;
-  }
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  return browser_view ? browser_view->GetLocationBar() : nullptr;
-}
 
 // A permission request should be auto-ignored if:
 //    - a user interacts with the LocationBar. The only exception is the NTP
@@ -118,7 +106,8 @@ bool ShouldIgnorePermissionRequest(
   }
 
   // Suppress permission prompts if the omnibox is being edited or is empty.
-  LocationBar* location_bar = GetLocationBar(web_contents);
+  LocationBar* location_bar =
+      location_bar::GetLocationBarForWebContents(web_contents);
   bool can_display_prompt = !(location_bar && location_bar->IsEditingOrEmpty());
 
   BrowserWindowInterface* browser = GetBrowser(web_contents);
@@ -160,7 +149,7 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
 }
 
 bool IsLocationBarDisplayed(content::WebContents* web_contents) {
-  LocationBar* lb = GetLocationBar(web_contents);
+  LocationBar* lb = location_bar::GetLocationBarForWebContents(web_contents);
   return lb && lb->IsDrawn() && !lb->IsFullscreen();
 }
 
@@ -322,7 +311,8 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
       });
 
   if (has_mic_request) {
-    if (LocationBar* location_bar = GetLocationBar(web_contents)) {
+    if (LocationBar* location_bar =
+            location_bar::GetLocationBarForWebContents(web_contents)) {
       location_bar->SetPermissionPromptShowing(true);
     }
   }
@@ -330,7 +320,8 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   auto prompt = CreateNormalPrompt(web_contents, delegate);
 
   if (!prompt && has_mic_request) {
-    if (LocationBar* location_bar = GetLocationBar(web_contents)) {
+    if (LocationBar* location_bar =
+            location_bar::GetLocationBarForWebContents(web_contents)) {
       location_bar->SetPermissionPromptShowing(false);
     }
   }

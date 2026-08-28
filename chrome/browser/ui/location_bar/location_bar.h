@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
@@ -227,6 +228,13 @@ class LocationBar {
   void AddLocationBarObserver(Observer* observer);
   void RemoveLocationBarObserver(Observer* observer);
 
+  base::WeakPtr<LocationBar> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+  base::WeakPtr<const LocationBar> GetWeakPtr() const {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   virtual ~LocationBar();
 
@@ -237,6 +245,7 @@ class LocationBar {
   NavigationParams navigation_params_;
   const raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
   base::ObserverList<Observer> observers_;
+  base::WeakPtrFactory<LocationBar> weak_ptr_factory_{this};
 };
 
 class LocationBarTesting {

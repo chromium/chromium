@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/tabs/public/tab_interface.h"
@@ -78,7 +79,5 @@ bool PermissionPromptDesktop::IsAskPrompt() const {
 }
 
 LocationBar* PermissionPromptDesktop::GetLocationBar() {
-  BrowserWindow* browser_window =
-      browser_ ? BrowserWindow::FromBrowser(browser_) : nullptr;
-  return browser_window ? browser_window->GetLocationBar() : nullptr;
+  return location_bar::GetLocationBarForWebContents(web_contents());
 }
