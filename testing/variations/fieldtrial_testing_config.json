@@ -11204,21 +11204,6 @@
             ]
         }
     ],
-    "IOSKeyboardWillShowSuggestionRefresh": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Suppressed",
-                    "enable_features": [
-                        "SuppressKeyboardWillShowSuggestionRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSLensGestureTextSelectionDisabled": [
         {
             "platforms": [

@@ -45,12 +45,6 @@ using autofill::FormActivityParams;
 
 namespace {
 
-// A period for unit tests to fast forward time to observe the result of
-// optional updates. This is used to wait out cooldowns and delays. The 10ms
-// buffer is added to create a slighly longer time delta.
-const base::TimeDelta kDelayForAcceptingOptionalUpdates =
-    kOptionalUpdateCooldownPeriod + base::Milliseconds(10);
-
 FormActivityParams CreateFormActivityParams(
     FormActivityParams::FieldType field_type) {
   FormActivityParams params;
@@ -717,11 +711,6 @@ TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_AfterDisconnect) {
 #endif
 TEST_F(FormInputAccessoryMediatorTest,
        MAYBE_keyboardWillShowRefresh_NotThrottledOrSuppressed) {
-  base::test::ScopedFeatureList scoped_featurelist;
-  scoped_featurelist.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh,
-                             kAutofillThrottleOptionalSuggestionRefresh});
 
   FormActivityParams params =
       CreateFormActivityParams(FormActivityParams::FieldType::kText);
@@ -741,138 +730,6 @@ TEST_F(FormInputAccessoryMediatorTest,
 
   PostKeyboardWillShowNotifications(3);
   EXPECT_EQ(count, 3);
-}
-
-// Tests that suggestion refreshes triggered by keyboardWillShow are throttled
-// when only kAutofillThrottleOptionalSuggestionRefresh is enabled.
-// TODO(crbug.com/477866475): Flaky on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_keyboardWillShowRefresh_Throttled \
-  keyboardWillShowRefresh_Throttled
-#else
-#define MAYBE_keyboardWillShowRefresh_Throttled \
-  DISABLED_keyboardWillShowRefresh_Throttled
-#endif
-TEST_F(FormInputAccessoryMediatorTest,
-       MAYBE_keyboardWillShowRefresh_Throttled) {
-  base::test::ScopedFeatureList scoped_featurelist;
-  scoped_featurelist.InitWithFeatures(
-      /*enabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh},
-      /*disabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh});
-
-  FormActivityParams params =
-      CreateFormActivityParams(FormActivityParams::FieldType::kText);
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
-                                                        params);
-  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
-
-  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
-  __block int count = 0;
-  OCMStub([mock_mediator_
-              retrieveSuggestionsForForm:params
-                                webState:static_cast<web::WebState*>(
-                                             [OCMArg anyPointer])])
-      .ignoringNonObjectArgs()
-      .andDo(^(NSInvocation*) {
-        count++;
-      });
-
-  PostKeyboardWillShowNotifications(3);
-  // Update isn't immediately triggered -- delayed.
-  EXPECT_EQ(count, 0);
-
-  task_environment_.FastForwardBy(kOptionalUpdateDelay +
-                                  base::Milliseconds(10));
-  // Update is triggered once -- throttled.
-  EXPECT_EQ(count, 1);
-}
-
-// Tests that suggestion refreshes triggered by keyboardWillShow restarts the
-// delay when throttled.
-// TODO(crbug.com/477866475): Flaky on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_keyboardWillShowRefresh_Throttled_RollingOver \
-  keyboardWillShowRefresh_Throttled_RollingOver
-#else
-#define MAYBE_keyboardWillShowRefresh_Throttled_RollingOver \
-  DISABLED_keyboardWillShowRefresh_Throttled_RollingOver
-#endif
-TEST_F(FormInputAccessoryMediatorTest,
-       MAYBE_keyboardWillShowRefresh_Throttled_RollingOver) {
-  base::test::ScopedFeatureList scoped_featurelist;
-  scoped_featurelist.InitWithFeatures(
-      /*enabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh},
-      /*disabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh});
-
-  FormActivityParams params =
-      CreateFormActivityParams(FormActivityParams::FieldType::kText);
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
-                                                        params);
-  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
-
-  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
-  __block int count = 0;
-  OCMStub([mock_mediator_
-              retrieveSuggestionsForForm:params
-                                webState:static_cast<web::WebState*>(
-                                             [OCMArg anyPointer])])
-      .ignoringNonObjectArgs()
-      .andDo(^(NSInvocation*) {
-        count++;
-      });
-
-  const base::TimeDelta halfDelay =
-      kOptionalUpdateDelay / 2 + base::Milliseconds(10);
-
-  // keyboardWillShow notification should not trigger a refresh immediately.
-  PostKeyboardWillShowNotifications(1);
-  EXPECT_EQ(count, 0);
-
-  // After half of the delay, no refreshes should be triggered.
-  task_environment_.FastForwardBy(halfDelay);
-  EXPECT_EQ(count, 0);
-
-  // A new notification restarts the delay. So, no refreshes should be triggered
-  // after the delay since the first event.
-  PostKeyboardWillShowNotifications(1);
-  task_environment_.FastForwardBy(halfDelay);
-  EXPECT_EQ(count, 0);
-
-  // After another half delay, the refresh should now be triggered.
-  task_environment_.FastForwardBy(halfDelay);
-  EXPECT_EQ(count, 1);
-}
-
-// Tests that suggestion refreshes triggered by keyboardWillShow are suppressed
-// when kSuppressKeyboardWillShowSuggestionRefresh is enabled.
-TEST_F(FormInputAccessoryMediatorTest, keyboardWillShowRefresh_Suppressed) {
-  base::test::ScopedFeatureList scoped_featurelist;
-  scoped_featurelist.InitWithFeatures(
-      /*enabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh},
-      /*disabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh});
-
-  FormActivityParams params =
-      CreateFormActivityParams(FormActivityParams::FieldType::kText);
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
-                                                        params);
-  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
-
-  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
-  __block int count = 0;
-  OCMStub([mock_mediator_
-              retrieveSuggestionsForForm:params
-                                webState:static_cast<web::WebState*>(
-                                             [OCMArg anyPointer])])
-      .ignoringNonObjectArgs()
-      .andDo(^(NSInvocation*) {
-        count++;
-      });
-
-  PostKeyboardWillShowNotifications(3);
-  EXPECT_EQ(count, 0);
-
-  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
-  EXPECT_EQ(count, 0);
 }
 
 // Tests that shouldShowRPId returns YES if and only if the suggestion RP ID

@@ -457,17 +457,7 @@ bool IsStateless() {
 - (void)keyboardWillShow:(NSNotification*)notification {
   _keyboardHeightChangeNotificationsEnabled = YES;
 
-  if (base::FeatureList::IsEnabled(
-          kSuppressKeyboardWillShowSuggestionRefresh)) {
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          kAutofillThrottleOptionalSuggestionRefresh)) {
-    [self scheduleOptionalUpdate];
-  } else {
-    [self updateSuggestionsIfNeeded];
-  }
+  [self updateSuggestionsIfNeeded];
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification*)notification {

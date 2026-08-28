@@ -22,13 +22,6 @@ BASE_DECLARE_FEATURE(kStatelessFormSuggestionControllerWithRequestDeduping);
 // accessory.
 BASE_DECLARE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh);
 
-// Enables the delay and throttling of keyboardWillShow triggered suggestion
-// refresh.
-BASE_DECLARE_FEATURE(kAutofillThrottleOptionalSuggestionRefresh);
-
-// Enables suppressing suggestion refreshes triggered by keyboardWillShow.
-BASE_DECLARE_FEATURE(kSuppressKeyboardWillShowSuggestionRefresh);
-
 // Enables skipping reloading input views in the form input keyboard accessory
 // when the app is in the background.
 BASE_DECLARE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground);
