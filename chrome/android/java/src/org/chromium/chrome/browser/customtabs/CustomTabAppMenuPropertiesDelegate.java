@@ -487,14 +487,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         modelList.add(new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model));
     }
 
-    @Override
-    protected boolean shouldShowPageInfoItem() {
-        if (mUiType == CustomTabsUiType.TRUSTED_WEB_ACTIVITY) {
-            return false;
-        }
-        return super.shouldShowPageInfoItem();
-    }
-
     private boolean shouldShowReaderModeItem() {
         if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()
                 || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
