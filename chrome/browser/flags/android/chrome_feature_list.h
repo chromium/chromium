@@ -447,6 +447,11 @@ inline constexpr base::FeatureParam<bool>
                                            "snippet_as_subtitle",
                                            /*default_value=*/false);
 
+inline constexpr base::FeatureParam<bool>
+    kXplatSyncedSetupThemesObservationOnly(&kXplatSyncedSetupThemes,
+                                           "observation_only",
+                                           /*default_value=*/false);
+
 }  // namespace chrome::android
 
 #endif  // CHROME_BROWSER_FLAGS_ANDROID_CHROME_FEATURE_LIST_H_

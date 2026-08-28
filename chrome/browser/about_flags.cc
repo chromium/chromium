@@ -4445,6 +4445,14 @@ const FeatureEntry::FeatureVariation
     kCrossWindowTabGroupOperationsVariations[] = {
         {"Remote group operations", kCrossWindowTabGroupOperationsRemoteGroup,
          nullptr}};
+
+const FeatureEntry::FeatureParam kXplatSyncedSetupThemes_ObservationOnly[] = {
+    {"observation_only", "true"},
+};
+
+const FeatureEntry::FeatureVariation kXplatSyncedSetupThemesVariations[] = {
+    {"Observation only", kXplatSyncedSetupThemes_ObservationOnly, nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -13875,7 +13883,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"xplat-synced-setup-themes",
      flag_descriptions::kXplatSyncedSetupThemesName,
      flag_descriptions::kXplatSyncedSetupThemesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kXplatSyncedSetupThemes)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kXplatSyncedSetupThemes,
+                                    kXplatSyncedSetupThemesVariations,
+                                    "XplatSyncedSetupThemes")},
     {"cct-tab-switcher-enabled-for-chrome-experiment",
      flag_descriptions::kCCTTabSwitcherEnabledForChromeExperimentName,
      flag_descriptions::kCCTTabSwitcherEnabledForChromeExperimentDescription,

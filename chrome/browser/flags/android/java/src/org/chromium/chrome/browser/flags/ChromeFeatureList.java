@@ -1816,6 +1816,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_THEME_MODULE_FORCE_DEPENDENCIES =
             "force_theme_module_dependencies";
     public static final String ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT = "force_light_theme";
+    public static final String XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY = "observation_only";
 
     // keep-sorted end
 
@@ -1833,7 +1834,10 @@ public abstract class ChromeFeatureList {
                             Map.of(ANDROID_THEME_MODULE_FORCE_DEPENDENCIES, "false")),
                     Map.entry(
                             ANDROID_THEME_RESOURCE_PROVIDER,
-                            Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")));
+                            Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")),
+                    Map.entry(
+                            XPLAT_SYNCED_SETUP_THEMES,
+                            Map.of(XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, "false")));
 
     /**
      * This map contains each parameter's default value in tests. This is what gets returned when
@@ -1849,7 +1853,10 @@ public abstract class ChromeFeatureList {
                                     Map.of(ANDROID_THEME_MODULE_FORCE_DEPENDENCIES, "false")),
                             Map.entry(
                                     ANDROID_THEME_RESOURCE_PROVIDER,
-                                    Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")));
+                                    Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")),
+                            Map.entry(
+                                    XPLAT_SYNCED_SETUP_THEMES,
+                                    Map.of(XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, "false")));
 
     // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
@@ -2387,4 +2394,7 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sTabBottomSheetSuppressBottomToolbarWhileOpen =
                     sTabBottomSheet.newBooleanParam("suppress_bottom_toolbar_while_open", false);
+    public static final MutableBooleanParamWithSafeDefault sXplatSyncedSetupThemesObservationOnly =
+            sXplatSyncedSetupThemes.newBooleanParam(
+                    XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, false);
 }
