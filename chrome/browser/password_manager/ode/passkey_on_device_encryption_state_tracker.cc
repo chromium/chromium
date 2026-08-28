@@ -7,8 +7,9 @@
 #include <vector>
 
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
-#include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
@@ -69,7 +70,10 @@ void PasskeyOnDeviceEncryptionStateTracker::ComputeState() {
     return;
   }
 
-  if (!sync_service()->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL)) {
+  // Verify whether the user disabled syncing of passwords and passkeys.
+  syncer::SyncUserSettings* user_settings = sync_service()->GetUserSettings();
+  if (!user_settings || !user_settings->GetSelectedTypes().Has(
+                            syncer::UserSelectableType::kPasswords)) {
     SetState(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
     return;
   }
