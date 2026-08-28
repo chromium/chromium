@@ -43,7 +43,6 @@ external/wpt/css/css-color/system-color-consistency.html
 external/wpt/css/css-color/system-color-hightlights-vs-getSelection-001.html
 external/wpt/css/css-color/system-color-hightlights-vs-getSelection-002.html
 external/wpt/css/css-color/system-color-support.html
-external/wpt/css/css-color/t424-hsl-basic-a.xht
 external/wpt/css/css-contain/content-visibility/content-visibility-vs-scrollIntoView-001.html
 external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html
 external/wpt/css/css-content/quotes-022.html
