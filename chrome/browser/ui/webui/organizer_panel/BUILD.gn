@@ -12,6 +12,7 @@ source_set("organizer_panel") {
   ]
 
   public_deps = [
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
     "//content/public/browser",
   ]
@@ -22,6 +23,8 @@ source_set("organizer_panel") {
     "//chrome/browser/resources/organizer_panel:resources",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:theme_source",
+    "//chrome/browser/ui/webui/metrics_reporter",
+    "//chrome/browser/ui/webui/tab_search",
     "//chrome/common",
     "//components/favicon_base",
     "//components/strings:components_strings",
