@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -135,6 +136,7 @@ TEST_F(IndigoCueTargetTest, CheckEligibility_EligibleGeneratesContent) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(kForceIndigoSwitch);
   EXPECT_CALL(*mock_skills_service_, RefreshDiscoverySkills()).Times(1);
+  base::HistogramTester histogram_tester;
 
   base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
       future;
@@ -163,6 +165,9 @@ TEST_F(IndigoCueTargetTest, CheckEligibility_EligibleGeneratesContent) {
   EXPECT_EQ(cue_opt->anchored_message_cue().anchored_message_text(),
             base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                 IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT)));
+
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kForced, 1);
 }
 
 TEST_F(IndigoCueTargetTest, CheckEligibility_Ineligible) {

@@ -763,6 +763,7 @@ void IndigoPageActionController::ResetTriggeringState() {
       optimization_guide::OptimizationGuideDecision::kUnknown;
   heuristic_result_ = std::nullopt;
   last_anchored_message_priority_ = std::nullopt;
+  last_trigger_source_ = std::nullopt;
   metadata_remote_.reset();
   UpdateEntryPointsState();
 }
@@ -775,11 +776,19 @@ void IndigoPageActionController::UpdateEntryPointsState() {
   }
 
   TriggerEvaluation eval = EvaluateTriggerState();
+  last_trigger_source_ = eval.source;
   const bool should_show = eval.source.has_value();
   if (should_show) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/true);
-    base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
-                                  *eval.source);
+    // For V2, we defer recording the trigger source until
+    // `IndigoCueTarget::GenerateContent` is called. This ensures we only record
+    // it when the cue is actually prepared to be shown, rather than just when
+    // eligibility is evaluated (which might be called multiple times or not
+    // lead to a shown cue).
+    if (!base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2)) {
+      base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
+                                    *eval.source);
+    }
   } else if (!eval.is_pending) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/false);
   }
@@ -821,6 +830,13 @@ void IndigoPageActionController::RefreshDiscoverySkills() {
         skills_service->RemoveObserver(&observer);
       }
     }
+  }
+}
+
+void IndigoPageActionController::RecordTriggerSource() {
+  if (last_trigger_source_.has_value()) {
+    base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
+                                  *last_trigger_source_);
   }
 }
 
@@ -1184,6 +1200,7 @@ void IndigoPageActionController::CheckEligibilityForCueing(
   }
 
   const bool eligible = eval.source.has_value();
+  last_trigger_source_ = eval.source;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), eligible));
 }

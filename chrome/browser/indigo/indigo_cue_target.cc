@@ -103,6 +103,7 @@ void IndigoCueTarget::GenerateContent(
         std::optional<optimization_guide::proto::ContextualCue>)> callback) {
   if (auto* controller = IndigoPageActionController::From(&tab_.get())) {
     controller->RefreshDiscoverySkills();
+    controller->RecordTriggerSource();
   }
   optimization_guide::proto::ContextualCue cue;
   cue.set_suggested_cuj(

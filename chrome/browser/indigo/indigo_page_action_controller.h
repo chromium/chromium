@@ -188,6 +188,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Refreshes 1P discovery skills for the tab's profile.
   virtual void RefreshDiscoverySkills();
 
+  // Records the trigger source to UMA.
+  void RecordTriggerSource();
+
   using EligibilityCallback = base::OnceCallback<void(bool)>;
 
   // Evaluates page-level eligibility for this tab. If the decision is already
@@ -422,6 +425,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // True if a delete original photo request is currently in flight.
   bool delete_photo_in_flight_ = false;
+
+  // The trigger source that was evaluated when eligibility was determined.
+  std::optional<IndigoTriggerSource> last_trigger_source_;
 
   // Weak pointer factory used for the invocation flow. This is invalidated on
   // navigation to ensure that if a user starts an action (like onboarding) and
