@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 
 namespace omnibox_everywhere {
@@ -58,6 +60,10 @@ ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowIcon() {
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowAppIcon() {
   return GetWindowIcon();
+}
+
+std::u16string OmniboxEverywhereWidgetDelegate::GetWindowTitle() const {
+  return l10n_util::GetStringUTF16(IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE);
 }
 
 }  // namespace omnibox_everywhere

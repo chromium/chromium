@@ -41,6 +41,8 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
   // views::WidgetDelegate:
   ui::ImageModel GetWindowIcon() override;
   ui::ImageModel GetWindowAppIcon() override;
+  std::u16string GetWindowTitle() const override;
+
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,
       const gfx::Point& location) override;
