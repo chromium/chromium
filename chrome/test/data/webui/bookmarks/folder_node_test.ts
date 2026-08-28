@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksFolderNodeElement, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
-import {ACCOUNT_HEADING_NODE_ID, LOCAL_HEADING_NODE_ID, ROOT_NODE_ID, selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, LOCAL_HEADING_NODE_ID, PermanentFolderType, ROOT_NODE_ID, selectFolder} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -134,7 +134,7 @@ suite('<bookmarks-folder-node>', function() {
     store.notifyObservers();
     await microtasksFinished();
 
-    assertTrue(getFolderNode('0')!.isOpen);
+    assertTrue(getFolderNode(ROOT_NODE_ID)!.isOpen);
     assertFalse(getFolderNode('1')!.isOpen);
     assertFalse(getFolderNode('7')!.isOpen);
   });
@@ -254,5 +254,42 @@ suite('<bookmarks-folder-node>', function() {
 
     assertDeepEquals(selectFolder('2'), store.lastAction);
     testCommandManager.assertMenuOpenForIds(['2']);
+  });
+
+  test('all permanent folders are shown in sidebar', () => {
+    const nodes = testTree(
+        createFolder('1', [], {
+          title: 'Bookmarks bar',
+          permanentFolderType: PermanentFolderType.kBookmarkBar,
+        }),
+        createFolder('2', [], {
+          title: 'Other bookmarks',
+          permanentFolderType: PermanentFolderType.kOther,
+        }),
+        createFolder('3', [], {
+          title: 'Mobile bookmarks',
+          permanentFolderType: PermanentFolderType.kMobile,
+        }),
+        createFolder('4', [], {
+          title: 'Managed bookmarks',
+          permanentFolderType: PermanentFolderType.kManaged,
+        }));
+
+    store = new TestStore({
+      nodes: nodes,
+      folderOpenState: getAllFoldersOpenState(nodes),
+      selectedFolder: '1',
+    });
+    store.replaceSingleton();
+
+    rootNode = document.createElement('bookmarks-folder-node');
+    rootNode.itemId = ROOT_NODE_ID;
+    rootNode.depth = -1;
+    replaceBody(rootNode);
+
+    const rootFolders =
+        rootNode.shadowRoot.querySelectorAll('bookmarks-folder-node');
+    const folderIds = Array.from(rootFolders).map(f => f.itemId);
+    assertDeepEquals(['1', '2', '3', '4'], folderIds);
   });
 });

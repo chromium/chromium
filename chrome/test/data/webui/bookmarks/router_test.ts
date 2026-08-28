@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 import type {BookmarksAppElement, SelectFolderAction, StartSearchAction} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarksApiProxyImpl, BookmarksRouter, CrRouter, getDisplayedList, Store} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksApiProxyImpl, BookmarksRouter, CrRouter, getDisplayedList, PermanentFolderType, Store} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestStore} from './test_store.js';
-import {createFolder, createItem, getAllFoldersOpenState, testTree} from './test_util.js';
+import {createFolder, createItem, createRoot, getAllFoldersOpenState, testTree} from './test_util.js';
 
 suite('<bookmarks-router>', function() {
   let store: TestStore;
+  let router: BookmarksRouter;
 
   function navigateTo(route: string) {
     window.history.replaceState({}, '', route);
@@ -34,8 +35,12 @@ suite('<bookmarks-router>', function() {
     });
     store.replaceSingleton();
 
-    const router = new BookmarksRouter();
+    router = new BookmarksRouter();
     router.initialize();
+  });
+
+  teardown(function() {
+    router.teardown();
   });
 
   test('search updates from route', function() {
@@ -90,6 +95,7 @@ suite('<bookmarks-router>', function() {
 
 suite('<bookmarks-router-account-and-local>', function() {
   let store: TestStore;
+  let router: BookmarksRouter;
 
   function navigateTo(route: string) {
     window.history.replaceState({}, '', route);
@@ -119,8 +125,12 @@ suite('<bookmarks-router-account-and-local>', function() {
     });
     store.replaceSingleton();
 
-    const router = new BookmarksRouter();
+    router = new BookmarksRouter();
     router.initialize();
+  });
+
+  teardown(function() {
+    router.teardown();
   });
 
   test('selected folder updates from route', function() {
@@ -166,7 +176,7 @@ suite('URL preload', function() {
     // removes event listeners from the active BookmarksApiProxy instance.
     // This prevents the element from trying to remove listeners from a swapped
     // proxy instance in subsequent test setups.
-    app.remove();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   /**
@@ -179,25 +189,21 @@ suite('URL preload', function() {
     window.history.replaceState({}, '', url);
     CrRouter.resetForTesting();
 
-    testBookmarksApiProxy.setGetTree([
+    testBookmarksApiProxy.setGetTree(createRoot([
       createFolder(
-          '0',
+          '1',
           [
-            createFolder(
-                '1',
-                [
-                  createFolder('11', []),
-                ],
-                {
-                  folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
-                }),
-            createFolder(
-                '2',
-                [
-                  createItem('21'),
-                ]),
+            createFolder('11', []),
+          ],
+          {
+            permanentFolderType: PermanentFolderType.kBookmarkBar,
+          }),
+      createFolder(
+          '2',
+          [
+            createItem('21', {title: 'testQuery'}),
           ]),
-    ]);
+    ]));
 
     app = document.createElement('bookmarks-app');
     document.body.appendChild(app);
@@ -205,10 +211,10 @@ suite('URL preload', function() {
   }
 
   test('loading a search URL performs a search', async function() {
-    testBookmarksApiProxy.setSearchResponse([createItem('11')]);
     await setupWithUrl('/?q=testQuery');
-    const lastQuery = await testBookmarksApiProxy.whenCalled('search');
-    assertEquals('testQuery', lastQuery);
+    const state = Store.getInstance().data;
+    assertEquals('testQuery', state.search.term);
+    assertDeepEquals(['21'], state.search.results);
   });
 
   test('loading a folder URL selects that folder', async function() {

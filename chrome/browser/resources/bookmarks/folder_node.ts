@@ -223,8 +223,8 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
         this.dispatch(changeFolderOpen(this.item_!.id, false));
       } else {
         const parentFolderNode = this.getParentFolderNode();
-        if (parentFolderNode!.itemId !== ROOT_NODE_ID) {
-          parentFolderNode!.getFocusTarget().focus();
+        if (parentFolderNode && parentFolderNode.itemId !== ROOT_NODE_ID) {
+          parentFolderNode.getFocusTarget().focus();
         }
       }
     }
@@ -256,9 +256,9 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
 
     // If there is no newly focused node, allow the parent to handle the change.
     if (!newFocusFolderNode) {
-      if (this.itemId !== ROOT_NODE_ID) {
-        this.getParentFolderNode()!.changeKeyboardSelection_(
-            0, yDirection, this);
+      const parentFolderNode = this.getParentFolderNode();
+      if (parentFolderNode && this.itemId !== ROOT_NODE_ID) {
+        parentFolderNode.changeKeyboardSelection_(0, yDirection, this);
       }
 
       return;
@@ -373,7 +373,9 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       return [];
     }
     return children.filter(itemId => {
-      return !nodes[itemId]?.url;  // safely access .url only if node exists
+      const node = nodes[itemId];
+      // Exclude url nodes.
+      return !node?.url;
     });
   }
 

@@ -2,25 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {PermanentFolderType} from './bookmarks_api.mojom-webui.js';
 import type {DropPosition, IncognitoAvailability, MenuSource} from './constants.js';
 
 /**
  * @fileoverview Closure typedefs for Bookmarks.
  */
 
-// A normalized version of chrome.bookmarks.BookmarkTreeNode.
 export interface BookmarkNode {
   id: string;
   title: string;
   parentId?: string;
   url?: string;
-  dateAdded?: number;
-  dateLastUsed?: number;
-  dateGroupModified?: number;
-  unmodifiable?: string;
   children?: string[];
-  folderType?: chrome.bookmarks.FolderType;
-  syncing?: boolean;
+  permanentFolderType?: PermanentFolderType;
+  isSynced?: boolean;
+  // Used for functionalities provided by private bookmarks extensions API.
+  legacyId?: number;
 }
 
 export interface ObjectMap<Type> {
@@ -90,9 +88,6 @@ export class BookmarkElement extends HTMLElement {
   }
 }
 
-export class DragData {
-  elements: chrome.bookmarks.BookmarkTreeNode[]|null = null;
-  sameProfile: boolean = false;
-}
+export type DragData = chrome.bookmarkManagerPrivate.DragData;
 
 export type TimerProxy = Pick<Window, 'setTimeout'|'clearTimeout'>;

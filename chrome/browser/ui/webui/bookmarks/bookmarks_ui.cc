@@ -12,6 +12,9 @@
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmarks_service_feature.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -28,6 +31,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -217,3 +221,21 @@ scoped_refptr<base::RefCountedMemory> BookmarksUI::GetFaviconResourceBytes(
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_BOOKMARKS_FAVICON, scale_factor);
 }
+
+BookmarksUI::~BookmarksUI() = default;
+
+void BookmarksUI::BindInterface(
+    mojo::PendingReceiver<bookmarks_api::mojom::BookmarksService> receiver) {
+  auto* tab = tabs::TabInterface::GetFromContents(web_ui()->GetWebContents());
+  if (tab) {
+    auto* browser_window = tab->GetBrowserWindowInterface();
+    if (browser_window) {
+      auto* feature = BookmarksServiceFeature::From(browser_window);
+      if (feature) {
+        feature->Accept(std::move(receiver));
+      }
+    }
+  }
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(BookmarksUI)

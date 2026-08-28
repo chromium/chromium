@@ -5,7 +5,7 @@
 import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
 import type {Action} from 'chrome://resources/js/store.js';
 
-import {createBookmark, editBookmark, moveBookmark, refreshNodes, removeBookmark, reorderChildren, setCanEditBookmarks, setIncognitoAvailability} from './actions.js';
+import {createBookmark, editBookmark, moveBookmark, removeBookmark, reorderChildren, setCanEditBookmarks, setIncognitoAvailability} from './actions.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {IncognitoAvailability} from './constants.js';
@@ -112,24 +112,6 @@ function onChildrenReordered(id: string, reorderInfo: {childIds: string[]}) {
   dispatch(reorderChildren(id, reorderInfo.childIds));
 }
 
-/**
- * Pauses the Created handler during an import. The imported nodes will all be
- * loaded at once when the import is finished.
- */
-function onImportBegan() {
-  BookmarksApiProxyImpl.getInstance().onCreated.removeListener(
-      onBookmarkCreated);
-  document.dispatchEvent(new CustomEvent('import-began'));
-}
-
-function onImportEnded() {
-  BookmarksApiProxyImpl.getInstance().getTree().then((nodeMap) => {
-    dispatch(refreshNodes(nodeMap));
-  });
-  BookmarksApiProxyImpl.getInstance().onCreated.addListener(onBookmarkCreated);
-  document.dispatchEvent(new CustomEvent('import-ended'));
-}
-
 function onIncognitoAvailabilityChanged(availability: IncognitoAvailability) {
   dispatch(setIncognitoAvailability(availability));
 }
@@ -149,8 +131,6 @@ export function init() {
   apiProxy.onCreated.addListener(onBookmarkCreated);
   apiProxy.onMoved.addListener(onBookmarkMoved);
   apiProxy.onRemoved.addListener(onBookmarkRemoved);
-  apiProxy.onImportBegan.addListener(onImportBegan);
-  apiProxy.onImportEnded.addListener(onImportEnded);
 
   const browserProxy = BrowserProxyImpl.getInstance();
   browserProxy.getIncognitoAvailability().then(onIncognitoAvailabilityChanged);
@@ -169,8 +149,6 @@ export function destroy() {
   apiProxy.onCreated.removeListener(onBookmarkCreated);
   apiProxy.onMoved.removeListener(onBookmarkMoved);
   apiProxy.onRemoved.removeListener(onBookmarkRemoved);
-  apiProxy.onImportBegan.removeListener(onImportBegan);
-  apiProxy.onImportEnded.removeListener(onImportEnded);
   if (incognitoAvailabilityListener) {
     removeWebUiListener(incognitoAvailabilityListener);
   }

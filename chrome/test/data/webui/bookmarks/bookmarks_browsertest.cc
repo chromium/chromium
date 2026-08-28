@@ -25,6 +25,13 @@ class BookmarksBrowserTest : public WebUIMochaBrowserTest {
   BookmarksBrowserTest() {
     set_test_loader_host(chrome::kChromeUIBookmarksHost);
   }
+
+  void SetUpOnMainThread() override {
+    WebUIMochaBrowserTest::SetUpOnMainThread();
+    bookmarks::BookmarkModel* model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
+    bookmarks::test::WaitForBookmarkModelToLoad(model);
+  }
 };
 
 using BookmarksTest = BookmarksBrowserTest;

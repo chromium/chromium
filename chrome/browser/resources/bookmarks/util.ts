@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {PermanentFolderType} from './bookmarks_api.mojom-webui.js';
+import type {BookmarkNode as MojoBookmarkNode, Folder as MojoFolder, RootNode as MojoRootNode} from './bookmarks_api.mojom-webui.js';
 import {ACCOUNT_HEADING_NODE_ID, IncognitoAvailability, LOCAL_HEADING_NODE_ID, ROOT_NODE_ID} from './constants.js';
 import type {BookmarkNode, BookmarksPageState, NodeMap, ObjectMap} from './types.js';
 
@@ -37,9 +39,9 @@ export function getDefaultSelectedFolder(nodes: NodeMap): string {
   for (const id of selectedFolderParent.children) {
     const node = nodes[id];
     assert(node);
-    if (node.folderType === chrome.bookmarks.FolderType.BOOKMARKS_BAR) {
+    if (node.permanentFolderType === PermanentFolderType.kBookmarkBar) {
       selectedFolder = id;
-      if (node.syncing) {
+      if (node.isSynced) {
         // If this is the account bookmarks bar, stop immediately so it
         // takes precedence over the local counterpart.
         break;
@@ -50,38 +52,105 @@ export function getDefaultSelectedFolder(nodes: NodeMap): string {
   return selectedFolder;
 }
 
-export function normalizeNode(treeNode: chrome.bookmarks.BookmarkTreeNode):
-    BookmarkNode {
-  const node = Object.assign({}, treeNode);
-  // Node index is not necessary and not kept up-to-date. Remove it from the
-  // data structure so we don't accidentally depend on the incorrect
-  // information.
-  delete node.index;
-  delete node.children;
-  const bookmarkNode = node as unknown as BookmarkNode;
-
-  if (!('url' in node)) {
-    // The onCreated API listener returns folders without |children| defined.
-    bookmarkNode.children = (treeNode.children || []).map(function(child) {
-      return child.id;
-    });
-  }
-  return bookmarkNode;
+export function normalizeMojoRootNode(mojoRoot: MojoRootNode): BookmarkNode {
+  return {
+    id: ROOT_NODE_ID,
+    title: '',
+    isSynced: false,
+    children: mojoRoot.children.map(child => child.id!.value),
+  };
 }
 
-function hasBothLocalAndAccountBookmarksBar(
-    nodes: chrome.bookmarks.BookmarkTreeNode[]): boolean {
+export function normalizeMojoNode(
+    mojoNode: MojoBookmarkNode, parentId: string): BookmarkNode {
+  if (mojoNode.url) {
+    const urlNode = mojoNode.url;
+    const result: BookmarkNode = {
+      id: urlNode.id!.value,
+      title: urlNode.title,
+      url: urlNode.url,
+      parentId: parentId,
+      isSynced: urlNode.isSynced,
+    };
+    if (urlNode.legacy?.id !== undefined && urlNode.legacy?.id !== null) {
+      result.legacyId = Number(urlNode.legacy.id);
+    }
+    return result;
+  }
+
+  if (mojoNode.folder) {
+    const folderNode = mojoNode.folder;
+    const result: BookmarkNode = {
+      id: folderNode.id?.value || '',
+      title: folderNode.title,
+      children: folderNode.children.map(child => {
+        return child.url?.id?.value || child.folder?.id?.value || '';
+      }),
+      parentId: parentId,
+      isSynced: folderNode.isSynced,
+    };
+    if (folderNode.permanentFolderType !== null &&
+        folderNode.permanentFolderType !== undefined &&
+        folderNode.permanentFolderType !== PermanentFolderType.kUnknown) {
+      result.permanentFolderType = folderNode.permanentFolderType;
+    }
+    if (folderNode.legacy?.id !== undefined && folderNode.legacy?.id !== null) {
+      result.legacyId = Number(folderNode.legacy.id);
+    }
+    return result;
+  }
+
+  assertNotReached();
+}
+
+/**
+ * Converts a storage BookmarkNode to a MojoBookmarkNode.
+ * Inverse of normalizeMojoNode.
+ */
+export function toMojoNode(node: BookmarkNode): MojoBookmarkNode {
+  const id = node.id ? {value: node.id} : null;
+  const title = node.title;
+  const isSynced = node.isSynced ?? false;
+  const legacy =
+      node.legacyId !== undefined ? {id: BigInt(node.legacyId)} : null;
+
+  if (node.url !== undefined) {
+    return {
+      url: {
+        id: id,
+        title: title,
+        url: node.url,
+        faviconUrl: null,
+        isSynced: isSynced,
+        legacy: legacy,
+      },
+    };
+  }
+
+  return {
+    folder: {
+      id: id,
+      title: title,
+      children: [],
+      permanentFolderType: node.permanentFolderType ?? null,
+      isSynced: isSynced,
+      legacy: legacy,
+    },
+  };
+}
+
+function hasBothLocalAndAccountBookmarksBar(nodes: MojoFolder[]): boolean {
   return nodes.some(
-             child => child.folderType ===
-                     chrome.bookmarks.FolderType.BOOKMARKS_BAR &&
-                 child.syncing) &&
+             child => child.permanentFolderType ===
+                     PermanentFolderType.kBookmarkBar &&
+                 child.isSynced) &&
       nodes.some(
           child =>
-              child.folderType === chrome.bookmarks.FolderType.BOOKMARKS_BAR &&
-              !child.syncing);
+              child.permanentFolderType === PermanentFolderType.kBookmarkBar &&
+              !child.isSynced);
 }
 
-function buildAccountHeadingNode(): BookmarkNode {
+export function buildAccountHeadingNode(): BookmarkNode {
   return {
     id: ACCOUNT_HEADING_NODE_ID,
     title: loadTimeData.getString('accountBookmarksTitle'),
@@ -90,7 +159,7 @@ function buildAccountHeadingNode(): BookmarkNode {
   };
 }
 
-function buildLocalHeadingNode(): BookmarkNode {
+export function buildLocalHeadingNode(): BookmarkNode {
   return {
     id: LOCAL_HEADING_NODE_ID,
     title: loadTimeData.getString('localBookmarksTitle'),
@@ -99,44 +168,44 @@ function buildLocalHeadingNode(): BookmarkNode {
   };
 }
 
-export function normalizeNodes(rootNode: chrome.bookmarks.BookmarkTreeNode):
-    NodeMap {
+export function normalizeNodes(rootNode: MojoRootNode): NodeMap {
   const nodeMap: NodeMap = {};
-  const stack = [];
-  stack.push(rootNode);
+  const stack: Array<{node: MojoBookmarkNode, parentId: string}> = [];
 
-  // If the user has both local and account bookmarks bars, insert heading nodes
-  // to distinguish them.
-  const addHeadingNodes =
-      hasBothLocalAndAccountBookmarksBar(rootNode.children!);
+  const normalizedRoot = normalizeMojoRootNode(rootNode);
+  nodeMap[normalizedRoot.id] = normalizedRoot;
+
+  const addHeadingNodes = hasBothLocalAndAccountBookmarksBar(rootNode.children);
+
+  if (addHeadingNodes) {
+    normalizedRoot.children = [];
+    for (const headingNode
+             of [buildAccountHeadingNode(), buildLocalHeadingNode()]) {
+      nodeMap[headingNode.id] = headingNode;
+      normalizedRoot.children.push(headingNode.id);
+    }
+  }
+
+  rootNode.children.forEach(child => {
+    let parentId = normalizedRoot.id;
+    if (addHeadingNodes) {
+      parentId =
+          child.isSynced ? ACCOUNT_HEADING_NODE_ID : LOCAL_HEADING_NODE_ID;
+      nodeMap[parentId]!.children!.push(child.id?.value || '');
+    }
+    stack.push({node: {folder: child}, parentId: parentId});
+  });
 
   while (stack.length > 0) {
-    const node = stack.pop()!;
-    nodeMap[node.id] = normalizeNode(node);
+    const {node, parentId} = stack.pop()!;
+    const normalized = normalizeMojoNode(node, parentId);
+    nodeMap[normalized.id] = normalized;
 
-    if (node.children) {
-      node.children.forEach(function(child) {
-        stack.push(child);
+    const folder = node.folder;
+    if (folder && folder.children) {
+      folder.children.forEach(child => {
+        stack.push({node: child, parentId: normalized.id});
       });
-    }
-
-    if (addHeadingNodes) {
-      if (node.id === rootNode.id) {
-        // Clear the children set on the root node, and add the heading nodes as
-        // children.
-        nodeMap[node.id]!.children = [];
-        for (const headingNode
-                 of [buildAccountHeadingNode(), buildLocalHeadingNode()]) {
-          nodeMap[headingNode.id] = headingNode;
-          nodeMap[node.id]!.children!.push(headingNode.id);
-        }
-      } else if (node.parentId === rootNode.id) {
-        // Replace the parent with the appropriate heading nodes.
-        const headingNode = node.syncing ? nodeMap[ACCOUNT_HEADING_NODE_ID]! :
-                                           nodeMap[LOCAL_HEADING_NODE_ID]!;
-        nodeMap[node.id]!.parentId = headingNode.id;
-        headingNode.children!.unshift(node.id);
-      }
     }
   }
 
@@ -168,6 +237,21 @@ export function isShowingSearch(state: BookmarksPageState): boolean {
   return state.search.results != null;
 }
 
+function isManaged(nodes: NodeMap, itemId: string): boolean {
+  let id = itemId;
+  while (id) {
+    const node = nodes[id];
+    if (!node) {
+      break;
+    }
+    if (node.permanentFolderType === PermanentFolderType.kManaged) {
+      return true;
+    }
+    id = node.parentId || '';
+  }
+  return false;
+}
+
 /**
  * Returns true if the node with ID |itemId| is modifiable, allowing
  * the node to be renamed, moved or deleted. Note that if a node is
@@ -177,7 +261,7 @@ export function isShowingSearch(state: BookmarksPageState): boolean {
 export function canEditNode(
     state: BookmarksPageState, itemId: string): boolean {
   return !isRootOrChildOfRoot(state, itemId) && !!state.nodes[itemId] &&
-      !state.nodes[itemId].unmodifiable && state.prefs.canEdit;
+      !isManaged(state.nodes, itemId) && state.prefs.canEdit;
 }
 
 /**
@@ -187,7 +271,7 @@ export function canEditNode(
 export function canReorderChildren(
     state: BookmarksPageState, itemId: string): boolean {
   return !isRootNode(itemId) && !!state.nodes[itemId] &&
-      !state.nodes[itemId].unmodifiable && state.prefs.canEdit;
+      !isManaged(state.nodes, itemId) && state.prefs.canEdit;
 }
 
 export function hasChildFolders(id: string, nodes: NodeMap): boolean {
@@ -284,4 +368,56 @@ export function isRootOrChildOfRoot(
 
   assert(node.parentId);
   return isRootNode(node.parentId);
+}
+
+/**
+ * Flattens the bookmark hierarchy into an ordered array of BookmarkNodes
+ * in hierarchical (pre-order depth-first) order. Root and permanent folder
+ * container nodes are excluded from the result list.
+ */
+export function flattenNodes(
+    nodes: NodeMap, baseId: string = ROOT_NODE_ID): BookmarkNode[] {
+  const flattened: BookmarkNode[] = [];
+
+  function traverse(id: string) {
+    const node = nodes[id];
+    if (!node) {
+      return;
+    }
+
+    if (!isRootNode(node.id) && node.permanentFolderType === undefined) {
+      flattened.push(node);
+    }
+
+    if (node.children) {
+      for (const childId of node.children) {
+        traverse(childId);
+      }
+    }
+  }
+
+  traverse(baseId);
+  return flattened;
+}
+
+export function searchBookmarks(nodes: NodeMap, term: string): BookmarkNode[] {
+  const tokens = term.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+  if (tokens.length === 0) {
+    return [];
+  }
+
+  return flattenNodes(nodes).filter(node => {
+    const title = node.title.toLowerCase();
+    const url = node.url ? node.url.toLowerCase() : '';
+    return tokens.every(
+        token => title.includes(token) || (!!url && url.includes(token)));
+  });
+}
+
+export function getLegacyId(node: BookmarkNode|undefined): string {
+  // This is mainly to work around the annoying redux store lookup, which might
+  // yield undefined for an id. Once we move off of this, we don't need this
+  // shim anymore.
+  assert(!!node && (!!node.legacyId || node.legacyId === 0));
+  return node.legacyId.toString();
 }

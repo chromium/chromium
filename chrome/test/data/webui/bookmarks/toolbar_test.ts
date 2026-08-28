@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 import type {BookmarksToolbarElement} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarkManagerApiProxyImpl, Command} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, Command, PermanentFolderType} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
+import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
@@ -22,6 +23,8 @@ suite('<bookmarks-toolbar>', function() {
   suiteSetup(function() {
     const bookmarkManagerApi = new TestBookmarkManagerApiProxy();
     BookmarkManagerApiProxyImpl.setInstance(bookmarkManagerApi);
+    const bookmarksApi = new TestBookmarksApiProxy();
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
   });
 
   setup(function() {
@@ -110,7 +113,7 @@ suite('<bookmarks-toolbar>', function() {
   });
 
   test('delete button is disabled when items are unmodifiable', async () => {
-    store.data.nodes['3']!.unmodifiable = 'managed';
+    store.data.nodes['3']!.permanentFolderType = PermanentFolderType.kManaged;
     store.data.selection.items = new Set(['2', '3']);
     store.notifyObservers();
     await microtasksFinished();

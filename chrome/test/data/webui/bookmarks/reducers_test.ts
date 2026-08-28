@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksPageState, FolderOpenState, NodeMap, SelectionState, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
-import {ACCOUNT_HEADING_NODE_ID, changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, LOCAL_HEADING_NODE_ID, moveBookmark, normalizeNode, reduceAction, refreshNodes, removeBookmark, reorderChildren, ROOT_NODE_ID, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelection} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, LOCAL_HEADING_NODE_ID, moveBookmark, reduceAction, refreshNodes, removeBookmark, reorderChildren, ROOT_NODE_ID, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelection} from 'chrome://bookmarks/bookmarks.js';
 import type {Action} from 'chrome://resources/js/store.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -123,12 +123,12 @@ suite('selection state', function() {
               createItem('3'),
               createItem('4'),
             ]),
-        createItem('5'));
+        createFolder('5', []));
 
     action = select(['2', '4', '5'], '4', true, false);
     selection = updateSelection(selection, action);
 
-    action = removeBookmark('1', '0', 0, nodeMap);
+    action = removeBookmark('1', ROOT_NODE_ID, 0, nodeMap);
     selection = updateSelection(selection, action);
 
     assertDeepEquals(['5'], normalizeIterable(selection.items));
@@ -139,8 +139,8 @@ suite('selection state', function() {
     action = select(['2', '3'], '2', true, false);
     selection = updateSelection(selection, action);
 
-    // Move item '2' from the 1st item in '0' to the 0th item in '1'.
-    action = moveBookmark('2', '1', 0, '0', 1);
+    // Move item '2' from the 1st item in root to the 0th item in '1'.
+    action = moveBookmark('2', '1', 0, ROOT_NODE_ID, 1);
     selection = updateSelection(selection, action);
 
     assertDeepEquals(['3'], normalizeIterable(selection.items));
@@ -204,7 +204,7 @@ suite('folder open state', function() {
 
     // Moving folders should open their parents.
     folderOpenState = new Map([['1', false], ['2', false]]);
-    action = moveBookmark('4', '2', 0, '0', 1);
+    action = moveBookmark('4', '2', 0, ROOT_NODE_ID, 1);
     folderOpenState = updateFolderOpenState(folderOpenState, action, nodes);
     assertTrue(folderOpenState.get('1')!);
     assertTrue(folderOpenState.get('2')!);
@@ -490,10 +490,10 @@ suite('node state', function() {
       title: '',
       id: '6',
       parentId: '1',
-      index: 2,
+      children: [],
+      legacyId: 6,
     };
-    action =
-        createBookmark(folder.parentId, folder.index, normalizeNode(folder));
+    action = createBookmark('1', 2, folder);
     nodes = updateNodes(nodes, action);
 
     assertEquals('1', nodes['6']!.parentId);
@@ -505,11 +505,11 @@ suite('node state', function() {
       title: '',
       id: '7',
       parentId: '6',
-      index: 0,
       url: 'https://www.example.com',
+      legacyId: 7,
     };
 
-    action = createBookmark(item.parentId, item.index, normalizeNode(item));
+    action = createBookmark('6', 0, item);
     nodes = updateNodes(nodes, action);
 
     assertEquals('6', nodes['7']!.parentId);
@@ -528,10 +528,10 @@ suite('node state', function() {
   });
 
   test('removes all children of deleted nodes', function() {
-    action = removeBookmark('1', '0', 0, nodes);
+    action = removeBookmark('1', ROOT_NODE_ID, 0, nodes);
     nodes = updateNodes(nodes, action);
 
-    assertDeepEquals(['0', '5'], Object.keys(nodes).sort());
+    assertDeepEquals([ROOT_NODE_ID, '5'].sort(), Object.keys(nodes).sort());
   });
 
   test('updates when a node is moved', function() {

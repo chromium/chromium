@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksItemElement, BookmarksListElement} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarkManagerApiProxyImpl, Command} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, Command} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -12,6 +12,7 @@ import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interaction
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
+import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from './test_util.js';
@@ -71,6 +72,8 @@ suite('<bookmarks-list>', function() {
 
     const proxy = new TestBookmarkManagerApiProxy();
     BookmarkManagerApiProxyImpl.setInstance(proxy);
+    const bookmarksApi = new TestBookmarksApiProxy();
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     list = document.createElement('bookmarks-list');
     list.style.height = '100%';

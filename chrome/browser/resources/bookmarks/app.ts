@@ -33,7 +33,7 @@ import {BookmarksRouter} from './router.js';
 import {Store} from './store.js';
 import {StoreClientMixinLit} from './store_client_mixin_lit.js';
 import type {BookmarksPageState, FolderOpenState} from './types.js';
-import {createEmptyState, getDefaultSelectedFolder} from './util.js';
+import {createEmptyState, getDefaultSelectedFolder, searchBookmarks} from './util.js';
 
 export const HIDE_FOCUS_RING_ATTRIBUTE = 'hide-focus-ring';
 
@@ -232,14 +232,12 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     }
 
     const searchTerm = this.searchTerm_;
-    BookmarksApiProxyImpl.getInstance().search(searchTerm).then(results => {
-      const ids = results.map(node => node.id);
-      this.dispatch(setSearchResults(ids));
-      getAnnouncerInstance().announce(
-          ids.length > 0 ?
-              loadTimeData.getStringF('searchResults', searchTerm) :
-              loadTimeData.getString('noSearchResults'));
-    });
+    const results = searchBookmarks(this.getState().nodes, searchTerm);
+    const ids = results.map(node => node.id);
+    this.dispatch(setSearchResults(ids));
+    getAnnouncerInstance().announce(
+        ids.length > 0 ? loadTimeData.getStringF('searchResults', searchTerm) :
+                         loadTimeData.getString('noSearchResults'));
   }
 
   private folderOpenStateChanged_(): void {

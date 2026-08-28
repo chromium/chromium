@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ACCOUNT_HEADING_NODE_ID, canEditNode, canReorderChildren, getDefaultSelectedFolder, getDescendants, isRootNode, isRootOrChildOfRoot, LOCAL_HEADING_NODE_ID, removeIdsFromObject, removeIdsFromSet, ROOT_NODE_ID} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, canEditNode, canReorderChildren, flattenNodes, getDefaultSelectedFolder, getDescendants, isRootNode, isRootOrChildOfRoot, LOCAL_HEADING_NODE_ID, PermanentFolderType, removeIdsFromObject, removeIdsFromSet, ROOT_NODE_ID, searchBookmarks} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestStore} from './test_store.js';
@@ -127,7 +127,9 @@ suite('util', function() {
         createFolder('2', [], {syncing: false}));
 
     const descendants = getDescendants(nodes, ROOT_NODE_ID);
-    assertDeepEquals([ROOT_NODE_ID, '1', '2'], normalizeIterable(descendants));
+    assertDeepEquals(
+        normalizeIterable([ROOT_NODE_ID, '1', '2']),
+        normalizeIterable(descendants));
     assertDeepEquals(nodes[ROOT_NODE_ID]!.children!, ['1', '2']);
   });
 
@@ -137,7 +139,9 @@ suite('util', function() {
         createFolder('2', [], {syncing: true}));
 
     const descendants = getDescendants(nodes, ROOT_NODE_ID);
-    assertDeepEquals([ROOT_NODE_ID, '1', '2'], normalizeIterable(descendants));
+    assertDeepEquals(
+        normalizeIterable([ROOT_NODE_ID, '1', '2']),
+        normalizeIterable(descendants));
     assertDeepEquals(nodes[ROOT_NODE_ID]!.children!, ['1', '2']);
   });
 
@@ -156,7 +160,8 @@ suite('util', function() {
 
         const descendants = getDescendants(nodes, ROOT_NODE_ID);
         assertDeepEquals(
-            [ROOT_NODE_ID, '1', '2'], normalizeIterable(descendants));
+            normalizeIterable([ROOT_NODE_ID, '1', '2']),
+            normalizeIterable(descendants));
         assertDeepEquals(nodes[ROOT_NODE_ID]!.children!, ['1', '2']);
       });
 
@@ -179,14 +184,14 @@ suite('util', function() {
 
         const descendants = getDescendants(nodes, ROOT_NODE_ID);
         assertDeepEquals(
-            [
+            normalizeIterable([
               ROOT_NODE_ID,
               '1',
               '2',
               '3',
               ACCOUNT_HEADING_NODE_ID,
               LOCAL_HEADING_NODE_ID,
-            ],
+            ]),
             normalizeIterable(descendants));
         assertDeepEquals(
             nodes[ROOT_NODE_ID]!.children!,
@@ -272,5 +277,119 @@ suite('util', function() {
 
     // Test that the local bookmarks bar is picked if account bar is missing.
     assertEquals('11', getDefaultSelectedFolder(nodesNoAccount));
+  });
+
+  test('searchBookmarks', function() {
+    const nodes = testTree(createFolder('1', [
+      createItem('2', {title: 'Google', url: 'https://www.google.com'}),
+      createItem('3', {title: 'Google Mail', url: 'https://mail.google.com'}),
+      createItem('4', {title: 'Yahoo Mail', url: 'https://mail.yahoo.com'}),
+      createFolder(
+          '5',
+          [
+            createItem('6', {title: 'Gmail', url: 'https://gmail.com'}),
+          ]),
+      createFolder('7', [], {
+        title: 'Google Bookmarks',
+        permanentFolderType: PermanentFolderType.kBookmarkBar,
+      }),
+      createFolder('8', [], {
+        title: 'Google Stuff',
+      }),
+    ]));
+
+    // Empty search term returns empty results.
+    assertDeepEquals([], searchBookmarks(nodes, ''));
+    assertDeepEquals([], searchBookmarks(nodes, '   '));
+
+    const assertMatchingNodes =
+        (searchTerm: string, expected: string[], tree = nodes) => {
+          assertDeepEquals(
+              expected, searchBookmarks(tree, searchTerm).map(n => n.id));
+        };
+
+    // Single term matching title.
+    assertMatchingNodes('Google', ['2', '3', '8']);
+    assertMatchingNodes('Mail', ['3', '4', '6']);
+
+    // Single term matching URL.
+    assertMatchingNodes('google.com', ['2', '3']);
+    assertMatchingNodes('gmail', ['6']);
+
+    // Case insensitivity.
+    assertMatchingNodes('gOoGlE', ['2', '3', '8']);
+
+    // Tokenized search (multi-word).
+    assertMatchingNodes('google mail', ['3']);
+    assertMatchingNodes('mail google', ['3']);
+
+    // "mail yahoo" should match "Yahoo Mail" ('4').
+    assertMatchingNodes('mail yahoo', ['4']);
+
+    // Token matching across title and URL.
+    const nodes2 = testTree(createFolder('1', [
+      createItem(
+          '2',
+          {title: 'Apple Pie Recipe', url: 'https://www.nytimes.com/food'}),
+    ]));
+    assertMatchingNodes('pie nytimes', ['2'], nodes2);
+  });
+
+  test('flattenNodes', function() {
+    const nodes = testTree(
+        createFolder(
+            '1',
+            [
+              createItem('2', {title: 'Google', url: 'https://www.google.com'}),
+              createFolder(
+                  '3',
+                  [
+                    createItem('4', {title: 'Sub Item'}),
+                  ],
+                  {title: 'Sub Folder'}),
+              createItem('5', {title: 'Item 5'}),
+            ],
+            {
+              permanentFolderType: PermanentFolderType.kBookmarkBar,
+            }),
+        createFolder(
+            '6',
+            [
+              createItem('7', {title: 'Other Item'}),
+            ],
+            {
+              permanentFolderType: PermanentFolderType.kOther,
+            }));
+
+    const flat = flattenNodes(nodes);
+    // Root node, bookmark bar ('1'), and other bookmarks ('6') should be
+    // excluded. User folders ('3') and bookmark items ('2', '4', '5', '7')
+    // should be included in pre-order.
+    assertDeepEquals(['2', '3', '4', '5', '7'], flat.map(n => n.id));
+
+    // Custom baseId for a subtree.
+    const subtree = flattenNodes(nodes, '3');
+    assertDeepEquals(['3', '4'], subtree.map(n => n.id));
+
+    // Non-existent baseId returns empty array.
+    assertDeepEquals([], flattenNodes(nodes, '999'));
+
+    // Empty NodeMap returns empty array.
+    assertDeepEquals([], flattenNodes({}));
+  });
+
+  test('flattenNodes with account and local heading nodes', function() {
+    const nodes = testTree(
+        createFolder('1', [createItem('11', {syncing: true})], {
+          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+          syncing: true,
+        }),
+        createFolder('2', [createItem('21', {syncing: false})], {
+          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+          syncing: false,
+        }));
+
+    const flat = flattenNodes(nodes);
+    assertDeepEquals(['11', '21'], flat.map(n => n.id));
   });
 });

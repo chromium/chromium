@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksFolderNodeElement, BookmarksItemElement, BookmarksListElement, SelectFolderAction, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDisplayedList, MenuSource, selectFolder, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDefaultSelectedFolder, getDisplayedList, MenuSource, selectFolder, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -22,6 +22,7 @@ suite('<bookmarks-command-manager>', function() {
   let testCommandManager: TestCommandManager;
   let store: TestStore;
   let bookmarkManagerProxy: TestBookmarkManagerApiProxy;
+  let bookmarksProxy: TestBookmarksApiProxy;
 
   setup(function() {
     loadTimeData.overrideValues({
@@ -76,7 +77,7 @@ suite('<bookmarks-command-manager>', function() {
     });
     store.replaceSingleton();
 
-    const bookmarksProxy = new TestBookmarksApiProxy();
+    bookmarksProxy = new TestBookmarksApiProxy();
     BookmarksApiProxyImpl.setInstance(bookmarksProxy);
 
     bookmarkManagerProxy = new TestBookmarkManagerApiProxy();
@@ -366,7 +367,7 @@ suite('<bookmarks-command-manager>', function() {
     assertTrue(commandManager.canExecute(Command.DELETE, parentAndChildren));
     commandManager.handle(Command.DELETE, parentAndChildren);
 
-    const lastDelete = await bookmarkManagerProxy.whenCalled('removeTrees');
+    const lastDelete = await bookmarksProxy.whenCalled('delete');
 
     assertDeepEquals(['11', '12'], lastDelete);
   });
@@ -854,25 +855,19 @@ suite('<bookmarks-command-manager> whole page integration', function() {
   let commandManager: BookmarksCommandManagerElement;
   let testFolderId: string;
 
-  function create(details: chrome.bookmarks.CreateDetails) {
-    return chrome.bookmarks.create(details);
-  }
-
   suiteSetup(async function() {
-    const testFolder = {
-      parentId: '1',
-      title: 'Test',
-    };
-    const testFolderNode = await create(testFolder);
-    testFolderId = testFolderNode.id;
-    const testItem = {
-      parentId: testFolderId,
-      title: 'Test bookmark',
-      url: 'https://www.example.com/',
-    };
+    const apiProxy = new BookmarksApiProxyImpl();
+    BookmarksApiProxyImpl.setInstance(apiProxy);
+    const tree = await apiProxy.getTree();
+    const bookmarkBarId = getDefaultSelectedFolder(tree);
 
-    await create(testItem);
-    await create(testItem);
+    const testFolderNode = await apiProxy.create(bookmarkBarId, null, 'Test');
+    testFolderId = testFolderNode.id;
+
+    await apiProxy.create(
+        testFolderId, null, 'Test bookmark', 'https://www.example.com/');
+    await apiProxy.create(
+        testFolderId, null, 'Test bookmark', 'https://www.example.com/');
   });
 
   setup(async function() {
@@ -920,6 +915,6 @@ suite('<bookmarks-command-manager> whole page integration', function() {
   });
 
   suiteTeardown(function() {
-    return chrome.bookmarks.removeTree(testFolderId);
+    return BookmarksApiProxyImpl.getInstance().delete([testFolderId]);
   });
 });

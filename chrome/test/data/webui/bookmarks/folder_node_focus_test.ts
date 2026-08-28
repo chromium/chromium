@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 import type {BookmarksFolderNodeElement, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarkManagerApiProxyImpl, changeFolderOpen, Command, ROOT_NODE_ID, selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, changeFolderOpen, Command, ROOT_NODE_ID, selectFolder} from 'chrome://bookmarks/bookmarks.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
+import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
@@ -18,6 +19,7 @@ suite('<bookmarks-folder-node>', function() {
   let rootNode: BookmarksFolderNodeElement;
   let store: TestStore;
   let bookmarkManagerProxy: TestBookmarkManagerApiProxy;
+  let bookmarksApi: TestBookmarksApiProxy;
 
   function getFolderNode(id: string) {
     return findFolderNode(rootNode, id) as BookmarksFolderNodeElement;
@@ -64,6 +66,8 @@ suite('<bookmarks-folder-node>', function() {
 
     bookmarkManagerProxy = new TestBookmarkManagerApiProxy();
     BookmarkManagerApiProxyImpl.setInstance(bookmarkManagerProxy);
+    bookmarksApi = new TestBookmarksApiProxy();
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     rootNode = document.createElement('bookmarks-folder-node');
     rootNode.itemId = ROOT_NODE_ID;
@@ -240,7 +244,7 @@ suite('<bookmarks-folder-node>', function() {
 
     getFolderNode('2').$.container.focus();
     keydown('2', 'Delete');
-    await bookmarkManagerProxy.whenCalled('removeTrees');
+    await bookmarksApi.whenCalled('delete');
 
     testCommandManager.assertLastCommand(Command.DELETE, ['2']);
   });

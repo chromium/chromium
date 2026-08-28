@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BookmarksFolderNodeElement, FolderOpenState, NodeMap} from 'chrome://bookmarks/bookmarks.js';
-import {normalizeNodes, ROOT_NODE_ID} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarksFolderNodeElement, FolderOpenState, MojoBookmarkNode, MojoRootNode, NodeMap} from 'chrome://bookmarks/bookmarks.js';
+import {normalizeNodes, PermanentFolderType, ROOT_NODE_ID} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -22,64 +22,125 @@ export function replaceBody(element: Element) {
  * Convert a list of top-level bookmark nodes into a normalized lookup table of
  * nodes.
  */
-export function testTree(...nodes: chrome.bookmarks.BookmarkTreeNode[]):
-    NodeMap {
-  return normalizeNodes(createFolder(ROOT_NODE_ID, nodes));
+export function testTree(...nodes: MojoBookmarkNode[]): NodeMap {
+  return normalizeNodes(createRoot(nodes));
+}
+
+/**
+ * Creates a root node with given children.
+ */
+export function createRoot(children: MojoBookmarkNode[]): MojoRootNode {
+  return {
+    id: {value: ROOT_NODE_ID},
+    children: children.map(c => c.folder!),
+  };
 }
 
 /**
  * Creates a folder with given properties.
  */
 export function createFolder(
-    id: string, children: chrome.bookmarks.BookmarkTreeNode[],
-    config?: Partial<chrome.bookmarks.BookmarkTreeNode>):
-    chrome.bookmarks.BookmarkTreeNode {
-  const newFolder = Object.assign(
+    id: string, children: MojoBookmarkNode[], config?: {
+      isSynced?: boolean,
+      permanentFolderType?: unknown, [key: string]: unknown,
+    }): MojoBookmarkNode {
+  let permanentFolderType = PermanentFolderType.kUnknown;
+  const configFolderType =
+      config?.permanentFolderType || config?.['folderType'];
+  if (configFolderType !== undefined) {
+    const ft = configFolderType;
+    if (ft === PermanentFolderType.kBookmarkBar ||
+        ft === chrome.bookmarks.FolderType.BOOKMARKS_BAR) {
+      permanentFolderType = PermanentFolderType.kBookmarkBar;
+    } else if (
+        ft === PermanentFolderType.kOther ||
+        ft === chrome.bookmarks.FolderType.OTHER) {
+      permanentFolderType = PermanentFolderType.kOther;
+    } else if (
+        ft === PermanentFolderType.kMobile ||
+        ft === chrome.bookmarks.FolderType.MOBILE) {
+      permanentFolderType = PermanentFolderType.kMobile;
+    } else if (
+        ft === PermanentFolderType.kManaged ||
+        ft === chrome.bookmarks.FolderType.MANAGED) {
+      permanentFolderType = PermanentFolderType.kManaged;
+    }
+  } else if (config?.['unmodifiable'] === 'managed') {
+    permanentFolderType = PermanentFolderType.kManaged;
+  }
+
+  let isSynced = true;
+  if (config?.isSynced !== undefined) {
+    isSynced = config.isSynced;
+  } else if (config?.['syncing'] !== undefined) {
+    isSynced = config['syncing'] as boolean;
+  }
+
+  let legacyId: bigint|null = null;
+  try {
+    legacyId = BigInt(id);
+  } catch (e) {
+    legacyId = null;
+  }
+
+  const folderData = Object.assign(
       {
-        id: id,
+        id: {value: id},
         children: children,
         title: '',
-        syncing: config?.syncing ?? true,
-        folderType: config?.folderType,
+        isSynced: isSynced,
+        permanentFolderType: permanentFolderType,
+        legacy: legacyId !== null ? {id: legacyId} : null,
       },
       config || {});
-
-  if (children.length) {
-    for (let i = 0; i < children.length; i++) {
-      children[i]!.index = i;
-      children[i]!.parentId = newFolder.id;
-    }
-  }
-  return newFolder;
+  folderData.permanentFolderType = permanentFolderType;
+  return {
+    folder: folderData,
+  };
 }
 
 /**
- * Splices out the item/folder at |index| and adjusts the indices of all the
- * items after that.
+ * Splices out the item/folder at |index|.
  */
-export function removeChild(
-    tree: chrome.bookmarks.BookmarkTreeNode, index: number) {
-  const children = tree.children!;
+export function removeChild(tree: MojoBookmarkNode, index: number) {
+  const children = tree.folder!.children;
   children.splice(index, 1);
-  for (let i = index; i < children.length; i++) {
-    children[i]!.index = i;
-  }
 }
 
 /**
  * Creates a bookmark with given properties.
  */
-export function createItem(
-    id: string, config?: Partial<chrome.bookmarks.BookmarkTreeNode>):
-    chrome.bookmarks.BookmarkTreeNode {
-  return Object.assign(
-      {
-        id: id,
-        title: '',
-        url: 'http://www.google.com/',
-        syncing: config?.syncing ?? true,
-      },
-      config || {});
+export function createItem(id: string, config?: {
+  isSynced?: boolean,
+  url?: string,
+  title?: string, [key: string]: unknown,
+}): MojoBookmarkNode {
+  let isSynced = true;
+  if (config?.isSynced !== undefined) {
+    isSynced = config.isSynced;
+  } else if (config?.['syncing'] !== undefined) {
+    isSynced = config['syncing'] as boolean;
+  }
+
+  let legacyId: bigint|null = null;
+  try {
+    legacyId = BigInt(id);
+  } catch (e) {
+    legacyId = null;
+  }
+
+  return {
+    url: Object.assign(
+        {
+          id: {value: id},
+          title: '',
+          url: 'http://www.google.com/',
+          faviconUrl: null,
+          isSynced: isSynced,
+          legacy: legacyId !== null ? {id: legacyId} : null,
+        },
+        config || {}),
+  };
 }
 
 export function normalizeIterable<T>(iterable: Iterable<T>): T[] {

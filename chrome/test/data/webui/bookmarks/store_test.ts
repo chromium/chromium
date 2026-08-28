@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksPageState, NodeMap} from 'chrome://bookmarks/bookmarks.js';
-import {createEmptyState, removeBookmark, Store, StoreClientMixinLit} from 'chrome://bookmarks/bookmarks.js';
+import {createEmptyState, removeBookmark, ROOT_NODE_ID, Store, StoreClientMixinLit} from 'chrome://bookmarks/bookmarks.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -139,7 +139,7 @@ suite('bookmarks.StoreClientMixin', function() {
   });
 
   test('renders initial data', function() {
-    assertDeepEquals(['0', '1', '11', '12', '13'], getRenderedItems());
+    assertDeepEquals([ROOT_NODE_ID, '1', '11', '12', '13'], getRenderedItems());
   });
 
   test('renders changes to watched state', async () => {
@@ -154,7 +154,7 @@ suite('bookmarks.StoreClientMixin', function() {
     await update(newState);
 
     assertTrue(client.hasChanged);
-    assertDeepEquals(['0', '1', '11', '12'], getRenderedItems());
+    assertDeepEquals([ROOT_NODE_ID, '1', '11', '12'], getRenderedItems());
   });
 
   test('ignores changes to other subtrees', async () => {
