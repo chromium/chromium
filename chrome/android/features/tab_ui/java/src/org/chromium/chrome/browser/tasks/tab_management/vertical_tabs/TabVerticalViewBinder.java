@@ -216,6 +216,11 @@ class TabVerticalViewBinder {
         if (view.getAlpha() != 1.0f) {
             view.setAlpha(1.0f);
         }
+        // Since TAB_CONTEXT_CLICK_LISTENER is now disabled for Vertical Tabs, consume context
+        // clicks at the child tab item level so performContextClick() does not bubble up to the
+        // parent RecyclerView's context click listener. Tab item right-clicks are handled via the
+        // RecyclerView's onInterceptTouchEvent.
+        view.setOnContextClickListener(v -> true);
 
         if (TabProperties.FAVICON_FETCHER == propertyKey) {
             updateFaviconImage(model, view);

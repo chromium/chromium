@@ -2670,4 +2670,39 @@ public class TabVerticalViewBinderUnitTest {
 
         assertEquals(View.GONE, hiddenView.getVisibility());
     }
+
+    @Test
+    @SmallTest
+    public void testBindTab_ConsumesContextClicks() {
+        TabVerticalViewBinder.bindTab(mModel, mItemView, null);
+
+        // Perform context click on the tab row view and verify it is consumed.
+        assertTrue(
+                "Standard tab item view must consume context clicks.",
+                mItemView.performContextClick());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_ConsumesContextClicks() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
+
+        // Perform context click on the pinned tab view and verify it is consumed.
+        assertTrue(
+                "Pinned tab item view must consume context clicks.",
+                pinnedView.performContextClick());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_ConsumesContextClicks() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, null);
+
+        // Perform context click on the group header view and verify it is consumed.
+        assertTrue(
+                "Tab group header view must consume context clicks.",
+                headerView.performContextClick());
+    }
 }
