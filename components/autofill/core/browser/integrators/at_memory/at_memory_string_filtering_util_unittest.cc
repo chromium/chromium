@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_string_filtering_util.h"
 
-#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

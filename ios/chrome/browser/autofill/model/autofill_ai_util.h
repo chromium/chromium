@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 
 class ProfileIOS;

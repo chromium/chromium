@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace autofill {

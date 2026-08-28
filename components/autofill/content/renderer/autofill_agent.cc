@@ -43,7 +43,7 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/content/renderer/a11y_utils.h"
+#include "components/autofill/content/renderer/a11y_util.h"
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"

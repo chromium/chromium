@@ -13,7 +13,7 @@
 
 #include "base/check.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_util.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {

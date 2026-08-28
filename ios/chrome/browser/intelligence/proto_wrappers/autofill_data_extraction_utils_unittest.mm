@@ -6,7 +6,7 @@
 
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"

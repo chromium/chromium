@@ -13,7 +13,7 @@
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/autofill/core/browser/data_model/data_model_utils.h"
+#import "components/autofill/core/browser/data_model/data_model_util.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"

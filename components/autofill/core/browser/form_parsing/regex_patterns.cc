@@ -12,7 +12,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "build/buildflag.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_util.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/dense_set.h"

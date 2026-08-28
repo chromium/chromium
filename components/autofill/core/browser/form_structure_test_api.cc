@@ -7,7 +7,7 @@
 #include <ranges>
 
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

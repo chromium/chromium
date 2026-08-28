@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

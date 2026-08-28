@@ -324,7 +324,7 @@ def generate_cpp_lines(id_to_name_to_lang_to_patterns):
 
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/dense_set.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_util.h"
 
 namespace autofill {
 

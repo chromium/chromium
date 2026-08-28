@@ -25,7 +25,7 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/management_util.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_filter.h"
 #include "components/sync/service/sync_service.h"

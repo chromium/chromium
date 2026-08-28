@@ -13,8 +13,8 @@
 #include "base/test/values_test_util.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
-#include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments/test/autofill_payments_test_util.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {

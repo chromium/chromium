@@ -288,3 +288,18 @@ def CheckFeatureFilesOrdering(input_api, output_api):
             )
         )
   return errors
+
+def CheckUtilityFileNaming(input_api, output_api):
+  """Checks that utility files have the suffix '_util'."""
+
+  warnings = []
+  if IsComponentsAutofillFileAffected(
+      input_api, '_utils.h'
+  ) or IsComponentsAutofillFileAffected(input_api, '_utils.cc'):
+    warnings += [
+        output_api.PresubmitPromptWarning(
+                f'All utility files in //components/autofill/ should have the suffix "_util".'
+        )
+    ]
+
+  return warnings

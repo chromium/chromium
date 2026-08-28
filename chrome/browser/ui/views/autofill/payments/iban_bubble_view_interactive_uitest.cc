@@ -43,7 +43,7 @@
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/strike_database/strike_database_integrator_base.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"

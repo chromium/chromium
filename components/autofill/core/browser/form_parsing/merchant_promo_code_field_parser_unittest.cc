@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 
-#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_util.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 using base::ASCIIToUTF16;

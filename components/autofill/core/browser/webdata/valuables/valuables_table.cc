@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
-#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_table_util.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_table.h"
 #include "sql/database.h"

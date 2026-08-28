@@ -91,8 +91,8 @@ proto_library("risk_proto") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "autofill_test_utils.cc",
-    "autofill_test_utils.h",
+    "autofill_test_util.cc",
+    "autofill_test_util.h",
     "content_autofill_driver_factory_test_api.cc",
     "content_autofill_driver_factory_test_api.h",
     "content_autofill_driver_test_api.h",

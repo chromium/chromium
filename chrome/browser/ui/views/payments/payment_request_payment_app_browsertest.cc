@@ -15,7 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/payments/payment_app_install_util.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
 #include "components/payments/content/service_worker_payment_app_finder_test_api.h"

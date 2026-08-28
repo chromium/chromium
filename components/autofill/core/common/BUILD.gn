@@ -132,12 +132,12 @@ component("features") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "autofill_test_utils.cc",
-    "autofill_test_utils.h",
+    "autofill_test_util.cc",
+    "autofill_test_util.h",
     "form_data_test_api.h",
     "test_matchers.h",
-    "test_utils/autofill_form_test_utils.cc",
-    "test_utils/autofill_form_test_utils.h",
+    "test_utils/autofill_form_test_util.cc",
+    "test_utils/autofill_form_test_util.h",
   ]
   deps = [
     "//base",

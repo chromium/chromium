@@ -36,7 +36,7 @@
 #import "base/uuid.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
-#import "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
+#import "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"

@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
 

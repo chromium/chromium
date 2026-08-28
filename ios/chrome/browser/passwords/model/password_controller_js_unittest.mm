@@ -13,7 +13,7 @@
 #import "base/test/gmock_expected_support.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"

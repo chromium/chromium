@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/password_manager/core/browser/password_form.h"

@@ -5,7 +5,7 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

@@ -586,7 +586,7 @@ function setUpCheckAtMemoryPermissions() {
         text: 'Retrieve shopping data for filling',
       },
     ];
-    // LINT.ThenChange(/components/autofill/core/browser/at_memory/at_memory_enablement_utils.h:AtMemoryAction)
+    // LINT.ThenChange(/components/autofill/core/browser/at_memory/at_memory_enablement_util.h:AtMemoryAction)
     for (const action of actions) {
       const option = document.createElement('option');
       option.value = action.value;

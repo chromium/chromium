@@ -12,7 +12,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_util.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/common/language_code.h"
 

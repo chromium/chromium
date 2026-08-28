@@ -8,7 +8,7 @@
 #import "base/test/bind.h"
 #import "base/test/run_until.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
-#import "components/autofill/core/common/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_test_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/fake_form_fetcher.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"

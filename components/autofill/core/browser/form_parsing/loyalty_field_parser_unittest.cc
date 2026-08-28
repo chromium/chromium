@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/form_parsing/loyalty_field_parser.h"
 
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_util.h"
 
 namespace autofill {
 

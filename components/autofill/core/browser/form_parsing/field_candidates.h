@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/unique_ids.h"

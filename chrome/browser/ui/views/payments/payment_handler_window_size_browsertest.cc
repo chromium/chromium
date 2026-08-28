@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

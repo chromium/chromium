@@ -9,7 +9,7 @@
 
 #include "base/i18n/unicodestring.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"

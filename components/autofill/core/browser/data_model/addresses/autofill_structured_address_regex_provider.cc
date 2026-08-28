@@ -13,7 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/re2/src/re2/re2.h"
 

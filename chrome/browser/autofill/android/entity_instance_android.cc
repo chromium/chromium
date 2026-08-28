@@ -11,7 +11,7 @@
 #include "base/notreached.h"
 #include "components/autofill/android/main_autofill_jni_headers/EntityInstance_jni.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 
 namespace autofill {
 

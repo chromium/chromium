@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 
 namespace autofill {

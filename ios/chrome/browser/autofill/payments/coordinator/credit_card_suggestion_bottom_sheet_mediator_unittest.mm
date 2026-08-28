@@ -9,7 +9,7 @@
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/autofill/model/features.h"

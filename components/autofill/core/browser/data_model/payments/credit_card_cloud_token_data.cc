@@ -7,7 +7,7 @@
 #include <optional>
 #include <string>
 
-#include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/data_model/data_model_util.h"
 
 namespace autofill {
 

@@ -1,0 +1,232 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/form_import/form_data_importer_util.h"
+
+#include <algorithm>
+#include <iterator>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_import_requirement_util.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/signatures.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
+#include "url/origin.h"
+
+namespace autofill {
+
+namespace {
+
+bool IsOriginPartOfDeletionInfo(const std::optional<url::Origin>& origin,
+                                const history::DeletionInfo& deletion_info) {
+  if (!origin) {
+    return false;
+  }
+  return deletion_info.IsAllHistory() ||
+         std::ranges::contains(deletion_info.deleted_rows(), *origin,
+                               [](const history::URLRow& url_row) {
+                                 return url::Origin::Create(url_row.url());
+                               });
+}
+
+}  // anonymous namespace
+
+MultiStepImportMerger::MultiStepImportMerger(
+    const std::string& app_locale,
+    const GeoIpCountryCode& variation_country_code)
+    : app_locale_(app_locale),
+      variation_country_code_(variation_country_code) {}
+MultiStepImportMerger::~MultiStepImportMerger() = default;
+
+void MultiStepImportMerger::ProcessMultiStepImport(
+    AutofillProfile& profile,
+    ProfileImportMetadata& import_metadata) {
+  multistep_candidates_.RemoveOutdatedItems(kMultiStepImportTTL,
+                                            import_metadata.origin);
+  bool has_min_address_requirements =
+      MergeProfileWithMultiStepCandidates(profile, import_metadata);
+  if (!has_min_address_requirements) {
+    // Add the incomplete `profile` as an `multistep_candidate`, so it can be
+    // complemented during later imports. Complete profiles for multi-step
+    // complements are added in the AddressProfileSaveManager after a user
+    // decision was made.
+    AddMultiStepImportCandidate(profile, import_metadata,
+                                /*is_imported=*/false);
+  }
+}
+
+void MultiStepImportMerger::AddMultiStepImportCandidate(
+    const AutofillProfile& profile,
+    const ProfileImportMetadata& import_metadata,
+    bool is_imported) {
+  multistep_candidates_.Push({profile, import_metadata, is_imported},
+                             import_metadata.origin);
+}
+
+bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
+    AutofillProfile& profile,
+    ProfileImportMetadata& import_metadata) {
+  // Start merging with the most recent `multistep_candidates_`.
+  auto candidate = multistep_candidates_.begin();
+  AutofillProfile completed_profile = profile;
+  ProfileImportMetadata completed_metadata = import_metadata;
+  // Merging might fail due to an incorrectly complemented country in one of the
+  // merge candidates. In this case, multi-step imports are not offered.
+  while (candidate != multistep_candidates_.end() &&
+         completed_profile.MergeDataFrom(candidate->profile, app_locale_) !=
+             AutofillProfile::ProfileMergeResult::kMergeFailed) {
+    MergeImportMetadata(candidate->import_metadata, completed_metadata);
+    candidate++;
+  }
+
+  // The minimum address requirements depend on the country, which has possibly
+  // changed as a result of the merge.
+  if (IsMinimumAddress(completed_profile)) {
+    profile = std::move(completed_profile);
+    import_metadata = std::move(completed_metadata);
+    multistep_candidates_.Clear();
+    return true;
+  } else {
+    // Remove all profiles that couldn't be merged.
+    multistep_candidates_.erase(candidate, multistep_candidates_.end());
+    return false;
+  }
+}
+
+void MultiStepImportMerger::MergeImportMetadata(
+    const ProfileImportMetadata& source,
+    ProfileImportMetadata& target) const {
+  // If an invalid phone number was observed in either of the partial profiles,
+  // importing was only possible due to its removal. For the purpose of metrics,
+  // we care about the status of the validity of the phone number in the
+  // combined profile. Thus the logic merges towards kValid.
+  if (target.phone_import_status != PhoneImportStatus::kValid &&
+      source.phone_import_status != PhoneImportStatus::kNone) {
+    target.phone_import_status = source.phone_import_status;
+  }
+  // If either of the partial profiles contains information imported from an
+  // unrecognized autocomplete attribute, so does the combined profile.
+  target.did_import_from_unrecognized_autocomplete_field |=
+      source.did_import_from_unrecognized_autocomplete_field;
+  // Set `country_source` to `ProfileCountrySource::kCountryMerged` if the
+  // origin of the profile's country cannot be determined.
+  switch (target.country_source) {
+    case ProfileCountrySource::kExplicitlyObserved:
+    case ProfileCountrySource::kDefaultCountryCodeForNewAddress:
+    case ProfileCountrySource::kPhoneNumberRegionCode:
+      if (target.country_source != source.country_source) {
+        target.country_source = ProfileCountrySource::kCountryMerged;
+      }
+      break;
+    case ProfileCountrySource::kNoCountry:
+      // Target profile does not have any country, unconditionally take country
+      // of source profile.
+      target.country_source = source.country_source;
+      break;
+    case ProfileCountrySource::kCountryMerged:
+      break;
+  }
+}
+
+void MultiStepImportMerger::OnBrowsingHistoryCleared(
+    const history::DeletionInfo& deletion_info) {
+  if (IsOriginPartOfDeletionInfo(multistep_candidates_.origin(),
+                                 deletion_info)) {
+    Clear();
+  }
+}
+
+void MultiStepImportMerger::OnAddressDataChanged(
+    AddressDataManager& address_data_manager) {
+  auto it = multistep_candidates_.begin();
+  while (it != multistep_candidates_.end()) {
+    // `it` might get erased, so `++it` at the end of the loop doesn't suffice.
+    auto next = std::next(it);
+    // Incomplete profiles are not imported yet, so they cannot have changed.
+    if (it->is_imported) {
+      const AutofillProfile* stored_profile =
+          address_data_manager.GetProfileByGUID(it->profile.guid());
+      if (!stored_profile) {
+        // The profile was deleted, so we shouldn't offer importing it again.
+        multistep_candidates_.erase(it, next);
+      } else if (it->profile != *stored_profile) {
+        // The profile was edited in some way. Make sure that we offer updates
+        // for the latest version.
+        it->profile = *stored_profile;
+      }
+    }
+    it = next;
+  }
+}
+
+FormAssociator::FormAssociator() = default;
+FormAssociator::~FormAssociator() = default;
+
+void FormAssociator::TrackFormAssociations(const url::Origin& origin,
+                                           FormSignature form_signature,
+                                           FormType form_type) {
+  static constexpr base::TimeDelta ttl = base::Minutes(5);
+  // This ensures that `recent_address_forms_` and `recent_credit_card_forms`
+  // share the same origin (if they are non-empty).
+  recent_address_forms_.RemoveOutdatedItems(ttl, origin);
+  recent_credit_card_forms_.RemoveOutdatedItems(ttl, origin);
+
+  auto& container = form_type == FormType::kAddressForm
+                        ? recent_address_forms_
+                        : recent_credit_card_forms_;
+  container.Push(form_signature, origin);
+}
+
+FormStructure::FormAssociations FormAssociator::GetFormAssociations(
+    FormSignature form_signature) const {
+  FormStructure::FormAssociations associations;
+  if (!recent_address_forms_.empty()) {
+    associations.last_address_form_submitted = *recent_address_forms_.begin();
+  }
+  if (!recent_credit_card_forms_.empty()) {
+    associations.last_credit_card_form_submitted =
+        *recent_credit_card_forms_.begin();
+  }
+  if (associations.last_address_form_submitted != form_signature &&
+      associations.last_credit_card_form_submitted != form_signature) {
+    return {};
+  }
+  if (recent_address_forms_.size() > 1) {
+    associations.second_last_address_form_submitted =
+        *std::next(recent_address_forms_.begin());
+  }
+  return associations;
+}
+
+const std::optional<url::Origin>& FormAssociator::origin() const {
+  DCHECK(
+      !recent_address_forms_.origin() || !recent_credit_card_forms_.origin() ||
+      *recent_address_forms_.origin() == *recent_credit_card_forms_.origin());
+  return recent_address_forms_.origin() ? recent_address_forms_.origin()
+                                        : recent_credit_card_forms_.origin();
+}
+
+void FormAssociator::Clear() {
+  recent_address_forms_.Clear();
+  recent_credit_card_forms_.Clear();
+}
+
+void FormAssociator::OnBrowsingHistoryCleared(
+    const history::DeletionInfo& deletion_info) {
+  if (IsOriginPartOfDeletionInfo(origin(), deletion_info)) {
+    Clear();
+  }
+}
+
+}  // namespace autofill

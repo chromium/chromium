@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/ui/autofill_resource_utils.h"
+#include "components/autofill/core/browser/ui/autofill_resource_util.h"
 #include "components/messages/android/message_enums.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"

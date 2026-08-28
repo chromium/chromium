@@ -4,8 +4,8 @@
 
 static_library("renderer") {
   sources = [
-    "a11y_utils.cc",
-    "a11y_utils.h",
+    "a11y_util.cc",
+    "a11y_util.h",
     "at_memory_handler.cc",
     "at_memory_handler.h",
     "autofill_agent.cc",
@@ -31,8 +31,8 @@ static_library("renderer") {
     "page_passwords_analyser.h",
     "password_autofill_agent.cc",
     "password_autofill_agent.h",
-    "password_form_conversion_utils.cc",
-    "password_form_conversion_utils.h",
+    "password_form_conversion_util.cc",
+    "password_form_conversion_util.h",
     "password_generation_agent.cc",
     "password_generation_agent.h",
     "prefilled_values_detector.cc",
@@ -80,14 +80,14 @@ static_library("test_support") {
     "autofill_agent_test_api.h",
     "autofill_renderer_test.cc",
     "autofill_renderer_test.h",
-    "focus_test_utils.cc",
-    "focus_test_utils.h",
+    "focus_test_util.cc",
+    "focus_test_util.h",
     "form_submission_tracker_test_api.h",
     "javascript_autofill_tracker_test_api.h",
     "test_password_autofill_agent.cc",
     "test_password_autofill_agent.h",
-    "test_utils.cc",
-    "test_utils.h",
+    "test_util.cc",
+    "test_util.h",
   ]
 
   public_deps = [
@@ -127,7 +127,7 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   sources = [
-    "a11y_utils_browsertest.cc",
+    "a11y_util_browsertest.cc",
     "at_memory_handler_browsertest.cc",
     "autofill_agent_browsertest.cc",
     "autofill_agent_form_interaction_browsertest.cc",
@@ -139,7 +139,7 @@ source_set("browser_tests") {
     "form_submission_tracker_browsertest.cc",
     "html_based_username_detector_browsertest.cc",
     "javascript_autofill_tracker_browsertest.cc",
-    "password_form_conversion_utils_browsertest.cc",
+    "password_form_conversion_util_browsertest.cc",
   ]
 
   deps = [

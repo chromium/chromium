@@ -8,7 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 

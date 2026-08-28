@@ -4,7 +4,7 @@
 
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 
-#import "components/autofill/core/common/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_test_util.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/test_form_activity_observer.h"

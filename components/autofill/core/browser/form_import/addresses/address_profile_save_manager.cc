@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
-#include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_util.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 

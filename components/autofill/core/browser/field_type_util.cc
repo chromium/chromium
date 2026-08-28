@@ -1,0 +1,358 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/field_type_util.h"
+
+#include <stddef.h>
+
+#include <optional>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/notreached.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
+
+namespace autofill {
+
+bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {
+  // This function should only be invoked when the possible types have been
+  // determined.
+  DCHECK(!field.possible_types().empty());
+
+  if (field.possible_types().contains_any({UNKNOWN_TYPE, EMPTY_TYPE})) {
+    // If either UNKNOWN_TYPE or EMPTY_TYPE is present, there should be no other
+    // type
+    DCHECK_EQ(field.possible_types().size(), 1u);
+    return false;
+  }
+  return true;
+}
+
+bool TypeOfFieldIsPossibleType(const AutofillField& field) {
+  return field.possible_types().contains_any(field.Type().GetTypes());
+}
+
+size_t AddressLineIndex(FieldType type) {
+  static constexpr auto kAddressLineIndex =
+      base::MakeFixedFlatMap<FieldType, size_t>({{ADDRESS_HOME_LINE1, 0},
+                                                 {ADDRESS_HOME_LINE2, 1},
+                                                 {ADDRESS_HOME_LINE3, 2}});
+  if (auto it = kAddressLineIndex.find(type); it != kAddressLineIndex.end()) {
+    return it->second;
+  }
+  NOTREACHED();
+}
+
+size_t DetermineExpirationYearLength(FieldType assumed_field_type) {
+  switch (assumed_field_type) {
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+      return 2;
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+      return 4;
+    default:
+      NOTREACHED();
+  }
+}
+
+bool IsAlternativeNameType(FieldType type) {
+  return type == ALTERNATIVE_FULL_NAME || type == ALTERNATIVE_GIVEN_NAME ||
+         type == ALTERNATIVE_FAMILY_NAME;
+}
+
+bool IsDateFieldType(FieldType field_type) {
+  switch (field_type) {
+    case NO_SERVER_DATA:
+    case UNKNOWN_TYPE:
+    case EMPTY_TYPE:
+    case NAME_FIRST:
+    case NAME_MIDDLE:
+    case NAME_LAST:
+    case NAME_MIDDLE_INITIAL:
+    case NAME_FULL:
+    case NAME_SUFFIX:
+    case EMAIL_ADDRESS:
+    case PHONE_HOME_NUMBER:
+    case PHONE_HOME_CITY_CODE:
+    case PHONE_HOME_COUNTRY_CODE:
+    case PHONE_HOME_CITY_AND_NUMBER:
+    case PHONE_HOME_WHOLE_NUMBER:
+    case ADDRESS_HOME_LINE1:
+    case ADDRESS_HOME_LINE2:
+    case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_CITY:
+    case ADDRESS_HOME_STATE:
+    case ADDRESS_HOME_ZIP:
+    case ADDRESS_HOME_ZIP_PREFIX:
+    case ADDRESS_HOME_ZIP_SUFFIX:
+    case ADDRESS_HOME_COUNTRY:
+    case CREDIT_CARD_NAME_FULL:
+    case CREDIT_CARD_NUMBER:
+    case CREDIT_CARD_EXP_MONTH:
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_TYPE:
+    case CREDIT_CARD_VERIFICATION_CODE:
+    case COMPANY_NAME:
+    case MERCHANT_EMAIL_SIGNUP:
+    case MERCHANT_PROMO_CODE:
+    case PASSWORD:
+    case ACCOUNT_CREATION_PASSWORD:
+    case ADDRESS_HOME_STREET_ADDRESS:
+    case ADDRESS_HOME_SORTING_CODE:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_LINE3:
+    case NOT_ACCOUNT_CREATION_PASSWORD:
+    case USERNAME:
+    case USERNAME_AND_EMAIL_ADDRESS:
+    case NEW_PASSWORD:
+    case PROBABLY_NEW_PASSWORD:
+    case NOT_NEW_PASSWORD:
+    case CREDIT_CARD_NAME_FIRST:
+    case CREDIT_CARD_NAME_LAST:
+    case PHONE_HOME_EXTENSION:
+    case CONFIRMATION_PASSWORD:
+    case AMBIGUOUS_TYPE:
+    case SEARCH_TERM:
+    case PRICE:
+    case NOT_PASSWORD:
+    case SINGLE_USERNAME:
+    case NOT_USERNAME:
+    case ADDRESS_HOME_STREET_NAME:
+    case ADDRESS_HOME_HOUSE_NUMBER:
+    case ADDRESS_HOME_SUBPREMISE:
+    case ADDRESS_HOME_OTHER_SUBUNIT:
+    case NAME_LAST_FIRST:
+    case NAME_LAST_CONJUNCTION:
+    case NAME_LAST_SECOND:
+    case NAME_HONORIFIC_PREFIX:
+    case ADDRESS_HOME_ADDRESS:
+    case ADDRESS_HOME_ADDRESS_WITH_NAME:
+    case ADDRESS_HOME_FLOOR:
+    case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+    case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+    case PHONE_HOME_NUMBER_PREFIX:
+    case PHONE_HOME_NUMBER_SUFFIX:
+    case IBAN_VALUE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+    case NUMERIC_QUANTITY:
+    case ONE_TIME_CODE:
+    case DELIVERY_INSTRUCTIONS:
+    case ADDRESS_HOME_OVERFLOW:
+    case ADDRESS_HOME_LANDMARK:
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_STREET_LOCATION:
+    case ADDRESS_HOME_BETWEEN_STREETS:
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case ADDRESS_HOME_APT:
+    case ADDRESS_HOME_APT_TYPE:
+    case LOYALTY_MEMBERSHIP_ID:
+    case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case ALTERNATIVE_FULL_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
+    case PASSPORT_NUMBER:
+    case PASSPORT_ISSUING_COUNTRY:
+    case LOYALTY_MEMBERSHIP_PROGRAM:
+    case LOYALTY_MEMBERSHIP_PROVIDER:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_VIN:
+    case VEHICLE_MAKE:
+    case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
+    case DRIVERS_LICENSE_REGION:
+    case DRIVERS_LICENSE_NUMBER:
+    case NATIONAL_ID_CARD_NUMBER:
+    case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
+    case KNOWN_TRAVELER_NUMBER:
+    case MAX_VALID_FIELD_TYPE:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case ADDRESS_HOME_ZIP_AND_CITY:
+    case ORDER_ID:
+    case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
+      return false;
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+    case PASSPORT_EXPIRATION_DATE:
+    case PASSPORT_ISSUE_DATE:
+    case DRIVERS_LICENSE_EXPIRATION_DATE:
+    case DRIVERS_LICENSE_ISSUE_DATE:
+    case NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case NATIONAL_ID_CARD_ISSUE_DATE:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case ORDER_DATE:
+      return true;
+  }
+  NOTREACHED();
+}
+
+bool IsAffixFormatStringEnabledForType(FieldType type) {
+  switch (type) {
+    case NO_SERVER_DATA:
+    case UNKNOWN_TYPE:
+    case EMPTY_TYPE:
+    case NAME_FIRST:
+    case NAME_MIDDLE:
+    case NAME_LAST:
+    case NAME_MIDDLE_INITIAL:
+    case NAME_FULL:
+    case NAME_SUFFIX:
+    case EMAIL_ADDRESS:
+    case PHONE_HOME_NUMBER:
+    case PHONE_HOME_CITY_CODE:
+    case PHONE_HOME_COUNTRY_CODE:
+    case PHONE_HOME_CITY_AND_NUMBER:
+    case PHONE_HOME_WHOLE_NUMBER:
+    case ADDRESS_HOME_LINE1:
+    case ADDRESS_HOME_LINE2:
+    case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_CITY:
+    case ADDRESS_HOME_STATE:
+    case ADDRESS_HOME_ZIP:
+    case ADDRESS_HOME_COUNTRY:
+    case CREDIT_CARD_NAME_FULL:
+    case CREDIT_CARD_NUMBER:
+    case CREDIT_CARD_EXP_MONTH:
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+    case CREDIT_CARD_TYPE:
+    case CREDIT_CARD_VERIFICATION_CODE:
+    case COMPANY_NAME:
+    case MERCHANT_EMAIL_SIGNUP:
+    case MERCHANT_PROMO_CODE:
+    case PASSWORD:
+    case ACCOUNT_CREATION_PASSWORD:
+    case ADDRESS_HOME_STREET_ADDRESS:
+    case ADDRESS_HOME_SORTING_CODE:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_LINE3:
+    case NOT_ACCOUNT_CREATION_PASSWORD:
+    case USERNAME:
+    case USERNAME_AND_EMAIL_ADDRESS:
+    case NEW_PASSWORD:
+    case PROBABLY_NEW_PASSWORD:
+    case NOT_NEW_PASSWORD:
+    case CREDIT_CARD_NAME_FIRST:
+    case CREDIT_CARD_NAME_LAST:
+    case PHONE_HOME_EXTENSION:
+    case CONFIRMATION_PASSWORD:
+    case AMBIGUOUS_TYPE:
+    case SEARCH_TERM:
+    case PRICE:
+    case NOT_PASSWORD:
+    case SINGLE_USERNAME:
+    case NOT_USERNAME:
+    case ADDRESS_HOME_STREET_NAME:
+    case ADDRESS_HOME_HOUSE_NUMBER:
+    case ADDRESS_HOME_SUBPREMISE:
+    case ADDRESS_HOME_OTHER_SUBUNIT:
+    case NAME_LAST_FIRST:
+    case NAME_LAST_CONJUNCTION:
+    case NAME_LAST_SECOND:
+    case NAME_HONORIFIC_PREFIX:
+    case ADDRESS_HOME_ADDRESS:
+    case ADDRESS_HOME_ADDRESS_WITH_NAME:
+    case ADDRESS_HOME_FLOOR:
+    case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+    case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+    case PHONE_HOME_NUMBER_PREFIX:
+    case PHONE_HOME_NUMBER_SUFFIX:
+    case IBAN_VALUE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+    case NUMERIC_QUANTITY:
+    case ONE_TIME_CODE:
+    case DELIVERY_INSTRUCTIONS:
+    case ADDRESS_HOME_OVERFLOW:
+    case ADDRESS_HOME_LANDMARK:
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_STREET_LOCATION:
+    case ADDRESS_HOME_BETWEEN_STREETS:
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case ADDRESS_HOME_APT:
+    case ADDRESS_HOME_APT_TYPE:
+    case LOYALTY_MEMBERSHIP_ID:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case ALTERNATIVE_FULL_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
+    case PASSPORT_ISSUING_COUNTRY:
+    case PASSPORT_EXPIRATION_DATE:
+    case PASSPORT_ISSUE_DATE:
+    case LOYALTY_MEMBERSHIP_PROGRAM:
+    case LOYALTY_MEMBERSHIP_PROVIDER:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_MAKE:
+    case VEHICLE_MODEL:
+    case DRIVERS_LICENSE_REGION:
+    case DRIVERS_LICENSE_EXPIRATION_DATE:
+    case DRIVERS_LICENSE_ISSUE_DATE:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
+    case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+    case NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case NATIONAL_ID_CARD_ISSUE_DATE:
+    case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case ADDRESS_HOME_ZIP_PREFIX:
+    case ADDRESS_HOME_ZIP_SUFFIX:
+    case MAX_VALID_FIELD_TYPE:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case ADDRESS_HOME_ZIP_AND_CITY:
+    case ORDER_ID:
+    case ORDER_DATE:
+    case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
+      return false;
+    case PASSPORT_NUMBER:
+    case VEHICLE_VIN:
+    case DRIVERS_LICENSE_NUMBER:
+    case NATIONAL_ID_CARD_NUMBER:
+      return true;
+  }
+  NOTREACHED();
+}
+
+bool IsAffixFormatStringEnabledForType(AttributeType type) {
+  std::optional<FieldType> field_type = type.field_type();
+  return field_type && IsAffixFormatStringEnabledForType(*field_type);
+}
+
+}  // namespace autofill

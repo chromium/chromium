@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_util.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
