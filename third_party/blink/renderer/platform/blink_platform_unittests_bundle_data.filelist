@@ -151,6 +151,7 @@
 ../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossless.jxl
 ../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossy.jxl
 ../../web_tests/external/wpt/jpegxl/resources/8x8_noise.jxl
+../../web_tests/external/wpt/jpegxl/resources/adobe-rgb.jxl
 ../../web_tests/external/wpt/jpegxl/resources/animated-red-green.jxl
 ../../web_tests/external/wpt/jpegxl/resources/animation-1loop.jxl
 ../../web_tests/external/wpt/jpegxl/resources/animation-2loops.jxl
@@ -180,6 +181,7 @@
 ../../web_tests/external/wpt/jpegxl/resources/progressive-3.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive_ac.jxl
 ../../web_tests/external/wpt/jpegxl/resources/prophoto-rgb.jxl
+../../web_tests/external/wpt/jpegxl/resources/rec2020.jxl
 ../../web_tests/external/wpt/jpegxl/resources/sdr_alpha.jxl
 ../../web_tests/external/wpt/jpegxl/resources/smallest_valid.jxl
 ../../web_tests/external/wpt/jpegxl/resources/spline_on_first_frame.jxl
