@@ -11236,6 +11236,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicContextualCueingV2AutoSubmitDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicContextualCueingV2AutoSubmit)},
+    {"glic-message-first-fre-for-contextual-cue",
+     flag_descriptions::kGlicMessageFirstFreForContextualCueName,
+     flag_descriptions::kGlicMessageFirstFreForContextualCueDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicMessageFirstFreForContextualCue)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enterprise-published-skills-policy-enabled",

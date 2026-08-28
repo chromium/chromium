@@ -8741,6 +8741,8 @@ from previous Chrome versions.
   <int value="-1855347512" label="FormControlsRefresh:disabled"/>
   <int value="-1855339525"
       label="CompressionDictionaryTransportRequireKnownRootCert:enabled"/>
+  <int value="-1855111085"
+      label="GlicMessageFirstFreForContextualCue:disabled"/>
   <int value="-1854783122" label="AccessibilityAccelerator:enabled"/>
   <int value="-1854432127" label="ChromeHomePullToRefreshIphAtTop:disabled"/>
   <int value="-1854372227" label="VrBrowsingExperimentalFeatures:enabled"/>
@@ -21270,6 +21272,7 @@ from previous Chrome versions.
   <int value="2029804000" label="ClipboardContentsId:enabled"/>
   <int value="2030086360"
       label="EnableMachineLearningModelLoaderWebPlatformApi:disabled"/>
+  <int value="2030472170" label="GlicMessageFirstFreForContextualCue:enabled"/>
   <int value="2030517002" label="HeadlessTabModel:enabled"/>
   <int value="2030614867" label="OmniboxMultilineEditField:disabled"/>
   <int value="2031620694"

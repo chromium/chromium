@@ -1891,6 +1891,12 @@ inline constexpr char kGlicContextualCueingV2AutoSubmitDescription[] =
     "Enable automatically submitting a suggested prompt when the v2 contextual "
     "cue UI for Glic is clicked.";
 
+inline constexpr char kGlicMessageFirstFreForContextualCueName[] =
+    "Glic Message First FRE for Contextual Cue";
+inline constexpr char kGlicMessageFirstFreForContextualCueDescription[] =
+    "Enables the message-first first run experience (FRE) when auto-submitting "
+    "from a contextual cue.";
+
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledName[] =
     "Enable EnterprisePublishedSkills policy";
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledDescription[] =

@@ -5903,6 +5903,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-message-first-fre-for-contextual-cue",
+    "owners": [ "iwells@chromium.org", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-opt-in-dialog-a11y-fix",
     "owners": [
       "rosiey@google.com",
