@@ -22,10 +22,7 @@ WalletReminderNoticeUiDelegateAndroid::
     ~WalletReminderNoticeUiDelegateAndroid() = default;
 
 void WalletReminderNoticeUiDelegateAndroid::ShowWalletReminderNotice(
-    [[maybe_unused]] LegalMessageLines legal_message_lines) {
-  // TODO(crbug.com/541299511): Pass `legal_message_lines` across the bridge
-  // once dynamic legal messages are supported in the Android bottom sheet,
-  // then remove [[maybe_unused]] above.
+    LegalMessageLines legal_message_lines) {
   if (!autofill_wallet_reminder_notice_bottom_sheet_bridge_) {
     if (auto* window_android =
             client_->GetWebContents().GetTopLevelNativeWindow()) {
@@ -35,7 +32,8 @@ void WalletReminderNoticeUiDelegateAndroid::ShowWalletReminderNotice(
     }
   }
   if (autofill_wallet_reminder_notice_bottom_sheet_bridge_) {
-    autofill_wallet_reminder_notice_bottom_sheet_bridge_->RequestShowContent();
+    autofill_wallet_reminder_notice_bottom_sheet_bridge_->RequestShowContent(
+        std::move(legal_message_lines));
   }
 }
 

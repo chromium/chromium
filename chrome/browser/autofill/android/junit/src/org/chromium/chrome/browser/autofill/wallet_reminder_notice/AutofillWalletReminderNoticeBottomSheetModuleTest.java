@@ -12,7 +12,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,10 +29,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
+import java.util.List;
 
 /** Integration tests for the Autofill Wallet Reminder Notice bottom sheet module. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -37,15 +46,17 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
     @Mock private BottomSheetController mBottomSheetController;
 
     private Activity mActivity;
+    private List<LegalMessageLine> mLegalMessageLines;
     private AutofillWalletReminderNoticeBottomSheetCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mLegalMessageLines = List.of(new LegalMessageLine("Test legal message line"));
         mCoordinator =
                 new AutofillWalletReminderNoticeBottomSheetCoordinator(
-                        mActivity, mBottomSheetController);
+                        mActivity, mBottomSheetController, mLegalMessageLines);
     }
 
     @Test
@@ -73,6 +84,17 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
         assertThat(
                 mCoordinator
                         .getPropertyModelForTesting()
+                        .get(AutofillWalletReminderNoticeBottomSheetProperties.LEGAL_MESSAGE),
+                notNullValue());
+        assertThat(
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillWalletReminderNoticeBottomSheetProperties.LEGAL_MESSAGE)
+                        .mLines,
+                equalTo(mLegalMessageLines));
+        assertThat(
+                mCoordinator
+                        .getPropertyModelForTesting()
                         .get(
                                 AutofillWalletReminderNoticeBottomSheetProperties
                                         .ON_GOT_IT_CLICK_ACTION),
@@ -94,6 +116,38 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
                         any(AutofillWalletReminderNoticeBottomSheetContent.class),
                         /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testClickLegalMessageLink_launchesCustomTabIntent() {
+        final String urlString = "https://example.test";
+        LegalMessageLine line =
+                new LegalMessageLine(
+                        "Test legal message",
+                        List.of(
+                                new LegalMessageLine.Link(
+                                        /* start= */ 0, /* end= */ 4, urlString)));
+        mCoordinator =
+                new AutofillWalletReminderNoticeBottomSheetCoordinator(
+                        mActivity, mBottomSheetController, List.of(line));
+        mCoordinator.requestShowContent();
+
+        TextView legalMessageView =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.wallet_reminder_legal_message);
+        assertThat(legalMessageView, notNullValue());
+
+        Spanned spannedText = (Spanned) legalMessageView.getText();
+        ClickableSpan[] spans = spannedText.getSpans(0, spannedText.length(), ClickableSpan.class);
+        assertThat(spans.length, equalTo(1));
+
+        spans[0].onClick(legalMessageView);
+
+        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertThat(intent, notNullValue());
+        assertThat(intent.getData(), equalTo(Uri.parse(urlString)));
+        assertThat(intent.getAction(), equalTo(Intent.ACTION_VIEW));
     }
 
     @Test

@@ -33,6 +33,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -93,7 +94,9 @@ public class AutofillWalletReminderNoticeBottomSheetRenderTest {
                 () -> {
                     mCoordinator =
                             new AutofillWalletReminderNoticeBottomSheetCoordinator(
-                                    mActivityTestRule.getActivity(), mBottomSheetController);
+                                    mActivityTestRule.getActivity(),
+                                    mBottomSheetController,
+                                    createTestLegalMessageLines());
                 });
     }
 
@@ -121,5 +124,37 @@ public class AutofillWalletReminderNoticeBottomSheetRenderTest {
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(
                 bottomSheetView, "autofill_wallet_reminder_notice_bottom_sheet_content");
+    }
+
+    private static List<LegalMessageLine> createTestLegalMessageLines() {
+        LegalMessageLine line1 =
+                new LegalMessageLine(
+                        "Payment methods, loyalty cards, and other passes that you add in Chrome"
+                                + " are saved in Google Wallet.");
+        LegalMessageLine line2 = new LegalMessageLine("");
+        String line3Text =
+                "Depending on your Wallet settings, some of this info can be used to"
+                        + " personalize experiences, as well as improve services through"
+                        + " analytics and measurement. Learn more about how your saved info is"
+                        + " used";
+        LegalMessageLine line3 =
+                new LegalMessageLine(
+                        line3Text,
+                        List.of(
+                                createLink(
+                                        line3Text,
+                                        "Wallet settings",
+                                        "https://wallet.google.com/settings"),
+                                createLink(
+                                        line3Text,
+                                        "Learn more about how your saved info is used",
+                                        "https://support.google.com/wallet")));
+        return List.of(line1, line2, line3);
+    }
+
+    private static LegalMessageLine.Link createLink(String fullText, String linkText, String url) {
+        int start = fullText.indexOf(linkText);
+        assert start != -1 : "Link text not found in full text";
+        return new LegalMessageLine.Link(start, start + linkText.length(), url);
     }
 }

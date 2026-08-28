@@ -25,7 +25,7 @@ class MockAutofillWalletReminderNoticeBottomSheetBridge
             /*window_android=*/nullptr) {}
   ~MockAutofillWalletReminderNoticeBottomSheetBridge() override = default;
 
-  MOCK_METHOD(void, RequestShowContent, (), (override));
+  MOCK_METHOD(void, RequestShowContent, (LegalMessageLines), (override));
 };
 
 class WalletReminderNoticeUiDelegateAndroidTest
@@ -54,7 +54,11 @@ class WalletReminderNoticeUiDelegateAndroidTest
 TEST_F(WalletReminderNoticeUiDelegateAndroidTest, ShowWalletReminderNotice) {
   auto mock_bridge =
       std::make_unique<MockAutofillWalletReminderNoticeBottomSheetBridge>();
-  EXPECT_CALL(*mock_bridge, RequestShowContent()).Times(1);
+  EXPECT_CALL(
+      *mock_bridge,
+      RequestShowContent(testing::ElementsAre(testing::Property(
+          &LegalMessageLine::text, testing::Eq(u"Test Legal Message")))))
+      .Times(1);
 
   delegate()->SetAutofillWalletReminderNoticeBottomSheetBridgeForTesting(
       std::move(mock_bridge));

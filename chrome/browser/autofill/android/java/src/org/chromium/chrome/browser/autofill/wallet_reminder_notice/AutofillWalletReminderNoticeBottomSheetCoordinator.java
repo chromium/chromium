@@ -9,15 +9,21 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.components.autofill.payments.LegalMessage;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.List;
+
 /** Coordinator for assembling and controlling the Wallet Reminder Notice bottom sheet. */
 @NullMarked
 public class AutofillWalletReminderNoticeBottomSheetCoordinator {
+    private final Context mContext;
     private final AutofillWalletReminderNoticeBottomSheetMediator mMediator;
     private final AutofillWalletReminderNoticeBottomSheetView mView;
     private final PropertyModel mModel;
@@ -27,7 +33,10 @@ public class AutofillWalletReminderNoticeBottomSheetCoordinator {
             mModelChangeProcessor;
 
     public AutofillWalletReminderNoticeBottomSheetCoordinator(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            List<LegalMessageLine> legalMessageLines) {
+        mContext = context;
         mView = new AutofillWalletReminderNoticeBottomSheetView(context);
 
         AutofillWalletReminderNoticeBottomSheetContent content =
@@ -42,6 +51,9 @@ public class AutofillWalletReminderNoticeBottomSheetCoordinator {
                         .with(
                                 AutofillWalletReminderNoticeBottomSheetProperties.TITLE,
                                 context.getString(R.string.autofill_wallet_reminder_notice_title))
+                        .with(
+                                AutofillWalletReminderNoticeBottomSheetProperties.LEGAL_MESSAGE,
+                                new LegalMessage(legalMessageLines, this::openLegalMessageLink))
                         .build();
 
         mMediator =
@@ -55,6 +67,10 @@ public class AutofillWalletReminderNoticeBottomSheetCoordinator {
 
     public void requestShowContent() {
         mMediator.requestShowContent();
+    }
+
+    void openLegalMessageLink(String url) {
+        AutofillUiUtils.openLink(mContext, url);
     }
 
     public void destroy() {

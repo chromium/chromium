@@ -37,6 +37,9 @@ import org.chromium.ui.modelutil.PropertyModel;
     }
 
     void onGotItClicked() {
+        if (mIsDestroyed) {
+            return;
+        }
         mBottomSheetController.hideContent(
                 mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
     }

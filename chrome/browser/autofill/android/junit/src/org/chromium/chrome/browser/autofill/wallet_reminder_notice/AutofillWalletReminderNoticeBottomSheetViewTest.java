@@ -24,9 +24,13 @@ import org.robolectric.Robolectric;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.autofill.payments.LegalMessage;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link AutofillWalletReminderNoticeBottomSheetView}. */
@@ -51,8 +55,10 @@ public class AutofillWalletReminderNoticeBottomSheetViewTest {
     public void testViewAccessors() {
         assertThat(mView.getContentView(), notNullValue());
         assertThat(mView.getTitleText(), notNullValue());
+        assertThat(mView.getLegalMessage(), notNullValue());
         assertThat(mView.getGotItButton(), notNullValue());
         assertThat(mView.getTitleText().getId(), equalTo(R.id.wallet_reminder_title));
+        assertThat(mView.getLegalMessage().getId(), equalTo(R.id.wallet_reminder_legal_message));
         assertThat(mView.getGotItButton().getId(), equalTo(R.id.wallet_reminder_button_got_it));
     }
 
@@ -85,6 +91,33 @@ public class AutofillWalletReminderNoticeBottomSheetViewTest {
                         AutofillWalletReminderNoticeBottomSheetProperties.TITLE, testTitle));
 
         assertThat(mView.getTitleText().getText().toString(), equalTo(testTitle));
+    }
+
+    @Test
+    public void testLegalMessage() {
+        LegalMessageLine line =
+                new LegalMessageLine(
+                        "Test legal message with a link.",
+                        List.of(new LegalMessageLine.Link(27, 31, "https://example.com")));
+
+        bind(
+                mModelBuilder.with(
+                        AutofillWalletReminderNoticeBottomSheetProperties.LEGAL_MESSAGE,
+                        new LegalMessage(List.of(line), (url) -> {})));
+
+        assertThat(mView.getLegalMessage().getText(), notNullValue());
+        assertTrue(mView.getLegalMessage().getText().toString().contains("Test legal message"));
+        assertEquals(View.VISIBLE, mView.getLegalMessage().getVisibility());
+    }
+
+    @Test
+    public void testLegalMessage_hiddenWhenEmpty() {
+        bind(
+                mModelBuilder.with(
+                        AutofillWalletReminderNoticeBottomSheetProperties.LEGAL_MESSAGE,
+                        new LegalMessage(Collections.emptyList(), (url) -> {})));
+
+        assertEquals(View.GONE, mView.getLegalMessage().getVisibility());
     }
 
     @Test

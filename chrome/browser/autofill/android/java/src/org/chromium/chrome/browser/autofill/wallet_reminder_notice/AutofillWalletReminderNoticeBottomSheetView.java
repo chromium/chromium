@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** View holder for the Wallet Reminder Notice bottom sheet. */
 @NullMarked
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.autofill.R;
     private final View mContentView;
     private final ImageView mHeaderIcon;
     private final TextView mTitleText;
+    private final TextViewWithClickableSpans mLegalMessage;
     private final Button mGotItButton;
 
     AutofillWalletReminderNoticeBottomSheetView(Context context) {
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.autofill.R;
                         .inflate(R.layout.autofill_wallet_reminder_notice_bottom_sheet, null);
         mHeaderIcon = mContentView.findViewById(R.id.wallet_reminder_header_icon);
         mTitleText = mContentView.findViewById(R.id.wallet_reminder_title);
+        mLegalMessage = mContentView.findViewById(R.id.wallet_reminder_legal_message);
         mGotItButton = mContentView.findViewById(R.id.wallet_reminder_button_got_it);
     }
 
@@ -41,6 +44,10 @@ import org.chromium.chrome.browser.autofill.R;
 
     TextView getTitleText() {
         return mTitleText;
+    }
+
+    TextViewWithClickableSpans getLegalMessage() {
+        return mLegalMessage;
     }
 
     Button getGotItButton() {

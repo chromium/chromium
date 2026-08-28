@@ -25,10 +25,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Collections;
+import java.util.List;
 
 /** Unit tests for {@link AutofillWalletReminderNoticeBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,7 +59,8 @@ public class AutofillWalletReminderNoticeBottomSheetBridgeTest {
 
     @Test
     public void testRequestShowContent() {
-        mBridge.requestShowContent();
+        List<LegalMessageLine> lines = List.of(new LegalMessageLine("Test legal message"));
+        mBridge.requestShowContent(lines);
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -66,12 +71,12 @@ public class AutofillWalletReminderNoticeBottomSheetBridgeTest {
 
     @Test
     public void testRequestShowContent_calledMultipleTimes_destroysPreviousCoordinator() {
-        mBridge.requestShowContent();
+        mBridge.requestShowContent(Collections.emptyList());
         AutofillWalletReminderNoticeBottomSheetCoordinator firstCoordinator =
                 mBridge.getCoordinatorForTesting();
         assertThat(firstCoordinator, notNullValue());
 
-        mBridge.requestShowContent();
+        mBridge.requestShowContent(Collections.emptyList());
         AutofillWalletReminderNoticeBottomSheetCoordinator secondCoordinator =
                 mBridge.getCoordinatorForTesting();
         assertThat(secondCoordinator, notNullValue());
@@ -92,7 +97,7 @@ public class AutofillWalletReminderNoticeBottomSheetBridgeTest {
         AutofillWalletReminderNoticeBottomSheetBridge bridge =
                 new AutofillWalletReminderNoticeBottomSheetBridge(windowWithoutController);
 
-        bridge.requestShowContent();
+        bridge.requestShowContent(Collections.emptyList());
 
         assertThat(bridge.getCoordinatorForTesting(), nullValue());
         windowWithoutController.destroy();
@@ -107,14 +112,14 @@ public class AutofillWalletReminderNoticeBottomSheetBridgeTest {
                 new AutofillWalletReminderNoticeBottomSheetBridge(window);
         window.destroy();
 
-        bridge.requestShowContent();
+        bridge.requestShowContent(Collections.emptyList());
 
         assertThat(bridge.getCoordinatorForTesting(), nullValue());
     }
 
     @Test
     public void testDestroy() {
-        mBridge.requestShowContent();
+        mBridge.requestShowContent(Collections.emptyList());
         assertThat(mBridge.getCoordinatorForTesting(), notNullValue());
 
         mBridge.destroy();

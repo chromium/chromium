@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_wallet_reminder_notice_bottom_sheet_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "components/autofill/android/payments/legal_message_line_android.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that declare env/types.
@@ -32,11 +33,13 @@ AutofillWalletReminderNoticeBottomSheetBridge::
   }
 }
 
-void AutofillWalletReminderNoticeBottomSheetBridge::RequestShowContent() {
+void AutofillWalletReminderNoticeBottomSheetBridge::RequestShowContent(
+    LegalMessageLines legal_message_lines) {
   if (java_object_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_AutofillWalletReminderNoticeBottomSheetBridge_requestShowContent(
-        env, java_object_);
+        env, java_object_,
+        LegalMessageLineAndroid::ConvertToJavaLinkedList(legal_message_lines));
   }
 }
 

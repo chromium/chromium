@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 
 namespace ui {
 class WindowAndroid;
@@ -28,8 +29,8 @@ class AutofillWalletReminderNoticeBottomSheetBridge {
 
   virtual ~AutofillWalletReminderNoticeBottomSheetBridge();
 
-  // Requests to show the bottom sheet notice.
-  virtual void RequestShowContent();
+  // Requests to show the bottom sheet notice with the provided legal messages.
+  virtual void RequestShowContent(LegalMessageLines legal_message_lines);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

@@ -8,12 +8,16 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.List;
 
 /** JNI bridge entry point to show the Wallet Reminder Notice bottom sheet. */
 @JNINamespace("autofill")
@@ -28,7 +32,8 @@ public class AutofillWalletReminderNoticeBottomSheetBridge {
     }
 
     @CalledByNative
-    public void requestShowContent() {
+    public void requestShowContent(
+            @JniType("std::vector") List<LegalMessageLine> legalMessageLines) {
         Context context = mWindowAndroid.getContext().get();
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(mWindowAndroid);
@@ -42,7 +47,7 @@ public class AutofillWalletReminderNoticeBottomSheetBridge {
 
         mCoordinator =
                 new AutofillWalletReminderNoticeBottomSheetCoordinator(
-                        context, bottomSheetController);
+                        context, bottomSheetController, legalMessageLines);
         mCoordinator.requestShowContent();
     }
 
