@@ -26,9 +26,6 @@ OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(source, kOnDeviceInternalsResources,
                               IDR_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_HTML);
 
-  source->AddBoolean("isManifestBrokerEnabled",
-                     base::FeatureList::IsEnabled(
-                         optimization_guide::kOptimizationGuideManifestBroker));
   source->AddBoolean("useChromeOSModelService",
                      BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE));
 }

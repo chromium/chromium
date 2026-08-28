@@ -18,10 +18,6 @@ const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";
 
-// Overrides the on-device model adaptation file paths for on-device model
-// execution.
-const char kOnDeviceModelAdaptationsOverride[] =
-    "optimization-guide-ondevice-model-adaptations-override";
 
 // Overrides the model quality service URL.
 const char kModelQualityServiceURL[] = "model-quality-service-url";

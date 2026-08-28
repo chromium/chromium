@@ -7,16 +7,19 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
@@ -25,10 +28,17 @@
 
 namespace optimization_guide {
 
-// Files expected to be in the on device model adaptation bundle.
-inline constexpr base::FilePath::CharType
-    kOnDeviceModelAdaptationWeightsFile[] =
-        FILE_PATH_LITERAL("adaptation_weights.bin");
+struct OnDeviceBaseModelSpec {
+  bool operator==(const OnDeviceBaseModelSpec& other) const = default;
+
+  // The name of the base model currently available on-device.
+  std::string model_name;
+  // The version of the base model currently available on-device.
+  std::string model_version;
+  // The selected performance hint for this device and base model.
+  proto::OnDeviceModelPerformanceHint selected_performance_hint =
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED;
+};
 
 class OnDeviceModelFeatureAdapter;
 class OnDeviceModelMetadata;

@@ -14,7 +14,6 @@
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
 namespace component_updater {
 
@@ -35,13 +34,6 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
   static void UpdateOnDemand(const std::string& id,
                              OnDemandUpdater::Priority priority);
 };
-
-// Returns the extension ID for the optimization guide on-device models.
-std::string GetOptimizationGuideOnDeviceModelExtensionId();
-
-std::unique_ptr<
-    optimization_guide::OnDeviceModelComponentStateManager::Delegate>
-CreateOptimizationGuideOnDeviceModelComponentDelegate();
 
 // Creates a generic delegate for Manifest Component.
 std::unique_ptr<optimization_guide::ManifestAssetManager::Delegate>

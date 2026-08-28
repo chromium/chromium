@@ -60,9 +60,6 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
-#include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -109,9 +106,7 @@ namespace {
 using ::optimization_guide::ModelBasedCapabilityKey;
 using ::optimization_guide::ModelExecutionFeaturesController;
 using ::optimization_guide::ModelExecutionManager;
-using ::optimization_guide::OnDeviceModelComponentStateManager;
 using ::optimization_guide::OnDeviceModelPerformanceClass;
-using ::optimization_guide::OnDeviceModelServiceController;
 
 // Used to override the value of `version_info::IsOfficialBuild()` for tests.
 std::optional<bool> g_is_official_build_for_testing;

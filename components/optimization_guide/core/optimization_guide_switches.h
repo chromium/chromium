@@ -31,9 +31,6 @@ extern const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask();
 
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kOnDeviceModelAdaptationsOverride[];
 
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

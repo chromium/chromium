@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
+
 namespace optimization_guide {
 
 // LINT.IfChange(OnDeviceBaseModelEnum)
@@ -46,6 +48,23 @@ OnDeviceBaseModel ConvertComponentKeyToEnum(const std::string& key);
 // These must remain in sync with BaseModel variants in
 // tools/metrics/histograms/metadata/optimization/histograms.xml.
 std::string ConvertComponentKeyToUmaModelName(const std::string& key);
+
+// Files expected to be in the on-device model bundle.
+inline constexpr base::FilePath::CharType kWeightsFile[] =
+    FILE_PATH_LITERAL("weights.bin");
+inline constexpr base::FilePath::CharType kWeightCacheFile[] =
+    FILE_PATH_LITERAL("cache.bin");
+inline constexpr base::FilePath::CharType kEncoderCacheFile[] =
+    FILE_PATH_LITERAL("encoder_cache.bin");
+inline constexpr base::FilePath::CharType kAdapterCacheFile[] =
+    FILE_PATH_LITERAL("adapter_cache.bin");
+inline constexpr base::FilePath::CharType kProgramCacheFile[] =
+    FILE_PATH_LITERAL("program_cache.bin");
+inline constexpr base::FilePath::CharType kOnDeviceModelExecutionConfigFile[] =
+    FILE_PATH_LITERAL("on_device_model_execution_config.pb");
+inline constexpr base::FilePath::CharType
+    kOnDeviceModelAdaptationWeightsFile[] =
+        FILE_PATH_LITERAL("adaptation_weights.bin");
 
 }  // namespace optimization_guide
 

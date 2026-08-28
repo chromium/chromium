@@ -24,7 +24,6 @@
 #import "components/optimization_guide/core/hints/top_host_provider.h"
 #import "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #import "components/optimization_guide/core/model_execution/model_execution_manager.h"
-#import "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_logger.h"

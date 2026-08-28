@@ -22,7 +22,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/stringprintf.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"  // nogncheck
-#import "components/optimization_guide/core/model_execution/on_device_model_component.h"  // nogncheck
 #import "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"  // nogncheck
 #import "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"  // nogncheck
 #import "components/optimization_guide/core/optimization_guide_features.h"  // nogncheck

@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/on_device_internals/on_device_internals_crx_component.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
-#include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,7 +34,6 @@ class PageHandler : public mojom::PageHandler,
   PageHandler& operator=(const PageHandler&) = delete;
 
  private:
-  friend OnDeviceInternalsCrxObserver;
   using Service = on_device_model::mojom::OnDeviceModelService;
   Service& GetService();
 
@@ -44,10 +41,6 @@ class PageHandler : public mojom::PageHandler,
   using PlatformService = on_device_model::mojom::OnDeviceModelPlatformService;
   PlatformService& GetPlatformService();
 #endif
-
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  optimization_guide::ModelBrokerState* GetModelBrokerState();
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   void OnModelAssetsLoaded(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
@@ -71,13 +64,8 @@ class PageHandler : public mojom::PageHandler,
   void GetDeviceAndPerformanceInfo(
       GetDeviceAndPerformanceInfoCallback callback) override;
   void GetDefaultModelPath(GetDefaultModelPathCallback callback) override;
-  void UninstallDefaultModel() override;
-  void GetPageData(GetPageDataCallback callback) override;
-  void SetFeatureRecentlyUsedState(int feature_key,
-                                   bool is_recently_used) override;
   void DecodeBitmap(mojo_base::BigBuffer image_buffer,
                     DecodeBitmapCallback callback) override;
-  void ResetModelCrashCount() override;
   void BindModelBrokerDebug(
       mojo::PendingReceiver<optimization_guide::mojom::ModelBrokerDebug>
           receiver) override;
@@ -90,31 +78,12 @@ class PageHandler : public mojom::PageHandler,
                          int source_line,
                          const std::string& message) override;
 
-  // Called when model info is received. Populates `page_data` with the model
-  // info and starts gathering DevicePerformanceInfo.
-  void OnReceivedModelInfoForPageData(GetPageDataCallback callback,
-                                      mojom::PageDataPtr page_data,
-                                      mojom::BaseModelInfoPtr model_info);
-
-  // Called when device performance info is received. Populates `page_data` with
-  // the performance info and passes it off to `callback`.
-  void OnReceivedPerformanceInfoForPageData(
-      GetPageDataCallback callback,
-      mojom::PageDataPtr page_data,
-      on_device_model::mojom::DevicePerformanceInfoPtr perf_info,
-      on_device_model::mojom::DeviceInfoPtr device_info);
-
-  // Called by the `download_observer_` to report progress to
-  void SendDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
-
   mojo::Receiver<mojom::PageHandler> receiver_;
   mojo::Remote<mojom::Page> page_;
 
   mojo::Remote<Service> service_;
   on_device_model::mojom::DevicePerformanceInfoPtr perf_info_;
   on_device_model::mojom::DeviceInfoPtr device_info_;
-
-  OnDeviceInternalsCrxObserver download_observer_{*this};
 
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
   mojo::Remote<PlatformService> platform_service_;

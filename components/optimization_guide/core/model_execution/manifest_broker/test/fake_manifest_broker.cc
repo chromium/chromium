@@ -6,9 +6,25 @@
 
 #include "base/test/test_future.h"
 #include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
+
+ScopedModelBrokerFeatureList::ScopedModelBrokerFeatureList() {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kOptimizationGuideModelExecution, {}},
+       {features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "0"}}}},
+      {});
+}
+ScopedModelBrokerFeatureList::~ScopedModelBrokerFeatureList() = default;
+
+ModelBrokerPrefService::ModelBrokerPrefService() {
+  model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
+}
+ModelBrokerPrefService::~ModelBrokerPrefService() = default;
 
 FakeManifestBroker::FakeManifestBroker() = default;
 FakeManifestBroker::~FakeManifestBroker() = default;

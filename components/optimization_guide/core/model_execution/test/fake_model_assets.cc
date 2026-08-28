@@ -11,9 +11,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -109,11 +108,6 @@ base::DictValue FakeBaseModelAsset::Manifest() const {
                                         supported_performance_hints_.Clone()));
 }
 
-void FakeBaseModelAsset::SetReadyIn(
-    OnDeviceModelComponentStateManager& manager) const {
-  manager.SetReady(base::Version(version()), path(), Manifest());
-}
-
 proto::OnDeviceBaseModelMetadata FakeBaseModelAsset::DefaultSpec() {
   proto::OnDeviceBaseModelMetadata result;
   result.set_base_model_version("0.0.1");
@@ -139,12 +133,11 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
   }
   std::vector<base::FilePath> additional_files = {config_path};
   if (content.weight) {
-    paths_ = std::make_unique<on_device_model::AdaptationAssetPaths>();
-    paths_->weights =
+    base::FilePath weights_path =
         temp_dir_.GetPath().Append(kOnDeviceModelAdaptationWeightsFile);
-    CHECK(base::WriteFile(paths_->weights,
+    CHECK(base::WriteFile(weights_path,
                           base::NumberToString(content.weight.value())));
-    additional_files.push_back(paths_->weights);
+    additional_files.push_back(weights_path);
   }
   model_info_ = {
       .model_file_path = base::FilePath::FromUTF8Unsafe(kTestAbsoluteFilePath),
@@ -152,17 +145,8 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
       .version = version(),
       .model_metadata = AnyWrapProto(content.metadata),
   };
-  metadata_ = std::make_unique<OnDeviceModelAdaptationMetadata>(
-      paths_.get(), version(),
-      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
-          std::move(content.config)));
 }
 FakeAdaptationAsset::~FakeAdaptationAsset() = default;
-
-void FakeAdaptationAsset::SendTo(
-    OnDeviceModelServiceController& controller) const {
-  controller.MaybeUpdateModelAdaptation(feature(), metadata());
-}
 
 FakeLanguageModelAsset::FakeLanguageModelAsset() {
   CHECK(temp_dir_.CreateUniqueTempDir());

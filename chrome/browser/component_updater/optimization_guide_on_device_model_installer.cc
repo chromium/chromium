@@ -39,7 +39,6 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
@@ -51,7 +50,6 @@ namespace component_updater {
 namespace {
 
 // Extension id is fklghjjljmnfjoepjmlobpekiapffcja.
-constexpr char kManifestName[] = "Optimization Guide On Device Model";
 constexpr base::FilePath::CharType kInstallationRelativePath[] =
     FILE_PATH_LITERAL("OptGuideOnDeviceModel");
 constexpr uint8_t kPublicKeySHA256[32] = {
@@ -144,166 +142,6 @@ void GetComponentFreeDiskSpace(
       std::move(callback));
 #endif
 }
-
-// Legacy Installer policy for the On-Device Base Model.
-class OptimizationGuideOnDeviceBaseModelInstallerPolicy final
-    : public OptimizationGuideOnDeviceModelInstallerPolicy {
- public:
-  // `state_manager` has the lifetime till all profiles are closed. It could
-  // slightly vary from lifetime of `this` which runs in separate task runner,
-  // and could get destroyed slightly later than `state_manager`.
-  explicit OptimizationGuideOnDeviceBaseModelInstallerPolicy(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          state_manager,
-      optimization_guide::OnDeviceModelRegistrationAttributes attributes)
-      : state_manager_(state_manager), attributes_(std::move(attributes)) {}
-  ~OptimizationGuideOnDeviceBaseModelInstallerPolicy() override = default;
-
-  void OnCustomUninstall() final {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&optimization_guide::OnDeviceModelComponentStateManager::
-                           UninstallComplete,
-                       state_manager_));
-  }
-
-  bool VerifyInstallation(const base::DictValue& manifest,
-                          const base::FilePath& install_dir) const final {
-    return optimization_guide::OnDeviceModelComponentStateManager::
-        VerifyInstallation(install_dir, manifest);
-  }
-
-  void ComponentReady(const base::Version& version,
-                      const base::FilePath& install_dir,
-                      base::DictValue manifest) final {
-    if (state_manager_) {
-      state_manager_->SetReady(version, install_dir, manifest);
-    }
-  }
-
-  base::FilePath GetRelativeInstallDir() const override {
-    return base::FilePath(kInstallationRelativePath);
-  }
-
-  void GetHash(std::vector<uint8_t>* hash) const override {
-    hash->assign_range(kPublicKeySHA256);
-  }
-
-  std::string GetName() const override { return kManifestName; }
-  update_client::InstallerAttributes GetInstallerAttributes() const override {
-    using Hint = optimization_guide::proto::OnDeviceModelPerformanceHint;
-    return {
-        {"cpu_support", attributes_.supported_hints.contains(
-                            Hint::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU)
-                            ? "yes"
-                            : "no"},
-        {"highest_quality_support",
-         attributes_.supported_hints.contains(
-             Hint::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY)
-             ? "yes"
-             : "no"},
-        {"fastest_inference_support",
-         attributes_.supported_hints.contains(
-             Hint::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE)
-             ? "yes"
-             : "no"},
-    };
-  }
-
-  static const std::string GetOnDeviceModelExtensionId() {
-    return crx_file::id_util::GenerateIdFromHash(kPublicKeySHA256);
-  }
-
- private:
-  // The on-device state manager should be accessed in the UI thread.
-  base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-      state_manager_;
-  const optimization_guide::OnDeviceModelRegistrationAttributes attributes_;
-};
-
-class OnDeviceModelComponentStateManagerDelegate final
-    : public optimization_guide::OnDeviceModelComponentStateManager::Delegate {
- public:
-  OnDeviceModelComponentStateManagerDelegate() = default;
-  ~OnDeviceModelComponentStateManagerDelegate() override = default;
-
-  base::FilePath GetInstallDirectory() override {
-    return GetComponentInstallDirectory();
-  }
-
-  void GetFreeDiskSpace(const base::FilePath& path,
-                        base::OnceCallback<void(std::optional<base::ByteSize>)>
-                            callback) override {
-#if BUILDFLAG(CHROME_FOR_TESTING)
-    // No need for free disk space check in CfT, so invoke the callback
-    // asynchronously so that large size on device components are updated after
-    // all other components.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::ByteSize::Max()));
-#else
-    GetComponentFreeDiskSpace(path, std::move(callback));
-#endif
-  }
-
-  void RegisterInstaller(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          state_manager,
-      optimization_guide::OnDeviceModelRegistrationAttributes attributes)
-      override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!g_browser_process) {
-      return;
-    }
-    ComponentUpdateService* cus = g_browser_process->component_updater();
-    auto register_callback = base::BindOnce(
-        [](base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-               state_manager,
-           ComponentUpdateService* cus, const std::string& extension_id) {
-          if (state_manager) {
-            state_manager->InstallerRegistered(
-                IsModelAlreadyInstalled(cus, extension_id));
-          }
-        },
-        state_manager, cus, GetComponentId());
-    base::MakeRefCounted<ComponentInstaller>(
-        CreateInstallerPolicy(state_manager, std::move(attributes)))
-        ->Register(cus, std::move(register_callback));
-  }
-
-  void Uninstall(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          state_manager) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    base::MakeRefCounted<ComponentInstaller>(
-        CreateInstallerPolicy(
-            state_manager,
-            optimization_guide::OnDeviceModelRegistrationAttributes({})))
-        ->Uninstall();
-  }
-
-  void RequestUpdate(bool is_background) override {
-    OnDemandUpdater::Priority priority = OnDemandUpdater::Priority::FOREGROUND;
-    if (is_background) {
-      priority = OnDemandUpdater::Priority::BACKGROUND;
-    }
-    OptimizationGuideOnDeviceBaseModelInstallerPolicy::UpdateOnDemand(
-        GetComponentId(), priority);
-  }
-
-  std::string GetComponentId() override {
-    return OptimizationGuideOnDeviceBaseModelInstallerPolicy::
-        GetOnDeviceModelExtensionId();
-  }
-
- private:
-  std::unique_ptr<ComponentInstallerPolicy> CreateInstallerPolicy(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          state_manager,
-      optimization_guide::OnDeviceModelRegistrationAttributes attributes) {
-    return std::make_unique<OptimizationGuideOnDeviceBaseModelInstallerPolicy>(
-        state_manager, std::move(attributes));
-  }
-};
 
 // A generic component installer policy for Manifest Component.
 class ManifestComponentsInstallerPolicy final
@@ -608,17 +446,6 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
                      << std::to_underlying(error);
         }
       }));
-}
-
-std::unique_ptr<
-    optimization_guide::OnDeviceModelComponentStateManager::Delegate>
-CreateOptimizationGuideOnDeviceModelComponentDelegate() {
-  return std::make_unique<OnDeviceModelComponentStateManagerDelegate>();
-}
-
-std::string GetOptimizationGuideOnDeviceModelExtensionId() {
-  return OptimizationGuideOnDeviceBaseModelInstallerPolicy::
-      GetOnDeviceModelExtensionId();
 }
 
 std::unique_ptr<optimization_guide::ManifestAssetManager::Delegate>

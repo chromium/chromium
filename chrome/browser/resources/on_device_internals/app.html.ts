@@ -17,13 +17,7 @@ export function getHtml(this: OnDeviceInternalsAppElement) {
   <on-device-internals-tools class="tab-contents"></on-device-internals-tools>
   <on-device-internals-event-log class="tab-contents">
   </on-device-internals-event-log>
-  ${this.isManifestBrokerEnabled_ ? '' : html`
-  <on-device-internals-model-status class="tab-contents">
-  </on-device-internals-model-status>`}
-  ${
-      this.isManifestBrokerEnabled_ ? html`
   <on-device-internals-broker-state class="tab-contents">
-  </on-device-internals-broker-state>` :
-                                      ''}
+  </on-device-internals-broker-state>
 </cr-page-selector>`;
 }

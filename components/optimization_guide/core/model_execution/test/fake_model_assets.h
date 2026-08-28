@@ -13,16 +13,14 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
+#include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 namespace optimization_guide {
-
-class OnDeviceModelComponentStateManager;
 
 // Base model files and metadata suitable for a FakeOnDeviceModelService.
 class FakeBaseModelAsset {
@@ -59,9 +57,6 @@ class FakeBaseModelAsset {
   // Returns a fake manifest content for this asset.
   base::DictValue Manifest() const;
 
-  // Pass this asset to manager->SetReady.
-  void SetReadyIn(OnDeviceModelComponentStateManager& manager) const;
-
   // Constructs metadata compatible with the default constructed asset.
   static proto::OnDeviceBaseModelMetadata DefaultSpec();
 
@@ -85,11 +80,8 @@ class FakeAdaptationAsset {
 
   int64_t version() const { return 12345; }
   mojom::OnDeviceFeature feature() const { return feature_; }
-  OnDeviceModelAdaptationMetadata metadata() const { return *metadata_; }
 
   const ModelInfo& model_info() const { return model_info_; }
-
-  void SendTo(OnDeviceModelServiceController& controller) const;
 
   base::FilePath dir() { return temp_dir_.GetPath(); }
 
@@ -97,8 +89,6 @@ class FakeAdaptationAsset {
   base::ScopedTempDir temp_dir_;
   mojom::OnDeviceFeature feature_;
   ModelInfo model_info_;
-  std::unique_ptr<on_device_model::AdaptationAssetPaths> paths_;
-  std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata_;
 };
 
 // Language model files and metadata suitable for a FakeOnDeviceModelService.

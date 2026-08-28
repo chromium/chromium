@@ -7,15 +7,8 @@
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/delivery/model_provider_registry.h"
-#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
-#include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
-#include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
-#include "components/optimization_guide/core/model_execution/test/request_builder.h"
-#include "components/optimization_guide/core/model_execution/test/response_holder.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,46 +38,43 @@ TEST(ModelBrokerClientTest, DisconnectedClient) {
 TEST(ModelBrokerClientTest, PendingClient) {
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
-  FakeAdaptationAsset fake_asset({.config = SimpleComposeConfig()});
-  FakeModelBroker fake_broker({});
-  fake_broker.UpdateModelAdaptation(fake_asset);
+  FakeManifestBroker broker;
+  ScenarioBuilder::MinimalTestScenario(broker.component_state());
+  broker.component_state().SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+  broker.Startup();
 
-  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
-                           logger.GetWeakPtr());
+  auto& client = broker.client();
   EXPECT_FALSE(client.HasSubscriber(mojom::OnDeviceFeature::kTest));
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  // Requesting test feature, but only compose has assets.
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
 
-  base::test::RunUntil([&]() {
+  EXPECT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(client.HasSubscriber(mojom::OnDeviceFeature::kTest));
+
+  broker.component_state().SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kHealthy);
+  ASSERT_TRUE(future.Take());
 }
 
 // Verify that CreateSession works when all the assets are provided.
 TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
-  FakeAdaptationAsset fake_asset({
-      .config =
-          []() {
-            auto config = SimpleComposeConfig();
-            config.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-            config.set_can_skip_text_safety(true);
-            return config;
-          }(),
-  });
-  FakeModelBroker fake_broker({});
-  fake_broker.UpdateModelAdaptation(fake_asset);
+  FakeManifestBroker broker;
+  ScenarioBuilder::MinimalTestScenario(broker.component_state());
+  broker.Startup();
+  broker.client().RequestAssetsFor("test");
+  task_environment_.RunUntilIdle();
 
-  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
-                           logger.GetWeakPtr());
+  auto& client = broker.client();
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
 
   // Requesting the feature we've provided assets for should succeed.
@@ -98,20 +88,13 @@ TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
 TEST(ModelBrokerClientTest, ReadyWithUseCaseClient) {
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
-  FakeAdaptationAsset fake_asset({
-      .config =
-          []() {
-            auto config = SimpleComposeConfig();
-            config.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-            config.set_can_skip_text_safety(true);
-            return config;
-          }(),
-  });
-  FakeModelBroker fake_broker({});
-  fake_broker.UpdateModelAdaptation(fake_asset);
+  FakeManifestBroker broker;
+  ScenarioBuilder::MinimalTestScenario(broker.component_state());
+  broker.Startup();
+  broker.client().RequestAssetsFor("test");
+  task_environment_.RunUntilIdle();
 
-  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
-                           logger.GetWeakPtr());
+  auto& client = broker.client();
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
 
   // Requesting the feature via its use case name "test" should succeed.
@@ -120,15 +103,16 @@ TEST(ModelBrokerClientTest, ReadyWithUseCaseClient) {
 }
 
 TEST(ModelBrokerClientTest, GetConfigNulloptWhenNotSet) {
-  base::test::TaskEnvironment task_environment_;
-  OptimizationGuideLogger logger;
-  FakeModelBroker fake_broker({});
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  FakeManifestBroker broker;
+  ScenarioBuilder(broker.component_state()).Finish();
+  broker.Startup();
 
-  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
-                           logger.GetWeakPtr());
-
+  auto& client = broker.client();
   base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> future;
   client.GetConfig(mojom::OnDeviceFeature::kTest, future.GetCallback());
+
   auto result = future.Take();
   EXPECT_FALSE(result.has_value());
 }
@@ -139,35 +123,17 @@ TEST(ModelBrokerClientTest, GetConfigNulloptWhenNotSet) {
 TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  OptimizationGuideLogger logger;
-  // Note: We pass a compose asset here, so the kTest feature will still be in
-  // kPendingAsset status.
-  FakeAdaptationAsset fake_asset{{
-      .config = SimpleComposeConfig(),
-  }};
-  FakeModelBroker broker({});
-  broker.UpdateModelAdaptation(fake_asset);
+  FakeManifestBroker broker;
+  // Start up with no test solution in manifest.
+  ScenarioBuilder(broker.component_state()).Finish();
+  broker.Startup();
 
-  mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
-  ModelBrokerClient broker_client(broker.BindAndPassRemote(),
-                                  logger.GetWeakPtr());
-
+  auto& client = broker.client();
   base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
-  broker_client.CreateSession(mojom::OnDeviceFeature::kTest,
-                              SessionConfigParams{},
-                              session_future.GetCallback());
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       session_future.GetCallback());
 
-  // Session should not resolve yet, because test adaptation asset has a
-  // kUpdatePending status.
-  task_environment.FastForwardBy(base::Hours(1));
-  ASSERT_FALSE(session_future.IsReady());
-
-  // Emulate receiving info that a adaptation is not available from server.
-  // Provider removes the target when the server says no matching model is
-  // available.
-  broker.model_provider().RemoveModel(
-      GetOptimizationTargetForFeature(mojom::OnDeviceFeature::kTest));
-
+  task_environment.RunUntilIdle();
   // Session should resolve to unavailable.
   auto session = session_future.Take();
   ASSERT_FALSE(session);
