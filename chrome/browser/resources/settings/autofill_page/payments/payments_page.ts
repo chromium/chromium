@@ -443,8 +443,6 @@ export class SettingsPaymentsPageElement extends
     e.preventDefault();
 
     MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
-        'Autofill.PaymentMethodsSettingsPage.AddCardClicked2', true);
-    MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
         'Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2',
         this.creditCards.length === 0);
 

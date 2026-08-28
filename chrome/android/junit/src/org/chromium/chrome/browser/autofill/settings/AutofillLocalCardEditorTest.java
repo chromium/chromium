@@ -781,19 +781,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    public void testRecordHistogram_whenAddCardFlowStarted() {
-        // Expect histogram to record add card flow.
-        HistogramWatcher addCardFlowHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(AutofillLocalCardEditor.ADD_CARD_FLOW_HISTOGRAM, true)
-                        .build();
-        initFragment(null);
-
-        addCardFlowHistogram.assertExpected();
-    }
-
-    @Test
-    @MediumTest
     public void testRecordHistogram_whenAddCardFlowStartedWithoutExistingCards() {
         // Expect histogram to record true for entering the add card flow without existing cards.
         HistogramWatcher addCardFlowWithoutExistingCardsHistogram =
@@ -833,7 +820,6 @@ public class AutofillLocalCardEditorTest {
         // not be recorded.
         HistogramWatcher addCardFlowHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords(AutofillLocalCardEditor.ADD_CARD_FLOW_HISTOGRAM)
                         .expectNoRecords(
                                 AutofillLocalCardEditor
                                         .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM)

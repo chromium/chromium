@@ -269,9 +269,6 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
 
     await verifyBooleanHistogramRecorded(
         testMetricsBrowserProxy,
-        'Autofill.PaymentMethodsSettingsPage.AddCardClicked2', true);
-    await verifyBooleanHistogramRecorded(
-        testMetricsBrowserProxy,
         'Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2',
         true);
   });
