@@ -773,8 +773,7 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   }
 
   if (base::FeatureList::IsEnabled(features::kDirectCompositorThreadIpc) &&
-      !for_web_tests && params.embedder_params->compositor_task_runner &&
-      mojo::IsDirectReceiverSupported()) {
+      !for_web_tests && params.embedder_params->compositor_task_runner) {
     params.embedder_params->use_direct_client_receiver = true;
   }
 

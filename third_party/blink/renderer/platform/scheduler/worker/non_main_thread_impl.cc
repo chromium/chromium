@@ -56,8 +56,7 @@ NonMainThreadImpl::NonMainThreadImpl(const ThreadCreationParams& params)
 
   base::MessagePumpType message_pump_type = base::MessagePumpType::DEFAULT;
   if (params.thread_type == ThreadType::kCompositorThread &&
-      base::FeatureList::IsEnabled(features::kDirectCompositorThreadIpc) &&
-      mojo::IsDirectReceiverSupported()) {
+      base::FeatureList::IsEnabled(features::kDirectCompositorThreadIpc)) {
     message_pump_type = base::MessagePumpType::IO;
   }
   thread_ = std::make_unique<SimpleThreadImpl>(

@@ -102,9 +102,8 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   // IOWatcher like MessagePumpAndroid.
   const bool should_use_io_pump =
       features::IsVizWithIoMessagePumpEnabled() ||
-      (mojo::IsDirectReceiverSupported() &&
-       (features::IsVizDirectCompositorThreadIpcNonRootEnabled() ||
-        features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled()));
+      features::IsVizDirectCompositorThreadIpcNonRootEnabled() ||
+      features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled();
   if (should_use_io_pump) {
     thread_options.message_pump_type = base::MessagePumpType::IO;
   }
