@@ -447,6 +447,26 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
+                       RapidTabSwitchDuringButtonAnimationDoesNotCrash) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      // Switch tabs back and forth to ensure layer animations and drop shadow
+      // tear down cleanly across active tab changes.
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      SelectTab(kTabStripElementId, 1),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      SelectTab(kTabStripElementId, 1),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        HideButtonWhenNotAssociatedToTask) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),

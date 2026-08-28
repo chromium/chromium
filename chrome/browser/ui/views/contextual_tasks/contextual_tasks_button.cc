@@ -47,6 +47,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -273,9 +274,7 @@ ContextualTasksButton::ContextualTasksButton(
 }
 
 ContextualTasksButton::~ContextualTasksButton() {
-  if (drop_shadow_painted_layer_) {
-    views::View::RemoveLayerFromRegions(drop_shadow_painted_layer_->layer());
-  }
+  ClearDropShadow();
 }
 
 float ContextualTasksButton::GetCornerRadiusFor(
@@ -491,10 +490,13 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
                               true);
     MaybeShowFeaturePromo();
   } else {
-    SetVisible(will_be_visible);
-    if (was_visible && !will_be_visible) {
+    if (!will_be_visible) {
+      if (layer() && layer()->GetAnimator()) {
+        layer()->GetAnimator()->AbortAllAnimations();
+      }
       ClearDropShadow();
     }
+    SetVisible(will_be_visible);
   }
 }
 
@@ -570,7 +572,12 @@ void ContextualTasksButton::AnimateShow() {
 
 void ContextualTasksButton::ClearDropShadow() {
   if (drop_shadow_painted_layer_) {
-    views::View::RemoveLayerFromRegions(drop_shadow_painted_layer_->layer());
+    if (auto* drop_shadow_layer = drop_shadow_painted_layer_->layer()) {
+      if (drop_shadow_layer->GetAnimator()) {
+        drop_shadow_layer->GetAnimator()->AbortAllAnimations();
+      }
+      views::View::RemoveLayerFromRegions(drop_shadow_layer);
+    }
     drop_shadow_painted_layer_.reset();
   }
 }
