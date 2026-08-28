@@ -2778,10 +2778,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
   EXPECT_EQ(1u, query_result.size());
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Tester class for the tabs.zoom* api functions.
-// TODO(https://crbug.com/505313377): Port these to desktop android. Currently,
-// zoom controllers are not created for tabs, so the functions always return
-// an error.
 class ExtensionTabsZoomTest : public ExtensionTabsTest {
  public:
   void SetUpOnMainThread() override;
@@ -2968,6 +2967,10 @@ double GetZoomLevel(const content::WebContents* web_contents) {
   return zoom::ZoomController::FromWebContents(web_contents)->GetZoomLevel();
 }
 
+double GetZoomFactor(const content::WebContents* web_contents) {
+  return blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents));
+}
+
 content::OpenURLParams GetOpenParams(const char* url) {
   return content::OpenURLParams(GURL(url), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -2981,21 +2984,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, SetAndGetZoom) {
   content::WebContents* web_contents = OpenUrlAndWaitForLoad(params.url);
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
+  const double default_zoom_factor = GetZoomFactor(web_contents);
+
   // Test default values before we set anything.
   double zoom_factor = -1;
   EXPECT_TRUE(RunGetZoom(tab_id, &zoom_factor));
-  EXPECT_EQ(1.0, zoom_factor);
+  EXPECT_FLOAT_EQ(default_zoom_factor, zoom_factor);
 
   // Test chrome.tabs.setZoom().
   const double kZoomLevel = 0.8;
   EXPECT_TRUE(RunSetZoom(tab_id, kZoomLevel));
-  EXPECT_EQ(kZoomLevel,
-            blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents)));
+  EXPECT_FLOAT_EQ(kZoomLevel * default_zoom_factor,
+                  GetZoomFactor(web_contents));
 
   // Test chrome.tabs.getZoom().
   zoom_factor = -1;
   EXPECT_TRUE(RunGetZoom(tab_id, &zoom_factor));
-  EXPECT_EQ(kZoomLevel, zoom_factor);
+  EXPECT_FLOAT_EQ(kZoomLevel * default_zoom_factor, zoom_factor);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, GetDefaultZoom) {
@@ -3050,7 +3055,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, SetToDefaultZoom) {
   EXPECT_TRUE(RunSetZoom(tab_id, 0.0));
   EXPECT_TRUE(RunGetZoom(tab_id, &observed_zoom_factor));
   EXPECT_TRUE(blink::ZoomValuesEqual(
-      new_default_zoom_level,
+      GetZoomLevel(web_contents),
       blink::ZoomFactorToZoomLevel(observed_zoom_factor)));
 }
 
@@ -3078,49 +3083,44 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, ZoomSettings) {
   int tab_id_A2 = ExtensionTabUtil::GetTabId(web_contents_A2);
   int tab_id_B = ExtensionTabUtil::GetTabId(web_contents_B);
 
-  ASSERT_FLOAT_EQ(1.f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
-  ASSERT_FLOAT_EQ(1.f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
-  ASSERT_FLOAT_EQ(1.f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_B)));
+  const double default_zoom_factor = GetZoomFactor(web_contents_A1);
+
+  ASSERT_FLOAT_EQ(default_zoom_factor, GetZoomFactor(web_contents_A1));
+  ASSERT_FLOAT_EQ(default_zoom_factor, GetZoomFactor(web_contents_A2));
+  ASSERT_FLOAT_EQ(default_zoom_factor, GetZoomFactor(web_contents_B));
 
   // Test per-origin automatic zoom settings.
   EXPECT_TRUE(RunSetZoom(tab_id_B, 1.f));
   EXPECT_TRUE(RunSetZoom(tab_id_A2, 1.1f));
-  EXPECT_FLOAT_EQ(1.1f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
-  EXPECT_FLOAT_EQ(1.1f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
-  EXPECT_FLOAT_EQ(1.f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_B)));
+  EXPECT_FLOAT_EQ(1.1f * default_zoom_factor, GetZoomFactor(web_contents_A1));
+  EXPECT_FLOAT_EQ(1.1f * default_zoom_factor, GetZoomFactor(web_contents_A2));
+  EXPECT_FLOAT_EQ(1.f * default_zoom_factor, GetZoomFactor(web_contents_B));
 
   // Test per-tab automatic zoom settings.
+  // Per-tab zoom uses temporary zoom levels in HostZoomMap, which are stored
+  // and retrieved as exact zoom levels without applying Android's OS-level
+  // per-origin font scale adjustments.
   EXPECT_TRUE(RunSetZoomSettings(tab_id_A1, "automatic", "per-tab"));
   EXPECT_TRUE(RunSetZoom(tab_id_A1, 1.2f));
-  EXPECT_FLOAT_EQ(1.2f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
-  EXPECT_FLOAT_EQ(1.1f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+  EXPECT_FLOAT_EQ(1.2f, GetZoomFactor(web_contents_A1));
+  EXPECT_FLOAT_EQ(1.1f * default_zoom_factor, GetZoomFactor(web_contents_A2));
 
   // Test 'manual' mode.
+  // Manual mode stores zoom levels directly on the ZoomController without
+  // routing through HostZoomMap, so no OS-level font scale adjustments apply.
   EXPECT_TRUE(RunSetZoomSettings(tab_id_A1, "manual", nullptr));
   EXPECT_TRUE(RunSetZoom(tab_id_A1, 1.3f));
-  EXPECT_FLOAT_EQ(1.3f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
-  EXPECT_FLOAT_EQ(1.1f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+  EXPECT_FLOAT_EQ(1.3f, GetZoomFactor(web_contents_A1));
+  EXPECT_FLOAT_EQ(1.1f * default_zoom_factor, GetZoomFactor(web_contents_A2));
 
-  // Test 'disabled' mode, which will reset A1's zoom to 1.f.
+  // Test 'disabled' mode, which will reset A1's zoom to 1.f (unscaled).
   EXPECT_TRUE(RunSetZoomSettings(tab_id_A1, "disabled", nullptr));
   std::string error = RunSetZoomExpectError(tab_id_A1, 1.4f);
   EXPECT_TRUE(base::MatchPattern(error, keys::kCannotZoomDisabledTabError));
-  EXPECT_FLOAT_EQ(1.f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
+  EXPECT_FLOAT_EQ(1.f, GetZoomFactor(web_contents_A1));
   // We should still be able to zoom A2 though.
   EXPECT_TRUE(RunSetZoom(tab_id_A2, 1.4f));
-  EXPECT_FLOAT_EQ(1.4f,
-                  blink::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+  EXPECT_FLOAT_EQ(1.4f * default_zoom_factor, GetZoomFactor(web_contents_A2));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, PerTabResetsOnNavigation) {
@@ -3142,8 +3142,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, PerTabResetsOnNavigation) {
   EXPECT_EQ("per-tab", scope);
 
   // Navigation of tab should reset mode to per-origin.
-  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url_B,
-                                                            1);
+  ASSERT_TRUE(NavigateToURL(web_contents, url_B));
   EXPECT_TRUE(RunGetZoomSettings(tab_id, &mode, &scope));
   EXPECT_EQ("automatic", mode);
   EXPECT_EQ("per-origin", scope);
@@ -3238,6 +3237,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest,
   EXPECT_TRUE(
       base::MatchPattern(error, manifest_errors::kCannotAccessChromeUrl));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
 class ExtensionApiPdfTest : public base::test::WithFeatureOverride,
