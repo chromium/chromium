@@ -2050,6 +2050,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "composebox-rich-image-suggestions",
+    "owners": [ "yvonneshi@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "composebox-server-side-state",
     "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 160
@@ -7541,11 +7546,6 @@
     "name": "ntp-realbox-next",
     "owners": [ "romanarora@chromium.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "ntp-rich-image-suggestions",
-    "owners": [ "yvonneshi@google.com", "chrome-desktop-ntp@google.com" ],
-    "expiry_milestone": 165
   },
   {
     "name": "ntp-scaled-action-chips",

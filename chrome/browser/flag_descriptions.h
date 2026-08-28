@@ -1602,6 +1602,11 @@ inline constexpr char kCollaborationSharedTabGroupAccountDataName[] =
 inline constexpr char kCollaborationSharedTabGroupAccountDataDescription[] =
     "Enable the messaging sync backend for shared tab groups.";
 
+inline constexpr char kComposeboxRichImageSuggestionsName[] =
+    "Composebox Rich Image Suggestions";
+inline constexpr char kComposeboxRichImageSuggestionsDescription[] =
+    "Enables richer image suggestions in the Composebox for image generation.";
+
 inline constexpr char kComposeboxSkillsContextualTasksName[] =
     "Composebox/Searchbox Skills (Contextual Tasks)";
 inline constexpr char kComposeboxSkillsContextualTasksDescription[] =
@@ -7136,12 +7141,6 @@ inline constexpr char kNtpRealboxCr23ThemingName[] =
     "Chrome Refresh Themed Realbox";
 inline constexpr char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
-
-inline constexpr char kNtpRichImageSuggestionsName[] =
-    "NTP Rich Image Suggestions";
-inline constexpr char kNtpRichImageSuggestionsDescription[] =
-    "Enables richer image suggestions in the NTP Composebox for image "
-    "generation.";
 
 inline constexpr char kNtpScaledActionChipsName[] = "NTP Scaled Action Chips";
 inline constexpr char kNtpScaledActionChipsDescription[] =

@@ -7291,6 +7291,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxUsesChromeComposeClient)},
 
+    {"composebox-rich-image-suggestions",
+     flag_descriptions::kComposeboxRichImageSuggestionsName,
+     flag_descriptions::kComposeboxRichImageSuggestionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxRichImageSuggestions)},
+
     {"composebox-skills-contextual-tasks",
      flag_descriptions::kComposeboxSkillsContextualTasksName,
      flag_descriptions::kComposeboxSkillsContextualTasksDescription, kOsDesktop,
@@ -7516,11 +7521,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxCr23Theming,
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
-
-    {"ntp-rich-image-suggestions",
-     flag_descriptions::kNtpRichImageSuggestionsName,
-     flag_descriptions::kNtpRichImageSuggestionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpRichImageSuggestions)},
 
     {"ntp-scaled-action-chips", flag_descriptions::kNtpScaledActionChipsName,
      flag_descriptions::kNtpScaledActionChipsDescription, kOsDesktop,

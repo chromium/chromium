@@ -43,6 +43,10 @@ BASE_DECLARE_FEATURE(kComposeboxSkillsOmniboxEverywhere);
 // If enabled, skills are enabled in the composebox/searchbox for Omnibox Popup.
 BASE_DECLARE_FEATURE(kComposeboxSkillsOmniboxPopup);
 
+// If enabled, richer suggestions (e.g. image grids) for tools such as Create
+// Image will be shown in the Composebox.
+BASE_DECLARE_FEATURE(kComposeboxRichImageSuggestions);
+
 // If enabled, suggest requests for multifile inputs will include the cinpts CGI param.
 BASE_DECLARE_FEATURE(kSuggestRequestSendsMultifileCgiParam);
 

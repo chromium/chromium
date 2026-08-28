@@ -8890,6 +8890,7 @@ from previous Chrome versions.
   <int value="-1812579951" label="ContentSuggestionsCategoryRanker:enabled"/>
   <int value="-1812547164"
       label="AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement:enabled"/>
+  <int value="-1812477991" label="ComposeboxRichImageSuggestions:enabled"/>
   <int value="-1812105527" label="WarmUpCompositor:enabled"/>
   <int value="-1812091085" label="kEnableOidcProfileRemoteCommands:disabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
@@ -12827,7 +12828,6 @@ from previous Chrome versions.
   <int value="-588491904" label="glic-reset-mi-enabled-by-tier:disabled"/>
   <int value="-588245348"
       label="history-clusters-should-show-all-clusters-on-prominent-ui-surfaces"/>
-  <int value="-588197788" label="NtpRichImageSuggestions:disabled"/>
   <int value="-588163454"
       label="AccessibilitySelectToSpeakHoverTextImprovements:enabled"/>
   <int value="-587446483" label="(Obsolete) LacrosOnly:disabled"/>
@@ -13204,6 +13204,7 @@ from previous Chrome versions.
   <int value="-474322576" label="disable-quick-unlock-pin"/>
   <int value="-473087416" label="DragTabsInTabletMode:enabled"/>
   <int value="-473052940" label="ContextualSearchLegacyHttpPolicy:enabled"/>
+  <int value="-472845558" label="ComposeboxRichImageSuggestions:disabled"/>
   <int value="-472783446"
       label="BoundaryEventDispatchTracksNodeRemoval:disabled"/>
   <int value="-472477695" label="AutofillSaveCardImprovedUserConsent:enabled"/>
@@ -17984,7 +17985,6 @@ from previous Chrome versions.
   <int value="1021573543" label="QuickSettingsPWA:disabled"/>
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022006626" label="DesktopAndroidTWADisclosures:enabled"/>
-  <int value="1022270409" label="NtpRichImageSuggestions:enabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
   <int value="1022504679" label="UseMultipleOverlays:enabled"/>
   <int value="1022853086"

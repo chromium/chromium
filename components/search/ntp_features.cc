@@ -195,10 +195,6 @@ BASE_FEATURE(kNtpOutlookCalendarModule,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// If enabled, richer suggestions (e.g. image grids) for tools such as Create
-// Image will be shown in the NTP Composebox.
-BASE_FEATURE(kNtpRichImageSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, scaled merchandising action chips (e.g., dynamic tool
 // suggestions and resource pickers) will be shown on the NTP.
 BASE_FEATURE(kNtpScaledActionChips, base::FEATURE_DISABLED_BY_DEFAULT);
