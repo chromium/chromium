@@ -93,7 +93,6 @@ class PhysicalFragmentRareData
       PhysicalRect inflow_bounds;
       std::unique_ptr<const FrameSetLayoutData> frame_set_layout_data;
       LogicalRect table_grid_rect;
-      scoped_refptr<const TableBorders> table_collapsed_borders;
       std::unique_ptr<CollapsedTableBordersGeometry>
           table_collapsed_borders_geometry;
       wtf_size_t table_cell_column_index;
