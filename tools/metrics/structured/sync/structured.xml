@@ -3695,4 +3695,119 @@
   </event>
 </project>
 
+<project name="Glic">
+  <owner>wry@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Metrics for tracking Gemini in Chrome (Glic) events, including invocations, features, and UI states.
+  </summary>
+
+  <enum name="GlicCuiOutcome">
+    <variant value="0">SUCCESS</variant>
+    <variant value="1">UNKNOWN_CANCEL</variant>
+    <variant value="2">ABANDONED</variant>
+    <variant value="3">FAILED</variant>
+    <variant value="4">FAILED_LATENCY</variant>
+  </enum>
+
+  <event name="InvokeStarted">
+    <summary>
+      Recorded when a Glic invocation is initiated.
+    </summary>
+    <metric name="InvocationId" type="int">
+      <summary>
+        A unique identifier generated for this specific invocation.
+      </summary>
+    </metric>
+    <metric name="InvocationSource" type="int">
+      <summary>
+        The source of the invocation, mapped from mojom::InvocationSource.
+      </summary>
+    </metric>
+    <metric name="FeatureMode" type="int">
+      <summary>
+        The feature mode to use for the invocation, mapped from mojom::FeatureMode.
+      </summary>
+    </metric>
+    <metric name="EmbedderType" type="int">
+      <summary>
+        The embedder type for the UI (e.g. Tab vs Floaty).
+      </summary>
+    </metric>
+  </event>
+
+  <event name="InvokeTerminated">
+    <summary>
+      Recorded when an invocation completes, either successfully or with an error.
+    </summary>
+    <metric name="InvocationId" type="int">
+      <summary>
+        A unique identifier generated for this specific invocation.
+      </summary>
+    </metric>
+    <metric name="Outcome" type="GlicCuiOutcome">
+      <summary>
+        The high level outcome of the invocation natively mapped from GlicCuiOutcome.
+      </summary>
+    </metric>
+    <metric name="InvokeError" type="int">
+      <summary>
+        The specific error reason if OutcomeType is Error. Maps to GlicInvokeError.
+      </summary>
+    </metric>
+    <metric name="StoppedTaskType" type="int">
+      <summary>
+        The type enum of the task that was running when the error occurred.
+      </summary>
+    </metric>
+    <metric name="TimeSinceStart" type="int">
+      <summary>
+        Total latency in milliseconds from the start of the invocation.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="InvokeWebUiStateReached">
+    <summary>
+      Recorded each time the WebUI transitions states for the current invocation.
+    </summary>
+    <metric name="InvocationId" type="int">
+      <summary>
+        A unique identifier generated for this specific invocation.
+      </summary>
+    </metric>
+    <metric name="WebUiState" type="int">
+      <summary>
+        The new state of the WebUI, mapped from GlicInstanceEvent (e.g.,
+        kWebUiStateShowLoading).
+      </summary>
+    </metric>
+  </event>
+
+  <event name="InvokeTaskPhaseCompleted">
+    <summary>
+      Recorded when a sequential invoke task completes, providing latency data for
+      each phase.
+    </summary>
+    <metric name="InvocationId" type="int">
+      <summary>
+        A unique identifier generated for this specific invocation.
+      </summary>
+    </metric>
+    <metric name="TaskType" type="int">
+      <summary>
+        An enum representing the specific task (e.g., WaitForClientConnectedTask).
+      </summary>
+    </metric>
+    <metric name="DurationTimeDelta" type="int">
+      <summary>
+        The duration in milliseconds that this specific task took to complete.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 </structured-metrics>
