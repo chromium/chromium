@@ -7,6 +7,19 @@
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
+[slot='title'] {
+  align-items: center;
+  display: flex;
+  font-size: 1rem;
+  gap: 8px;
+}
+
+#app-icon {
+  flex-shrink: 0;
+  height: 20px;
+  width: 20px;
+}
+
 [slot='body'] {
   display: flex;
   flex-direction: column;

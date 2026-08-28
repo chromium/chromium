@@ -411,6 +411,20 @@ suite('<iwa-dev-update-options-dialog>', () => {
     assertEquals('Select or enter version', pinnedVersionInput.placeholder);
   });
 
+  test('displays app icon in dialog title', async () => {
+    await openDialog();
+    const appIcon =
+        dialog.shadowRoot.querySelector<HTMLImageElement>('#app-icon');
+    assertTrue(!!appIcon);
+    assertEquals('chrome://app-icon/test-app-id/20', appIcon.src);
+    assertEquals('', appIcon.alt);
+
+    const titleSpan =
+        dialog.shadowRoot.querySelector<HTMLSpanElement>('[slot="title"] span');
+    assertTrue(!!titleSpan);
+    assertEquals('Test App • Update Options', titleSpan.textContent?.trim());
+  });
+
   test('allows saving custom values not present in manifest', async () => {
     await openDialog({
       currentChannel: 'default',

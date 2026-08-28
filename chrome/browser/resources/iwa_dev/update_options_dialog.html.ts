@@ -10,7 +10,11 @@ export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
   // clang-format off
   return html`
 <cr-dialog id="dialog" show-on-attach @cr-dialog-open="${this.onCrDialogOpen_}">
-  <div slot="title">Update Options - ${this.app.name}</div>
+  <div slot="title">
+    <img id="app-icon" draggable="false"
+         src="chrome://app-icon/${this.app.appId}/20" alt="">
+    <span>${this.app.name} • Update Options</span>
+  </div>
   <div slot="body">
     <div class="dropdown-container">
       <label for="channelInput">Update Channel</label>
