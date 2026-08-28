@@ -4,7 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 
-#include "base/containers/flat_set.h"
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -215,7 +216,7 @@ PrepareClientToAimRequestInfo(
     info->context_turn_metadata.push_back(active_tab_context_turn_metadata);
   }
 
-  base::flat_set<base::UnguessableToken> file_tokens;
+  std::vector<base::UnguessableToken> file_tokens;
   if (session_handle) {
     file_tokens = session_handle->GetUploadedContextTokens();
   }
@@ -230,7 +231,9 @@ PrepareClientToAimRequestInfo(
   }
 
   if (overlay_token.has_value()) {
-    file_tokens.insert(*overlay_token);
+    if (!std::ranges::contains(file_tokens, *overlay_token)) {
+      file_tokens.push_back(*overlay_token);
+    }
     // When an overlay token is present, it implies a recent Lens Overlay
     // interaction, such as a region search. Setting this flag forces the
     // inclusion of that interaction's data in the request. This is required
@@ -240,7 +243,7 @@ PrepareClientToAimRequestInfo(
     info->force_include_latest_interaction_request_data = true;
   }
 
-  info->file_tokens = std::move(file_tokens).extract();
+  info->file_tokens = std::move(file_tokens);
 
   return info;
 }

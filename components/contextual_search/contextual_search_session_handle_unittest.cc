@@ -1941,4 +1941,38 @@ TEST_F(ContextualSearchSessionHandleTest, HasSubmittedContext) {
   EXPECT_TRUE(local_handle->has_submitted_context());
 }
 
+TEST_F(ContextualSearchSessionHandleTest,
+       CreateClientToAimRequest_PreservesTokenOrder) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  // Create multiple tokens in a specific sequence.
+  base::UnguessableToken token1 = local_handle->CreateContextToken();
+  base::UnguessableToken token2 = local_handle->CreateContextToken();
+  base::UnguessableToken token3 = local_handle->CreateContextToken();
+
+  auto request_info = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(
+          [&](std::unique_ptr<
+              ContextualSearchContextController::CreateClientToAimRequestInfo>
+                  info) {
+            EXPECT_EQ(info->file_tokens.size(), 3u);
+            EXPECT_EQ(info->file_tokens[0], token1);
+            EXPECT_EQ(info->file_tokens[1], token2);
+            EXPECT_EQ(info->file_tokens[2], token3);
+            return lens::ClientToAimMessage();
+          });
+
+  local_handle->CreateClientToAimRequest(std::move(request_info));
+}
+
 }  // namespace contextual_search

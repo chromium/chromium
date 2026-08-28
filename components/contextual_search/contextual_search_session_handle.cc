@@ -735,19 +735,19 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
     }
   }
 
-  // Move the uploaded tokens to the request's file_tokens. Make sure to dedupe
-  // the tokens with those already in the ClientToAimRequestInfo.
-  base::flat_set<base::UnguessableToken> file_tokens_set(
-      std::move(create_client_to_aim_request_info->file_tokens));
-  // Deduplicate file tokens by adding tokens to set that is sent in
-  // this current request/query submission.
-  file_tokens_set.insert(uploaded_context_tokens_.begin(),
-                         uploaded_context_tokens_.end());
+  // Move the uploaded tokens to the request's file_tokens, preserving upload
+  // order while deduplicating any tokens already in ClientToAimRequestInfo.
+  std::vector<base::UnguessableToken> final_file_tokens =
+      std::move(create_client_to_aim_request_info->file_tokens);
+  for (const auto& token : uploaded_context_tokens_) {
+    if (!std::ranges::contains(final_file_tokens, token)) {
+      final_file_tokens.push_back(token);
+    }
+  }
   // Keep tabs but clear the files. Move any tab tokens in current
   // turn/submission into `persisted_tabs_`.
   ClearFiles(/*query_submitted=*/true);
-  create_client_to_aim_request_info->file_tokens =
-      std::move(file_tokens_set).extract();
+  create_client_to_aim_request_info->file_tokens = std::move(final_file_tokens);
 
   if (!create_client_to_aim_request_info->file_tokens.empty()) {
     has_submitted_context_ = true;
