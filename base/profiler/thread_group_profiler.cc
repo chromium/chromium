@@ -55,17 +55,14 @@ namespace {
 // |g_thread_group_profiler_client| is intentionally leaked on shutdown.
 ThreadGroupProfilerClient* g_thread_group_profiler_client = nullptr;
 
-// Run continuous profiling 2% of the time.
-constexpr double kFractionOfExecutionTimeToSample = 0.02;
-
 constexpr char kProfilerMetadataThreadGroupType[] = "ThreadGroupType";
 
-// Keep sampling new worker thread until last second of sampling duration.
-// This is intended as an performance optimization, i.e. it's not worth it to do
-// the whole StackSamplingProfiler set up just to get less than 10 samples. And
+// Keep sampling new worker thread until last 300ms of sampling duration.
+// This is intended as a performance optimization, i.e. it's not worth it to do
+// the whole StackSamplingProfiler set up just to get less than 3 samples. And
 // since this treats all threads equally it does not affect the unbiased nature
 // of sampling.
-const TimeDelta kMinRemainingTimeForNewThreadSampling = Seconds(1);
+const TimeDelta kMinRemainingTimeForNewThreadSampling = Milliseconds(300);
 }  // namespace
 
 // static
@@ -95,10 +92,7 @@ ThreadGroupProfiler::ThreadGroupProfiler(
       periodic_sampling_scheduler_(
           periodic_sampling_scheduler
               ? std::move(periodic_sampling_scheduler)
-              : std::make_unique<PeriodicSamplingScheduler>(
-                    GetSamplingDuration(),
-                    kFractionOfExecutionTimeToSample,
-                    TimeTicks::Now())),
+              : GetClient()->CreatePeriodicSamplingScheduler()),
       stack_sampling_profiler_factory_(std::move(profiler_factory)) {
   CHECK(delegate_);
   DETACH_FROM_SEQUENCE(sequence_checker_);

@@ -86,6 +86,10 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
              GetProfilerProcessType(*base::CommandLine::ForCurrentProcess()));
 }
 
+bool ThreadProfilerConfiguration::IsBrowserTestModeEnabled() const {
+  return ::IsBrowserTestModeEnabled();
+}
+
 bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcessAndThread(
     sampling_profiler::ProfilerThreadType thread) const {
   return IsProfilerEnabledForCurrentProcess() &&

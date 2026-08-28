@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/profiler/module_cache.h"
+#include "base/profiler/periodic_sampling_scheduler.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/profiler/thread_group_profiler_client.h"
@@ -1716,6 +1717,11 @@ class MockThreadGroupProfilerClient : public ThreadGroupProfilerClient {
   }
   StackSamplingProfiler::UnwindersFactory GetUnwindersFactory() override {
     return {};
+  }
+  std::unique_ptr<PeriodicSamplingScheduler> CreatePeriodicSamplingScheduler()
+      override {
+    return std::make_unique<PeriodicSamplingScheduler>(Seconds(10), 0.02,
+                                                       TimeTicks::Now());
   }
 };
 

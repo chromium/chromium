@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/sampling_profiler/process_type.h"
@@ -19,6 +20,13 @@ class CommandLine;
 }  // namespace base
 
 class ThreadProfilerPlatformConfiguration;
+
+// If enabled, ThreadProfilerPlatformConfiguration::IsEnabledForThread() will
+// return true for ThreadPoolWorker threads. This can use a normal feature
+// config instead of being part of the RelativePopulations experiment group
+// because the feature is only checked after the ThreadPool is created, at which
+// point field trials have been set up.
+BASE_DECLARE_FEATURE(kSamplingProfilerOnWorkerThreads);
 
 // ThreadProfilerConfiguration chooses a configuration for the enable state of
 // the stack sampling profiler across all processes. This configuration is
@@ -39,6 +47,9 @@ class ThreadProfilerConfiguration {
 
   // True if the profiler is enabled for any thread in the current process.
   bool IsProfilerEnabledForCurrentProcess() const;
+
+  // True if the profiler is configured in browser test mode.
+  bool IsBrowserTestModeEnabled() const;
 
   // True if the profiler should be started for |thread| in the current process.
   bool IsProfilerEnabledForCurrentProcessAndThread(

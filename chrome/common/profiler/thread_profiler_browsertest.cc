@@ -9,12 +9,16 @@
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/version_info/channel.h"
@@ -43,14 +47,13 @@ class ProfileInterceptor {
     return *instance;
   }
 
-  void SetFoundClosure(const base::RepeatingClosure& found_closure) {
+  void SetCallbackAndPredicate(const base::RepeatingClosure& found_closure,
+                               const Predicate& predicate) {
     base::AutoLock lock(lock_);
     found_closure_ = found_closure;
-  }
-
-  void SetPredicate(const Predicate& predicate) {
-    base::AutoLock lock(lock_);
     predicate_ = predicate;
+    found_profile_ = false;
+    CheckPendingProfilesLockRequired();
   }
 
   bool ProfileWasFound() {
@@ -60,28 +63,24 @@ class ProfileInterceptor {
 
   void Intercept(metrics::SampledProfile profile) {
     base::AutoLock lock(lock_);
-    if (predicate_.is_null()) {
-      pending_profiles_.push_back(profile);
-    } else {
-      CHECK(!found_closure_.is_null());
-      if (predicate_.Run(profile)) {
-        OnProfileFound();
-        return;
-      }
-      for (const auto& pending_profile : pending_profiles_) {
-        if (predicate_.Run(pending_profile)) {
-          OnProfileFound();
-          break;
-        }
-      }
-      pending_profiles_.clear();
+    pending_profiles_.push_back(std::move(profile));
+    if (!predicate_.is_null() && !found_closure_.is_null() && !found_profile_) {
+      CheckPendingProfilesLockRequired();
     }
   }
 
  private:
-  void OnProfileFound() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    found_profile_ = true;
-    found_closure_.Run();
+  void CheckPendingProfilesLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    for (auto it = pending_profiles_.begin(); it != pending_profiles_.end();) {
+      if (predicate_.Run(*it)) {
+        found_profile_ = true;
+        it = pending_profiles_.erase(it);
+        found_closure_.Run();
+        return;
+      } else {
+        ++it;
+      }
+    }
   }
 
   base::Lock lock_;
@@ -103,6 +102,10 @@ bool MatchesProfile(metrics::SampledProfile::TriggerEvent trigger_event,
 
 class ThreadProfilerBrowserTest : public PlatformBrowserTest {
  public:
+  ThreadProfilerBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(kSamplingProfilerOnWorkerThreads);
+  }
+
   void SetUp() override {
     // Arrange to intercept the CPU profiles at the time they're provided to the
     // metrics component.
@@ -118,6 +121,9 @@ class ThreadProfilerBrowserTest : public PlatformBrowserTest {
     command_line->AppendSwitchASCII(switches::kStartStackProfiler,
                                     switches::kStartStackProfilerBrowserTest);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Wait for a profile with the specified properties.
@@ -140,8 +146,12 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
       base::BindRepeating(&MatchesProfile, trigger_event, process, thread);
 
   base::RunLoop run_loop;
-  ProfileInterceptor::GetInstance().SetFoundClosure(run_loop.QuitClosure());
-  ProfileInterceptor::GetInstance().SetPredicate(predicate);
+  ProfileInterceptor::GetInstance().SetCallbackAndPredicate(
+      run_loop.QuitClosure(), predicate);
+
+  if (ProfileInterceptor::GetInstance().ProfileWasFound()) {
+    return true;
+  }
 
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(30));
   run_loop.Run();
@@ -209,4 +219,14 @@ IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::NETWORK_SERVICE_PROCESS,
                              metrics::IO_THREAD));
+}
+
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, BrowserProcessThreadPool) {
+  base::RepeatingTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(10), base::BindRepeating([] {
+                base::ThreadPool::PostTask(FROM_HERE, base::DoNothing());
+              }));
+  EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PERIODIC_COLLECTION,
+                             metrics::BROWSER_PROCESS,
+                             metrics::THREAD_POOL_THREAD));
 }

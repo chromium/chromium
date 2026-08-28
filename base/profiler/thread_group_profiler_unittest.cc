@@ -85,6 +85,11 @@ class MockThreadGroupProfilerClient : public ThreadGroupProfilerClient {
   StackSamplingProfiler::UnwindersFactory GetUnwindersFactory() override {
     return CreateCoreUnwindersFactoryForTesting(nullptr);
   }
+  std::unique_ptr<PeriodicSamplingScheduler> CreatePeriodicSamplingScheduler()
+      override {
+    return std::make_unique<MockPeriodicSamplingScheduler>(
+        kTimeToNextCollection);
+  }
 };
 
 class MockProfiler : public ThreadGroupProfiler::Profiler {
@@ -570,7 +575,7 @@ TEST_F(ThreadGroupProfilerTest,
   InitiateNextCollection();
   EXPECT_TRUE(sampling_profilers_.empty());
 
-  AdvanceBySamples(kSamplesPerProfile - 5);
+  AdvanceBySamples(kSamplesPerProfile - 2);
   EXPECT_TRUE(sampling_profilers_.empty());
 
   worker->SetActive();

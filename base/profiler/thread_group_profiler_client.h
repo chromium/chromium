@@ -15,6 +15,7 @@
 namespace base {
 
 class CommandLine;
+class PeriodicSamplingScheduler;
 class ProfileBuilder;
 
 // Interface for controlling thread group profiling behavior.
@@ -34,6 +35,10 @@ class BASE_EXPORT ThreadGroupProfilerClient {
   // Creates a ProfileBuilder for recording profile data.
   virtual std::unique_ptr<ProfileBuilder> CreateProfileBuilder(
       OnceClosure builder_completed_callback) = 0;
+
+  // Creates a PeriodicSamplingScheduler for scheduling collection sessions.
+  virtual std::unique_ptr<PeriodicSamplingScheduler>
+  CreatePeriodicSamplingScheduler() = 0;
 
   // Returns a factory function for creating unwinders.
   virtual base::StackSamplingProfiler::UnwindersFactory
