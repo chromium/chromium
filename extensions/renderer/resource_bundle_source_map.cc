@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/resource_bundle_source_map.h"
 
+#include <algorithm>
+#include <functional>
 #include <ostream>
 #include <string_view>
 
@@ -28,63 +30,46 @@ v8::Local<v8::String> ConvertString(v8::Isolate* isolate,
 
 }  // namespace
 
-ResourceBundleSourceMap::ResourceInfo::ResourceInfo() = default;
-ResourceBundleSourceMap::ResourceInfo::ResourceInfo(int in_id) : id(in_id) {}
-ResourceBundleSourceMap::ResourceInfo::ResourceInfo(ResourceInfo&& other) =
-    default;
-
-ResourceBundleSourceMap::ResourceInfo::~ResourceInfo() = default;
-
-ResourceBundleSourceMap::ResourceInfo&
-ResourceBundleSourceMap::ResourceInfo::operator=(ResourceInfo&& other) =
-    default;
-
 ResourceBundleSourceMap::ResourceBundleSourceMap(
     const ui::ResourceBundle* resource_bundle)
     : resource_bundle_(resource_bundle) {}
 
 ResourceBundleSourceMap::~ResourceBundleSourceMap() = default;
 
-void ResourceBundleSourceMap::RegisterSource(std::string_view name,
-                                             int resource_id) {
-  base::AutoLock lock(lock_);
-  resource_map_.emplace(name, resource_id);
-}
-
 v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
     v8::Isolate* isolate,
     std::string_view name) const {
   base::AutoLock lock(lock_);
-  auto resource_iter = resource_map_.find(name);
-  if (resource_iter == resource_map_.end()) {
+  std::optional<int> resource_id = FindResourceId(name);
+  if (!resource_id) {
     DUMP_WILL_BE_NOTREACHED()
         << "No module is registered with name \"" << name << "\"";
     return v8::Local<v8::String>();
   }
 
-  const ResourceInfo& info = resource_iter->second;
-  if (info.cached) {
-    return ConvertString(isolate, *info.cached);
+  auto cached = cached_sources_.find(*resource_id);
+  if (cached != cached_sources_.end()) {
+    return ConvertString(isolate, cached->second);
   }
 
-  std::string_view resource = resource_bundle_->GetRawDataResource(info.id);
+  std::string_view resource =
+      resource_bundle_->GetRawDataResource(*resource_id);
   if (resource.empty()) {
     DUMP_WILL_BE_NOTREACHED()
         << "Module resource registered as \"" << name << "\" not found";
     return v8::Local<v8::String>();
   }
 
-  bool is_gzipped = resource_bundle_->IsGzipped(info.id);
+  bool is_gzipped = resource_bundle_->IsGzipped(*resource_id);
   if (is_gzipped) {
-    info.cached = std::make_unique<std::string>();
-    if (!compression::GzipUncompress(resource, info.cached.get())) {
-      // Let |info.cached| point to an empty string, so that the next time when
-      // the resource is requested, the method returns an empty string directly,
+    std::string& cached_source = cached_sources_[*resource_id];
+    if (!compression::GzipUncompress(resource, &cached_source)) {
+      // Leave an empty string in the cache so later requests return directly
       // instead of trying to uncompress again.
-      info.cached->clear();
+      cached_source.clear();
       return v8::Local<v8::String>();
     }
-    resource = *info.cached;
+    resource = cached_source;
   }
 
   return ConvertString(isolate, resource);
@@ -92,7 +77,19 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
 
 bool ResourceBundleSourceMap::Contains(std::string_view name) const {
   base::AutoLock lock(lock_);
-  return resource_map_.contains(name);
+  return FindResourceId(name).has_value();
+}
+
+std::optional<int> ResourceBundleSourceMap::FindResourceId(
+    std::string_view name) const {
+  for (const SourceTable& table : source_tables_) {
+    auto source = std::ranges::lower_bound(table, name, std::less<>(),
+                                           &SourceEntry::first);
+    if (source != table.end() && source->first == name) {
+      return source->second;
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace extensions

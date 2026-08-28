@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/grit/renderer_resources_resources.h"
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
@@ -129,12 +130,8 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 
 void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
     ResourceBundleSourceMap* source_map) const {
-  struct RegisterSourceData {
-    std::string_view name;
-    int resource_id;
-  };
-
-  static constexpr RegisterSourceData kSources[] = {
+  static constexpr auto kSources = base::MakeFixedFlatMap<std::string_view,
+                                                          int>({
       // Custom bindings.
       {"action", IDR_RENDERER_RESOURCES_EXTENSIONS_ACTION_CUSTOM_BINDINGS_JS},
       {"browserAction",
@@ -252,11 +249,9 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
        IDR_RENDERER_RESOURCES_EXTENSIONS_WEB_VIEW_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS},
       {"chromeWebView",
        IDR_RENDERER_RESOURCES_EXTENSIONS_WEB_VIEW_CHROME_WEB_VIEW_JS},
-  };
+  });
 
-  for (const auto& source : kSources) {
-    source_map->RegisterSource(source.name, source.resource_id);
-  }
+  source_map->RegisterSources(kSources);
 }
 
 void ChromeExtensionsRendererAPIProvider::EnableCustomElementAllowlist() const {

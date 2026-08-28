@@ -419,6 +419,7 @@ source_set("unit_tests") {
     "module_system_test.h",
     "module_system_unittest.cc",
     "native_extension_bindings_system_unittest.cc",
+    "resource_bundle_source_map_unittest.cc",
     "safe_builtins_unittest.cc",
     "scoped_web_frame.cc",
     "scoped_web_frame.h",

@@ -4,6 +4,9 @@
 
 #include "chrome/renderer/controlled_frame/controlled_frame_extensions_renderer_api_provider.h"
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
 #include "chrome/grit/renderer_resources_resources.h"
 #include "chrome/renderer/controlled_frame/web_url_pattern_natives.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
@@ -29,12 +32,8 @@ void ControlledFrameExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 
 void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
     extensions::ResourceBundleSourceMap* source_map) const {
-  struct RegisterSourceData {
-    std::string_view name;
-    int resource_id;
-  };
-
-  static constexpr RegisterSourceData kSources[] = {
+  static constexpr auto kSources = base::MakeFixedFlatMap<std::string_view,
+                                                          int>({
       {"htmlControlledFrameElement",
        IDR_RENDERER_RESOURCES_CONTROLLED_FRAME_HTML_CONTROLLED_FRAME_ELEMENT_JS},
       {"controlledFrameApiMethods",
@@ -51,11 +50,9 @@ void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
        IDR_RENDERER_RESOURCES_CONTROLLED_FRAME_CONTROLLED_FRAME_CONTEXT_MENUS_JS},
       {"controlledFrameURLPatternsHelper",
        IDR_RENDERER_RESOURCES_CONTROLLED_FRAME_CONTROLLED_FRAME_URL_PATTERNS_HELPER_JS},
-  };
+  });
 
-  for (const auto& source : kSources) {
-    source_map->RegisterSource(source.name, source.resource_id);
-  }
+  source_map->RegisterSources(kSources);
 }
 
 void ControlledFrameExtensionsRendererAPIProvider::
