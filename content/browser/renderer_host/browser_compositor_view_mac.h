@@ -150,6 +150,8 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
 
   void InvalidateSurfaceAllocationGroup();
 
+  void SetEvictOnHide(bool evict_on_hide);
+
  private:
   // ui::LayerObserver implementation:
   void LayerDestroyed(ui::Layer* layer) override;

@@ -451,4 +451,10 @@ void BrowserCompositorMac::InvalidateSurfaceAllocationGroup() {
       /*also_invalidate_allocation_group=*/true);
 }
 
+void BrowserCompositorMac::SetEvictOnHide(bool evict_on_hide) {
+  if (delegated_frame_host_) {
+    delegated_frame_host_->SetEvictOnHide(evict_on_hide);
+  }
+}
+
 }  // namespace content

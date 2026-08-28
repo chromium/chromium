@@ -2568,6 +2568,12 @@ bool RenderWidgetHostViewAura::HasSavedCompositorFrame() const {
   return delegated_frame_host_ && delegated_frame_host_->HasSavedFrame();
 }
 
+void RenderWidgetHostViewAura::SetEvictOnHide(bool evict_on_hide) {
+  if (delegated_frame_host_) {
+    delegated_frame_host_->SetEvictOnHide(evict_on_hide);
+  }
+}
+
 void RenderWidgetHostViewAura::FocusedNodeChanged(
     bool editable,
     const gfx::Rect& node_bounds_in_screen) {

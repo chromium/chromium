@@ -227,6 +227,8 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 
+  void SetEvictOnHide(bool evict_on_hide);
+
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,

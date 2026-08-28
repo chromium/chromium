@@ -68,6 +68,8 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
 
   bool visible() const { return visible_; }
 
+  void SetEvictOnHide(bool evict_on_hide) { evict_on_hide_ = evict_on_hide; }
+
   // Returns an ordered collection of `SurfaceIds` that should be evicted.
   std::vector<SurfaceId> CollectSurfaceIdsForEviction() const;
 
@@ -79,6 +81,7 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
   bool has_surface_ = false;
   bool visible_ = false;
   bool opted_out_from_frame_eviction_ = false;
+  bool evict_on_hide_ = false;
 };
 
 }  // namespace viz

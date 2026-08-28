@@ -593,6 +593,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 
+  void SetEvictOnHide(bool evict_on_hide) override {}
+
   void SetViewTransitionResources(
       std::unique_ptr<ScopedViewTransitionResources> resources);
   bool HasViewTransitionResourcesForTesting() const {

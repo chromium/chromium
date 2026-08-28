@@ -51,6 +51,9 @@ void FrameEvictor::SetVisible(bool visible) {
       FrameEvictionManager::GetInstance()->LockFrame(this);
     } else {
       FrameEvictionManager::GetInstance()->UnlockFrame(this);
+      if (evict_on_hide_) {
+        EvictCurrentFrame();
+      }
     }
   }
 }

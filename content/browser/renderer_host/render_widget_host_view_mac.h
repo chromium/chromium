@@ -194,6 +194,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   std::optional<SkColor> GetBackgroundColor() override;
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
   bool HasSavedCompositorFrame() const override;
+  void SetEvictOnHide(bool evict_on_hide) override;
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInScreen() override;

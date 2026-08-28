@@ -340,6 +340,9 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void SetSupportsAutoFill(bool supports) {}
 
   virtual std::optional<uint32_t> GetForceSpecifiedDeadlineForTesting();
+
+  // Sets whether the view should evict its saved compositor frame when hidden.
+  virtual void SetEvictOnHide(bool evict_on_hide) = 0;
 };
 
 }  // namespace content

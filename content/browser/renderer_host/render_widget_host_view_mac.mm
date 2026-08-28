@@ -1536,6 +1536,12 @@ bool RenderWidgetHostViewMac::HasSavedCompositorFrame() const {
          browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
 }
 
+void RenderWidgetHostViewMac::SetEvictOnHide(bool evict_on_hide) {
+  if (browser_compositor_) {
+    browser_compositor_->SetEvictOnHide(evict_on_hide);
+  }
+}
+
 void RenderWidgetHostViewMac::TransformPointToRootSurface(gfx::PointF* point) {
   browser_compositor_->TransformPointToRootSurface(point);
 }

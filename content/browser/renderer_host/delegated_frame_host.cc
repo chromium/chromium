@@ -750,4 +750,8 @@ void DelegatedFrameHost::SetIsFrameSinkIdOwner(bool is_owner) {
   }
 }
 
+void DelegatedFrameHost::SetEvictOnHide(bool evict_on_hide) {
+  frame_evictor_->SetEvictOnHide(evict_on_hide);
+}
+
 }  // namespace content

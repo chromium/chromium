@@ -12,6 +12,7 @@
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/unguessable_token.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,17 +55,34 @@ class FakeFrameEvictorClient : public FrameEvictorClient {
   FakeFrameEvictorClient() = default;
   ~FakeFrameEvictorClient() override = default;
 
+  void set_evictor(FrameEvictor* evictor) { evictor_ = evictor; }
+  void set_surface_id(const SurfaceId& surface_id) { surface_id_ = surface_id; }
+
   void EvictDelegatedFrame(const std::vector<SurfaceId>& surface_ids) override {
     evicted_ = true;
+    evicted_ids_ = surface_ids;
+    if (evictor_) {
+      evictor_->OnSurfaceDiscarded();
+    }
   }
-  EvictIds CollectSurfaceIdsForEviction() const override { return EvictIds(); }
-  SurfaceId GetCurrentSurfaceId() const override { return SurfaceId(); }
+  EvictIds CollectSurfaceIdsForEviction() const override {
+    EvictIds ids;
+    if (surface_id_.is_valid()) {
+      ids.embedded_ids.push_back(surface_id_);
+    }
+    return ids;
+  }
+  SurfaceId GetCurrentSurfaceId() const override { return surface_id_; }
   SurfaceId GetPreNavigationSurfaceId() const override { return SurfaceId(); }
 
   bool evicted() const { return evicted_; }
+  const std::vector<SurfaceId>& evicted_ids() const { return evicted_ids_; }
 
  private:
+  raw_ptr<FrameEvictor> evictor_ = nullptr;
+  SurfaceId surface_id_;
   bool evicted_ = false;
+  std::vector<SurfaceId> evicted_ids_;
 };
 
 }  // namespace
@@ -313,6 +331,116 @@ TEST_P(FrameEvictionManagerTest, OptedOutFrameIsNotEvictedOnCulling) {
   EXPECT_TRUE(participating_frame2.has_frame());
   // The opted-out frame was not evicted.
   EXPECT_FALSE(opted_out_client.evicted());
+}
+
+TEST_P(FrameEvictionManagerTest, FrameEvictorDefaultBehaviorNoEvictionOnHide) {
+  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
+  manager->set_max_number_of_saved_frames(5);
+  FakeFrameEvictorClient client;
+  FrameEvictor evictor(&client);
+  client.set_evictor(&evictor);
+
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  // Embed a surface and make it visible.
+  evictor.SetVisible(true);
+  evictor.OnNewSurfaceEmbedded();
+  EXPECT_TRUE(evictor.has_surface());
+  EXPECT_EQ(1u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  // Hide it. It should NOT be evicted immediately and moves to unlocked frames.
+  evictor.SetVisible(false);
+  EXPECT_FALSE(client.evicted());
+  EXPECT_TRUE(evictor.has_surface());
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(1u, manager->GetUnlockedFramesCountForTesting());
+}
+
+TEST_P(FrameEvictionManagerTest, FrameEvictorEvictOnHide) {
+  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
+  manager->set_max_number_of_saved_frames(5);
+  FakeFrameEvictorClient client;
+  FrameEvictor evictor(&client);
+  client.set_evictor(&evictor);
+  evictor.SetEvictOnHide(true);
+
+  SurfaceId surface_id(
+      FrameSinkId(1, 1),
+      LocalSurfaceId(1, 1, base::UnguessableToken::CreateForTesting(1, 2)));
+  client.set_surface_id(surface_id);
+
+  // Embed a surface and make it visible.
+  evictor.SetVisible(true);
+  evictor.OnNewSurfaceEmbedded();
+  EXPECT_TRUE(evictor.has_surface());
+  EXPECT_EQ(1u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  // Hide it. It SHOULD be evicted immediately and unlocked properly.
+  evictor.SetVisible(false);
+  EXPECT_TRUE(client.evicted());
+  EXPECT_EQ(std::vector<SurfaceId>{surface_id}, client.evicted_ids());
+  EXPECT_FALSE(evictor.has_surface());
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+}
+
+TEST_P(FrameEvictionManagerTest,
+       FrameEvictorEvictOnHideDoesNotImpactOtherFramesAccounting) {
+  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
+  manager->set_max_number_of_saved_frames(5);
+
+  // Scenario: A regular tab and an ephemeral popup (with SetEvictOnHide(true)).
+  // Hiding the popup must unlock it first and evict cleanly so locked frames
+  // accounting does not retain the popup as locked and impact tab switching.
+  FakeFrameEvictorClient tab_client;
+  FrameEvictor tab_evictor(&tab_client);
+  tab_client.set_evictor(&tab_evictor);
+
+  // Tab becomes visible and embeds a surface.
+  tab_evictor.SetVisible(true);
+  tab_evictor.OnNewSurfaceEmbedded();
+  EXPECT_TRUE(tab_evictor.has_surface());
+  EXPECT_EQ(1u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  // Tab is hidden (switched away). Its frame remains saved in the cache.
+  tab_evictor.SetVisible(false);
+  EXPECT_FALSE(tab_client.evicted());
+  EXPECT_TRUE(tab_evictor.has_surface());
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(1u, manager->GetUnlockedFramesCountForTesting());
+
+  // Popup is shown with SetEvictOnHide(true).
+  FakeFrameEvictorClient popup_client;
+  FrameEvictor popup_evictor(&popup_client);
+  popup_client.set_evictor(&popup_evictor);
+  popup_evictor.SetEvictOnHide(true);
+
+  SurfaceId popup_surface_id(
+      FrameSinkId(2, 1),
+      LocalSurfaceId(2, 1, base::UnguessableToken::CreateForTesting(2, 1)));
+  popup_client.set_surface_id(popup_surface_id);
+
+  popup_evictor.SetVisible(true);
+  popup_evictor.OnNewSurfaceEmbedded();
+  EXPECT_TRUE(popup_evictor.has_surface());
+  EXPECT_EQ(1u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(1u, manager->GetUnlockedFramesCountForTesting());
+
+  // Hide the popup. It should unlock and evict itself, leaving tab's frame
+  // untouched.
+  popup_evictor.SetVisible(false);
+  EXPECT_TRUE(popup_client.evicted());
+  EXPECT_EQ(std::vector<SurfaceId>{popup_surface_id},
+            popup_client.evicted_ids());
+
+  EXPECT_FALSE(popup_evictor.has_surface());
+  EXPECT_TRUE(tab_evictor.has_surface());
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(1u, manager->GetUnlockedFramesCountForTesting());
 }
 
 }  // namespace viz
