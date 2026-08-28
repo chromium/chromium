@@ -69,6 +69,10 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void GetAutoTodos(GetAutoTodosCallback callback) override;
   void UpdateAutoTodo(const context_hub::AutoTodoEntry& todo,
                       UpdateAutoTodoCallback callback) override;
+  void ClearFirstPartyAutoTodos(
+      ClearFirstPartyAutoTodosCallback callback) override;
+  void ClearThirdPartyAutoTodos(
+      ClearThirdPartyAutoTodosCallback callback) override;
   void SetTodoFeedback(
       browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback,
       SetTodoFeedbackCallback callback) override;

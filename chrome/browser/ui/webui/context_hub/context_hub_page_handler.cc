@@ -143,6 +143,28 @@ void ContextHubPageHandler::UpdateAutoTodo(
   service->UpdateAutoTodo(todo, std::move(callback));
 }
 
+void ContextHubPageHandler::ClearFirstPartyAutoTodos(
+    ClearFirstPartyAutoTodosCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->ClearFirstPartyAutoTodos(std::move(callback));
+    return;
+  }
+  std::move(callback).Run(false);
+}
+
+void ContextHubPageHandler::ClearThirdPartyAutoTodos(
+    ClearThirdPartyAutoTodosCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->ClearThirdPartyAutoTodos(std::move(callback));
+    return;
+  }
+  std::move(callback).Run(false);
+}
+
 void ContextHubPageHandler::SetTodoFeedback(
     browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback,
     SetTodoFeedbackCallback callback) {

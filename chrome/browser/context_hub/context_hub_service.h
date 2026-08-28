@@ -174,6 +174,12 @@ class ContextHubService : public KeyedService,
   void DeleteAutoTodoByTabId(int64_t tab_id,
                              AutoTodosStore::OperationCallback callback);
 
+  // Clears all 1P Auto Todos from the AutoTodos store.
+  void ClearFirstPartyAutoTodos(AutoTodosStore::OperationCallback callback);
+
+  // Clears all 3P Auto Todos from the AutoTodos store.
+  void ClearThirdPartyAutoTodos(AutoTodosStore::OperationCallback callback);
+
   // Stores or updates a todo feedback item in the in-memory cache.
   void SetTodoFeedback(
       browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback);

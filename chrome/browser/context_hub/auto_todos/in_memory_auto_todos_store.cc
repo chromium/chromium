@@ -147,6 +147,42 @@ void InMemoryAutoTodosStore::Clear(base::OnceClosure callback) {
   }
 }
 
+void InMemoryAutoTodosStore::ClearFirstPartyTodos(OperationCallback callback) {
+  DeleteExpiredEntriesInternal();
+  bool deleted = false;
+  auto it = entries_.begin();
+  while (it != entries_.end()) {
+    if (it->second.is_first_party()) {
+      it = entries_.Erase(it);
+      deleted = true;
+      continue;
+    }
+    ++it;
+  }
+  if (deleted) {
+    NotifyAutoTodosChanged();
+  }
+  std::move(callback).Run(true);
+}
+
+void InMemoryAutoTodosStore::ClearThirdPartyTodos(OperationCallback callback) {
+  DeleteExpiredEntriesInternal();
+  bool deleted = false;
+  auto it = entries_.begin();
+  while (it != entries_.end()) {
+    if (it->second.is_third_party()) {
+      it = entries_.Erase(it);
+      deleted = true;
+      continue;
+    }
+    ++it;
+  }
+  if (deleted) {
+    NotifyAutoTodosChanged();
+  }
+  std::move(callback).Run(true);
+}
+
 void InMemoryAutoTodosStore::DeleteExpiredEntries(OperationCallback callback) {
   bool deleted = DeleteExpiredEntriesInternal();
   if (deleted) {

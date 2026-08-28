@@ -82,6 +82,15 @@ export function getHtml(this: AiTaskboxElement) {
           !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
                           @click="${this.onGenerateGmailTodosClick_}">
                       </cr-icon-button>
+                      <cr-icon-button
+                          id="workspaceDropdownButton"
+                          iron-icon="cr:arrow-drop-down"
+                          title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
+                          aria-label="Clear ALL Workspace Todos"
+                          ?disabled="${
+          !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
+                          @click="${this.onWorkspaceMenuClick_}">
+                      </cr-icon-button>
                     </div>
                 </div>
 
@@ -175,6 +184,15 @@ export function getHtml(this: AiTaskboxElement) {
                           ?disabled="${
           !this.autoTodosEnabled_ || this.isGeneratingTabTodos_}"
                           @click="${this.onGenerateTabTodosClick_}">
+                      </cr-icon-button>
+                      <cr-icon-button
+                          id="browserDropdownButton"
+                          iron-icon="cr:arrow-drop-down"
+                          title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
+                          aria-label="Clear ALL Browser Todos"
+                          ?disabled="${
+          !this.autoTodosEnabled_ || this.isGeneratingTabTodos_}"
+                          @click="${this.onBrowserMenuClick_}">
                       </cr-icon-button>
                     </div>
                 </div>
@@ -316,6 +334,22 @@ export function getHtml(this: AiTaskboxElement) {
                 </div>
             </section>
         </div>
+
+        <cr-action-menu id="workspaceMenu">
+          <button class="dropdown-item"
+              title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
+              @click="${this.onClearWorkspaceTodosClick_}">
+            Clear ALL Workspace Todos
+          </button>
+        </cr-action-menu>
+
+        <cr-action-menu id="browserMenu">
+          <button class="dropdown-item"
+              title="clears all todos and any context. regeneration after clearing may result in previously dismissed/cleared todos"
+              @click="${this.onClearBrowserTodosClick_}">
+            Clear ALL Browser Todos
+          </button>
+        </cr-action-menu>
     </main>
   `;
 }

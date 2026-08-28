@@ -842,6 +842,70 @@ TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_ThirdParty_Success) {
             ThirdPartyData::GroupType::kUnfinishedAction);
 }
 
+TEST_F(ContextHubPageHandlerTest, ClearFirstPartyAutoTodos) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  AutoTodoEntry fp_entry;
+  fp_entry.id = "fp_1";
+  fp_entry.title = "Workspace Todo";
+  fp_entry.data = FirstPartyData{};
+
+  AutoTodoEntry tp_entry;
+  tp_entry.id = "tp_1";
+  tp_entry.title = "Browser Todo";
+  tp_entry.data = ThirdPartyData{.tab_id = 123};
+
+  base::test::TestFuture<bool> add_future1, add_future2;
+  service->UpdateAutoTodo(std::move(fp_entry), add_future1.GetCallback());
+  EXPECT_TRUE(add_future1.Get());
+  service->UpdateAutoTodo(std::move(tp_entry), add_future2.GetCallback());
+  EXPECT_TRUE(add_future2.Get());
+
+  base::test::TestFuture<bool> clear_future;
+  handler_->ClearFirstPartyAutoTodos(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service->GetAutoTodos(get_future.GetCallback());
+  auto entries = get_future.Get();
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0].id, "tp_1");
+}
+
+TEST_F(ContextHubPageHandlerTest, ClearThirdPartyAutoTodos) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  AutoTodoEntry fp_entry;
+  fp_entry.id = "fp_1";
+  fp_entry.title = "Workspace Todo";
+  fp_entry.data = FirstPartyData{};
+
+  AutoTodoEntry tp_entry;
+  tp_entry.id = "tp_1";
+  tp_entry.title = "Browser Todo";
+  tp_entry.data = ThirdPartyData{.tab_id = 123};
+
+  base::test::TestFuture<bool> add_future1, add_future2;
+  service->UpdateAutoTodo(std::move(fp_entry), add_future1.GetCallback());
+  EXPECT_TRUE(add_future1.Get());
+  service->UpdateAutoTodo(std::move(tp_entry), add_future2.GetCallback());
+  EXPECT_TRUE(add_future2.Get());
+
+  base::test::TestFuture<bool> clear_future;
+  handler_->ClearThirdPartyAutoTodos(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service->GetAutoTodos(get_future.GetCallback());
+  auto entries = get_future.Get();
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0].id, "fp_1");
+}
+
 TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged) {
   ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(&profile_);

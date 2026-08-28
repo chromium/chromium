@@ -212,6 +212,14 @@ interface PageHandler {
   [RuntimeFeature=kAutoTodos]
   GenerateTabBasedTodos() => (bool success);
 
+  // Clears all first-party (Workspace) Auto Todos from the cache.
+  [RuntimeFeature=kAutoTodos]
+  ClearFirstPartyAutoTodos() => (bool success);
+
+  // Clears all third-party (Browser) Auto Todos from the cache.
+  [RuntimeFeature=kAutoTodos]
+  ClearThirdPartyAutoTodos() => (bool success);
+
   // Stores or updates feedback on an Auto Todo item in the cache.
   [RuntimeFeature=kAutoTodos]
   SetTodoFeedback(AutoTodoItemFeedback feedback) => ();

@@ -1777,6 +1777,74 @@ TEST_F(ContextHubServiceTest, DeleteAutoTodoByTabId) {
   EXPECT_TRUE(get_future.Get().empty());
 }
 
+TEST_F(ContextHubServiceTest, ClearFirstPartyAutoTodos) {
+  AutoTodoEntry fp_entry;
+  fp_entry.id = "fp_todo_1";
+  fp_entry.title = "Workspace Todo";
+  fp_entry.status = AutoTodoEntry::Status::kActive;
+  fp_entry.data = FirstPartyData{};
+
+  AutoTodoEntry tp_entry;
+  tp_entry.id = "tp_todo_1";
+  tp_entry.title = "Browser Todo";
+  tp_entry.status = AutoTodoEntry::Status::kActive;
+  tp_entry.data = ThirdPartyData{
+      .tab_id = 123,
+      .group_type = ThirdPartyData::GroupType::kNudgeToClose,
+  };
+
+  base::test::TestFuture<bool> add_future1, add_future2;
+  service_.UpdateAutoTodo(fp_entry, add_future1.GetCallback());
+  EXPECT_TRUE(add_future1.Get());
+  service_.UpdateAutoTodo(tp_entry, add_future2.GetCallback());
+  EXPECT_TRUE(add_future2.Get());
+
+  base::test::TestFuture<bool> clear_future;
+  service_.ClearFirstPartyAutoTodos(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Get());
+  EXPECT_TRUE(service_.GetLastFirstPartyGenerationTime().is_null());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "tp_todo_1");
+}
+
+TEST_F(ContextHubServiceTest, ClearThirdPartyAutoTodos) {
+  AutoTodoEntry fp_entry;
+  fp_entry.id = "fp_todo_1";
+  fp_entry.title = "Workspace Todo";
+  fp_entry.status = AutoTodoEntry::Status::kActive;
+  fp_entry.data = FirstPartyData{};
+
+  AutoTodoEntry tp_entry;
+  tp_entry.id = "tp_todo_1";
+  tp_entry.title = "Browser Todo";
+  tp_entry.status = AutoTodoEntry::Status::kActive;
+  tp_entry.data = ThirdPartyData{
+      .tab_id = 123,
+      .group_type = ThirdPartyData::GroupType::kNudgeToClose,
+  };
+
+  base::test::TestFuture<bool> add_future1, add_future2;
+  service_.UpdateAutoTodo(fp_entry, add_future1.GetCallback());
+  EXPECT_TRUE(add_future1.Get());
+  service_.UpdateAutoTodo(tp_entry, add_future2.GetCallback());
+  EXPECT_TRUE(add_future2.Get());
+
+  base::test::TestFuture<bool> clear_future;
+  service_.ClearThirdPartyAutoTodos(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Get());
+  EXPECT_TRUE(service_.GetLastThirdPartyGenerationTime().is_null());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "fp_todo_1");
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextHubServiceTest, OnTabStripModelChanged_DeletesTabTodoOnTabClose) {
   MockServiceObserver observer;

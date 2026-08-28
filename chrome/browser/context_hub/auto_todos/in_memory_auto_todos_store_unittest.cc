@@ -216,6 +216,58 @@ TEST_F(InMemoryAutoTodosStoreTest, ClearStore) {
   EXPECT_TRUE(get_future.Get().empty());
 }
 
+TEST_F(InMemoryAutoTodosStoreTest, ClearFirstPartyTodos) {
+  AutoTodoEntry fp_item;
+  fp_item.id = "fp_1";
+  fp_item.data = FirstPartyData{};
+
+  AutoTodoEntry tp_item;
+  tp_item.id = "tp_1";
+  tp_item.data = ThirdPartyData{.tab_id = 10};
+
+  base::test::TestFuture<bool> add_future1, add_future2;
+  store_.AddOrUpdateItem(fp_item, add_future1.GetCallback());
+  EXPECT_TRUE(add_future1.Get());
+  store_.AddOrUpdateItem(tp_item, add_future2.GetCallback());
+  EXPECT_TRUE(add_future2.Get());
+
+  base::test::TestFuture<bool> clear_future;
+  store_.ClearFirstPartyTodos(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  store_.GetAllItems(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "tp_1");
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, ClearThirdPartyTodos) {
+  AutoTodoEntry fp_item;
+  fp_item.id = "fp_1";
+  fp_item.data = FirstPartyData{};
+
+  AutoTodoEntry tp_item;
+  tp_item.id = "tp_1";
+  tp_item.data = ThirdPartyData{.tab_id = 10};
+
+  base::test::TestFuture<bool> add_future1, add_future2;
+  store_.AddOrUpdateItem(fp_item, add_future1.GetCallback());
+  EXPECT_TRUE(add_future1.Get());
+  store_.AddOrUpdateItem(tp_item, add_future2.GetCallback());
+  EXPECT_TRUE(add_future2.Get());
+
+  base::test::TestFuture<bool> clear_future;
+  store_.ClearThirdPartyTodos(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  store_.GetAllItems(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "fp_1");
+}
+
 TEST_F(InMemoryAutoTodosStoreTest, ObserverNotifiedOnAdd) {
   MockStoreObserver observer;
   store_.AddObserver(&observer);

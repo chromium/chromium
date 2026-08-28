@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import './todo_item.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -201,16 +203,16 @@ export class AiTaskboxElement extends CrLitElement {
             browserProxyFactory.getInstance().handler.getAutoTodos(),
             browserProxyFactory.getInstance().handler.getTodoFeedbacks(),
           ]);
-      if (lastFirstPartyGenerationTime &&
-          lastFirstPartyGenerationTime.internalValue > 0n) {
-        this.lastGmailGenerationTime_ =
-            convertMojoTimeToDate(lastFirstPartyGenerationTime);
-      }
-      if (lastThirdPartyGenerationTime &&
-          lastThirdPartyGenerationTime.internalValue > 0n) {
-        this.lastTabGenerationTime_ =
-            convertMojoTimeToDate(lastThirdPartyGenerationTime);
-      }
+      this.lastGmailGenerationTime_ =
+          (lastFirstPartyGenerationTime &&
+           lastFirstPartyGenerationTime.internalValue > 0n) ?
+          convertMojoTimeToDate(lastFirstPartyGenerationTime) :
+          null;
+      this.lastTabGenerationTime_ =
+          (lastThirdPartyGenerationTime &&
+           lastThirdPartyGenerationTime.internalValue > 0n) ?
+          convertMojoTimeToDate(lastThirdPartyGenerationTime) :
+          null;
       const feedbackMap = new Map<string, boolean>();
       for (const feedback of feedbacks) {
         feedbackMap.set(feedback.todoId, feedback.liked);
@@ -396,6 +398,58 @@ export class AiTaskboxElement extends CrLitElement {
     }
     return diffDays === 1 ? 'Last updated 1 day ago' :
                             `Last updated ${diffDays} days ago`;
+  }
+
+  protected onWorkspaceMenuClick_(e: Event) {
+    e.stopPropagation();
+    this.shadowRoot?.querySelector<CrActionMenuElement>('#workspaceMenu')
+        ?.showAt(e.currentTarget as HTMLElement);
+  }
+
+  protected onBrowserMenuClick_(e: Event) {
+    e.stopPropagation();
+    this.shadowRoot?.querySelector<CrActionMenuElement>('#browserMenu')
+        ?.showAt(e.currentTarget as HTMLElement);
+  }
+
+  protected async onClearWorkspaceTodosClick_() {
+    if (!this.autoTodosEnabled_ || this.isGeneratingGmailTodos_) {
+      return;
+    }
+    this.shadowRoot?.querySelector<CrActionMenuElement>('#workspaceMenu')
+        ?.close();
+    try {
+      const {success} = await browserProxyFactory.getInstance()
+                            .handler.clearFirstPartyAutoTodos();
+      if (success) {
+        this.todos = null;
+        this.completedTodos = null;
+        this.hasGeneratedGmail_ = false;
+        this.lastGmailGenerationTime_ = null;
+      }
+    } catch (e) {
+      console.error('Failed to clear workspace todos:', e);
+    }
+  }
+
+  protected async onClearBrowserTodosClick_() {
+    if (!this.autoTodosEnabled_ || this.isGeneratingTabTodos_) {
+      return;
+    }
+    this.shadowRoot?.querySelector<CrActionMenuElement>('#browserMenu')
+        ?.close();
+    try {
+      const {success} = await browserProxyFactory.getInstance()
+                            .handler.clearThirdPartyAutoTodos();
+      if (success) {
+        this.tabTodos = null;
+        this.completedTabTodos = null;
+        this.hasGeneratedTab_ = false;
+        this.lastTabGenerationTime_ = null;
+      }
+    } catch (e) {
+      console.error('Failed to clear browser todos:', e);
+    }
   }
 }
 

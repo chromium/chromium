@@ -33,6 +33,8 @@ class InMemoryAutoTodosStore : public AutoTodosStore {
   void DeleteItem(const std::string& id, OperationCallback callback) override;
   void DeleteItemByTabId(int64_t tab_id, OperationCallback callback) override;
   void Clear(base::OnceClosure callback) override;
+  void ClearFirstPartyTodos(OperationCallback callback) override;
+  void ClearThirdPartyTodos(OperationCallback callback) override;
   void DeleteExpiredEntries(OperationCallback callback) override;
   void GetAllItems(GetAllItemsCallback callback) const override;
 

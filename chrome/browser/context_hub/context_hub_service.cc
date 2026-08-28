@@ -746,6 +746,26 @@ void ContextHubService::DeleteAutoTodoByTabId(
   auto_todos_store_->DeleteItemByTabId(tab_id, std::move(callback));
 }
 
+void ContextHubService::ClearFirstPartyAutoTodos(
+    AutoTodosStore::OperationCallback callback) {
+  if (!auto_todos_store_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  last_first_party_generation_time_ = base::Time();
+  auto_todos_store_->ClearFirstPartyTodos(std::move(callback));
+}
+
+void ContextHubService::ClearThirdPartyAutoTodos(
+    AutoTodosStore::OperationCallback callback) {
+  if (!auto_todos_store_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  last_third_party_generation_time_ = base::Time();
+  auto_todos_store_->ClearThirdPartyTodos(std::move(callback));
+}
+
 void ContextHubService::SetTodoFeedback(
     browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback) {
   if (!feedback) {
