@@ -92,6 +92,35 @@ suite('InfoTooltipTest', () => {
     const targetRect = target.getBoundingClientRect();
     const expectedRight = parentRect.right - targetRect.right;
     assertEquals(`${expectedRight}px`, crTooltip.style.right);
+
+    // Caret center offset calculation check: targetWidth / 2 - 8.
+    const expectedCaretOffset = Math.max(0, (targetRect.width / 2) - 8);
+    assertEquals(
+        `${expectedCaretOffset}px`,
+        crTooltip.style.getPropertyValue('--info-tooltip-caret-inline-end'));
+  });
+
+  test('updates position on target attribute change', async () => {
+    tooltipElement.target = target;
+    tooltipElement.container = container;
+    tooltipElement.horizontalAlign = 'right';
+    tooltipElement.show();
+    await microtasksFinished();
+
+    const crTooltip = tooltipElement.shadowRoot.querySelector('cr-tooltip')!;
+    const initialRight = crTooltip.style.right;
+
+    // Shift target position via style change.
+    target.style.left = '50px';
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    // The right offset should update.
+    const parentRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const expectedRight = parentRect.right - targetRect.right;
+    assertEquals(`${expectedRight}px`, crTooltip.style.right);
+    assertTrue(crTooltip.style.right !== initialRight);
   });
 
   test('renders text button and fires event on click', async () => {

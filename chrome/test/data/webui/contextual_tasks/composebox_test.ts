@@ -1473,6 +1473,25 @@ suite('ContextualTasksComposeboxTest', () => {
               initialPlaceholder, inputElement.getAttribute('placeholder'));
         });
 
+        test('lens search tooltip showing reflects attribute', async () => {
+          const {wrapper} = parts;
+
+          assertFalse(wrapper.isLensSearchTooltipShowing);
+          assertFalse(wrapper.hasAttribute('is-lens-search-tooltip-showing'));
+
+          wrapper.isLensSearchTooltipShowing = true;
+          await wrapper.updateComplete;
+
+          assertTrue(wrapper.isLensSearchTooltipShowing);
+          assertTrue(wrapper.hasAttribute('is-lens-search-tooltip-showing'));
+
+          wrapper.isLensSearchTooltipShowing = false;
+          await wrapper.updateComplete;
+
+          assertFalse(wrapper.isLensSearchTooltipShowing);
+          assertFalse(wrapper.hasAttribute('is-lens-search-tooltip-showing'));
+        });
+
         test('ClearInputAndFocusClearsMatchesOnSubmit', () => {
           const {wrapper, innerComposebox} = parts;
 

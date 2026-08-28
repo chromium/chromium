@@ -101,6 +101,8 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .isLensOverlayShowing="${this.isLensOverlayShowing_}"
+          .isLensSearchTooltipShowing="${
+              this.lensSearchTooltipTarget_ !== null}"
           .isOverlayOpenForAimVisualSearch="${
               this.isOverlayOpenForAimVisualSearch_}"
           .enableNativeZeroStateSuggestions="${
