@@ -20,10 +20,12 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace content {
+class Page;
 class WebContents;
 }  // namespace content
 
@@ -58,9 +60,11 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public views::ViewObserver,
                              public SystemTrayObserver,
                              public ChromeWebModalDialogManagerDelegate,
-                             public web_modal::WebContentsModalDialogHost {
+                             public web_modal::WebContentsModalDialogHost,
+                             public content::WebContentsObserver {
  public:
-  explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
+  explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller,
+                                content::WebContents* web_contents = nullptr);
 
   OobeUIDialogDelegate(const OobeUIDialogDelegate&) = delete;
   OobeUIDialogDelegate& operator=(const OobeUIDialogDelegate&) = delete;
@@ -96,6 +100,9 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   views::Widget* GetWebDialogWidget() const;
 
   views::View* GetWebDialogView();
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   class ModalDialogManagerCleanup;

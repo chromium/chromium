@@ -41,6 +41,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -161,6 +162,13 @@ void WebUILoginView::Init() {
   WebContentsModalDialogManager::FromWebContents(web_contents)
       ->SetDelegate(this);
   web_contents->SetDelegate(this);
+  content::WebContentsObserver::Observe(web_contents);
+}
+
+void WebUILoginView::PrimaryPageChanged(content::Page& page) {
+  if (GetWebUI() && GetWebUI()->GetController() && !GetOobeUI() && GetWidget()) {
+    GetWidget()->Close();
+  }
 }
 
 void WebUILoginView::RequestFocus() {
@@ -233,7 +241,7 @@ OobeUI* WebUILoginView::GetOobeUI() {
     return nullptr;
   }
 
-  return static_cast<OobeUI*>(GetWebUI()->GetController());
+  return GetWebUI()->GetController()->GetAs<OobeUI>();
 }
 
 void WebUILoginView::OnPostponedShow() {

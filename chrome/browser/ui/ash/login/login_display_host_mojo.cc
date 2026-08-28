@@ -388,7 +388,9 @@ void LoginDisplayHostMojo::OnLocalAuthenticationCompleted(
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
   EnsureOobeDialogLoaded();
   if (dialog_->IsVisible()) {
-    GetOobeUI()->GetErrorScreen()->FixCaptivePortal();
+    if (GetOobeUI()) {
+      GetOobeUI()->GetErrorScreen()->FixCaptivePortal();
+    }
   } else {
     dialog_->SetShouldDisplayCaptivePortal(true);
   }
