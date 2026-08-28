@@ -228,6 +228,7 @@ static inline void Insert(HTMLConstructionSiteTask& task) {
       patch->Apply(task);
     } else {
       task.parent = template_element->InsertionTarget();
+      task.next_child = nullptr;
     }
     // If the Document was detached in the middle of parsing, The template
     // element won't be able to initialize its contents, so bail out.
@@ -1303,6 +1304,7 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
       patch->Apply(dummy_task);
     } else {
       dummy_task.parent = template_element->InsertionTarget();
+      dummy_task.next_child = nullptr;
     }
     // If the Document was detached in the middle of parsing, the template
     // element won't be able to initialize its contents, so bail out.
@@ -1732,7 +1734,9 @@ void HTMLConstructionSite::FindFosterSite(HTMLConstructionSiteTask& task) {
   // 2.5
   if (ContainerNode* parent = last_table->GetElement()->parentNode()) {
     task.parent = parent;
-    task.next_child = last_table->GetElement();
+    if (!IsA<HTMLTemplateElement>(parent)) {
+      task.next_child = last_table->GetElement();
+    }
     return;
   }
 

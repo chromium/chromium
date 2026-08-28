@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Foster parenting redirects into the template contents when the table's parent is a template element
-  assert_equals: the foster-parented element goes into the template's contents (tmpl.content=, tmpl=<table>[<tbody>[<tr>[<script>]]]) expected "template-contents" but got "dropped"
-Harness: the test ran to completion.
-
