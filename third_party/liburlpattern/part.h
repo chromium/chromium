@@ -86,6 +86,9 @@ struct COMPONENT_EXPORT(LIBURLPATTERN) Part {
   // Returns true if the `name` member is a custom name; e.g. for a `:foo`
   // group.
   bool HasCustomName() const;
+
+  // Returns true if the Part is a simple full wildcard; i.e. `*`.
+  bool IsSimpleFullWildcard() const;
 };
 
 COMPONENT_EXPORT(LIBURLPATTERN)

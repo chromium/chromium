@@ -78,4 +78,9 @@ bool Part::HasCustomName() const {
   return !name.empty() && !std::isdigit(name[0]);
 }
 
+bool Part::IsSimpleFullWildcard() const {
+  return type == PartType::kFullWildcard && suffix.empty() && prefix.empty() &&
+         modifier == Modifier::kNone && !HasCustomName();
+}
+
 }  // namespace liburlpattern
