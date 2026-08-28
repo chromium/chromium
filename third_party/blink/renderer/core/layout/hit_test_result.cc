@@ -559,7 +559,10 @@ bool HitTestResult::IsContentEditable() const {
 std::tuple<bool, ListBasedHitTestBehavior>
 HitTestResult::AddNodeToListBasedTestResultInternal(
     Node* node,
-    const HitTestLocation& location) {
+    const HitTestLocation& location,
+    const PhysicalRect* physical_rect,
+    const gfx::QuadF* quad,
+    const cc::Region* region) {
   // If not a list-based test, stop testing because the hit has been found.
   if (!GetHitTestRequest().ListBased())
     return std::make_tuple(false, kStopHitTesting);
@@ -573,7 +576,8 @@ HitTestResult::AddNodeToListBasedTestResultInternal(
     if (GetHitTestRequest().UseHitNodeCb()) {
       LocalFrameView::InvalidationDisallowedScope invalidation_disallowed(
           *node->GetDocument().View());
-      behavior = GetHitTestRequest().RunHitNodeCb(*node);
+      behavior =
+          GetHitTestRequest().RunHitNodeCb(*node, physical_rect, quad, region);
     }
     return std::make_tuple(false, behavior);
   }
@@ -608,7 +612,8 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
   bool should_check_containment;
   ListBasedHitTestBehavior behavior;
   std::tie(should_check_containment, behavior) =
-      AddNodeToListBasedTestResultInternal(node, location);
+      AddNodeToListBasedTestResultInternal(node, location, &rect, nullptr,
+                                           nullptr);
   if (!should_check_containment)
     return behavior;
   return rect.Contains(location.BoundingBox()) ? kStopHitTesting
@@ -622,7 +627,8 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
   bool should_check_containment;
   ListBasedHitTestBehavior behavior;
   std::tie(should_check_containment, behavior) =
-      AddNodeToListBasedTestResultInternal(node, location);
+      AddNodeToListBasedTestResultInternal(node, location, nullptr, &quad,
+                                           nullptr);
   if (!should_check_containment)
     return behavior;
   return quad.ContainsQuad(gfx::QuadF(gfx::RectF(location.BoundingBox())))
@@ -637,7 +643,8 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
   bool should_check_containment;
   ListBasedHitTestBehavior behavior;
   std::tie(should_check_containment, behavior) =
-      AddNodeToListBasedTestResultInternal(node, location);
+      AddNodeToListBasedTestResultInternal(node, location, nullptr, nullptr,
+                                           &region);
   if (!should_check_containment)
     return behavior;
   return region.Contains(location.ToEnclosingRect()) ? kStopHitTesting

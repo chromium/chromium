@@ -589,7 +589,10 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
 ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
     const ClientIdsSet& client_ids_set,
     Metrics& counts,
-    const Node& node) {
+    const Node& node,
+    const PhysicalRect*,
+    const gfx::QuadF*,
+    const cc::Region*) {
   counts.total_hit_tested_nodes++;
 
   if (node == VideoElement()) {
