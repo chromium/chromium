@@ -110,12 +110,14 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
   ComposeboxPickerPresenter* presenter_ = nil;
 };
 
-// Tests that when the disclaimer feature is disabled, the Drive picker is
-// presented directly.
+// Tests that when the disclaimer feature is disabled and user is signed in, the
+// Drive picker is presented directly.
 TEST_F(ComposeboxPickerPresenterTest,
        TestPresentDriveFilePicker_DisclaimerDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
+
+  SignIn();
 
   [presenter_ presentDriveFilePicker];
 
@@ -160,8 +162,8 @@ TEST_F(ComposeboxPickerPresenterTest,
   EXPECT_TRUE(handler_.drivePickerShown);
 }
 
-// Tests that when no identity is signed in, the flow does not show the
-// ConsentKit sheet and opens the Drive picker fallback.
+// Tests that attempting to present the Drive file picker when no identity is
+// signed in causes a CHECK failure.
 TEST_F(ComposeboxPickerPresenterTest, TestPresentDriveFilePicker_NoIdentity) {
   scoped_feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOptionDisclaimer);
@@ -170,9 +172,7 @@ TEST_F(ComposeboxPickerPresenterTest, TestPresentDriveFilePicker_NoIdentity) {
       contextual_search::kDriveConsentState,
       static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
 
-  [presenter_ presentDriveFilePicker];
-
-  EXPECT_TRUE(handler_.drivePickerShown);
+  EXPECT_DEATH_IF_SUPPORTED([presenter_ presentDriveFilePicker], "");
 }
 
 // Tests that when consent is needed and the upstream provider stubs out

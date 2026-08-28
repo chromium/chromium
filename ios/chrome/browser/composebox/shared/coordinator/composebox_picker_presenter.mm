@@ -6,6 +6,8 @@
 
 #import <PhotosUI/PhotosUI.h>
 
+#import "base/check.h"
+#import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/memory/weak_ptr.h"
 #import "components/contextual_search/input_state_model.h"
@@ -148,13 +150,16 @@
   if (!_browser) {
     return;
   }
+  CHECK_EQ(_browser->type(), Browser::Type::kRegular);
 
   ProfileIOS* profile = _browser->GetProfile();
-  PrefService* prefService = profile->GetPrefs();
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(profile);
+  CHECK(authService && authService->HasPrimaryIdentity());
   id<SystemIdentity> identity = authService->GetPrimaryIdentity();
+  CHECK(identity);
 
+  PrefService* prefService = profile->GetPrefs();
   auto consentState = static_cast<contextual_search::DriveConsentState>(
       prefService->GetInteger(contextual_search::kDriveConsentState));
 
@@ -164,8 +169,7 @@
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOptionDisclaimer) &&
       !base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted) &&
-      consentState != contextual_search::DriveConsentState::kConsent &&
-      identity) {
+      consentState != contextual_search::DriveConsentState::kConsent) {
     PrivacyPrimitiveConfiguration* config =
         [[PrivacyPrimitiveConfiguration alloc] init];
     config.identity = identity;
@@ -199,6 +203,14 @@
   if (!success || !_browser) {
     return;
   }
+  if (_browser->type() != Browser::Type::kRegular) {
+    return;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
+  if (!authService || !authService->HasPrimaryIdentity()) {
+    return;
+  }
   PrefService* prefs = _browser->GetProfile()->GetPrefs();
   prefs->SetInteger(
       contextual_search::kDriveConsentState,
@@ -208,6 +220,14 @@
 
 - (void)showDriveFilePickerInternal {
   if (!_browser) {
+    return;
+  }
+  if (_browser->type() != Browser::Type::kRegular) {
+    return;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
+  if (!authService || !authService->HasPrimaryIdentity()) {
     return;
   }
   id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
