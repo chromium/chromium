@@ -33,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -65,7 +64,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TipsPromoCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TipsPromoCoordinatorUnitTest {
     private static final int NARROW_SCREEN_WIDTH_DP = 300;
     private static final int WIDE_SCREEN_WIDTH_DP = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;

@@ -29,7 +29,6 @@ import org.mockito.hamcrest.MockitoHamcrest;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,7 +42,6 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NotificationSuspenderUnitTest {
     private static final String TEST_DOMAIN = "example.com";
     private static final String TEST_SUBDOMAIN = "subdomain.example.com";

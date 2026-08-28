@@ -43,9 +43,7 @@ import java.util.Arrays;
 
 /** Tests for the (@link QuickActionSearchWidgetProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowLog.class})
+@Config(shadows = {ShadowLog.class})
 public class QuickActionSearchWidgetProviderTest {
     private static final int WIDGET_A_ID = 123;
     private static final int WIDGET_B_ID = 987;

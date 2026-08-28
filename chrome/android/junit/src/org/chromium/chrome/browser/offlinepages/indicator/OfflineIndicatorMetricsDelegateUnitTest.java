@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
@@ -19,7 +18,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link OfflineIndicatorMetricsDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class OfflineIndicatorMetricsDelegateUnitTest {
     /**
      * Fake of OfflineIndicatorMetricsDelegate.Clock used to test metrics that rely on the wall

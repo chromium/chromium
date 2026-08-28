@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FakeTimeTestRule;
@@ -43,7 +42,6 @@ import java.util.List;
  * be provided by the system, such as whether Chrome was installed through the system image.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("UnusedMethod")
 public class OmahaBaseTest {
     private static class TimestampPair {

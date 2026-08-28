@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link GlobalNightModeStateController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = ShadowAppCompatDelegate.class)
+@Config(shadows = ShadowAppCompatDelegate.class)
 public class GlobalNightModeStateControllerTest {
     /**
      * Shadow implementation of {@link androidx.appcompat.app.AppCompatDelegate} that bypass

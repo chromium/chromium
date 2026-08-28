@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
@@ -37,7 +36,6 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
 
 /** Unit tests for NotificationTriggerBackgroundTask. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NotificationTriggerBackgroundTaskTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BackgroundTaskScheduler mTaskScheduler;

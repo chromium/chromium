@@ -116,7 +116,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabPageCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,

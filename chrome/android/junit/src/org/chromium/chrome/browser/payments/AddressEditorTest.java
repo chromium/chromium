@@ -58,7 +58,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -94,7 +93,6 @@ import java.util.stream.StreamSupport;
 
 /** Unit tests for {@link AddressEditor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AddressEditorTest {
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private static final List<AutofillAddressUiComponent> SUPPORTED_ADDRESS_FIELDS =

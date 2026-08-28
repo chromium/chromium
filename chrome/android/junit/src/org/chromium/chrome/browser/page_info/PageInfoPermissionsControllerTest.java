@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -45,7 +44,6 @@ import java.util.Arrays;
 
 /** Tests for PageInfoPermissionsController. */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PageInfoPermissionsControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();

@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -55,7 +54,6 @@ import java.util.Set;
 
 /** Unit tests for {@link TabbedStartupWindowPolicyDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.ON_STARTUP_WINDOW_POLICY,
     ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH,

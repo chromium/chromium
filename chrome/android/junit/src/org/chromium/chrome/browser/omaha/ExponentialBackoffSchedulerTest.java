@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -16,7 +15,6 @@ import org.chromium.base.test.util.Feature;
 
 /** Tests the ExponentialBackoffScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ExponentialBackoffSchedulerTest {
     private static final String PREFERENCE_NAME = "scheduler";
     private static final long BACKOFF_MS = 15000;

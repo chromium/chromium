@@ -43,9 +43,7 @@ import java.io.File;
 
 /** Unit tests for OfflinePageUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class})
+@Config(shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class})
 public class OfflinePageUtilsUnitTest {
     @Mock public Profile.Natives mMockProfileNatives;
 

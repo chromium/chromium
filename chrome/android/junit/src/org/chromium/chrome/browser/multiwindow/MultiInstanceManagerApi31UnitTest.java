@@ -138,9 +138,7 @@ import java.util.stream.Collectors;
 
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 @EnableFeatures({
     ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH,
     ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN

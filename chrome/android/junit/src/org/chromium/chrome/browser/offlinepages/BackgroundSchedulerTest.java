@@ -24,7 +24,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,7 +36,6 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /** Unit tests for BackgroundScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BackgroundSchedulerTest {
     private final TriggerConditions mConditions1 =
             new TriggerConditions(

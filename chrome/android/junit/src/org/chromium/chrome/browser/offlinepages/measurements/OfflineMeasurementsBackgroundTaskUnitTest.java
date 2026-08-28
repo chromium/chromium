@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -17,7 +16,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link OfflineMeasurementsBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class OfflineMeasurementsBackgroundTaskUnitTest {
     @Test
     public void cancelTaskAndclearPersistedDataFromPrefs() {

@@ -96,7 +96,7 @@ import java.util.Set;
 
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 31)
+@Config(sdk = 31)
 public class MultiWindowUtilsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

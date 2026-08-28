@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Type;
 
 /** Tests the API surface of UpdateSuccessMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UpdateSuccessMetricsTest {
     @Mock private TrackingProvider mProvider;
 

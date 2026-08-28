@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 import org.robolectric.annotation.GraphicsMode;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
@@ -46,7 +45,6 @@ import java.util.List;
 
 /** Unit tests for {@link WindowOcclusionTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class WindowOcclusionTrackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

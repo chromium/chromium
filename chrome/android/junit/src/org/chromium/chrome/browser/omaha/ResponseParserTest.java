@@ -9,7 +9,6 @@ import android.util.Xml;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -20,7 +19,6 @@ import java.io.StringWriter;
 
 /** Unit tests for the Omaha ResponseParser. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ResponseParserTest {
     // Note that the Omaha server appends "/" to the end of the URL codebase.
     private static final String STRIPPED_URL =

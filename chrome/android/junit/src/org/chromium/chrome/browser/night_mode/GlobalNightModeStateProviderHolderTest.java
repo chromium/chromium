@@ -11,14 +11,12 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_TH
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link GlobalNightModeStateProviderHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class GlobalNightModeStateProviderHolderTest {
     @Test
     public void testNightModeNotAvailable() {

@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -48,7 +47,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for OfflinePageUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class OfflinePageTabObserverTest {
     // Using a null tab, as it cannot be mocked. TabHelper will help return proper mocked responses.
     private static final int TAB_ID = 77;

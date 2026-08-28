@@ -15,7 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,7 +32,6 @@ import java.util.Set;
  * for instance-specific fields.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.MULTI_INSTANCE_SHARED_PREFS_MIGRATION,
     ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH

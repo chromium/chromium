@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,7 +40,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
  * Unit tests for helper functions in {@link NewTabPage} and {@link NewTabPageCoordinator} classes.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NewTabPageUtilUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
