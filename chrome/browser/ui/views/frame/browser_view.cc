@@ -974,7 +974,7 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
             vertical_tab_strip_state_controller,
             BrowserActions::From(browser_)->root_action_item(), this);
 
-    if (base::FeatureList::IsEnabled(features::kGlassFrame)) {
+    if (features::IsGlassFrameEnabled()) {
       vertical_tab_strip_background_blur_backdrop_ = AddChildView(
           std::make_unique<VerticalTabStripBackgroundBlurBackdrop>());
     }
