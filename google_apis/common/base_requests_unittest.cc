@@ -18,7 +18,9 @@
 #include "google_apis/common/test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_service.h"
@@ -129,12 +131,32 @@ class BaseRequestsTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  // Handles incoming HTTP requests on the primary test server. Records each
+  // request to verify header delivery and issues a 302 redirect for the
+  // `/redirect` path if a target URL is configured.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    std::unique_ptr<net::test_server::BasicHttpResponse> response(
-        new net::test_server::BasicHttpResponse);
+    received_requests_.push_back(request);
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (redirect_location_.is_valid() && request.relative_url == "/redirect") {
+      response->set_code(net::HTTP_FOUND);
+      response->AddCustomHeader("Location", redirect_location_.spec());
+      return std::move(response);
+    }
     response->set_code(response_code_);
     response->set_content(response_body_);
+    response->set_content_type("application/json");
+    return std::move(response);
+  }
+
+  // Handles incoming HTTP requests on the secondary cross-origin server.
+  // Records received requests to inspect headers delivered across origin
+  // boundaries.
+  std::unique_ptr<net::test_server::HttpResponse> HandleOtherOriginRequest(
+      const net::test_server::HttpRequest& request) {
+    other_origin_requests_.push_back(request);
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
     response->set_content_type("application/json");
     return std::move(response);
   }
@@ -148,9 +170,13 @@ class BaseRequestsTest : public testing::Test {
       test_shared_loader_factory_;
   std::unique_ptr<RequestSender> sender_;
   net::EmbeddedTestServer test_server_;
+  net::EmbeddedTestServer other_origin_server_;
 
   net::HttpStatusCode response_code_;
   std::string response_body_;
+  GURL redirect_location_;
+  std::vector<net::test_server::HttpRequest> received_requests_;
+  std::vector<net::test_server::HttpRequest> other_origin_requests_;
 };
 
 TEST_F(BaseRequestsTest, ParseValidJson) {
@@ -196,6 +222,60 @@ TEST_F(BaseRequestsTest, UrlFetchRequestBaseResponseCodeOverride) {
 
   // HTTP_FORBIDDEN (403) is overridden by the error reason.
   EXPECT_EQ(HTTP_SERVICE_UNAVAILABLE, error);
+}
+
+// Verifies that the Authorization header is removed when a request is
+// redirected to a cross-origin destination.
+TEST_F(BaseRequestsTest, AuthorizationHeaderRemovedOnCrossOriginRedirect) {
+  other_origin_server_.RegisterRequestHandler(base::BindRepeating(
+      &BaseRequestsTest::HandleOtherOriginRequest, base::Unretained(this)));
+  ASSERT_TRUE(other_origin_server_.Start());
+  ASSERT_NE(test_server_.base_url(), other_origin_server_.base_url());
+
+  redirect_location_ = other_origin_server_.GetURL("/target");
+
+  ApiErrorCode error = OTHER_ERROR;
+  base::RunLoop run_loop;
+  sender_->StartRequestWithAuthRetry(std::make_unique<FakeUrlFetchRequest>(
+      sender_.get(),
+      test_util::CreateQuitCallback(
+          &run_loop, test_util::CreateCopyResultCallback(&error)),
+      test_server_.GetURL("/redirect")));
+  run_loop.Run();
+
+  EXPECT_EQ(HTTP_SUCCESS, error);
+  ASSERT_EQ(1u, received_requests_.size());
+  EXPECT_NE(received_requests_[0].headers.end(),
+            received_requests_[0].headers.find(
+                net::HttpRequestHeaders::kAuthorization));
+  ASSERT_EQ(1u, other_origin_requests_.size());
+  EXPECT_EQ(other_origin_requests_[0].headers.end(),
+            other_origin_requests_[0].headers.find(
+                net::HttpRequestHeaders::kAuthorization));
+}
+
+// Verifies that the Authorization header is preserved when a request is
+// redirected to a same-origin destination.
+TEST_F(BaseRequestsTest, AuthorizationHeaderKeptOnSameOriginRedirect) {
+  redirect_location_ = test_server_.GetURL("/target");
+
+  ApiErrorCode error = OTHER_ERROR;
+  base::RunLoop run_loop;
+  sender_->StartRequestWithAuthRetry(std::make_unique<FakeUrlFetchRequest>(
+      sender_.get(),
+      test_util::CreateQuitCallback(
+          &run_loop, test_util::CreateCopyResultCallback(&error)),
+      test_server_.GetURL("/redirect")));
+  run_loop.Run();
+
+  EXPECT_EQ(HTTP_SUCCESS, error);
+  ASSERT_EQ(2u, received_requests_.size());
+  EXPECT_NE(received_requests_[0].headers.end(),
+            received_requests_[0].headers.find(
+                net::HttpRequestHeaders::kAuthorization));
+  EXPECT_NE(received_requests_[1].headers.end(),
+            received_requests_[1].headers.find(
+                net::HttpRequestHeaders::kAuthorization));
 }
 
 TEST(BaseRequestsHttpRequestMethodEnumTest, ConvertsToString) {
