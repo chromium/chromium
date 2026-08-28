@@ -331,6 +331,77 @@ TEST_F(ContextualTasksPageHandlerTest, GetThreadUrl) {
   run_loop.Run();
 }
 
+TEST_F(ContextualTasksPageHandlerTest, CreateNewThread_LegacyArchitecture) {
+  std::unique_ptr<content::WebContents> inner_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  EXPECT_CALL(*contextual_tasks_ui_, GetInnerWebContents())
+      .WillRepeatedly(Return(inner_web_contents.get()));
+
+  GURL expected_url(kAiPageUrl);
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_, GetDefaultAiPageUrl())
+      .WillOnce(Return(expected_url));
+
+  page_handler_->CreateNewThread();
+
+  EXPECT_EQ(inner_web_contents->GetVisibleURL(), expected_url);
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       CreateNewThread_SidePanelRearchitecture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  EXPECT_CALL(*contextual_tasks_ui_, GetInnerWebContents())
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(*mock_panel_controller_, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_panel_controller_, GetCurrentTask())
+      .WillRepeatedly(Return(ContextualTask(task_id)));
+
+  GURL raw_url("https://www.google.com/search?udm=50");
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
+              GetDefaultAiPageUrlForTask(task_id))
+      .WillOnce(Return(raw_url));
+
+  page_handler_->CreateNewThread();
+
+  GURL expected_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      raw_url, active_web_contents.get());
+  EXPECT_EQ(active_web_contents->GetVisibleURL(), expected_url);
+
+  std::string gsc_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(expected_url, "gsc", &gsc_val));
+  EXPECT_EQ(gsc_val, "2");
+}
+
+TEST_F(ContextualTasksPageHandlerTest, CreateNewThread_NoWebContents_SafeNoOp) {
+  EXPECT_CALL(*contextual_tasks_ui_, GetInnerWebContents())
+      .WillRepeatedly(Return(nullptr));
+
+  // Should exit safely without crashing.
+  page_handler_->CreateNewThread();
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       CreateNewThread_SidePanelRearchitecture_NoWebContents_SafeNoOp) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  EXPECT_CALL(*mock_panel_controller_, GetActiveWebContents())
+      .WillRepeatedly(Return(nullptr));
+
+  // Should exit safely without crashing.
+  page_handler_->CreateNewThread();
+}
+
 TEST_F(ContextualTasksPageHandlerTest, GetUrlForTask_InitialUrlExists) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL expected_url(kQueryUrl);

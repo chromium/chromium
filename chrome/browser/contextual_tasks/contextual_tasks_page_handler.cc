@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_actions_runner.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom-shared.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
@@ -1057,6 +1058,40 @@ void ContextualTasksPageHandler::OnLogoPointerDown() {
 }
 
 void ContextualTasksPageHandler::CreateNewThread() {
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    if (!panel_controller_) {
+      return;
+    }
+    content::WebContents* target_contents =
+        panel_controller_->GetActiveWebContents();
+    if (!target_contents) {
+      return;
+    }
+
+    std::optional<base::Uuid> task_id;
+    if (auto current_task = panel_controller_->GetCurrentTask()) {
+      task_id = current_task->GetTaskId();
+    } else if (auto* helper =
+                   ContextualSearchWebContentsHelper::FromWebContents(
+                       target_contents)) {
+      task_id = helper->task_id();
+    }
+
+    GURL url = task_id.has_value()
+                   ? ui_service_->GetDefaultAiPageUrlForTask(task_id.value())
+                   : ui_service_->GetDefaultAiPageUrl();
+    url = ui_service_->AddRequiredSidePanelUrlChanges(url, target_contents);
+
+    content::NavigationController::LoadURLParams params(url);
+    params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+    target_contents->GetController().LoadURLWithParams(params);
+
+    if (web_ui_controller_) {
+      web_ui_controller_->SetThreadTitle(std::nullopt);
+    }
+    return;
+  }
+
   std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
   GURL url;
   if (task_id.has_value()) {
