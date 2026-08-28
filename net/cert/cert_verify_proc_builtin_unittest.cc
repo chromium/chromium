@@ -1152,17 +1152,25 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
     int min_log_number;
     int expected_result_for_local_root;
     int expected_result_for_known_root;
+    bool load_landmark_data = true;
   } testcases[] = {
       // A log number of zero is not allowed. This should always fail (it's
       // enforced by the boringssl side of MTC verification.)
+      // MTCAnchor doesn't allow loading of trusted landmarks with log number 0
+      // (we assume the trusted infrastructure supplying the landmark data will
+      // never supply such data so it fails at load time rather than
+      // verification time), so for this test case we don't try to import
+      // the landmark data.
       {.log_number = 0,
        .min_log_number = 0,
        .expected_result_for_local_root = ERR_CERT_AUTHORITY_INVALID,
-       .expected_result_for_known_root = ERR_CERT_AUTHORITY_INVALID},
+       .expected_result_for_known_root = ERR_CERT_AUTHORITY_INVALID,
+       .load_landmark_data = false},
       {.log_number = 0,
        .min_log_number = 1,
        .expected_result_for_local_root = ERR_CERT_AUTHORITY_INVALID,
-       .expected_result_for_known_root = ERR_CERT_AUTHORITY_INVALID},
+       .expected_result_for_known_root = ERR_CERT_AUTHORITY_INVALID,
+       .load_landmark_data = false},
 
       // min_log_number doesn't explicitly require known root since it comes
       // from the MtcAnchorExtraData (in practice that data will only be
@@ -1233,7 +1241,9 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
     auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
         ca_cosigner.id, ca_cosigner.signature_algorithm,
         x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
-        mtc_log.GetPerLogLandmarkSubtreeHashes());
+        test.load_landmark_data
+            ? mtc_log.GetPerLogLandmarkSubtreeHashes()
+            : std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
     ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
     AddTrustStore(&trust_store);
 
