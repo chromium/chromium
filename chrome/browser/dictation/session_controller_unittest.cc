@@ -40,7 +40,9 @@ namespace {
 
 class DictationSessionControllerTest : public ChromeRenderViewHostTestHarness {
  public:
-  DictationSessionControllerTest() {
+  DictationSessionControllerTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(kDictation);
   }
   ~DictationSessionControllerTest() override = default;
@@ -866,6 +868,109 @@ TEST_F(DictationSessionControllerTest, EscapeEndsActiveStreamElseEndsSession) {
   WaitForPostedTasks();
 
   EXPECT_EQ(controller_, nullptr);
+}
+
+TEST_F(DictationSessionControllerTest,
+       AutoSessionEndDelayedShutdownFiresAfterDelay) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kDictation,
+        {{"session_ends_on_stream_end", "true"},
+         {"auto_session_end_delay", "750ms"}}}},
+      {});
+
+  controller_->ResetUi();
+
+  controller_->StartDictationStream(EmptyTarget(),
+                                    DictationStreamStartTrigger::kSessionStart);
+  auto* stream_provider = controller_->attached_stream_provider();
+  ASSERT_NE(stream_provider, nullptr);
+
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider), GetState())
+      .WillRepeatedly(
+          testing::Return(StreamProvider::StreamState::kTranscribing));
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider, StreamProvider::StreamState::kInitializing);
+  EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
+
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider), GetState())
+      .WillRepeatedly(testing::Return(StreamProvider::StreamState::kComplete));
+  EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
+    controller_.reset();
+  });
+
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider, StreamProvider::StreamState::kTranscribing);
+  WaitForPostedTasks();
+
+  // After the stream ends, the session should automatically end after the set
+  // delay.
+  ASSERT_NE(controller_, nullptr);
+  EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
+  EXPECT_TRUE(controller_->is_auto_session_end_timer_running_for_testing());
+  task_environment()->FastForwardBy(base::Milliseconds(751));
+  EXPECT_EQ(controller_, nullptr);
+}
+
+TEST_F(DictationSessionControllerTest,
+       AutoSessionEndDelayedShutdownCancelledByNewStream) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kDictation,
+        {{"session_ends_on_stream_end", "true"},
+         {"auto_session_end_delay", "750ms"}}}},
+      {});
+
+  controller_->ResetUi();
+
+  controller_->StartDictationStream(EmptyTarget(),
+                                    DictationStreamStartTrigger::kSessionStart);
+  auto* stream_provider1 = controller_->attached_stream_provider();
+  ASSERT_NE(stream_provider1, nullptr);
+
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider1), GetState())
+      .WillRepeatedly(
+          testing::Return(StreamProvider::StreamState::kTranscribing));
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider1, StreamProvider::StreamState::kInitializing);
+  EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
+
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider1), GetState())
+      .WillRepeatedly(testing::Return(StreamProvider::StreamState::kComplete));
+  EXPECT_CALL(mock_delegate_, EndSession()).Times(0);
+
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider1, StreamProvider::StreamState::kTranscribing);
+  WaitForPostedTasks();
+
+  // With the stream ended, we'll automatically end the session after the delay.
+  ASSERT_NE(controller_, nullptr);
+  EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
+  EXPECT_TRUE(controller_->is_auto_session_end_timer_running_for_testing());
+
+  // Advance time, but not enough for the timer to expire.
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_TRUE(controller_->is_auto_session_end_timer_running_for_testing());
+
+  // Within the delay window, the user starts a new stream.
+  controller_->StartDictationStream(
+      EmptyTarget(), DictationStreamStartTrigger::kHotkeyToggleExistingSession);
+  auto* stream_provider2 = controller_->attached_stream_provider();
+  ASSERT_NE(stream_provider2, nullptr);
+  EXPECT_NE(stream_provider1, stream_provider2);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+
+  // Delayed shutdown should be cancelled.
+  EXPECT_FALSE(controller_->is_auto_session_end_timer_running_for_testing());
+  task_environment()->FastForwardBy(base::Milliseconds(751));
+  EXPECT_NE(controller_, nullptr);
+  EXPECT_EQ(controller_->attached_stream_provider(), stream_provider2);
 }
 
 }  // namespace

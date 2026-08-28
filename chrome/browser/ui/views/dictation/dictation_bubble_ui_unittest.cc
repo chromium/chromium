@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -93,6 +94,36 @@ TEST_P(DictationBubbleUiTest, StatePropagatesToWaveform) {
   // Transition back to kInactive.
   bubble->SetState(UiState::kInactive);
   EXPECT_EQ(waveform_view->state(), UiState::kInactive);
+}
+
+TEST_P(DictationBubbleUiTest, StatePropagatesToToggleButton) {
+  auto bubble = std::make_unique<DictationBubbleUi>(
+      anchor_view_, base::DoNothing(), base::DoNothing());
+  bubble->Show();
+
+  views::View* contents_view = bubble->GetContentsView();
+  ASSERT_NE(contents_view, nullptr);
+
+  views::View* toggle_button_raw =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          DictationBubbleUi::kToggleButtonElementIdForTesting,
+          views::ElementTrackerViews::GetContextForView(contents_view));
+  ASSERT_NE(toggle_button_raw, nullptr);
+
+  auto* toggle_button =
+      views::AsViewClass<views::MdTextButton>(toggle_button_raw);
+  ASSERT_NE(toggle_button, nullptr);
+
+  const bool session_ends_on_stream_end = GetParam();
+
+  bubble->SetState(UiState::kTranscribing);
+  EXPECT_TRUE(toggle_button->GetEnabled());
+
+  bubble->SetState(UiState::kFinalizing);
+  EXPECT_FALSE(toggle_button->GetEnabled());
+
+  bubble->SetState(UiState::kInactive);
+  EXPECT_EQ(toggle_button->GetEnabled(), !session_ends_on_stream_end);
 }
 
 TEST_P(DictationBubbleUiTest, AudioLevelPropagatesToWaveform) {

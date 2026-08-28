@@ -5,6 +5,7 @@
 #include "chrome/browser/dictation/features.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace dictation {
 
@@ -27,5 +28,8 @@ const base::FeatureParam<bool> kWebSpeechApiBackend{
 
 const base::FeatureParam<bool> kSessionEndsOnStreamEnd{
     &kDictation, "session_ends_on_stream_end", false};
+
+const base::FeatureParam<base::TimeDelta> kAutoSessionEndDelay{
+    &kDictation, "auto_session_end_delay", base::Milliseconds(750)};
 
 }  // namespace dictation
