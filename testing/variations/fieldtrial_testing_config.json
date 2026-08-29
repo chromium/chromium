@@ -7045,9 +7045,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "session_ends_on_stream_end": "true"
-                    },
                     "enable_features": [
                         "Dictation"
                     ]
