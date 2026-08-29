@@ -13,7 +13,6 @@ import android.os.Looper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -22,11 +21,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Test class for {@link UnownedUserDataHost}, which also describes typical usage.
  *
- * Most tests for this class is in {@link UnownedUserDataKeyTest}, since the public API is mostly
+ * <p>Most tests for this class is in {@link UnownedUserDataKeyTest}, since the public API is mostly
  * available from {@link UnownedUserDataKey}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UnownedUserDataHostTest {
     @Test
     public void testDestruction() {

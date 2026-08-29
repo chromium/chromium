@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
@@ -24,7 +23,6 @@ import org.chromium.testing.TestListInstrumentationRunListener;
  * Robolectric test to ensure static methods in TestListInstrumentationRunListener works properly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("UnusedMethod")
 public class TestListInstrumentationRunListenerTest {
 

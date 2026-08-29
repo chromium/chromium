@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MemoryPressureLevel;
@@ -25,7 +24,6 @@ import java.util.function.Supplier;
 
 /** Test for MemoryPressureMonitor. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MemoryPressureMonitorTest {
     private MemoryPressureMonitor mMonitor;
 

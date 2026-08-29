@@ -38,7 +38,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ChildBindingState;
@@ -51,7 +50,6 @@ import java.util.ArrayList;
 
 /** Unit tests for ChildProcessConnection. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChildProcessConnectionTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

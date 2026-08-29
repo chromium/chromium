@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -18,7 +17,6 @@ import java.util.Arrays;
 
 /** Unit tests for {@link Log}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CollectionUtilTest {
     /** Tests that the computed call origin is the correct one. */
     @Test

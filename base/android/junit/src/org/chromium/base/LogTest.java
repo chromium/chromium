@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -18,7 +17,6 @@ import java.util.List;
 
 /** Unit tests for {@link Log}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LogTest {
     @Test
     public void normalizeTagTest() {

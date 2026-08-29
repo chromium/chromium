@@ -7,7 +7,6 @@ package org.chromium.base.test.util;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -18,7 +17,6 @@ import java.util.List;
 
 /** Unit tests for SkipCheck. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("UnusedMethod")
 public class SkipCheckTest {
     @Retention(RetentionPolicy.RUNTIME)

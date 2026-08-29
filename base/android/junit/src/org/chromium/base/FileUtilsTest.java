@@ -55,9 +55,7 @@ import java.util.function.Function;
 
 /** Unit tests for {@link Log}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {FileUtilsTest.FakeShadowBitmapFactory.class})
+@Config(shadows = {FileUtilsTest.FakeShadowBitmapFactory.class})
 public class FileUtilsTest {
     @Rule public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 

@@ -32,9 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link Linker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {LinkerTest.ShadowParcelFileDescriptorForLibInfo.class})
+@Config(shadows = {LinkerTest.ShadowParcelFileDescriptorForLibInfo.class})
 @SuppressWarnings("GuardedBy") // doNothing().when(...).methodLocked() cannot resolve |mLock|.
 public class LinkerTest {
     // This shadow is required for calling LibInfo.to/from Aidl. Since we don't actually have real

@@ -11,13 +11,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Test class for {@link CallbackController}, which also describes typical usage. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CallbackControllerTest {
     /** Callbacks in this test act on {@code CallbackTarget}. */
     private static class CallbackTarget {

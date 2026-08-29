@@ -9,7 +9,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -18,7 +17,6 @@ import java.util.Map;
 
 /** Tests for {@link CommandLine}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CommandLineTest {
     // A reference command line. Note that switch2 is [brea\d], switch3 is [and "butter"],
     // and switch4 is [a "quoted" 'food'!]

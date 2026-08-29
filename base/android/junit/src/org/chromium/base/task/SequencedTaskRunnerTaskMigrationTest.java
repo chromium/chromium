@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * happens as native initializes.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SequencedTaskRunnerTaskMigrationTest {
 
     // It might be tempting to use fake executor similar to Robolectric's scheduler that is driven

@@ -8,13 +8,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.FrameworkMethod;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for RestrictionSkipCheck. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("UnusedMethod")
 public class RestrictionSkipCheckTest {
     private static final String TEST_RESTRICTION_APPLIES =

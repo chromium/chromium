@@ -17,7 +17,6 @@ import static org.chromium.base.test.util.Matchers.rejectedPromise;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise.UnhandledRejectionException;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +26,6 @@ import java.util.function.Function;
 
 /** Unit tests for {@link Promise}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PromiseTest {
     // We need a simple mutable reference type for testing.
     private static class Value {

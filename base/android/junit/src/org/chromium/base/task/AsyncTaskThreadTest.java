@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask.Status;
@@ -31,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link AsyncTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AsyncTaskThreadTest {
     private static final String TAG = "AsyncTaskThreadTest";
     private static final boolean DEBUG = false;

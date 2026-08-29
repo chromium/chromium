@@ -10,14 +10,12 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
 /** junit tests for {@link LifetimeAssert}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LifetimeAssertUnitTest {
     private static class TestClass {
         // Put assert inside of a test class to mirror typical api usage.
