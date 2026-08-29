@@ -13,6 +13,9 @@ rust_static_library("athm_ffi") {
     "athm_ffi.rs",
     "client.rs",
     "issuer.rs",
+    "privacy_pass_client.rs",
+    "privacy_pass_common.rs",
+    "privacy_pass_issuer.rs",
     "types.rs",
   ]
   cpp_api_from_rust = {
@@ -20,5 +23,24 @@ rust_static_library("athm_ffi") {
     cpp_namespace = "private_verification_tokens"
   }
   deps = [ "//third_party/anonymous_tokens:athm" ]
-  visibility = [ "//components/private_verification_tokens/common:*" ]
+  visibility = [
+    ":*",
+    "//components/private_verification_tokens/common:*",
+  ]
+}
+
+rust_static_library("privacy_pass_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "privacy_pass_unittest.rs"
+  sources = [ "privacy_pass_unittest.rs" ]
+  deps = [
+    ":athm_ffi",
+    "//testing/rust_gtest_interop",
+    "//third_party/anonymous_tokens:athm",
+  ]
+  visibility = [
+    "//components/private_verification_tokens:*",
+    "//components/private_verification_tokens/common:*",
+  ]
 }
