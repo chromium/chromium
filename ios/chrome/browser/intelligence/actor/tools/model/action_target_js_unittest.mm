@@ -50,7 +50,8 @@ class ActionTargetJavaScriptTest : public web::JavascriptTest {
     NSString* script = [NSString
         stringWithFormat:
             @"__gCrWeb.getRegisteredApi('action_target').getFunction('"
-            @"resolveTargetIframe')(%d, %d, %d)",
+            @"resolveTargetIframe')({coordinate: {x: %d, y: %d, pixelType: "
+            @"%d}})",
             x, y, pixelType];
 
     id result = web::test::ExecuteJavaScript(web_view(), script);

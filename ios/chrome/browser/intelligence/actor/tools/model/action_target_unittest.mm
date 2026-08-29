@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 
+#import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -107,6 +108,40 @@ TEST_F(ActionTargetTest, TestUpdateCoordinate) {
   ASSERT_TRUE(target.coordinate().has_value());
   EXPECT_EQ(target.coordinate()->x, 30);
   EXPECT_EQ(target.coordinate()->y, 40);
+}
+
+// Test that ToDictValue converts a coordinate target to a dictionary value.
+TEST_F(ActionTargetTest, TestToDictValue_Coordinate) {
+  optimization_guide::proto::ActionTarget proto;
+  proto.mutable_coordinate()->set_x(10);
+  proto.mutable_coordinate()->set_y(20);
+  proto.mutable_coordinate()->set_pixel_type(
+      optimization_guide::proto::Coordinate::PIXEL_TYPE_DIPS);
+
+  ActionTarget target = ActionTarget::FromProto(proto);
+  base::DictValue dict = target.ToDictValue();
+
+  const base::DictValue* coord_dict = dict.FindDict("coordinate");
+  ASSERT_TRUE(coord_dict);
+  EXPECT_EQ(coord_dict->FindInt("x"), 10);
+  EXPECT_EQ(coord_dict->FindInt("y"), 20);
+  EXPECT_EQ(
+      coord_dict->FindInt("pixelType"),
+      static_cast<int>(optimization_guide::proto::Coordinate::PIXEL_TYPE_DIPS));
+  EXPECT_FALSE(dict.FindInt("contentNodeId").has_value());
+}
+
+// Test that ToDictValue converts a node ID target to a dictionary value.
+TEST_F(ActionTargetTest, TestToDictValue_ContentNodeId) {
+  optimization_guide::proto::ActionTarget proto;
+  proto.set_content_node_id(123);
+  proto.mutable_document_identifier()->set_serialized_token("doc_token");
+
+  ActionTarget target = ActionTarget::FromProto(proto);
+  base::DictValue dict = target.ToDictValue();
+
+  EXPECT_EQ(dict.FindInt("contentNodeId"), 123);
+  EXPECT_FALSE(dict.FindDict("coordinate"));
 }
 
 }  // namespace actor

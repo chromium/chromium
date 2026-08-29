@@ -27,12 +27,9 @@ class SelectToolJavaScriptFeatureTest
     return SelectToolJavaScriptFeature::GetInstance();
   }
 
-  // Mocks both JavaScript functions for selecting to return the given result.
+  // Mocks JavaScript function for selecting to return the given result.
   void MockSelectJsFunctions(const std::string& mock_return_value) {
-    MockJsFunction(feature(), "select_tool", "selectByCoordinate",
-                   mock_return_value);
-    MockJsFunction(feature(), "select_tool", "selectByNodeId",
-                   mock_return_value);
+    MockJsFunction(feature(), "select_tool", "select", mock_return_value);
   }
 
   ActionTarget CreateTargetWithCoordinates() {

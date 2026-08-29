@@ -28,11 +28,9 @@ class ClickToolJavaScriptFeatureTest
     return ClickToolJavaScriptFeature::GetInstance();
   }
 
-  // Mocks both JavaScript functions for clicking to return the given result.
+  // Mocks JavaScript function for clicking to return the given result.
   void MockClickJsFunctions(const std::string& mock_return_value) {
-    MockJsFunction(feature(), "click_tool", "clickByCoordinate",
-                   mock_return_value);
-    MockJsFunction(feature(), "click_tool", "clickByNodeId", mock_return_value);
+    MockJsFunction(feature(), "click_tool", "click", mock_return_value);
   }
 
   ActionTarget CreateTargetWithCoordinates() {
@@ -114,16 +112,16 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
 }
 
 TEST_F(ClickToolJavaScriptFeatureTest, InvalidatedWebFrame) {
-  ActionTarget type_by_coordinate = CreateTargetWithCoordinates();
-  ActionTarget type_by_node_id = CreateTargetWithNodeId();
+  ActionTarget click_by_coordinate = CreateTargetWithCoordinates();
+  ActionTarget click_by_node_id = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ToolExecutionResult> node_id_future;
 
-  feature()->Click(/*target_frame=*/nullptr, type_by_coordinate,
+  feature()->Click(/*target_frame=*/nullptr, click_by_coordinate,
                    ClickAction::UNKNOWN_CLICK_TYPE,
                    ClickAction::UNKNOWN_CLICK_COUNT,
                    coordinate_future.GetCallback());
-  feature()->Click(/*target_frame=*/nullptr, type_by_node_id,
+  feature()->Click(/*target_frame=*/nullptr, click_by_node_id,
                    ClickAction::UNKNOWN_CLICK_TYPE,
                    ClickAction::UNKNOWN_CLICK_COUNT,
                    node_id_future.GetCallback());

@@ -28,11 +28,9 @@ class TypeToolJavaScriptFeatureTest
     return TypeToolJavaScriptFeature::GetInstance();
   }
 
-  // Mocks both JavaScript functions for typing to return the given result.
+  // Mocks JavaScript function for typing to return the given result.
   void MockTypeJsFunctions(const std::string& mock_return_value) {
-    MockJsFunction(feature(), "type_tool", "typeByCoordinate",
-                   mock_return_value);
-    MockJsFunction(feature(), "type_tool", "typeByNodeId", mock_return_value);
+    MockJsFunction(feature(), "type_tool", "type", mock_return_value);
   }
 
   ActionTarget CreateTargetWithCoordinates() {

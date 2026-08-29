@@ -41,6 +41,8 @@ mojom::ActionResultCode ToActionResultCode(int code) {
       return mojom::ActionResultCode::kOk;
     case ActionTargetResultCode::kCoordinatesOutOfBounds:
       return mojom::ActionResultCode::kCoordinatesOutOfBounds;
+    case ActionTargetResultCode::kArgumentsInvalid:
+      return mojom::ActionResultCode::kArgumentsInvalid;
   }
   NOTREACHED();
 }
@@ -124,6 +126,7 @@ void ActionTargetJavaScriptFeature::GetTargetFrameByDocumentIdentifier(
     web::WebState* web_state,
     const ActionTarget& target,
     TargetFrameCallback callback) {
+  CHECK(target.node_id().has_value());
   base::expected<web::WebFrame*, ToolExecutionResult> target_frame =
       GetWebFrameByRemoteFrameToken(web_state,
                                     target.node_id()->document_identifier);
@@ -142,10 +145,9 @@ void ActionTargetJavaScriptFeature::GetTargetFrameByCoordinate(
     const ActionTarget& target,
     TargetFrameCallback callback,
     int depth) {
+  CHECK(target.coordinate().has_value());
   base::ListValue parameters;
-  parameters.Append(target.coordinate()->x);
-  parameters.Append(target.coordinate()->y);
-  parameters.Append(static_cast<int>(target.coordinate()->pixel_type));
+  parameters.Append(target.ToDictValue());
 
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(

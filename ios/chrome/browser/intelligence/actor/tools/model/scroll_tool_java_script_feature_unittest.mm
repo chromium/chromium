@@ -30,12 +30,9 @@ class ScrollToolJavaScriptFeatureTest
     return ScrollToolJavaScriptFeature::GetInstance();
   }
 
-  // Mocks both JavaScript functions for scrolling to return the given result.
+  // Mocks JavaScript function for scrolling to return the given result.
   void MockScrollJsFunctions(const std::string& mock_return_value) {
-    MockJsFunction(feature(), "scroll_tool", "scrollByCoordinate",
-                   mock_return_value);
-    MockJsFunction(feature(), "scroll_tool", "scrollByNodeId",
-                   mock_return_value);
+    MockJsFunction(feature(), "scroll_tool", "scroll", mock_return_value);
   }
 
   ActionTarget CreateTargetWithCoordinates() {

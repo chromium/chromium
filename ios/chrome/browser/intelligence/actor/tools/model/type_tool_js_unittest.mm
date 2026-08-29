@@ -92,7 +92,7 @@ class TypeToolJavaScriptTest
 
     NSString* call_api_script = base::SysUTF8ToNSString(base::StringPrintf(
         R"(__gCrWeb.getRegisteredApi('type_tool').getFunction()"
-        R"('typeByCoordinate')(%d, %d, %d, '%s', %d, %s))",
+        R"('type')({coordinate: {x: %d, y: %d, pixelType: %d}}, '%s', %d, %s))",
         x, y, pixelType, text.c_str(), typeMode,
         followByEnter ? "true" : "false"));
 
@@ -107,7 +107,7 @@ class TypeToolJavaScriptTest
                              bool followByEnter) {
     NSString* script = base::SysUTF8ToNSString(base::StringPrintf(
         R"(__gCrWeb.getRegisteredApi('type_tool').getFunction()"
-        R"('typeByNodeId')(%d, '%s', %d, %s))",
+        R"('type')({contentNodeId: %d}, '%s', %d, %s))",
         nodeId, text.c_str(), typeMode, followByEnter ? "true" : "false"));
 
     id result = web::test::ExecuteJavaScript(web_view(), script);

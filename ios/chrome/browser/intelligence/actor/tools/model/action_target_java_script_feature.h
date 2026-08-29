@@ -30,6 +30,8 @@ enum class ActionTargetResultCode {
   kOk = 0,
   // The coordinates provided to the function were not in the viewport.
   kCoordinatesOutOfBounds = 1,
+  // The argument provided to resolveTargetIframe were invalid.
+  kArgumentsInvalid = 2,
 };
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/action_target.ts:ActionTargetResultCode)
 

@@ -8,7 +8,8 @@
  */
 
 import {setInputElementValue, valueForElement} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import type {ActionTarget, Coordinate} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import {getElementFromPoint, isCoordinateTarget, isNodeIdTarget} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
@@ -106,15 +107,15 @@ function selectMatchingOption(element: HTMLElement, targetValue: string): {
 }
 
 /**
- * Tries to find the <select> element by coordinate and select the option with
- * the given `value`.
+ * Simulates selecting the <option> matching `value` in a <select> element at
+ * the given coordinates.
+ * @param coordinate The target coordinate.
+ * @param value The value to select.
+ * @return An object containing the result of the select attempt.
  */
-function selectByCoordinate(
-    x: number, y: number, pixelType: number, value: string): {
-  resultCode: number,
-  message: string,
-} {
-  const {element} = getElementFromPoint(x, y, pixelType);
+function selectByCoordinate(coordinate: Coordinate, value: string):
+    {resultCode: number, message: string} {
+  const {element} = getElementFromPoint(coordinate);
   if (!element || !(element instanceof HTMLElement)) {
     return {
       resultCode: SelectToolResultCode.COORDINATES_OUT_OF_BOUNDS,
@@ -125,13 +126,14 @@ function selectByCoordinate(
 }
 
 /**
- * Tries to find the <select> element by its DOM node id and select the option
- * with the given `value`.
+ * Simulates selecting the <option> matching `value` in a <select> element with
+ * the given DOM node ID.
+ * @param nodeId The DOM node ID of the target element.
+ * @param value The value to select.
+ * @return an object containing the result of the select attempt.
  */
-function selectByNodeId(nodeId: number, value: string): {
-  resultCode: number,
-  message: string,
-} {
+function selectByNodeId(
+    nodeId: number, value: string): {resultCode: number, message: string} {
   const node: Node|null = getNodeById(nodeId, window);
   if (!node || node.nodeType !== Node.ELEMENT_NODE) {
     return {
@@ -148,7 +150,29 @@ function selectByNodeId(nodeId: number, value: string): {
   return selectMatchingOption(node as HTMLElement, value);
 }
 
+/**
+ * Tries to find the <select> element specified by an ActionTarget and select
+ * the option with the given `value`.
+ * @param target The action target (coordinate or node ID).
+ * @param value The value to select.
+ * @return an object containing the result of the select attempt.
+ */
+function select(target: ActionTarget, value: string): {
+  resultCode: number,
+  message: string,
+} {
+  if (isNodeIdTarget(target)) {
+    return selectByNodeId(target.contentNodeId, value);
+  } else if (isCoordinateTarget(target)) {
+    return selectByCoordinate(target.coordinate, value);
+  }
+
+  return {
+    resultCode: SelectToolResultCode.COORDINATES_OUT_OF_BOUNDS,
+    message: 'Invalid target.',
+  };
+}
+
 const selectToolApi = new CrWebApi('select_tool');
-selectToolApi.addFunction('selectByCoordinate', selectByCoordinate);
-selectToolApi.addFunction('selectByNodeId', selectByNodeId);
+selectToolApi.addFunction('select', select);
 gCrWeb.registerApi(selectToolApi);

@@ -9,7 +9,8 @@
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import type {ActionTarget, Coordinate} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import {getElementFromPoint, isCoordinateTarget, isNodeIdTarget} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
@@ -81,35 +82,18 @@ function getAutofillRendererIdByNodeId(nodeId: number):
  * Resolves the Autofill renderer ID for the element at the specified
  * coordinates.
  *
- * @param x The x-coordinate.
- * @param y The y-coordinate.
- * @param pixelType The pixel type (0=UNSPECIFIED, 1=DIPS, 2=PHYSICAL).
+ * @param coordinate The target coordinate.
  * @return An object containing the result code and the unique ID if successful.
  */
-function getAutofillRendererIdByCoordinate(
-    x: number, y: number, pixelType: number): AutofillRendererIdResult {
-  const fromPoint = getElementFromPoint(x, y, pixelType);
+function getAutofillRendererIdByCoordinate(coordinate: Coordinate):
+    AutofillRendererIdResult {
+  const fromPoint = getElementFromPoint(coordinate);
   if (!fromPoint.element) {
     return {
       resultCode: AttemptFormFillingToolResultCode.COORDINATES_OUT_OF_BOUNDS,
     };
   }
   return getAutofillRendererIdByElement(fromPoint.element as Element);
-}
-
-// JavaScript representation of `ActionTarget`.
-interface TargetInfo {
-  nodeId?: number;
-  x?: number;
-  y?: number;
-  pixelType?: number;
-}
-
-/**
- * Returns true if the value is a valid, finite number.
- */
-function isValidNumber(val: number|undefined|null): val is number {
-  return typeof val === 'number' && Number.isFinite(val);
 }
 
 interface AutofillRendererIdsResult {
@@ -120,24 +104,20 @@ interface AutofillRendererIdsResult {
 /**
  * Batched resolver that retrieves Autofill renderer IDs for a list of targets.
  *
- * @param targets A list of target specifications, containing either `nodeId`
- *     or coordinate targets.
+ * @param targets A list of target specifications (ActionTarget).
  * @return A list of resolution results matching the input targets list.
  */
-function getAutofillRendererIds(targets: TargetInfo[]):
+function getAutofillRendererIds(targets: ActionTarget[]):
     AutofillRendererIdsResult {
   const uniqueIds: string[] = [];
   for (const target of targets) {
     let result: AutofillRendererIdResult;
 
     // Attempt to retrieve the autofill renderer ID for `target`.
-    if (isValidNumber(target.nodeId)) {
-      result = getAutofillRendererIdByNodeId(target.nodeId);
-    } else if (
-        isValidNumber(target.x) && isValidNumber(target.y) &&
-        isValidNumber(target.pixelType)) {
-      result = getAutofillRendererIdByCoordinate(
-          target.x, target.y, target.pixelType);
+    if (isNodeIdTarget(target)) {
+      result = getAutofillRendererIdByNodeId(target.contentNodeId);
+    } else if (isCoordinateTarget(target)) {
+      result = getAutofillRendererIdByCoordinate(target.coordinate);
     } else {
       // Invalid target.
       result = {

@@ -7,7 +7,8 @@
  * within an element.
  */
 
-import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import type {ActionTarget, Coordinate} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import {getElementFromPoint, isCoordinateTarget, isNodeIdTarget} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
@@ -261,25 +262,15 @@ function scrollElement(target: Element, scrollParams?: ScrollParams):
 }
 
 /**
- * Simulates scrolling at a coordinate.
- * @param x The x-coordinate.
- * @param y The y-coordinate.
- * @param pixelType The type of pixels.
- * @param [direction] The scroll direction.
- * @param [distance] The distance to scroll.
- * @return an object containing the result of the scroll attempt.
+ * Simulates scrolling at or on a target specified by coordinates.
+ * @param coordinate The target coordinate.
+ * @param [scrollParams] The scroll parameters.
+ * @return An object containing the result of the scroll attempt.
  */
 function scrollByCoordinate(
-    x: number,
-    y: number,
-    pixelType: number,
-    direction?: number,
-    distance?: number,
-    ): {
-  resultCode: number,
-  message: string,
-} {
-  let {element} = getElementFromPoint(x, y, pixelType);
+    coordinate: Coordinate,
+    scrollParams?: ScrollParams): {resultCode: number, message: string} {
+  let {element} = getElementFromPoint(coordinate);
   if (!element) {
     return {
       resultCode: ScrollToolResultCode.COORDINATES_OUT_OF_BOUNDS,
@@ -287,18 +278,13 @@ function scrollByCoordinate(
     };
   }
 
-  let scrollParams: ScrollParams|undefined;
-  if (direction !== undefined && distance !== undefined) {
-    scrollParams = {
-      direction: getScrollDirection(direction),
-      distance,
-    };
-
+  if (scrollParams) {
     // When the desktop ScrollTool does a directional scroll of an element
     // targeted by coordinate, it checks if it has a scrollable ancestor and
     // uses that for scrolling.
     // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/scroll_tool.cc;l=34;drc=06d06050f1a98a6ce06cc1dc4470eebaf5a81990
-    const scrollableElement = findScrollableAncestor(element, direction);
+    const scrollableElement =
+        findScrollableAncestor(element, scrollParams.direction);
     if (!scrollableElement) {
       return {
         resultCode: ScrollToolResultCode.SCROLL_TARGET_NOT_USER_SCROLLABLE,
@@ -312,17 +298,13 @@ function scrollByCoordinate(
 }
 
 /**
- * Simulates scrolling an element specified by its DOM node ID.
- * @param nodeId The ID of the node.
- * @param [direction] The scroll direction.
- * @param [distance] The distance to scroll.
+ * Simulates scrolling at or on a target specified by DOM node ID.
+ * @param nodeId The DOM node ID of the target element.
+ * @param [scrollParams] The scroll parameters.
  * @return an object containing the result of the scroll attempt.
  */
-function scrollByNodeId(
-    nodeId: number, direction?: number, distance?: number): {
-  resultCode: number,
-  message: string,
-} {
+function scrollByNodeId(nodeId: number, scrollParams?: ScrollParams):
+    {resultCode: number, message: string} {
   let node: Node|null = null;
   if (nodeId === 0) {
     node = document.scrollingElement;
@@ -347,6 +329,24 @@ function scrollByNodeId(
     };
   }
 
+  return scrollElement(node as Element, scrollParams);
+}
+
+/**
+ * Simulates scrolling at or on a target specified by an ActionTarget.
+ * @param target The action target (coordinate or node ID).
+ * @param [direction] The scroll direction.
+ * @param [distance] The distance to scroll.
+ * @return an object containing the result of the scroll attempt.
+ */
+function scroll(
+    target: ActionTarget,
+    direction?: number,
+    distance?: number,
+    ): {
+  resultCode: number,
+  message: string,
+} {
   let scrollParams: ScrollParams|undefined;
   if (direction !== undefined && distance !== undefined) {
     scrollParams = {
@@ -355,12 +355,20 @@ function scrollByNodeId(
     };
   }
 
-  return scrollElement(node as Element, scrollParams);
+  if (isNodeIdTarget(target)) {
+    return scrollByNodeId(target.contentNodeId, scrollParams);
+  } else if (isCoordinateTarget(target)) {
+    return scrollByCoordinate(target.coordinate, scrollParams);
+  }
+
+  return {
+    resultCode: ScrollToolResultCode.ARGUMENTS_INVALID,
+    message: 'Invalid target.',
+  };
 }
 
 const scrollToolApi = new CrWebApi('scroll_tool');
-scrollToolApi.addFunction('scrollByCoordinate', scrollByCoordinate);
-scrollToolApi.addFunction('scrollByNodeId', scrollByNodeId);
+scrollToolApi.addFunction('scroll', scroll);
 scrollToolApi.addFunction('isScrollable', isScrollable);
 
 gCrWeb.registerApi(scrollToolApi);

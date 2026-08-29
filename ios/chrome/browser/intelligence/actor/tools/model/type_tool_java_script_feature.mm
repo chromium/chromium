@@ -69,7 +69,7 @@ void TypeToolJavaScriptFeature::Type(
     optimization_guide::proto::TypeAction_TypeMode mode,
     bool follow_by_enter,
     ToolExecutionCallback callback) {
-  CHECK(target.node_id().has_value() || target.coordinate().has_value());
+  CHECK(target.is_valid());
 
   if (!target_frame) {
     std::move(callback).Run(
@@ -78,27 +78,14 @@ void TypeToolJavaScriptFeature::Type(
   }
 
   base::ListValue parameters;
-  std::string function_name;
-
-  if (target.node_id().has_value()) {
-    parameters.Append(target.node_id()->content_node_id);
-    parameters.Append(text);
-    parameters.Append(static_cast<int>(mode));
-    parameters.Append(follow_by_enter);
-    function_name = "type_tool.typeByNodeId";
-  } else {
-    parameters.Append(target.coordinate()->x);
-    parameters.Append(target.coordinate()->y);
-    parameters.Append(static_cast<int>(target.coordinate()->pixel_type));
-    parameters.Append(text);
-    parameters.Append(static_cast<int>(mode));
-    parameters.Append(follow_by_enter);
-    function_name = "type_tool.typeByCoordinate";
-  }
+  parameters.Append(target.ToDictValue());
+  parameters.Append(text);
+  parameters.Append(static_cast<int>(mode));
+  parameters.Append(follow_by_enter);
 
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
-      target_frame.get(), function_name, parameters,
+      target_frame.get(), "type_tool.type", parameters,
       base::BindOnce(
           [](ToolExecutionCallback callback, const base::Value* result) {
             std::move(callback).Run(ParseJavaScriptResultWithResultCode(

@@ -51,10 +51,13 @@ class AttemptFormFillingToolJavaScriptTest : public web::JavascriptTest {
   NSDictionary* GetAutofillRendererIds(id nodeId, id x, id y, id pixelType) {
     NSString* targetJson;
     if (nodeId) {
-      targetJson = [NSString stringWithFormat:@"{ nodeId: %@ }", nodeId];
-    } else {
+      targetJson = [NSString stringWithFormat:@"{ contentNodeId: %@ }", nodeId];
+    } else if (x && y && pixelType) {
       targetJson = [NSString
-          stringWithFormat:@"{ x: %@, y: %@, pixelType: %@ }", x, y, pixelType];
+          stringWithFormat:@"{ coordinate: { x: %@, y: %@, pixelType: %@ } }",
+                           x, y, pixelType];
+    } else {
+      targetJson = @"{}";
     }
     NSString* script = [NSString
         stringWithFormat:

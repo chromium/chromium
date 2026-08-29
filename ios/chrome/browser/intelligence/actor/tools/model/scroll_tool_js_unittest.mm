@@ -94,8 +94,8 @@ class ScrollToolJavaScriptTest
           R"(
             (function() {
               return __gCrWeb.getRegisteredApi('scroll_tool')
-                             .getFunction('scrollByCoordinate')
-                                         (%d, %d, %d, %d, %f);
+                             .getFunction('scroll')
+                                         ({coordinate: {x: %d, y: %d, pixelType: %d}}, %d, %f);
             })();
           )",
           x, y, pixel_type, additional_fields->direction,
@@ -105,8 +105,8 @@ class ScrollToolJavaScriptTest
           R"(
             (function() {
               return __gCrWeb.getRegisteredApi('scroll_tool')
-                             .getFunction('scrollByCoordinate')
-                                         (%d, %d, %d);
+                             .getFunction('scroll')
+                                         ({coordinate: {x: %d, y: %d, pixelType: %d}});
             })();
           )",
           x, y, pixel_type);
@@ -127,7 +127,7 @@ class ScrollToolJavaScriptTest
           R"(
             (function() {
               return __gCrWeb.getRegisteredApi('scroll_tool')
-                             .getFunction('scrollByNodeId')(%d, %d, %f);
+                             .getFunction('scroll')({contentNodeId: %d}, %d, %f);
             })();
           )",
           node_id, additional_fields->direction, additional_fields->distance);
@@ -136,7 +136,7 @@ class ScrollToolJavaScriptTest
           R"(
             (function() {
               return __gCrWeb.getRegisteredApi('scroll_tool')
-                             .getFunction('scrollByNodeId')(%d);
+                             .getFunction('scroll')({contentNodeId: %d});
             })();
           )",
           node_id);

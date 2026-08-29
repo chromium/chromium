@@ -7,7 +7,8 @@
  */
 
 import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
-import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import type {ActionTarget} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import {getElementFromPoint, isCoordinateTarget} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // LINT.IfChange(ActionTargetResultCode)
@@ -16,25 +17,25 @@ enum ActionTargetResultCode {
   OK = 0,
   // The coordinates provided to the function were not in the viewport.
   COORDINATES_OUT_OF_BOUNDS = 1,
+  // The arguments provided to `resolveTargetIframe` were invalid.
+  ARGUMENTS_INVALID = 2,
 }
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h:ActionTargetResultCode)
 
 /**
- * Resolves the target iframe at the given coordinates.
+ * Resolves whether the element specified by the coordinate target is an iframe.
  *
- * If the element at the coordinates is an iframe, it registers the child frame
- * and returns the details needed to forward the action (remote token and
+ * If the element at the target coordinates is an iframe, it registers the child
+ * frame and returns the details needed to forward the action (remote token and
  * frame-relative coordinates) via the `childFrame` property. If the element
- * is not an iframe, the `childFrame` property is simply omitted, indicating
- * that the target resides within the current frame.
+ * is not an iframe, the `childFrame` property is omitted, indicating
+ * that the target element resides within the current frame.
  *
- * @param {number} x The x-coordinate.
- * @param {number} y The y-coordinate.
- * @param {number} pixelType The type of pixels (0=UNSPECIFIED, 1=DIPS,
- *     2=PHYSICAL).
+ * @param target The coordinate-based action target used to check if the target
+ *     element is an iframe.
  * @return An object containing the result of the resolution attempt.
  */
-function resolveTargetIframe(x: number, y: number, pixelType: number): {
+function resolveTargetIframe(target: ActionTarget): {
   resultCode: number,
   message?: string,
   childFrame?: {
@@ -43,7 +44,15 @@ function resolveTargetIframe(x: number, y: number, pixelType: number): {
     frameY: number,
   },
 } {
-  const {element, clientX, clientY} = getElementFromPoint(x, y, pixelType);
+  if (!isCoordinateTarget(target)) {
+    return {
+      resultCode: ActionTargetResultCode.ARGUMENTS_INVALID,
+      message:
+          'Expected `target` to be coordinate based. Node ID targets can be resolved in native code.',
+    };
+  }
+
+  const {element, clientX, clientY} = getElementFromPoint(target.coordinate);
 
   if (!element) {
     return {

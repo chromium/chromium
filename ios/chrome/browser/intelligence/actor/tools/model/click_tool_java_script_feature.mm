@@ -64,7 +64,7 @@ void ClickToolJavaScriptFeature::Click(
     optimization_guide::proto::ClickAction_ClickType click_type,
     int click_count,
     ToolExecutionCallback callback) {
-  CHECK(target.node_id().has_value() || target.coordinate().has_value());
+  CHECK(target.is_valid());
 
   if (!target_frame) {
     std::move(callback).Run(
@@ -73,27 +73,13 @@ void ClickToolJavaScriptFeature::Click(
   }
 
   base::ListValue parameters;
-  std::string function_name;
-
-  if (target.node_id().has_value()) {
-    parameters.Append(target.node_id()->content_node_id);
-    parameters.Append(static_cast<int>(click_type));
-    parameters.Append(click_count);
-    function_name = "click_tool.clickByNodeId";
-  } else if (target.coordinate().has_value()) {
-    parameters.Append(target.coordinate()->x);
-    parameters.Append(target.coordinate()->y);
-    parameters.Append(static_cast<int>(click_type));
-    parameters.Append(click_count);
-    parameters.Append(static_cast<int>(target.coordinate()->pixel_type));
-    function_name = "click_tool.clickByCoordinate";
-  } else {
-    NOTREACHED();
-  }
+  parameters.Append(target.ToDictValue());
+  parameters.Append(static_cast<int>(click_type));
+  parameters.Append(click_count);
 
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
-      target_frame.get(), function_name, parameters,
+      target_frame.get(), "click_tool.click", parameters,
       base::BindOnce(
           [](ToolExecutionCallback cb, const base::Value* result) {
             std::move(cb).Run(ParseJavaScriptResultWithResultCode(

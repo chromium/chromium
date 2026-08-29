@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 
+#import <utility>
+
 #import "base/check.h"
+#import "base/values.h"
 
 namespace actor {
 
@@ -38,6 +41,20 @@ void ActionTarget::UpdateCoordinate(int x, int y) {
   CHECK(coordinate_);
   coordinate_->x = x;
   coordinate_->y = y;
+}
+
+base::DictValue ActionTarget::ToDictValue() const {
+  base::DictValue dict;
+  if (coordinate_.has_value()) {
+    base::DictValue coord_dict;
+    coord_dict.Set("x", coordinate_->x);
+    coord_dict.Set("y", coordinate_->y);
+    coord_dict.Set("pixelType", static_cast<int>(coordinate_->pixel_type));
+    dict.Set("coordinate", std::move(coord_dict));
+  } else if (node_id_.has_value()) {
+    dict.Set("contentNodeId", static_cast<int>(node_id_->content_node_id));
+  }
+  return dict;
 }
 
 }  // namespace actor

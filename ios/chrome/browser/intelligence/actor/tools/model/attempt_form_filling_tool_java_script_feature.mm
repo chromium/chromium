@@ -98,17 +98,7 @@ void AttemptFormFillingToolJavaScriptFeature::GetAutofillRendererIds(
   // Convert target to JavaScript dict.
   for (const ActionTarget& target : targets) {
     CHECK(target.is_valid());
-    base::DictValue target_dict;
-    if (target.node_id().has_value()) {
-      target_dict.Set("nodeId",
-                      static_cast<int>(target.node_id()->content_node_id));
-    } else if (target.coordinate().has_value()) {
-      target_dict.Set("x", target.coordinate()->x);
-      target_dict.Set("y", target.coordinate()->y);
-      target_dict.Set("pixelType",
-                      static_cast<int>(target.coordinate()->pixel_type));
-    }
-    targets_list.Append(std::move(target_dict));
+    targets_list.Append(target.ToDictValue());
   }
 
   base::ListValue parameters;

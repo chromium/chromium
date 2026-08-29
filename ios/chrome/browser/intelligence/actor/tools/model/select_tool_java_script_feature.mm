@@ -55,7 +55,7 @@ void SelectToolJavaScriptFeature::Select(
     const ActionTarget& target,
     const std::string& value,
     ToolExecutionCallback callback) {
-  CHECK(target.node_id().has_value() || target.coordinate().has_value());
+  CHECK(target.is_valid());
 
   if (!target_frame) {
     std::move(callback).Run(
@@ -64,23 +64,12 @@ void SelectToolJavaScriptFeature::Select(
   }
 
   base::ListValue parameters;
-  std::string function_name;
-
-  if (target.node_id().has_value()) {
-    parameters.Append(target.node_id()->content_node_id);
-    parameters.Append(value);
-    function_name = "select_tool.selectByNodeId";
-  } else {
-    parameters.Append(target.coordinate()->x);
-    parameters.Append(target.coordinate()->y);
-    parameters.Append(static_cast<int>(target.coordinate()->pixel_type));
-    parameters.Append(value);
-    function_name = "select_tool.selectByCoordinate";
-  }
+  parameters.Append(target.ToDictValue());
+  parameters.Append(value);
 
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
-      target_frame.get(), function_name, parameters,
+      target_frame.get(), "select_tool.select", parameters,
       base::BindOnce(
           [](ToolExecutionCallback callback, const base::Value* result) {
             std::move(callback).Run(ParseJavaScriptResultWithResultCode(

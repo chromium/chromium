@@ -97,8 +97,8 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
                                   int pixelType) {
     NSString* script = base::SysUTF8ToNSString(base::StringPrintf(
         R"(__gCrWeb.getRegisteredApi('click_tool').getFunction()"
-        R"('clickByCoordinate')(%d, %d, %d, %d, %d))",
-        x, y, clickType, clickCount, pixelType));
+        R"('click')({coordinate: {x: %d, y: %d, pixelType: %d}}, %d, %d))",
+        x, y, pixelType, clickType, clickCount));
 
     id result = web::test::ExecuteJavaScript(web_view(), script);
     NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
@@ -108,7 +108,7 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
   NSDictionary* ClickByNodeId(int nodeId, int clickType, int clickCount) {
     NSString* script = base::SysUTF8ToNSString(base::StringPrintf(
         R"(__gCrWeb.getRegisteredApi('click_tool').getFunction()"
-        R"('clickByNodeId')(%d, %d, %d))",
+        R"('click')({contentNodeId: %d}, %d, %d))",
         nodeId, clickType, clickCount));
 
     id result = web::test::ExecuteJavaScript(web_view(), script);
