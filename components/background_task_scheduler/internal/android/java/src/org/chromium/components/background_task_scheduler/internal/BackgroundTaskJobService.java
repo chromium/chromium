@@ -124,7 +124,6 @@ public class BackgroundTaskJobService extends JobService {
         }
 
         if (BackgroundTaskSchedulerJobService.didTaskExpire(params, mClock.currentTimeMillis())) {
-            BackgroundTaskSchedulerUma.getInstance().reportTaskExpired(params.getJobId());
             return false;
         }
 

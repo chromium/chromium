@@ -958,20 +958,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackgroundTaskScheduler.TaskExpired"
-    enum="BackgroundTaskId" expires_after="2025-06-08">
-  <owner>nator@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records that a specific background task has expired. Cached before the task
-    is to be started.
-
-    Cached to SharedPreferences to be recorded in the next ChromeActivity start
-    instead of recorded immediately on background.
-  </summary>
-</histogram>
-
 <histogram name="Android.BackgroundTaskScheduler.TaskFinished.{TaskType}"
     units="ms" expires_after="2027-02-07">
   <owner>nyquist@chromium.org</owner>

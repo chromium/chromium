@@ -145,11 +145,6 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
         }
     }
 
-    /** Reports metrics for not starting a task because of expiration. */
-    public void reportTaskExpired(int taskId) {
-        cacheEvent("Android.BackgroundTaskScheduler.TaskExpired", toUmaEnumValueFromTaskId(taskId));
-    }
-
     /** Reports metrics for task canceling. */
     public void reportTaskCanceled(int taskId) {
         cacheEvent(
