@@ -1,7 +1,198 @@
-<head>
-<script src="../../resources/js-test.js"></script>
-</head>
-<body>
-<script src="resources/message-port-multi.js"></script>
-<!-- We don't use the standard js-test-post as this is an asynchronous test -->
-</body>
+<!DOCTYPE html>
+<title>MessagePort.postMessage() with multiple ports</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+function createChannel(t) {
+  const channel = new MessageChannel();
+  t.add_cleanup(() => {
+    channel.port1.close();
+    channel.port2.close();
+  });
+  return channel;
+}
+
+function nextMessage(port) {
+  return new Promise(resolve => {
+    port.onmessage = resolve;
+  });
+}
+
+test(t => {
+  const channel = createChannel(t);
+  assert_throws_js(TypeError, () => channel.port1.postMessage());
+}, "postMessage() requires a message");
+
+test(t => {
+  const channel = createChannel(t);
+  assert_throws_dom("DataCloneError", () => {
+    channel.port1.postMessage("same port", [channel.port1]);
+  });
+}, "The source port cannot be transferred");
+
+test(t => {
+  const channel = createChannel(t);
+  const transferred = createChannel(t);
+  assert_throws_js(TypeError, () => {
+    channel.port1.postMessage(
+        "null port", [transferred.port1, null, transferred.port2]);
+  });
+}, "The transfer list cannot contain null");
+
+test(t => {
+  const channel = createChannel(t);
+  const transferred = createChannel(t);
+  assert_throws_dom("DataCloneError", () => {
+    channel.port1.postMessage(
+        "non-transferable object", [transferred.port1, {}, transferred.port2]);
+  });
+}, "The transfer list cannot contain a non-transferable object");
+
+test(t => {
+  const channel = createChannel(t);
+  const transferred = createChannel(t);
+  assert_throws_dom("DataCloneError", () => {
+    channel.port1.postMessage(
+        "duplicate port", [transferred.port1, transferred.port1]);
+  });
+}, "The transfer list cannot contain a duplicate port");
+
+test(t => {
+  const channel = createChannel(t);
+  assert_throws_dom("DataCloneError", () => {
+    channel.port1.postMessage("array-like object", [{length: 3}]);
+  });
+}, "The transfer list cannot contain an array-like object");
+
+test(t => {
+  const channel = createChannel(t);
+  const buffer = new ArrayBuffer(2);
+  assert_throws_dom("DataCloneError", () => {
+    channel.port1.postMessage("duplicate buffer", [buffer, buffer]);
+  });
+}, "The transfer list cannot contain a duplicate ArrayBuffer");
+
+test(t => {
+  const channel = createChannel(t);
+  const transferList = [];
+  transferList[1234567890] = channel.port1;
+  assert_throws_js(RangeError, () => {
+    channel.port1.postMessage("large transfer list", transferList);
+  });
+}, "An excessively large transfer list throws a RangeError");
+
+promise_test(async t => {
+  const channel = createChannel(t);
+  const message = nextMessage(channel.port2);
+  channel.port1.postMessage("no ports");
+
+  assert_array_equals((await message).ports, []);
+}, "event.ports is empty when no transfer list is provided");
+
+promise_test(async t => {
+  const channel = createChannel(t);
+  const message = nextMessage(channel.port2);
+  channel.port1.postMessage("empty transfer list", []);
+
+  assert_array_equals((await message).ports, []);
+}, "event.ports is empty when the transfer list is empty");
+
+promise_test(async t => {
+  const channel = createChannel(t);
+  const transferred = createChannel(t);
+  const message = nextMessage(channel.port2);
+  channel.port1.postMessage(
+      "two ports", [transferred.port1, transferred.port2]);
+
+  const event = await message;
+  assert_equals(event.ports.length, 2);
+  event.ports.forEach(port => port.close());
+}, "event.ports contains both transferred ports");
+
+promise_test(async t => {
+  const channel = createChannel(t);
+  const transferred = createChannel(t);
+  assert_throws_dom("DataCloneError", () => {
+    channel.port1.postMessage(
+        "duplicate port", [transferred.port1, transferred.port1]);
+  });
+
+  const message = nextMessage(channel.port2);
+  channel.port1.postMessage(
+      "two ports", [transferred.port1, transferred.port2]);
+  const event = await message;
+  assert_equals(event.ports.length, 2);
+  event.ports.forEach(port => port.close());
+}, "A failed transfer does not disentangle its ports");
+
+for (const [name, value] of [
+  ["MessageChannel", () => new MessageChannel()],
+  ["Navigator", () => navigator],
+  ["Function", () => function() {}],
+]) {
+  promise_test(async t => {
+    const channel = createChannel(t);
+    const transferred = createChannel(t);
+    const hostObject = value();
+    if (hostObject instanceof MessageChannel) {
+      t.add_cleanup(() => {
+        hostObject.port1.close();
+        hostObject.port2.close();
+      });
+    }
+
+    assert_throws_dom("DataCloneError", () => {
+      channel.port1.postMessage(
+          {hostObject, port: transferred.port1}, [transferred.port1]);
+    });
+
+    const message = nextMessage(transferred.port2);
+    transferred.port1.postMessage("still entangled");
+    assert_equals((await message).data, "still entangled");
+  }, `A ${name} cannot be cloned and does not cause ports to be transferred`);
+}
+
+promise_test(async t => {
+  const channel = createChannel(t);
+  const transferred = createChannel(t);
+  const message = nextMessage(channel.port2);
+  channel.port1.postMessage(
+      {port: transferred.port1}, [transferred.port1]);
+
+  const event = await message;
+  assert_equals(event.ports.length, 1);
+  assert_equals(event.ports[0], event.data.port);
+  event.ports[0].close();
+}, "A transferred port appears in both event.ports and event.data");
+
+promise_test(async t => {
+  const channel = createChannel(t);
+  const transferred = createChannel(t);
+  const message = nextMessage(channel.port2);
+  channel.port1.postMessage(
+      {port1: transferred.port1, port2: transferred.port1},
+      [transferred.port1]);
+
+  const event = await message;
+  assert_equals(event.ports.length, 1);
+  assert_equals(event.ports[0], event.data.port1);
+  assert_equals(event.data.port1, event.data.port2);
+  event.ports[0].close();
+}, "A port referenced twice in data is transferred once");
+
+promise_test(async t => {
+  const channel = createChannel(t);
+  const transferred1 = createChannel(t);
+  const transferred2 = createChannel(t);
+  const message = nextMessage(channel.port2);
+  channel.port1.postMessage(
+      {port1: transferred1.port1, port2: transferred2.port1},
+      [transferred1.port1, transferred2.port1]);
+
+  const event = await message;
+  assert_equals(event.ports.length, 2);
+  assert_equals(event.ports[0], event.data.port1);
+  assert_equals(event.ports[1], event.data.port2);
+  event.ports.forEach(port => port.close());
+}, "Two ports can be transferred in one message");
+</script>
