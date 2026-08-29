@@ -45,9 +45,6 @@ class ModelExecutionFetcher {
   // Records the request status histogram for the given `feature`.
   static void RecordRequestStatusHistogram(ModelBasedCapabilityKey feature,
                                            FetcherRequestStatus status);
-  static proto::ExecuteRequest ToExecuteRequest(
-      ModelBasedCapabilityKey feature,
-      const google::protobuf::MessageLite& request_metadata);
 };
 
 }  // namespace optimization_guide

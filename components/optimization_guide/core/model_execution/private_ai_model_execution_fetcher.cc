@@ -10,6 +10,7 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/model_execution/model_execution_proto_util.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/private_ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -83,9 +84,9 @@ void PrivateAiModelExecutionFetcher::ExecuteModel(
   auto private_ai_feature_name = ToPrivateAiFeatureName(feature);
 
   private_ai::proto::PaicMessage paic_message;
-  private_ai::PopulatePaicMessage(private_ai_feature_name,
-                                  ToExecuteRequest(feature, request_metadata),
-                                  &paic_message);
+  private_ai::PopulatePaicMessage(
+      private_ai_feature_name, CreateExecuteRequest(feature, request_metadata),
+      &paic_message);
 
   private_ai::Client::RequestOptions options;
   if (timeout) {

@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_proto_util.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -678,7 +679,7 @@ void ModelExecutionFetcherImpl::ExecuteModel(
   model_execution_callback_ = std::move(callback);
 
   proto::ExecuteRequest execute_request =
-      ToExecuteRequest(feature, request_metadata);
+      CreateExecuteRequest(feature, request_metadata);
   std::string serialized_request;
   execute_request.SerializeToString(&serialized_request);
 
