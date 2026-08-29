@@ -173,7 +173,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
         if (verticalMargin > 0) {
             int dialogHeight = MeasureSpec.getSize(heightMeasureSpec);
-            int availableHeight = isLargeFormFactorUiEnabled ? dialogHeight : metrics.heightPixels;
+            int availableHeight = metrics.heightPixels;
             int maxHeight = Math.max(0, availableHeight - 2 * verticalMargin);
             int height = Math.min(dialogHeight, maxHeight);
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);

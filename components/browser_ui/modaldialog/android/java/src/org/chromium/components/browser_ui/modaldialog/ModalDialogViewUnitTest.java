@@ -509,6 +509,7 @@ public class ModalDialogViewUnitTest {
     public void measure_LargeFormFactorUi_ShortWindow_Maintains24dpVerticalMargin() {
         // Short container (500dp tall).
         var containerHeight = 500;
+        mDisplayMetrics.heightPixels = containerHeight;
 
         // Content requests 600dp height.
         createModel(mModelBuilder, MAX_DIALOG_WIDTH_LFF, 600);
