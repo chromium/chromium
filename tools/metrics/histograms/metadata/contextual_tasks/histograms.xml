@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualTasks.Context.SiteExclusions.ActiveTab.ExclusionsChecked"
-    units="count" expires_after="2026-09-17">
+    units="count" expires_after="2027-03-17">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.SiteExclusions.ActiveTab.Filtered"
-    enum="Boolean" expires_after="2026-09-17">
+    enum="Boolean" expires_after="2027-03-17">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualTasks.Context.SiteExclusions.AllTabs.CheckingDuration"
-    units="ms" expires_after="2026-09-17">
+    units="ms" expires_after="2027-03-17">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.SiteExclusions.AllTabs.TabsChecked"
-    units="count" expires_after="2026-09-17">
+    units="count" expires_after="2027-03-17">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.SiteExclusions.AllTabs.TabsFiltered"
-    units="count" expires_after="2026-09-17">
+    units="count" expires_after="2027-03-17">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
