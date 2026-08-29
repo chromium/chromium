@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/common/read_anything/distillation_evaluator.mojom.h"
@@ -430,14 +429,8 @@ class ReadAnythingUntrustedPageHandler :
 
   void RecordListenToThisPagePlaybackMetric(bool successful_playback);
 
-  // The Reading Mode controller for both immersive and side-panel reading mode,
-  // used when the immersive reading mode flag is enabled.
+  // The Reading Mode controller for both immersive and side-panel reading mode.
   raw_ptr<ReadAnythingController> read_anything_controller_;
-  // Legacy side-panel reading mode controller, only to be used when the
-  // immersive reading mode flag is disabled.
-  // TODO: (crbug.com/449162079) Remove this when immersive reading mode flag is
-  // fully rolled out.
-  raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
   raw_ptr<tabs::TabInterface> tab_;

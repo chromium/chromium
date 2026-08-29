@@ -10,9 +10,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_scope.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
@@ -28,19 +25,6 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
                         SidePanelWebUIViewT);
 
 END_METADATA
-
-ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
-    Profile* profile,
-    SidePanelEntryScope& scope)
-    : SidePanelWebUIViewT(
-          scope,
-          base::RepeatingClosure(),
-          base::RepeatingClosure(),
-          std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(
-              GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
-              profile,
-              IDS_READING_MODE_TITLE,
-              /*esc_closes_ui=*/false)) {}
 
 ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
     Profile* profile,

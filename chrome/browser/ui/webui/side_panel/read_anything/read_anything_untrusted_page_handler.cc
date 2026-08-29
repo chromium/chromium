@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -461,13 +460,6 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
 
   if (read_anything_controller_) {
     read_anything_controller_->RemoveObserver(this);
-  }
-  if (side_panel_controller_) {
-    // If |this| is destroyed before the |ReadAnythingSidePanelController|, then
-    // remove |this| from the observer lists. In the cases where the coordinator
-    // is destroyed first, these will have been destroyed before this call.
-    side_panel_controller_->RemovePageHandlerAsObserver(
-        weak_factory_.GetWeakPtr());
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1438,7 +1430,6 @@ void ReadAnythingUntrustedPageHandler::OnTabDiscarded(
 }
 
 void ReadAnythingUntrustedPageHandler::OnDestroyed() {
-  side_panel_controller_ = nullptr;
   read_anything_controller_ = nullptr;
 }
 
