@@ -147,25 +147,6 @@ dictionary ParseHTMLUnsafeOptions {
     [Measure] DOMRectList getClientRects();
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect getBoundingClientRect();
 
-    // Returns the transform applied to the Element mapping its border-box,
-    // before CSS transforms, to the canvas coordinate space. When the element
-    // is in a canvas subtree, the canvas transform affects the geometry of the
-    // element (e.g., for hit-testing, `getBoundingClientRect()`) and can be
-    // used to make the element's geometry match its drawn position in the
-    // canvas. The canvas transform has no effect if the element is not in a
-    // canvas subtree.
-    // The initial value is the identity matrix.
-    [RuntimeEnabled=ElementCanvasTransform, NewObject] DOMMatrix getCanvasTransform();
-
-    // Sets the transform applied to the Element mapping its border-box, before
-    // CSS transforms, to the canvas coordinate space. When the element is in a
-    // canvas subtree, this affects the geometry of the element (e.g., for
-    // hit-testing, `getBoundingClientRect()`) and can be used to make the
-    // element's geometry match its drawn position in a canvas. The canvas
-    // transform has no effect if the element is not in a canvas subtree. This
-    // does not affect the rendering of the element, and does not trigger the
-    // canvas `paint` event.
-    [RuntimeEnabled=ElementCanvasTransform, RaisesException] void setCanvasTransform(optional DOMMatrixInit matrix = {});
 
     [RuntimeEnabled=ElementMatchContainer, NewObject] ContainerQueryList matchContainer(DOMString query);
 

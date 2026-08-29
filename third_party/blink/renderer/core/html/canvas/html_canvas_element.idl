@@ -40,6 +40,10 @@
     [RuntimeEnabled=CanvasDrawElement] attribute EventHandler onpaint;
     [RuntimeEnabled=CanvasDrawElement] void requestPaint();
     [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform((Element or ElementImage) element, DOMMatrix draw_transform);
+    // Returns the current transform applied to the Element mapping its
+    // border box, before CSS transfor to the canvas coordinate space. Applies before standard
+    // CSS transforms.
+    [RuntimeEnabled=ElementCanvasTransform, RaisesException, NewObject] DOMMatrix getElementTransform(Element element);
     [RuntimeEnabled=CanvasDrawElement, RaisesException] ElementImage captureElementImage(Element element);
     [RuntimeEnabled=CanvasDrawElement, RaisesException] void updateElementGeometry((Element or ElementImage) element, optional UpdateElementGeometryOptions options = {});
     [RuntimeEnabled=CanvasDrawElement] void clearElementGeometry((Element or ElementImage) element);

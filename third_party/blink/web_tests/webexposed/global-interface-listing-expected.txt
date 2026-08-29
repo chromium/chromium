@@ -2610,7 +2610,6 @@ interface Element : Node
     method getAttributeNodeNS
     method getBoundingClientRect
     method getBoxQuads
-    method getCanvasTransform
     method getClientRects
     method getElementsByClassName
     method getElementsByTagName
@@ -2652,7 +2651,6 @@ interface Element : Node
     method setAttributeNS
     method setAttributeNode
     method setAttributeNodeNS
-    method setCanvasTransform
     method setHTML
     method setHTMLUnsafe
     method setPointerCapture

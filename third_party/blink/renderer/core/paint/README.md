@@ -564,9 +564,11 @@ like layout, hit testing, accessibility, etc. See the
     retrieve the associated canvas for drawable elements.
 
 ### Canvas Transform
-*   **Canvas transform**: `getCanvasTransform()` and `setCanvasTransform()` on
-    `Element` define a transform mapping the element's border box, before CSS
-    transforms, to the canvas coordinate space.
+*   **Canvas transform**: `getElementTransform()` on `HTMLCanvasElement` returns
+    the transform applied to an element mapping its border box, before CSS
+    transforms, to the canvas coordinate space. Canvas transforms are set via
+    `canvas.updateElementGeometry(element, { canvasTransform })` (or automatically
+    via `drawElementImage()`) and cleared via `canvas.clearElementGeometry(element)`.
 *   **PaintLayer transform**: When present, the canvas transform is
     pre-concatenated before CSS transforms in `PaintLayer::UpdateTransform()`.
 *   **Property tree node**: An `ElementCanvasTransform` node is inserted

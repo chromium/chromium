@@ -2154,8 +2154,7 @@ TEST_P(VisualRectMappingTest, ElementCanvasTransformVisualRectMapping) {
   auto* target = target_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
-  target_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(50, 60));
+  target_element->SetCanvasTransform(gfx::Transform::MakeTranslation(50, 60));
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect local_rect(0, 0, 100, 100);
@@ -2186,10 +2185,8 @@ TEST_P(VisualRectMappingTest, NestedElementCanvasTransformVisualRectMapping) {
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
-  a_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(100, 0));
-  b_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(0, 100));
+  a_element->SetCanvasTransform(gfx::Transform::MakeTranslation(100, 0));
+  b_element->SetCanvasTransform(gfx::Transform::MakeTranslation(0, 100));
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect local_rect(0, 0, 50, 50);
@@ -2227,10 +2224,8 @@ TEST_P(VisualRectMappingTest,
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
-  a_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(100, 0));
-  b_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(0, 100));
+  a_element->SetCanvasTransform(gfx::Transform::MakeTranslation(100, 0));
+  b_element->SetCanvasTransform(gfx::Transform::MakeTranslation(0, 100));
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect local_rect(0, 0, 50, 50);
@@ -2269,8 +2264,7 @@ TEST_P(
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
-  a_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(100, 0));
+  a_element->SetCanvasTransform(gfx::Transform::MakeTranslation(100, 0));
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect local_rect(0, 0, 50, 50);
@@ -2308,8 +2302,7 @@ TEST_P(VisualRectMappingTest,
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
-  a_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(100, 0));
+  a_element->SetCanvasTransform(gfx::Transform::MakeTranslation(100, 0));
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect local_rect(0, 0, 50, 50);
@@ -2351,10 +2344,8 @@ TEST_P(VisualRectMappingTest,
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
-  a_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(100, 0));
-  b_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(0, 100));
+  a_element->SetCanvasTransform(gfx::Transform::MakeTranslation(100, 0));
+  b_element->SetCanvasTransform(gfx::Transform::MakeTranslation(0, 100));
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect local_rect(0, 0, 50, 50);

@@ -22,8 +22,7 @@ async_test(function(t) {
     const ctx = canvas.getContext('2d');
     ctx.reset();
 
-    let matrix = ctx.drawElementImage(drawn, 10, 10);
-    drawn.setCanvasTransform(matrix);
+    ctx.drawElementImage(drawn, 10, 10);
 
     const axCanvas = axElementById('canvas');
     const axDrawn = axElementById('drawn');

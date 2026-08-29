@@ -382,6 +382,8 @@ class CORE_EXPORT HTMLCanvasElement final
                                  DOMMatrix* draw_transform,
                                  ExceptionState&);
 
+  DOMMatrix* getElementTransform(Element* element, ExceptionState&) const;
+
   bool VerifyDrawElementImageEligibility(Element* element,
                                          const String& func_name,
                                          ExceptionState& exception_state) const;

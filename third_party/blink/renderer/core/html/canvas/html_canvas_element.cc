@@ -766,7 +766,7 @@ void HTMLCanvasElement::UpdateDrawnElementGeometry(
     hit_testable_descendants_.AppendOrMoveToLast(&element);
   }
   if (transform) {
-    element.SetCanvasTransformInternal(*transform);
+    element.SetCanvasTransform(*transform);
   }
 }
 
@@ -968,6 +968,22 @@ DOMMatrix* HTMLCanvasElement::getElementTransform(
                           RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
                               GetExecutionContext()));
   return MakeGarbageCollected<DOMMatrix>(transform, transform.Is2dTransform());
+}
+
+DOMMatrix* HTMLCanvasElement::getElementTransform(
+    Element* element,
+    ExceptionState& exception_state) const {
+  if (!VerifyDrawElementImageEligibility(element, "getElementTransform",
+                                         exception_state)) {
+    return nullptr;
+  }
+  if (element) {
+    if (const gfx::Transform* transform = element->GetCanvasTransform()) {
+      return MakeGarbageCollected<DOMMatrix>(*transform,
+                                             transform->Is2dTransform());
+    }
+  }
+  return DOMMatrix::Create();
 }
 
 bool HTMLCanvasElement::VerifyDrawElementImageEligibility(

@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_box_quad_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_animations_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
@@ -188,7 +187,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
-#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -4522,26 +4520,7 @@ void Element::DidChangeIsInCanvasSubtree() {
   }
 }
 
-DOMMatrix* Element::getCanvasTransform() {
-  if (const auto* transform = GetCanvasTransformInternal()) {
-    return MakeGarbageCollected<DOMMatrix>(*transform,
-                                           transform->Is2dTransform());
-  }
-  return DOMMatrix::Create();
-}
-
-void Element::setCanvasTransform(DOMMatrixInit* matrix,
-                                 ExceptionState& exception_state) {
-  DOMMatrix* dom_matrix = DOMMatrix::fromMatrix(matrix, exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-  CHECK(dom_matrix);
-  gfx::Transform transform = dom_matrix->Matrix();
-  SetCanvasTransformInternal(transform);
-}
-
-const gfx::Transform* Element::GetCanvasTransformInternal() const {
+const gfx::Transform* Element::GetCanvasTransform() const {
   if (const NodeRareData* data = RareData()) {
     return data->GetWrappedField<gfx::Transform>(
         NodeRareData::FieldId::kCanvasTransform);
@@ -4550,7 +4529,7 @@ const gfx::Transform* Element::GetCanvasTransformInternal() const {
 }
 
 bool Element::HasCanvasTransform() const {
-  return GetCanvasTransformInternal() != nullptr;
+  return GetCanvasTransform() != nullptr;
 }
 
 const gfx::Transform* Element::GetUsedCanvasTransform() const {
@@ -4558,14 +4537,14 @@ const gfx::Transform* Element::GetUsedCanvasTransform() const {
       RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
           GetExecutionContext())) {
     if (HasCanvasTransform() && CanvasForDrawing()) {
-      return GetCanvasTransformInternal();
+      return GetCanvasTransform();
     }
   }
   return nullptr;
 }
 
-void Element::SetCanvasTransformInternal(const gfx::Transform& transform) {
-  if (const gfx::Transform* existing = GetCanvasTransformInternal()) {
+void Element::SetCanvasTransform(const gfx::Transform& transform) {
+  if (const gfx::Transform* existing = GetCanvasTransform()) {
     if (*existing == transform) {
       return;
     }

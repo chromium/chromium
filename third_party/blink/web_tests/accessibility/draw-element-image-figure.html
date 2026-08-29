@@ -24,11 +24,8 @@ async_test(function(t) {
     const ctx = canvas.getContext('2d');
     ctx.reset();
 
-    let image_matrix = ctx.drawElementImage(image, 10, 10);
-    image.setCanvasTransform(image_matrix);
-
-    let caption_matrix = ctx.drawElementImage(caption, 10, 200);
-    caption.setCanvasTransform(caption_matrix);
+    ctx.drawElementImage(image, 10, 10);
+    ctx.drawElementImage(caption, 10, 200);
 
     // Verify all objects in the canvas subtree are exposed to the accessibility tree.
     const axCanvas = axElementById('canvas');

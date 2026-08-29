@@ -2645,13 +2645,7 @@ TEST_P(PaintLayerTest, PaintLayerCanvasTransformUpdated) {
 
   // Setting canvas transform allocates PaintLayer::Transform() and updates
   // rect.
-  NonThrowableExceptionState exception_state;
-  auto* matrix_init = DOMMatrixInit::Create();
-  matrix_init->setE(20);
-  matrix_init->setM41(20);
-  matrix_init->setF(30);
-  matrix_init->setM42(30);
-  target->setCanvasTransform(matrix_init, exception_state);
+  target->SetCanvasTransform(gfx::Transform::MakeTranslation(20, 30));
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -2661,11 +2655,7 @@ TEST_P(PaintLayerTest, PaintLayerCanvasTransformUpdated) {
             target->GetBoundingClientRectNoLifecycleUpdate());
 
   // Basic invalidation: updating canvas transform.
-  matrix_init->setE(50);
-  matrix_init->setM41(50);
-  matrix_init->setF(60);
-  matrix_init->setM42(60);
-  target->setCanvasTransform(matrix_init, exception_state);
+  target->SetCanvasTransform(gfx::Transform::MakeTranslation(50, 60));
 
   UpdateAllLifecyclePhasesForTest();
 

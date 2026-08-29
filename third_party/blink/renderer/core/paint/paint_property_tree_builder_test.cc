@@ -8197,8 +8197,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
   )HTML");
 
   auto* target_element = GetDocument().getElementById(AtomicString("target"));
-  target_element->SetCanvasTransformInternal(
-      gfx::Transform::MakeTranslation(50, 60));
+  target_element->SetCanvasTransform(gfx::Transform::MakeTranslation(50, 60));
   UpdateAllLifecyclePhasesForTest();
 
   const auto* properties = PaintPropertiesForElement("target");

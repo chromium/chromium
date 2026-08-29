@@ -113,8 +113,6 @@ class CustomElementRegistry;
 class DisplayLockContext;
 class DisplayStyle;
 class Document;
-class DOMMatrix;
-class DOMMatrixInit;
 class DOMPoint;
 class DOMPointInit;
 class DOMQuad;
@@ -1188,9 +1186,6 @@ class CORE_EXPORT Element : public ContainerNode {
   // the 'drawable' attribute). Returns nullptr otherwise.
   HTMLCanvasElement* CanvasForDrawing() const;
 
-  DOMMatrix* getCanvasTransform();
-  void setCanvasTransform(DOMMatrixInit* matrix,
-                          ExceptionState& exception_state);
   bool HasCanvasTransform() const;
   // Returns the transform that should be used for mapping the border-box,
   // before CSS transforms, to the canvas coordinate space. When the element
@@ -1199,8 +1194,8 @@ class CORE_EXPORT Element : public ContainerNode {
   // element's geometry match its drawn position in a canvas. Returns nullptr
   // if the element does not have a CanvasForDrawing.
   const gfx::Transform* GetUsedCanvasTransform() const;
-  const gfx::Transform* GetCanvasTransformInternal() const;
-  void SetCanvasTransformInternal(const gfx::Transform& transform);
+  const gfx::Transform* GetCanvasTransform() const;
+  void SetCanvasTransform(const gfx::Transform& transform);
   void ClearCanvasTransform();
 
   bool IsDefined() const {
