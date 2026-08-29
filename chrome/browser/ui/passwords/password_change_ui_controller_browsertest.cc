@@ -80,6 +80,14 @@ class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
     return ui_controller_->toast_view()->close_button();
   }
 
+  int GetExpectedPrivacyNoticeDialogTitle() const {
+    return base::FeatureList::IsEnabled(
+               password_change::features::
+                   kPasswordChangeWithPrivateInferenceLoginCheck)
+               ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OFFER_DIALOG_TITLE_WITH_PI
+               : IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE;
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
   PasswordChangeDelegateMock delegate_;
@@ -133,8 +141,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
   UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
 
   EXPECT_EQ(GetDialogDelegate()->GetWindowTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE));
+            l10n_util::GetStringUTF16(GetExpectedPrivacyNoticeDialogTitle()));
   EXPECT_EQ(GetDialogDelegate()->AsBubbleDialogDelegate()->GetSubtitle(), u"");
 
   EXPECT_CALL(delegate_, OnPrivacyNoticeAccepted);
@@ -155,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
   UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
 
   EXPECT_EQ(GetDialogDelegate()->GetWindowTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE));
+            l10n_util::GetStringUTF16(GetExpectedPrivacyNoticeDialogTitle()));
 
   EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
