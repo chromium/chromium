@@ -18,6 +18,7 @@ public class NfcProviderImpl implements NfcProvider {
     private static final String TAG = "NfcProviderImpl";
     private final NfcDelegate mDelegate;
     private @Nullable NfcImpl mNfcImpl;
+    private boolean mOperationsSuspended;
 
     public NfcProviderImpl(NfcDelegate delegate) {
         mDelegate = delegate;
@@ -33,6 +34,7 @@ public class NfcProviderImpl implements NfcProvider {
             mNfcImpl.closeMojoConnection();
             mNfcImpl = null;
         }
+        mOperationsSuspended = false;
     }
 
     @Override
@@ -49,12 +51,13 @@ public class NfcProviderImpl implements NfcProvider {
         if (mNfcImpl != null) {
             mNfcImpl.closeMojoConnection();
         }
-        mNfcImpl = new NfcImpl(hostId, mDelegate, request);
+        mNfcImpl = new NfcImpl(hostId, mDelegate, request, mOperationsSuspended);
     }
 
     /** Suspends the NFC usage. Should be called when web page visibility is lost. */
     @Override
     public void suspendNfcOperations() {
+        mOperationsSuspended = true;
         if (mNfcImpl != null) {
             mNfcImpl.suspendNfcOperations();
         }
@@ -63,9 +66,18 @@ public class NfcProviderImpl implements NfcProvider {
     /** Resumes the NFC usage. Should be called when web page becomes visible. */
     @Override
     public void resumeNfcOperations() {
+        mOperationsSuspended = false;
         if (mNfcImpl != null) {
             mNfcImpl.resumeNfcOperations();
         }
+    }
+
+    @Nullable NfcImpl getNfcImplForTesting() {
+        return mNfcImpl;
+    }
+
+    boolean getOperationsSuspendedForTesting() {
+        return mOperationsSuspended;
     }
 
     /** A factory for implementations of the NfcProvider interface. */

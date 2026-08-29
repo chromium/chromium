@@ -6,8 +6,10 @@ package org.chromium.device.nfc;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -99,7 +101,7 @@ public class NFCTest {
     /** Class that is used test NfcImpl implementation */
     private static class TestNfcImpl extends NfcImpl {
         public TestNfcImpl(Context context, NfcDelegate delegate) {
-            super(0, delegate, null);
+            super(0, delegate, null, false);
         }
 
         public void processPendingOperationsForTesting(NfcTagHandler handler) {
@@ -935,7 +937,7 @@ public class NFCTest {
         localMojoNdefRecord.data = ApiCompatibilityUtils.getBytesUtf8(TEST_TEXT);
         {
             // Must start with ':'.
-            localMojoNdefRecord.recordType = "dummyLocalTypeNotStartingwith:";
+            localMojoNdefRecord.recordType = "localTypeNotStartingWith:";
             localMojoNdefRecord.data = ApiCompatibilityUtils.getBytesUtf8(TEST_TEXT);
             NdefMessage localMojoNdefMessage = createMojoNdefMessage(localMojoNdefRecord);
             android.nfc.NdefMessage localNdefMessage = null;
@@ -1171,6 +1173,14 @@ public class NFCTest {
         // Check that watch request was completed successfully even if NFC operations are suspended.
         verify(mockCallback).call(mErrorCaptor.capture());
         assertNull(mErrorCaptor.getValue());
+
+        // Check that reader mode was NOT enabled while operations are suspended.
+        verify(mNfcAdapter, never())
+                .enableReaderMode(
+                        any(Activity.class),
+                        any(ReaderCallback.class),
+                        anyInt(),
+                        (Bundle) isNull());
 
         // Check that watch is not triggered when NFC tag is in proximity.
         nfc.processPendingOperationsForTesting(mNfcTagHandler);
@@ -1977,5 +1987,84 @@ public class NFCTest {
                 android.nfc.NdefRecord.RTD_SMART_POSTER,
                 ApiCompatibilityUtils.getBytesUtf8(DUMMY_RECORD_ID),
                 payloadMessage.toByteArray());
+    }
+
+    /**
+     * Test that NfcProviderImpl.suspendNfcOperations() persists the suspended state when called
+     * before getNfcForHost(), and applies it when NfcImpl is instantiated.
+     */
+    @Test
+    @Feature({"NFCTest"})
+    public void testProviderSuspendsBeforeGetNfcForHost() {
+        NfcProviderImpl provider = new NfcProviderImpl(mDelegate);
+        provider.suspendNfcOperations();
+        assertTrue(provider.getOperationsSuspendedForTesting());
+
+        provider.getNfcForHost(1, null);
+        NfcImpl nfc = provider.getNfcImplForTesting();
+        assertNotNull(nfc);
+        assertTrue(nfc.isOperationsSuspendedForTesting());
+
+        mDelegate.invokeCallback();
+        Push_Response mockCallback = mock(Push_Response.class);
+        nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
+
+        // Check that push request was cancelled immediately due to operations being suspended.
+        verify(mockCallback).call(mErrorCaptor.capture());
+        assertNotNull(mErrorCaptor.getValue());
+        assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
+    }
+
+    /**
+     * Test that NfcProviderImpl preserves the suspended state when a new NfcImpl is requested
+     * (rebind) while suspended.
+     */
+    @Test
+    @Feature({"NFCTest"})
+    public void testProviderRebindPreservesSuspendedState() {
+        NfcProviderImpl provider = new NfcProviderImpl(mDelegate);
+        provider.getNfcForHost(1, null);
+        NfcImpl nfc1 = provider.getNfcImplForTesting();
+        assertNotNull(nfc1);
+        assertFalse(nfc1.isOperationsSuspendedForTesting());
+
+        provider.suspendNfcOperations();
+        assertTrue(nfc1.isOperationsSuspendedForTesting());
+        assertTrue(provider.getOperationsSuspendedForTesting());
+
+        // Rebind with a new host/request
+        provider.getNfcForHost(2, null);
+        NfcImpl nfc2 = provider.getNfcImplForTesting();
+        assertNotNull(nfc2);
+        assertTrue(nfc2.isOperationsSuspendedForTesting());
+
+        mDelegate.invokeCallback();
+        Push_Response mockCallback = mock(Push_Response.class);
+        nfc2.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
+
+        // Check that push request was cancelled immediately on the new instance.
+        verify(mockCallback).call(mErrorCaptor.capture());
+        assertNotNull(mErrorCaptor.getValue());
+        assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
+    }
+
+    /**
+     * Test that NfcProviderImpl.resumeNfcOperations() clears the suspended state and resumes
+     * operations on the underlying NfcImpl.
+     */
+    @Test
+    @Feature({"NFCTest"})
+    public void testProviderResumeClearsSuspendedState() {
+        NfcProviderImpl provider = new NfcProviderImpl(mDelegate);
+        provider.suspendNfcOperations();
+        assertTrue(provider.getOperationsSuspendedForTesting());
+
+        provider.resumeNfcOperations();
+        assertFalse(provider.getOperationsSuspendedForTesting());
+
+        provider.getNfcForHost(1, null);
+        NfcImpl nfc = provider.getNfcImplForTesting();
+        assertNotNull(nfc);
+        assertFalse(nfc.isOperationsSuspendedForTesting());
     }
 }
