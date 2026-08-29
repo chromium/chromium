@@ -3193,6 +3193,13 @@ void RenderViewContextMenu::AppendDictationItems() {
   }
   observers_.AddObserver(dictation_menu_observer_.get());
   dictation_menu_observer_->InitMenu(params_);
+
+  auto index = menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_DICTATION);
+  if (index.has_value()) {
+    menu_model_.SetIsNewFeatureAt(
+        index.value(), UserEducationService::MaybeShowNewBadge(
+                           GetBrowserContext(), dictation::kDictation));
+  }
 }
 
 void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {

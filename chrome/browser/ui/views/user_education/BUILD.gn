@@ -81,6 +81,7 @@ source_set("impl") {
     "//chrome/browser/background/glic",
     "//chrome/browser/desktop_to_mobile_promos:utils",
     "//chrome/browser/devtools",
+    "//chrome/browser/dictation",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search/background",
