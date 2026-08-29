@@ -80,6 +80,8 @@ class DownloadDriverImpl : public DownloadDriver,
 
   void OnUploadProgress(const std::string& guid, uint64_t bytes_uploaded);
 
+  void NotifyDriverReady();
+
   void OnHardRecoverComplete(bool success);
 
   // Remove the download, used to be posted to the task queue.
@@ -96,7 +98,7 @@ class DownloadDriverImpl : public DownloadDriver,
   raw_ptr<SimpleDownloadManagerCoordinator> download_manager_coordinator_;
 
   // Whether this object is ready to handle download requests.
-  bool is_ready_;
+  bool is_ready_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

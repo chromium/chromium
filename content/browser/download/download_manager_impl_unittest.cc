@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -1031,6 +1032,34 @@ TEST_F(DownloadManagerTest, PostInitializationWithoutHistoryLoadingSupport) {
   // becomes initialized immediately after in-progress cache initialization,
   // without waiting for OnHistoryDBInitialized().
   EXPECT_TRUE(download_manager_->IsManagerInitialized());
+}
+
+TEST_F(DownloadManagerTest, WaitForActiveDownloadsInitialization) {
+  bool active_initialized = false;
+  base::RunLoop run_loop;
+  download_manager_->WaitForActiveDownloadsInitialization(
+      base::BindLambdaForTesting([&]() {
+        active_initialized = true;
+        run_loop.Quit();
+      }));
+  EXPECT_FALSE(active_initialized);
+
+  OnInProgressDownloadManagerInitialized();
+  run_loop.Run();
+
+  EXPECT_TRUE(active_initialized);
+  EXPECT_FALSE(download_manager_->IsManagerInitialized());
+
+  bool active_initialized_post = false;
+  base::RunLoop run_loop2;
+  download_manager_->WaitForActiveDownloadsInitialization(
+      base::BindLambdaForTesting([&]() {
+        active_initialized_post = true;
+        run_loop2.Quit();
+      }));
+  EXPECT_FALSE(active_initialized_post);
+  run_loop2.Run();
+  EXPECT_TRUE(active_initialized_post);
 }
 
 }  // namespace content

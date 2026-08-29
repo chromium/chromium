@@ -9,6 +9,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/uuid.h"
 #include "components/download/content/public/all_download_item_notifier.h"
@@ -65,6 +67,8 @@ class DownloadDriverImplTest : public testing::Test {
   ~DownloadDriverImplTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        download::features::kDeferredDownloadHistoryLoading);
     EXPECT_CALL(mock_client_, IsTrackingDownload(_))
         .WillRepeatedly(Return(true));
     driver_ = std::make_unique<DownloadDriverImpl>(&coordinator_);
@@ -79,6 +83,7 @@ class DownloadDriverImplTest : public testing::Test {
   std::unique_ptr<DownloadDriverImpl> driver_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure the download manager can be initialized after the download driver.
@@ -100,6 +105,37 @@ TEST_F(DownloadDriverImplTest, TestHardRecover) {
   EXPECT_CALL(mock_client_, OnDriverHardRecoverComplete(true)).Times(1);
   driver_->HardRecover();
   task_runner_->RunUntilIdle();
+}
+
+TEST_F(DownloadDriverImplTest, WaitForActiveDownloadsInitialization) {
+  driver_->Initialize(&mock_client_);
+  EXPECT_FALSE(driver_->IsReady());
+
+  EXPECT_CALL(mock_client_, OnDriverReady(true)).Times(1);
+  mock_manager_.NotifyOnDownloadInitialized();
+  task_runner_->RunUntilIdle();
+
+  EXPECT_TRUE(driver_->IsReady());
+}
+
+TEST_F(DownloadDriverImplTest, DriverInitializeAfterManagerReady) {
+  mock_manager_.NotifyOnDownloadInitialized();
+  EXPECT_CALL(mock_client_, OnDriverReady(true)).Times(1);
+  driver_->Initialize(&mock_client_);
+  task_runner_->RunUntilIdle();
+  EXPECT_TRUE(driver_->IsReady());
+}
+
+TEST_F(DownloadDriverImplTest, CoordinatorBufferingCallbacks) {
+  SimpleDownloadManagerCoordinator coordinator(base::NullCallback());
+  bool callback_run = false;
+  coordinator.WaitForActiveDownloadsInitialization(
+      base::BindLambdaForTesting([&]() { callback_run = true; }));
+  EXPECT_FALSE(callback_run);
+  coordinator.SetSimpleDownloadManager(&mock_manager_, true);
+  mock_manager_.NotifyOnDownloadInitialized();
+  task_runner_->RunUntilIdle();
+  EXPECT_TRUE(callback_run);
 }
 // Ensure driver remove call before download created will result in content
 // layer remove call and not propagating the event to driver's client.

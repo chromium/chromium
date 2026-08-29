@@ -92,6 +92,10 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   // finish asynchronously after this method returns.
   void CheckForExternallyRemovedDownloads();
 
+  // Calls `callback` when active/in-progress downloads are initialized.
+  // Buffers the callback if simple_download_manager_ is not yet set.
+  void WaitForActiveDownloadsInitialization(base::OnceClosure callback);
+
  private:
   // SimpleDownloadManager::Observer implementation.
   void OnDownloadsInitialized() override;
@@ -115,6 +119,9 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
 
   // Callback to download the url when full manager becomes ready.
   DownloadWhenFullManagerStartsCallBack download_when_full_manager_starts_cb_;
+
+  // Callbacks waiting for active downloads to be initialized.
+  std::vector<base::OnceClosure> active_downloads_callbacks_;
 
   // Observers that want to be notified of changes to the set of downloads.
   base::ObserverList<Observer> observers_;

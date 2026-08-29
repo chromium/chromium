@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/download/public/common/simple_download_manager.h"
+
+#include <utility>
+
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace download {
 
@@ -27,6 +31,12 @@ void SimpleDownloadManager::RemoveObserver(Observer* observer) {
 void SimpleDownloadManager::OnInitialized() {
   initialized_ = true;
   NotifyInitialized();
+  std::vector<base::OnceClosure> callbacks =
+      std::move(active_downloads_initialized_callbacks_);
+  for (auto& callback : callbacks) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+  }
 }
 
 void SimpleDownloadManager::OnNewDownloadCreated(DownloadItem* download) {
@@ -37,6 +47,19 @@ void SimpleDownloadManager::OnNewDownloadCreated(DownloadItem* download) {
 void SimpleDownloadManager::NotifyInitialized() {
   for (auto& observer : simple_download_manager_observers_)
     observer.OnDownloadsInitialized();
+}
+
+void SimpleDownloadManager::WaitForActiveDownloadsInitialization(
+    base::OnceClosure callback) {
+  if (callback.is_null()) {
+    return;
+  }
+  if (initialized_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    return;
+  }
+  active_downloads_initialized_callbacks_.push_back(std::move(callback));
 }
 
 }  // namespace download

@@ -45,6 +45,12 @@ void SimpleDownloadManagerCoordinator::SetSimpleDownloadManager(
   current_manager_has_all_history_downloads_ = manages_all_history_downloads;
   simple_download_manager_ = simple_download_manager;
   simple_download_manager_->AddObserver(this);
+  std::vector<base::OnceClosure> callbacks =
+      std::move(active_downloads_callbacks_);
+  for (auto& callback : callbacks) {
+    simple_download_manager_->WaitForActiveDownloadsInitialization(
+        std::move(callback));
+  }
 }
 
 void SimpleDownloadManagerCoordinator::AddObserver(Observer* observer) {
@@ -110,6 +116,19 @@ AllDownloadEventNotifier* SimpleDownloadManagerCoordinator::GetNotifier() {
 
 void SimpleDownloadManagerCoordinator::CheckForExternallyRemovedDownloads() {
   simple_download_manager_->CheckForHistoryFilesRemoval();
+}
+
+void SimpleDownloadManagerCoordinator::WaitForActiveDownloadsInitialization(
+    base::OnceClosure callback) {
+  if (callback.is_null()) {
+    return;
+  }
+  if (simple_download_manager_) {
+    simple_download_manager_->WaitForActiveDownloadsInitialization(
+        std::move(callback));
+  } else {
+    active_downloads_callbacks_.push_back(std::move(callback));
+  }
 }
 
 }  // namespace download

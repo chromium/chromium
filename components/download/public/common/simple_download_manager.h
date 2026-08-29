@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -71,6 +72,9 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
   // finish asynchronously after this method returns.
   virtual void CheckForHistoryFilesRemoval() {}
 
+  // Calls `callback` when active/in-progress downloads are initialized.
+  virtual void WaitForActiveDownloadsInitialization(base::OnceClosure callback);
+
  protected:
   // Called when the manager is initialized.
   void OnInitialized();
@@ -86,6 +90,10 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
 
   // Observers that want to be notified of changes to the set of downloads.
   base::ObserverList<Observer> simple_download_manager_observers_;
+
+ private:
+  // Callbacks waiting for active downloads to be initialized.
+  std::vector<base::OnceClosure> active_downloads_initialized_callbacks_;
 };
 
 }  // namespace download
