@@ -1672,7 +1672,6 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
     content::WebContents* active_web_contents,
     contextual_search::ContextualSearchSessionHandle* session_handle) {
   if (!active_web_contents ||
-      session_handle->GetSubmittedContextTokens().size() != 1 ||
       !session_handle->IsTabInContext(
           sessions::SessionTabHelper::IdForTab(active_web_contents))) {
     return false;
@@ -1693,7 +1692,11 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
   }
 
   // Otherwise, fallback to the Lens side panel if Lens Overlay and AIM M3 are
-  // enabled.
+  // enabled and there is only a single context token.
+  if (session_handle->GetSubmittedContextTokens().size() != 1) {
+    return false;
+  }
+
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
   auto* entry_point_controller =
