@@ -15,6 +15,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -303,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 
 // TODO(crbug.com/499004589): Re-enable this test when it's fixed.
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
-                       DISABLED_ComposeboxLensButtonClearsThenTogglesOverlay) {
+                       ComposeboxLensButtonClearsThenTogglesOverlay) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -314,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
                                     "contextual-tasks-composebox",
                                     "#composebox", "#lensIcon"};
 
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto off_center_point = base::BindLambdaForTesting([browser_view]() {
@@ -327,22 +328,28 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   StateChange lens_button_exists;
   lens_button_exists.event = kLensButtonExists;
   lens_button_exists.where = kPathToLensButton;
-  lens_button_exists.type = StateChange::Type::kExists;
+  lens_button_exists.type = StateChange::Type::kExistsAndConditionTrue;
+  lens_button_exists.test_function =
+      "(el) => { const r = el.getBoundingClientRect(); return r.width > 0 && "
+      "r.height > 0; }";
 
   RunTestSequence(
       // 1. Open Lens Overlay and make a selection to open the side panel.
       OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](contextual_tasks::ContextualTasksWebView* web_view) {
+                         return web_view->content_web_view();
+                       }),
       InstrumentNonTabWebView(kSidePanelWebContentsId,
-                              kContextualTasksSidePanelWebViewElementId),
-      // Fix load-abort in the side panel by navigating the embedded frame
-      // to a local URL. This keeps the searchbox visible.
-      ExecuteJsAt(
-          kSidePanelWebContentsId, {"contextual-tasks-app", "#threadFrame"},
-          base::StringPrintf("el => { el.src = '%s'; }", url.spec().c_str())),
-      // Force the searchbox to stay visible by mimicking an AI page status.
+                              "SidePanelContentWebViewName"),
       ExecuteJsAt(kSidePanelWebContentsId, DeepQuery{"contextual-tasks-app"},
-                  "el => { el.isAiPage_ = true; }"),
+                  "el => { "
+                  "  el.removeThreadFrameListenersForTesting(); "
+                  "  el.isLoadError_ = false; "
+                  "  el.isZeroState_ = true; "
+                  "}"),
       WaitForWebContentsReady(kSidePanelWebContentsId),
 
       // 2. Click the Lens button in the side panel to clear the overlay.
