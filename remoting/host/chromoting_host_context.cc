@@ -54,6 +54,11 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
   CreateClientCertStoreCallback create_client_cert_store_callback()
       const override;
+  void set_create_client_cert_store_callback(
+      CreateClientCertStoreCallback create_client_cert_store_callback)
+      override {
+    create_client_cert_store_ = std::move(create_client_cert_store_callback);
+  }
 
  private:
   // |ui_shared_url_loader_factory_| is a SharedUrlLoaderFactory which is bound
@@ -167,6 +172,8 @@ class ChromotingHostContextDesktop : public ChromotingHostContext {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
   CreateClientCertStoreCallback create_client_cert_store_callback()
       const override;
+  void set_create_client_cert_store_callback(
+      CreateClientCertStoreCallback create_client_cert_store_callback) override;
 
  private:
   // Serves URLRequestContexts that use the network and UI task runners.
@@ -175,6 +182,8 @@ class ChromotingHostContextDesktop : public ChromotingHostContext {
   // Makes a SharedURLLoaderFactory out of |url_request_context_getter_|
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
+
+  CreateClientCertStoreCallback create_client_cert_store_;
 };
 
 ChromotingHostContextDesktop::ChromotingHostContextDesktop(
@@ -199,15 +208,20 @@ ChromotingHostContextDesktop::~ChromotingHostContextDesktop() {
 }
 
 std::unique_ptr<ChromotingHostContext> ChromotingHostContextDesktop::Copy() {
-  return std::make_unique<ChromotingHostContextDesktop>(
+  auto copy = std::make_unique<ChromotingHostContextDesktop>(
       ui_task_runner(), file_task_runner(), input_task_runner(),
       network_task_runner(), video_capture_task_runner(),
       url_request_context_getter_);
+  copy->set_create_client_cert_store_callback(create_client_cert_store_);
+  return copy;
 }
 
 std::unique_ptr<net::ClientCertStore>
 ChromotingHostContextDesktop::CreateClientCertStore() const {
   DCHECK(network_task_runner()->BelongsToCurrentThread());
+  if (create_client_cert_store_) {
+    return create_client_cert_store_.Run();
+  }
   return CreateClientCertStoreInstance();
 }
 
@@ -229,7 +243,15 @@ ChromotingHostContextDesktop::url_loader_factory() {
 
 ChromotingHostContext::CreateClientCertStoreCallback
 ChromotingHostContextDesktop::create_client_cert_store_callback() const {
+  if (create_client_cert_store_) {
+    return create_client_cert_store_;
+  }
   return base::BindRepeating(&CreateClientCertStoreInstance);
+}
+
+void ChromotingHostContextDesktop::set_create_client_cert_store_callback(
+    CreateClientCertStoreCallback create_client_cert_store_callback) {
+  create_client_cert_store_ = std::move(create_client_cert_store_callback);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

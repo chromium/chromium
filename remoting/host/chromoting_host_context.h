@@ -74,6 +74,8 @@ class ChromotingHostContext {
   // Returns a callback that can be called to create a ClientCertStore.
   virtual CreateClientCertStoreCallback create_client_cert_store_callback()
       const = 0;
+  virtual void set_create_client_cert_store_callback(
+      CreateClientCertStoreCallback create_client_cert_store_callback) = 0;
 
   // Task runner for the thread that is used for the UI.
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner() const;
