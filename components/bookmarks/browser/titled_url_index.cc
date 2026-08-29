@@ -12,7 +12,8 @@
 #include <utility>
 
 #include "base/i18n/case_conversion.h"
-#include "base/i18n/unicodestring.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/normalizer.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -24,24 +25,6 @@
 #include "components/omnibox/common/string_cleaning.h"
 #include "components/query_parser/snippet.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "third_party/icu/source/common/unicode/normalizer2.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/apk_assets.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
-#include "base/path_service.h"
-#include "base/strings/stringprintf.h"
-
-namespace base::i18n {
-extern bool g_icu_initialized;
-}
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace bookmarks {
 
@@ -51,43 +34,6 @@ namespace {
 bool IsPrefix(const std::u16string& prefix, const std::u16string& string) {
   return prefix.size() <= string.size() &&
          prefix.compare(0, prefix.size(), string, 0, prefix.size()) == 0;
-}
-
-void DumpNormalizationFailure(bool retry_worked) {
-#if BUILDFLAG(IS_ANDROID)
-  std::string fallback_asset_path;
-  base::FilePath asset_path;
-  // This is the fall-back path used for tests.
-  if (base::PathService::Get(base::DIR_ASSETS, &asset_path)) {
-    asset_path = asset_path.AppendASCII("icudtl.dat");
-    if (base::PathExists(asset_path)) {
-      fallback_asset_path = asset_path.value();
-    }
-  }
-
-  int64_t file_size = -1;
-  std::string apk_path;
-  base::MemoryMappedFile::Region region;
-  base::ScopedFD fd(base::android::OpenApkAsset("assets/icudtl.dat", &region));
-  if (fd.is_valid()) {
-    file_size = static_cast<int64_t>(region.size);
-    base::FilePath target_path;
-    if (base::ReadSymbolicLink(
-            base::FilePath(base::StringPrintf("/proc/self/fd/%d", fd.get())),
-            &target_path)) {
-      apk_path = target_path.value();
-    }
-  }
-
-  SCOPED_CRASH_KEY_STRING256("bookmarks", "fallback_asset_path",
-                             fallback_asset_path);
-  SCOPED_CRASH_KEY_STRING256("bookmarks", "apk_path", apk_path);
-  SCOPED_CRASH_KEY_NUMBER("bookmarks", "file_size", file_size);
-  SCOPED_CRASH_KEY_BOOL("bookmarks", "icu_init", base::i18n::g_icu_initialized);
-  SCOPED_CRASH_KEY_BOOL("bookmarks", "retry_worked", retry_worked);
-
-  base::debug::DumpWithoutCrashing();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -177,27 +123,8 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
 
 // static
 std::u16string TitledUrlIndex::Normalize(std::u16string_view text) {
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::Normalizer2* normalizer2 =
-      icu::Normalizer2::getInstance(nullptr, "nfkc", UNORM2_COMPOSE, status);
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "failed to create a normalizer: " << u_errorName(status);
-    normalizer2 =
-        icu::Normalizer2::getInstance(nullptr, "nfkc", UNORM2_COMPOSE, status);
-    bool retry_worked = !U_FAILURE(status);
-    DumpNormalizationFailure(retry_worked);
-    return std::u16string(text);
-  }
-  icu::UnicodeString unicode_text(text.data(),
-                                  static_cast<int32_t>(text.length()));
-  icu::UnicodeString unicode_normalized_text;
-  normalizer2->normalize(unicode_text, unicode_normalized_text, status);
-  if (U_FAILURE(status)) {
-    // This should not happen. Log the error and fall back.
-    LOG(ERROR) << "normalization failed: " << u_errorName(status);
-    return std::u16string(text);
-  }
-  return base::i18n::UnicodeStringToString16(unicode_normalized_text);
+  return base::i18n::IcuBridge::GetInstance().normalizer().Normalize(
+      base::i18n::IcuBridge::Normalizer::NormalizationForm::NFKC, text);
 }
 
 void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
