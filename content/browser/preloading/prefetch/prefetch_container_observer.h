@@ -84,6 +84,23 @@ class PrefetchContainerObserver : public base::CheckedObserver {
   // `PrefetchContainerLoadState::kFailed`.
   virtual void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) = 0;
+
+  // State: `PrefetchContainer::IsPrefetchStale()` is true or the
+  // `PrefetchContainer` is about to be destroyed.
+  // Called when the prefetch becomes stale. Please see
+  // `PrefetchContainer::IsPrefetchStale()` for more details.
+  //
+  // Do NOT use this other than in specific use cases for WebView prefetch
+  // deduplication.
+  // This is a tentative interface and violates some `PrefetchContainerObserver`
+  // semantics, e.g. `OnPrefetchStale()` doesn't correspond to
+  // `PrefetchContainerLoadState`, and `PrefetchContainerAsyncObserver` doesn't
+  // make `OnPrefetchStale()` async.
+  // TODO(crbug.com/551306029): Revisit the entire semantics and plumbings
+  // `OnPrefetchStale()` once we destroy `PrefetchContainer` upon becoming
+  // stale.
+  // TODO(crbug.com/551306029): Make this pure virtual function.
+  virtual void OnPrefetchStale(const PrefetchContainer& prefetch_container) {}
 };
 
 }  // namespace content

@@ -19,6 +19,13 @@ PrefetchContainerAsyncObserverBase::~PrefetchContainerAsyncObserverBase() =
 void PrefetchContainerAsyncObserverBase::OnWillBeDestroyed(
     const PrefetchContainer& prefetch_container) {}
 
+void PrefetchContainerAsyncObserverBase::OnPrefetchStale(
+    const PrefetchContainer& prefetch_container) {
+  // `OnPrefetchStale()` is intentionally called synchronously as an exception.
+  // Please see `PrefetchContainerObserver::OnPrefetchStale` for more details.
+  GetUnderlyingObserver().OnPrefetchStale(prefetch_container);
+}
+
 void PrefetchContainerAsyncObserverBase::OnGotInitialEligibility(
     const PrefetchContainer& prefetch_container) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

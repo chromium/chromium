@@ -155,8 +155,10 @@ AwPrefetchHandleWrapper::GetNoVarySearchHint() const {
 }
 
 bool AwPrefetchHandleWrapper::IsPrefetchStale() const {
-  // We can't touch the inner handle during deduplication, which can happen on
-  // any thread. Thus, we always return false.
+  if (state_ == State::kPrefetchHandleCommitted) {
+    CHECK(prefetch_handle_);
+    return prefetch_handle_->IsPrefetchStale();
+  }
   return false;
 }
 

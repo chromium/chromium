@@ -592,7 +592,6 @@ class CONTENT_EXPORT PrefetchContainer
   // `time_prefetch_match_missed_` for more details.
   void SetPrefetchMatchMissedTimeForMetrics(base::TimeTicks time);
 
-
   const PrefetchContainerMetrics& GetPrefetchContainerMetrics() const {
     return prefetch_container_metrics_;
   }
@@ -661,6 +660,10 @@ class CONTENT_EXPORT PrefetchContainer
       const network::mojom::URLResponseHead& head);
   void NotifyPrefetchRequestComplete();
 
+  // Notifies observers when the prefetch becomes stale, if not already
+  // notified.
+  void OnStale();
+
   // ----------------------------------------------------------------
   // Metrics:
 
@@ -694,7 +697,6 @@ class CONTENT_EXPORT PrefetchContainer
   // UMAs.
   void RecordPrefetchPotentialCandidateServingResultHistogram(
       PrefetchPotentialCandidateServingResult matching_result);
-
 
   // The prefetch request parameters of the very first initiator/requester of
   // this prefetch at the time of request creation.
@@ -788,7 +790,6 @@ class CONTENT_EXPORT PrefetchContainer
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       pre_prefetch_loader_client_receiver_;
 
-
   // Counts how many times this container has been served to the navigation.
   // Only used for the metrics.
   base::ClampedNumeric<uint32_t> served_count_ = 0;
@@ -800,7 +801,6 @@ class CONTENT_EXPORT PrefetchContainer
   // further processing may need to affect how the response is processed to make
   // inferences about this logic less practical.
   bool is_cross_site_contaminated_ = false;
-
 
   // Container id used by test utilities.
   const std::string container_id_for_testing_;
@@ -843,6 +843,15 @@ class CONTENT_EXPORT PrefetchContainer
 
   // True iff the destructor was called.
   bool is_in_dtor_ = false;
+
+  // True if `OnPrefetchStale()` has already been notified to observers.
+  // Per `PrefetchContainerObserver` at-most-once contract, this latch prevents
+  // duplicate notifications across multiple failure transitions and dtor.
+  // TODO(crbug.com/551306029): Eventually this should be the same as the return
+  // value of `PrefetchContainer::IsPrefetchStale()`. After that, rename this to
+  // `is_stale_` and make `PrefetchContainer::IsPrefetchStale()` refer to
+  // `is_stale_`.
+  bool is_stale_notified_ = false;
 
   // True during notifying `observers_`.
   // This is used to `DUMP_WILL_BE_CHECK()` the disallowed operations during
