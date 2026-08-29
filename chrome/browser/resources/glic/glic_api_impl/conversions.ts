@@ -69,17 +69,10 @@ export type CheckEnumCompatibility<MojoEnum, TsEnum> = AnnotateError<
 assertNever<CheckEnumCompatibility<
     typeof mojomEnums.PanelStateKind,
     Omit<typeof api.PanelStateKind, 'FLOATING'|'DOCKED'>>>();
-// kUnknown isn't in the public API because this is a closed enum, and will not
-// be expanded.
+// kUnknown isn't in the public API because this is a closed enum, and will
+// not be expanded.
 assertNever<CheckEnumCompatibility<
     Omit<typeof mojom.WebClientMode, 'kUnknown'>, typeof api.WebClientMode>>();
-assertNever<CheckEnumCompatibility<
-    typeof mojom.CaptureScreenshotErrorReason,
-    typeof api.CaptureScreenshotErrorReason>>();
-assertNever<CheckEnumCompatibility<
-    typeof mojom.ScrollToErrorReason, typeof api.ScrollToErrorReason>>();
-assertNever<CheckEnumCompatibility<
-    typeof mojomEnums.InvocationSource, typeof api.InvocationSource>>();
 assertNever<CheckEnumCompatibility<
     Omit<typeof mojom.SettingsPageField, 'kNone'>,
     typeof api.SettingsPageField>>();

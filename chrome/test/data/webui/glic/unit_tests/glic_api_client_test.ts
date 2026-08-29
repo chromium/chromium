@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {InterfaceDef, ObservableSetByTabIdDelegate, ObservableValue, PendingRemote, PostMessageRemote, PostMessageRouter, RequestMessage, WebClientHost} from 'chrome://glic/glic.js';
-import {createBidirectionalPostMessageTransport, defInterface, ObservableSetByTabId, WebClientHostDef} from 'chrome://glic/glic.js';
+import {ObservableSetByTabId} from '//webui-test/glic/glic_api_impl/client/observable_set_by_tab_id.js';
+import type {ObservableSetByTabIdDelegate} from '//webui-test/glic/glic_api_impl/client/observable_set_by_tab_id.js';
+import {WebClientHostDef} from '//webui-test/glic/glic_api_impl/request_types.js';
+import type {WebClientHost} from '//webui-test/glic/glic_api_impl/request_types.js';
+import {defInterface} from '//webui-test/glic/glic_api_impl/transport/messaging.js';
+import type {InterfaceDef} from '//webui-test/glic/glic_api_impl/transport/messaging.js';
+import {createDirectMessagingPair} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
+import type {PendingRemote, PostMessageRemote, PostMessageRouter} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
+import type {ObservableValue} from '//webui-test/glic/observable.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-class StubSender {
-  sentMessages: RequestMessage[] = [];
-  postMessage(message: any, _targetOrigin: string, _transfer?: Transferable[]):
-      void {
-    this.sentMessages.push(message);
-  }
-}
 
 interface TestEnvironment {
   sender: PostMessageRemote<WebClientHost>;
@@ -70,20 +69,15 @@ function sleep(timeout: number): Promise<void> {
 
 suite('ObservableSetByTabId', () => {
   function createEnvironment(): TestEnvironment {
-    const stubSender = new StubSender();
-    const transport =
-        createBidirectionalPostMessageTransport<WebClientHost, InterfaceDef>(
-            'origin',
-            stubSender,
-            /*lifecycleObserver=*/ {},
-            /*rootMessageHandler=*/ {} as any,
-            'logPrefix',
-            /*isHost=*/ false,
-            /*errorCodec=*/ {} as any,
-            /*interfaceDef=*/ DummyInterfaceDef,
-            /*_remoteInterfaceDef=*/ WebClientHostDef,
-        );
-    const router = transport.router;
+    const pair = createDirectMessagingPair<WebClientHost, InterfaceDef>(
+        'test',
+        /*errorCodec=*/ {} as any,
+        /*clientRootHandler=*/ {} as any,
+        /*hostRootHandler=*/ {} as any,
+        /*clientInterfaceDef=*/ DummyInterfaceDef,
+        /*hostInterfaceDef=*/ WebClientHostDef,
+    );
+    const router = pair.client.router;
     const sender =
         router.newPipeWithRemote<WebClientHost>(WebClientHostDef).remote;
     const delegate = new TestDelegate(router);

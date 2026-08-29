@@ -4,8 +4,9 @@
 
 // cc_file_path: chrome/browser/glic/host/glic_api_browsertest.cc
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, PromptType, ResponseStopCause, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, PromptType, ResponseStopCause, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode, WebUseCounter} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabContextResult, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHostImpl} from '/glic/glic_api_impl/client/glic_api_client.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -17,6 +18,14 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testDoNothing() {}
+
+  async testRecordUseCounter() {
+    assertDefined(this.host.getMetrics);
+    const metrics = this.host.getMetrics();
+    assertDefined(metrics);
+    assertDefined(metrics.onRecordUseCounter);
+    metrics.onRecordUseCounter(WebUseCounter.SUBMIT_PROMPT_WITH_AUTO_MODE);
+  }
 
   async testDefaultInvocationSource() {
     const panelOpenData =
@@ -1023,7 +1032,12 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testErrorShownOnMojoPipeError() {}
+  async testErrorShownOnMojoPipeError() {
+    // Calling getModelQualityClientId triggers a mojo pipe error because the
+    // runtime feature is disabled.
+    (this.host as GlicBrowserHostImpl)
+        .clientRemote.requestWithResponse('getModelQualityClientId', undefined);
+  }
 
   async testPanelActiveWithMicrophone() {
     await this.advanceToNextStep();

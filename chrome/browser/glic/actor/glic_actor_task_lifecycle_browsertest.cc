@@ -101,6 +101,7 @@ class JournalObserver : public ::actor::AggregatedJournal::Observer {
 
   void WillAddJournalEntry(
       const ::actor::AggregatedJournal::Entry& entry) override {
+    entries_.push_back(entry.data.Clone());
     if (wait_predicate_ && wait_predicate_.Run(*entry.data)) {
       if (run_loop_) {
         run_loop_->Quit();
@@ -109,15 +110,21 @@ class JournalObserver : public ::actor::AggregatedJournal::Observer {
   }
 
   // Waits until a journal entry matching the predicate is observed.
-  // NOTE: Only entries added after this method is called will be considered.
   void WaitUntil(Predicate predicate) {
+    for (const auto& entry : entries_) {
+      if (predicate.Run(*entry)) {
+        return;
+      }
+    }
     wait_predicate_ = std::move(predicate);
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
+    wait_predicate_.Reset();
   }
 
  private:
   raw_ptr<::actor::AggregatedJournal> journal_;
+  std::vector<::actor::mojom::JournalEntryPtr> entries_;
   Predicate wait_predicate_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -478,12 +485,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   completion_subscription =
       CreateTaskCompletionSubscription(task_id, task_completion_state);
 
-  EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get())
-      << "Task " << task_id << " did not reach kFinished state.";
-
   JournalObserver observer(&actor_keyed_service()->GetJournal());
 
   ContinueJsTest();
+
+  EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get())
+      << "Task " << task_id << " did not reach kFinished state.";
 
   // Pausing an inactive task should be a no-op and log an error.
   observer.WaitUntil(

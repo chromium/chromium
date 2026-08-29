@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
+#include "chrome/browser/glic/host/guest_source.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -61,16 +62,6 @@
 #endif
 
 namespace glic {
-
-// Sets the maximum number of in-flight requests to the guest.
-BASE_FEATURE(kGlicMaxInFlightRequests, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kGlicMaxInFlightRequestLimit,
-                   &kGlicMaxInFlightRequests,
-                   "max_in_flight_request_limit",
-                   200);
-BASE_FEATURE(kGlicSendResponsesForAllRequests,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler,
                            public GlicWebClientManager::Delegate {
@@ -317,10 +308,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   // Set up guest api source.
   // This comes from 'glic_api_injection' in
   // chrome/browser/resources/glic/BUILD.gn.
-  source->AddString(
-      "glicGuestAPISource",
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_GLIC_GLIC_API_IMPL_GLIC_API_INJECTED_CLIENT_ROLLUP_JS));
+  source->AddString("glicGuestAPISource", GetGuestAPISource());
 
   bool reload_after_navigation =
       !command_line->HasSwitch(::switches::kGlicSkipReloadAfterNavigation);
@@ -416,13 +404,25 @@ void GlicUI::AttachToHost(Host* host) {
   }
   CHECK(host);
   host_ = host;
+  web_client_manager_->AttachToHost(host);
+  if (pending_web_client_receiver_) {
+    host->CreateWebClient(std::move(pending_web_client_receiver_));
+  }
   if (pending_receiver_.is_valid()) {
     page_handler_ = std::make_unique<GlicPageHandler>(
         web_ui()->GetWebContents(), host, std::move(pending_receiver_),
         std::move(pending_page_));
     std::move(pending_callback_).Run(host->GetInstanceId().value());
   }
-  web_client_manager_->AttachToHost(host);
+}
+
+void GlicUI::SetPendingWebClientReceiver(
+    mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver) {
+  if (host_) {
+    host_->CreateWebClient(std::move(receiver));
+  } else {
+    pending_web_client_receiver_ = std::move(receiver);
+  }
 }
 
 void GlicUI::CreatePageHandler(
@@ -444,6 +444,9 @@ void GlicUI::CreatePageHandler(
   }
   page_handler_ = std::make_unique<GlicPageHandler>(
       web_ui()->GetWebContents(), host_, std::move(receiver), std::move(page));
+  if (pending_web_client_receiver_) {
+    host_->CreateWebClient(std::move(pending_web_client_receiver_));
+  }
   std::move(callback).Run(host_->GetInstanceId().value());
 }
 

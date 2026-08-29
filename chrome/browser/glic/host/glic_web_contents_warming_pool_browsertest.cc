@@ -105,15 +105,46 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingPoolBrowserTest, MAYBE_BackfillWarming) {
             base::Milliseconds(90));  // Allow slight scheduling leeway.
 }
 
+// Test fixture for verifying that a warmed container can properly load the
+// guest WebUI client and connect.
+//
+// When `features::kGlicWarming` is enabled, warming begins automatically
+// during profile initialization at browser startup, before
+// `GlicBrowserTestMixin::SetUpOnMainThread()` starts the embedded test server
+// and sets the `--glic-guest-url` command line switch. As a result, the early
+// warmed container attempts to load the default production URL and fails in
+// tests.
+//
+// This fixture leaves automatic startup warming disabled, allowing the test
+// to manually trigger warming via `MaybeStartInitialWarming()` after
+// `SetUpOnMainThread()` has configured the embedded test server and guest URL.
+class GlicManualWarmingPoolBrowserTest
+    : public GlicBrowserTestMixin<PlatformBrowserTest> {
+ public:
+  GlicManualWarmingPoolBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicWebContentsWarming},
+        /*disabled_features=*/{features::kGlicWarming});
+  }
+
+  GlicWebContentsWarmingPool& pool() {
+    return coordinator().GetWebContentsWarmingPoolForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // TODO(b/496609005): Skip on ChromeOS due to profile ineligibility timeouts.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_WarmedContainerConnects DISABLED_WarmedContainerConnects
 #else
 #define MAYBE_WarmedContainerConnects WarmedContainerConnects
 #endif
-IN_PROC_BROWSER_TEST_F(GlicWarmingPoolBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicManualWarmingPoolBrowserTest,
                        MAYBE_WarmedContainerConnects) {
-  // 1. Wait for initial preload to complete.
+  // 1. Manually start warming now that the embedded test server is running.
+  ASSERT_TRUE(pool().MaybeStartWarming(GlicWarmingTrigger::kStartup));
   ASSERT_TRUE(
       RunUntil([this]() { return pool().HasWarmedContainerForTesting(); },
                "Wait for initial cold warming"));

@@ -937,9 +937,15 @@ export function getHostRequestHistogramInfo(
     return undefined;
   }
   const method = interfaceDef.methodMap?.get(requestType);
-  // interfaceDef() ensures histogram satisfies HostRequestHistogramInfo, or is
-  // unset.
-  return method?.histogram as HostRequestHistogramInfo | undefined;
+  if (!method || !method.histogram) {
+    return undefined;
+  }
+  const name = (method.histogram as {name?: string}).name ??
+      (requestType.charAt(0).toUpperCase() + requestType.slice(1));
+  return {
+    name,
+    id: method.histogram.id,
+  };
 }
 
 //

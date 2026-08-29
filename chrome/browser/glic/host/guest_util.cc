@@ -260,12 +260,8 @@ class CachedOriginMatcher {
 }  // namespace
 
 bool IsGlicGuest(content::WebContents* web_contents) {
-  if (!web_contents ||
-      GlicGuestMarker::FromWebContents(web_contents) == nullptr) {
-    return false;
-  }
-  auto* guest_view = guest_view::GuestViewBase::FromWebContents(web_contents);
-  return guest_view && guest_view->attached();
+  return web_contents &&
+         GlicGuestMarker::FromWebContents(web_contents) != nullptr;
 }
 
 void MarkProcessAsGlic(content::RenderProcessHost* rph) {
@@ -429,12 +425,11 @@ void BindGlicWebClientHandler(
     return;
   }
   auto* glic_ui = GlicUI::From(top);
-  if (!glic_ui || !glic_ui->host()) {
+  if (!glic_ui) {
     return;
   }
-  glic_ui->host()->CreateWebClient(std::move(receiver));
+  glic_ui->SetPendingWebClientReceiver(std::move(receiver));
 }
-
 content::StoragePartitionConfig GetGlicStoragePartitionConfig(
     content::BrowserContext* browser_context) {
   return content::StoragePartitionConfig::Create(browser_context,

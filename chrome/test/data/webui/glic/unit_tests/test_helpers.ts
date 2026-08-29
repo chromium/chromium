@@ -41,7 +41,7 @@ export class FakePageHandler implements Partial<PageHandlerInterface> {
 }
 
 export class FakeBrowserProxy implements BrowserProxy {
-  pageHandler = new FakePageHandler() as PageHandlerInterface;
+  pageHandler = new FakePageHandler() as unknown as PageHandlerInterface;
   pageCallbackRouter = new PageCallbackRouter();
   preloadPageCallbackRouter = new PreloadPageCallbackRouter();
 }

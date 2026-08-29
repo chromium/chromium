@@ -71,6 +71,12 @@ class GlicActorFunctionalBrowserTestMixin : public T {
   base::CallbackListSubscription CreateTaskCompletionSubscription(
       TaskId for_task_id,
       TestFuture<ActorTask::State>& future) {
+    ActorTask* existing_task = actor_keyed_service()->GetTask(for_task_id);
+    if (existing_task &&
+        ActorTask::IsCompletedState(existing_task->GetState())) {
+      future.SetValue(existing_task->GetState());
+      return base::CallbackListSubscription();
+    }
     return actor_keyed_service()->AddTaskStateChangedCallback(
         base::BindLambdaForTesting([&future, for_task_id](ActorTask& task) {
           if (task.id() == for_task_id &&

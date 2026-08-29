@@ -389,7 +389,8 @@ SkillsInteractiveUiTestBase::WaitForSkillPreviewOrder(
 
 ui::test::InteractiveTestApi::StepBuilder
 SkillsInteractiveUiTestBase::ClickOnGlicClientElement(DeepQuery where) {
-  return ExecuteJsAt(glic::kGlicContentsElementId, where, kClickFn);
+  return ExecuteJsAt(glic::kGlicContentsElementId, where, kClickFn,
+                     InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget);
 }
 
 ui::test::InteractiveTestApi::MultiStep

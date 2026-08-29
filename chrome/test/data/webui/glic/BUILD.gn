@@ -4,6 +4,7 @@
 
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("../build_webui_tests.gni")
 
 out_dir = "$target_gen_dir/glic"
@@ -55,13 +56,19 @@ ts_library("build_extra_ts") {
     "test_client/sections/interaction.ts",
     "test_client/sections/stress.ts",
   ]
-  deps = [ "//chrome/browser/resources/glic:build_ts" ]
+  deps = [
+    "//chrome/browser/resources/glic:build_glic_api_ts",
+    "//chrome/browser/resources/glic:build_ts",
+  ]
 
   definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
 
   path_mappings = [
     "/glic/glic_api/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/*",
+            "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/glic_api/*",
+            target_gen_dir),
+    "/glic/glic_api_impl/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/glic_api_impl/*",
             target_gen_dir),
 
     # Not all files under glic/ are copied. See test_glic_deps.
@@ -95,11 +102,11 @@ copy("test_client_external_files") {
 
 copy("test_client_api_deps") {
   sources = [
-    "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/glic_api.js",
-    "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/glic_api_generated.js",
+    "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/glic_api/glic_api.js",
+    "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/glic_api/glic_api_generated.js",
   ]
   outputs = [ "$out_dir/glic_api/{{source_file_part}}" ]
-  deps = [ "//chrome/browser/resources/glic:build_ts" ]
+  deps = [ "//chrome/browser/resources/glic:build_glic_api_ts" ]
 }
 
 copy("test_glic_deps") {
@@ -124,12 +131,20 @@ if (!is_android) {
       "unit_tests/webview_test.ts",
     ]
 
-    ts_path_mappings =
-        [ "chrome://glic/glic.js|" + rebase_path(
+    ts_path_mappings = [
+      "chrome://glic/glic.js|" + rebase_path(
               "$root_gen_dir/chrome/browser/resources/glic/tsc/glic.d.ts",
-              target_gen_dir) ]
+              target_gen_dir),
+      "//webui-test/glic/*|" + rebase_path(
+              "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/*",
+              target_gen_dir),
+      "chrome://webui-test/glic/*|" + rebase_path(
+              "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/*",
+              target_gen_dir),
+    ]
 
     ts_deps = [
+      "//chrome/browser/resources/glic:build_glic_api_ts",
       "//chrome/browser/resources/glic:build_ts",
       "//ui/webui/resources/cr_components/color_change_listener:build_ts",
       "//ui/webui/resources/cr_elements:build_ts",
@@ -144,5 +159,13 @@ if (!is_android) {
       "//tools/typescript/definitions/web_request.d.ts",
       "//tools/typescript/definitions/webview_tag.d.ts",
     ]
+  }
+
+  generate_grd("build_glic_api_grdp") {
+    grd_prefix = "webui_glic_api"
+    out_grd = "$target_gen_dir/glic_api_resources.grdp"
+    deps = [ "//chrome/browser/resources/glic:build_glic_api_ts" ]
+    manifest_files = [ "$root_gen_dir/chrome/browser/resources/glic/build_glic_api_ts_manifest.json" ]
+    resource_path_prefix = "glic"
   }
 }

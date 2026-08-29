@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
@@ -40,6 +41,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -64,8 +67,8 @@ GlicPageHandler::GlicPageHandler(
   VLOG(1) << "Glic [PageHandler] Constructor";
   CHECK(host_);
   MarkProcessAsGlic(webui_contents->GetPrimaryMainFrame()->GetProcess());
+  host_observation_.Observe(host_);
   host_->WebUIPageHandlerAdded(this);
-  host_->AddObserver(this);
   host_->instance().AddStateObserver(this);
 
   UpdatePageState(host_->instance().GetPanelState().kind);
@@ -79,12 +82,7 @@ GlicPageHandler::GlicPageHandler(
 GlicPageHandler::~GlicPageHandler() {
   VLOG(1) << "Glic [PageHandler] Destructor";
   host_->instance().RemoveStateObserver(this);
-  // Clear `host_` before unregistering so the Host can be deleted
-  // synchronously without leaving a dangling raw_ptr during teardown.
-  Host* host = host_;
-  host_ = nullptr;
-  host->RemoveObserver(this);
-  host->WebUIPageHandlerRemoved(this);
+  host_->WebUIPageHandlerRemoved(this);
 }
 
 content::WebContents* GlicPageHandler::webui_contents() {
@@ -99,11 +97,6 @@ GlicKeyedService* GlicPageHandler::GetGlicService() {
   return GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_);
 }
 
-void GlicPageHandler::CreateWebClient(
-    ::mojo::PendingReceiver<glic::mojom::WebClientHandler>
-        web_client_receiver) {
-  host_->CreateWebClient(std::move(web_client_receiver));
-}
 
 void GlicPageHandler::PrepareForClient(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
@@ -240,6 +233,49 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
   host().ClosePanel();
   base::RecordAction(
       base::UserMetricsAction("Glic.DisabledByAdminPanelLinkClicked"));
+}
+
+void GlicPageHandler::OpenLinkInPopup(const GURL& url,
+                                      int32_t popup_width,
+                                      int32_t popup_height) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  gfx::NativeView native_view = webui_contents_->GetContentNativeView();
+  const display::Display& display =
+      display::Screen::Get()->GetDisplayNearestView(native_view);
+  const gfx::Rect work_area = display.work_area();
+
+  const int x = work_area.x() + (work_area.width() - popup_width) / 2;
+  const int y = work_area.y() + (work_area.height() - popup_height) / 2;
+
+  std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
+      Profile::FromBrowserContext(browser_context_), url,
+      ui::PAGE_TRANSITION_LINK);
+  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->opened_by_another_window = true;
+  params->window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
+  glic::NavigateAsync(std::move(params), base::DoNothing());
+}
+
+void GlicPageHandler::OpenLinkInNewTab(const GURL& url) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
+      Profile::FromBrowserContext(browser_context_), url,
+      ui::PAGE_TRANSITION_LINK);
+  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  glic::NavigateAsync(std::move(params), base::DoNothing());
+}
+
+void GlicPageHandler::ShouldAllowGeolocationPermissionRequest(
+    ShouldAllowGeolocationPermissionRequestCallback callback) {
+  std::move(callback).Run(Profile::FromBrowserContext(browser_context_)
+                              ->GetPrefs()
+                              ->GetBoolean(prefs::kGlicGeolocationEnabled) &&
+                          host_->IsWidgetShowing(nullptr));
 }
 
 void GlicPageHandler::OpenHelpCenterTopicAndClosePanel(

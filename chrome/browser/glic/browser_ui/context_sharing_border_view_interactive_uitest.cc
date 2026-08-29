@@ -283,13 +283,15 @@ class ContextSharingBorderViewUiTestBase : public test::InteractiveGlicTest {
   void CloseGlicWindow() {
     const DeepQuery kCloseWindowButton{{"#closebn"}};
     RunTestSequence(
-        ExecuteJsAt(kGlicContentsElementId, kCloseWindowButton, kClickFn));
+        ExecuteJsAt(kGlicContentsElementId, kCloseWindowButton, kClickFn,
+                    InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget));
   }
 
   void ShutdownGlicWindow() {
     const DeepQuery kShutdownWindowButton{{"#shutdownbn"}};
     RunTestSequence(
-        ExecuteJsAt(kGlicContentsElementId, kShutdownWindowButton, kClickFn));
+        ExecuteJsAt(kGlicContentsElementId, kShutdownWindowButton, kClickFn,
+                    InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget));
   }
 
   void ClickGlicButtonInBrowser(BrowserWindowInterface* browser) {

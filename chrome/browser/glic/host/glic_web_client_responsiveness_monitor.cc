@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
@@ -30,6 +31,9 @@ GlicWebClientResponsivenessMonitor::GlicWebClientResponsivenessMonitor(
 }
 
 GlicWebClientResponsivenessMonitor::~GlicWebClientResponsivenessMonitor() {
+  if (current_state_ == mojom::WebClientState::kUnresponsive) {
+    RecordUnresponsiveExited();
+  }
   Stop();
 }
 
@@ -85,6 +89,9 @@ void GlicWebClientResponsivenessMonitor::OnCheckResponsiveResponse() {
   timeout_timer_.Stop();
   error_timer_.Stop();
   if (current_state_ != mojom::WebClientState::kResponsive) {
+    if (current_state_ == mojom::WebClientState::kUnresponsive) {
+      RecordUnresponsiveExited();
+    }
     current_state_ = mojom::WebClientState::kResponsive;
     state_changed_callback_.Run(current_state_);
   }
@@ -113,6 +120,10 @@ void GlicWebClientResponsivenessMonitor::OnCheckResponsiveTimeout() {
 
   if (current_state_ == mojom::WebClientState::kResponsive) {
     current_state_ = mojom::WebClientState::kUnresponsive;
+    unresponsive_start_time_ = base::TimeTicks::Now();
+    base::UmaHistogramEnumeration(
+        "Glic.Host.WebClientUnresponsiveState",
+        WebClientUnresponsiveState::kEnteredHeartbeat);
     state_changed_callback_.Run(current_state_);
 
     int error_timeout_ms = features::kGlicClientUnresponsiveUiMaxTimeMs.Get();
@@ -129,10 +140,22 @@ void GlicWebClientResponsivenessMonitor::OnCheckResponsiveTimeout() {
 
 void GlicWebClientResponsivenessMonitor::OnUnresponsiveErrorTimeout() {
   if (current_state_ == mojom::WebClientState::kUnresponsive) {
+    RecordUnresponsiveExited();
     current_state_ = mojom::WebClientState::kError;
     ping_timer_.Stop();
     timeout_timer_.Stop();
     state_changed_callback_.Run(current_state_);
+  }
+}
+
+void GlicWebClientResponsivenessMonitor::RecordUnresponsiveExited() {
+  if (!unresponsive_start_time_.is_null()) {
+    base::UmaHistogramEnumeration("Glic.Host.WebClientUnresponsiveState",
+                                  WebClientUnresponsiveState::kExited);
+    base::UmaHistogramMediumTimes(
+        "Glic.Host.WebClientUnresponsiveState.Duration",
+        base::TimeTicks::Now() - unresponsive_start_time_);
+    unresponsive_start_time_ = base::TimeTicks();
   }
 }
 

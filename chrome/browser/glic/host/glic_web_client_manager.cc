@@ -117,6 +117,8 @@ content::WebContents* GlicWebClientManager::web_client_contents() const {
 }
 void GlicWebClientManager::CreateWebClient(
     mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver) {
+  base::UmaHistogramEnumeration("Glic.Host.WebClientLifecycleEvent",
+                                GlicWebClientLifecycleEvent::kCreated);
   if (web_client_owned_) {
     UnsetWebClient();
   }
@@ -125,7 +127,7 @@ void GlicWebClientManager::CreateWebClient(
       host_, host_->profile(), std::move(web_client_receiver),
       base::BindOnce(&GlicWebClientManager::UnsetWebClient,
                      // Safe, web_client_owned_ is owned by this.
-                     base::Unretained(this)),
+                     base::Unretained(this), std::nullopt),
       base::BindRepeating(&GlicWebClientManager::OnWebClientStateChanged,
                           // Safe, web_client_owned_ is owned by this.
                           base::Unretained(this)));
@@ -144,15 +146,25 @@ void GlicWebClientManager::OnWebClientStateChanged(
 void GlicWebClientManager::WebClientInitialized() {
   CHECK(web_client_owned_);
   web_client_ = web_client_owned_.get();
+  base::UmaHistogramEnumeration("Glic.Host.WebClientLifecycleEvent",
+                                GlicWebClientLifecycleEvent::kInitialized);
 }
 
-void GlicWebClientManager::UnsetWebClient() {
+void GlicWebClientManager::UnsetWebClient(
+    std::optional<GlicWebClientLifecycleEvent> event) {
   if (!web_client_owned_) {
     return;
   }
   DVLOG(1) << "Glic [WebClientManager] UnsetWebClient, had_access="
            << (web_client_owned_ ? "true" : "false");
   bool had_web_client = (web_client_ != nullptr);
+  base::UmaHistogramEnumeration(
+      "Glic.Host.WebClientLifecycleEvent",
+      event.value_or(
+          had_web_client
+              ? GlicWebClientLifecycleEvent::kDisconnectedAfterInitialization
+              : GlicWebClientLifecycleEvent::
+                    kDisconnectedBeforeInitialization));
   web_client_ = nullptr;
   web_client_owned_.reset();
   if (host_) {
@@ -195,7 +207,7 @@ void GlicWebClientManager::DidFinishNavigation(
                                 is_api_allowed, page_type, is_initial_commit);
   }
   if (web_client_owned_) {
-    UnsetWebClient();
+    UnsetWebClient(GlicWebClientLifecycleEvent::kDisconnectedOnNavigation);
   }
 }
 
@@ -208,7 +220,7 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
   base::UmaHistogramEnumeration("Glic.Session.WebClientCrash.ExitReason",
                                 TerminationStatusToExitReason(status));
   if (web_client_owned_) {
-    UnsetWebClient();
+    UnsetWebClient(GlicWebClientLifecycleEvent::kDisconnectedOnProcessGone);
   }
   if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
     base::RecordAction(base::UserMetricsAction("GlicSessionWebClientCrash"));

@@ -65,10 +65,10 @@ bool IsGlicOwnedTab(tabs::TabInterface* tab);
 // Returns true if `web_contents` is the Glic guest WebContents.
 bool IsGlicGuest(content::WebContents* web_contents);
 
+// Binds WebClientHandler for guest frame.
 void BindGlicWebClientHandler(
     content::RenderFrameHost* rfh,
     mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver);
-
 // Returns true if `process_host` is either the Glic FRE WebUI or the Glic
 // main WebUI.
 bool IsProcessHostForGlic(content::RenderProcessHost* process_host);

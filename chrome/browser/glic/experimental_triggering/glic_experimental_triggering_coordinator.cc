@@ -303,10 +303,16 @@ class ExperimentalTriggeringUpdatesHandler
                 mojom::SubscriberObservationType observation) override {
     switch (observation) {
       case mojom::SubscriberObservationType::kComplete:
-        SendTaskUpdateMessage(TaskUpdate::State::kComplete);
+        if (!terminal_update_sent_) {
+          terminal_update_sent_ = true;
+          SendTaskUpdateMessage(TaskUpdate::State::kComplete);
+        }
         break;
       case mojom::SubscriberObservationType::kError:
-        SendTaskUpdateMessage(TaskUpdate::State::kFailed);
+        if (!terminal_update_sent_) {
+          terminal_update_sent_ = true;
+          SendTaskUpdateMessage(TaskUpdate::State::kFailed);
+        }
         break;
       case mojom::SubscriberObservationType::kUpdate: {
         if (!update) {
@@ -332,15 +338,18 @@ class ExperimentalTriggeringUpdatesHandler
                                   std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion:
+            terminal_update_sent_ = true;
             SendTaskUpdateMessage(TaskUpdate::State::kComplete,
                                   TaskUpdate::DataType::kFinalResponse,
                                   std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kTerminalStopped:
+            terminal_update_sent_ = true;
             SendTaskUpdateMessage(TaskUpdate::State::kStopped, std::nullopt,
                                   std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
+            terminal_update_sent_ = true;
             SendTaskUpdateMessage(TaskUpdate::State::kFailed,
                                   TaskUpdate::DataType::kErrorMessage,
                                   std::move(update->data), std::move(metadata));
@@ -820,6 +829,7 @@ class ExperimentalTriggeringUpdatesHandler
 
   std::optional<int64_t> last_seen_sequence_number_;
   GlicExperimentalTriggeringUpdateCallback update_callback_;
+  bool terminal_update_sent_ = false;
 
   base::WeakPtrFactory<ExperimentalTriggeringUpdatesHandler> weak_ptr_factory_{
       this};

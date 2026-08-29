@@ -194,9 +194,9 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
     const taskId = await this.host.createTask();
     assertTrue(taskId > 0);
 
-    await this.host.stopActorTask(taskId, ActorTaskStopReason.TASK_COMPLETE);
     await this.advanceToNextStep({taskId});
 
+    await this.host.stopActorTask(taskId, ActorTaskStopReason.TASK_COMPLETE);
     const focusedTabId = await this.getFocusedTabId();
 
     await this.host.pauseActorTask(

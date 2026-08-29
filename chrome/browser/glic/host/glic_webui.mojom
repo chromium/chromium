@@ -186,9 +186,6 @@ enum HelpCenterTopic {
 
 // Page handler for the glic WebUI, implemented by the browser.
 interface PageHandler {
-  // Creates a WebClientHandler, for use by a single web client instance.
-  CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
-
   // TODO(crbug.com/454120908): Remove this method after WebContents warming is
   // rolled out.
   // Prepare the webview for loading the client. Sync Google account sign-in
@@ -199,8 +196,18 @@ interface PageHandler {
   // Called whenever the webview mainframe commits.
   WebviewCommitted(url.mojom.Url url);
 
+  // Opens a link in a popup window.
+  OpenLinkInPopup(url.mojom.Url url, int32 popup_width, int32 popup_height);
+
+  // Opens a link in a new tab.
+  OpenLinkInNewTab(url.mojom.Url url);
+
   // Notifies the host that the zoom level of the webview has changed.
   OnZoomLevelChange(double zoom_factor);
+
+  // Returns whether geolocation permission request from the webview should be
+  // allowed.
+  ShouldAllowGeolocationPermissionRequest() => (bool is_allowed);
 
   // Closes the Glic panel.
   ClosePanel() => ();

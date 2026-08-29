@@ -7,13 +7,11 @@ import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
-import {WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import {PanelStateKind} from './glic_enums.mojom-webui.js';
+import {GuestPageType, HelpCenterTopic, PrepareForClientResult, ProfileReadyState, WebClientState, WebUiState} from './glic_webui.mojom-webui.js';
 import type {ZoomAction} from './glic_webui.mojom-webui.js';
-import {GuestPageType, HelpCenterTopic, PrepareForClientResult, ProfileReadyState, WebUiState} from './glic_webui.mojom-webui.js';
 import type {WebviewDelegate} from './webview.js';
 import {WebviewController, WebviewPersistentState} from './webview.js';
-
 // Time to wait before showing loading panel.
 const kPreHoldLoadingTimeMs = loadTimeData.getInteger('preLoadingTimeMs');
 
@@ -28,11 +26,6 @@ const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
 const kEnableDebug = loadTimeData.getBoolean('enableDebug');
 
 const kShowErrorAllowed = loadTimeData.getBoolean('showErrorAllowed');
-
-// Whether additional web client unresponsiveness tracking metrics should be
-// recorded.
-const kEnableUnresponsiveMetrics =
-    loadTimeData.getBoolean('enableWebClientUnresponsiveMetrics');
 
 interface PageElementTypes {
   panelContainer: HTMLElement;
@@ -78,17 +71,6 @@ interface StateDescriptor {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange(WebClientUnresponsiveState)
-export enum WebClientUnresponsiveState {
-  ENTERED_FROM_WEBVIEW_EVENT = 0,
-  ENTERED_FROM_CUSTOM_HEARTBEAT = 1,
-  ALREADY_ON_FROM_WEBVIEW_EVENT = 2,
-  ALREADY_ON_FROM_CUSTOM_HEARTBEAT = 3,
-  EXITED = 4,
-  MAX_VALUE = EXITED,
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientUnresponsiveState)
-
 // Enum for specific stages of loading the web client, reported if loading times
 // out.
 // LINT.IfChange(LoadingStage)
@@ -132,12 +114,14 @@ export class GlicAppController implements WebviewDelegate {
 
   // Present only when loading or after loading is finished. Removed on error.
   private webview?: WebviewController;
+  get webviewForTesting(): WebviewController|undefined {
+    return this.webview;
+  }
   private webviewPersistentState = new WebviewPersistentState();
 
   private profileReadyState: ProfileReadyState|undefined = undefined;
   private profileReadyInitialState = Promise.withResolvers<void>();
 
-  private enteredUnresponsiveTimestampMs?: number;
   // Loading stage, affects metrics only.
   private loadingStage: LoadingStage = LoadingStage.NOT_LOADING;
   private loadingStageStartTimestampMs?: DOMHighResTimeStamp;
@@ -246,37 +230,6 @@ export class GlicAppController implements WebviewDelegate {
       });
     }
     this.initializeIcons_();
-  }
-
-  trackUnresponsiveState(newState: WebClientUnresponsiveState): void {
-    if (!kEnableUnresponsiveMetrics) {
-      return;
-    }
-
-    // Track and record unresponsive state duration.
-    if (newState === WebClientUnresponsiveState.ENTERED_FROM_WEBVIEW_EVENT ||
-        newState === WebClientUnresponsiveState.ENTERED_FROM_CUSTOM_HEARTBEAT) {
-      // Entering an unresponsive state.
-      this.enteredUnresponsiveTimestampMs = Date.now();
-    } else if (newState === WebClientUnresponsiveState.EXITED) {
-      // Existing an unresponsive state.
-      if (this.enteredUnresponsiveTimestampMs !== undefined) {
-        const unresponsiveDuration =
-            Date.now() - this.enteredUnresponsiveTimestampMs;
-        chrome.histograms.recordMediumTime(
-            'Glic.Host.WebClientUnresponsiveState.Duration',
-            unresponsiveDuration);
-        this.enteredUnresponsiveTimestampMs = undefined;
-      } else {
-        console.error(
-            'Unresponsive state exited without an entering timestamp');
-      }
-    }
-
-    // Record unresponsive state detections and transitions.
-    chrome.histograms.recordEnumerationValue(
-        'Glic.Host.WebClientUnresponsiveState', newState,
-        WebClientUnresponsiveState.MAX_VALUE + 1);
   }
 
   webviewError(reason: string): void {
@@ -481,7 +434,6 @@ export class GlicAppController implements WebviewDelegate {
             },
         onExit:
             () => {
-              this.trackUnresponsiveState(WebClientUnresponsiveState.EXITED);
               $.unresponsiveOverlay.classList.toggle('hidden', true);
             },
       },
@@ -550,10 +502,6 @@ export class GlicAppController implements WebviewDelegate {
   }
 
   private getLoadingStage(): LoadingStage {
-    if (this.loadingStage === LoadingStage.LOADING_WEB_CLIENT &&
-        this.webview?.waitingOnPanelWillOpen()) {
-      return LoadingStage.AWAITING_NOTIFY_PANEL_WILL_OPEN;
-    }
     return this.loadingStage;
   }
 
@@ -636,8 +584,9 @@ export class GlicAppController implements WebviewDelegate {
       return;
     }
     this.showPanel('loadingPanel');
+    this.earliestLoadingDismissTime = performance.now() + kMinHoldLoadingTimeMs;
     if (this.webview?.getWebClientState().getCurrentValue() ===
-        WebClientState.RESPONSIVE) {
+        WebClientState.kResponsive) {
       if (this.panelStateKind === PanelStateKind.kHidden) {
         this.setState(WebUiState.kWarmed);
         return;
@@ -680,18 +629,8 @@ export class GlicAppController implements WebviewDelegate {
     // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
     // by `webClientReady`.
     this.loadingTimer = setTimeout(() => {
-      if (this.webview?.waitingOnPanelWillOpen()) {
-        console.warn('Exceeded timeout waiting for notifyPanelWillOpen');
-        this.setErrorState(WebUiErrorReason.TIMEOUT_NOTIFY_PANEL_WILL_OPEN);
-
-      } else if (
-          this.webview?.getWebClientState().getCurrentValue() ===
-          WebClientState.RESPONSIVE) {
-        this.setState(WebUiState.kReady);
-      } else {
-        console.warn('Exceeded timeout waiting for client to load');
-        this.setErrorState(WebUiErrorReason.TIMEOUT_LOADING_CLIENT);
-      }
+      console.warn('Exceeded timeout waiting for client to load');
+      this.setErrorState(WebUiErrorReason.TIMEOUT_LOADING_CLIENT);
 
       if (this.state !== WebUiState.kReady) {
         chrome.histograms.recordEnumerationValue(
@@ -787,44 +726,35 @@ export class GlicAppController implements WebviewDelegate {
 
   webClientStateChanged(state: WebClientState): void {
     switch (state) {
-      case WebClientState.WARMED:
+      case WebClientState.kWarmed:
         if (this.state === WebUiState.kBeginLoad ||
             this.state === WebUiState.kFinishLoading ||
             this.state === WebUiState.kShowLoading) {
           this.cancelTimeout();
-          this.trackLoadingStageEnd();
           this.setState(WebUiState.kWarmed);
           if (this.panelStateKind !== PanelStateKind.kHidden) {
             this.startWarmedTimeout();
           }
         }
         break;
-      case WebClientState.RESPONSIVE:
+      case WebClientState.kResponsive:
         if (this.state === WebUiState.kUnresponsive) {
           this.setState(WebUiState.kReady);
         }
         break;
-      case WebClientState.UNRESPONSIVE:
-        this.trackUnresponsiveState(
-            this.state === WebUiState.kUnresponsive ?
-                WebClientUnresponsiveState.ALREADY_ON_FROM_CUSTOM_HEARTBEAT :
-                WebClientUnresponsiveState.ENTERED_FROM_CUSTOM_HEARTBEAT);
-        this.setState(WebUiState.kUnresponsive);
+      case WebClientState.kUnresponsive:
         break;
-      case WebClientState.ERROR:
+      case WebClientState.kError:
         this.guestResizeEnabled = false;
         this.setErrorState(WebUiErrorReason.CLIENT_ERROR);
         break;
-      case WebClientState.UNINITIALIZED:
-        break;
       default:
-        assertNotReachedCase(state);
+        assertNotReachedCase(state as never);
     }
   }
 
   // External entry points.
 
-  // TODO: Make this a proper state.
   showDebug(): void {
     this.setState(WebUiState.kReady);
     $.guestPanel.classList.toggle('show-header', true);

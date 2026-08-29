@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {createBidirectionalPostMessageTransport, defInterface, defMessage, InverseSet, ON_PIPE_CLOSED} from 'chrome://glic/glic.js';
-import type {ErrorCodec, InterfaceDef, PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageRouterImpl, PostMessageSender, TransferableException} from 'chrome://glic/glic.js';
+import {defInterface, defMessage} from '//webui-test/glic/glic_api_impl/transport/messaging.js';
+import type {InterfaceDef} from '//webui-test/glic/glic_api_impl/transport/messaging.js';
+import {createDirectMessagingPair, InverseSet, ON_PIPE_CLOSED} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
+import type {ErrorCodec, PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageRouterImpl, TransferableException} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertRejects, sleep, waitUntilEqual} from './test_helpers.js';
@@ -17,25 +19,6 @@ const TEST_ERROR_CODEC: ErrorCodec = {
     return raw.exception;
   },
 };
-
-class FakePostMessageSender implements PostMessageSender {
-  router?: PostMessageRouterImpl;
-  sendOrigin: string = '';
-
-  postMessage(
-      message: unknown, _targetOrigin: string,
-      _transfer?: Transferable[]): void {
-    setTimeout(() => {
-      if (this.router) {
-        this.router.onMessage({
-          data: message,
-          origin: this.sendOrigin,
-          source: {} as unknown as MessageEventSource,
-        } as MessageEvent);
-      }
-    }, 0);
-  }
-}
 
 const CandyApiDef = defInterface({
   name: 'CandyApi',
@@ -168,16 +151,12 @@ class HostHandler implements PostMessageHandler<TestHostApi> {
 }
 
 suite('PostMessageTransportTest', () => {
-  let hostTarget: FakePostMessageSender;
-  let clientTarget: FakePostMessageSender;
   let routers: PostMessageRouterImpl[] = [];
 
   let hostHandler: HostHandler;
   let clientHandler: ClientHandler;
 
   setup(() => {
-    hostTarget = new FakePostMessageSender();
-    clientTarget = new FakePostMessageSender();
     hostHandler = new HostHandler();
     clientHandler = new ClientHandler();
     routers = [];
@@ -193,25 +172,21 @@ suite('PostMessageTransportTest', () => {
     const hostObserver = new TrackingLifecycleObserver();
     const clientObserver = new TrackingLifecycleObserver();
 
-    const host = createBidirectionalPostMessageTransport(
-        'client-origin', hostTarget, hostObserver, hostHandler, 'host', true,
-        TEST_ERROR_CODEC, TestHostApiDef, TestClientApiDef);
+    const pair = createDirectMessagingPair(
+        'test', TEST_ERROR_CODEC, clientHandler, hostHandler, TestClientApiDef,
+        TestHostApiDef, clientObserver, hostObserver);
 
-    const client = createBidirectionalPostMessageTransport(
-        'host-origin', clientTarget, clientObserver, clientHandler, 'client',
-        false, TEST_ERROR_CODEC, TestClientApiDef, TestHostApiDef);
+    clientHandler.router = pair.client.router;
 
-    hostTarget.router = client.router;
-    clientTarget.router = host.router;
-    clientHandler.router = client.router;
+    routers.push(pair.host.router);
+    routers.push(pair.client.router);
 
-    hostTarget.sendOrigin = 'host-origin';
-    clientTarget.sendOrigin = 'client-origin';
-
-    routers.push(host.router);
-    routers.push(client.router);
-
-    return {host, client, hostObserver, clientObserver};
+    return {
+      host: pair.host,
+      client: pair.client,
+      hostObserver,
+      clientObserver,
+    };
   }
 
   test('Successful bidirectional ping-pong request and response', async () => {

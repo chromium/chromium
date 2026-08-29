@@ -213,25 +213,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h:DaisyChainFirstAction) -->
 
-<!-- LINT.IfChange(GlicDetailedWebClientState) -->
-
-<enum name="GlicDetailedWebClientState">
-  <int value="0" label="Bootstrap pending"/>
-  <int value="1" label="Web client not created"/>
-  <int value="2" label="Web client initialize failed"/>
-  <int value="3" label="Web client created but not initialized"/>
-  <int value="4" label="(Obsolete) Temporary unresponsive"/>
-  <int value="5" label="(Obsolete) Permanent unresponsive"/>
-  <int value="6" label="Responsive"/>
-  <int value="7" label="(Obsolete) Responsive Inactive"/>
-  <int value="8" label="(Obsolete) Unresponsive Inactive"/>
-  <int value="9" label="(Obsolete) Mojo pipe closed unexpectedly"/>
-  <int value="10" label="Mojo pipe closed unexpectedly before initialize"/>
-  <int value="11" label="Mojo pipe closed unexpectedly after initialization"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/host/glic_api_host.ts:DetailedWebClientState) -->
-
 <!-- LINT.IfChange(GlicDragAndDropContentType) -->
 
 <enum name="GlicDragAndDropContentType">
@@ -1228,6 +1209,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmingPoolStatus) -->
 
+<!-- LINT.IfChange(GlicWebClientLifecycleEvent) -->
+
+<enum name="GlicWebClientLifecycleEvent">
+  <int value="0" label="Created"/>
+  <int value="1" label="Initialized"/>
+  <int value="2" label="Disconnected before initialization"/>
+  <int value="3" label="Disconnected after initialization"/>
+  <int value="4" label="Disconnected on navigation"/>
+  <int value="5" label="Disconnected on process gone"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_client_manager.h:GlicWebClientLifecycleEvent) -->
+
 <!-- LINT.IfChange(GlicWebClientMode) -->
 
 <enum name="GlicWebClientMode">
@@ -1431,24 +1425,25 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(WebClientUnresponsiveState) -->
 
 <enum name="WebClientUnresponsiveState">
-  <int value="0" label="Entered; webview event">
-    Entered unresponsive state, detected by a webview unresponsive event&quot;
+  <int value="0" label="(Obsolete) Entered; webview event">
+    (Obsolete) Entered unresponsive state, previously detected by JS webview
+    event.
   </int>
   <int value="1" label="Entered; heartbeat">
-    Entered unresponsive state, detected by Glic's custom heartbeat check&quot;
+    Entered unresponsive state, detected by Glic's C++ responsiveness monitor.
   </int>
-  <int value="2" label="Already unresponsive; webview event">
-    Already on unresponsive state, detected again by a webview unresponsive
-    event&quot;
+  <int value="2" label="(Obsolete) Already unresponsive; webview event">
+    (Obsolete) Already in unresponsive state, detected by JS webview event.
   </int>
-  <int value="3" label="Already unresponsive; heartbeat">
-    Already on unresponsive state, detected again by Glic's custom heartbeat
-    check&quot;
+  <int value="3" label="(Obsolete) Already unresponsive; heartbeat">
+    (Obsolete) Already in unresponsive state, detected by JS heartbeat.
   </int>
-  <int value="4" label="Exited">Exited unresponsive state&quot;</int>
+  <int value="4" label="Exited">
+    Exited unresponsive state, detected by Glic's C++ responsiveness monitor.
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:WebClientUnresponsiveState) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_client_responsiveness_monitor.h:WebClientUnresponsiveState) -->
 
 <!-- LINT.IfChange(WebUiState) -->
 

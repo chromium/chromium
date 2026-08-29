@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
-import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
-import {GuestPageType, WebClientState as WebClientStateMojo, ZoomAction} from './glic_webui.mojom-webui.js';
+import {GuestPageType, WebClientState, ZoomAction} from './glic_webui.mojom-webui.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
 import {GlicRequestHeaderInjector} from './shared/glic_request_headers.js';
@@ -103,20 +101,26 @@ export class WebviewPersistentState {
   }
 }
 
-// Creates and manages the <webview> element, and the GlicApiHost which
-// communicates with it.
+// Creates and manages the <webview> element.
 export class WebviewController {
   webview: WebViewType;
-  private host?: GlicApiHost;
   private dormant = false;
-  private communicator?: GlicApiCommunicator;
+
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
   private webClientState =
-      ObservableValue.withValue(WebClientState.UNINITIALIZED);
+      ObservableValue.withValue(WebClientState.kUninitialized);
   private glicRequestHeaderInjector?: GlicRequestHeaderInjector;
   private displayScaleMultiplier = 1.0;
   private webClientStateListenerId?: number;
+  private bootstrapIntervalId?: number;
+
+  private stopBootstrapPing() {
+    if (this.bootstrapIntervalId !== undefined) {
+      window.clearInterval(this.bootstrapIntervalId);
+      this.bootstrapIntervalId = undefined;
+    }
+  }
 
   constructor(
       private readonly container: HTMLElement,
@@ -125,6 +129,7 @@ export class WebviewController {
       private persistentState: WebviewPersistentState,
   ) {
     this.webview = document.createElement('webview');
+    this.webview.setAttribute('allowpopups', 'true');
 
     this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
         this.webview, loadTimeData.getString('chromeVersion'),
@@ -133,28 +138,21 @@ export class WebviewController {
 
     this.webClientStateListenerId =
         this.browserProxy.preloadPageCallbackRouter.webClientStateChanged
-            .addListener((state: WebClientStateMojo) => {
+            .addListener((state: WebClientState) => {
+              this.webClientState.assignAndSignal(state);
               switch (state) {
-                case WebClientStateMojo.kWarmed:
-                  this.webClientState.assignAndSignal(WebClientState.WARMED);
+                case WebClientState.kWarmed:
+                  this.stopBootstrapPing();
                   break;
-                case WebClientStateMojo.kResponsive:
+                case WebClientState.kResponsive:
+                  this.stopBootstrapPing();
                   this.persistentState.onClientReady();
-                  this.webClientState.assignAndSignal(
-                      WebClientState.RESPONSIVE);
                   break;
-                case WebClientStateMojo.kUnresponsive:
-                  this.webClientState.assignAndSignal(
-                      WebClientState.UNRESPONSIVE);
-                  break;
-                case WebClientStateMojo.kError:
-                  this.webClientState.assignAndSignal(WebClientState.ERROR);
-                  this.destroyHost(WebClientState.ERROR);
-                  break;
-                case WebClientStateMojo.kUninitialized:
+                case WebClientState.kError:
+                  this.destroyHost(WebClientState.kError);
                   break;
                 default:
-                  assertNotReachedCase(state);
+                  break;
               }
             });
 
@@ -219,10 +217,11 @@ export class WebviewController {
       this.glicRequestHeaderInjector.destroy();
       this.glicRequestHeaderInjector = undefined;
     }
+
     this.destroyHost(
-        this.webClientState.getCurrentValue() === WebClientState.ERROR ?
-            WebClientState.ERROR :
-            WebClientState.UNINITIALIZED);
+        this.webClientState.getCurrentValue() === WebClientState.kError ?
+            WebClientState.kError :
+            WebClientState.kUninitialized);
     this.eventTracker.removeAll();
     this.onDestroy.forEach(f => f());
     this.onDestroy = [];
@@ -240,33 +239,8 @@ export class WebviewController {
     this.destroyHost();
   }
 
-  private reportOnDestroy(): void {
-    if (this.host) {
-      let state = this.host.getDetailedWebClientState();
-      if (state ===
-          DetailedWebClientState
-              .MOJO_PIPE_CLOSED_UNEXPECTEDLY_BEFORE_INITIALIZE) {
-        state = DetailedWebClientState.BOOTSTRAP_PENDING;
-      }
-      chrome.histograms.recordEnumerationValue(
-          'Glic.Host.WebClientState.OnDestroy', state,
-          DetailedWebClientState.MAX_VALUE + 1);
-    }
-  }
-
-  private destroyHost(
-      webClientState?: WebClientState, isNavigationCommit: boolean = false) {
-    if (this.host) {
-      if (!isNavigationCommit) {
-        this.reportOnDestroy();
-      }
-      this.host.destroy();
-      this.host = undefined;
-    }
-    if (this.communicator) {
-      this.communicator.destroy();
-      this.communicator = undefined;
-    }
+  private destroyHost(webClientState?: WebClientState) {
+    this.stopBootstrapPing();
     if (webClientState !== undefined) {
       this.webClientState.assignAndSignal(webClientState);
     }
@@ -292,10 +266,6 @@ export class WebviewController {
     });
   }
 
-  waitingOnPanelWillOpen(): boolean {
-    return this.host?.waitingOnPanelWillOpen() ?? false;
-  }
-
   private onLoadStop(): void {
     if (this.webview.checkVisibility()) {
       this.webview.focus();
@@ -309,10 +279,6 @@ export class WebviewController {
   private async onPermissionRequest(
       e: chrome.webviewTag.PermissionRequestEvent): Promise<void> {
     e.preventDefault();
-    if (!this.host) {
-      e.request.deny();
-      return;
-    }
     switch (e.permission) {
       case 'media': {
         // TODO(b/416092165): Block mic requests if the mic permission was not
@@ -321,9 +287,9 @@ export class WebviewController {
         return;
       }
       case 'geolocation': {
-        const isGeolocationAllowed =
-            await this.host.shouldAllowGeolocationPermissionRequest();
-        if (isGeolocationAllowed) {
+        const {isAllowed} = await this.browserProxy.pageHandler
+                                .shouldAllowGeolocationPermissionRequest();
+        if (isAllowed) {
           e.request.allow();
         } else {
           e.request.deny();
@@ -339,6 +305,8 @@ export class WebviewController {
 
   private onExit(event: chrome.webviewTag.ExitEvent): void {
     if (event.reason !== 'normal') {
+      this.destroyHost(WebClientState.kError);
+      chrome.histograms.recordUserAction('GlicSessionWebClientCrash');
       console.warn(`webview exit. processId: ${event.processId}, reason: ${
           event.reason}`);
     }
@@ -350,24 +318,14 @@ export class WebviewController {
       url: string, isApiAllowed: boolean, pageType: GuestPageType,
       _isInitialCommit: boolean): void {
     if (this.dormant ||
-        this.getWebClientState().getCurrentValue() === WebClientState.ERROR) {
+        this.getWebClientState().getCurrentValue() === WebClientState.kError) {
       return;
     }
 
     const wasResponsive = this.getWebClientState().getCurrentValue() ===
-        WebClientState.RESPONSIVE;
+        WebClientState.kResponsive;
 
-    if (this.host) {
-      chrome.histograms.recordEnumerationValue(
-          'Glic.Host.WebClientState.OnCommit',
-          this.host.getDetailedWebClientState(),
-          DetailedWebClientState.MAX_VALUE + 1);
-      if (!wasResponsive) {
-        this.reportOnDestroy();
-      }
-      this.destroyHost(
-          /*webClientState=*/ undefined, /*isNavigationCommit=*/ true);
-    }
+    this.destroyHost();
 
     if (pageType !== GuestPageType.kRegular || !isApiAllowed) {
       this.delegate.webviewPageCommit(
@@ -378,18 +336,21 @@ export class WebviewController {
     }
 
     const urlObj = URL.parse(url);
-    const origin = urlObj ? urlObj.origin : '*';
-    const contentWindow =
-        this.webview.contentWindow || (window as unknown as WindowProxy);
-    this.communicator = new GlicApiCommunicator(origin, contentWindow);
-    this.host = new GlicApiHost(this.browserProxy, this.communicator);
-    this.host.getWebClientState().subscribe(state => {
-      if (state === WebClientState.ERROR) {
-        this.webClientState.assignAndSignal(WebClientState.ERROR);
-        this.destroyHost(WebClientState.ERROR);
-      }
-    });
-    this.communicator.contentLoaded();
+    if (urlObj && this.webview.contentWindow && isApiAllowed) {
+      const contentWindow = this.webview.contentWindow;
+      const origin = urlObj.origin;
+      this.stopBootstrapPing();
+      const sendBootstrap = () => {
+        contentWindow.postMessage(
+            {
+              type: 'glic-bootstrap',
+              glicApiSource: loadTimeData.getString('glicGuestAPISource'),
+            },
+            origin);
+      };
+      sendBootstrap();
+      this.bootstrapIntervalId = window.setInterval(sendBootstrap, 50);
+    }
 
     this.browserProxy.pageHandler.webviewCommitted(url);
 
@@ -405,20 +366,13 @@ export class WebviewController {
   private onNewWindowEvent(event: chrome.webviewTag.NewWindowEvent) {
     event.preventDefault();
     event.stopPropagation();
-    if (!this.host) {
-      return;
-    }
 
     if (loadTimeData.getBoolean('glicPopupWindowsEnabled') &&
         event.windowOpenDisposition === 'new_popup') {
-      this.host.openLinkInPopup(
+      this.browserProxy.pageHandler.openLinkInPopup(
           event.targetUrl, event.initialWidth, event.initialHeight);
     } else {
-      this.host.openLinkInNewTab(event.targetUrl);
+      this.browserProxy.pageHandler.openLinkInNewTab(event.targetUrl);
     }
-  }
-
-  getApiHost(): GlicApiHost|undefined {
-    return this.host;
   }
 }

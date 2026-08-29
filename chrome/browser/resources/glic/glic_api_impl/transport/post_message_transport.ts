@@ -91,6 +91,7 @@ const ROOT_PIPE = 0 as RootPipe;
 // Manages pipes and provides a way to send and receive messages over
 // `postMessage`.
 export interface PostMessageRouter {
+  receiver?: PostMessageRequestReceiver;
   // Creates a new pipe bound to a pending receiver and a remote.
   newPipeWithRemote<RemoteInterface extends InterfaceDef>(
       remoteInterfaceDef: RemoteInterface): {
@@ -623,6 +624,7 @@ export class PostMessageReceiverImpl implements PostMessageReceiver {
     this.pipe.addCloseHandler(f);
   }
 }
+
 // Sends requests over postMessage.
 export class PostMessageRequestSender {
   requestId = 1;
@@ -867,29 +869,95 @@ export class PostMessageRequestReceiver {
   }
 }
 
-export function createBidirectionalPostMessageTransport<
-    RemoteInterface extends InterfaceDef,
-                            ReceiverInterface extends InterfaceDef>(
-    remoteOrigin: string,
-    postMessageSender: PostMessageSender,
-    lifecycleObserver: PostMessageLifecycleObserver,
-    rootMessageHandler: PostMessageHandler<ReceiverInterface>,
+// Creates a direct in-memory messaging transport pair between host and client
+// without going through real window.postMessage.
+export function createDirectMessagingPair<
+    HostRemoteInterface extends InterfaceDef,
+                                ClientRemoteInterface extends InterfaceDef>(
     logPrefix: string,
-    isHost: boolean,
     errorCodec: ErrorCodec,
-    interfaceDef: ReceiverInterface,
-    _remoteInterfaceDef: RemoteInterface,
+    clientRootHandler: PostMessageHandler<ClientRemoteInterface>,
+    hostRootHandler: PostMessageHandler<HostRemoteInterface>,
+    clientInterfaceDef: ClientRemoteInterface,
+    hostInterfaceDef: HostRemoteInterface,
+    clientLifecycleObserver: PostMessageLifecycleObserver = {},
+    hostLifecycleObserver: PostMessageLifecycleObserver = {},
 ) {
-  const senderId = newSenderId();
-  const router = new PostMessageRouterImpl(
-      remoteOrigin, senderId, postMessageSender, logPrefix, isHost, errorCodec);
-  const sender = new PostMessageRequestSender(router);
-  const receiver = new PostMessageRequestReceiver(router, lifecycleObserver);
-  const rootReceiver =
-      router.newReceiver(ROOT_PIPE, rootMessageHandler, interfaceDef);
-  const rootRemote =
-      new PostMessageRemoteImpl<RemoteInterface>(ROOT_PIPE, sender, router);
-  return {router, sender, receiver, rootRemote, rootReceiver};
+  const targetForClient: {router?: PostMessageRouterImpl} = {};
+  const targetForHost: {router?: PostMessageRouterImpl} = {};
+
+  const senderToHost: PostMessageSender = {
+    postMessage(
+        message: unknown, _targetOrigin: string, _transfer?: Transferable[]) {
+      queueMicrotask(() => {
+        targetForHost.router?.onMessage({
+          origin: '*',
+          source: window,
+          data: message,
+          ports: [],
+        } as unknown as MessageEvent);
+      });
+    },
+  };
+
+  const senderToClient: PostMessageSender = {
+    postMessage(
+        message: unknown, _targetOrigin: string, _transfer?: Transferable[]) {
+      queueMicrotask(() => {
+        targetForClient.router?.onMessage({
+          origin: '*',
+          source: window,
+          data: message,
+          ports: [],
+        } as unknown as MessageEvent);
+      });
+    },
+  };
+
+  const clientSenderId = newSenderId();
+  const hostSenderId = newSenderId();
+
+  const routerClient = new PostMessageRouterImpl(
+      '*', clientSenderId, senderToHost, `${logPrefix}_client`, false,
+      errorCodec);
+  const routerHost = new PostMessageRouterImpl(
+      '*', hostSenderId, senderToClient, `${logPrefix}_host`, true, errorCodec);
+
+  targetForClient.router = routerClient;
+  targetForHost.router = routerHost;
+
+  const clientSender = new PostMessageRequestSender(routerClient);
+  const clientReceiver =
+      new PostMessageRequestReceiver(routerClient, clientLifecycleObserver);
+  const clientRootReceiver = routerClient.newReceiver(
+      ROOT_PIPE, clientRootHandler, clientInterfaceDef);
+  const clientRootRemote = new PostMessageRemoteImpl<HostRemoteInterface>(
+      ROOT_PIPE, clientSender, routerClient);
+
+  const hostSender = new PostMessageRequestSender(routerHost);
+  const hostReceiver =
+      new PostMessageRequestReceiver(routerHost, hostLifecycleObserver);
+  const hostRootReceiver =
+      routerHost.newReceiver(ROOT_PIPE, hostRootHandler, hostInterfaceDef);
+  const hostRootRemote = new PostMessageRemoteImpl<ClientRemoteInterface>(
+      ROOT_PIPE, hostSender, routerHost);
+
+  return {
+    client: {
+      router: routerClient,
+      sender: clientSender,
+      receiver: clientReceiver,
+      rootRemote: clientRootRemote,
+      rootReceiver: clientRootReceiver,
+    },
+    host: {
+      router: routerHost,
+      sender: hostSender,
+      receiver: hostReceiver,
+      rootRemote: hostRootRemote,
+      rootReceiver: hostRootReceiver,
+    },
+  };
 }
 
 // Converts a value to JSON for debug logging.

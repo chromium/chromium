@@ -39,6 +39,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
@@ -1599,31 +1600,12 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTest {
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                        testErrorShownOnMojoPipeError) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
-  glic::GlicHistogramTester histogram_tester;
   ExecuteJsTest();
 
   auto* web_contents = instance->host().webui_contents();
   ASSERT_TRUE(web_contents);
 
-  // Reach in to `GlicApiHost`'s handler to call a function that's gated by
-  // a disabled feature.
-  const char* script = R"js(
-(()=>{
-  const appController = appRouter.glicController;
-  if (!appController.webview.host.handler.getModelQualityClientId) {
-    return "Method not found";
-  }
-  appController.webview.host.handler.getModelQualityClientId();
-  return "Method called";
-})()
-)js";
-  auto result = content::EvalJs(web_contents->GetPrimaryMainFrame(), script);
-  ASSERT_EQ("Method called", result.ExtractString());
-
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Host.WebClientState.OnDestroy",
-      11 /*MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE*/, 1);
 
   // Verify the reload button works.
   ASSERT_TRUE(content::ExecJs(web_contents,
@@ -3102,14 +3084,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
-  glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
-                                           0 /*BOOTSTRAP_PENDING*/) > 0;
-  }));
 #endif
 }
 
@@ -3119,14 +3096,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
 #define MAYBE_testNoBootstrap testNoBootstrap
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoBootstrap) {
-  glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
-                                           0 /*BOOTSTRAP_PENDING*/) > 0;
-  }));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
@@ -3141,8 +3113,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
   });
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
-                                           3 /*WEB_CLIENT_NOT_INITIALIZED*/) >
+    return histogram_tester.GetBucketCount(
+               "Glic.Host.WebClientLifecycleEvent",
+               GlicWebClientLifecycleEvent::kDisconnectedBeforeInitialization) >
            0;
   }));
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -3475,6 +3448,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDoNothing) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testRecordUseCounter) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(histogram_tester.WaitForBucketCount("Glic.Api.UseCounter", 1, 1));
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDefaultInvocationSource) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
@@ -3501,10 +3481,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest({.params = base::Value(1)});  // test run count: 1.
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnCommit",
-                                      6 /*RESPONSIVE*/, 1);
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
-                                      0 /*BOOTSTRAP_PENDING*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Host.WebClientLifecycleEvent",
+      GlicWebClientLifecycleEvent::kDisconnectedOnNavigation, 1);
 }
 
 // TODO(b/544866316): Consider moving this to a different test suite
@@ -3555,6 +3534,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetUserProfileInfo) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetUserProfileInfo",
+      glic::mojom::GlicRequestEvent::kRequestReceived, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetUserProfileInfo",
+      glic::mojom::GlicRequestEvent::kResponseSent, 1);
   // Confirm that this response-receiving request gets latency metrics recorded.
   histogram_tester.ExpectTotalCount(
       "Glic.Api.RequestHostLatency.GetUserProfileInfo", 1);

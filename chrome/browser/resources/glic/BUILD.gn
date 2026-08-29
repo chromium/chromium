@@ -4,6 +4,7 @@
 
 import("//build/config/python.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
@@ -21,38 +22,6 @@ build_webui("build") {
   ts_files = [
     "app_router.ts",
     "browser_proxy.ts",
-    "glic_api_impl/actor/actor_client.ts",
-    "glic_api_impl/actor/actor_host.ts",
-    "glic_api_impl/actor/actor_types.ts",
-    "glic_api_impl/annotation/annotation_client.ts",
-    "glic_api_impl/annotation/annotation_host.ts",
-    "glic_api_impl/annotation/annotation_types.ts",
-    "glic_api_impl/skills/skills_client.ts",
-    "glic_api_impl/skills/skills_host.ts",
-    "glic_api_impl/skills/skills_types.ts",
-    "glic_api_impl/client/glic_api_client.ts",
-    "glic_api_impl/client/image_utils.ts",
-    "glic_api_impl/client/observable_set_by_tab_id.ts",
-    "glic_api_impl/conversions.ts",
-    "glic_api_impl/experimental_triggering/experimental_triggering_client.ts",
-    "glic_api_impl/experimental_triggering/experimental_triggering_host.ts",
-    "glic_api_impl/experimental_triggering/experimental_triggering_types.ts",
-    "glic_api_impl/glic_api_injected_client.ts",
-    "glic_api_impl/host/conversions.ts",
-    "glic_api_impl/host/glic_api_host.ts",
-    "glic_api_impl/host/host_from_client.ts",
-    "glic_api_impl/host/host_to_client.ts",
-    "glic_api_impl/host/host_utils.ts",
-    "glic_api_impl/host/types.ts",
-    "glic_api_impl/request_types.ts",
-    "glic_api_impl/transport/messaging.ts",
-    "glic_api_impl/transport/post_message_transport.ts",
-    "glic_api_impl/zero_state_suggestions/zero_state_suggestions_client.ts",
-    "glic_api_impl/zero_state_suggestions/zero_state_suggestions_host.ts",
-    "glic_api_impl/zero_state_suggestions/zero_state_suggestions_types.ts",
-    "glic_api_impl/client/glic_client_common.ts",
-    "glic_api/glic_api.ts",
-    "glic_api/glic_api_generated.ts",
     "glic_app_controller.ts",
     "glic.ts",
     "icons.html.ts",
@@ -85,23 +54,13 @@ build_webui("build") {
   extra_grdp_files = [ "$target_gen_dir/glic_api_injection.grdp" ]
 
   mojo_files_deps = [
-    "glic_api_impl/generate_impl:generate_enum_conversions",
     "//chrome/browser/glic:mojo_bindings_ts__generator",
-    "//chrome/common:actor_webui_mojom_ts__generator",
     "//chrome/common:glic_enums_mojom_ts__generator",
-    "//components/content_settings/core/common:content_settings_types_ts__generator",
-    "//components/optimization_guide/content/mojom:mojo_interfaces_ts__generator",
-    "//third_party/blink/public/mojom/content_extraction:content_extraction_ts__generator",
   ]
   mojo_files = [
-    "$target_gen_dir/glic_api_impl/generate_impl/enum_conversions.ts",
-    "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/glic/host/glic_internals.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/glic/host/glic_webui.mojom-webui.ts",
-    "$root_gen_dir/chrome/common/actor_webui.mojom-webui.ts",
     "$root_gen_dir/chrome/common/glic_enums.mojom-webui.ts",
-    "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
-    "$root_gen_dir/third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-webui.ts",
   ]
 
   ts_definitions = [
@@ -140,15 +99,132 @@ build_webui("build") {
   ts_composite = true
 }
 
+glic_api_ts_files = [
+  "glic_api/glic_api.ts",
+  "glic_api/glic_api_generated.ts",
+  "glic_api_impl/actor/actor_client.ts",
+  "glic_api_impl/actor/actor_host.ts",
+  "glic_api_impl/actor/actor_types.ts",
+  "glic_api_impl/annotation/annotation_client.ts",
+  "glic_api_impl/annotation/annotation_host.ts",
+  "glic_api_impl/annotation/annotation_types.ts",
+  "glic_api_impl/client/glic_api_client.ts",
+  "glic_api_impl/client/glic_client_common.ts",
+  "glic_api_impl/client/image_utils.ts",
+  "glic_api_impl/client/observable_set_by_tab_id.ts",
+  "glic_api_impl/conversions.ts",
+  "glic_api_impl/experimental_triggering/experimental_triggering_client.ts",
+  "glic_api_impl/experimental_triggering/experimental_triggering_host.ts",
+  "glic_api_impl/experimental_triggering/experimental_triggering_types.ts",
+  "glic_api_impl/glic_api_injected_client.ts",
+  "glic_api_impl/guest_load_time_data.ts",
+  "glic_api_impl/host/conversions.ts",
+  "glic_api_impl/host/glic_api_host.ts",
+  "glic_api_impl/host/host_from_client.ts",
+  "glic_api_impl/host/host_to_client.ts",
+  "glic_api_impl/host/host_utils.ts",
+  "glic_api_impl/host/types.ts",
+  "glic_api_impl/mojo_bindings_stub.ts",
+  "glic_api_impl/request_types.ts",
+  "glic_api_impl/skills/skills_client.ts",
+  "glic_api_impl/skills/skills_host.ts",
+  "glic_api_impl/skills/skills_types.ts",
+  "glic_api_impl/transport/messaging.ts",
+  "glic_api_impl/transport/post_message_transport.ts",
+  "glic_api_impl/zero_state_suggestions/zero_state_suggestions_client.ts",
+  "glic_api_impl/zero_state_suggestions/zero_state_suggestions_host.ts",
+  "glic_api_impl/zero_state_suggestions/zero_state_suggestions_types.ts",
+]
+
+copy("copy_glic_api_mojo") {
+  deps = [
+    "glic_api_impl/generate_impl:generate_enum_conversions",
+    "//chrome/browser/glic:mojo_bindings_ts__generator",
+    "//chrome/common:actor_webui_mojom_ts__generator",
+    "//chrome/common:glic_enums_mojom_ts__generator",
+    "//components/content_settings/core/common:content_settings_types_ts__generator",
+    "//third_party/blink/public/mojom/content_extraction:content_extraction_ts__generator",
+  ]
+  sources = [
+    "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
+    "$root_gen_dir/chrome/common/actor_webui.mojom-webui.ts",
+    "$root_gen_dir/chrome/common/glic_enums.mojom-webui.ts",
+    "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
+    "$root_gen_dir/third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-webui.ts",
+    "$target_gen_dir/glic_api_impl/generate_impl/enum_conversions.ts",
+  ]
+  outputs = [ "$target_gen_dir/glic_api_tsc_input/{{source_file_part}}" ]
+}
+
+copy("copy_glic_api_src") {
+  sources = [
+    "observable.ts",
+    "task_queue.ts",
+    "timer.ts",
+  ]
+  outputs = [ "$target_gen_dir/glic_api_tsc_input/{{source_file_part}}" ]
+}
+
+copy("copy_glic_api_files") {
+  sources = glic_api_ts_files
+  outputs = [ "$target_gen_dir/glic_api_tsc_input/{{source_target_relative}}" ]
+}
+
+webui_ts_library("build_glic_api_ts") {
+  root_dir = "$target_gen_dir/glic_api_tsc_input"
+  out_dir = "$target_gen_dir/glic_api_tsc"
+  in_files = glic_api_ts_files + [
+               "observable.ts",
+               "task_queue.ts",
+               "timer.ts",
+               "enum_conversions.ts",
+               "glic.mojom-webui.ts",
+               "actor_webui.mojom-webui.ts",
+               "glic_enums.mojom-webui.ts",
+               "content_settings_types.mojom-webui.ts",
+               "ai_page_content_metadata.mojom-webui.ts",
+             ]
+  deps = [
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  extra_deps = [
+    ":copy_glic_api_files",
+    ":copy_glic_api_mojo",
+    ":copy_glic_api_src",
+  ]
+  definitions = []
+  tsconfig_base = "//tools/typescript/tsconfig_base.json"
+  composite = true
+}
+
 # Build the API provided to the Glic web client. It needs to be built into a
 # single js file and sent to the Glic web client at runtime.
 glic_api_injection_manifest = "$target_gen_dir/glic_api_injection_manifest.json"
-optimize_webui("glic_api_injection") {
+bundle_js("glic_api_injection_bundle") {
   host = "about:blank"
-  input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+  input = rebase_path("$target_gen_dir/glic_api_tsc", root_build_dir)
   js_module_in_files = [ "glic_api_impl/glic_api_injected_client.js" ]
+  out_folder = "$target_gen_dir/glic_api_injection_bundle"
+  external_paths = [
+    "//resources/mojo/mojo/public/js/bindings.js|" +
+        rebase_path("$root_gen_dir/mojo/public/js/bindings.js", root_build_dir),
+    "chrome://resources/mojo/mojo/public/js/bindings.js|" +
+        rebase_path("$root_gen_dir/mojo/public/js/bindings.js", root_build_dir),
+  ]
+  excludes = []
+  deps = [
+    ":build_glic_api_ts",
+    "//mojo/public/js:bindings_module",
+  ]
+}
+
+minify_js("glic_api_injection") {
+  in_folder = "$target_gen_dir/glic_api_injection_bundle"
+  out_folder = target_gen_dir
+  in_files = [ "glic_api_impl/glic_api_injected_client.rollup.js" ]
   out_manifest = "$glic_api_injection_manifest"
-  deps = [ ":build_ts" ]
+  deps = [ ":glic_api_injection_bundle" ]
 }
 
 generate_grd("glic_api_injection_grdp") {

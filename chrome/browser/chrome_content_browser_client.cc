@@ -101,6 +101,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -2248,8 +2249,12 @@ bool ChromeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
 
 bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
     content::RenderFrameHost& render_frame_host) {
-  if (glic::IsFrameAllowedGlicApi(render_frame_host)) {
-    return true;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host);
+  if (base::FeatureList::IsEnabled(features::kGlicEnableMojoJs)) {
+    if (web_contents && glic::IsGlicGuest(web_contents)) {
+      return true;
+    }
   }
   // TODO(crbug.com/539909218): Prototype shortcut. Enabling MojoJS for any PWC
   // exposes the entire Mojo interface surface rather than only GeicApi, and the
@@ -2260,8 +2265,6 @@ bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
   // `IsInPrimaryMainFrame()` because this predicate is consulted from
   // `ReadyToCommitNavigation` before the frame commits, where
   // lifecycle-dependent queries return false.
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host);
   if (!render_frame_host.GetParentOrOuterDocument() && web_contents &&
       pwc::PrivilegedWebContents::FromWebContents(web_contents)) {
     return true;

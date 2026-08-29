@@ -23,6 +23,10 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// This file includes definitions used ONLY by the glic web client, and no
+// Chrome WebUI. Don't add dependencies on this from WebUI code, as it will
+// bundle a lot of unused js bindings into Chrome.
+
 // Warning: a script copies some enums from this file over to glic_api.ts.
 // Run this script to update them, and read it for details.
 // chrome/browser/resources/glic/glic_api_impl/generate.py
@@ -1110,11 +1114,28 @@ struct CreateTabOptions {
   int32? window_id;
 };
 
+enum GlicRequestEvent {
+  kRequestReceived = 0,
+  kResponseSent = 1,
+  kRequestHandlerException = 2,
+  kRequestReceivedWhileInactive = 4,
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
 // WebClientHandler is created.
 interface WebClientHandler {
+  // Reports API request count metrics from the web client.
+  ReportApiRequestCount(string request_type, GlicRequestEvent event);
+
+  // Reports API request latency metrics from the web client.
+  ReportApiRequestLatency(
+      string request_type, mojo_base.mojom.TimeDelta latency);
+
+  // Records a sparse histogram value.
+  RecordSparseValue(string name, int32 value);
+
   // Called just before the web client initialize() call. Provides the initial
   // state of any values that can be queried.
   WebClientCreated(pending_remote<WebClient> web_client)

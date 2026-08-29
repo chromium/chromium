@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageRequestSender, PostMessageRouterImpl, Queue} from 'chrome://glic/glic.js';
-import type {RequestMessage} from 'chrome://glic/glic.js';
+import {PostMessageRequestSender, PostMessageRouterImpl, Queue} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
+import type {RequestMessage} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-// To trigger these tests, run tests in
-// chrome/test/data/webui/glic/glic_browsertest.cc
 class StubSender {
   sentMessages: RequestMessage[] = [];
 

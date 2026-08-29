@@ -26,6 +26,18 @@ namespace glic {
 
 class Host;
 
+// LINT.IfChange(GlicWebClientLifecycleEvent)
+enum class GlicWebClientLifecycleEvent {
+  kCreated = 0,
+  kInitialized = 1,
+  kDisconnectedBeforeInitialization = 2,
+  kDisconnectedAfterInitialization = 3,
+  kDisconnectedOnNavigation = 4,
+  kDisconnectedOnProcessGone = 5,
+  kMaxValue = kDisconnectedOnProcessGone,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebClientLifecycleEvent)
+
 // Manages the Glic web client and observes the guest frame (WebContents).
 // Owned by GlicUI.
 class GlicWebClientManager : public content::WebContentsObserver {
@@ -70,7 +82,8 @@ class GlicWebClientManager : public content::WebContentsObserver {
   void CreateWebClient(
       mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver);
   void WebClientInitialized();
-  void UnsetWebClient();
+  void UnsetWebClient(
+      std::optional<GlicWebClientLifecycleEvent> event = std::nullopt);
 
   // content::WebContentsObserver:
   void DidStartNavigation(
