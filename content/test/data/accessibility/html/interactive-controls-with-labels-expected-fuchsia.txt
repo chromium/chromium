@@ -88,38 +88,38 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN
-++++++++++++++UNKNOWN focusable label='Hours aria label' actions='{SET_VALUE}' value='12'
+++++++++++++++UNKNOWN label='Hours aria label' actions='{SET_VALUE}' value='12'
 ++++++++++++++++STATIC_TEXT label='12'
 ++++++++++++++++++UNKNOWN label='12'
 ++++++++++++++STATIC_TEXT label=':'
 ++++++++++++++++UNKNOWN label=':'
-++++++++++++++UNKNOWN focusable label='Minutes aria label' actions='{SET_VALUE}' value='05'
+++++++++++++++UNKNOWN label='Minutes aria label' actions='{SET_VALUE}' value='05'
 ++++++++++++++++STATIC_TEXT label='05'
 ++++++++++++++++++UNKNOWN label='05'
 ++++++++++++++STATIC_TEXT label=' '
 ++++++++++++++++UNKNOWN label=' '
-++++++++++++++UNKNOWN focusable label='AM/PM aria label' actions='{SET_VALUE}' value='PM'
+++++++++++++++UNKNOWN label='AM/PM aria label' actions='{SET_VALUE}' value='PM'
 ++++++++++++++++STATIC_TEXT label='PM'
 ++++++++++++++++++UNKNOWN label='PM'
-++++++++++UNKNOWN focusable label='Show time picker aria label' actions='{DEFAULT}'
+++++++++++UNKNOWN label='Show time picker aria label' actions='{DEFAULT}'
 ++++++UNKNOWN focusable label='Test label' actions='{DEFAULT, SET_VALUE}' value='12:05'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN
-++++++++++++++UNKNOWN focusable label='Hours Test label' actions='{SET_VALUE}' value='12'
+++++++++++++++UNKNOWN label='Hours Test label' actions='{SET_VALUE}' value='12'
 ++++++++++++++++STATIC_TEXT label='12'
 ++++++++++++++++++UNKNOWN label='12'
 ++++++++++++++STATIC_TEXT label=':'
 ++++++++++++++++UNKNOWN label=':'
-++++++++++++++UNKNOWN focusable label='Minutes Test label' actions='{SET_VALUE}' value='05'
+++++++++++++++UNKNOWN label='Minutes Test label' actions='{SET_VALUE}' value='05'
 ++++++++++++++++STATIC_TEXT label='05'
 ++++++++++++++++++UNKNOWN label='05'
 ++++++++++++++STATIC_TEXT label=' '
 ++++++++++++++++UNKNOWN label=' '
-++++++++++++++UNKNOWN focusable label='AM/PM Test label' actions='{SET_VALUE}' value='PM'
+++++++++++++++UNKNOWN label='AM/PM Test label' actions='{SET_VALUE}' value='PM'
 ++++++++++++++++STATIC_TEXT label='PM'
 ++++++++++++++++++UNKNOWN label='PM'
-++++++++++UNKNOWN focusable label='Show time picker Test label' actions='{DEFAULT}'
+++++++++++UNKNOWN label='Show time picker Test label' actions='{DEFAULT}'
 ++++++UNKNOWN focusable label='aria label' actions='{DEFAULT, SET_VALUE}' value='#e4e4e4'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden

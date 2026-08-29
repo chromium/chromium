@@ -5,30 +5,30 @@ UNKNOWN focusable
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN
-++++++++++++++UNKNOWN focusable label='Hours' actions='{SET_VALUE}' value='01'
+++++++++++++++UNKNOWN label='Hours' actions='{SET_VALUE}' value='01'
 ++++++++++++++++STATIC_TEXT label='01'
 ++++++++++++++++++UNKNOWN label='01'
 ++++++++++++++STATIC_TEXT label=':'
 ++++++++++++++++UNKNOWN label=':'
-++++++++++++++UNKNOWN focusable label='Minutes' actions='{SET_VALUE}' value='50'
+++++++++++++++UNKNOWN label='Minutes' actions='{SET_VALUE}' value='50'
 ++++++++++++++++STATIC_TEXT label='50'
 ++++++++++++++++++UNKNOWN label='50'
 ++++++++++++++STATIC_TEXT label=':'
 ++++++++++++++++UNKNOWN label=':'
-++++++++++++++UNKNOWN focusable label='Seconds' actions='{SET_VALUE}' value='02'
+++++++++++++++UNKNOWN label='Seconds' actions='{SET_VALUE}' value='02'
 ++++++++++++++++STATIC_TEXT label='02'
 ++++++++++++++++++UNKNOWN label='02'
 ++++++++++++++STATIC_TEXT label='.'
 ++++++++++++++++UNKNOWN label='.'
-++++++++++++++UNKNOWN focusable label='Milliseconds' actions='{SET_VALUE}' value='922'
+++++++++++++++UNKNOWN label='Milliseconds' actions='{SET_VALUE}' value='922'
 ++++++++++++++++STATIC_TEXT label='922'
 ++++++++++++++++++UNKNOWN label='922'
 ++++++++++++++STATIC_TEXT label=' '
 ++++++++++++++++UNKNOWN label=' '
-++++++++++++++UNKNOWN focusable label='AM/PM' actions='{SET_VALUE}' value='PM'
+++++++++++++++UNKNOWN label='AM/PM' actions='{SET_VALUE}' value='PM'
 ++++++++++++++++STATIC_TEXT label='PM'
 ++++++++++++++++++UNKNOWN label='PM'
-++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
+++++++++++UNKNOWN label='Show time picker' actions='{DEFAULT}'
 ++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
