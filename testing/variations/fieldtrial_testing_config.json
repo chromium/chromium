@@ -18172,7 +18172,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "ContextualTasksContextSmartTabSharing": "true"
+                        "ContextualTasksContextSmartTabSharing": "true",
+                        "ContextualTasksEnablePreviousTabFallback": "true"
                     },
                     "enable_features": [
                         "ContextualTasksContext",
