@@ -2,7 +2,7 @@ Name: Open Screen Protocol Library
 Short Name: openscreen
 URL: https://chromium.googlesource.com/openscreen
 Version: N/A
-Revision: cc603d6ce008192ad74cbb5513581b4085207c25
+Revision: f564318962f2406a56bdf2a5ae5650114f0ac57a
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: src/LICENSE
