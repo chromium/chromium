@@ -25,8 +25,7 @@ class SyncManager final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  SyncManager(ServiceWorkerRegistration*,
-              scoped_refptr<base::SequencedTaskRunner>);
+  explicit SyncManager(ServiceWorkerRegistration*);
 
   ScriptPromise<IDLUndefined> registerFunction(ScriptState*,
                                                const String& tag,
@@ -38,6 +37,8 @@ class SyncManager final : public ScriptWrappable {
   enum { kUnregisteredSyncID = -1 };
 
  private:
+  mojom::blink::OneShotBackgroundSyncService* GetBackgroundSyncServiceRemote();
+
   // Callbacks
   void RegisterCallback(ScriptPromiseResolver<IDLUndefined>*,
                         mojom::blink::BackgroundSyncError,

@@ -41,12 +41,7 @@ SyncManager* ServiceWorkerRegistrationSync::sync(
 
 SyncManager* ServiceWorkerRegistrationSync::sync() {
   if (!sync_manager_) {
-    ExecutionContext* execution_context =
-        GetSupplementable()->GetExecutionContext();
-    // TODO(falken): Consider defining a task source in the spec for this event.
-    sync_manager_ = MakeGarbageCollected<SyncManager>(
-        GetSupplementable(),
-        execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+    sync_manager_ = MakeGarbageCollected<SyncManager>(GetSupplementable());
   }
   return sync_manager_.Get();
 }
@@ -58,12 +53,8 @@ PeriodicSyncManager* ServiceWorkerRegistrationSync::periodicSync(
 
 PeriodicSyncManager* ServiceWorkerRegistrationSync::periodicSync() {
   if (!periodic_sync_manager_) {
-    ExecutionContext* execution_context =
-        GetSupplementable()->GetExecutionContext();
-    // TODO(falken): Consider defining a task source in the spec for this event.
-    periodic_sync_manager_ = MakeGarbageCollected<PeriodicSyncManager>(
-        GetSupplementable(),
-        execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+    periodic_sync_manager_ =
+        MakeGarbageCollected<PeriodicSyncManager>(GetSupplementable());
   }
   return periodic_sync_manager_.Get();
 }

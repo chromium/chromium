@@ -22,7 +22,9 @@ const String& PaymentManager::userHint() {
 
 void PaymentManager::setUserHint(const String& user_hint) {
   user_hint_ = user_hint;
-  manager_->SetUserHint(user_hint_);
+  if (manager_.is_bound()) {
+    manager_->SetUserHint(user_hint_);
+  }
 }
 
 ScriptPromise<IDLBoolean> PaymentManager::enableDelegations(
@@ -32,6 +34,12 @@ ScriptPromise<IDLBoolean> PaymentManager::enableDelegations(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot enable payment delegations");
+    return EmptyPromise();
+  }
+
+  if (!manager_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "PaymentManager backend went away");
     return EmptyPromise();
   }
 
@@ -92,12 +100,10 @@ PaymentManager::PaymentManager(ServiceWorkerRegistration* registration)
     context->GetBrowserInterfaceBroker().GetInterface(
         manager_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kUserInteraction)));
+    manager_.set_disconnect_handler(BindOnce(
+        &PaymentManager::OnServiceConnectionError, WrapWeakPersistent(this)));
+    manager_->Init(context->Url(), registration_->scope());
   }
-
-  manager_.set_disconnect_handler(BindOnce(
-      &PaymentManager::OnServiceConnectionError, WrapWeakPersistent(this)));
-  manager_->Init(registration_->GetExecutionContext()->Url(),
-                 registration_->scope());
 }
 
 void PaymentManager::OnEnableDelegationsResponse(
