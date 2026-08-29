@@ -19,6 +19,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.view.WindowManager;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -94,6 +96,10 @@ public class ActorTaskHelperTest {
     @After
     public void tearDown() {
         OffscreenRenderingManager.setInstanceForTesting(null);
+    }
+
+    private void setNotificationsEnabled(boolean enabled) {
+        NotificationProxyUtils.setNotificationEnabledForTest(enabled);
     }
 
     @Test
@@ -271,6 +277,42 @@ public class ActorTaskHelperTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false"})
+    public void
+            testOnStop_BackgroundActuation_RequireNotificationsFalse_NotificationsDisabled_TransitionsToBackground() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+        ActorForegroundServiceController mockFgsController =
+                mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(mockFgsController);
+
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getState()).thenReturn(ActorTaskState.ACTING);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
+
+        helper.onStopWithNative();
+
+        verify(mockFgsController).transitionActiveTasksToBackground(selector);
+        verify(taskInWindow, never()).pause();
+        verify(mActorService, never()).stopTask(anyInt(), anyInt());
+    }
+
+    @Test
     public void testOnDestroy_OnlyCurrentWindow() {
         TabModelSelector selector = mock(TabModelSelector.class);
         SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
@@ -439,6 +481,50 @@ public class ActorTaskHelperTest {
         helper.onDestroy();
 
         verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testBackgroundActuation_BaseFeatureDisabled_AlwaysReturnsFalse() {
+        setNotificationsEnabled(true);
+        ChromeFeatureList.sGlicBackgroundActuationRequireNotifications.setForTesting(true);
+        assertFalse(ActorUtils.isBackgroundActuationEnabled());
+        setNotificationsEnabled(false);
+        ChromeFeatureList.sGlicBackgroundActuationRequireNotifications.setForTesting(false);
+        assertFalse(ActorUtils.isBackgroundActuationEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testBackgroundActuation_RequireNotificationsDefault_WithNotificationsEnabled() {
+        setNotificationsEnabled(true);
+        assertTrue(ActorUtils.isBackgroundActuationEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testBackgroundActuation_RequireNotificationsDefault_WithNotificationsDisabled() {
+        setNotificationsEnabled(false);
+        assertFalse(ActorUtils.isBackgroundActuationEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false"})
+    public void testBackgroundActuation_RequireNotificationsFalse_WithNotificationsDisabled() {
+        setNotificationsEnabled(false);
+        assertTrue(ActorUtils.isBackgroundActuationEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false"})
+    public void testBackgroundActuation_RequireNotificationsFalse_WithNotificationsEnabled() {
+        setNotificationsEnabled(true);
+        assertTrue(ActorUtils.isBackgroundActuationEnabled());
     }
 
     @Test

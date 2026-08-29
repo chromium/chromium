@@ -2128,6 +2128,10 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sGlicShowTaskInProgressSnackbar =
             newBooleanCachedFeatureParam(GLIC, "show_task_in_progress_snackbar", true);
 
+    public static final BooleanCachedFeatureParam sGlicBackgroundActuationRequireNotifications =
+            newBooleanCachedFeatureParam(
+                    GLIC_BACKGROUND_ACTUATION, "require_notifications", /* defaultValue= */ true);
+
     public static final BooleanCachedFeatureParam sHomeButtonRemovalApplyToAllCountries =
             newBooleanCachedFeatureParam(HOME_BUTTON_REMOVAL, "apply_to_all_countries", false);
 
@@ -2320,6 +2324,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
                     sEnableAndroidSidePanelDisableAnimations,
                     sGestureUserEducationPageDelay,
+                    sGlicBackgroundActuationRequireNotifications,
                     sGlicShowTaskInProgressSnackbar,
                     sHomeButtonRemovalApplyToAllCountries,
                     sHomeButtonRemovalEverywhere,

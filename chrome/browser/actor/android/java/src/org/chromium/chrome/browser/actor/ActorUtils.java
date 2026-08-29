@@ -92,11 +92,15 @@ public class ActorUtils {
     }
 
     /**
-     * Returns whether background actuation is enabled and allowed (i.e. the feature flag is enabled
-     * and Actor notifications are not blocked).
+     * Returns whether background actuation is enabled and allowed (i.e. the base
+     * GlicBackgroundActuation feature flag is enabled, and either notifications are enabled or the
+     * feature param is configured not to require notifications).
      */
     public static boolean isBackgroundActuationEnabled() {
-        return ChromeFeatureList.sGlicBackgroundActuation.isEnabled()
-                && areActorNotificationsEnabled();
+        if (!ChromeFeatureList.sGlicBackgroundActuation.isEnabled()) {
+            return false;
+        }
+        return !ChromeFeatureList.sGlicBackgroundActuationRequireNotifications.getValue()
+                || areActorNotificationsEnabled();
     }
 }
