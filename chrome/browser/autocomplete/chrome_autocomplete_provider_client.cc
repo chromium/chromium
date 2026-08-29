@@ -814,8 +814,8 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 bool ChromeAutocompleteProviderClient::ShouldOpenCoBrowsePanel() const {
 #if !BUILDFLAG(IS_ANDROID)
-  return omnibox::kAskGCoBrowse.Get()
-      || omnibox::kAskGCoBrowseWithVisualSelection.Get();
+  return omnibox::kAskGCoBrowse.Get() ||
+         omnibox::kAskGCoBrowseWithVisualSelection.Get();
 #else
   return false;
 #endif
@@ -834,11 +834,6 @@ void ChromeAutocompleteProviderClient::OpenCoBrowsePanel() {
                          : nullptr;
 
   if (ui_service) {
-    if (auto* lens_controller = LensSearchController::From(tab)) {
-      lens_controller->SetInvocationSource(
-          lens::LensOverlayInvocationSource::kOmniboxPageAction);
-    }
-
     GURL creation_url = ui_service->GetDefaultAiPageUrl();
     auto* tab_helper =
         ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
@@ -860,6 +855,17 @@ void ChromeAutocompleteProviderClient::OpenCoBrowsePanel() {
       }
     }
 
+    if (auto* lens_controller = LensSearchController::From(tab)) {
+      if (omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
+        // Concurrently launch the Lens Overlay alongside the side panel
+        // opening.
+        lens_controller->OpenLensOverlay(
+            lens::LensOverlayInvocationSource::kOmniboxPageAction);
+      } else {
+        lens_controller->SetInvocationSource(
+            lens::LensOverlayInvocationSource::kOmniboxPageAction);
+      }
+    }
     contextual_tasks::StartTaskUiOptions options;
     options.entry_point =
         omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION;

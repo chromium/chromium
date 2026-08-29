@@ -253,6 +253,10 @@ class ContextualTasksUI
   // ignores the order of query parameters.
   static bool AreUrlsEqual(const GURL& a, const GURL& b);
 
+  // Returns whether this side panel instance was opened via the Omnibox
+  // Co-Browse action with visual selection enabled.
+  bool IsCoBrowseOmniboxAction() const;
+
   // Returns whether OnActiveTabContextStatusChanged should proceed with trying
   // to add the current tab as an auto-chip.
   bool CanUpdateSuggestedTabContext(tabs::TabInterface* tab,

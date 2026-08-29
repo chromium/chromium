@@ -229,6 +229,13 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
         }));
 
     ON_CALL(*service_for_nav_, IsAiUrl(_)).WillByDefault(Return(true));
+    ON_CALL(*service_for_nav_, SetInitialEntryPointForTask(_, _))
+        .WillByDefault([this](const base::Uuid& task_id,
+                              omnibox::ChromeAimEntryPoint entry_point) {
+          service_for_nav_
+              ->ContextualTasksUiService::SetInitialEntryPointForTask(
+                  task_id, entry_point);
+        });
 
     embedded_web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_, content::SiteInstance::Create(profile_));
@@ -1349,6 +1356,100 @@ TEST_F(ContextualTasksUiTest, CanExpandToFullTab_FeatureDisabled) {
 
   controller.SetIsAiPage(true);
   EXPECT_FALSE(controller.CanExpandToFullTab());
+}
+
+TEST_F(ContextualTasksUiTest, IsCoBrowseOmniboxAction_True) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGCoBrowseWithVisualSelection", "true"}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  service_for_nav_->SetInitialEntryPointForTask(
+      task_id,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+  controller.SetTaskId(task_id);
+
+  EXPECT_TRUE(controller.IsCoBrowseOmniboxAction());
+}
+
+TEST_F(ContextualTasksUiTest, IsCoBrowseOmniboxAction_False_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      omnibox::kWebUIOmniboxAskGAboutThisPage);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  service_for_nav_->SetInitialEntryPointForTask(
+      task_id,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+  controller.SetTaskId(task_id);
+
+  EXPECT_FALSE(controller.IsCoBrowseOmniboxAction());
+}
+
+TEST_F(ContextualTasksUiTest, IsCoBrowseOmniboxAction_False_OtherEntryPoint) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGCoBrowseWithVisualSelection", "true"}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  service_for_nav_->SetInitialEntryPointForTask(
+      task_id,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  controller.SetTaskId(task_id);
+
+  EXPECT_FALSE(controller.IsCoBrowseOmniboxAction());
+}
+
+TEST_F(ContextualTasksUiTest, IsCoBrowseOmniboxAction_False_NoTaskId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGCoBrowseWithVisualSelection", "true"}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  controller.SetTaskId(std::nullopt);
+
+  EXPECT_FALSE(controller.IsCoBrowseOmniboxAction());
+}
+
+TEST_F(ContextualTasksUiTest,
+       SetIsAiPage_CoBrowseOmniboxAction_SuppressesLensClose) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGCoBrowseWithVisualSelection", "true"}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  service_for_nav_->SetInitialEntryPointForTask(
+      task_id,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+  controller.SetTaskId(task_id);
+
+  EXPECT_TRUE(controller.IsCoBrowseOmniboxAction());
+  // Calling SetIsAiPage should not trigger CloseLensAsync for CoBrowse Omnibox
+  // Action.
+  controller.SetIsAiPage(true);
 }
 
 TEST_F(ContextualTasksUiTest,

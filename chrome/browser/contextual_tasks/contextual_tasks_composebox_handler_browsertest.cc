@@ -4054,55 +4054,6 @@ IN_PROC_BROWSER_TEST_F(
   mock_ui_->SetSessionHandle(nullptr);
 }
 
-class ContextualTasksComposeboxHandlerAutoTriggerTest
-    : public ContextualTasksComposeboxHandlerTest {
- public:
-  ContextualTasksComposeboxHandlerAutoTriggerTest() {
-    local_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox::kWebUIOmniboxAskGAboutThisPage,
-        {{"Omnibox_AskGCoBrowseWithVisualSelection", "true"}});
-  }
- private:
-  base::test::ScopedFeatureList local_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerAutoTriggerTest, AutoTriggerLens) {
-  // Destroy the default handler and reset the receiver to allow rebinding.
-  handler_.reset();
-  searchbox_page_receiver_.reset();
-
-  // Set the invocation source on the mock LensSearchController.
-  mock_lens_controller_->SetInvocationSource(
-      lens::LensOverlayInvocationSource::kOmniboxPageAction);
-
-  // We expect OpenLensOverlay to be called when OnTaskChanged is called.
-  EXPECT_CALL(
-      *mock_lens_controller_,
-      OpenLensOverlay(
-          lens::LensOverlayInvocationSource::kOmniboxPageAction,
-          testing::_))
-      .Times(1);
-
-  // Manually create the handler to use our mock page.
-  auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
-      mock_ui_.get(), profile(), web_contents(),
-      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
-      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-      searchbox_page_receiver_.BindNewPipeAndPassRemote(),
-      base::BindRepeating(
-          &ContextualTasksUI::GetOrCreateContextualSessionHandle,
-          base::Unretained(mock_ui_.get())),
-      base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
-                          base::Unretained(mock_ui_.get())),
-      base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
-                          base::Unretained(mock_ui_.get())));
-
-  ON_CALL(*custom_handler, GetLensSearchController())
-      .WillByDefault(testing::Return(mock_lens_controller_.get()));
-
-  custom_handler->OnTaskChanged();
-}
-
 class ContextualTasksComposeboxHandlerSmartTabSharingTest
     : public ContextualTasksComposeboxHandlerTest {
  public:

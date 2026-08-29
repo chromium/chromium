@@ -193,10 +193,6 @@ class ContextualTasksComposeboxHandler
       bool is_voice_search,
       const std::map<std::string, std::string>& additional_cgi_params = {});
 
-  // Called when side panel navigation is complete to trigger Lens overlay if
-  // it was configured to auto-trigger on navigation.
-  void MaybeTriggerLens();
-
 #if !BUILDFLAG(IS_ANDROID)
   void OnVisualSelectionAdded(
       base::UnguessableToken overlay_token,

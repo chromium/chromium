@@ -528,9 +528,6 @@ void ContextualTasksComposeboxHandler::UpdateStateFromUrl(const GURL& url) {
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles(/*should_block_auto_suggested_tabs=*/false);
   SetSmartTabSharingActive(false);
-  // Maybe trigger lens overlay when Side Panel is done with navigation
-  // which triggers OnTaskChanged().
-  MaybeTriggerLens();
   InitializeInputStateModel();
 }
 
@@ -1208,21 +1205,6 @@ bool ContextualTasksComposeboxHandler::HasAutoSuggestedTab() {
   auto* auto_suggestion_manager = web_ui_interface_->GetAutoSuggestionManager();
   return auto_suggestion_manager &&
          auto_suggestion_manager->GetCurrentSuggestion() != nullptr;
-}
-
-void ContextualTasksComposeboxHandler::MaybeTriggerLens() {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
-    return;
-  }
-  if (auto* controller = GetLensSearchController()) {
-    if (controller->invocation_source() ==
-            lens::LensOverlayInvocationSource::kOmniboxPageAction) {
-      DCHECK(controller->invocation_source().has_value());
-      controller->OpenLensOverlay(controller->invocation_source().value());
-    }
-  }
-#endif
 }
 
 void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(

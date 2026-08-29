@@ -605,6 +605,17 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
+  // Re-initializes the open side panel with a new zero-state task. This
+  // provides a clean start by creating a new task, attaching the entry point,
+  // and reloading the parent WebUI.
+  void ReloadZeroStateInOpenSidePanel(
+      content::WebContents* panel_contents,
+      tabs::TabInterface* tab_interface,
+      const GURL& url,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle,
+      omnibox::ChromeAimEntryPoint entry_point);
+
   // Navigates to a share URL.
   virtual void OpenUrl(const content::OpenURLParams& url_params,
                        const blink::mojom::WindowFeatures& window_features,

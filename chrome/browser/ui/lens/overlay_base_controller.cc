@@ -91,8 +91,7 @@ bool OverlayBaseController::IsOverlayActive() const {
 
 bool OverlayBaseController::IsOverlayInitializing() {
   return state_ == State::kStartingWebUI || state_ == State::kScreenshot ||
-         state_ == State::kClosingOpenedSidePanel ||
-         state_ == State::kWaitingForOpeningSidePanelReflow;
+         state_ == State::kClosingOpenedSidePanel;
 }
 
 bool OverlayBaseController::IsOverlayClosing() {
@@ -616,15 +615,12 @@ void OverlayBaseController::ShowModalUI() {
     state_ = State::kClosingOpenedSidePanel;
     side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
                          /*suppress_animations=*/true);
-  } else if (ShouldWaitForSidePanelReflow()) {
-    state_ = State::kWaitingForOpeningSidePanelReflow;
   } else {
     state_ = State::kScreenshot;
   }
 
   // 2. Execute the action corresponding to the state.
-  if (state_ == State::kClosingOpenedSidePanel ||
-      state_ == State::kWaitingForOpeningSidePanelReflow) {
+  if (state_ == State::kClosingOpenedSidePanel) {
     base::SingleThreadTaskRunner::GetCurrentDefault()
         ->PostNonNestableDelayedTask(
             FROM_HERE,
@@ -647,14 +643,9 @@ void OverlayBaseController::ShowModalUI() {
   }
 }
 
-bool OverlayBaseController::ShouldWaitForSidePanelReflow() {
-  return false;
-}
-
 void OverlayBaseController::FinishedWaitingForReflow(
     base::TimeTicks reflow_start_time) {
-  if (state_ == State::kClosingOpenedSidePanel ||
-      state_ == State::kWaitingForOpeningSidePanelReflow) {
+  if (state_ == State::kClosingOpenedSidePanel) {
     state_ = State::kScreenshot;
     StartScreenshotFlow();
   }
@@ -1099,7 +1090,9 @@ void OverlayBaseController::OnSidePanelAlignmentChanged() {
 
 void OverlayBaseController::OnSidePanelDidOpen() {
   if (IsResultsSidePanelShowing()) {
-    SetOverlayRoundedCorner();
+    if (IsOverlayShowing()) {
+      SetOverlayRoundedCorner();
+    }
   } else {
     // If a side panel opens that is not ours, we must close the overlay.
     RequestSyncClose(DismissalSource::kUnexpectedSidePanelOpen);

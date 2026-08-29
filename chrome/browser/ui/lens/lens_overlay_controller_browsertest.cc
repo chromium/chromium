@@ -545,17 +545,8 @@ class LensOverlayControllerFake : public lens::TestLensOverlayController {
         TestLensOverlayController::IsResultsSidePanelShowing());
   }
 
-  bool ShouldWaitForSidePanelReflow() override {
-    return mock_should_wait_for_reflow_.value_or(
-        TestLensOverlayController::ShouldWaitForSidePanelReflow());
-  }
-
   void set_mock_results_side_panel_showing(bool showing) {
     mock_results_side_panel_showing_ = showing;
-  }
-
-  void set_mock_should_wait_for_reflow(bool wait) {
-    mock_should_wait_for_reflow_ = wait;
   }
 
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
@@ -564,7 +555,6 @@ class LensOverlayControllerFake : public lens::TestLensOverlayController {
   bool should_bind_overlay_ = true;
   bool is_screenshot_possible_ = true;
   std::optional<bool> mock_results_side_panel_showing_;
-  std::optional<bool> mock_should_wait_for_reflow_;
   mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
       &fake_overlay_page_};
 };
@@ -4593,41 +4583,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       ShowModalUI_KeepPanelAndWait) {
-  WaitForPaint();
-
-  auto* controller = GetLensOverlayController();
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the side panel (stub Bookmarks to represent CoBrowse)
-  auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  side_panel_ui->Show(SidePanelEntry::Id::kBookmarks);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kBookmarks));
-  }));
-
-  // Mock that the open panel is the target results panel (keep it open).
-  fake_controller->set_mock_results_side_panel_showing(true);
-  // Mock that we need to wait for reflow (programmatic trigger).
-  fake_controller->set_mock_should_wait_for_reflow(true);
-
-  // Trigger Lens.
-  OpenLensOverlay(LensOverlayInvocationSource::kOmniboxPageAction);
-
-  // Verify it immediately enters the opening wait state.
-  ASSERT_EQ(controller->state(), State::kWaitingForOpeningSidePanelReflow);
-
-  // Wait for reflow and verify it finishes.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Side panel should still be open (mocked as results panel).
-  EXPECT_TRUE(IsSidePanelOpen());
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        ShowModalUI_KeepPanelCaptureImmediately) {
   WaitForPaint();
 
@@ -4645,15 +4600,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Mock that the open panel is the target results panel.
   fake_controller->set_mock_results_side_panel_showing(true);
-  // Mock that we do NOT need to wait for reflow (manual trigger).
-  fake_controller->set_mock_should_wait_for_reflow(false);
 
   // Trigger Lens.
   OpenLensOverlay(LensOverlayInvocationSource::kContextualTasksComposebox);
 
   // Verify it bypasses wait states and goes straight to screenshot/overlay.
   ASSERT_NE(controller->state(), State::kClosingOpenedSidePanel);
-  ASSERT_NE(controller->state(), State::kWaitingForOpeningSidePanelReflow);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));

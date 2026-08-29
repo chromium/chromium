@@ -353,24 +353,22 @@ class ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest
 
 IN_PROC_BROWSER_TEST_F(
     ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest,
-    OpensSidePanelAndSetsAutoTrigger) {
+    OpensSidePanelAndLensOverlaySimultaneously) {
   ASSERT_TRUE(browser()->GetActiveTabInterface()->GetContents());
 
-  // Lens overlay should NOT be opened immediately.
-  EXPECT_CALL(*GetLensSearchController(),
-              OpenLensOverlay(testing::_, testing::_))
-      .Times(0);
+  // Lens overlay should be opened immediately in parallel with side panel.
+  EXPECT_CALL(
+      *GetLensSearchController(),
+      OpenLensOverlay(lens::LensOverlayInvocationSource::kOmniboxPageAction,
+                      testing::_))
+      .Times(1);
 
-  // Act: Call the entry point for Scenario B
+  // Act: Call the entry point for CoBrowse with visual selection
   GetAutocompleteProviderClient()->OpenCoBrowsePanel();
 
   // Assert: Verify that the side panel is open.
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
-
-  // Assert: Verify that the invocation source is set to kOmniboxPageAction.
-  EXPECT_EQ(GetLensSearchController()->invocation_source(),
-            lens::LensOverlayInvocationSource::kOmniboxPageAction);
 }
 
 class ChromeAutocompleteProviderClientAskGLensChipRouteTest

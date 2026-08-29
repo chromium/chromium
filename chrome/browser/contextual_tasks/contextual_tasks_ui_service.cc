@@ -246,13 +246,21 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-bool ShouldReloadZeroState(const GURL& url, ContextualTasksUiService* service) {
+bool ShouldReloadZeroStateForOmniboxAction(
+    const GURL& url,
+    ContextualTasksUiService* service,
+    omnibox::ChromeAimEntryPoint entry_point) {
   return base::FeatureList::IsEnabled(
              omnibox::kWebUIOmniboxAskGAboutThisPage) &&
+         entry_point == omnibox::ChromeAimEntryPoint::
+                            DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION &&
          ContextualTasksUI::IsZeroState(url, service);
 }
 #else
-bool ShouldReloadZeroState(const GURL& url, ContextualTasksUiService* service) {
+bool ShouldReloadZeroStateForOmniboxAction(
+    const GURL& url,
+    ContextualTasksUiService* service,
+    omnibox::ChromeAimEntryPoint entry_point) {
   return false;
 }
 #endif
@@ -1137,6 +1145,28 @@ void ContextualTasksUiService::InitializeTaskInSidePanel(
                          /*input_state_model=*/nullptr);
   }
   AssociateWebContentsToTask(web_contents, task_id);
+}
+
+void ContextualTasksUiService::ReloadZeroStateInOpenSidePanel(
+    content::WebContents* panel_contents,
+    tabs::TabInterface* tab_interface,
+    const GURL& url,
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+        session_handle,
+    omnibox::ChromeAimEntryPoint entry_point) {
+  // Cleanly start over: Create a new task, record entry point, and reload the
+  // parent WebUI.
+  ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
+  SetInitialEntryPointForTask(task.GetTaskId(), entry_point);
+  task_id_to_creation_url_[task.GetTaskId()] = url;
+  AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
+
+  content::NavigationController::LoadURLParams load_params(
+      GetContextualTaskUrlForTask(task.GetTaskId()));
+  panel_contents->GetController().LoadURLWithParams(load_params);
+
+  InitializeTaskInSidePanel(panel_contents, task.GetTaskId(),
+                            std::move(session_handle));
 }
 
 void ContextualTasksUiService::OnNonThreadNavigationInTab(
@@ -2947,7 +2977,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   }
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
-    if (ShouldReloadZeroState(url, this)) {
+    if (ShouldReloadZeroStateForOmniboxAction(url, this, options.entry_point)) {
       // TODO(crbug.com/537842795): Understand if this flow is possible in the
       // rearchitecture and handle accordingly. For now, just load the URL.
     }
@@ -2959,19 +2989,10 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   // navigation directly to the embedded page.
   if (ContextualTasksUIInterface* web_ui_interface =
           GetWebUiInterface(panel_contents)) {
-    if (ShouldReloadZeroState(url, this)) {
-      // Cleanly start over: Create a new task and reload the parent WebUI.
-      ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
-      task_id_to_creation_url_[task.GetTaskId()] = url;
-      AssociateWebContentsToTask(tab_interface->GetContents(),
-                                 task.GetTaskId());
-
-      content::NavigationController::LoadURLParams load_params(
-          GetContextualTaskUrlForTask(task.GetTaskId()));
-      panel_contents->GetController().LoadURLWithParams(load_params);
-
-      InitializeTaskInSidePanel(panel_contents, task.GetTaskId(),
-                                std::move(session_handle));
+    if (ShouldReloadZeroStateForOmniboxAction(url, this, options.entry_point)) {
+      ReloadZeroStateInOpenSidePanel(panel_contents, tab_interface, url,
+                                     std::move(session_handle),
+                                     options.entry_point);
       return;
     }
 

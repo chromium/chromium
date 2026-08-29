@@ -450,7 +450,6 @@ class LensOverlayController : public OverlayBaseController,
 
   // OverlayBaseController overrides allowed for testing:
   bool IsResultsSidePanelShowing() override;
-  bool ShouldWaitForSidePanelReflow() override;
 
  private:
   // Data class for constructing overlay and storing overlay state for
