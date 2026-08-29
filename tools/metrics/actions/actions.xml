@@ -5278,6 +5278,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.VerticalTabs.GroupHeaderHovered">
+  <owner>jtanaristy@google.com</owner>
+  <owner>agazal@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    Recorded when the user hovers over a tab group header while the Vertical
+    Tabs rail is expanded on Android, showing the group header action button.
+  </description>
+</action>
+
+<action name="Android.VerticalTabs.GroupHeaderMenuButtonClicked">
+  <owner>jtanaristy@google.com</owner>
+  <owner>agazal@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    Recorded when the user clicks the three-dot menu button on a tab group
+    header in Vertical Tabs on Android.
+  </description>
+</action>
+
 <action name="Android.VerticalTabs.GroupMenu{ActionType}">
   <owner>agazal@google.com</owner>
   <owner>eleanorlee@google.com</owner>

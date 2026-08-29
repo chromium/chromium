@@ -283,6 +283,8 @@ public class VerticalTabListCoordinator {
                         @Override
                         public void run(
                                 View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                            RecordUserAction.record(
+                                    "Android.VerticalTabs.GroupHeaderMenuButtonClicked");
                             showTabGroupHeaderContextMenu(
                                     getItemViewAnchorRectProvider(view), tabGroupId);
                         }

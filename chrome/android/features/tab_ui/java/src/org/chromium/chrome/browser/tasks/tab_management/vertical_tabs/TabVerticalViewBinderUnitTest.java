@@ -51,6 +51,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -1476,6 +1477,8 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
+        UserActionTester userActionTester = new UserActionTester();
+
         // Hover enter.
         MotionEvent enterEvent =
                 MotionEvent.obtain(
@@ -1490,6 +1493,8 @@ public class TabVerticalViewBinderUnitTest {
         verify(mTabHoverCardListener)
                 .onTabGroupHoverCardStateChanged(
                         TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
+        assertTrue(
+                userActionTester.getActions().contains("Android.VerticalTabs.GroupHeaderHovered"));
         enterEvent.recycle();
 
         // Hover exit.
@@ -1507,6 +1512,37 @@ public class TabVerticalViewBinderUnitTest {
                 .onTabGroupHoverCardStateChanged(
                         TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
         exitEvent.recycle();
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_Hover_RailCollapsed_NoActionRecorded() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
+        mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+
+        UserActionTester userActionTester = new UserActionTester();
+
+        MotionEvent enterEvent =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ HOVER_EVENT_X,
+                        /* y= */ HOVER_EVENT_Y,
+                        /* metaState= */ 0);
+        enterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        headerView.dispatchGenericMotionEvent(enterEvent);
+        assertFalse(
+                userActionTester.getActions().contains("Android.VerticalTabs.GroupHeaderHovered"));
+        enterEvent.recycle();
     }
 
     @Test

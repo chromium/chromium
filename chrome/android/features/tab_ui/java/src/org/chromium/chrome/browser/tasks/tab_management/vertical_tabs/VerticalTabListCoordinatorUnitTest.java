@@ -990,11 +990,16 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(TabActionButtonType.OVERFLOW, actionButtonData.type);
         assertNotNull(actionButtonData.tabActionListener);
 
+        UserActionTester userActionTester = new UserActionTester();
         View mockButtonView = mock(View.class);
         actionButtonData.tabActionListener.run(
                 mockButtonView, TAB_ID_1, /* triggeringMotion= */ null);
 
         verify(mTabGroupContextMenuCoordinator).showMenu(any(RectProvider.class), eq(tabGroupId));
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("Android.VerticalTabs.GroupHeaderMenuButtonClicked"));
     }
 
     @Test

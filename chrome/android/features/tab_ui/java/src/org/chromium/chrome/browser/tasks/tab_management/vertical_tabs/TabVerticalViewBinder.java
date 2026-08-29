@@ -36,6 +36,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
@@ -1212,6 +1213,12 @@ class TabVerticalViewBinder {
 
         Runnable onHoverEnter =
                 () -> {
+                    boolean isRailCollapsed =
+                            model.get(TabProperties.RAIL_COLLAPSE_STATE)
+                                    == RailCollapseState.COLLAPSED;
+                    if (!isRailCollapsed && view.findViewById(R.id.menu_button) != null) {
+                        RecordUserAction.record("Android.VerticalTabs.GroupHeaderHovered");
+                    }
                     updateGroupHeaderIcons(model, view, /* isHovered= */ true);
                     notifyGroupHeaderHoverChange(model, view, /* isHovered= */ true);
                 };
