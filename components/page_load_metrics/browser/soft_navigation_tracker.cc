@@ -63,6 +63,17 @@ bool SoftNavigationTracker::UpdateMainFrameMetrics(
   return true;
 }
 
+void SoftNavigationTracker::OnHidden(base::TimeDelta background_time) {
+  last_hidden_time_ = background_time;
+  for (auto& [id, nav] : navigations_) {
+    nav->RecordFirstBackgroundTime(background_time);
+  }
+}
+
+void SoftNavigationTracker::OnShown(base::TimeDelta shown_time) {
+  last_shown_time_ = shown_time;
+}
+
 void SoftNavigationTracker::
     ProcessCompletedNavigationsAwaitingReportingCriteria() {
   PruneUncommittedNavigationsUpTo(last_committed_navigation_id_);
@@ -290,6 +301,17 @@ void SoftNavigationTracker::AddMainFrameSoftNavigationCommit(
     return;
   }
   nav->metrics = soft_navigation.Clone();
+  if (last_hidden_time_.has_value()) {
+    if (!last_shown_time_.has_value() ||
+        soft_navigation.commit->start_time < last_shown_time_.value()) {
+      // In theory, earlier visibility transitions could have occurred prior to
+      // `last_hidden_time_`, but soft navigations only commit from a
+      // foregrounded renderer. Storing `last_hidden_time_` is sufficient since
+      // it is only used to determine whether subsequent LCP events occurred in
+      // the foreground.
+      nav->RecordFirstBackgroundTime(last_hidden_time_.value());
+    }
+  }
   last_committed_navigation_id_ = nav_id;
   ++soft_navigation_count_;
 }

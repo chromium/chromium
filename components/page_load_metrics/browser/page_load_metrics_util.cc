@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/page_load_metrics/browser/features.h"
+#include "components/page_load_metrics/browser/soft_navigation_data.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "net/base/url_util.h"
@@ -141,6 +142,21 @@ bool WasStartedInForegroundOptionalEventInForeground(
   return delegate.StartedInForeground() && event &&
          (!delegate.GetTimeToFirstBackground() ||
           event.value() <= delegate.GetTimeToFirstBackground().value());
+}
+
+bool WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+    const std::optional<base::TimeDelta>& event,
+    const SoftNavigationData& soft_navigation_data) {
+  if (!event || !soft_navigation_data.metrics ||
+      !soft_navigation_data.metrics->commit) {
+    return false;
+  }
+  if (!soft_navigation_data.first_background_time) {
+    return true;
+  }
+  base::TimeDelta start_time = soft_navigation_data.metrics->commit->start_time;
+  return soft_navigation_data.first_background_time.value() > start_time &&
+         event.value() <= soft_navigation_data.first_background_time.value();
 }
 
 // There is a copy of this function in prerender_page_load_metrics_observer.cc.

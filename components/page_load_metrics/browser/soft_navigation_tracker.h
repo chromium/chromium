@@ -54,6 +54,15 @@ class SoftNavigationTracker {
       base::span<const mojom::LayoutShiftPtr> layout_shifts = {},
       base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps = {});
 
+  // Notifies the tracker that the page has become hidden, to record first
+  // background time for active/open soft navigations. TimeDelta relative to
+  // (hard) navigation timeOrigin (navigation start).
+  void OnHidden(base::TimeDelta background_time);
+
+  // Notifies the tracker that the page has become visible. TimeDelta relative
+  // to (hard) navigation timeOrigin (navigation start).
+  void OnShown(base::TimeDelta shown_time);
+
   // Finalizes all active/in-progress soft navigations (e.g. on page destruction
   // or backgrounding) and pushes remaining completed navigations to `client_`.
   void CompleteActiveNavigationAndFlush();
@@ -120,6 +129,9 @@ class SoftNavigationTracker {
   uint64_t last_committed_navigation_id_ = 0;
   uint64_t active_navigation_id_ = 0;
   raw_ptr<Client> client_ = nullptr;
+
+  std::optional<base::TimeDelta> last_hidden_time_;
+  std::optional<base::TimeDelta> last_shown_time_;
 
   // Map of all soft navigations currently tracked by this tracker, keyed by
   // performance_timeline_navigation_id (sorted in ascending/chronological

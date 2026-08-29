@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/features.h"
+#include "components/page_load_metrics/browser/soft_navigation_data.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -237,6 +238,46 @@ TEST_F(PageLoadMetricsUtilTest, CalculateLCPEntropyBucket) {
             CalculateLCPEntropyBucket(std::numeric_limits<double>::infinity()));
   EXPECT_EQ(
       0, CalculateLCPEntropyBucket(std::numeric_limits<double>::quiet_NaN()));
+}
+
+TEST_F(PageLoadMetricsUtilTest, WasSoftNavigationStartedInForeground) {
+  SoftNavigationData data;
+  data.metrics = mojom::SoftNavigationMetrics::New();
+  data.metrics->commit = mojom::SoftNavigationCommit::New();
+  data.metrics->commit->start_time = base::Milliseconds(100);
+
+  // No event timing -> false.
+  EXPECT_FALSE(WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+      std::nullopt, data));
+
+  // Event in foreground, never backgrounded -> true.
+  EXPECT_TRUE(WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+      base::Milliseconds(150), data));
+
+  // Backgrounded at 500ms (after start_time = 100ms):
+  data.first_background_time = base::Milliseconds(500);
+
+  // Event before backgrounding -> true.
+  EXPECT_TRUE(WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+      base::Milliseconds(200), data));
+
+  // Event exactly at backgrounding -> true.
+  EXPECT_TRUE(WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+      base::Milliseconds(500), data));
+
+  // Event after backgrounding -> false.
+  EXPECT_FALSE(WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+      base::Milliseconds(501), data));
+
+  // Backgrounded at 50ms (before start_time = 100ms) -> started in background:
+  data.first_background_time = base::Milliseconds(50);
+  EXPECT_FALSE(WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+      base::Milliseconds(200), data));
+
+  // Backgrounded at 100ms (at start_time = 100ms) -> started in background:
+  data.first_background_time = base::Milliseconds(100);
+  EXPECT_FALSE(WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+      base::Milliseconds(200), data));
 }
 
 // A type to support parameterized testing for the category of the request.

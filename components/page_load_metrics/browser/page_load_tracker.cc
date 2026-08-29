@@ -306,6 +306,9 @@ PageLoadTracker::PageLoadTracker(
       page_type_(CalculatePageType(navigation_handle)),
       parent_tracker_(std::move(parent_tracker)) {
   DCHECK(!navigation_handle->HasCommitted());
+  if (!started_in_foreground_) {
+    metrics_update_dispatcher_.OnHidden(base::TimeDelta());
+  }
   RegisterObservers(this, embedder_interface, navigation_handle);
   switch (page_type_) {
     case internal::PageLoadTrackerPageType::kPrimaryPage:
@@ -396,6 +399,10 @@ PageLoadTracker::~PageLoadTracker() {
 }
 
 void PageLoadTracker::PageHidden() {
+  base::TimeTicks background_time = base::TimeTicks::Now();
+  ClampBrowserTimestampIfInterProcessTimeTickSkew(&background_time);
+  DCHECK_GE(background_time, navigation_start_);
+
   // Only log the first time we background in a given page load.
   if (!first_background_time_.has_value() ||
       (!back_forward_cache_restores_.empty() &&
@@ -413,8 +420,8 @@ void PageLoadTracker::PageHidden() {
     // where fg = foreground, bg = background. A and B are non prerendered and C
     // is prerendered.
     //
-    // PageShown and PgaeHidden are not called for navigation_start and
-    // actiivation_start; called when the visibility is changed after
+    // PageShown and PageHidden are not called for navigation_start and
+    // activation_start; called when the visibility is changed after
     // navigation_start (resp. activation_start) for non prerendered (resp.
     // prerendered) pages.
     //
@@ -425,13 +432,6 @@ void PageLoadTracker::PageHidden() {
       } else {
         DCHECK(!first_foreground_time_.has_value());
       }
-    }
-
-    base::TimeTicks background_time = base::TimeTicks::Now();
-    ClampBrowserTimestampIfInterProcessTimeTickSkew(&background_time);
-    DCHECK_GE(background_time, navigation_start_);
-
-    if (!first_background_time_.has_value()) {
       first_background_time_ = background_time;
     }
 
@@ -444,6 +444,8 @@ void PageLoadTracker::PageHidden() {
     }
   }
   visibility_tracker_.OnHidden();
+  metrics_update_dispatcher_.OnHidden(
+      DurationSinceNavigationStartForTime(background_time).value());
   InvokeAndPruneObservers("PageLoadMetricsObserver::OnHidden",
                           base::BindRepeating(
                               [](const mojom::PageLoadTiming* timing,
@@ -455,6 +457,10 @@ void PageLoadTracker::PageHidden() {
 }
 
 void PageLoadTracker::PageShown() {
+  base::TimeTicks foreground_time = base::TimeTicks::Now();
+  ClampBrowserTimestampIfInterProcessTimeTickSkew(&foreground_time);
+  DCHECK_GE(foreground_time, navigation_start_);
+
   // Only log the first time we foreground in a given page load.
   if (!first_foreground_time_.has_value()) {
     // See comment about visibility state transitions in PageHidden.
@@ -473,13 +479,12 @@ void PageLoadTracker::PageShown() {
              visibility_at_activation_ == PageVisibility::kBackground);
     }
 
-    base::TimeTicks foreground_time = base::TimeTicks::Now();
-    ClampBrowserTimestampIfInterProcessTimeTickSkew(&foreground_time);
-    DCHECK_GE(foreground_time, navigation_start_);
     first_foreground_time_ = foreground_time;
   }
 
   visibility_tracker_.OnShown();
+  metrics_update_dispatcher_.OnShown(
+      DurationSinceNavigationStartForTime(foreground_time).value());
   InvokeAndPruneObservers(
       "PageLoadMetricsObserver::OnShown",
       base::BindRepeating([](PageLoadMetricsObserverInterface* observer) {
@@ -596,9 +601,13 @@ void PageLoadTracker::DidActivatePrerenderedPage(
     case content::Visibility::HIDDEN:
     case content::Visibility::OCCLUDED:
       visibility_at_activation_ = PageVisibility::kBackground;
+      metrics_update_dispatcher_.OnHidden(
+          DurationSinceNavigationStartForTime(base::TimeTicks::Now()).value());
       break;
     case content::Visibility::VISIBLE:
       visibility_at_activation_ = PageVisibility::kForeground;
+      metrics_update_dispatcher_.OnShown(
+          DurationSinceNavigationStartForTime(base::TimeTicks::Now()).value());
       break;
   }
 

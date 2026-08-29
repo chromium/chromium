@@ -178,6 +178,9 @@ class PageLoadMetricsUpdateDispatcher {
 
   ~PageLoadMetricsUpdateDispatcher();
 
+  void OnHidden(base::TimeDelta background_time);
+  void OnShown(base::TimeDelta shown_time);
+
   void UpdateMetrics(
       content::RenderFrameHost* render_frame_host,
       mojom::PageLoadTimingPtr new_timing,

@@ -211,27 +211,6 @@ void SoftNavigationPageLoadMetricsObserver::RecordSoftFcp(
   }
 }
 
-bool SoftNavigationPageLoadMetricsObserver::
-    FromForegroundOptionalEventInForeground(
-        const std::optional<base::TimeDelta>& event) {
-  // TODO(crbug.com/7817946): We may want to revise this logic so that soft LCP
-  // for soft navs can be counted even when the (hard) navigation was started in
-  // the background.
-  const PageLoadMetricsObserverDelegate& delegate = GetDelegate();
-  if (state_ == State::kStarted) {
-    return WasStartedInForegroundOptionalEventInForeground(event, delegate);
-  } else if (state_ == State::kPrerenderActivated) {
-    return WasActivatedInForegroundOptionalEventInForeground(event, delegate);
-  } else if (state_ == State::kRestoredFromBackForwardCache) {
-    // The index for the most recent bfcache restore is # bfcache restores - 1.
-    size_t num_bfcache_restores = delegate.GetNumBackForwardCacheRestores();
-    CHECK_NE(0u, num_bfcache_restores);
-    return WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
-        event, delegate, num_bfcache_restores - 1);
-  }
-  return false;
-}
-
 void SoftNavigationPageLoadMetricsObserver::RecordSoftLcp(
     ukm::builders::SoftNavigation& builder,
     const page_load_metrics::SoftNavigationData& soft_navigation_data) {
@@ -248,8 +227,9 @@ void SoftNavigationPageLoadMetricsObserver::RecordSoftLcp(
   const auto& soft_navigation_metrics = *soft_navigation_data.metrics;
   CHECK(soft_navigation_metrics.commit);
   if (largest_contentful_paint.ContainsValidTime() &&
-      FromForegroundOptionalEventInForeground(
-          largest_contentful_paint.Time())) {
+      page_load_metrics::
+          WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+              largest_contentful_paint.Time(), soft_navigation_data)) {
     base::TimeDelta soft_lcp = (largest_contentful_paint.Time().value() -
                                 soft_navigation_metrics.commit->start_time);
     builder.SetPaintTiming_LargestContentfulPaint(soft_lcp.InMilliseconds());

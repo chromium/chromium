@@ -29,6 +29,7 @@ struct CompletedSoftNavigationRecord {
   InteractionToNextPaintCalculator inp_calculator;
   LayoutShiftNormalization cls_calculator;
   ContentfulPaintTimingInfo lcp;
+  std::optional<base::TimeDelta> first_background_time;
 };
 
 class TestObserver : public SoftNavigationTracker::Client {
@@ -46,6 +47,7 @@ class TestObserver : public SoftNavigationTracker::Client {
           .inp_calculator = data.inp_calculator,
           .cls_calculator = data.cls_calculator,
           .lcp = data.lcp_handler.MergeMainFrameAndSubframes(),
+          .first_background_time = data.first_background_time,
       });
     }
   }
@@ -789,6 +791,139 @@ TEST(SoftNavigationTrackerTest, UncommittedNavigationsPrunedOnHigherCommit) {
   // Navigation 4 is active.
   EXPECT_NE(tracker.GetSoftNavigationDataForTest(4), nullptr);
   EXPECT_EQ(tracker.soft_navigation_count(), 1u);
+}
+
+TEST(SoftNavigationTrackerTest, ForegroundAndBackgroundTracking) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Soft nav 2 starts in foreground at 100ms.
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navs;
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(150)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
+
+  // Page goes to background at 500ms.
+  tracker.OnHidden(base::Milliseconds(500));
+
+  // Soft nav 3 commits in background at 600ms.
+  soft_navs.clear();
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(600), base_time + base::Milliseconds(600),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(650)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
+
+  // Page comes back to foreground at 700ms.
+  tracker.OnShown(base::Milliseconds(700));
+
+  // Soft nav 4 commits in foreground at 800ms.
+  soft_navs.clear();
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      4, base::Milliseconds(800), base_time + base::Milliseconds(800),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(850)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
+
+  tracker.CompleteActiveNavigationAndFlush();
+
+  ASSERT_EQ(observer.completed_navs.size(), 3u);
+
+  // Soft nav 2: Started in foreground, backgrounded at 500ms.
+  EXPECT_EQ(observer.completed_navs[0].navigation_id, 2u);
+  EXPECT_EQ(observer.completed_navs[0].first_background_time,
+            base::Milliseconds(500));
+
+  // Soft nav 3: Started in background (which began at 500ms).
+  EXPECT_EQ(observer.completed_navs[1].navigation_id, 3u);
+  EXPECT_EQ(observer.completed_navs[1].first_background_time,
+            base::Milliseconds(500));
+
+  // Soft nav 4: Started in foreground at 800ms, never backgrounded.
+  EXPECT_EQ(observer.completed_navs[2].navigation_id, 4u);
+  EXPECT_EQ(observer.completed_navs[2].first_background_time, std::nullopt);
+}
+
+TEST(SoftNavigationTrackerTest, StartedInBackground) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+  tracker.OnHidden(base::TimeDelta());
+
+  // Soft nav 2 commits while tracker is in background.
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navs;
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(150)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
+
+  // Page comes to foreground at 200ms.
+  tracker.OnShown(base::Milliseconds(200));
+
+  // Soft nav 3 commits in foreground at 300ms.
+  soft_navs.clear();
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(300), base_time + base::Milliseconds(300),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(350)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
+
+  tracker.CompleteActiveNavigationAndFlush();
+
+  ASSERT_EQ(observer.completed_navs.size(), 2u);
+
+  // Nav 2: started in background.
+  EXPECT_EQ(observer.completed_navs[0].navigation_id, 2u);
+  EXPECT_EQ(observer.completed_navs[0].first_background_time,
+            base::TimeDelta());
+
+  // Nav 3: started in foreground.
+  EXPECT_EQ(observer.completed_navs[1].navigation_id, 3u);
+  EXPECT_EQ(observer.completed_navs[1].first_background_time, std::nullopt);
+}
+
+TEST(SoftNavigationTrackerTest, RaceCommitArrivesAfterForeground) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Soft nav 2 starts at 100ms in foreground. Page is backgrounded at 500ms and
+  // foregrounded at 700ms before nav 2 commit IPC arrives.
+  tracker.OnHidden(base::Milliseconds(500));
+  tracker.OnShown(base::Milliseconds(700));
+
+  // Nav 2 commit arrives late at 800ms with start_time = 100ms.
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navs;
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(150)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
+
+  tracker.CompleteActiveNavigationAndFlush();
+
+  ASSERT_EQ(observer.completed_navs.size(), 1u);
+  EXPECT_EQ(observer.completed_navs[0].navigation_id, 2u);
+  // Nav 2 was initiated in foreground (100ms < 500ms) but the page was
+  // backgrounded at 500ms before nav 2 finished.
+  EXPECT_EQ(observer.completed_navs[0].first_background_time,
+            base::Milliseconds(500));
 }
 
 }  // namespace page_load_metrics

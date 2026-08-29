@@ -22,10 +22,24 @@ struct SoftNavigationData {
   SoftNavigationData();
   ~SoftNavigationData();
 
+  // Records the timestamp of the first backgrounding event during this soft
+  // navigation. Only the initial background time is recorded; subsequent calls
+  // are ignored.
+  void RecordFirstBackgroundTime(base::TimeDelta background_time);
+
   mojom::SoftNavigationMetricsPtr metrics;
   InteractionToNextPaintCalculator inp_calculator;
   LayoutShiftNormalization cls_calculator;
   LargestContentfulPaintHandler lcp_handler;
+  // The timestamp when the page was backgrounded. If the soft navigation
+  // started while the page was in the background, this holds the timestamp of
+  // when that background period started (which will be <= soft navigation
+  // start_time). If the soft navigation started in the foreground and was later
+  // backgrounded, this holds the timestamp of the first backgrounding after
+  // navigation start (which will be > soft navigation start_time). Nullopt if
+  // never backgrounded. TimeDelta relative to (hard) navigation timeOrigin
+  // (navigation start).
+  std::optional<base::TimeDelta> first_background_time;
 };
 
 }  // namespace page_load_metrics

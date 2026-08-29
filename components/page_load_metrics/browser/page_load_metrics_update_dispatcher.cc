@@ -404,6 +404,15 @@ PageLoadMetricsUpdateDispatcher::~PageLoadMetricsUpdateDispatcher() {
   ShutDown();
 }
 
+void PageLoadMetricsUpdateDispatcher::OnHidden(
+    base::TimeDelta background_time) {
+  soft_navigation_tracker_.OnHidden(background_time);
+}
+
+void PageLoadMetricsUpdateDispatcher::OnShown(base::TimeDelta shown_time) {
+  soft_navigation_tracker_.OnShown(shown_time);
+}
+
 void PageLoadMetricsUpdateDispatcher::ShutDown() {
   bool should_dispatch = false;
   if (timer_ && timer_->IsRunning()) {

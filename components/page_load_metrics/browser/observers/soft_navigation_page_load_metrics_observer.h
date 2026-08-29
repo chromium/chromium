@@ -83,8 +83,6 @@ class SoftNavigationPageLoadMetricsObserver
                                      soft_navigation_data) override;
 
  private:
-  bool FromForegroundOptionalEventInForeground(
-      const std::optional<base::TimeDelta>& event);
   void RecordSoftCommit(
       ukm::builders::SoftNavigation& builder,
       const page_load_metrics::mojom::SoftNavigationCommit& commit);

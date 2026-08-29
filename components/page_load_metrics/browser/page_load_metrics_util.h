@@ -58,6 +58,7 @@
 namespace page_load_metrics {
 
 class PageLoadMetricsObserverDelegate;
+struct SoftNavigationData;
 
 namespace mojom {
 class PageLoadTiming;
@@ -138,6 +139,14 @@ void UmaMaxCumulativeShiftScoreHistogram10000x(
 bool WasStartedInForegroundOptionalEventInForeground(
     const std::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate);
+
+// Returns true if:
+// - We have timing information for the event.
+// - The soft navigation started while the page was in the foreground.
+// - The event occurred prior to the page being moved to the background.
+bool WasSoftNavigationStartedInForegroundOptionalEventInForeground(
+    const std::optional<base::TimeDelta>& event,
+    const SoftNavigationData& soft_navigation_data);
 
 // Returns true if:
 // - We have timing information for the event.
