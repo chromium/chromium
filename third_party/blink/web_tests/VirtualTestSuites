@@ -2756,7 +2756,6 @@
       "external/wpt/html/canvas/element/manual/draw-element-image/ink-overflow.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/scale.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/get-element-transform.tentative.html",
-      "external/wpt/html/canvas/element/manual/draw-element-image/draw-element-image-returned-matrix.tentative.html",
       "wpt_internal/webgl/draw-element-image/webgl-css-transform-on-div.html",
       "wpt_internal/webgl/draw-element-image/webgl-ink-overflow.html",
       "wpt_internal/webgl/draw-element-image/webgl-scaling.html"
@@ -2807,7 +2806,6 @@
       "external/wpt/html/canvas/element/manual/draw-element-image/ink-overflow.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/scale.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/get-element-transform.tentative.html",
-      "external/wpt/html/canvas/element/manual/draw-element-image/draw-element-image-returned-matrix.tentative.html",
       "wpt_internal/webgl/draw-element-image/webgl-css-transform-on-div.html",
       "wpt_internal/webgl/draw-element-image/webgl-ink-overflow.html",
       "wpt_internal/webgl/draw-element-image/webgl-scaling.html",
@@ -5120,7 +5118,8 @@
       "Win"
     ],
     "bases": [
-      "wpt_internal/html/canvas/drawElementImage/css-transform-on-div-disabled.html"
+      "wpt_internal/html/canvas/drawElementImage/css-transform-on-div-disabled.html",
+      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix-disabled.html"
     ],
     "exclusive_tests": "ALL",
     "args": [

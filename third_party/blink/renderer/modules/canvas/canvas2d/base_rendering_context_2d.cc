@@ -1345,13 +1345,14 @@ int BaseRenderingContext2D::LayerCount() const {
   return Canvas2DRecorderContext::LayerCount();
 }
 
-DOMMatrix* BaseRenderingContext2D::drawElementImage(
+V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
+    ScriptState* script_state,
     const V8UnionElementOrElementImage* element,
     double dx,
     double dy,
     const DrawElementOptions* options,
     ExceptionState& exception_state) {
-  return DrawElementInternal(element,
+  return DrawElementInternal(script_state, element,
                              /*sx*/ std::nullopt, /*sy*/ std::nullopt,
                              /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
                              dx, dy,
@@ -1359,7 +1360,8 @@ DOMMatrix* BaseRenderingContext2D::drawElementImage(
                              options, exception_state);
 }
 
-DOMMatrix* BaseRenderingContext2D::drawElementImage(
+V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
+    ScriptState* script_state,
     const V8UnionElementOrElementImage* element,
     double dx,
     double dy,
@@ -1367,13 +1369,14 @@ DOMMatrix* BaseRenderingContext2D::drawElementImage(
     double dheight,
     const DrawElementOptions* options,
     ExceptionState& exception_state) {
-  return DrawElementInternal(element,
+  return DrawElementInternal(script_state, element,
                              /*sx*/ std::nullopt, /*sy*/ std::nullopt,
                              /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
                              dx, dy, dwidth, dheight, options, exception_state);
 }
 
-DOMMatrix* BaseRenderingContext2D::drawElementImage(
+V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
+    ScriptState* script_state,
     const V8UnionElementOrElementImage* element,
     double sx,
     double sy,
@@ -1383,12 +1386,14 @@ DOMMatrix* BaseRenderingContext2D::drawElementImage(
     double dy,
     const DrawElementOptions* options,
     ExceptionState& exception_state) {
-  return DrawElementInternal(element, sx, sy, swidth, sheight, dx, dy,
-                             /*dwidth*/ std::nullopt, /*dheight*/ std::nullopt,
-                             options, exception_state);
+  return DrawElementInternal(script_state, element, sx, sy, swidth, sheight, dx,
+                             dy, /*dwidth*/ std::nullopt,
+                             /*dheight*/ std::nullopt, options,
+                             exception_state);
 }
 
-DOMMatrix* BaseRenderingContext2D::drawElementImage(
+V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
+    ScriptState* script_state,
     const V8UnionElementOrElementImage* element,
     double sx,
     double sy,
@@ -1400,11 +1405,12 @@ DOMMatrix* BaseRenderingContext2D::drawElementImage(
     double dheight,
     const DrawElementOptions* options,
     ExceptionState& exception_state) {
-  return DrawElementInternal(element, sx, sy, swidth, sheight, dx, dy, dwidth,
-                             dheight, options, exception_state);
+  return DrawElementInternal(script_state, element, sx, sy, swidth, sheight, dx,
+                             dy, dwidth, dheight, options, exception_state);
 }
 
-DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
+V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::DrawElementInternal(
+    ScriptState* script_state,
     const V8UnionElementOrElementImage* element,
     std::optional<double> sx,
     std::optional<double> sy,
@@ -1419,13 +1425,27 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       GetCanvasRenderingContextHost()->GetTopExecutionContext()));
 
+  bool element_canvas_transform_enabled =
+      RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
+          GetCanvasRenderingContextHost()->GetTopExecutionContext());
+
+  auto degenerate_return_value = [&script_state,
+                                  element_canvas_transform_enabled]() {
+    if (element_canvas_transform_enabled) {
+      return V8UnionDOMMatrixOrUndefined::Ret(script_state,
+                                              ToV8UndefinedGenerator());
+    }
+    return V8UnionDOMMatrixOrUndefined::Ret(script_state, DOMMatrix::Create());
+  };
+
   if (!GetOrCreatePaintCanvas()) {
-    return DOMMatrix::Create();
+    return degenerate_return_value();
   }
 
   if (!IsDrawElementImageEligible(element, "DrawElementImage",
                                   exception_state)) {
-    return nullptr;
+    return V8UnionDOMMatrixOrUndefined::Ret(script_state,
+                                            ToV8UndefinedGenerator());
   }
 
   std::optional<CanvasChildPaintRecord> child_paint_record;
@@ -1447,7 +1467,8 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "No cached paint record for element.");
     }
-    return nullptr;
+    return V8UnionDOMMatrixOrUndefined::Ret(script_state,
+                                            ToV8UndefinedGenerator());
   }
 
   float dpr = child_paint_record->paint_state.effective_zoom;
@@ -1457,7 +1478,7 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
   }
 
   if (src_rect.IsEmpty()) {
-    return DOMMatrix::Create();
+    return degenerate_return_value();
   }
 
   // The filter needs to be resolved before calling Draw, because it
@@ -1482,7 +1503,7 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
   }
 
   if (dst_rect.IsEmpty()) {
-    return DOMMatrix::Create();
+    return degenerate_return_value();
   }
 
   cc::PaintRecord paint_record = std::move(child_paint_record->record);
@@ -1587,10 +1608,6 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
                              -src_rect.y() * scale_factor.y());
   }
 
-  bool element_canvas_transform_enabled =
-      RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
-          GetCanvasRenderingContextHost()->GetTopExecutionContext());
-
   // This call will take our draw transform in canvas grid coordinates, and
   // convert it to a transform in CSS pixels suitable for positioning the
   // element.
@@ -1611,8 +1628,14 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
     }
   }
 
-  return MakeGarbageCollected<DOMMatrix>(result_transform,
-                                         result_transform.Is2dTransform());
+  if (element_canvas_transform_enabled) {
+    return V8UnionDOMMatrixOrUndefined::Ret(script_state,
+                                            ToV8UndefinedGenerator());
+  }
+
+  return V8UnionDOMMatrixOrUndefined::Ret(
+      script_state, MakeGarbageCollected<DOMMatrix>(
+                        result_transform, result_transform.Is2dTransform()));
 }
 
 scoped_refptr<const cc::AnimatedImageFrameIndexMap>

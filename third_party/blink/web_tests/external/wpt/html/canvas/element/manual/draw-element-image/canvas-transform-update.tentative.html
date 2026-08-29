@@ -28,9 +28,10 @@
       assert_equals(target.getBoundingClientRect().top, 0);
 
       // Default options ({updateGeometry: true}).
-      const transform = ctx.drawElementImage(target, 30, 40);
-      assert_array_equals(target.getCanvasTransform().toFloat64Array(), transform.toFloat64Array(),
-        'target canvas transform matches returned transform');
+      ctx.drawElementImage(target, 30, 40);
+      assert_array_equals(target.getCanvasTransform().toFloat64Array(),
+        new DOMMatrix().translate(30, 40).toFloat64Array(),
+        'target canvas transform matches drawn position');
       const rect = target.getBoundingClientRect();
       assert_equals(rect.left, 30);
       assert_equals(rect.top, 40);
@@ -44,9 +45,10 @@
 
       await waitForCanvasPaint(canvas);
 
-      const transform = ctx.drawElementImage(target, 50, 60, {updateGeometry: true});
-      assert_array_equals(target.getCanvasTransform().toFloat64Array(), transform.toFloat64Array(),
-        'target canvas transform matches returned transform with updateGeometry: true');
+      ctx.drawElementImage(target, 50, 60, {updateGeometry: true});
+      assert_array_equals(target.getCanvasTransform().toFloat64Array(),
+        new DOMMatrix().translate(50, 60).toFloat64Array(),
+        'target canvas transform matches drawn position with updateGeometry: true');
       const rect = target.getBoundingClientRect();
       assert_equals(rect.left, 50);
       assert_equals(rect.top, 60);
@@ -83,8 +85,9 @@
       await waitForCanvasPaint(canvas);
 
       // Overload: (element, dx, dy, dwidth, dheight, [options])
-      let transform = ctx.drawElementImage(target, 20, 30, 200, 100);
-      assert_array_equals(target.getCanvasTransform().toFloat64Array(), transform.toFloat64Array());
+      ctx.drawElementImage(target, 20, 30, 200, 100);
+      assert_array_equals(target.getCanvasTransform().toFloat64Array(),
+        new DOMMatrix().translate(20, 30).scale(2, 2).toFloat64Array());
       let rect = target.getBoundingClientRect();
       assert_equals(rect.left, 20);
       assert_equals(rect.top, 30);
@@ -110,8 +113,9 @@
       await waitForCanvasPaint(canvas);
 
       // Overload: (element, sx, sy, swidth, sheight, dx, dy, [options])
-      let transform = ctx.drawElementImage(target, 0, 0, 100, 50, 40, 50);
-      assert_array_equals(target.getCanvasTransform().toFloat64Array(), transform.toFloat64Array());
+      ctx.drawElementImage(target, 0, 0, 100, 50, 40, 50);
+      assert_array_equals(target.getCanvasTransform().toFloat64Array(),
+        new DOMMatrix().translate(40, 50).toFloat64Array());
       let rect = target.getBoundingClientRect();
       assert_equals(rect.left, 40);
       assert_equals(rect.top, 50);
@@ -133,8 +137,9 @@
       await waitForCanvasPaint(canvas);
 
       // Overload: (element, sx, sy, swidth, sheight, dx, dy, dwidth, dheight, [options])
-      let transform = ctx.drawElementImage(target, 0, 0, 100, 50, 15, 25, 200, 100);
-      assert_array_equals(target.getCanvasTransform().toFloat64Array(), transform.toFloat64Array());
+      ctx.drawElementImage(target, 0, 0, 100, 50, 15, 25, 200, 100);
+      assert_array_equals(target.getCanvasTransform().toFloat64Array(),
+        new DOMMatrix().translate(15, 25).scale(2, 2).toFloat64Array());
       let rect = target.getBoundingClientRect();
       assert_equals(rect.left, 15);
       assert_equals(rect.top, 25);
