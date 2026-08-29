@@ -354,11 +354,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
       blink::features::kAndroidSpellcheckFullApiBlink);
   feature_overrides.EnableFeature(blink::features::kAndroidSpellcheckNativeUi);
 
-  // Enable Account Picker dialog on Android Desktop.
-  // TODO(crbug.com/553630105): Remove when rollout is complete to all form
-  // factors.
-  feature_overrides.EnableFeature(chrome::android::kAccountPickerDialog);
-
   // Enable updated FRE layout on Android Desktop.
   // TODO(crbug.com/534451983): Remove when rollout is complete to all form
   // factors.
