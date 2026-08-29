@@ -1901,9 +1901,16 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   action->InvokeAction();
 
   // 7. Verify that the interaction was logged with the hashed CUJ!
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueInteraction",
+                                      ContextualCueingInteraction::kCueClicked,
+                                      1);
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.CueInteraction.Clicked",
       base::HashMetricName("test_cuj_string"), 1);
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.CueShown.PageType.Pdf",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.V2.CueInteraction.PageType.Pdf", 0);
 
   // Verify UKM metric.
   auto entries = ukm_recorder.GetEntriesByName(
@@ -1915,6 +1922,60 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       ukm::builders::ContextualCueing_CueInteraction::
           kProactiveCueInteractionName,
       static_cast<int64_t>(ContextualCueingInteraction::kCueClicked));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       RecordsCueInteractionOnPdfPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+
+  // 1. Navigate to a PDF document URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), pdf_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+
+  // 2. Mock the server response and inject a fake CUJ string.
+  auto response = MakeCompleteResponse();
+  response.mutable_contextual_cues(0)->set_suggested_cuj("pdf_cuj_string");
+  SeedExecutionResult(std::move(response));
+
+  // 3. Trigger the cue execution flow.
+  SimulateFilterPassed(pdf_url);
+
+  // 4. Wait for the flow to successfully finish.
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // 5. Confirm flow was completed successfully. There is a sample recorded to
+  // both the general and PDF-specific "CueShown" metric.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueShown",
+                                      base::HashMetricName("pdf_cuj_string"),
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueShown.PageType.Pdf",
+      base::HashMetricName("pdf_cuj_string"), 1);
+
+  // 6. Simulate user clicking the cue.
+  auto* action =
+      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  ASSERT_TRUE(action);
+  action->InvokeAction();
+
+  // 7. Verify that the interaction was logged to both the general and
+  // PDF-specific "CueInteraction" metric.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueInteraction",
+                                      ContextualCueingInteraction::kCueClicked,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.PageType.Pdf",
+      ContextualCueingInteraction::kCueClicked, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.Clicked",
+      base::HashMetricName("pdf_cuj_string"), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,

@@ -130,9 +130,14 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
 void RecordCueShownMetrics(ukm::SourceId source_id,
                            std::string_view cuj,
                            const CueTabMetrics& tab_metrics,
-                           base::TimeDelta latency) {
+                           base::TimeDelta latency,
+                           bool is_pdf) {
   base::UmaHistogramSparse("ContextualCueing.V2.CueShown",
                            base::HashMetricName(cuj));
+  if (is_pdf) {
+    base::UmaHistogramSparse("ContextualCueing.V2.CueShown.PageType.Pdf",
+                             base::HashMetricName(cuj));
+  }
   base::UmaHistogramTimes("ContextualCueing.V2.CueShownLatency", latency);
 
   auto* ukm_recorder = ukm::UkmRecorder::Get();
@@ -152,9 +157,15 @@ void RecordContextualCueingInteraction(
     ContextualCueingInteraction contextual_cueing_interaction,
     const std::string& cuj,
     ukm::SourceId source_id,
-    base::TimeDelta shown_duration) {
+    base::TimeDelta shown_duration,
+    bool is_pdf) {
   base::UmaHistogramEnumeration("ContextualCueing.V2.CueInteraction",
                                 contextual_cueing_interaction);
+  if (is_pdf) {
+    base::UmaHistogramEnumeration(
+        "ContextualCueing.V2.CueInteraction.PageType.Pdf",
+        contextual_cueing_interaction);
+  }
 
   std::string histogram_name =
       "ContextualCueing.V2.CueInteraction." +

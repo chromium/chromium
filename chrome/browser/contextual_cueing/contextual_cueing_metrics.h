@@ -36,13 +36,15 @@ struct CueTabMetrics {
 void RecordCueShownMetrics(ukm::SourceId source_id,
                            std::string_view cuj,
                            const CueTabMetrics& tab_metrics,
-                           base::TimeDelta latency);
+                           base::TimeDelta latency,
+                           bool is_pdf);
 
 void RecordContextualCueingInteraction(
     ContextualCueingInteraction contextual_cueing_interaction,
     const std::string& cuj,
     ukm::SourceId source_id,
-    base::TimeDelta shown_duration);
+    base::TimeDelta shown_duration,
+    bool is_pdf);
 
 void RecordContextualCueingDecision(
     ukm::SourceId source_id,

@@ -9,10 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/metrics_hashes.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
+#include "components/contextual_cueing/contextual_cueing_enums.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -139,6 +143,68 @@ TEST(ContextualCueingMetricsTest, CreateEvent) {
   EXPECT_EQ("[{\"title\":\"Other Title\",\"url\":\"https://other.com/\"}]",
             event.cue_context().tabs_shown());
   EXPECT_EQ("custom_cuj", event.cue_details().cuj_type());
+}
+
+TEST(ContextualCueingMetricsTest, RecordCueShownMetrics_Pdf) {
+  base::HistogramTester histogram_tester;
+  CueTabMetrics tab_metrics;
+  RecordCueShownMetrics(ukm::kInvalidSourceId, "test_cuj", tab_metrics,
+                        base::Milliseconds(100), /*is_pdf=*/true);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueShown",
+                                      base::HashMetricName("test_cuj"), 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueShown.PageType.Pdf",
+      base::HashMetricName("test_cuj"), 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueShownLatency",
+                                      100, 1);
+}
+
+TEST(ContextualCueingMetricsTest, RecordCueShownMetrics_NonPdf) {
+  base::HistogramTester histogram_tester;
+  CueTabMetrics tab_metrics;
+  RecordCueShownMetrics(ukm::kInvalidSourceId, "test_cuj", tab_metrics,
+                        base::Milliseconds(100), /*is_pdf=*/false);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueShown",
+                                      base::HashMetricName("test_cuj"), 1);
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.CueShown.PageType.Pdf",
+                                    0);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueShownLatency",
+                                      100, 1);
+}
+
+TEST(ContextualCueingMetricsTest, RecordContextualCueingInteraction_Pdf) {
+  base::HistogramTester histogram_tester;
+  RecordContextualCueingInteraction(ContextualCueingInteraction::kCueClicked,
+                                    "test_cuj", ukm::kInvalidSourceId,
+                                    base::Seconds(5), /*is_pdf=*/true);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueInteraction",
+                                      ContextualCueingInteraction::kCueClicked,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.PageType.Pdf",
+      ContextualCueingInteraction::kCueClicked, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.Clicked",
+      base::HashMetricName("test_cuj"), 1);
+}
+
+TEST(ContextualCueingMetricsTest, RecordContextualCueingInteraction_NonPdf) {
+  base::HistogramTester histogram_tester;
+  RecordContextualCueingInteraction(ContextualCueingInteraction::kCueClicked,
+                                    "test_cuj", ukm::kInvalidSourceId,
+                                    base::Seconds(5), /*is_pdf=*/false);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueInteraction",
+                                      ContextualCueingInteraction::kCueClicked,
+                                      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.V2.CueInteraction.PageType.Pdf", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueInteraction.Clicked",
+      base::HashMetricName("test_cuj"), 1);
 }
 
 }  // namespace

@@ -55,6 +55,7 @@
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/pdf/common/constants.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -1024,7 +1025,10 @@ void ContextualCueingController::ShowCue(
     show_latency = base::Time::Now() - page_load_time;
   }
 
-  RecordCueShownMetrics(GetTabSourceId(), cuj, tab_metrics, show_latency);
+  bool is_pdf = tab_->GetContents() &&
+                tab_->GetContents()->GetContentsMimeType() == pdf::kPDFMimeType;
+  RecordCueShownMetrics(GetTabSourceId(), cuj, tab_metrics, show_latency,
+                        is_pdf);
 
   RecordCueShownToPrivateInsights(tab_->GetProfile(), cue_id, cue_type, cue,
                                   tab_, tabs_to_show, background_tabs, cuj);
@@ -1294,8 +1298,10 @@ void ContextualCueingController::OnCueInteraction(
   base::TimeDelta shown_duration = ExtractCueShownDuration();
   ukm::SourceId source_id = GetTabSourceId();
 
+  bool is_pdf = tab_->GetContents() &&
+                tab_->GetContents()->GetContentsMimeType() == pdf::kPDFMimeType;
   RecordContextualCueingInteraction(interaction_type, cuj, source_id,
-                                    shown_duration);
+                                    shown_duration, is_pdf);
 
   RecordCueingInteractionToPrivateInsights(
       tab_->GetProfile(), cue_id, cue_type, cue, tab_, tabs_to_show,
