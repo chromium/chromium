@@ -7504,6 +7504,85 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Ask anything about what's on your screen by sharing your screen.
       </message>
 
+      <!-- Contextual Search -->
+      <if expr="use_titlecase">
+        <then>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE_LENS" desc="In Title Case: The name of the Search with Google Lens contextual search command in the context menu">
+            Search with Google Lens
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_PAGE_WITH_GOOGLE" desc="In Title Case: The name of the Search this page with Google contextual search command in the context menu">
+            Search This Page with Google
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE" desc="In Title Case: The name of the Search with Google contextual search command in the context menu">
+            Search with Google
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_IMAGE_WITH_GOOGLE" desc="In Title Case: The name of the Search this image with Google contextual search command in the context menu">
+            Search This Image with Google
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_GOOGLE_FOR" desc="In Title Case: The name of the Search Google for “string” contextual search command in the context menu">
+            Search Google for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_FOR" desc="In Title Case: The name of the Search for “string” contextual search command in the context menu">
+            Search for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE" desc="In Title Case: The name of the Ask Google about this page contextual search command in the context menu">
+            Ask Google About This Page
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_PAGE" desc="In Title Case: The name of the Ask about this page contextual search command in the context menu">
+            Ask About This Page
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_IMAGE" desc="In Title Case: The name of the Ask Google about this image contextual search command in the context menu">
+            Ask Google About This Image
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_IMAGE" desc="In Title Case: The name of the Ask about this image contextual search command in the context menu">
+            Ask About This Image
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT" desc="In Title Case: The name of the Ask Google about “string” contextual search command in the context menu">
+            Ask Google About “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT" desc="In Title Case: The name of the Ask about “string” contextual search command in the context menu">
+            Ask About “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+        </then>
+        <else>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE_LENS" desc="The name of the Search with Google Lens contextual search command in the context menu">
+            Search with Google Lens
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_PAGE_WITH_GOOGLE" desc="The name of the Search this page with Google contextual search command in the context menu">
+            Search this page with Google
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE" desc="The name of the Search with Google contextual search command in the context menu">
+            Search with Google
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_IMAGE_WITH_GOOGLE" desc="The name of the Search this image with Google contextual search command in the context menu">
+            Search this image with Google
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_GOOGLE_FOR" desc="The name of the Search Google for “string” contextual search command in the context menu">
+            Search Google for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_FOR" desc="The name of the Search for “string” contextual search command in the context menu">
+            Search for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE" desc="The name of the Ask Google about this page contextual search command in the context menu">
+            Ask Google about this page
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_PAGE" desc="The name of the Ask about this page contextual search command in the context menu">
+            Ask about this page
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_IMAGE" desc="The name of the Ask Google about this image contextual search command in the context menu">
+            Ask Google about this image
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_IMAGE" desc="The name of the Ask about this image contextual search command in the context menu">
+            Ask about this image
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT" desc="The name of the Ask Google about “string” contextual search command in the context menu">
+            Ask Google about “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT" desc="The name of the Ask about “string” contextual search command in the context menu">
+            Ask about “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+          </message>
+        </else>
+      </if>
 
       <!-- NTP -->
       <!-- Google Drive integration disclaimer for New Tab Page -->
