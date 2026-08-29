@@ -214,6 +214,12 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      */
     private int mMaxWidthPx;
 
+    /**
+     * The maximum height of the popup. This height is used as long as the popup still fits on
+     * screen.
+     */
+    private int mMaxHeightPx;
+
     /** The desired width for the content. */
     private int mDesiredContentWidth;
 
@@ -266,6 +272,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
         private int mMarginPx;
         private int mMaxWidthPx;
+        private int mMaxHeightPx;
         private int mDesiredContentWidthPx;
         private int mDesiredContentHeightPx;
 
@@ -375,6 +382,14 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
          */
         public Builder setMaxWidth(int maxWidth) {
             mMaxWidthPx = maxWidth;
+            return this;
+        }
+
+        /**
+         * @param maxHeight The max height for the popup.
+         */
+        public Builder setMaxHeight(int maxHeight) {
+            mMaxHeightPx = maxHeight;
             return this;
         }
 
@@ -586,6 +601,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         setLayoutObserver(builder.mLayoutObserver);
         setMargin(builder.mMarginPx);
         if (builder.mMaxWidthPx > 0) setMaxWidth(builder.mMaxWidthPx);
+        if (builder.mMaxHeightPx > 0) setMaxHeight(builder.mMaxHeightPx);
         if (builder.mDesiredContentWidthPx != 0 || builder.mDesiredContentHeightPx != 0) {
             updateDesiredContentSize(
                     builder.mDesiredContentWidthPx, builder.mDesiredContentHeightPx, false);
@@ -1000,6 +1016,17 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
+     * Sets the max height for the popup. This should be called before the popup is shown.
+     *
+     * @param maxHeight The max height for the popup.
+     * @deprecated Use the {@link Builder} to set this value during construction.
+     */
+    @Deprecated
+    public void setMaxHeight(int maxHeight) {
+        mMaxHeightPx = Math.max(maxHeight, getMinInteractSizePx());
+    }
+
+    /**
      * Sets whether the popup should horizontally overlap the anchor {@link Rect}. Defaults to
      * false. This should be called before the popup is shown.
      *
@@ -1190,10 +1217,12 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                         anchorRect,
                         getOrCreateContentView(),
                         mViewportRectProvider.getRect().width(),
+                        mViewportRectProvider.getRect().height(),
                         paddingX,
                         paddingY,
                         mMarginPx,
                         mMaxWidthPx,
+                        mMaxHeightPx,
                         mDesiredContentWidth,
                         mDesiredContentHeight,
                         mPreferredHorizontalOrientation,
@@ -1372,11 +1401,14 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
          * @param anchorRect The rect that popup anchored to in the window.
          * @param contentView The content view of popup window. Expected to be a {@link ViewGroup}.
          * @param rootViewWidth The width of root view.
+         * @param rootViewHeight The height of root view.
          * @param paddingX The padding on the X axis of popup window.
          * @param paddingY The padding on the Y axis of popup window.
          * @param marginPx Value set by {@link #setMargin(int)}.
          * @param maxWidthPx Value set by {@link #setMaxWidth(int)}.
+         * @param maxHeightPx Value set by {@link #setMaxHeight(int)}.
          * @param desiredContentWidth Value set by {@link #setDesiredContentWidth(int)}.
+         * @param desiredContentHeight Value set by {@link #setDesiredContentHeight(int)}.
          * @param preferredHorizontalOrientation Value set by {@link
          *     #setPreferredHorizontalOrientation(int)}.
          * @param preferredVerticalOrientation Value set by {@link
@@ -1398,10 +1430,12 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 Rect anchorRect,
                 View contentView,
                 int rootViewWidth,
+                int rootViewHeight,
                 int paddingX,
                 int paddingY,
                 int marginPx,
                 int maxWidthPx,
+                int maxHeightPx,
                 int desiredContentWidth,
                 int desiredContentHeight,
                 @HorizontalOrientation int preferredHorizontalOrientation,

@@ -73,6 +73,7 @@ public class ListMenuHost
     private final boolean mMenuHorizontalOverlapAnchor;
 
     private int mMenuMaxWidth;
+    private int mMenuMaxHeight;
 
     // Nullable for lazy initialization.
     private @MonotonicNonNull HierarchicalMenuController<AnchoredPopupWindow>
@@ -115,6 +116,7 @@ public class ListMenuHost
                 a.getDimensionPixelSize(
                         R.styleable.ListMenuButton_menuMaxWidth,
                         mView.getResources().getDimensionPixelSize(R.dimen.list_menu_width));
+        mMenuMaxHeight = a.getDimensionPixelSize(R.styleable.ListMenuButton_menuMaxHeight, 0);
         mMenuHorizontalOverlapAnchor =
                 a.getBoolean(R.styleable.ListMenuButton_menuHorizontalOverlapAnchor, true);
         mMenuVerticalOverlapAnchor =
@@ -213,6 +215,15 @@ public class ListMenuHost
     }
 
     /**
+     * Set the max height of the popup menu.
+     *
+     * @param maxHeight The max height of the popup.
+     */
+    public void setMenuMaxHeight(int maxHeight) {
+        mMenuMaxHeight = maxHeight;
+    }
+
+    /**
      * Sets whether the popup should keep any soft keyboard shown by the anchor's window visible.
      *
      * <p>Defaults to {@code false}. Set to {@code true} for menus anchored to a focused text field
@@ -251,6 +262,7 @@ public class ListMenuHost
                         .setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor)
                         .setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor)
                         .setMaxWidth(mMenuMaxWidth)
+                        .setMaxHeight(mMenuMaxHeight)
                         .setFocusable(true)
                         .setAnimateFromAnchor(true)
                         .addOnDismissListener(
@@ -342,6 +354,7 @@ public class ListMenuHost
                         .setVerticalOverlapAnchor(true)
                         .setHorizontalOverlapAnchor(false)
                         .setMaxWidth(mMenuMaxWidth)
+                        .setMaxHeight(mMenuMaxHeight)
                         .setFocusable(true)
                         .setTouchModal(false)
                         .setAnimateFromAnchor(false)

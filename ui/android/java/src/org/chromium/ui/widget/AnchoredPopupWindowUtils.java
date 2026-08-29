@@ -58,6 +58,20 @@ public class AnchoredPopupWindowUtils {
     }
 
     @VisibleForTesting
+    static int getMaxContentHeight(
+            int desiredMaxHeightPx, int rootViewHeight, int marginPx, int paddingY) {
+        int maxHeightBasedOnRootView = rootViewHeight - marginPx * 2;
+        int maxHeight;
+        if (desiredMaxHeightPx != 0 && desiredMaxHeightPx < maxHeightBasedOnRootView) {
+            maxHeight = desiredMaxHeightPx;
+        } else {
+            maxHeight = maxHeightBasedOnRootView;
+        }
+
+        return maxHeight > paddingY ? maxHeight - paddingY : 0;
+    }
+
+    @VisibleForTesting
     static int getPopupX(
             Rect anchorRect,
             Rect windowRect,

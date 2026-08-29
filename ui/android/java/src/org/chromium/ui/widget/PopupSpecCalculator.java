@@ -30,10 +30,12 @@ public class PopupSpecCalculator implements SpecCalculator {
             final Rect anchorRect,
             final View contentView,
             final int rootViewWidth,
+            final int rootViewHeight,
             int paddingX,
             int paddingY,
             int marginPx,
             int maxWidthPx,
+            int maxHeightPx,
             int desiredContentWidth,
             int desiredContentHeight,
             @HorizontalOrientation int preferredHorizontalOrientation,
@@ -49,10 +51,12 @@ public class PopupSpecCalculator implements SpecCalculator {
                 anchorRect,
                 contentView,
                 rootViewWidth,
+                rootViewHeight,
                 paddingX,
                 paddingY,
                 marginPx,
                 maxWidthPx,
+                maxHeightPx,
                 desiredContentWidth,
                 desiredContentHeight,
                 preferredHorizontalOrientation,
@@ -71,10 +75,12 @@ public class PopupSpecCalculator implements SpecCalculator {
             final Rect anchorRect,
             final View contentView,
             final int rootViewWidth,
+            final int rootViewHeight,
             int paddingX,
             int paddingY,
             int marginPx,
             int maxWidthPx,
+            int maxHeightPx,
             int desiredContentWidth,
             int desiredContentHeight,
             @HorizontalOrientation int preferredHorizontalOrientation,
@@ -88,6 +94,9 @@ public class PopupSpecCalculator implements SpecCalculator {
         final int maxContentWidth =
                 AnchoredPopupWindowUtils.getMaxContentWidth(
                         maxWidthPx, rootViewWidth, marginPx, paddingX);
+        final int maxContentHeight =
+                AnchoredPopupWindowUtils.getMaxContentHeight(
+                        maxHeightPx, rootViewHeight, marginPx, paddingY);
 
         final int widthSpec =
                 desiredContentWidth > 0
@@ -117,7 +126,8 @@ public class PopupSpecCalculator implements SpecCalculator {
                         paddingX,
                         paddingY,
                         marginPx,
-                        maxContentWidth);
+                        maxContentWidth,
+                        maxContentHeight);
 
         // Decide the actual dimensions.
         Size size =
@@ -188,7 +198,8 @@ public class PopupSpecCalculator implements SpecCalculator {
             int paddingX,
             int paddingY,
             int marginPx,
-            int maxContentWidth) {
+            int maxContentWidth,
+            int maxContentHeight) {
         // Choose whether to place the popup, left or right of the anchor.
         boolean isPositionToLeft = currentPositionToLeft;
         boolean allowHorizontalOverlap = horizontalOverlapAnchor;
@@ -262,12 +273,13 @@ public class PopupSpecCalculator implements SpecCalculator {
         }
 
         // With vertical overlap, height is bounded by the window rather than anchor distance.
-        int maxContentHeight;
+        int availableHeight;
         if (allowVerticalOverlap) {
-            maxContentHeight = freeSpaceRect.bottom - freeSpaceRect.top - paddingY - 2 * marginPx;
+            availableHeight = freeSpaceRect.bottom - freeSpaceRect.top - paddingY - 2 * marginPx;
         } else {
-            maxContentHeight = isPositionBelow ? spaceBelowAnchor : spaceAboveAnchor;
+            availableHeight = isPositionBelow ? spaceBelowAnchor : spaceAboveAnchor;
         }
+        maxContentHeight = Math.min(availableHeight, maxContentHeight);
         return new PopupPositionParams(
                 maxContentWidth,
                 maxContentHeight,

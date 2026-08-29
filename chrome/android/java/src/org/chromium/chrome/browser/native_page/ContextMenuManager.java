@@ -287,6 +287,13 @@ public class ContextMenuManager {
         mListContextMenu = new ListMenuHost(mAnchorView, null);
         mListContextMenu.setMenuMaxWidth(
                 mAnchorView.getResources().getDimensionPixelSize(R.dimen.menu_width));
+        // Ensure that the context menu does not occupy the entire screen and leaves space to click
+        // outside to dismiss the menu.
+        mListContextMenu.setMenuMaxHeight(
+                mAnchorView.getRootView().getHeight()
+                        - mAnchorView
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.min_touch_target_size));
         mListContextMenu.tryToFitLargestItem(true);
         mListContextMenu.setDelegate(
                 new ListMenuDelegate() {

@@ -41,6 +41,7 @@ public final class PopupSpecCalculatorTest {
     private int mPaddingY;
     private int mMarginPx;
     private int mMaxWidthPx;
+    private int mMaxHeightPx;
     private int mDesiredWidthPx;
     private int mDesiredHeightPx;
     private @HorizontalOrientation int mPreferredHorizontalOrientation;
@@ -338,6 +339,24 @@ public final class PopupSpecCalculatorTest {
 
         maxWidth = AnchoredPopupWindowUtils.getMaxContentWidth(300, 300, 10, 300);
         assertEquals("Max width should be clamped at 0.", 0, maxWidth);
+    }
+
+    @Test
+    public void spec_MaxContentHeight() {
+        int maxHeight = AnchoredPopupWindowUtils.getMaxContentHeight(300, 600, 10, 10);
+        assertEquals("Max height should be based on desired height.", 290, maxHeight);
+
+        maxHeight = AnchoredPopupWindowUtils.getMaxContentHeight(300, 300, 10, 10);
+        assertEquals("Max height should be based on root view height.", 270, maxHeight);
+
+        maxHeight = AnchoredPopupWindowUtils.getMaxContentHeight(0, 600, 10, 10);
+        assertEquals(
+                "Max height should be based on root view height when desired height is 0.",
+                570,
+                maxHeight);
+
+        maxHeight = AnchoredPopupWindowUtils.getMaxContentHeight(300, 300, 10, 300);
+        assertEquals("Max height should be clamped at 0.", 0, maxHeight);
     }
 
     // Test cases using #doTestAnchoredPopupAtRect.
@@ -912,6 +931,7 @@ public final class PopupSpecCalculatorTest {
         mPaddingY = 0;
         mMarginPx = 0;
         mMaxWidthPx = 0;
+        mMaxHeightPx = 0;
         mDesiredWidthPx = 0;
         mDesiredHeightPx = 0;
         mPreferredHorizontalOrientation = HorizontalOrientation.MAX_AVAILABLE_SPACE;
@@ -935,10 +955,12 @@ public final class PopupSpecCalculatorTest {
                         anchoredRect,
                         mContentView,
                         mRootWidth,
+                        mRootHeight,
                         mPaddingX,
                         mPaddingY,
                         mMarginPx,
                         mMaxWidthPx,
+                        mMaxHeightPx,
                         mDesiredWidthPx,
                         mDesiredHeightPx,
                         mPreferredHorizontalOrientation,

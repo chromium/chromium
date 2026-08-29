@@ -69,6 +69,7 @@ found in the LICENSE file.
 
     <declare-styleable name="ListMenuButton">
         <attr name="menuMaxWidth" format="reference|dimension"/>
+        <attr name="menuMaxHeight" format="reference|dimension"/>
         <attr name="menuVerticalOverlapAnchor" format="boolean"/>
         <attr name="menuHorizontalOverlapAnchor" format="boolean"/>
         <!-- Used to specify if a menu button is positioned at the start or at the end of a layout

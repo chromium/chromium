@@ -294,6 +294,15 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                             Rect popupRect = new Rect(mRect);
                             popupRect.offset(-layoutScreenLocation[0], -layoutScreenLocation[1]);
 
+                            // Ensure that the context menu does not occupy the entire screen and
+                            // leaves space to click outside to dismiss the menu.
+                            int maxHeight =
+                                    mActivity.getWindow().getDecorView().getHeight()
+                                            - mActivity
+                                                    .getResources()
+                                                    .getDimensionPixelSize(
+                                                            R.dimen.min_touch_target_size);
+
                             AnchoredPopupWindow.Builder builder =
                                     new AnchoredPopupWindow.Builder(
                                                     mActivity,
@@ -303,6 +312,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                                                     new RectProvider(popupRect))
                                             .setSmartAnchorWithMaxWidth(true)
                                             .setVerticalOverlapAnchor(true)
+                                            .setMaxHeight(maxHeight)
                                             .setOutsideTouchable(true)
                                             .setAnimateFromAnchor(true)
                                             // Set popup focusable so the screen reader can announce

@@ -38,6 +38,7 @@ public final class FlyoutPopupSpecCalculatorTest {
     private int mPaddingY;
     private int mMarginPx;
     private int mMaxWidthPx;
+    private int mMaxHeightPx;
     private int mDesiredWidthPx;
     private int mDesiredHeightPx;
     private @HorizontalOrientation int mPreferredHorizontalOrientation;
@@ -116,10 +117,12 @@ public final class FlyoutPopupSpecCalculatorTest {
                         anchoredRect,
                         mContentView,
                         mRootWidth,
+                        mRootHeight,
                         mPaddingX,
                         mPaddingY,
                         mMarginPx,
                         mMaxWidthPx,
+                        mMaxHeightPx,
                         mDesiredWidthPx,
                         mDesiredHeightPx,
                         mPreferredHorizontalOrientation,
@@ -143,6 +146,7 @@ public final class FlyoutPopupSpecCalculatorTest {
         mPaddingY = 0;
         mMarginPx = 0;
         mMaxWidthPx = 0;
+        mMaxHeightPx = 0;
         mDesiredWidthPx = 0;
         mDesiredHeightPx = 0;
         mPreferredHorizontalOrientation = HorizontalOrientation.MAX_AVAILABLE_SPACE;

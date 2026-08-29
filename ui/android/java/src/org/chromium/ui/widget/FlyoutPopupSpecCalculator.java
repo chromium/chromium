@@ -44,10 +44,12 @@ public class FlyoutPopupSpecCalculator implements SpecCalculator {
             final Rect anchorRect,
             final View contentView,
             final int rootViewWidth,
+            final int rootViewHeight,
             int paddingX,
             int paddingY,
             int marginPx,
             int maxWidthPx,
+            int maxHeightPx,
             int desiredContentWidth,
             int desiredContentHeight,
             @HorizontalOrientation int preferredHorizontalOrientation,
@@ -61,8 +63,13 @@ public class FlyoutPopupSpecCalculator implements SpecCalculator {
         final int maxContentWidth =
                 AnchoredPopupWindowUtils.getMaxContentWidth(
                         maxWidthPx, rootViewWidth, marginPx, paddingX);
-        final int maxContentHeight =
+        final int windowMaxHeight =
                 freeSpaceRect.bottom - freeSpaceRect.top - 2 * paddingY - 2 * marginPx;
+        final int maxContentHeight =
+                Math.min(
+                        windowMaxHeight,
+                        AnchoredPopupWindowUtils.getMaxContentHeight(
+                                maxHeightPx, rootViewHeight, marginPx, paddingY));
 
         final int widthSpec =
                 desiredContentWidth > 0

@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -32,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -223,6 +225,7 @@ public final class AnchoredPopupWindowTest {
                 .setLayoutObserver(layoutObserver)
                 .setMargin(10)
                 .setMaxWidth(200)
+                .setMaxHeight(400)
                 .setDesiredContentSize(150, 300)
                 .setPreferredVerticalOrientation(VerticalOrientation.ABOVE)
                 .setPreferredHorizontalOrientation(HorizontalOrientation.CENTER)
@@ -263,6 +266,8 @@ public final class AnchoredPopupWindowTest {
                         anyInt(),
                         anyInt(),
                         anyInt(),
+                        anyInt(),
+                        anyInt(),
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean(),
@@ -284,6 +289,8 @@ public final class AnchoredPopupWindowTest {
                         any(),
                         any(),
                         any(),
+                        anyInt(),
+                        anyInt(),
                         anyInt(),
                         anyInt(),
                         anyInt(),
@@ -344,6 +351,25 @@ public final class AnchoredPopupWindowTest {
                 .build();
 
         verify(mPopupWindow).setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+    }
+
+    @Test
+    public void testSetMaxHeight() {
+        RectProvider anchorRectProvider = new RectProvider(new Rect(0, 0, 100, 100));
+        RectProvider viewportRectProvider = new RectProvider(new Rect(0, 0, 1000, 1000));
+        AnchoredPopupWindow popupWindow =
+                new AnchoredPopupWindow.Builder(
+                                mActivity, mView, mDrawable, () -> mContentView, anchorRectProvider)
+                        .setViewportRectProvider(viewportRectProvider)
+                        .setMaxHeight(400)
+                        .build();
+
+        popupWindow.show();
+        ArgumentCaptor<Integer> heightSpecCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(mContentView, atLeastOnce()).measure(anyInt(), heightSpecCaptor.capture());
+        assertEquals(400, View.MeasureSpec.getSize(heightSpecCaptor.getValue()));
+        assertEquals(
+                View.MeasureSpec.AT_MOST, View.MeasureSpec.getMode(heightSpecCaptor.getValue()));
     }
 
     private AnchoredPopupWindow createAnchorPopupWindow() {

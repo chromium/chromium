@@ -69,6 +69,11 @@ class UrlBarContextMenuHelper {
         @Px int maxWidth = res.getDimensionPixelSize(R.dimen.url_bar_context_menu_max_width);
         mListMenuHost.tryToFitLargestItem(true);
         mListMenuHost.setMenuMaxWidth(maxWidth);
+        // Ensure that the context menu does not occupy the entire screen and leaves space to click
+        // outside to dismiss the menu.
+        mListMenuHost.setMenuMaxHeight(
+                mAnchorView.getRootView().getHeight()
+                        - res.getDimensionPixelSize(R.dimen.min_touch_target_size));
         // Keep the soft keyboard visible while the omnibox context menu is up. The popup stays
         // focusable (for accessibility and key navigation) but does not take input-method focus;
         // otherwise showing it would move IME focus off the url bar and dismiss the keyboard,

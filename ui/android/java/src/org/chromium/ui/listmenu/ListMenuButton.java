@@ -128,6 +128,15 @@ public class ListMenuButton extends ChromeImageButton {
     }
 
     /**
+     * Set the max height of the popup menu.
+     *
+     * @param maxHeight The max height of the popup.
+     */
+    public void setMenuMaxHeight(int maxHeight) {
+        mListMenuHost.setMenuMaxHeight(maxHeight);
+    }
+
+    /**
      * Adds a listener which will be notified when the popup menu is shown.
      *
      * @param l The listener of interest.
