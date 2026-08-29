@@ -1738,7 +1738,9 @@ void GaiaScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,
 
   // Forces a reload for Gaia screen on hiding error message.
   if (IsGaiaVisible() || IsGaiaHiddenByError()) {
-    ReloadGaia(reason == NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED);
+    if (frame_state_ != FRAME_STATE_LOADED) {
+      ReloadGaia(reason == NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED);
+    }
   }
 }
 
@@ -1787,7 +1789,9 @@ void GaiaScreenHandler::OnProxyAuthDone() {
 void GaiaScreenHandler::OnErrorScreenHide() {
   histogram_helper_->OnErrorHide();
   error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
-  ReloadGaia(/*force_reload=*/true);
+  if (frame_state_ != FRAME_STATE_LOADED) {
+    ReloadGaia(/*force_reload=*/true);
+  }
   ShowScreenDeprecated(GaiaView::kScreenId);
 }
 
