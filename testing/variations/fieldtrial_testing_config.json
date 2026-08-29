@@ -1925,6 +1925,26 @@
             ]
         }
     ],
+    "AutofillAddChromeUserContextFields": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAddChromeUserContextFields"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAddressUserPerceptionSurveyUS": [
         {
             "platforms": [
