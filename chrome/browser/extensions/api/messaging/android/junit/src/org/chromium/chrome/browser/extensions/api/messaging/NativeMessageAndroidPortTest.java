@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link NativeMessageAndroidPort}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -524,5 +526,202 @@ public class NativeMessageAndroidPortTest {
         Assert.assertTrue(fakePort2.isDisconnected);
         // Port observer should not have received any closed channel error.
         Assert.assertNull(portObserver.closedError);
+    }
+
+    // Test that when multiple ports are added with staggered timing:
+    // Port 1 is added -> half timeout elapses -> Port 2 is added -> Port 1 times out ->
+    // Port 2 connection succeeds afterwards and functions properly.
+    @Test
+    public void testPort1TimesOutBeforePort2Connects() throws Exception {
+        List<IConnectPortCallback> callbacks = new ArrayList<>();
+        List<FakeNativeMessagePort> fakePorts = new ArrayList<>();
+        Mockito.doAnswer(
+                        invocation -> {
+                            IExtensionNativeMessageCallback msgCb = invocation.getArgument(0);
+                            IConnectPortCallback connectPortCb = invocation.getArgument(1);
+                            callbacks.add(connectPortCb);
+                            fakePorts.add(new FakeNativeMessagePort(msgCb));
+                            return null;
+                        })
+                .when(mMockExtensionService)
+                .connectPort(Mockito.any(), Mockito.any());
+
+        // 1. Add port 1 and trigger connection.
+        NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
+        TestPortObserver observer1 = new TestPortObserver();
+        port1.setTestObserver(observer1);
+        Assert.assertNull(connectToApp(port1));
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(1, callbacks.size());
+
+        // 2. Let half the timeout pass (15s).
+        ShadowLooper.idleMainLooper(
+                NativeMessagingConnection.CONNECT_TIMEOUT_MS / 2, TimeUnit.MILLISECONDS);
+
+        // 3. Add port 2.
+        NativeMessageAndroidPort port2 = new NativeMessageAndroidPort();
+        TestPortObserver observer2 = new TestPortObserver();
+        port2.setTestObserver(observer2);
+        Assert.assertNull(connectToApp(port2));
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(2, callbacks.size());
+
+        // 4. Advance another half timeout (total 30s for port 1, 15s for port 2). Port 1 times out.
+        ShadowLooper.idleMainLooper(
+                NativeMessagingConnection.CONNECT_TIMEOUT_MS / 2, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(
+                "Could not connect port to " + TARGET_PACKAGE + ".", observer1.closedError);
+        Assert.assertNull(observer2.closedError);
+
+        // 5. Mock app returns success for port 2.
+        callbacks.get(1).onSuccess(fakePorts.get(1));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertNull(observer2.closedError);
+        port2.forwardMessageToApp("msg_from_port_2");
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(List.of("msg_from_port_2"), fakePorts.get(1).receivedMessages);
+    }
+
+    // Test that when multiple ports are added with staggered timing:
+    // Port 1 is added -> half timeout elapses -> Port 2 is added -> Port 2 connection succeeds ->
+    // Port 1 times out -> Port 2 survives and remains functional.
+    @Test
+    public void testPort2ConnectsBeforePort1TimesOut() throws Exception {
+        List<IConnectPortCallback> callbacks = new ArrayList<>();
+        List<FakeNativeMessagePort> fakePorts = new ArrayList<>();
+        Mockito.doAnswer(
+                        invocation -> {
+                            IExtensionNativeMessageCallback msgCb = invocation.getArgument(0);
+                            IConnectPortCallback connectPortCb = invocation.getArgument(1);
+                            callbacks.add(connectPortCb);
+                            fakePorts.add(new FakeNativeMessagePort(msgCb));
+                            return null;
+                        })
+                .when(mMockExtensionService)
+                .connectPort(Mockito.any(), Mockito.any());
+
+        // 1. Add port 1 and trigger connection.
+        NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
+        TestPortObserver observer1 = new TestPortObserver();
+        port1.setTestObserver(observer1);
+        Assert.assertNull(connectToApp(port1));
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(1, callbacks.size());
+
+        // 2. Let half the timeout pass (15s).
+        ShadowLooper.idleMainLooper(
+                NativeMessagingConnection.CONNECT_TIMEOUT_MS / 2, TimeUnit.MILLISECONDS);
+
+        // 3. Add port 2.
+        NativeMessageAndroidPort port2 = new NativeMessageAndroidPort();
+        TestPortObserver observer2 = new TestPortObserver();
+        port2.setTestObserver(observer2);
+        Assert.assertNull(connectToApp(port2));
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(2, callbacks.size());
+
+        // 4. Port 2 connection succeeds.
+        callbacks.get(1).onSuccess(fakePorts.get(1));
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertNull(observer2.closedError);
+
+        // 5. Advance another half timeout. Port 1 times out; Port 2 survives.
+        ShadowLooper.idleMainLooper(
+                NativeMessagingConnection.CONNECT_TIMEOUT_MS / 2, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(
+                "Could not connect port to " + TARGET_PACKAGE + ".", observer1.closedError);
+        Assert.assertNull(observer2.closedError);
+        Assert.assertFalse(fakePorts.get(1).isDisconnected);
+
+        port2.forwardMessageToApp("port_2_survives");
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(List.of("port_2_survives"), fakePorts.get(1).receivedMessages);
+    }
+
+    // Test that if an app delivers a late onSuccess after connectPort has timed out,
+    // the late remote port is immediately disconnected and the closed port is not modified.
+    @Test
+    public void testLateOnSuccessAfterTimeoutDisconnectsRemotePort() throws Exception {
+        IConnectPortCallback[] capturedCallback = new IConnectPortCallback[1];
+        Mockito.doAnswer(
+                        invocation -> {
+                            capturedCallback[0] = invocation.getArgument(1);
+                            return null;
+                        })
+                .when(mMockExtensionService)
+                .connectPort(Mockito.any(), Mockito.any());
+
+        NativeMessageAndroidPort port = new NativeMessageAndroidPort();
+        TestPortObserver observer = new TestPortObserver();
+        port.setTestObserver(observer);
+
+        Assert.assertNull(connectToApp(port));
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertNotNull(capturedCallback[0]);
+
+        // Trigger timeout.
+        ShadowLooper.idleMainLooper(
+                NativeMessagingConnection.CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(
+                "Could not connect port to " + TARGET_PACKAGE + ".", observer.closedError);
+
+        // App responds late with onSuccess.
+        FakeNativeMessagePort latePort = new FakeNativeMessagePort(null);
+        capturedCallback[0].onSuccess(latePort);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The late remote port should be immediately disconnected.
+        Assert.assertTrue(latePort.isDisconnected);
+        // Closed error is unchanged.
+        Assert.assertEquals(
+                "Could not connect port to " + TARGET_PACKAGE + ".", observer.closedError);
+    }
+
+    // Test that if an app delivers a late onError after connectPort has timed out,
+    // it is ignored and does not overwrite the timeout error or call the observer again.
+    @Test
+    public void testLateOnErrorAfterTimeoutIsIgnored() throws Exception {
+        IConnectPortCallback[] capturedCallback = new IConnectPortCallback[1];
+        Mockito.doAnswer(
+                        invocation -> {
+                            capturedCallback[0] = invocation.getArgument(1);
+                            return null;
+                        })
+                .when(mMockExtensionService)
+                .connectPort(Mockito.any(), Mockito.any());
+
+        NativeMessageAndroidPort port = new NativeMessageAndroidPort();
+        int[] closeCallCount = new int[1];
+        port.setTestObserver(
+                new NativeMessageAndroidPort.TestObserver() {
+                    @Override
+                    public void onMessageFromApp(String message) {}
+
+                    @Override
+                    public void onChannelClosed(String errorMessage) {
+                        closeCallCount[0]++;
+                    }
+                });
+
+        Assert.assertNull(connectToApp(port));
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertNotNull(capturedCallback[0]);
+
+        // Trigger timeout.
+        ShadowLooper.idleMainLooper(
+                NativeMessagingConnection.CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(1, closeCallCount[0]);
+
+        // App responds late with onError.
+        capturedCallback[0].onError("late error");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Observer should not be notified a second time.
+        Assert.assertEquals(1, closeCallCount[0]);
     }
 }

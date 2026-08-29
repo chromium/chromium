@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -333,5 +334,94 @@ public class NativeMessagingConnectionTest {
 
         // Duplicate service was immediately closed.
         Mockito.verify(duplicateService).closeConnection();
+    }
+
+    @Test
+    public void testBindServiceTimeout() {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        Assert.assertTrue(connection.isBound());
+
+        NativeMessageAndroidPort port = new NativeMessageAndroidPort();
+        final String[] closedError = new String[1];
+        port.setTestObserver(
+                new NativeMessageAndroidPort.TestObserver() {
+                    @Override
+                    public void onMessageFromApp(String message) {}
+
+                    @Override
+                    public void onChannelClosed(String errorMessage) {
+                        closedError[0] = errorMessage;
+                    }
+                });
+        Assert.assertNull(connection.addPort(EXT_1, false, port));
+
+        // Advance time to trigger the timeout.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertFalse(connection.isBound());
+        Assert.assertEquals("Unable to connect to " + TARGET_PACKAGE + ".", closedError[0]);
+        Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+    }
+
+    @Test
+    public void testConnectExtensionTimeout() {
+        IBrowserNativeMessageService unresponsiveService =
+                new IBrowserNativeMessageService.Stub() {
+                    @Override
+                    public void connectExtension(
+                            String extensionId, Bundle info, IConnectExtensionCallback cb) {
+                        // Unresponsive: never invokes cb.onSuccess or cb.onError.
+                    }
+                };
+
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(unresponsiveService.asBinder());
+
+        NativeMessageAndroidPort port = new NativeMessageAndroidPort();
+        final String[] closedError = new String[1];
+        port.setTestObserver(
+                new NativeMessageAndroidPort.TestObserver() {
+                    @Override
+                    public void onMessageFromApp(String message) {}
+
+                    @Override
+                    public void onChannelClosed(String errorMessage) {
+                        closedError[0] = errorMessage;
+                    }
+                });
+
+        Assert.assertNull(connection.addPort(EXT_1, true, port));
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
+
+        // Advance time to trigger the connectExtension timeout.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Assert.assertEquals("Unable to connect to " + TARGET_PACKAGE + ".", closedError[0]);
+        Assert.assertFalse(connection.isBound());
+        Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+    }
+
+    @Test
+    public void testOnServiceConnectedAfterTimeoutDoesNotAssignService() {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        Assert.assertTrue(connection.isBound());
+
+        // Advance time to trigger the bind timeout.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertFalse(connection.isBound());
+        Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+        Assert.assertNull(connection.getServiceForTesting());
+
+        // Simulate onServiceConnected firing after timeout has unbound the connection.
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+
+        // It should no-op: mService remains null and connection remains unbound.
+        Assert.assertNull(connection.getServiceForTesting());
+        Assert.assertFalse(connection.isBound());
     }
 }
