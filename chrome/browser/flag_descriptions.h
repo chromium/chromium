@@ -1683,6 +1683,12 @@ inline constexpr char kContextualCueingV2Name[] = "Contextual cueing V2";
 inline constexpr char kContextualCueingV2Description[] =
     "Enables the contextual cueing system version 2.";
 
+inline constexpr char kContextualCueingV2MultiSourceName[] =
+    "Contextual cueing V2 multi-source";
+inline constexpr char kContextualCueingV2MultiSourceDescription[] =
+    "Enables parallel evaluation of all registered cue targets and selects the "
+    "winner with UCB scoring for contextual cueing V2.";
+
 inline constexpr char kGeicEnabledName[] = "GEiC enabled";
 inline constexpr char kGeicEnabledDescription[] =
     "Enables Gemini Enterprise in Chrome (GEiC) side panel integration.";

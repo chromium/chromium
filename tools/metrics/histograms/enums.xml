@@ -9930,6 +9930,7 @@ from previous Chrome versions.
   <int value="-1488744539" label="QuickUnlockFingerprint:enabled"/>
   <int value="-1488329159" label="ScreenAI:enabled"/>
   <int value="-1487243228" label="NewUsbBackend:disabled"/>
+  <int value="-1487054143" label="contextual-cueing-v2-multi-source:disabled"/>
   <int value="-1486897951"
       label="PasswordCompromiseWarningInDetailsCard:enabled"/>
   <int value="-1486731455"
@@ -14011,6 +14012,7 @@ from previous Chrome versions.
   <int value="-226715863" label="SHA1ServerSignature:enabled"/>
   <int value="-226542943"
       label="AutofillMoveLegalTermsAndIconForNewCardEnrollment:disabled"/>
+  <int value="-225965227" label="ContextualCueingV2MultiSource:disabled"/>
   <int value="-225552103" label="SearchInCCT:enabled"/>
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
@@ -17394,6 +17396,7 @@ from previous Chrome versions.
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
   <int value="825381037" label="NtpFeatureOptimizationModuleRemoval:disabled"/>
+  <int value="825582537" label="ContextualCueingV2MultiSource:enabled"/>
   <int value="826644834" label="NtpRealboxCr23ConsistentRowHeight:disabled"/>
   <int value="826748470" label="NtpCalendarModule:enabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
@@ -20251,6 +20254,7 @@ from previous Chrome versions.
   <int value="1713230497" label="ColorCorrectRendering:disabled"/>
   <int value="1713419708" label="ProjectorV2:disabled"/>
   <int value="1713509078" label="NewBaseUrlInheritanceBehavior:enabled"/>
+  <int value="1713787897" label="contextual-cueing-v2-multi-source:enabled"/>
   <int value="1713822664" label="WebXRHandInput:enabled"/>
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
   <int value="1714018180"

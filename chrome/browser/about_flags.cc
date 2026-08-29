@@ -10915,6 +10915,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_cueing::kContextualCueingV2,
                                     kContextualCueingV2Options,
                                     "ContextualCueingV2Options")},
+    {"contextual-cueing-v2-multi-source",
+     flag_descriptions::kContextualCueingV2MultiSourceName,
+     flag_descriptions::kContextualCueingV2MultiSourceDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_cueing::kContextualCueingV2MultiSource)},
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"partition-alloc-scheduler-loop-quarantine",
