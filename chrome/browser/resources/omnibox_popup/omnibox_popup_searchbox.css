@@ -326,7 +326,7 @@ omnibox-popup-contextual-entrypoint {
   inset-inline-start: 6px;
 }
 
-#composeButton[dynamic][has-user-input]::part(compose-icon) {
+:host(:not([aim-button-icon-only_])) #composeButton[dynamic][has-user-input]::part(compose-icon) {
   max-width: 0;
 }
 
@@ -362,6 +362,19 @@ omnibox-popup-contextual-entrypoint {
   /* Match width to height (24px) for a 1:1 circular icon button. */
   min-width: var(--cr-button-height);
   width: var(--cr-button-height);
+}
+
+:host([aim-button-icon-only_]) #composeButton::part(compose-icon) {
+  inset-inline-start: unset;
+  opacity: 1;
+  position: static;
+  scale: 1;
+  transform: none;
+  width: 15px;
+}
+
+:host([aim-button-icon-only_]) #composeButton::part(compose-icon-favicon) {
+  width: 16px;
 }
 
 :host([aim-button-icon-only_]) #composeButton::part(label),
