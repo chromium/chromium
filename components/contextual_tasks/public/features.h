@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_FEATURES_H_
 #define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_FEATURES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/contextual_tasks/public/host_override.h"
 
 namespace contextual_tasks {
 
@@ -376,10 +378,11 @@ extern bool ShouldShowExpandedSecurityChip();
 
 // Returns the host that all URLs loaded in the embedded page in the Contextual
 // Tasks WebUi should be routed to.
-extern std::string GetForcedEmbeddedPageHost();
+extern std::optional<HostOverride> GetForcedEmbeddedPageHost();
 
 // Allows overriding the embedded page host at runtime for debugging.
-extern void SetForcedEmbeddedPageHostOverride(const std::string& host);
+extern void SetForcedEmbeddedPageHostOverride(
+    std::optional<HostOverride> host_override);
 
 // Returns the domains for the sign in page.
 extern std::vector<std::string> GetContextualTasksSignInDomains();

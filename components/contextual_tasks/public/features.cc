@@ -20,9 +20,11 @@
 
 namespace {
 // Allow runtime override of the forced embedded page host.
-std::string& GetForcedEmbeddedPageHostOverrideString() {
-  static base::NoDestructor<std::string> override_string;
-  return *override_string;
+std::optional<contextual_tasks::HostOverride>&
+GetForcedEmbeddedPageHostOverride() {
+  static base::NoDestructor<std::optional<contextual_tasks::HostOverride>>
+      override_host;
+  return *override_host;
 }
 
 // Allows tests to override the conditions for having sticky conversation.
@@ -698,25 +700,34 @@ bool ShouldShowExpandedSecurityChip() {
   return kContextualTasksShowExpandedSecurityChip.Get();
 }
 
-std::string GetForcedEmbeddedPageHost() {
-  std::string host = !GetForcedEmbeddedPageHostOverrideString().empty()
-                         ? GetForcedEmbeddedPageHostOverrideString()
-                         : kContextualTasksForcedEmbeddedPageHost.Get();
+std::optional<HostOverride> GetForcedEmbeddedPageHost() {
+  std::optional<HostOverride> host_override =
+      GetForcedEmbeddedPageHostOverride().has_value()
+          ? GetForcedEmbeddedPageHostOverride()
+          : HostOverride::FromString(
+                kContextualTasksForcedEmbeddedPageHost.Get());
+
+  if (!host_override.has_value()) {
+    return std::nullopt;
+  }
 
   // If there's a non-empty host, ensure that it is only ever going to a
-  // google.com domain. If not, return the default empty string.
+  // google.com domain. If not, return std::nullopt.
   // LINT.IfChange(AllowedHosts)
-  if (!host.empty() && !(base::EndsWith(host, ".google.com") ||
-                         base::EndsWith(host, ".googlers.com"))) {
-    return kContextualTasksForcedEmbeddedPageHost.default_value;
+  const std::string& host = host_override->host;
+  if (!(base::EndsWith(host, ".google.com") ||
+        base::EndsWith(host, ".googlers.com") || host == "google.com" ||
+        host == "googlers.com")) {
+    return std::nullopt;
   }
-  // LINT.ThenChange(//depot/chromium/chrome/browser/resources/contextual_tasks/app.ts:AllowedHosts)
+  // LINT.ThenChange(//chrome/browser/resources/contextual_tasks/internals/app.ts:AllowedHosts)
 
-  return host;
+  return host_override;
 }
 
-void SetForcedEmbeddedPageHostOverride(const std::string& host) {
-  GetForcedEmbeddedPageHostOverrideString() = host;
+void SetForcedEmbeddedPageHostOverride(
+    std::optional<HostOverride> host_override) {
+  GetForcedEmbeddedPageHostOverride() = std::move(host_override);
 }
 
 std::vector<std::string> GetContextualTasksSignInDomains() {

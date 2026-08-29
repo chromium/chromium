@@ -90,20 +90,26 @@ void ContextualTasksInternalsPageHandler::GetRelevantContext(
 
 void ContextualTasksInternalsPageHandler::SetForcedEmbeddedPageHost(
     const GURL& host) {
-  // Extract just the host portion, e.g. "test.google.com" from the URL.
   // If the passed URL is empty/invalid, this clears the override.
-  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::string(host.host()));
+  if (!host.is_valid() || host.is_empty()) {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+    return;
+  }
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{std::string(host.host())});
 }
 
 void ContextualTasksInternalsPageHandler::GetForcedEmbeddedPageHost(
     GetForcedEmbeddedPageHostCallback callback) {
-  std::string host = contextual_tasks::GetForcedEmbeddedPageHost();
-  if (host.empty()) {
+  std::optional<contextual_tasks::HostOverride> host =
+      contextual_tasks::GetForcedEmbeddedPageHost();
+  if (!host.has_value()) {
     std::move(callback).Run(GURL());
   } else {
     // Wrap the string host into a valid URL so it can be passed via Mojo.
     std::move(callback).Run(GURL(base::StrCat(
-        {url::kHttpsScheme, url::kStandardSchemeSeparator, host})));
+        {url::kHttpsScheme, url::kStandardSchemeSeparator, host->ToString()})));
   }
 }
 

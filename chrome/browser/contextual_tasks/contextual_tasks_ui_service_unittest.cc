@@ -37,6 +37,7 @@
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/host_override.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_features.h"
@@ -539,7 +540,8 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
 TEST_F(ContextualTasksUiServiceTest, IsGoogleCaptchaUrl) {
   ON_CALL(*aim_eligibility_service_, IsAimHost(_, _))
       .WillByDefault(
-          [](const GURL& url, std::optional<std::string> host_override) {
+          [](const GURL& url,
+             std::optional<contextual_tasks::HostOverride> host_override) {
             return url.host().find(".google.com") != std::string::npos;
           });
 
@@ -2388,15 +2390,17 @@ TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
 
 TEST_F(ContextualTasksUiServiceTest, ForcedEmbeddedPageHostOverride) {
   // By default, there should be no override.
-  EXPECT_EQ("", contextual_tasks::GetForcedEmbeddedPageHost());
+  EXPECT_FALSE(contextual_tasks::GetForcedEmbeddedPageHost().has_value());
 
   // Set an override and verify it's returned.
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
-  EXPECT_EQ("test.google.com", contextual_tasks::GetForcedEmbeddedPageHost());
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"test.google.com"});
+  EXPECT_EQ((contextual_tasks::HostOverride{"test.google.com"}),
+            contextual_tasks::GetForcedEmbeddedPageHost());
 
   // Clearing the override should return to the default state.
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
-  EXPECT_EQ("", contextual_tasks::GetForcedEmbeddedPageHost());
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  EXPECT_FALSE(contextual_tasks::GetForcedEmbeddedPageHost().has_value());
 }
 
 TEST_F(ContextualTasksUiServiceTest,
@@ -2404,7 +2408,8 @@ TEST_F(ContextualTasksUiServiceTest,
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"test.google.com"});
 
   GURL url("https://www.google.com/search?q=test");
   GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
@@ -2418,7 +2423,7 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(new_url, "q", &q_val));
   EXPECT_EQ("test", q_val);
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
 }
 
 TEST_F(ContextualTasksUiServiceTest,
@@ -2426,7 +2431,8 @@ TEST_F(ContextualTasksUiServiceTest,
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"test.google.com"});
 
   GURL signin_url("https://login.corp.google.com/signin");
   GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
@@ -2434,7 +2440,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_EQ("login.corp.google.com", new_url.host());
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
 }
 
 TEST_F(ContextualTasksUiServiceTest,
@@ -2442,7 +2448,8 @@ TEST_F(ContextualTasksUiServiceTest,
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"test.google.com"});
 
   GURL webui_url("chrome://contextual-tasks/?chrome_task_id=123");
   GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
@@ -2450,7 +2457,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_EQ(webui_url, new_url);
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
 }
 
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {

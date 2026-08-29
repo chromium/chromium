@@ -719,8 +719,9 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set("isSmallDeviceFormFactor",
            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE);
 
+  auto forced_host = contextual_tasks::GetForcedEmbeddedPageHost();
   dict.Set("forcedEmbeddedPageHost",
-           contextual_tasks::GetForcedEmbeddedPageHost());
+           forced_host ? forced_host->ToString() : "");
   dict.Set("contextualTasksSignInDomains",
            base::JoinString(contextual_tasks::GetContextualTasksSignInDomains(),
                             ","));

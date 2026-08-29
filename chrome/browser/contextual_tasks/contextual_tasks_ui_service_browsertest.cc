@@ -28,6 +28,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/host_override.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -873,7 +874,8 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* panel_contents = controller->GetActiveWebContents();
   ASSERT_TRUE(panel_contents);
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"test.google.com"});
 
   GURL url("https://www.google.com/search?q=host_test&gsc=2&hl=en&cs=0");
   content::OpenURLParams params(url, content::Referrer(),
@@ -896,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(
     return entry && entry->GetURL().host() == "test.google.com";
   }));
 
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
 }
 
 }  // namespace contextual_tasks

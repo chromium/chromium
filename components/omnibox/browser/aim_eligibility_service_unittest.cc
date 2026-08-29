@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/host_override.h"
 #include "components/country_codes/country_codes.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/testing_pref_service.h"
@@ -242,7 +243,8 @@ TEST_F(AimEligibilityServiceTest, IsAimUrl) {
 
   // Check that the host override works correctly
   EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(
-      GURL("https://goo.gl/feature?a=1&b=2"), "goo.gl"));
+      GURL("https://goo.gl/feature?a=1&b=2"),
+      contextual_tasks::HostOverride::FromString("goo.gl")));
 }
 
 TEST_F(AimEligibilityServiceTest, IsAimUrl_HostWildcard) {

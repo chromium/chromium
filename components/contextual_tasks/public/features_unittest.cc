@@ -5,12 +5,13 @@
 #include "components/contextual_tasks/public/features.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/contextual_tasks/public/host_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace contextual_tasks {
 
 TEST(FeaturesTest, ForcedEmbeddedPageHost_NoOverride) {
-  ASSERT_EQ("", GetForcedEmbeddedPageHost());
+  EXPECT_EQ(std::nullopt, GetForcedEmbeddedPageHost());
 }
 
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToGoogleHost) {
@@ -19,7 +20,7 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToGoogleHost) {
       kContextualTasks,
       {{"contextual-tasks-forced-embedded-page-host", "corp.google.com"}});
 
-  ASSERT_EQ("corp.google.com", GetForcedEmbeddedPageHost());
+  EXPECT_EQ((HostOverride{"corp.google.com"}), GetForcedEmbeddedPageHost());
 }
 
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost) {
@@ -28,7 +29,7 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost) {
       kContextualTasks,
       {{"contextual-tasks-forced-embedded-page-host", "example.com"}});
 
-  ASSERT_EQ("", GetForcedEmbeddedPageHost());
+  EXPECT_EQ(std::nullopt, GetForcedEmbeddedPageHost());
 }
 
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost_BadSuffix) {
@@ -37,7 +38,7 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost_BadSuffix) {
       kContextualTasks,
       {{"contextual-tasks-forced-embedded-page-host", "corpgoogle.com"}});
 
-  ASSERT_EQ("", GetForcedEmbeddedPageHost());
+  EXPECT_EQ(std::nullopt, GetForcedEmbeddedPageHost());
 }
 
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost_Subdomain) {
@@ -46,7 +47,16 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost_Subdomain) {
       kContextualTasks, {{"contextual-tasks-forced-embedded-page-host",
                           "google.com.example.com"}});
 
-  ASSERT_EQ("", GetForcedEmbeddedPageHost());
+  EXPECT_EQ(std::nullopt, GetForcedEmbeddedPageHost());
+}
+
+TEST(FeaturesTest, ForcedEmbeddedPageHost_SetOverrideRuntime) {
+  SetForcedEmbeddedPageHostOverride(HostOverride{"localhost.corp.google.com"});
+  EXPECT_EQ((HostOverride{"localhost.corp.google.com"}),
+            GetForcedEmbeddedPageHost());
+
+  SetForcedEmbeddedPageHostOverride(std::nullopt);
+  EXPECT_EQ(std::nullopt, GetForcedEmbeddedPageHost());
 }
 
 }  // namespace contextual_tasks

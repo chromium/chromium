@@ -63,6 +63,7 @@
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/host_override.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -312,7 +313,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
 
     ON_CALL(*mock, IsAimUrl(_, _))
         .WillByDefault(
-            [](const GURL& url, std::optional<std::string> host_override) {
+            [](const GURL& url,
+               std::optional<contextual_tasks::HostOverride> host_override) {
               return url.host().find(kMockAimPageHost) != std::string::npos;
             });
 

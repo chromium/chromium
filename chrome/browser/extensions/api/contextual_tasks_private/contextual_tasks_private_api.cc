@@ -169,16 +169,17 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
 
   // Determine the target host: use the forced embedded page host if set;
   // otherwise, default to the host/origin of the one the request came from.
-  std::string host = contextual_tasks::GetForcedEmbeddedPageHost();
-  if (host.empty()) {
-    host = rfh->GetLastCommittedURL().host();
-  }
+  std::optional<contextual_tasks::HostOverride> forced_host =
+      contextual_tasks::GetForcedEmbeddedPageHost();
+  contextual_tasks::HostOverride target_host =
+      forced_host.value_or(contextual_tasks::HostOverride{
+          std::string(rfh->GetLastCommittedURL().host())});
 
   GURL default_ai_url = ui_service->GetDefaultAiPageUrl();
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kHttpsScheme);
-  replacements.SetHostStr(host);
-  GURL base_aim_url = default_ai_url.ReplaceComponents(replacements);
+  GURL base_aim_url =
+      target_host.ApplyToUrl(default_ai_url.ReplaceComponents(replacements));
 
   GURL aim_url = AppendAimUrlParams(base_aim_url, params->details.aim_params);
   aim_url = contextual_tasks::AppendAimEntryPointParams(

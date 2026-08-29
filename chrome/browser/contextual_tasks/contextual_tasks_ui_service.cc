@@ -1405,13 +1405,11 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges(
   }
 
   // Check if host override is set and needs to be applied.
-  std::string forced_host = GetForcedEmbeddedPageHost();
-  if (!forced_host.empty() &&
-      !base::EqualsCaseInsensitiveASCII(url.host(), forced_host) &&
-      !IsSignInDomain(url)) {
+  std::optional<HostOverride> forced_host = GetForcedEmbeddedPageHost();
+  if (forced_host && !forced_host->Matches(url) && !IsSignInDomain(url)) {
     OMNIBOX_LOG("nav_trace")
         << "ShouldAddRequiredSidePanelUrlChanges: host mismatch: "
-        << std::string(url.host()) << " vs forced " << forced_host;
+        << std::string(url.host()) << " vs forced " << forced_host->ToString();
     return true;
   }
 
@@ -1500,11 +1498,9 @@ GURL ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
     }
   }
 
-  std::string forced_host = GetForcedEmbeddedPageHost();
-  if (!forced_host.empty() && !IsSignInDomain(new_url)) {
-    GURL::Replacements replacements;
-    replacements.SetHostStr(forced_host);
-    new_url = new_url.ReplaceComponents(replacements);
+  std::optional<HostOverride> forced_host = GetForcedEmbeddedPageHost();
+  if (forced_host && !IsSignInDomain(new_url)) {
+    new_url = forced_host->ApplyToUrl(new_url);
   }
 
   return new_url;
@@ -2553,9 +2549,9 @@ std::string ContextualTasksUiService::GetHostForTask(
     }
   }
 
-  std::string forced_host = GetForcedEmbeddedPageHost();
-  if (!forced_host.empty()) {
-    return forced_host;
+  std::optional<HostOverride> forced_host = GetForcedEmbeddedPageHost();
+  if (forced_host.has_value()) {
+    return forced_host->ToString();
   }
 
   return "";
@@ -2634,21 +2630,31 @@ bool ContextualTasksUiService::IsTrustedHost(const std::string& host) {
 
 std::optional<std::string> ContextualTasksUiService::GetHostFromUrl(
     const GURL& url) {
-  std::string host;
-  if (net::GetValueForKeyInQuery(url, kChromeHostParam, &host) &&
-      IsTrustedHost(host)) {
-    if (host == "[::1]" || host == "::1") {
-      return "[::1]";
-    }
-    url::CanonHostInfo host_info;
-    std::string canonical_host = net::CanonicalizeHost(host, &host_info);
-    if (!canonical_host.empty() &&
-        host_info.family != url::CanonHostInfo::BROKEN) {
-      return canonical_host;
-    }
-    return host;
+  std::string host_str;
+  if (!net::GetValueForKeyInQuery(url, kChromeHostParam, &host_str) ||
+      !IsTrustedHost(host_str)) {
+    return std::nullopt;
   }
-  return std::nullopt;
+
+  std::optional<HostOverride> host_override =
+      HostOverride::FromString(host_str);
+  if (!host_override) {
+    return std::nullopt;
+  }
+
+  if (host_override->host == "[::1]" || host_override->host == "::1") {
+    host_override->host = "::1";
+    return host_override->ToString();
+  }
+
+  url::CanonHostInfo host_info;
+  std::string canonical_host =
+      net::CanonicalizeHost(host_override->host, &host_info);
+  if (!canonical_host.empty() &&
+      host_info.family != url::CanonHostInfo::BROKEN) {
+    host_override->host = canonical_host;
+  }
+  return host_override->ToString();
 }
 
 void ContextualTasksUiService::SetInitialEntryPointForTask(
@@ -3245,9 +3251,11 @@ GURL ContextualTasksUiService::GetAiUrlFromWebUIUrl(const GURL& base_url,
 
   std::optional<std::string> host_value = GetHostFromUrl(url);
   if (host_value.has_value()) {
-    GURL::Replacements replacements;
-    replacements.SetHostStr(*host_value);
-    url = url.ReplaceComponents(replacements);
+    std::optional<HostOverride> host_override =
+        HostOverride::FromString(*host_value);
+    if (host_override) {
+      url = host_override->ApplyToUrl(url);
+    }
   }
 
   // Remove kChromeHostParam from the new url if it exists.
