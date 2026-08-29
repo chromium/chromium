@@ -536,3 +536,22 @@ source_set("tab_strip_impl") {
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
+
+source_set("new_tab_button") {
+  sources = [
+    "new_tab_button.cc",
+    "new_tab_button.h",
+  ]
+
+  deps = [
+    ":new_tab_button_menu_model",
+    ":tab_strip",
+    ":tab_strip_button",
+    "//base",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//ui/base:features",
+    "//ui/views",
+  ]
+}
