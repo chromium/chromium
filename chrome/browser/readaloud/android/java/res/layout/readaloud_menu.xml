@@ -25,13 +25,13 @@ found in the LICENSE file.
         android:orientation="horizontal">
         <ImageView
             android:id="@+id/readaloud_menu_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
             android:layout_gravity="center_vertical"
-            android:padding="12dp"
             android:src="@drawable/ic_arrow_back_24dp"
-            android:clickable="true"
             android:focusable="true"
+            android:background="@drawable/default_icon_background"
+            android:scaleType="center"
             android:contentDescription="@string/readaloud_menu_back"/>
         <TextView
             android:id="@+id/readaloud_menu_title"

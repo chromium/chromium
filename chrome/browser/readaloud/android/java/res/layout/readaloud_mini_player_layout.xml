@@ -52,8 +52,8 @@ found in the LICENSE file.
                 <ProgressBar
                     android:id="@+id/readaloud_spinner"
                     style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="@dimen/readaloud_mini_player_play_button_diameter"
-                    android:layout_height="@dimen/readaloud_mini_player_play_button_diameter"
+                    android:layout_width="@dimen/button_size"
+                    android:layout_height="@dimen/button_size"
                     android:layout_marginVertical="@dimen/readaloud_mini_player_play_button_margin_vertical"
                     android:layout_marginEnd="@dimen/readaloud_mini_player_play_button_margin_end"/>
 
@@ -125,14 +125,14 @@ found in the LICENSE file.
                 <!-- Play/pause button -->
                 <ImageView
                     android:id="@+id/play_button"
-                    android:layout_width="@dimen/readaloud_mini_player_play_button_diameter"
-                    android:layout_height="@dimen/readaloud_mini_player_play_button_diameter"
+                    android:layout_width="@dimen/button_size"
+                    android:layout_height="@dimen/button_size"
                     android:layout_marginVertical="@dimen/readaloud_mini_player_play_button_margin_vertical"
                     android:layout_marginEnd="@dimen/readaloud_mini_player_play_button_margin_end"
                     android:src="@drawable/mini_play_button"
-                    android:clickable="true"
                     android:focusable="true"
-                    android:background="@drawable/rounded_ripple"
+                    android:background="@drawable/default_icon_background"
+                    android:scaleType="center"
                     android:contentDescription="@string/readaloud_play"/>
 
                 <!-- Title and publisher -->
@@ -170,6 +170,7 @@ found in the LICENSE file.
                 android:contentDescription="@string/readaloud_close_player_button_content_description"
                 android:layout_width="@dimen/button_size"
                 android:layout_height="@dimen/button_size"
+                android:focusable="true"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/default_icon_background"

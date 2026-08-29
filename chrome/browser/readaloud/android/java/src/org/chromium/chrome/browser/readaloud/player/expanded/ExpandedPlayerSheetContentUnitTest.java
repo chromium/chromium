@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -333,6 +334,21 @@ public class ExpandedPlayerSheetContentUnitTest {
 
         assertTrue(mErrorLayout.getVisibility() == View.GONE);
         assertTrue(mLoadingLayout.getVisibility() == View.VISIBLE);
+    }
+
+    @Test
+    public void testInitialViewStates() {
+        TextView loadingText = mContentView.findViewById(R.id.readaloud_loading_text);
+        assertEquals(View.GONE, mLoadingLayout.getVisibility());
+        assertEquals(View.GONE, loadingText.getVisibility());
+        assertEquals(View.VISIBLE, mNormalLayout.getVisibility());
+
+        assertTrue(mSeekbar.isFocusable());
+        assertFalse(mSeekbar.getDefaultFocusHighlightEnabled());
+
+        assertTrue(mPublisherContainerView.isFocusable());
+        mContent.setInteractionHandler(mInteractionHandler);
+        assertTrue(mPublisherContainerView.isClickable());
     }
 
     @Test

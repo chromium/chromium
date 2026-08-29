@@ -5,13 +5,50 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
+    <!-- Layer 0: Background Fill (Hovered/Pressed states) -->
+    <item
+        android:width="@dimen/large_icon_background_size"
+        android:height="@dimen/large_icon_background_size"
+        android:gravity="center">
+        <selector>
+            <item android:state_pressed="true">
+                <shape android:shape="oval">
+                    <solid android:color="@color/color_on_surface_with_alpha_12" />
+                </shape>
+            </item>
+            <item android:state_hovered="true">
+                <shape android:shape="oval">
+                    <solid android:color="@color/color_on_surface_with_alpha_8" />
+                </shape>
+            </item>
+            <item android:drawable="@android:color/transparent" />
+        </selector>
+    </item>
+
+    <!-- Layer 1: Focus Ring (Drawn on top if focused) -->
+    <item
+        android:width="@dimen/large_icon_background_size"
+        android:height="@dimen/large_icon_background_size"
+        android:gravity="center">
+        <selector>
+            <item android:state_focused="true">
+                <shape android:shape="oval">
+                    <solid android:color="@android:color/transparent" />
+                    <stroke
+                        android:color="@macro/default_control_color_active"
+                        android:width="@dimen/focused_outline_stroke_width" />
+                </shape>
+            </item>
+            <item android:drawable="@android:color/transparent" />
+        </selector>
+    </item>
+    <item
+        android:width="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_width"
+        android:height="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_height"
+        android:gravity="center">
         <shape android:shape="rectangle">
             <solid android:color="@macro/default_icon_color"/>
-            <size
-                android:width="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_width"
-                android:height="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_height"/>
-            <corners android:radius="8dp" />
+            <corners android:radius="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_corner_radius" />
         </shape>
     </item>
 </layer-list>

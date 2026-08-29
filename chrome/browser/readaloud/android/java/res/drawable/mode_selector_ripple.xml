@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item
+        android:id="@android:id/mask"
+        android:left=
+            "@dimen/readaloud_playback_mode_selector_mask_inset"
+        android:top=
+            "@dimen/readaloud_playback_mode_selector_mask_inset"
+        android:right=
+            "@dimen/readaloud_playback_mode_selector_mask_inset"
+        android:bottom=
+            "@dimen/readaloud_playback_mode_selector_mask_inset">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/black" />
+            <corners
+                android:radius=
+                    "@dimen/readaloud_playback_mode_selector_corner_radius" />
+        </shape>
+    </item>
+    <item>
+        <selector>
+            <item
+                android:state_focused="true"
+                android:left=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset"
+                android:top=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset"
+                android:right=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset"
+                android:bottom=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset">
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/transparent" />
+                    <stroke
+                        android:color="@macro/default_control_color_active"
+                        android:width="@dimen/focused_outline_stroke_width" />
+                    <corners
+                        android:radius=
+                            "@dimen/readaloud_playback_mode_selector_focus_ring_corner_radius" />
+                </shape>
+            </item>
+            <item
+                android:state_hovered="true"
+                android:left=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset"
+                android:top=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset"
+                android:right=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset"
+                android:bottom=
+                    "@dimen/readaloud_playback_mode_selector_focus_ring_inset">
+                <shape android:shape="rectangle">
+                    <solid
+                        android:color="@color/color_on_surface_with_alpha_8" />
+                    <corners
+                        android:radius=
+                            "@dimen/readaloud_playback_mode_selector_focus_ring_corner_radius" />
+                </shape>
+            </item>
+            <item android:drawable="@android:color/transparent" />
+        </selector>
+    </item>
+</ripple>

@@ -659,7 +659,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             errorParams.height =
                     mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.error_layour_portrait_height);
+                            .getDimensionPixelSize(R.dimen.error_layout_portrait_height);
             bottomPadding =
                     mContext.getResources()
                             .getDimensionPixelSize(R.dimen.readaloud_controls_portrait_padding);
@@ -671,7 +671,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
             errorParams.height =
                     mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.error_layour_landscape_height);
+                            .getDimensionPixelSize(R.dimen.error_layout_landscape_height);
             topMargin =
                     mContext.getResources()
                             .getDimensionPixelSize(R.dimen.readaloud_now_playing_spacing_landscape);
