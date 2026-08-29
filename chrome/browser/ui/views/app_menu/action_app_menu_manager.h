@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
@@ -30,6 +29,7 @@ class ActionAppMenuManager {
     kBlock,
     kFooter,
     kDivider,
+    kSection,
     kCustom,
   };
 
@@ -45,9 +45,12 @@ class ActionAppMenuManager {
       std::optional<std::u16string> text_override = std::nullopt,
       std::optional<ui::ImageModel> icon_override = std::nullopt);
 
-  static std::unique_ptr<AppMenuSectionActionItem> CreateSectionActionItem(
-      std::u16string text,
+  static std::unique_ptr<actions::ActionItem> CreateSectionActionItem(
       DisplayType display_type,
+      std::optional<ui::ColorId> container_color = std::nullopt);
+
+  static std::unique_ptr<actions::ActionItem> CreateSectionHeaderActionItem(
+      std::u16string text,
       std::optional<ui::ColorId> container_color = std::nullopt);
 
   static std::unique_ptr<actions::ActionItem> CreateDividerActionItem();

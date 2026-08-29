@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
@@ -148,25 +147,17 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       continue;
     }
 
-    // Handle footer-style entry type.
-    if (child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey) ==
-        ActionAppMenuManager::DisplayType::kFooter) {
+    const ActionAppMenuManager::DisplayType display_type =
+        child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey);
+
+    if (display_type == ActionAppMenuManager::DisplayType::kFooter) {
       PopulateFooter(view_parent, child_ptr);
-      continue;
-    }
-
-    // Handle block-style entry type (creation of action buttons row).
-    if (child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey) ==
-        ActionAppMenuManager::DisplayType::kBlock) {
+    } else if (display_type == ActionAppMenuManager::DisplayType::kBlock) {
       PopulateBlockMenuItem(view_parent, child_ptr);
-      continue;
-    }
-
-    if (child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey) ==
-        ActionAppMenuManager::DisplayType::kDivider) {
+    } else if (display_type == ActionAppMenuManager::DisplayType::kDivider) {
       view_parent->AppendSeparator();
-    } else if (actions::IsActionClass<AppMenuSectionActionItem>(child_ptr)) {
-      views::MenuItemView* const section_header_menu_item =
+    } else if (display_type == ActionAppMenuManager::DisplayType::kSection) {
+      auto* section_header_menu_item =
           view_parent->AppendTitle(std::u16string(child_ptr->GetText()));
       ConfigureSectionHeader(section_header_menu_item);
       // Recursively call using the same parent to keep the children in

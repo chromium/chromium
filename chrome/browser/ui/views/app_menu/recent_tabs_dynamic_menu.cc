@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -149,8 +148,8 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
   for (const auto& recent_tab : recent_tabs) {
     std::unique_ptr<actions::BaseAction> action_item;
     if (recent_tab.type() == RecentTabItem::Type::kHeader) {
-      action_item =
-          std::make_unique<AppMenuSectionActionItem>(recent_tab.title());
+      action_item = ActionAppMenuManager::CreateSectionHeaderActionItem(
+          recent_tab.title());
     } else {
       if (recent_tab.action_id().has_value()) {
         action_item = ActionAppMenuManager::CreateIndirectActionItem(
