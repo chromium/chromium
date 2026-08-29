@@ -446,7 +446,9 @@ DecoderTextureState::DecoderTextureState(
       unpack_overlapping_rows_separately_unpack_buffer(
           workarounds.unpack_overlapping_rows_separately_unpack_buffer),
       split_level_0_pbo_full_sub_image_2d(
-          workarounds.split_level_0_pbo_full_sub_image_2d) {}
+          workarounds.split_level_0_pbo_full_sub_image_2d),
+      upload_oversized_mip_levels_via_unpack_buffer(
+          workarounds.upload_oversized_mip_levels_via_unpack_buffer) {}
 
 TextureManager::DestructionObserver::DestructionObserver() = default;
 
@@ -3436,12 +3438,58 @@ void TextureManager::DoTexImage(DecoderTextureState* texture_state,
                    AdjustTexFormat(feature_info_.get(), args.format), args.type,
                    args.pixels);
     } else {
-      glTexImage2D(args.target, args.level,
-                   AdjustTexInternalFormat(feature_info_.get(),
-                                           args.internal_format, args.type),
-                   args.width, args.height, args.border,
-                   AdjustTexFormat(feature_info_.get(), args.format), args.type,
-                   args.pixels);
+      bool handled = false;
+      if (texture_state->upload_oversized_mip_levels_via_unpack_buffer &&
+          args.target == GL_TEXTURE_2D && args.level > 0 &&
+          !unpack_buffer_bound &&
+          !(GLES2Util::GetChannelsForFormat(args.format) &
+            (GLES2Util::kDepth | GLES2Util::kStencil))) {
+        GLsizei level0_width = 0;
+        GLsizei level0_height = 0;
+        GLsizei level0_depth = 0;
+        if (texture->GetLevelSize(args.target, 0, &level0_width, &level0_height,
+                                  &level0_depth) &&
+            level0_width > 0 && level0_height > 0) {
+          const int slot_w = std::max(
+              1, static_cast<int>(
+                     std::bit_ceil(static_cast<uint32_t>(level0_width))) >>
+                     args.level);
+          const int slot_h = std::max(
+              1, static_cast<int>(
+                     std::bit_ceil(static_cast<uint32_t>(level0_height))) >>
+                     args.level);
+          if (args.width > slot_w || args.height > slot_h) {
+            GLuint scratch = 0;
+            glGenBuffersARB(1, &scratch);
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, scratch);
+            // Regardless of whether the user supplied data
+            // (args.pixels != nullptr), the pixel unpack buffer must
+            // be allocated with the expected amount of data.
+            if (args.pixels_size > 0) {
+              glBufferData(GL_PIXEL_UNPACK_BUFFER, args.pixels_size,
+                           args.pixels, GL_STREAM_DRAW);
+            }
+            glTexImage2D(
+                args.target, args.level,
+                AdjustTexInternalFormat(feature_info_.get(),
+                                        args.internal_format, args.type),
+                args.width, args.height, args.border,
+                AdjustTexFormat(feature_info_.get(), args.format), args.type,
+                nullptr);
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+            glDeleteBuffersARB(1, &scratch);
+            handled = true;
+          }
+        }
+      }
+      if (!handled) {
+        glTexImage2D(args.target, args.level,
+                     AdjustTexInternalFormat(feature_info_.get(),
+                                             args.internal_format, args.type),
+                     args.width, args.height, args.border,
+                     AdjustTexFormat(feature_info_.get(), args.format),
+                     args.type, args.pixels);
+      }
     }
   }
   GLenum error = ERRORSTATE_PEEK_GL_ERROR(error_state, function_name);
