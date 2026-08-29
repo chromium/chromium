@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">İpucu bildirimleri tanıtımı kapatıldı</translation>
 <translation id="1036348656032585052">Kapat</translation>
 <translation id="1045899828449635435">Ayrıca veriler bu sitelerden de silinsin mi?</translation>
+<translation id="1049461303780085993">Yanıtlar, önemli noktalar ve daha fazlası için Chrome'da Gemini'ı deneyin.</translation>
 <translation id="1049743911850919806">Gizli mod</translation>
 <translation id="1052842760770519282">Bazı şifrelerinize erişilemiyor</translation>
 <translation id="1057623954802068161">Sayfanın üst tarafına git</translation>
@@ -1117,6 +1118,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5465437530117042974">Sekme alt sayfası değişiklikleri kapatıldı.</translation>
 <translation id="5469852975082458401">Sayfalarda metin imleciyle gezinebilirsiniz. Kapatmak için F7'ye basın.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> sekmesi taşınamıyor</translation>
+<translation id="5478718673237429220">İnsan arabirim cihazına erişim gerekiyor</translation>
 <translation id="548278423535722844">Haritalar uygulamasında aç</translation>
 <translation id="5489222148748465285">Chrome aramaya devam etsin mi?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, Birden Çok Seçili Pencere İçinde Pencere Sekmesi</translation>
@@ -1964,6 +1966,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="867914734596684889">Yer işaretleri çubuğunu göster veya gizle</translation>
 <translation id="8683039184091909753">resim</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Seçili sekme</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> uygulamasının bu sitede insan arabirim cihazlarına (HID) erişmesi için izin gerekiyor. Bu ayarı daha sonra Ayarlar &gt; Uygulamalar &gt; Özel uygulama erişimi bölümünden değiştirebilirsiniz.</translation>
 <translation id="8696297579102085705">Cihazıma gönder</translation>
 <translation id="8699120352855309748">Şu dilleri çevirmeyi önerme</translation>
 <translation id="8700565880437506364">Chrome'da Gemini ile tanışın</translation>

@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">删除群组</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个闲置标签页}other{<ph name="TABS_COUNT_MANY" /> 个闲置标签页}}</translation>
 <translation id="1568067597247500137">将单个网站静音</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{下移标签页}other{下移标签页}}</translation>
 <translation id="1645759014353344461">已将 <ph name="TABS_COUNT_MANY" /> 个标签页合为一组</translation>
 <translation id="1657719826150349398">下移标签页</translation>
 <translation id="1670942869417022142">音频已静音</translation>
 <translation id="1697284962337958118">添加到</translation>
 <translation id="1713541401465507417">关闭所有标签页和分组</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> 个标签页分组已不可用}other{<ph name="TAB_GROUPS_COUNT_MANY" /> 个标签页分组已不可用}}</translation>
+<translation id="1759122978835002237">上移标签页分组</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">已将 <ph name="TABS_COUNT_ONE" /> 个标签页合为一组</translation>
 <translation id="1844381456014878100">闲置 7 天后</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开已关闭的无痕式标签页。}other{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开您已关闭的 # 个无痕式标签页。}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{将网站取消静音}other{将网站取消静音}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
+<translation id="2164232689984783657">下移标签页分组</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{将标签页取消分组}other{将标签页取消分组}}</translation>
 <translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2277224997687551299">修改组名称</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">“<ph name="TAB_GROUP_NAME" />”标签页分组已不可用</translation>
 <translation id="7402375256128852434">添加近期打开的标签页</translation>
 <translation id="7452985128687107478">标签页分组会自动保存并在您的所有设备上更新</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{上移标签页}other{上移标签页}}</translation>
 <translation id="747459581954555080">全部恢复</translation>
 <translation id="7489558427602531799">将标签页分组右移</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 项}other{<ph name="TABS_COUNT_MANY" /> 项}}</translation>

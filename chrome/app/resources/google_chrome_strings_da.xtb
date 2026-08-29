@@ -86,7 +86,6 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome anbefaler, at du sætter den fane, der gør din browser langsom, på pause}one{Chrome anbefaler, at du sætter den fane, der gør din browser langsom, på pause}other{Chrome anbefaler, at du sætter de faner, der gør din browser langsom, på pause}}</translation>
 <translation id="1832046143430087831">Gør websites hurtigere ved hjælp af Chromes V8-maskine, men gør Chrome en smule mindre modstandsdygtig over for angreb. Denne indstilling er deaktiveret.</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
-<translation id="1842869163383855194">Nem adgang til Søg i Chrome på din enhed, selvom Chrome er minimeret.</translation>
 <translation id="1843347690926158494">Søg på denne fane med Google Lens</translation>
 <translation id="1849248141818021764">Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Brug Chrome-appen til at browse videre på farten</translation>
@@ -326,7 +325,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="4173512894976930765">Websites fungerer sandsynligvis som forventet. Du logges ud af de fleste websites, når du lukker alle Chrome-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chrome.</translation>
 <translation id="4175922240926474352">Chrome har blokeret denne download, fordi websitet ikke anvender en sikker forbindelse, og der kan være blevet manipuleret med filen</translation>
 <translation id="4191857738314598978">{0,plural, =1{Genstart Chrome inden for én dag}one{Genstart Chrome inden for # dag}other{Genstart Chrome inden for # dage}}</translation>
-<translation id="4222394563269716113">Åbn Søg i Chrome med en tastaturgenvej.</translation>
 <translation id="4222932583846282852">Annullerer…</translation>
 <translation id="4224210481850767180">Installationen er blevet annulleret.</translation>
 <translation id="4242034826641750751">Chrome skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
@@ -352,7 +350,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4434353761996769206">Installationsfejl: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Del dette dokument med Gemini i Chrome for at få en hurtig oversigt og stille opfølgende spørgsmål</translation>
-<translation id="4447327682081576371">Vis Søg i Chrome på Mac-menulinjen, og aktivér tastaturgenvejen</translation>
 <translation id="4450664632294415862">Chrome – Login på netværk – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En anden handling i Google Chrome er i gang. Prøv igen senere.</translation>
 <translation id="4493028449971051158">Opstartsfejl: Kør installationsprogrammet som administrator.</translation>
@@ -376,6 +373,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="475321580758063259">Opdater Chrome for at fortsætte med at bruge Chrome-dataene på din Google-konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Gør websites hurtigere ved hjælp af Chromes V8-maskine, men gør Chrome en smule mindre modstandsdygtig over for angreb</translation>
+<translation id="4768676935374695498">Søg i denne video med Google Lens</translation>
 <translation id="479167709087336770">Dette anvender den samme stavekontrol, som anvendes i Google Søgning. Tekst, som du angiver i browseren, sendes til Google. Du kan altid ændre denne adfærd i indstillingerne.</translation>
 <translation id="4793679854893018356">Se, hvordan Chrome beskytter dig</translation>
 <translation id="4799870290441980300">Aktiverer yderligere funktioner for at levere Chromes stærkeste beskyttelse</translation>
@@ -438,7 +436,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5402307365844630024">Slå Gemini i Chrome Beta til/fra</translation>
 <translation id="541844421954567481">Tag dine adgangskoder, faner m.m. med på farten med Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Din præferencefil er beskadiget eller ugyldig. Google Chrome kan ikke gendanne dine præferencer.</translation>
-<translation id="545114101312117217">Nem adgang til dine genveje via Søg i Chrome</translation>
 <translation id="5465210843490471889">Vælg en Chrome-profil, hvor du vil bruge <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome åbnes nu, når Windows starter, så du kan begynde at browse med det samme. Du kan deaktivere dette i indstillingerne.</translation>
 <translation id="5486346529181556467">Vær med til at forbedre onlinesikkerheden for alle ved at rapportere et website, du mener er skadeligt. Få flere oplysninger om <ph name="BEGIN_LINK" />Googles politik vedrørende usikre websites<ph name="END_LINK" />.</translation>
@@ -514,7 +511,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6166185671393271715">Importér adgangskoder til Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
-<translation id="6177442314419606057">Søg i Chrome</translation>
 <translation id="6180522807229584611">Denne fane bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chrome tilladelse til at gøre den inaktiv.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
 <translation id="6192058120268468905">Din konto i Chrome</translation>
@@ -722,7 +718,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8074398340364918139">Hvis du vil søge efter en bestemt Chrome-funktion eller -udvidelse, skal du angive genvejen til den i adresselinjen efterfulgt af din valgte tastaturtast</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen mislykkedes, fordi din computer ikke opfylder minimumskravene til hardware.</translation>
-<translation id="8093772166980702367">Vis Søg i Chrome i systembakken, og aktivér tastaturgenvejen</translation>
 <translation id="8110438089258398864">Du kan genåbne AI-tilstand i Google Søgning for at stille spørgsmål, mens du browser</translation>
 <translation id="8113883687556086139">Verificer din identitet for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Tilpasser Chrome…</translation>
@@ -766,10 +761,12 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="848851325211467878">Logget ind som <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-medlemskab. Åbn kontomenuen</translation>
 <translation id="8496177819998570653">Google Adgangs­kode­admin­istrator</translation>
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
+<translation id="8502181052659370">Søg på denne fane med Google Lens</translation>
 <translation id="8521348052903287641">Indgående regel for udviklerversionen af Chrome om at tillade mDNS-trafik.</translation>
 <translation id="852529348814672339">Vis Chrome på dette sprog</translation>
 <translation id="8525579356836940628">Installationen blev afbrudt</translation>
 <translation id="8533056045953418157">Angiv Google Chrome som din standard PDF-fremviser</translation>
+<translation id="854593887324189900">Søg i dette billede med Google Lens</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Søg i sproglisten</translation>
 <translation id="8575047640889685742">Brug din <ph name="BEGIN_LINK" />egen adgangssætning<ph name="END_LINK" /> til at kryptere alle Chrome-data på din Google-konto. Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.</translation>

@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Xóa nhóm</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> mục không hoạt động}other{<ph name="TABS_COUNT_MANY" /> mục không hoạt động}}</translation>
 <translation id="1568067597247500137">Tắt tiếng trang web</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Chuyển thẻ xuống dưới}other{Chuyển các thẻ xuống dưới}}</translation>
 <translation id="1645759014353344461">Đã nhóm <ph name="TABS_COUNT_MANY" /> thẻ</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1670942869417022142">Đã tắt tiếng âm thanh</translation>
 <translation id="1697284962337958118">Thêm vào</translation>
 <translation id="1713541401465507417">Đóng mọi thẻ và nhóm</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> nhóm thẻ không còn hoạt động.}other{<ph name="TAB_GROUPS_COUNT_MANY" /> nhóm thẻ không còn hoạt động}}</translation>
+<translation id="1759122978835002237">Chuyển nhóm thẻ lên trên</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Đã nhóm <ph name="TABS_COUNT_ONE" /> thẻ</translation>
 <translation id="1844381456014878100">Sau 7 ngày không hoạt động</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. Thẻ ẩn danh sẽ bị mất.}other{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. # thẻ ẩn danh sẽ bị mất.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Bật tiếng trang web}other{Bật tiếng các trang web}}</translation>
 <translation id="2162620598375156287">Hiện có giá <ph name="CURRENT_PRICE" /> trên <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Chuyển nhóm thẻ xuống dưới</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Bỏ thẻ khỏi nhóm}other{Bỏ thẻ khỏi nhóm}}</translation>
 <translation id="2271452184061378400">Các nhóm thẻ của bạn được lưu tại đây</translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Nhóm thẻ "<ph name="TAB_GROUP_NAME" />" không còn hoạt động</translation>
 <translation id="7402375256128852434">Thêm các thẻ gần đây</translation>
 <translation id="7452985128687107478">Các nhóm thẻ tự động lưu và cập nhật trên mọi thiết bị của bạn</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Chuyển thẻ lên trên}other{Chuyển các thẻ lên trên}}</translation>
 <translation id="747459581954555080">Khôi phục tất cả</translation>
 <translation id="7489558427602531799">Di chuyển nhóm thẻ sang phải</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> mục}other{<ph name="TABS_COUNT_MANY" /> mục}}</translation>

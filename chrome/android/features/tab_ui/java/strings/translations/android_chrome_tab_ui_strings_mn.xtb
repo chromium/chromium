@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Бүлгийг устгах</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Идэвхгүй <ph name="TABS_COUNT_ONE" /> зүйл}other{Идэвхгүй <ph name="TABS_COUNT_MANY" /> зүйл}}</translation>
 <translation id="1568067597247500137">Сайтын дууг хаах</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Табыг доош зөөх}other{Табуудыг доош зөөх}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> табыг бүлэглэсэн</translation>
 <translation id="1657719826150349398">Табыг доош зөөх</translation>
 <translation id="1670942869417022142">Аудионы дууг хаасан</translation>
 <translation id="1697284962337958118">Дараахад нэмэх</translation>
 <translation id="1713541401465507417">Бүх таб, бүлгийг хаах</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> табын бүлэг цаашид байхгүй болсон}other{<ph name="TAB_GROUPS_COUNT_MANY" /> табын бүлэг цаашид байхгүй болсон}}</translation>
+<translation id="1759122978835002237">Табын бүлгийг дээш зөөх</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> табыг бүлэглэсэн</translation>
 <translation id="1844381456014878100">7 хоног идэвхгүй байсны дараа</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Та хаасан таб, бүлгээ саяхны табын хэсэг болон табын бүлгийн хэсгээс дахин нээх боломжтой. Таны нууцлалтай таб боломжгүй байх болно.}other{Та хаасан таб, бүлгээ саяхны табын хэсэг болон табын бүлгийн хэсгээс дахин нээх боломжтой. Таны нууцлалтай # таб боломжгүй байх болно.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Сайтын дууг нээх}other{Сайтуудын дууг нээх}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
+<translation id="2164232689984783657">Табын бүлгийг доош зөөх</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Табыг бүлэглэхээ болих}other{Табуудыг бүлэглэхээ болих}}</translation>
 <translation id="2271452184061378400">Таны табын бүлгийг энд хадгалдаг</translation>
 <translation id="2277224997687551299">Бүлгийн нэрийг засах</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" табын бүлэг цаашид байхгүй болсон</translation>
 <translation id="7402375256128852434">Саяхны табуудыг нэмэх</translation>
 <translation id="7452985128687107478">Табын бүлгийг таны бүх төхөөрөмж дээр автоматаар хадгалж, шинэчилдэг</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Табыг дээш зөөх}other{Табуудыг дээш зөөх}}</translation>
 <translation id="747459581954555080">Бүгдийг сэргээх</translation>
 <translation id="7489558427602531799">Табын бүлгийг баруун тийш зөөх</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> зүйл}other{<ph name="TABS_COUNT_MANY" /> зүйл}}</translation>

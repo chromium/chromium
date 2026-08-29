@@ -90,7 +90,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chrome rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="1832046143430087831">Shpejton sajtet me motorin V8 të Chrome, por e bën Chrome disi më pak rezistent ndaj sulmeve. Ky cilësim është joaktiv.</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
-<translation id="1842869163383855194">Qasu me lehtësi për të përdorur "Kërko" në Chrome në pajisjen tënde, edhe nëse Chrome është i minimizuar.</translation>
 <translation id="1843347690926158494">Kërko në këtë skedë me "Lenten e Google"</translation>
 <translation id="1849248141818021764">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, do të të duhet të <ph name="BEGIN_LINK" />fshish të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Përdor aplikacionin e Chrome për të vazhduar të shfletosh kur je në lëvizje</translation>
@@ -329,7 +328,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4173512894976930765">Sajtet ndoshta do të punojnë siç pritet. Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chrome, përveçse nga "Llogaria jote e Google" nëse je i identifikuar në Chrome.</translation>
 <translation id="4175922240926474352">Chrome e bllokoi këtë shkarkim sepse sajti nuk po përdor një lidhje të sigurt dhe mund të ketë pasur ndërhyrje te skedari</translation>
 <translation id="4191857738314598978">{0,plural, =1{Hap përsëri Chrome brenda një dite}other{Hap përsëri Chrome brenda # ditësh}}</translation>
-<translation id="4222394563269716113">Hap "Kërko" në Chrome me një shkurtore të tastierës.</translation>
 <translation id="4222932583846282852">Po e anulon...</translation>
 <translation id="4224210481850767180">Instalimi është anuluar.</translation>
 <translation id="4242034826641750751">Chrome ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
@@ -355,7 +353,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Ndaje këtë dokument me Gemini në Chrome për të marrë një përmbledhje të shpejtë dhe për të bërë pyetje vijuese</translation>
-<translation id="4447327682081576371">Shfaq "Kërko" në Chrome në shiritin e menysë së Mac dhe aktivizo shkurtoren e tastierës</translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Një veprim tjetër në Google Chrome është në vazhdim. Provo përsëri më vonë.</translation>
 <translation id="4493028449971051158">Gabim në nisje: ekzekuto instaluesin si administrator.</translation>
@@ -379,6 +376,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="475321580758063259">Përditëso Chrome për të vazhduar të përdorësh të dhënat e Chrome në "Llogarinë tënde të Google" <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Shpejton sajtet me motorin V8 të Chrome, por e bën Chrome disi më pak rezistent ndaj sulmeve</translation>
+<translation id="4768676935374695498">Kërkoje këtë video me "Lenten e Google"</translation>
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
 <translation id="4793679854893018356">Mëso se si të mban të sigurt Chrome</translation>
 <translation id="4799870290441980300">Aktivizon veçori shtesë për të ofruar mbrojtjet më të forta të Chrome</translation>
@@ -445,7 +443,6 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 <translation id="5430073640787465221">Skedari i preferencave është i dëmtuar ose i pavlefshëm.
 
 Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
-<translation id="545114101312117217">Qasje e lehtë te shkurtoret e tua nga "Kërko" në Chrome</translation>
 <translation id="5465210843490471889">Zgjidh një profil të Chrome për ta përdorur me <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome tani niset kur niset Windows që të mund të fillosh të shfletosh menjëherë. Mund ta çaktivizosh këtë te cilësimet.</translation>
 <translation id="5486346529181556467">Përmirëso sigurinë online për të gjithë kur raporton një sajt që mendon se është i dëmshëm. Mëso më shumë rreth <ph name="BEGIN_LINK" />politikës së Google për sajtet e pasigurta.<ph name="END_LINK" /></translation>
@@ -521,7 +518,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6166185671393271715">Importo fjalëkalimet në Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="6177442314419606057">Kërko në Chrome</translation>
 <translation id="6180522807229584611">Kjo skedë po përdor burime shtesë. Për të përmirësuar performancën tënde, lejo që Chrome ta bëjë atë joaktive.</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
 <translation id="6192058120268468905">Llogaria jote në Chrome</translation>
@@ -727,7 +723,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8074398340364918139">Për të kërkuar një veçori ose shtesë specifike të Chrome, shkruaj shkurtoren e saj në shiritin e adresave, të ndjekur nga tasti i zgjedhur i tastierës</translation>
 <translation id="8077579734294125741">Profilet e tjera të Chrome</translation>
 <translation id="8086881907087796310">Instalimi dështoi sepse kompjuteri yt nuk i përmbush kërkesat minimale për harduerin.</translation>
-<translation id="8093772166980702367">Shfaq "Kërko" në Chrome në tabakanë e sistemit dhe aktivizo shkurtoren e tastierës</translation>
 <translation id="8110438089258398864">Mund ta rihapësh "Modalitetin e IA-së të 'Kërko në Google'" për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="8113883687556086139">Verifiko që je ti për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Chrome po personalizohet...</translation>
@@ -771,10 +766,12 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="848851325211467878">Identifikuar si <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, anëtarësim në Google. Hap menynë e llogarisë</translation>
 <translation id="8496177819998570653">Men&amp;axheri i fjalëkalimeve i Google</translation>
 <translation id="8498858610309223613">Sapo është zbatuar një përditësim special i sigurisë për Google Chrome. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
+<translation id="8502181052659370">Kërkoje këtë skedë me "Lenten e Google"</translation>
 <translation id="8521348052903287641">Rregulli hyrës për Google Chrome Dev për të lejuar trafikun mDNS.</translation>
 <translation id="852529348814672339">Shfaqe Chrome në këtë gjuhë</translation>
 <translation id="8525579356836940628">Instalimi ndaloi</translation>
 <translation id="8533056045953418157">Cakto Google Chrome si shikuesin e parazgjedhur të skedarëve PDF</translation>
+<translation id="854593887324189900">Kërkoje këtë imazh me "Lenten e Google"</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
 <translation id="8575047640889685742">Përdor <ph name="BEGIN_LINK" />frazën tënde të kalimit<ph name="END_LINK" /> për të enkriptuar të gjitha të dhënat e Chrome në "Llogarinë tënde të Google". Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.</translation>

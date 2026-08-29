@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento non attivo}other{<ph name="TABS_COUNT_MANY" /> elementi non attivi}}</translation>
 <translation id="1568067597247500137">Disattiva l'audio del sito</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Sposta scheda in basso}other{Sposta schede in basso}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> schede raggruppate</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
 <translation id="1670942869417022142">Audio disattivato</translation>
 <translation id="1697284962337958118">Aggiungi a</translation>
 <translation id="1713541401465507417">Chiudi tutte le schede e tutti i gruppi</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> gruppo di schede non più disponibile}other{<ph name="TAB_GROUPS_COUNT_MANY" /> gruppi di schede non più disponibili}}</translation>
+<translation id="1759122978835002237">Sposta gruppo di schede in alto</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> scheda raggruppata</translation>
 <translation id="1844381456014878100">Dopo 7 giorni di inattività</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. La scheda Incognito non sarà disponibile.}other{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. # schede Incognito non saranno disponibili.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Sposta gruppo di schede in basso</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
 <translation id="2271452184061378400">I tuoi gruppi di schede vengono salvati qui</translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Gruppo di schede "<ph name="TAB_GROUP_NAME" />" non più disponibile</translation>
 <translation id="7402375256128852434">Aggiungi schede recenti</translation>
 <translation id="7452985128687107478">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Sposta scheda in alto}other{Sposta schede in alto}}</translation>
 <translation id="747459581954555080">Ripristina tutto</translation>
 <translation id="7489558427602531799">Sposta gruppo di schede a destra</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento}other{<ph name="TABS_COUNT_MANY" /> elementi}}</translation>

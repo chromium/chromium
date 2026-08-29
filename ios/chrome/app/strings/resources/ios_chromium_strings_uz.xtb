@@ -109,6 +109,7 @@ Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <p
 <translation id="3180939591219927904">“Chromium yopilganda Inkognito varaqlar qulflansin” parametrini yoqing</translation>
 <translation id="327628223428512207">Bu parolni saqlash va barcha qurilmalarda Chromium maʼlumotlarini olish uchun kodli iborani kiriting</translation>
 <translation id="328933489847748230">{count,plural, =1{Hozir 1 ta Chromium oynasi chiqarilgan}other{Hozir {count} ta Chromium oynasi chiqarilgan}}</translation>
+<translation id="3344204225393848305">Chromiumni birlamchi brauzer etib belgilash</translation>
 <translation id="3344973607274501920">Chromium parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="3366305173356742781">Hisobingizdagi Chromium maʼlumotlari</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}}</translation>
@@ -239,6 +240,7 @@ Bularni hisobga olish kerak:
   • Chromiumda nosozlik yuz bersa, uning tafsilotlari hamda ayrim shaxsiy axborotlar ham yuboriladi
 
   • Sinxronizatsiya yoqilsa, koʻrsatkichlarga siz kiritgan URL manzillar ham biriktiriladi.<ph name="END_INDENT" /></translation>
+<translation id="5908771460212301718">Tezkor vazifalarni bajaring va Chromiumdan unumli foydalanish yoʻllarini bilib oling:</translation>
 <translation id="5932787118589620366">Chromium brauzeri maʼlumotlarini oʻchirish</translation>
 <translation id="593808800391107017">Maxfiylik va xavfsizlikka oid muammolar avtomatik aniqlanganda Chromium bu haqida xabar qiladi.</translation>
 <translation id="5951593919357934226">Chromiumdan unumli foydalaning</translation>
@@ -282,6 +284,7 @@ Bularni hisobga olish kerak:
 <translation id="6852799557929001644">Bu qurilmadagi boshqa ilovalarda Chromium parollaringiz va boshqalarga kiring.</translation>
 <translation id="6887138405044152640">Bu varaqni boshqa qurilmaga yuborish uchun narigi qurilmada Chromium hisobiga kiring.</translation>
 <translation id="6911341667534646387">Chromium maʼlumotlari Google hisobingizda saqlanishda davom etsin</translation>
+<translation id="6992760259282302305">Chromiumni birlamchi brauzer etib belgilash</translation>
 <translation id="7018284295775193585">Chromium yangilanmadi</translation>
 <translation id="7055269218854630176">Siz kirayotgan hisob va Chromium profilingiz qanday ishlatilishi tashkilotingiz (<ph name="DOMAIN" />) boshqaruvida. Administrator ayrim funksiyalarni sozlashi va cheklashi mumkin.</translation>
 <translation id="7099326575020694068">Chromium kamerangizdan Split View rejimida foydalana olmaydi</translation>
@@ -342,6 +345,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8385503371191508165">Kirish kalitlarini Parollar menejerida saqlashni boshlang</translation>
 <translation id="8390323835464055390">Chromium avtomatik kiritishi orqali istalgan ilovada saqlangan parol va kalitlar bilan hisobga kiring</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
+<translation id="8428449554948979733">“Chromiumni birlamchi brauzer etib belgilash” taklifini berkitish</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}}</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
 <translation id="8602103377623855616">Chromium sahifasi</translation>

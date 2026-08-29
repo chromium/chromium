@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1158134713295836892">Chrome 內建 Gemini</translation>
+<translation id="1159484622358475170">{count,plural, =1{你已檢查 1 個密碼}other{你檢查了 # 個密碼}}</translation>
 <translation id="1161444134753003495">登入</translation>
 <translation id="1161663161838091892">必須同步處理分頁和歷史記錄才能繼續操作</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} 張信用卡}other{{count} 張信用卡}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">複製連結網址</translation>
 <translation id="199425419756152024">查看密碼</translation>
 <translation id="1996318269856535896">你仍可在這部裝置上使用現有的瀏覽資料。如要使用，請登出代管帳戶。</translation>
+<translation id="2002971615187574739">善用 AI，事半功倍</translation>
 <translation id="2010008505735295285">重新載入</translation>
 <translation id="2012723204723845092">歡迎回來！</translation>
 <translation id="2015722694326466240">你必須先在裝置上設定螢幕解鎖密碼才能查看密碼。</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">標示為未閱讀</translation>
 <translation id="2922210239002704889">開啟首頁或鍵盤</translation>
 <translation id="2924940770243654951">在新無痕分頁中開啟</translation>
+<translation id="2934607171563543600">自從完成「請檢查你的密碼」後</translation>
 <translation id="2952278131021475699">智慧鏡頭相機搜尋功能</translation>
 <translation id="2953821385349876107">選擇其他 Google 帳戶</translation>
 <translation id="2962516096219646456">查看所有自動填入資料</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{這 {count} 組密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 組密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="3659297405161482746">找不到付款方式</translation>
 <translation id="3662966164093827811">{count,plural, =1{已選取 1 個}other{已選取 # 個}}</translation>
+<translation id="3668035568083954765">守護隱私，確保安全</translation>
 <translation id="3668816008081204991">閱讀清單已隱藏</translation>
 <translation id="3670030362669914947">號碼</translation>
 <translation id="3672283986707092811">全選</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708"><ph name="TIME" />發現問題。</translation>
 <translation id="5056587122125565772">生成圖像</translation>
 <translation id="5059136629401106827">確定</translation>
+<translation id="5061202435354361813">瀏覽體驗再升級</translation>
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
 <translation id="5067540696062462445">下載</translation>
 <translation id="5070314445039955096">你離開「<ph name="SITE_DOMAIN" />」後，該網站的權限會重設為停用</translation>
@@ -1686,6 +1691,7 @@
 <translation id="6454311990702999318">無效的資料</translation>
 <translation id="6459411599807878608">已隱藏詳細資料</translation>
 <translation id="646394917185284261">檔案</translation>
+<translation id="6470721056280836221">Google 會根據你的功能使用情況資料推薦任務，並更新進度。你隨時可以關閉 Level Up 功能。</translation>
 <translation id="6472069383518492189">這裡會顯示下載的檔案</translation>
 <translation id="6476253015009698798">價格追蹤功能不支援這個網頁。</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
@@ -1763,6 +1769,7 @@
 <translation id="667999046851023355">文件</translation>
 <translation id="6681791404926413601">{count,plural, =1{鍵盤上方顯示 {count} 個付款方式選項。}other{鍵盤上方顯示 {count} 個付款方式選項。}}</translation>
 <translation id="6682680306647339111">提醒已移除</translation>
+<translation id="6683022854667115063">耳罩式耳機</translation>
 <translation id="6684262542644248484">登入網站</translation>
 <translation id="6685259053455152195">運用捷徑快速修改設定及使用網址列的功能。</translation>
 <translation id="6689342293888598653">白色背景</translation>
@@ -1925,6 +1932,7 @@
 <translation id="7233006041370588369">請選取要填入的密碼。</translation>
 <translation id="723874023660911012">切換設定檔</translation>
 <translation id="7241135764990439166">無法使用無痕模式</translation>
+<translation id="7245288034498365666">妥善整理，節省時間</translation>
 <translation id="7253951228444156601">正在檢查密碼…</translation>
 <translation id="7261217796641151584">分享群組</translation>
 <translation id="7266578100016339897">這麼做可有效整理分頁，保持井然有序。你隨時可以前往「設定」變更這項設定。</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promoció de notificacions de consells tancada</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1045899828449635435">Vols esborrar també les dades d'aquests llocs web?</translation>
+<translation id="1049461303780085993">Prova Gemini a Chrome per obtenir respostes, conclusions clau i més</translation>
 <translation id="1049743911850919806">Incògnit</translation>
 <translation id="1052842760770519282">No es pot accedir a algunes de les teves contrasenyes</translation>
 <translation id="1057623954802068161">Desplaça't fins a la part superior de la pàgina</translation>
@@ -1117,6 +1118,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5465437530117042974">El full inferior de la pestanya ha canviat a Tancat.</translation>
 <translation id="5469852975082458401">Pots navegar per les pàgines amb un cursor de text. Prem F7 per desactivar aquesta funció.</translation>
 <translation id="5471273988133666918">La pestanya <ph name="TAB_TITLE" /> no es pot moure</translation>
+<translation id="5478718673237429220">Cal accés a dispositius d'interfície humana</translation>
 <translation id="548278423535722844">Obre en una aplicació de mapes</translation>
 <translation id="5489222148748465285">Vols que Chrome continuï cercant?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, pestanya multiseleccionada d'imatge sobre imatge</translation>
@@ -1964,6 +1966,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="867914734596684889">Mostra o amaga la barra d'adreces d'interès</translation>
 <translation id="8683039184091909753">imatge</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestanya seleccionada</translation>
+<translation id="8694622119922491927">Per visitar aquest lloc web, <ph name="APP_NAME" /> necessita permís per accedir als dispositius d'interfície humana (HID). Pots canviar aquesta opció de configuració més endavant a Configuració &gt; Aplicacions &gt; Accés especial d'aplicacions.</translation>
 <translation id="8696297579102085705">Envia al teu dispositiu</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
 <translation id="8700565880437506364">Presentem Gemini a Chrome</translation>

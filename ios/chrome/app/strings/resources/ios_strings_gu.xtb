@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">સમય સમાપ્તિ મહિનો</translation>
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{તમે 1 પાસવર્ડ ચેક કર્યો}one{તમે # પાસવર્ડ ચેક કર્યો}other{તમે # પાસવર્ડ ચેક કર્યા}}</translation>
 <translation id="1161444134753003495">સાઇન ઇન કરો</translation>
 <translation id="1161663161838091892">આગળ વધવા માટે ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} ક્રેડિટ કાર્ડ}one{{count} ક્રેડિટ કાર્ડ}other{{count} ક્રેડિટ કાર્ડ}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">લિંક URL કૉપિ કરો</translation>
 <translation id="199425419756152024">પાસવર્ડ જુઓ</translation>
 <translation id="1996318269856535896">તમે હજી પણ આ ડિવાઇસ પર તમારા વર્તમાન બ્રાઉઝિંગ ડેટાનો ઉપયોગ કરી શકો છો. તેનો ઉપયોગ કરવા માટે, તમારા મેનેજ કરેલા એકાઉન્ટમાંથી સાઇન આઉટ કરો.</translation>
+<translation id="2002971615187574739">વધુમાં વધુ કાર્યો કરવા માટે AIનો ઉપયોગ કરો</translation>
 <translation id="2010008505735295285">ફરીથી લોડ કરો</translation>
 <translation id="2012723204723845092">આપનું ફરી સ્વાગત છે!</translation>
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="2922210239002704889">તમારા હોમપેજ અથવા કીબોર્ડ પર જાઓ</translation>
 <translation id="2924940770243654951">નવા છૂપા ટૅબમાં ખોલો</translation>
+<translation id="2934607171563543600">"તમારા પાસવર્ડ ચેક કરો"ની પ્રક્રિયા પૂર્ણ થાય પછી</translation>
 <translation id="2952278131021475699">Lens કૅમેરા વડે શોધની સુવિધા</translation>
 <translation id="2953821385349876107">કોઈ અલગ Google એકાઉન્ટ પસંદ કરો</translation>
 <translation id="2962516096219646456">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો બધો ડેટા જુઓ</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તે તમારા Google એકાઉન્ટ, {email}માં છે.}one{{count} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}other{{count} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલા છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}}</translation>
 <translation id="3659297405161482746">કોઈ ચુકવણી પદ્ધતિ મળી નથી</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 પસંદ કરી}one{# પસંદ કરી}other{# પસંદ કરી}}</translation>
+<translation id="3668035568083954765">તમારી પ્રાઇવસીની સુરક્ષા કરો અને સલામત રહો</translation>
 <translation id="3668816008081204991">વાંચન સૂચિ છુપાવેલી છે</translation>
 <translation id="3670030362669914947">નંબર</translation>
 <translation id="3672283986707092811">તમામને પસંદ કરો</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> સમસ્યાઓ મળી.</translation>
 <translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="5059136629401106827">ઓકે</translation>
+<translation id="5061202435354361813">તમારા બ્રાઉઝિંગને એક લેવલ ઉપર લઈ જાઓ</translation>
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
 <translation id="5067540696062462445">ડાઉનલોડ</translation>
 <translation id="5070314445039955096">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે "<ph name="SITE_DOMAIN" />" સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે</translation>
@@ -1686,6 +1691,7 @@
 <translation id="6454311990702999318">અમાન્ય ડેટા</translation>
 <translation id="6459411599807878608">વિગતો છુપાવેલી છે</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">કાર્યોનો સુઝાવ આપવા અને પ્રગતિ અપડેટ કરવા માટે, Google સુવિધા વપરાશના તમારા ડેટાનો ઉપયોગ કરે છે. તમે કોઈપણ સમયે લેવલ અપ પ્રોગ્રામ બંધ કરી શકો છો.</translation>
 <translation id="6472069383518492189">તમને તમારા ડાઉનલોડ અહીં જોવા મળશે</translation>
 <translation id="6476253015009698798">આ પેજ માટે કિંમત ટ્રૅક કરવાની સુવિધા ઉપલબ્ધ નથી.</translation>
 <translation id="6476284679642588870">ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
@@ -1763,6 +1769,7 @@
 <translation id="667999046851023355">દસ્તાવેજ</translation>
 <translation id="6681791404926413601">{count,plural, =1{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
 <translation id="6682680306647339111">રિમાઇન્ડર કાઢી નાખ્યું</translation>
+<translation id="6683022854667115063">હૅડફોન</translation>
 <translation id="6684262542644248484">વેબસાઇટ પર સાઇન ઇન કરો</translation>
 <translation id="6685259053455152195">સેટિંગમાં ઝડપથી ફેરફાર કરવા અને ઍડ્રેસ બારમાંથી સુવિધાઓનો ઉપયોગ કરવા માટે શૉર્ટકટ.</translation>
 <translation id="6689342293888598653">બૅકગ્રાઉન્ડનો સફેદ રંગ</translation>
@@ -1925,6 +1932,7 @@
 <translation id="7233006041370588369">ભરવા માટે પાસવર્ડ પસંદ કરો.</translation>
 <translation id="723874023660911012">પ્રોફાઇલ સ્વિચ કરો</translation>
 <translation id="7241135764990439166">છૂપો મોડ ઉપલબ્ધ નથી</translation>
+<translation id="7245288034498365666">વ્યવસ્થિત બનો અને સમય બચાવો</translation>
 <translation id="7253951228444156601">પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
 <translation id="7261217796641151584">ગ્રૂપ શેર કરો</translation>
 <translation id="7266578100016339897">આ તમને વ્યવસ્થિત રહેવામાં સહાય કરે છે. તમે આને સેટિંગમાં જઈને કોઈપણ સમયે બદલી શકો છો.</translation>

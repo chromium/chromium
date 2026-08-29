@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Kustuta grupp</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> passiivne üksus}other{<ph name="TABS_COUNT_MANY" /> passiivset üksust}}</translation>
 <translation id="1568067597247500137">Vaigista sait</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Teisalda vaheleht alla}other{Teisalda vahelehed alla}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> vahelehte grupeeriti</translation>
 <translation id="1657719826150349398">Teisalda vaheleht alla</translation>
 <translation id="1670942869417022142">Vaigistatud heli</translation>
 <translation id="1697284962337958118">Lisa kogusse</translation>
 <translation id="1713541401465507417">Sulgege kõik vahelehed ja grupid</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> vahelehegrupp ei ole enam saadaval}other{<ph name="TAB_GROUPS_COUNT_MANY" /> vahelehegruppi ei ole enam saadaval}}</translation>
+<translation id="1759122978835002237">Teisalda vahelehegrupp üles</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> vaheleht grupeeriti</translation>
 <translation id="1844381456014878100">7 passiivse päeva järel</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Teie suletud vahelehti ja gruppe on võimalik uuesti avada jaotistest Hiljutised vahelehed ja Vahelehegrupid. Teie inkognito vaheleht pole saadaval.}other{Teie suletud vahelehti ja gruppe on võimalik uuesti avada jaotistest Hiljutised vahelehed ja Vahelehegrupid. Teie # inkognito vahelehte pole saadaval.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Saidi vaigistuse tühistamine}other{Saitide vaigistuse tühistamine}}</translation>
 <translation id="2162620598375156287">Nüüd <ph name="CURRENT_PRICE" /> veebisaidil <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Teisalda vahelehegrupp alla</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tühista vahelehe grupeerimine}other{Tühista vahelehtede grupeerimine}}</translation>
 <translation id="2271452184061378400">Teie vahelehegrupid on salvestatud siia</translation>
 <translation id="2277224997687551299">Grupi nime muutmine</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Vahelehegrupp „<ph name="TAB_GROUP_NAME" />“ ei ole enam saadaval</translation>
 <translation id="7402375256128852434">Hiljutiste vahelehtede lisamine</translation>
 <translation id="7452985128687107478">Vahelehegrupid salvestuvad automaatselt ja värskendatakse kõikides teie seadmetes</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Teisalda vaheleht üles}other{Teisalda vahelehed üles}}</translation>
 <translation id="747459581954555080">Taasta kõik</translation>
 <translation id="7489558427602531799">Teisalda vahelehegrupp paremale</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> üksus}other{<ph name="TABS_COUNT_MANY" /> üksust}}</translation>

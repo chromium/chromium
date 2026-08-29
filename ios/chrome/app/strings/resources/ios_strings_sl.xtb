@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Mesec poteka</translation>
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1158134713295836892">Gemini v Chromu</translation>
+<translation id="1159484622358475170">{count,plural, =1{Preverili ste 1 geslo}one{Preverili ste # geslo}two{Preverili ste # gesli}few{Preverili ste # gesla}other{Preverili ste # gesel}}</translation>
 <translation id="1161444134753003495">Prijava</translation>
 <translation id="1161663161838091892">Če želite nadaljevati, sinhronizirajte zavihke in zgodovino</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditna kartica}one{{count} kreditna kartica}two{{count} kreditni kartici}few{{count} kreditne kartice}other{{count} kreditnih kartic}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopiraj URL povezave</translation>
 <translation id="199425419756152024">Prikaži geslo</translation>
 <translation id="1996318269856535896">Obstoječe podatke brskanja lahko še vedno uporabljate v tej napravi. Če jih želite uporabljati, se odjavite iz upravljanega računa.</translation>
+<translation id="2002971615187574739">Uporabite umetno inteligenco za večjo storilnost</translation>
 <translation id="2010008505735295285">Znova naloži</translation>
 <translation id="2012723204723845092">Dobrodošli nazaj!</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Označi kot neprebrano</translation>
 <translation id="2922210239002704889">Odpiranje domače strani ali tipkovnice</translation>
 <translation id="2924940770243654951">Odpri na novem anonimnem zavihku</translation>
+<translation id="2934607171563543600">od dokončanja preverjanja gesel</translation>
 <translation id="2952278131021475699">Iskanje s fotoaparatom v Googlu Lens</translation>
 <translation id="2953821385349876107">Izbira drugega računa Google</translation>
 <translation id="2962516096219646456">Ogled vseh podatkov samodejnega izpolnjevanja</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {email}.}one{{count} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}two{{count} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}few{{count} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}other{{count} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}}</translation>
 <translation id="3659297405161482746">Najdeno ni bilo nobeno plačilno sredstvo</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
+<translation id="3668035568083954765">Zaščitite zasebnost in poskrbite za varnost</translation>
 <translation id="3668816008081204991">Bralni seznam je skrit</translation>
 <translation id="3670030362669914947">Številka</translation>
 <translation id="3672283986707092811">Izberi vse</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Težave so bile najdene: <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Ustvari sliko</translation>
 <translation id="5059136629401106827">V redu</translation>
+<translation id="5061202435354361813">Izboljšajte brskanje</translation>
 <translation id="5062321486222145940">Namesti Google Drive</translation>
 <translation id="5067540696062462445">Prenosi</translation>
 <translation id="5070314445039955096">Dovoljenja za spletno mesto »<ph name="SITE_DOMAIN" />« bodo ponastavljena na izklopljena, ko zapustite to spletno mesto</translation>
@@ -1686,6 +1691,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6454311990702999318">Neveljavni podatki</translation>
 <translation id="6459411599807878608">Podrobnosti so skrite</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google uporablja podatke o uporabi funkcij za priporočanje opravil in posodabljanje napredka. Funkcijo Level Up lahko kadar koli izklopite.</translation>
 <translation id="6472069383518492189">Tukaj bodo prikazani prenosi</translation>
 <translation id="6476253015009698798">Spremljanje cen ni na voljo za to spletno mesto.</translation>
 <translation id="6476284679642588870">Upravljanje plačilnih sredstev</translation>
@@ -1763,6 +1769,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost za plačilno sredstvo.}one{Nad tipkovnico je na voljo {count} možnost za plačilno sredstvo.}two{Nad tipkovnico sta na voljo {count} možnosti za plačilno sredstvo.}few{Nad tipkovnico so na voljo {count} možnosti za plačilno sredstvo.}other{Nad tipkovnico je na voljo {count} možnosti za plačilno sredstvo.}}</translation>
 <translation id="6682680306647339111">Opomnik je odstranjen</translation>
+<translation id="6683022854667115063">Slušalke</translation>
 <translation id="6684262542644248484">Prijavite se na spletnem mestu</translation>
 <translation id="6685259053455152195">Bližnjice za hitro spreminjanje nastavitev in uporabo funkcij v naslovni vrstici.</translation>
 <translation id="6689342293888598653">Ozadje v beli barvi</translation>
@@ -1925,6 +1932,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7233006041370588369">Izberite geslo, ki ga želite vnesti.</translation>
 <translation id="723874023660911012">Preklopi profil</translation>
 <translation id="7241135764990439166">Anonimni način ni na voljo</translation>
+<translation id="7245288034498365666">Organizirajte se in prihranite čas</translation>
 <translation id="7253951228444156601">Preverjanje gesel …</translation>
 <translation id="7261217796641151584">Deli skupino</translation>
 <translation id="7266578100016339897">Tako ostanete organizirani. To lahko kadar koli spremenite v nastavitvah.</translation>

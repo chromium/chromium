@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Fájlok előkészítése…</translation>
 <translation id="1014509239502131234">Folyamatban van az eredmény generálásának visszavonása</translation>
 <translation id="1015730422737071372">További részletek megadása</translation>
+<translation id="1016671033299705843">Vezetői engedély biztonságos hozzáadása</translation>
 <translation id="1019413721762100891">Ki</translation>
 <translation id="1021753677514347426">A probléma oka az Ön vagy valaki más által az eszközre telepített egyik tanúsítvány. Erről a tanúsítványról tudni lehet, hogy hálózati forgalom megfigyelésére és elfogására használják, és a Chromium szerint nem megbízható. Bár a megfigyelésnek létezik néhány jogszerű formája (például iskolai vagy vállalati hálózatokon), a Chromium biztosra szeretne menni abban, hogy Ön ezzel tisztában van – még akkor is, ha Ön nem tud tenni ellene. A megfigyelés az internethez hozzáférő bármely böngészőben vagy alkalmazásban megtörténhet.</translation>
 <translation id="1024111578869940408">A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy alig észrevehető változtatásokat végeznek a webhely címében.</translation>
@@ -238,6 +239,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1392813880755413602">OpenDocument-prezentáció</translation>
 <translation id="139305205187523129">A(z) <ph name="HOST_NAME" /> nem küldött adatokat.</translation>
 <translation id="1393071644879491291">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók ráveszik Önt valamilyen szoftver telepítésére, illetve olyan adatok megadására, mint a jelszavai, a telefonszámai vagy a bankkártyaszámai. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
+<translation id="1397342126322860141">Személyazonosító igazolvány biztonságos hozzáadása a Google Wallethez</translation>
 <translation id="1398743098754840707">Az itt hozzáadott webhelyekre nem hivatkozik majd a rendszer a válaszokban, még akkor sem, ha a lap meg van nyitva. Ha egy hozzáadott webhely jelenleg használatban van egy üzenetszálban, akár 30 perc is eltelhet, mire az üzenetszál befejezi a rá való hivatkozást.</translation>
 <translation id="1405567553485452995">Világoszöld</translation>
 <translation id="1406370515365284486">A fizetési módjai továbbra is mentve lesznek</translation>
@@ -771,6 +773,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2288422996159078444">Megfigyelik, hogy mit gépel be, milyen oldalakat keres fel, illetve milyen egyéb tevékenységeket végez az interneten; emellett a webhelyek tartalma is módosulhat az Ön tudta nélkül.</translation>
 <translation id="2289385804009217824">Vágás</translation>
 <translation id="2292556288342944218">Az internethez való hozzáférést a rendszer letiltotta</translation>
+<translation id="2294150501457238325">Útlevél biztonságos hozzáadása</translation>
 <translation id="2295831393422400053">Kapcsolja be A keresések és a böngészés javítása beállítást a Segítség az íráshoz funkció használatához</translation>
 <translation id="2296244067976588032">Azonosítókulcs • iCloud Kulcskarika</translation>
 <translation id="2296331629987861142">Fizetés egyszerű részletfizetéssel (jogosultságtól függően, díjköteles)</translation>
@@ -1131,6 +1134,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2931453528659195355">Vásárlási információk kezelése</translation>
 <translation id="2933624813161016821">Dombornyomó fólia</translation>
 <translation id="2935726091208500473">a lapok megosztásánál</translation>
+<translation id="2936698630976431647">Válassza ki a promóciós kód mezőt a Google Walletből származó ajánlatok automatikus kitöltéséhez</translation>
 <translation id="293796669683825859">Megjegyzések</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linkek megnyitása</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – A kurzor megjelenítéséhez, az alkalmazások közötti váltáshoz, az oldal újratöltéséhez vagy a visszalépéshez</translation>
@@ -1281,6 +1285,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3190736958609431397">Nyomon követés megszüntetése</translation>
 <translation id="3194737229810486521">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni az eszközön</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Vezetői engedély hozzáadása a Google Wallethez</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> nyomtató a(z) <ph name="SERVER_NAME" /> nevű szerveren</translation>
 <translation id="3196374699162453920">Foglalási kód</translation>
 <translation id="3196902089458890316">Mindig megosztja a releváns lapokat, hogy jobb válaszokat kaphasson?</translation>
@@ -1388,6 +1393,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3380864720620200369">Ügyfél-azonosító:</translation>
 <translation id="3383566085871012386">Jelenlegi fontossági sorrend</translation>
 <translation id="3383713837163550889">Helyi fájljait 1 perc múlva töröljük</translation>
+<translation id="33837817515081754">Ismert utazói szám (Known Traveler Number, KTN) hozzáadása a Google Wallethez</translation>
 <translation id="3384522979010096022">Szervezete nem engedélyezi a webhely megtekintését</translation>
 <translation id="3391030046425686457">Szállítási cím</translation>
 <translation id="3391482648489541560">fájlszerkesztés</translation>
@@ -1461,6 +1467,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3517264445792388751">A rendszergazda letiltotta a fájlrendszert</translation>
 <translation id="3518941727116570328">Több elem kezelése</translation>
 <translation id="3519670528214225835">Kérdezés a következőtől: <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Jármű hozzáadása a Google Wallethez</translation>
 <translation id="3525130752944427905">10 × 14 hüvelyk</translation>
 <translation id="3525435918300186947">Szeretné vezérelni és átprogramozni a MIDI-eszközöket?</translation>
 <translation id="3527624163937328588">Melléklet eltávolítása</translation>
@@ -1813,6 +1820,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4103249731201008433">Az eszköz sorozatszáma érvénytelen</translation>
 <translation id="4103592298805904008">Karton (egyfalú)</translation>
 <translation id="4104702906064390950">IBAN-adatok mentése folyamatban</translation>
+<translation id="4104995898379951162">Ismert utazói szám (Known Traveler Number, KTN) biztonságos hozzáadása</translation>
 <translation id="4106101218644797743">a szinkronizálási beállításokban kezelheti.</translation>
 <translation id="4106887816571530227">A beágyazott tartalmak nem engedélyezettek</translation>
 <translation id="4107047499377819067">Elkezdődött a VPN-háttérszolgáltatások telepítése. Ez eltarthat néhány percig.</translation>
@@ -1870,6 +1878,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4195459680867822611">Chrome-tippek megjelenítése gomb, nyomja meg a Chrome funkcióival kapcsolatos további információkért.</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4196861286325780578">&amp;Áthelyezés újra</translation>
+<translation id="4199131764832701740">Útlevél hozzáadása a Google Wallethez</translation>
 <translation id="4202554117186904723">5. tekercs</translation>
 <translation id="4203769790323223880">Kamerahasználat nem engedélyezett</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />A tűzfal és a vírusirtó konfigurációjának ellenőrzése<ph name="END_LINK" /></translation>
@@ -2235,6 +2244,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4805128460707321168">Személyazonosító okmány biztonságos frissítése</translation>
 <translation id="4807098396393229769">A kártyán feltüntetett név</translation>
+<translation id="4808598252755230865">Ismert utazói szám (Known Traveler Number, KTN) biztonságos hozzáadása a Google Wallethez</translation>
 <translation id="4809079943450490359">Utasítások az eszköz rendszergazdájától:</translation>
 <translation id="4811450222531576619">További információ a forrásról és a témáról</translation>
 <translation id="4811696127853690432">Jármű biztonságos mentése a Google Walletbe</translation>
@@ -2264,6 +2274,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4855395119669662878">A rendszergazda a következő időpontban megkezdi a fájlok feltöltését a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba: <ph name="DATE_TIME" />. A fájlfeltöltés befejeződéséig tartsa csatlakoztatva az eszközt. A feltöltés során csak a helyi fájlokat fogja tudni olvasni.</translation>
 <translation id="485902285759009870">Kód ellenőrzése…</translation>
 <translation id="4860260582253463350">Mielőtt továbbléphetnél a YouTube-ra, meg kell győződnünk arról, hogy valóban te vagy az. Alkalmazni fogjuk a szülőd vagy gondviselőd által a Family Linkben megadott beállításokat.</translation>
+<translation id="4861514638281352187">Panaszkezelési azonosító biztonságos hozzáadása</translation>
 <translation id="4862642413395066333">OCSP (valós idejű tanúsítványlekérdezés) válaszok aláírása</translation>
 <translation id="4864406669374375262">Verzió-karakterlánc vágólapra másolva</translation>
 <translation id="486459320933704969">A szülődnek vagy a gondviselődnek jóvá kell hagynia a webhely felkeresését</translation>
@@ -2695,6 +2706,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="55635442646131152">Dokumentumvázlat</translation>
 <translation id="5563589142503817291">A tartózkodási hely használatához adjon hozzáférést a Chrome-nak itt: <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Inkognitó lap megnyitása</translation>
+<translation id="5565613377956908865">Személyazonosító igazolvány hozzáadása a Google Wallethez</translation>
 <translation id="5565735124758917034">Aktív</translation>
 <translation id="5570825185877910964">Fiók védelme</translation>
 <translation id="5571083550517324815">Ezen a címen nem lehetséges az átvétel. Válasszon másik címet.</translation>
@@ -2882,6 +2894,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5895694128043506580">A Google Chrome megpróbál bizalmas információkat megjeleníteni</translation>
 <translation id="5898767305816764989">„Tetszik” gomb. Az Enter billentyű lenyomásával visszajelzést küldhet arról, hogy tetszik Önnek a következő: <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Sárga</translation>
+<translation id="5902204772823742902">Vezetői engedély biztonságos hozzáadása a Google Wallethez</translation>
 <translation id="5903264686717710770">Megszólítás:</translation>
 <translation id="5905671155741555195">A munkahelyi cím segítségével hatékonyabban végezheti el feladatait a Google-szolgáltatásokban, például relevánsabb keresési találatokat és útvonalterveket kaphat a Google Térképben. Címét <ph name="BEGIN_LINK" />Google-fiókjában (<ph name="ACCOUNT" />)<ph name="END_LINK" /> szerkesztheti vagy törölheti.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (szinkronizálva)</translation>
@@ -3301,6 +3314,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6613866251791999074">További információ a Chrome-ban használt keresőmotorról</translation>
 <translation id="6615297766614333076">2. kötegelő</translation>
 <translation id="6619496928666593220">Az IBAN-szám nincs kitöltve</translation>
+<translation id="662009501953240458">Jármű biztonságos hozzáadása a Google Wallethez</translation>
 <translation id="6624427990725312378">Kapcsolatfelvételi adatok</translation>
 <translation id="6625629379283886932">Taníts meg programozni</translation>
 <translation id="6628463337424475685">Keresés: <ph name="ENGINE" /></translation>
@@ -3671,6 +3685,7 @@ További részletek:
 <translation id="7261463765917514051">Biztonságos fizetés az automatikus kitöltéssel</translation>
 <translation id="7265608370113700582">A cím csak ezen az eszközön áll rendelkezésre</translation>
 <translation id="7266094331715305887">alkalmazások az eszközön</translation>
+<translation id="7268742523336093718">Útlevél biztonságos hozzáadása a Google Wallethez</translation>
 <translation id="7269151392155523061">A gyorsparancs nem egyezhet meg a(z) <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> által meghatározott keresőösszesítő kulcsszóval: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="7273111226200291353">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a letöltött fájlokat. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban, és az is előfordulhat, hogy a vállalati irányelvek alapján tárolni fogják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
 <translation id="7275334191706090484">Kezelt könyvjelzők</translation>
@@ -4240,6 +4255,7 @@ További részletek:
 <translation id="8241707690549784388">A keresett oldal a megadott információt használta. Ha visszatér arra az oldalra, akkor lehet, hogy az egyszer már megtett mozdulatok ismétlésre kerülnek. Mégis továbblép?</translation>
 <translation id="8242426110754782860">Folytatás</translation>
 <translation id="824620968958405573">Automatikus böngészési feladat</translation>
+<translation id="8247824837030847066">Személyazonosító igazolvány biztonságos hozzáadása</translation>
 <translation id="8248406213705193919">Szeretné biztonságosan elmenteni a kártyát?</translation>
 <translation id="8249296373107784235">Megszakítás</translation>
 <translation id="8250094606476360498">A cím jelenleg mentve van erre az eszközre. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="ACCOUNT" />).</translation>
@@ -4660,6 +4676,7 @@ További részletek:
 <translation id="9003639428623471314">Kahu boríték</translation>
 <translation id="9004367719664099443">VR-munkamenet folyamatban</translation>
 <translation id="9005998258318286617">A PDF-dokumentum betöltése sikertelen.</translation>
+<translation id="900686221526305417">Jármű biztonságos hozzáadása</translation>
 <translation id="9008201768610948239">Mellőzés</translation>
 <translation id="9010187979699879769">Készíts nekem tanulási ütemtervet</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Nincs}=1{1 webhelytől}other{# webhelytől}}</translation>
@@ -4814,6 +4831,7 @@ További részletek:
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új webhely gyors létrehozásához a Google Webhelyek szolgáltatással</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> tag csatlakozott a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz</translation>
 <translation id="949314938206378263">A webhely felkeresését kérelmezted. Szülőd a Family Linkben reagálhat rá.</translation>
+<translation id="949484466204182817">Panaszkezelési azonosító hozzáadása a Google Wallethez</translation>
 <translation id="950736567201356821">Három lyuk felül</translation>
 <translation id="950926967802086924">Azonosítókulcs • Google Jelszókezelő</translation>
 <translation id="952165179818196872">Adja hozzá a(z) <ph name="PROVIDER" /> szolgáltatást, hogy alkalmazásváltás nélkül fizethessen</translation>
@@ -4828,6 +4846,7 @@ További részletek:
 <translation id="962484866189421427">Ez a tartalom megtévesztő alkalmazásokat telepíthet, amelyek más alkalmazásnak tettethetik magukat, illetve az Ön nyomon követésére alkalmas adatokat gyűjthetnek. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">A Chromium a régiójában hatályos jogszabályok alapján arra kéri Önt, hogy válassza ki az alapértelmezett keresőmotort. Ezek a keresőmotorok népszerűek az Ön régiójában, és véletlenszerű sorrendben jelennek meg.</translation>
 <translation id="963837307749850257">Minden felhasználó</translation>
+<translation id="963988220224168636">Panaszkezelési azonosító biztonságos hozzáadása a Google Wallethez</translation>
 <translation id="964050462028070434">Jelszavak és azonosítókulcsok kezelése…</translation>
 <translation id="964681140808832181">Igen, meg szeretném szakítani</translation>
 <translation id="969892804517981540">Hivatalos verzió</translation>

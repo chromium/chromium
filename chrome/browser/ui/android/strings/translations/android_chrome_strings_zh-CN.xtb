@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">已关闭提示通知宣传内容</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1045899828449635435">一并清除来自这些网站的数据？</translation>
+<translation id="1049461303780085993">试用 Chrome 中的 Gemini，轻松获取答案、要点总结等</translation>
 <translation id="1049743911850919806">无痕模式</translation>
 <translation id="1052842760770519282">您的部分密码无法使用</translation>
 <translation id="1057623954802068161">滚动到页面顶部</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5465437530117042974">标签页底部动作条已关闭。</translation>
 <translation id="5469852975082458401">您可以使用文本光标浏览网页。按 F7 可关闭。</translation>
 <translation id="5471273988133666918">无法移动标签页“<ph name="TAB_TITLE" />”</translation>
+<translation id="5478718673237429220">需要人机接口设备访问权限</translation>
 <translation id="548278423535722844">在地图应用中打开</translation>
 <translation id="5489222148748465285">要让 Chrome 继续查找吗？</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />，多选状态下的画中画标签页</translation>
@@ -1962,7 +1964,8 @@
 <translation id="867914734596684889">显示或隐藏书签栏</translation>
 <translation id="8683039184091909753">图片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，所选的标签页</translation>
-<translation id="8696297579102085705">发送到您的设备</translation>
+<translation id="8694622119922491927">“<ph name="APP_NAME" />”需要获得相应权限，才能让此网站使用人机接口设备 (HID)。以后，您可以在“设置”&gt;“应用”&gt;“特殊应用权限”中更改此设置。</translation>
+<translation id="8696297579102085705">发送到设备</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
 <translation id="8700565880437506364">Chrome 中的 Gemini 闪亮登场</translation>
 <translation id="8712637175834984815">知道了</translation>

@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Notiek failu sagatavošana…</translation>
 <translation id="1014509239502131234">Rezultāta atsaukšana</translation>
 <translation id="1015730422737071372">Sniegt papildu informāciju</translation>
+<translation id="1016671033299705843">Autovadītāja apliecības informācijas droša pievienošana</translation>
 <translation id="1019413721762100891">Izsl.</translation>
 <translation id="1021753677514347426">Šīs problēmas iemesls ir sertifikāts, kuru jūs vai kāds cits ir instalējis jūsu ierīcē. Ir zināms, ka šis sertifikāts tiek izmantots tīklu pārraudzībai un pārtveršanai, un pārlūks Chromium tam neuzticas. Lai gan pastāv daži likumīgi pārraudzības gadījumi, piemēram, skolas vai uzņēmuma tīklā, pārlūks Chromium vēlas pārliecināties, ka esat par to informēts, pat ja nevarat to apturēt. Pārraudzība var notikt jebkurā pārlūkā vai lietojumprogrammā ar piekļuvi tīmeklim.</translation>
 <translation id="1024111578869940408">Uzbrucēji dažkārt atdarina vietnes, veicot grūti pamanāmas izmaiņas tīmekļa adresē.</translation>
@@ -238,6 +239,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1392813880755413602">OpenDocument prezentācija</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nenosūtīja nekādus datus.</translation>
 <translation id="1393071644879491291">Vietnē, kuru mēģinājāt apmeklēt, uzbrucēji var jūs maldināt, lai pamudinātu instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroles, tālruņa numuru vai kredītkaršu numurus. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu.<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">ID kartes droša pievienošana lietotnei Google maks</translation>
 <translation id="1398743098754840707">Šeit pievienotās vietnes netiks izmantotas atbilžu sniegšanai, pat ja cilne būs atvērta. Ja pavedienā pašlaik tiek izmantota jūsu pievienotā vietne, var paiet līdz 30 minūtēm, līdz pavedienā vairs netiks izmantota atsauce uz šo vietni.</translation>
 <translation id="1405567553485452995">Gaiši zaļa</translation>
 <translation id="1406370515365284486">Jūsu maksājuma veidi joprojām tiks saglabāti</translation>
@@ -771,6 +773,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2288422996159078444">Tiek skatīts viss, ko jūs rakstāt, visas lapas, kuras skatāt, vai jebkura cita darbība tīmeklī. Vietņu saturs var tikt mainīts, jūs neinformējot.</translation>
 <translation id="2289385804009217824">Apgriešana</translation>
 <translation id="2292556288342944218">Piekļuve internetam ir bloķēta</translation>
+<translation id="2294150501457238325">Pases droša pievienošana</translation>
 <translation id="2295831393422400053">Ieslēdziet iestatījumu “Uzlabot meklēšanu un pārlūkošanu”, lai izmantotu funkciju “Palīdzība rakstīšanā”.</translation>
 <translation id="2296244067976588032">Piekļuves atslēga • iCloud Keychain</translation>
 <translation id="2296331629987861142">Veiciet vienkāršus nomaksas maksājumus (tiek pārbaudīta piemērotība; tiek piemērotas maksas)</translation>
@@ -1131,6 +1134,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2931453528659195355">Pārvaldīt pirkumu informāciju</translation>
 <translation id="2933624813161016821">Folijspieduma folija</translation>
 <translation id="2935726091208500473">savu ciļņu kopīgošanu</translation>
+<translation id="2936698630976431647">Atlasiet akcijas koda lauku, lai automātiski aizpildītu piedāvājumus no lietotnes Google maks</translation>
 <translation id="293796669683825859">Komentāri</translation>
 <translation id="2938225289965773019">atvērt <ph name="PROTOCOL" /> saites</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – lai parādītu kursoru, pārslēgtu lietotnes, atkārtoti ielādētu lapu vai pārietu atpakaļ</translation>
@@ -1283,6 +1287,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3190736958609431397">Atcelt izsekošanu</translation>
 <translation id="3194737229810486521">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pastāvīgi glabāt datus jūsu ierīcē.</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Autovadītāja apliecības pievienošana lietotnei Google maks</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> serverī <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Rezervācijas kods</translation>
 <translation id="3196902089458890316">Vai vienmēr kopīgot atbilstošās cilnes, lai saņemtu labākas atbildes?</translation>
@@ -1390,6 +1395,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3380864720620200369">Klienta ID:</translation>
 <translation id="3383566085871012386">Pašreizējā prioritārā secība</translation>
 <translation id="3383713837163550889">Jūsu lokālie faili tiks dzēsti pēc vienas minūtes</translation>
+<translation id="33837817515081754">Zināmā ceļotāja numura pievienošana lietotnei Google maks</translation>
 <translation id="3384522979010096022">Jūsu organizācija neatļauj skatīt šo vietni</translation>
 <translation id="3391030046425686457">Piegādes adrese</translation>
 <translation id="3391482648489541560">failu rediģēšana</translation>
@@ -1463,6 +1469,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3517264445792388751">Jūsu administrators atspējoja failu sistēmu.</translation>
 <translation id="3518941727116570328">Vairāku objektu apstrāde</translation>
 <translation id="3519670528214225835">Jautāt <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Transportlīdzekļa pievienošana lietotnei Google maks</translation>
 <translation id="3525130752944427905">10 x 14 collas</translation>
 <translation id="3525435918300186947">MIDI ierīču kontrolēšana un pārprogrammēšana?</translation>
 <translation id="3527624163937328588">Noņemt pielikumu</translation>
@@ -1814,6 +1821,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4103249731201008433">Ierīces sērijas numurs nav derīgs.</translation>
 <translation id="4103592298805904008">Kartons (vienslāņa)</translation>
 <translation id="4104702906064390950">Notiek IBAN informācijas saglabāšana</translation>
+<translation id="4104995898379951162">Zināmā ceļotāja numura pievienošana</translation>
 <translation id="4106101218644797743">sinhronizācijas iestatījumos</translation>
 <translation id="4106887816571530227">Iegultais saturs nav atļauts</translation>
 <translation id="4107047499377819067">Ir sākta VPN fona pakalpojumu instalēšana. Tā var ilgt dažas minūtes.</translation>
@@ -1871,6 +1879,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4195459680867822611">Poga “Skatīt Chrome padomus”. Aktivizējiet, lai uzzinātu par Chrome funkcijām.</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4196861286325780578">&amp;Atcelt pārvietošanas atsaukšanu</translation>
+<translation id="4199131764832701740">Pases pievienošana lietotnei Google maks</translation>
 <translation id="4202554117186904723">Piektais rullis</translation>
 <translation id="4203769790323223880">Piekļuve kamerai nav atļauta</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Pārbaudiet ugunsmūri un pretvīrusu programmu konfigurācijas<ph name="END_LINK" />.</translation>
@@ -2236,6 +2245,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Identifikācijas kartes droša atjaunināšana</translation>
 <translation id="4807098396393229769">Vārds uz kartes</translation>
+<translation id="4808598252755230865">Zināmā ceļotāja numura droša pievienošana lietotnei Google maks</translation>
 <translation id="4809079943450490359">Ierīces administratora norādījumi</translation>
 <translation id="4811450222531576619">Uzziniet par tās avotu un tēmu.</translation>
 <translation id="4811696127853690432">Transportlīdzekļa informācijas droša saglabāšana Google makā</translation>
@@ -2265,6 +2275,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4855395119669662878">Jūsu administrators sāks augšupielādēt failus pakalpojumā <ph name="CLOUD_PROVIDER" /> plkst. <ph name="DATE_TIME" />. Ierīcei ir jāpaliek savienotai līdz brīdim, kad failu augšupielāde būs pabeigta. Augšupielādes laikā varēsiet lasīt tikai lokālos failus.</translation>
 <translation id="485902285759009870">Notiek koda verificēšana…</translation>
 <translation id="4860260582253463350">Pirms dodaties uz pakalpojumu YouTube, mums jāpārliecinās, vai tas tiešām esat jūs. Jūs izmantosiet iestatījumus, ko vecāki vai aizbildnis izvēlējās lietotnē Family Link.</translation>
+<translation id="4861514638281352187">Kompensācijas numura droša pievienošana</translation>
 <translation id="4862642413395066333">OCSP atbilžu parakstīšana</translation>
 <translation id="4864406669374375262">Versijas virkne tika kopēta starpliktuvē</translation>
 <translation id="486459320933704969">Kādam no vecākiem vai aizbildnim ir jāapstiprina, ka jūs varat apmeklēt šo vietni.</translation>
@@ -2696,6 +2707,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="55635442646131152">Dokumenta struktūrskats</translation>
 <translation id="5563589142503817291">Lai izmantotu atrašanās vietu, piešķiriet pārlūkam Chrome piekļuvi šeit: <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Atvērt inkognito cilni</translation>
+<translation id="5565613377956908865">ID kartes pievienošana lietotnei Google maks</translation>
 <translation id="5565735124758917034">Aktīvs</translation>
 <translation id="5570825185877910964">Aizsargāt kontu</translation>
 <translation id="5571083550517324815">Nevar saņemt sūtījumu šajā adresē. Atlasiet citu adresi.</translation>
@@ -2883,6 +2895,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5895694128043506580">Google Chrome mēģina parādīt sensitīvu informāciju</translation>
 <translation id="5898767305816764989">Poga “Patīk”; nospiediet taustiņu Enter, lai iesniegtu atsauksmi, ka jums patīk; <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Dzeltena</translation>
+<translation id="5902204772823742902">Autovadītāja apliecības droša pievienošana lietotnei Google maks</translation>
 <translation id="5903264686717710770">Nosaukums:</translation>
 <translation id="5905671155741555195">Jūsu darbavietas adrese var palīdzēt jums paveikt vairāk dažādos Google pakalpojumos, piemēram, iegūt atbilstošākus meklēšanas rezultātus un norādes pakalpojumā Google Maps. Varat rediģēt vai dzēst adresi <ph name="BEGIN_LINK" />savā Google kontā <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (veikta sinhronizācija)</translation>
@@ -3302,6 +3315,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6613866251791999074">Uzzināt vairāk par savu meklētājprogrammu pārlūkā Chrome</translation>
 <translation id="6615297766614333076">2. izvades vieta</translation>
 <translation id="6619496928666593220">Nav aizpildīts IBAN</translation>
+<translation id="662009501953240458">Transportlīdzekļa informācijas droša pievienošana lietotnei Google maks</translation>
 <translation id="6624427990725312378">Kontaktinformācija</translation>
 <translation id="6625629379283886932">Iemāci man kodēt</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> meklēšana</translation>
@@ -3672,6 +3686,7 @@ Papildu informācija:
 <translation id="7261463765917514051">Droši norēķini, izmantojot automātisko aizpildi</translation>
 <translation id="7265608370113700582">Adrese ir pieejama tikai šajā ierīcē.</translation>
 <translation id="7266094331715305887">lietotnes ierīcē</translation>
+<translation id="7268742523336093718">Pases droša pievienošana lietotnei Google maks</translation>
 <translation id="7269151392155523061">Saīsne nedrīkst būt tāda pati kā meklēšanas apkopotāja atslēgvārds, kas definēts politikā <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Jūsu lejupielādētie faili tiek nosūtīti uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šie faili var tikt pārmeklēti, lai konstatētu, vai tajos ir sensitīvi dati vai ļaunprātīga programmatūra, un uzglabāti saskaņā ar uzņēmuma politikām, turklāt tie var būt redzami jūsu administratoram.</translation>
 <translation id="7275334191706090484">Pārvaldītās grāmatzīmes</translation>
@@ -4241,6 +4256,7 @@ Papildu informācija:
 <translation id="8241707690549784388">Lapa, ko meklējāt, izmantoja jūsu ievadīto informāciju. Atgriešanās lapā var radīt jebkuras jūsu darbības atkārtojumu. Vai vēlaties turpināt?</translation>
 <translation id="8242426110754782860">Turpināt</translation>
 <translation id="824620968958405573">Automātiskas pārlūkošanas uzdevums</translation>
+<translation id="8247824837030847066">ID kartes droša pievienošana</translation>
 <translation id="8248406213705193919">Vai droši saglabāt karti?</translation>
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
 <translation id="8250094606476360498">Šī adrese pašlaik ir saglabāta šajā ierīcē. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="ACCOUNT" />).</translation>
@@ -4661,6 +4677,7 @@ Papildu informācija:
 <translation id="9003639428623471314">Aploksne Kahu</translation>
 <translation id="9004367719664099443">Notiek VR sesija</translation>
 <translation id="9005998258318286617">Neizdevās ielādēt PDF dokumentu.</translation>
+<translation id="900686221526305417">Transportlīdzekļa droša pievienošana</translation>
 <translation id="9008201768610948239">Ignorēt</translation>
 <translation id="9010187979699879769">Izveido man mācību plānu</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Nav}=1{No 1 vietnes}zero{No # vietnēm}one{No # vietnes}other{No # vietnēm}}</translation>
@@ -4814,6 +4831,7 @@ Papildu informācija:
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu vietni pakalpojumā Google vietnes, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="949026252328034572">Vairāki dalībnieki (<ph name="MEMBER_COUNT" />) pievienojās ciļņu grupai “<ph name="GROUP_NAME" />”.</translation>
 <translation id="949314938206378263">Jūs lūdzāt atļauju apmeklēt šo vietni. Kāds no jūsu vecākiem var atbildēt lietotnē Family Link.</translation>
+<translation id="949484466204182817">Kompensācijas numura pievienošana lietotnei Google maks</translation>
 <translation id="950736567201356821">Trīs caurumi augšdaļā</translation>
 <translation id="950926967802086924">Piekļuves atslēga • Google paroļu pārvaldnieks</translation>
 <translation id="952165179818196872">Pievienojiet <ph name="PROVIDER" />, lai maksātu, nepārslēdzot lietotnes</translation>
@@ -4828,6 +4846,7 @@ Papildu informācija:
 <translation id="962484866189421427">Šis saturs jūsu ierīcē var mēģināt instalēt maldinošas lietotnes, kas tiek uzdodas par cita veida saturu, vai vākt datus, kas var tikt izmantoti jūsu izsekošanai. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
 <translation id="963734905955638680">Saskaņā ar kādu tiesību aktu, kas ir spēkā jūsu reģionā, pārlūks Chromium aicina jūs izvēlēties noklusējuma meklētājprogrammu. Šīs meklētājprogrammas ir populāras jūsu reģionā un tiek rādītas nejaušā secībā.</translation>
 <translation id="963837307749850257">Visi lietotāji</translation>
+<translation id="963988220224168636">Kompensācijas numura droša pievienošana lietotnei Google maks</translation>
 <translation id="964050462028070434">Pārvaldīt paroles un piekļuves atslēgas…</translation>
 <translation id="964681140808832181">Jā, es vēlos atcelt</translation>
 <translation id="969892804517981540">Oficiālā Uzbūve</translation>

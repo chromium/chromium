@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promoveringen af notifikationer med tips er lukket</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1045899828449635435">Vil du rydde data fra disse websites?</translation>
+<translation id="1049461303780085993">Prøv Gemini i Chrome for at få svar, de vigtigste pointer og meget mere</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Nogle af dine adgangskoder er ikke tilgængelige</translation>
 <translation id="1057623954802068161">Rul til toppen af siden</translation>
@@ -1117,6 +1118,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5465437530117042974">Ændringerne af feltet i bunden med faner er lukket.</translation>
 <translation id="5469852975082458401">Du kan navigere på sider med en tekstmarkør. Tryk på F7, eller deaktiver.</translation>
 <translation id="5471273988133666918">Fanen <ph name="TAB_TITLE" /> kan ikke flyttes</translation>
+<translation id="5478718673237429220">Adgang til HID-enheder (Human Interface Device) er påkrævet</translation>
 <translation id="548278423535722844">Åbn i kortapp</translation>
 <translation id="5489222148748465285">Skal Chrome fortsætte med at søge?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, fane med multivalg i tilstanden integreret billede</translation>
@@ -1964,6 +1966,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="867914734596684889">Vis eller skjul bogmærkelinjen</translation>
 <translation id="8683039184091909753">billede</translation>
 <translation id="8688183792442786085">Valgt fane: <ph name="TAB_TITLE" /></translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> skal have tilladelse til at tilgå HID-enheder for dette website. Du kan ændre denne indstilling senere under Indstillinger &gt; Apps &gt; Særlig appadgang.</translation>
 <translation id="8696297579102085705">Send til din enhed</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
 <translation id="8700565880437506364">Vi præsenterer Gemini i Chrome</translation>

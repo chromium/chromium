@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Mjesec isteka</translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1158134713295836892">Gemini u Chromeu</translation>
+<translation id="1159484622358475170">{count,plural, =1{Provjerili ste 1 lozinku}one{Provjerili ste # lozinku}few{Provjerili ste # lozinke}other{Provjerili ste # lozinki}}</translation>
 <translation id="1161444134753003495">Prijava</translation>
 <translation id="1161663161838091892">Da nastavite, sinhronizirajte kartice i historiju</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditna kartica}one{{count} kreditna kartica}few{{count} kreditne kartice}other{{count} kreditnih kartica}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopiraj URL linka</translation>
 <translation id="199425419756152024">Prikaži lozinku</translation>
 <translation id="1996318269856535896">I dalje možete koristiti postojeće podatke o pregledanju na ovom uređaju. Da ih koristite, odjavite se s upravljanog računa.</translation>
+<translation id="2002971615187574739">Koristite AI da postignete više</translation>
 <translation id="2010008505735295285">Ponovo učitaj</translation>
 <translation id="2012723204723845092">Dobro došli nazad!</translation>
 <translation id="2015722694326466240">Postavite šifru na uređaju da vidite lozinke.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Označi kao nepročitano</translation>
 <translation id="2922210239002704889">Idite na početnu stranicu ili tastaturu</translation>
 <translation id="2924940770243654951">Otvori na novoj anonimnoj kartici</translation>
+<translation id="2934607171563543600">otkako ste završili "Provjerite lozinke"</translation>
 <translation id="2952278131021475699">Pretraživanje kamerom u Objektivu</translation>
 <translation id="2953821385349876107">Odaberite drugi Google račun</translation>
 <translation id="2962516096219646456">Pregled svih podataka za automatsko popunjavanje</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} lozinka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu, {email}.}one{{count} lozinka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu, {email}.}few{{count} lozinke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu, {email}.}other{{count} lozinki je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu, {email}.}}</translation>
 <translation id="3659297405161482746">Nije pronađen nijedan način plaćanja</translation>
 <translation id="3662966164093827811">{count,plural, =1{Odabrana je 1 stavka}one{Odabrana je # stavka}few{Odabrane su # stavke}other{Odabrano je # stavki}}</translation>
+<translation id="3668035568083954765">Zaštitite privatnost i budite sigurni</translation>
 <translation id="3668816008081204991">Lista za čitanje je sakrivena</translation>
 <translation id="3670030362669914947">Broj</translation>
 <translation id="3672283986707092811">Odaberi sve</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Pronađeni su problemi <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Kreiraj sliku</translation>
 <translation id="5059136629401106827">UREDU</translation>
+<translation id="5061202435354361813">Poboljšajte pregledanje</translation>
 <translation id="5062321486222145940">Instaliraj Google Disk</translation>
 <translation id="5067540696062462445">Preuzimanja</translation>
 <translation id="5070314445039955096">Odobrenja za "<ph name="SITE_DOMAIN" />" će se vratiti na zadano kada napustite ovu web lokaciju</translation>
@@ -1686,6 +1691,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6454311990702999318">Nevažeći podaci</translation>
 <translation id="6459411599807878608">Detalji su sakriveni</translation>
 <translation id="646394917185284261">Fajlovi</translation>
+<translation id="6470721056280836221">Google koristi vaše podatke o korištenju funkcija da preporučuje zadatke i ažurira napredak. Level Up možete isključiti bilo kada.</translation>
 <translation id="6472069383518492189">Ovdje ćete pronaći preuzimanja</translation>
 <translation id="6476253015009698798">Praćenje cijena nije dostupno za ovu stranicu.</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
@@ -1763,6 +1769,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opcija za način plaćanja je dostupna iznad tastature.}one{{count} opcija za način plaćanja je dostupna iznad tastature.}few{{count} opcije za način plaćanja su dostupne iznad tastature.}other{{count} opcija za način plaćanja je dostupno iznad tastature.}}</translation>
 <translation id="6682680306647339111">Podsjetnik je uklonjen</translation>
+<translation id="6683022854667115063">Slušalice</translation>
 <translation id="6684262542644248484">Prijavite se na web lokaciju</translation>
 <translation id="6685259053455152195">Prečice koje možete koristiti da brzo izmijenite postavke i koristite funkcije iz trake za adresu.</translation>
 <translation id="6689342293888598653">Bijela boja pozadine</translation>
@@ -1925,6 +1932,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="7233006041370588369">Odaberite lozinku za unos.</translation>
 <translation id="723874023660911012">Promijeni profil</translation>
 <translation id="7241135764990439166">Anonimni način rada nije dostupan</translation>
+<translation id="7245288034498365666">Organizirajte se i uštedite vrijeme</translation>
 <translation id="7253951228444156601">Provjera lozinki…</translation>
 <translation id="7261217796641151584">Dijelite grupu</translation>
 <translation id="7266578100016339897">Ovo vam pomaže da se organizirate. Možete promijeniti ovo u postavkama bilo kada.</translation>

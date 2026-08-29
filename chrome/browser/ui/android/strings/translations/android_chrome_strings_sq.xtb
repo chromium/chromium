@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promovimi i njoftimeve të këshillave u mbyll</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1045899828449635435">Të pastrohen edhe të dhënat nga këto sajte?</translation>
+<translation id="1049461303780085993">Provo Gemini në Chrome për të marrë përgjigje, pikat kryesore etj.</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="1052842760770519282">Disa nga fjalëkalimet e tua nuk janë të qasshme</translation>
 <translation id="1057623954802068161">Lëviz në krye të faqes</translation>
@@ -986,6 +987,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4913169188695071480">Ndalo rifreskimin</translation>
 <translation id="4921224083091001889">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chrome si <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Shkarkimi nuk rekomandohet nga organizata jote</translation>
+<translation id="4924398189611529766">Kur shfleton në modalitetin "I fshehtë", të tjerët që e përdorin këtë pajisje nuk do të shikojnë aktivitetin tënd, kështu që mund të shfletosh në mënyrë më private. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Pamja e ekranit më <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Mund t'i ruash imazhet dhe skedarët që t'i shikosh offline ose t'i ndash në aplikacione të tjera</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 faqeshënues dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}other{# faqeshënues dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}}</translation>
@@ -1116,6 +1118,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5465437530117042974">Ndryshimet e fletës së poshtme të skedës u mbyllën.</translation>
 <translation id="5469852975082458401">Mund t'i navigosh faqet me një kursor teksti. Shtyp F7 për ta çaktivizuar.</translation>
 <translation id="5471273988133666918">Skeda <ph name="TAB_TITLE" /> nuk mund të zhvendoset</translation>
+<translation id="5478718673237429220">Kërkohet qasja te pajisja për ndërveprim me përdoruesin</translation>
 <translation id="548278423535722844">Hape në aplikacionin e hartave</translation>
 <translation id="5489222148748465285">Të lejohet Chrome të kërkojë?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, skeda e zgjedhur me shumë të tjera e "Figurë brenda figurës"</translation>
@@ -1963,6 +1966,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="867914734596684889">Shfaq ose fshih shiritin e faqeshënuesve</translation>
 <translation id="8683039184091909753">imazhi</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, skeda e zgjedhur</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> ka nevojë për leje për t'u qasur te pajisjet për ndërveprim me përdoruesin (HID) për këtë sajt. Mund ta ndryshosh këtë cilësim më vonë te Cilësimet &gt; Aplikacionet &gt; Qasja e veçantë e aplikacioneve.</translation>
 <translation id="8696297579102085705">Dërgo te pajisja jote</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
 <translation id="8700565880437506364">Prezantimi i Gemini në Chrome</translation>

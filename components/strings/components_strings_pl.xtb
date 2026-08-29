@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Przygotowuję pliki</translation>
 <translation id="1014509239502131234">Cofam wynik</translation>
 <translation id="1015730422737071372">Podaj dodatkowe informacje</translation>
+<translation id="1016671033299705843">Bezpiecznie dodaj prawo jazdy</translation>
 <translation id="1019413721762100891">wyłączono</translation>
 <translation id="1021753677514347426">Ten problem pojawia się z powodu certyfikatu zainstalowanego na tym urządzeniu przez Ciebie lub inną osobę. Ten certyfikat jest używany do monitorowania i przechwytywania ruchu sieciowego. Chromium mu nie ufa. Choć w pewnych przypadkach (np. w sieci szkolnej lub firmowej) monitorowanie jest uzasadnione i legalne, Chromium będzie Cię o tym powiadamiać, nawet jeśli nie możesz nic na to poradzić. Monitorowanie może odbywać się w każdej przeglądarce lub aplikacji, która ma dostęp do sieci.</translation>
 <translation id="1024111578869940408">Niektóre złośliwe strony podszywają się pod inne, używając bardzo podobnych adresów internetowych, które różnią się trudnymi do zauważenia szczegółami.</translation>
@@ -238,6 +239,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1392813880755413602">Prezentacja OpenDocument</translation>
 <translation id="139305205187523129">Serwer <ph name="HOST_NAME" /> nie wysłał żadnych danych.</translation>
 <translation id="1393071644879491291">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasła, numery telefonów czy numery kart kredytowych. Chrome zdecydowanie zaleca powrót do bezpieczeństwa. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Bezpiecznie dodaj dowód tożsamości do Portfela Google</translation>
 <translation id="1398743098754840707">Witryny dodane tutaj nie będą używane jako odniesienie w odpowiedziach, nawet wtedy, gdy karta będzie otwarta. Jeśli dodana witryna jest obecnie używana w wątku, może minąć do 30 minut, zanim wątek przestanie się do niej odwoływać.</translation>
 <translation id="1405567553485452995">Jasnozielony</translation>
 <translation id="1406370515365284486">Twoje formy płatności nadal będą zapisane</translation>
@@ -771,6 +773,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2288422996159078444">Wszystko co piszesz, przeglądane przez Ciebie strony i wszelka pozostała aktywność w internecie są monitorowane. Oprócz tego bez Twojej wiedzy mogą zostać zmienione treści na stronach.</translation>
 <translation id="2289385804009217824">Przycięcie</translation>
 <translation id="2292556288342944218">Masz zablokowany dostęp do internetu</translation>
+<translation id="2294150501457238325">Bezpiecznie dodaj paszport</translation>
 <translation id="2295831393422400053">Aby korzystać z funkcji Pomóż mi napisać, włącz ustawienie Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="2296244067976588032">Klucz dostępu • Pęk kluczy iCloud</translation>
 <translation id="2296331629987861142">Płać w niewielkich ratach (jeśli spełniasz wymagania; obowiązują opłaty)</translation>
@@ -1131,6 +1134,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2931453528659195355">Zarządzaj informacjami o zakupach</translation>
 <translation id="2933624813161016821">Folia do wytłaczania</translation>
 <translation id="2935726091208500473">udostępnianiu kart</translation>
+<translation id="2936698630976431647">Wybierz pole kodu promocyjnego, aby automatycznie uzupełniać oferty z Portfela Google</translation>
 <translation id="293796669683825859">Komentarze</translation>
 <translation id="2938225289965773019">Otwieranie linków protokołu <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – aby wyświetlić kursor, przełącz aplikacje, odśwież stronę lub wróć do poprzedniej</translation>
@@ -1283,6 +1287,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="3194737229810486521"><ph name="URL" /> chce na stałe przechowywać dane na Twoim urządzeniu</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Dodaj prawo jazdy do Portfela Google</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serwerze <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Kod rezerwacji</translation>
 <translation id="3196902089458890316">Czy chcesz zawsze udostępniać odpowiednie karty, aby otrzymywać lepsze odpowiedzi?</translation>
@@ -1390,6 +1395,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3380864720620200369">Identyfikator klienta:</translation>
 <translation id="3383566085871012386">Obecna kolejność obowiązywania</translation>
 <translation id="3383713837163550889">Za minutę Twoje pliki lokalne zostaną usunięte</translation>
+<translation id="33837817515081754">Dodaj numer KTN do Portfela Google</translation>
 <translation id="3384522979010096022">Twoja organizacja nie zezwala na wyświetlanie tej witryny</translation>
 <translation id="3391030046425686457">Adres dostawy</translation>
 <translation id="3391482648489541560">edytowanie plików</translation>
@@ -1463,6 +1469,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3517264445792388751">System plików został wyłączony przez administratora</translation>
 <translation id="3518941727116570328">Obsługa wielu obiektów</translation>
 <translation id="3519670528214225835">Zapytaj <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Dodaj pojazd do Portfela Google</translation>
 <translation id="3525130752944427905">10 x 14 cali</translation>
 <translation id="3525435918300186947">Sterować urządzeniami MIDI i je przeprogramowywać?</translation>
 <translation id="3527624163937328588">Usuń załącznik</translation>
@@ -1816,6 +1823,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4103249731201008433">Numer seryjny urządzenia jest nieprawidłowy</translation>
 <translation id="4103592298805904008">Tektura (jednowarstwowa)</translation>
 <translation id="4104702906064390950">Zapisuję dane numeru IBAN</translation>
+<translation id="4104995898379951162">Bezpiecznie dodaj numer KTN</translation>
 <translation id="4106101218644797743">ustawieniach synchronizacji</translation>
 <translation id="4106887816571530227">Umieszczona treść jest niedozwolona</translation>
 <translation id="4107047499377819067">Rozpoczęła się instalacja usług VPN działających w tle. Może to potrwać kilka minut.</translation>
@@ -1873,6 +1881,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4195459680867822611">Przycisk Zobacz wskazówki na temat Chrome; aktywuj, aby dowiedzieć się więcej o funkcjach Chrome</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4196861286325780578">&amp;Ponów przeniesienie</translation>
+<translation id="4199131764832701740">Dodaj paszport do Portfela Google</translation>
 <translation id="4202554117186904723">Rolka 5</translation>
 <translation id="4203769790323223880">Kamera nie jest dozwolona</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Sprawdź konfigurację zapory sieciowej i oprogramowania antywirusowego<ph name="END_LINK" /></translation>
@@ -2238,6 +2247,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4805128460707321168">Bezpiecznie zaktualizuj dowód tożsamości</translation>
 <translation id="4807098396393229769">Imię i nazwisko na karcie</translation>
+<translation id="4808598252755230865">Bezpiecznie dodaj numer KTN do Portfela Google</translation>
 <translation id="4809079943450490359">Instrukcje od administratora urządzenia:</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
 <translation id="4811696127853690432">Bezpiecznie zapisz pojazd w Portfelu Google</translation>
@@ -2267,6 +2277,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4855395119669662878">Administrator zacznie przesyłać Twoje pliki do usługi <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Dopóki pliki nie zostaną przesłane, nie odłączaj urządzenia. Podczas przesyłania możliwy będzie tylko odczyt plików lokalnych.</translation>
 <translation id="485902285759009870">Weryfikuję kod...</translation>
 <translation id="4860260582253463350">Zanim przejdziesz do YouTube, musimy się upewnić, że to Ty. Włączymy ustawienia skonfigurowane przez rodzica lub opiekuna w Family Link.</translation>
+<translation id="4861514638281352187">Bezpiecznie dodaj numer redress</translation>
 <translation id="4862642413395066333">Podpisywanie odpowiedzi protokołu OCSP</translation>
 <translation id="4864406669374375262">Ciąg znaków wersji został skopiowany do schowka</translation>
 <translation id="486459320933704969">Twój rodzic lub opiekun musi wyrazić zgodę na odwiedzenie tej witryny</translation>
@@ -2698,6 +2709,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="55635442646131152">Konspekt dokumentu</translation>
 <translation id="5563589142503817291">Aby używać lokalizacji, otwórz <ph name="LINK" /> i zezwól Chrome na dostęp.</translation>
 <translation id="5565613213060953222">Otwórz kartę incognito</translation>
+<translation id="5565613377956908865">Dodaj dowód tożsamości do Portfela Google</translation>
 <translation id="5565735124758917034">Aktywny</translation>
 <translation id="5570825185877910964">Chroń konto</translation>
 <translation id="5571083550517324815">Odbiór spod tego adresu jest niemożliwy. Wybierz inny adres.</translation>
@@ -2885,6 +2897,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5895694128043506580">Google Chrome próbuje wyświetlić informacje poufne</translation>
 <translation id="5898767305816764989">Przycisk Lubię. Naciśnij Enter, aby wskazać, że sugestia <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> Ci się podoba</translation>
 <translation id="5901630391730855834">Żółty</translation>
+<translation id="5902204772823742902">Bezpiecznie dodaj prawo jazdy do Portfela Google</translation>
 <translation id="5903264686717710770">Tytuł:</translation>
 <translation id="5905671155741555195">Dzięki adresowi służbowemu możesz korzystać z usług Google w bardziej efektywny sposób, np. otrzymywać trafniejsze wyniki wyszukiwania i wskazówki dojazdu w Mapach Google. Adres możesz zmienić lub usunąć <ph name="BEGIN_LINK" />na koncie Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (zsynchronizowane)</translation>
@@ -3304,6 +3317,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6613866251791999074">Więcej informacji o wyszukiwarce w Chrome</translation>
 <translation id="6615297766614333076">Układarka 2</translation>
 <translation id="6619496928666593220">Nie wypełniono numeru IBAN</translation>
+<translation id="662009501953240458">Bezpiecznie dodaj pojazd do Portfela Google</translation>
 <translation id="6624427990725312378">Dane kontaktowe</translation>
 <translation id="6625629379283886932">Naucz mnie programować</translation>
 <translation id="6628463337424475685">Wyszukiwarka <ph name="ENGINE" /></translation>
@@ -3674,6 +3688,7 @@ Dodatkowe informacje:
 <translation id="7261463765917514051">Płać bezpiecznie dzięki autouzupełnianiu</translation>
 <translation id="7265608370113700582">Adres jest dostępny tylko na tym urządzeniu</translation>
 <translation id="7266094331715305887">aplikacje na urządzeniu</translation>
+<translation id="7268742523336093718">Bezpiecznie dodaj paszport do Portfela Google</translation>
 <translation id="7269151392155523061">Skrót nie może być taki sam jak słowo kluczowe agregatora wyszukiwania zdefiniowane przez zasadę <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Pobierane pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych lub złośliwego oprogramowania, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
 <translation id="7275334191706090484">Zakładki zarządzane</translation>
@@ -4243,6 +4258,7 @@ Dodatkowe informacje:
 <translation id="8241707690549784388">Strona, na której wyszukiwane są wprowadzone przez Ciebie informacje. Powrót do tej strony może spowodować konieczność powtórzenia wykonanych czynności. Czy chcesz kontynuować?</translation>
 <translation id="8242426110754782860">Dalej</translation>
 <translation id="824620968958405573">Zadanie automatycznego przeglądania</translation>
+<translation id="8247824837030847066">Bezpiecznie dodaj dowód tożsamości</translation>
 <translation id="8248406213705193919">Zapisać bezpiecznie kartę?</translation>
 <translation id="8249296373107784235">Przerwij</translation>
 <translation id="8250094606476360498">Ten adres jest obecnie zapisany na tym urządzeniu. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="ACCOUNT" />.</translation>
@@ -4662,6 +4678,7 @@ Dodatkowe informacje:
 <translation id="9003639428623471314">Koperta Kahu</translation>
 <translation id="9004367719664099443">Trwa sesja VR</translation>
 <translation id="9005998258318286617">Nie udało się wczytać dokumentu PDF.</translation>
+<translation id="900686221526305417">Bezpiecznie dodaj pojazd</translation>
 <translation id="9008201768610948239">Ignoruj</translation>
 <translation id="9010187979699879769">Utwórz dla mnie harmonogram nauki</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Brak}=1{Z 1 witryny}few{Z # witryn}many{Z # witryn}other{Z # witryny}}</translation>
@@ -4815,6 +4832,7 @@ Dodatkowe informacje:
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nową witrynę w Witrynach Google</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> użytkowników dołączyło do grupy kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="949314938206378263">Prosisz o zgodę na odwiedzenie tej strony. Twój rodzic może odpowiedzieć w Family Link.</translation>
+<translation id="949484466204182817">Dodaj numer redress do Portfela Google</translation>
 <translation id="950736567201356821">Trzy otwory u góry</translation>
 <translation id="950926967802086924">Klucz dostępu • Menedżer haseł Google</translation>
 <translation id="952165179818196872">Dodaj <ph name="PROVIDER" />, aby płacić bez przełączania aplikacji</translation>
@@ -4829,6 +4847,7 @@ Dodatkowe informacje:
 <translation id="962484866189421427">Te treści mogą próbować zainstalować wprowadzające w błąd aplikacje, które udają, że są przeznaczone do czegoś innego niż w rzeczywistości, lub zbierają dane, na podstawie których można Cię śledzić. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Zgodnie z przepisami prawa obowiązującymi w Twoim regionie Chromium prosi Cię o wybranie domyślnej wyszukiwarki. Te wyszukiwarki są popularne w Twoim regionie. Pokazujemy je w kolejności losowej.</translation>
 <translation id="963837307749850257">Wszyscy użytkownicy</translation>
+<translation id="963988220224168636">Bezpiecznie dodaj numer redress do Portfela Google</translation>
 <translation id="964050462028070434">Zarządzaj hasłami i kluczami dostępu…</translation>
 <translation id="964681140808832181">Tak, chcę anulować</translation>
 <translation id="969892804517981540">Oficjalna wersja</translation>

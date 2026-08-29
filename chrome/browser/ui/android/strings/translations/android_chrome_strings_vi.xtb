@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Thông báo quảng cáo kèm mẹo đã đóng</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1045899828449635435">Đồng thời xóa dữ liệu khỏi các trang web này?</translation>
+<translation id="1049461303780085993">Dùng thử Gemini trong Chrome để nhận câu trả lời, nắm bắt ý chính và nhiều lợi ích khác</translation>
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="1052842760770519282">Không sử dụng được một số mật khẩu của bạn</translation>
 <translation id="1057623954802068161">Di chuyển lên đầu trang</translation>
@@ -1117,6 +1118,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5465437530117042974">Đã đóng bảng thẻ ở dưới cùng.</translation>
 <translation id="5469852975082458401">Bạn có thể di chuyển giữa các trang bằng con trỏ văn bản. Hãy nhấn F7 để tắt.</translation>
 <translation id="5471273988133666918">Không thể di chuyển thẻ <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">Cần có quyền truy cập vào thiết bị giao diện người dùng</translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
 <translation id="5489222148748465285">Cho phép Chrome tiếp tục tìm?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />: Thẻ được chọn cùng với nhiều thẻ khác và đang ở chế độ hình trong hình</translation>
@@ -1964,6 +1966,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="867914734596684889">Hiển thị hoặc ẩn thanh Dấu trang</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, thẻ được chọn</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> cần có quyền truy cập vào các thiết bị giao diện người dùng (HID) cho trang web này. Bạn có thể thay đổi chế độ cài đặt này sau trong phần Cài đặt &gt; Ứng dụng &gt; Quyền truy cập đặc biệt.</translation>
 <translation id="8696297579102085705">Gửi tới thiết bị của bạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
 <translation id="8700565880437506364">Giới thiệu Gemini trong Chrome</translation>

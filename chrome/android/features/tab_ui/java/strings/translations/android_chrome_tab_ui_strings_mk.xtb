@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Избриши ја групата</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна ставка}one{<ph name="TABS_COUNT_MANY" /> неактивна ставка}other{<ph name="TABS_COUNT_MANY" /> неактивни ставки}}</translation>
 <translation id="1568067597247500137">Исклучи звук за сајт</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Премести ја картичката подолу}one{Премести ги картичките подолу}other{Премести ги картичките подолу}}</translation>
 <translation id="1645759014353344461">Создадена е група со картички (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1670942869417022142">Звукот на аудиото е исклучен</translation>
 <translation id="1697284962337958118">Додај во</translation>
 <translation id="1713541401465507417">Затвори ги сите картички и групи</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група картички веќе не е достапна}one{<ph name="TAB_GROUPS_COUNT_MANY" /> група картички веќе не се достапни}other{<ph name="TAB_GROUPS_COUNT_MANY" /> групи картички веќе не се достапни}}</translation>
+<translation id="1759122978835002237">Премести ја групата картички погоре</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Дознајте повеќе<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Создадена е група со <ph name="TABS_COUNT_ONE" /> картичка</translation>
 <translation id="1844381456014878100">По неактивност од 7 дена</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Картичката „Инкогнито“ нема да биде достапна.}one{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картичка „Инкогнито“ нема да бидат достапни.}other{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картички „Инкогнито“ нема да бидат достапни.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Вклучи го звукот на сајтот}one{Вклучи го звукот на сајтовите}other{Вклучи го звукот на сајтовите}}</translation>
 <translation id="2162620598375156287">Сега <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Премести ја групата картички подолу</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Одгрупирај ја картичката}one{Одгрупирај ги картичките}other{Одгрупирај ги картичките}}</translation>
 <translation id="2271452184061378400">Вашите групи картички се зачувани овде</translation>
 <translation id="2277224997687551299">Изменете го името на групата</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Групата картички „<ph name="TAB_GROUP_NAME" />“ веќе не е достапна</translation>
 <translation id="7402375256128852434">Додајте ги неодамнешните картички</translation>
 <translation id="7452985128687107478">Групите картички автоматски се зачувуваат и ажурираат на сите ваши уреди</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Премести ја картичката погоре}one{Премести ги картичките погоре}other{Премести ги картичките погоре}}</translation>
 <translation id="747459581954555080">Поврати ги сите</translation>
 <translation id="7489558427602531799">Премести ја групата картички надесно</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ставка}one{<ph name="TABS_COUNT_MANY" /> ставка}other{<ph name="TABS_COUNT_MANY" /> ставки}}</translation>

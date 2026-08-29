@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Se cerró a promoción de notificaciones de sugerencias</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1045899828449635435">¿Borrar estos datos?</translation>
+<translation id="1049461303780085993">Prueba Gemini en Chrome para obtener respuestas, información clave y mucho más</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1052842760770519282">No se puede acceder a algunas de tus contraseñas</translation>
 <translation id="1057623954802068161">Desplazarse hasta la parte superior de la página</translation>
@@ -1117,6 +1118,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5465437530117042974">Se cerró la hoja inferior de pestañas.</translation>
 <translation id="5469852975082458401">Puedes navegar páginas con un cursor de texto. Presiona F7 para desactivar esta función.</translation>
 <translation id="5471273988133666918">No se puede mover la pestaña <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">Se requiere acceso a dispositivos de interfaz humana</translation>
 <translation id="548278423535722844">Abrir en una app de mapas</translation>
 <translation id="5489222148748465285">¿Quieres que Chrome siga buscando?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla con selección múltiple</translation>
@@ -1964,6 +1966,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="867914734596684889">Mostrar u ocultar la barra de Favoritos</translation>
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestaña seleccionada</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> necesita permiso para acceder a dispositivos de interfaz humana (HID) para este sitio. Puedes cambiar este parámetro de configuración más adelante en Configuración &gt; Apps &gt; Acceso especial de apps.</translation>
 <translation id="8696297579102085705">Enviar al dispositivo</translation>
 <translation id="8699120352855309748">No ofrecer la traducción de estos idiomas</translation>
 <translation id="8700565880437506364">Presentamos Gemini en Chrome</translation>

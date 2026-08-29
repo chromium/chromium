@@ -2501,6 +2501,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2926708162326352948">Thème mis à jour avec l'image téléversée</translation>
 <translation id="2927017729816812676">Stockage du cache</translation>
 <translation id="2928030851119977280">Choix enregistré. Votre choix s'appliquera lorsque vous vous connecterez à d'autres services Google.</translation>
+<translation id="2928361271496576301">Raccourci-clavier d'acceptation</translation>
 <translation id="2928795416630981206">Autorisés à suivre la position de votre caméra</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome a retiré les autorisations de 1 site}one{Chrome a retiré les autorisations de {NUM_SITES} site}other{Chrome a retiré les autorisations de {NUM_SITES} sites}}</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
@@ -2591,6 +2592,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2992754757708650257">Quitter le site et terminer la tâche?</translation>
 <translation id="2992931425024192067">Afficher l'intégralité du contenu des notifications</translation>
 <translation id="2993517869960930405">Détails de l'appli</translation>
+<translation id="2994495699095559601">Pour vous donner des réponses plus pertinentes, Google utilise le contenu et l'URL des onglets partagés. Votre onglet actuel est partagé dans les nouveaux clavardages. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="2994804273850542871">Niveau 4 : ULTRA</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder}one{Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder}other{Conservez ces groupes pour y ajouter des onglets plus tard ou quittez-les si vous ne voulez plus y accéder}}</translation>
 <translation id="2996071302059856125">En savoir plus sur la façon dont l'IA façonne votre expérience et sur les commandes offertes par Chrome</translation>
@@ -3109,6 +3111,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3394850431319394743">Autorisé à utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="339722927132407568">Fige</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
+<translation id="3400036602686830681">Votre mot de passe a été exposé dans une violation de données. Modifiez-le maintenant ou examinez tous les problèmes dans la <ph name="BEGIN_LINK" />Vérification de mot de passe<ph name="END_LINK" />.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz), entrelacé</translation>
 <translation id="3401484564516348917">Lire de l'information à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés, des valeurs de registre et des fichiers</translation>
 <translation id="3402255108239926910">Choisissez un avatar</translation>
@@ -3537,6 +3540,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> imprimantes ont été trouvées sur le serveur d'impression</translation>
 <translation id="3712143870407382523">Choisissez une fenêtre pour ce côté</translation>
 <translation id="3712897371525859903">Enregistrer la p&amp;age sous...</translation>
+<translation id="3712966523643024813">Nouveautés</translation>
 <translation id="371300529209814631">Retour/Continuer</translation>
 <translation id="371302509916403935">Souligné</translation>
 <translation id="3713047097299026954">Cette clé de sécurité ne contient aucune donnée de connexion</translation>
@@ -3700,6 +3704,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3812525830114410218">Certificat non fiable</translation>
 <translation id="3813296892522778813">Accédez à l'<ph name="BEGIN_LINK_CHROMIUM" />aide Google Chrome<ph name="END_LINK_CHROMIUM" /> si vous ne parvenez pas à trouver ce que vous recherchez</translation>
 <translation id="3813358687923336574">Langue utilisée pour la traduction des pages et des réponses rapides</translation>
+<translation id="381485723922188688">Option</translation>
 <translation id="3815668647912194650">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder.</translation>
 <translation id="3816118180265633665">Couleurs de Chrome</translation>
 <translation id="3817524650114746564">Ouvrez les paramètres de mandataires de votre ordinateur</translation>
@@ -4815,6 +4820,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4699172675775169585">Images et fichiers mis en cache</translation>
 <translation id="4699357559218762027">(lancement automatique)</translation>
 <translation id="4699473989647132421">Rivage</translation>
+<translation id="4700734033170984447">Résumer cette page avec Gemini</translation>
 <translation id="4701335814944566468">Consulté hier</translation>
 <translation id="4705082603944362042">{MIN_PIN_LENGTH,plural, =1{Entrez votre nouveau NIP. Un NIP doit comporter au moins un caractère et peut contenir des lettres, des chiffres et d'autres caractères.}one{Entrez votre nouveau NIP. Un NIP doit comporter au moins # caractère et peut contenir des lettres, des chiffres et d'autres caractères.}other{Entrez votre nouveau NIP. Un NIP doit comporter au moins # caractères et peut contenir des lettres, des chiffres et d'autres caractères.}}</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
@@ -4899,6 +4905,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+flèche vers le bas pour répondre</translation>
 <translation id="4772914216048388646">Ordonné</translation>
 <translation id="4773122030389014189">Partager le groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
+<translation id="4773299976671772492">Arrêté</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> supprimées</translation>
 <translation id="4776311127346151860">Connexion de votre <ph name="DEVICE_NAME" /> réussie</translation>
@@ -5595,6 +5602,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5298315677001348398">Voulez-vous continuer et autoriser ce logiciel à apporter des modifications à votre appareil?</translation>
 <translation id="5299109548848736476">Ne pas faire le suivi</translation>
 <translation id="5299558715747014286">Afficher et gérer vos groupes d'onglets</translation>
+<translation id="5300667117276823109">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />données Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ne seront pas examinées ni utilisées pour améliorer les modèles d'IA générative. Gemini est une IA et peut se tromper.</translation>
 <translation id="5301398529256275325">Essayez de poser des questions comme « résumer cette page » ou votre propre question.</translation>
 <translation id="5301954838959518834">J'ai compris.</translation>
 <translation id="5302032366299160685">Attendez que le fichier s'ouvre avant de réessayer</translation>
@@ -5993,6 +6001,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5625225435499354052">Modifier dans Google Pay</translation>
 <translation id="5627832140542566187">Orientation de l'écran</translation>
 <translation id="5628434207686266338">Définir le mot de passe de l'appareil</translation>
+<translation id="5628652442614339066">Ouvrez-le facilement avec</translation>
 <translation id="562935524653278697">Votre administrateur a désactivé la synchronisation de vos favoris, de l'historique, des mots de passe et d'autres paramètres.</translation>
 <translation id="5631017369956619646">Utilisation de l'UC</translation>
 <translation id="5631272057151918206">Cela va retirer jusqu'à <ph name="OFFLINE_STORAGE_SIZE" /> d'espace utilisés par vos fichiers hors ligne. Certains fichiers seront toujours accessibles hors ligne. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -6354,6 +6363,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5926936390113611560">Ouvrir tous les profils</translation>
 <translation id="592880897588170157">Téléchargez des fichiers PDF plutôt que de les ouvrir automatiquement dans Chrome</translation>
 <translation id="5930567261594625340">Ciel nocturne</translation>
+<translation id="5931292892421325763">&amp;Ouvrir le gestionnaire de favoris</translation>
 <translation id="5932194499818201827">Ouvrir le lien dans une fenêtre de navigation privée</translation>
 <translation id="5932224571077948991">Site diffusant des annonces intrusives ou trompeuses</translation>
 <translation id="59324397759951282">Appareil USB fabriqué par <ph name="MANUFACTURER_NAME" /></translation>
@@ -6457,6 +6467,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6003143259071779217">Retirer le réseau cellulaire de la carte eSIM</translation>
 <translation id="6003479444341796444">La barre de titre est maintenant affichée</translation>
 <translation id="6003582434972667631">Thème défini par votre organisation</translation>
+<translation id="6005010326905893430">modifier le vôtre</translation>
 <translation id="6005045517426700202">Bâtiment en brique</translation>
 <translation id="6006484371116297560">Classique</translation>
 <translation id="6007053304250788613">Un seul écran peut être exclu en mode Miroir</translation>
@@ -6831,6 +6842,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6305627295927385295">Supprimer ce qui suit :</translation>
 <translation id="6305702903308659374">Utiliser un volume de lecture normal même si ChromeVox est en train de parler</translation>
 <translation id="6307268917612054609">Les services système ainsi que les applications et les sites Web disposant de l'autorisation d'accéder à la caméra peuvent utiliser votre caméra</translation>
+<translation id="6307884029666635765">Créer un &amp;code QR</translation>
 <translation id="6307990684951724544">Système occupé</translation>
 <translation id="6308778163698400658">Ajouter à la barre d'outils</translation>
 <translation id="6308937455967653460">Enregistrer le lie&amp;n sous...</translation>
@@ -7388,6 +7400,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6740234557573873150">Mettre en pause <ph name="FILE_NAME" /></translation>
 <translation id="6743841972744298686">Paramètres de synchronisation</translation>
 <translation id="6744397361782514824">Échanger avec l'affichage de gauche</translation>
+<translation id="6745569635660688171">Capture d'écran de la région sélectionnée</translation>
 <translation id="6746124502594467657">Déplacer vers le bas</translation>
 <translation id="67465227497040338">Afficher le mot de passe pour <ph name="DOMAIN" /></translation>
 <translation id="6746834324024491643">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
@@ -7464,6 +7477,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6801435275744557998">Calibrer l'écran tactile</translation>
 <translation id="6801920212017470190">Restez informé de toutes les baisses de prix en déplacement</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
+<translation id="6802825994120702390">Ajoutez du contexte à votre question en sélectionnant une zone ou l'intégralité de votre écran</translation>
 <translation id="6803766346203101854">Ce site est autorisé à enregistrer des données sur votre appareil.</translation>
 <translation id="6805236548654699520">Retirez les fenêtres contextuelles indésirables, résolvez les problèmes de réseau et bien plus encore en restaurant vos paramètres à Sécurisé par défaut.</translation>
 <translation id="6805478749741295868">Il s'agit d'une fonctionnalité d'IA expérimentale et elle ne fonctionnera pas toujours correctement.</translation>
@@ -8732,6 +8746,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7777624210360383048">Raccourci <ph name="SHORTCUT" /> pour <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Ouvrir le gestionnaire de favoris</translation>
 <translation id="7779840061887151693">affichage</translation>
+<translation id="7780716468751073938">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />données Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ne seront pas examinées ni utilisées pour améliorer les modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus peuvent ne pas convenir à tout le monde.</translation>
 <translation id="7782102568078991263">Aucune autre suggestion de Google</translation>
 <translation id="7782717250816686129">Stocker les données persistantes à l'écran de connexion et insérer les authentifiants dans la session.</translation>
 <translation id="7784020347632229094">En savoir plus sur le raccourci-clavier</translation>
@@ -8795,6 +8810,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
 <translation id="7834832693620032149">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
 <translation id="7836850009646241041">Essayez de toucher votre clé de sécurité à nouveau</translation>
+<translation id="7837994938322273689">Nommer la fenêtre…</translation>
 <translation id="7838838951812478896">Impossible d'enregistrer « <ph name="NETWORK_NAME" /> » à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> envoyé à l'appareil <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> envoyé à l'appareil <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> envoyés à l'appareil <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839696104613959439">Afficher la sélection de réseaux</translation>
@@ -10410,6 +10426,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9071664234353284876">Aucune authentification</translation>
 <translation id="9072220108592671115">Version <ph name="VERSION" /> installée</translation>
 <translation id="9072918088200875065">Vous avez autorisé Gemini à se connecter à ces sites pour effectuer des tâches à votre place.</translation>
+<translation id="9074190188883314952">Utilisez le bouton de lentille pour partager ce qui s'affiche à l'écran</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 cœur}one{{CORE_COUNT} cœur}other{{CORE_COUNT} cœurs}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9075413375877487220">Cette extension n'est pas approuvée par la navigation sécurisée améliorée.</translation>
@@ -10562,6 +10579,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement sur votre compte Google, vous ne pouvez ni partager ni rejoindre des groupes d'onglets</translation>
 <translation id="9197456336762295195">Balayez ce code QR avec l'appareil photo de l'appareil qui possède votre clé d'accès pour google.com</translation>
 <translation id="919840898042157087">Mouvement statique</translation>
+<translation id="9198797990125364460">Poser des questions à Google où que vous soyez</translation>
 <translation id="9199503643457729322">Cliquez pour quitter le Guide sur la confidentialité.</translation>
 <translation id="9199695835892108985">Réinitialiser toutes les autorisations du port série?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> pourra modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>

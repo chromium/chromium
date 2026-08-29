@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Nõuandemärguannete promo on suletud</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1045899828449635435">Kas kustutada ka nende saitide andmed?</translation>
+<translation id="1049461303780085993">Proovige Geminit Chrome'is, et saada vastuseid, põhipunkte ja muud</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Mõnele teie paroolile ei pääse juurde</translation>
 <translation id="1057623954802068161">Kerige lehe ülaossa</translation>
@@ -1117,6 +1118,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5465437530117042974">Vahelehe alumise lehe muudatused on suletud.</translation>
 <translation id="5469852975082458401">Lehtedel saab navigeerida tekstikursoriga. Funktsiooni väljalülitamiseks vajutage klahvi F7.</translation>
 <translation id="5471273988133666918">Vahelehte <ph name="TAB_TITLE" /> ei saa teisaldada</translation>
+<translation id="5478718673237429220">Nõutav on juurdepääs inimliidesega seadmele</translation>
 <translation id="548278423535722844">Avage kaardirakenduses</translation>
 <translation id="5489222148748465285">Kas Chrome võib edasi otsida?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, mitmikvalikuga pilt-pildis vaheleht</translation>
@@ -1964,6 +1966,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="867914734596684889">Järjehoidjariba kuvamine või peitmine</translation>
 <translation id="8683039184091909753">pilt</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, valitud vaheleht</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> vajab selle saidi puhul luba, et inimliidesega seadmetele (HID-dele) juurde pääseda. Seda seadet saate hiljem muuta jaotises Seaded &gt; Rakendused &gt; Rakenduse erijuurdepääs.</translation>
 <translation id="8696297579102085705">Saada seadmesse</translation>
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
 <translation id="8700565880437506364">Tutvustame Geminit Chrome'is</translation>

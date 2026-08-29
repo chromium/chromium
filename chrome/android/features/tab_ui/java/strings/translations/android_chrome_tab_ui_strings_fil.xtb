@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> hindi aktibong item}one{<ph name="TABS_COUNT_MANY" /> hindi aktibong item}other{<ph name="TABS_COUNT_MANY" /> na hindi aktibong item}}</translation>
 <translation id="1568067597247500137">I-mute ang site</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Ilipat ang tab pababa}one{Ilipat ang mga tab pababa}other{Ilipat ang mga tab pababa}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> (na) tab ang naigrupo</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1670942869417022142">Naka-mute na audio</translation>
 <translation id="1697284962337958118">Idagdag sa</translation>
 <translation id="1713541401465507417">Isara ang lahat ng tab at grupo</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{Hindi na available ang <ph name="TAB_GROUPS_COUNT_ONE" /> grupo ng tab}one{Hindi na available ang <ph name="TAB_GROUPS_COUNT_MANY" /> grupo ng tab}other{Hindi na available ang <ph name="TAB_GROUPS_COUNT_MANY" /> na grupo ng tab}}</translation>
+<translation id="1759122978835002237">Ilipat ang grupo ng tab sa itaas</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Matuto pa<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab ang naigrupo</translation>
 <translation id="1844381456014878100">Pagkalipas ng 7 araw na hindi aktibo</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong tab na Incognito.}one{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # tab na Incognito.}other{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{I-unmute ang site}one{I-unmute ang mga site}other{I-unmute ang mga site}}</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Ilipat ang grupo ng tab pababa</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{I-ungroup ang tab}one{I-ungroup ang mga tab}other{I-ungroup ang mga tab}}</translation>
 <translation id="2271452184061378400">Nase-save dito ang iyong mga grupo ng tab</translation>
 <translation id="2277224997687551299">I-edit ang pangalan ng grupo</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Hindi available ang grupo ng tab na "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="7402375256128852434">Magdagdag ng mga kamakailang tab</translation>
 <translation id="7452985128687107478">Awtomatikong nase-save at naa-update ang mga grupo ng tab sa lahat ng iyong device</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Ilipat ang tab pataas}one{Ilipat ang mga tab pataas}other{Ilipat ang mga tab pataas}}</translation>
 <translation id="747459581954555080">Ipanumbalik lahat</translation>
 <translation id="7489558427602531799">Ilipat pakanan ang grupo ng tab</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item}one{<ph name="TABS_COUNT_MANY" /> item}other{<ph name="TABS_COUNT_MANY" /> na item}}</translation>

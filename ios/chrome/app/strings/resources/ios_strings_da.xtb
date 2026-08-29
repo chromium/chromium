@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1158134713295836892">Gemini i Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Du har tjekket 1 adgangskode}one{Du har tjekket # adgangskode}other{Du har tjekket # adgangskoder}}</translation>
 <translation id="1161444134753003495">Log ind</translation>
 <translation id="1161663161838091892">Synkroniser faner og historik for at fortsætte</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditkort}one{{count} kreditkort}other{{count} kreditkort}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopiér linkets webadresse</translation>
 <translation id="199425419756152024">Se adgangskode</translation>
 <translation id="1996318269856535896">Du kan stadig bruge dine eksisterende browserdata på denne enhed. For at bruge dem skal du logge ud af din administrerede konto.</translation>
+<translation id="2002971615187574739">Få mere fra hånden med AI</translation>
 <translation id="2010008505735295285">Genindlæs</translation>
 <translation id="2012723204723845092">Velkommen tilbage.</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Markér som ulæst</translation>
 <translation id="2922210239002704889">Gå til startsiden eller tastaturet</translation>
 <translation id="2924940770243654951">Åbn på ny inkognitofane</translation>
+<translation id="2934607171563543600">siden du gennemførte "Tjek dine adgangskoder"</translation>
 <translation id="2952278131021475699">Lens-kamerasøgning</translation>
 <translation id="2953821385349876107">Vælg en anden Google-konto</translation>
 <translation id="2962516096219646456">Se alle Autofyld-data</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} adgangskode gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}one{{count} adgangskode gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}other{{count} adgangskoder gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, {email}.}}</translation>
 <translation id="3659297405161482746">Der blev ikke fundet nogen betalingsmetoder</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
+<translation id="3668035568083954765">Beskyt dit privatliv, og øg sikkerheden</translation>
 <translation id="3668816008081204991">Læselisten er skjult</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3672283986707092811">Vælg alle</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Der blev registreret problemer <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Opret billede</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Få bedre browsing med Level Up</translation>
 <translation id="5062321486222145940">Installer Google Drev</translation>
 <translation id="5067540696062462445">Downloads</translation>
 <translation id="5070314445039955096">Tilladelser for "<ph name="SITE_DOMAIN" />" nulstilles til deres deaktiverede tilstand, når du forlader dette website</translation>
@@ -1686,6 +1691,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6454311990702999318">Ugyldige data</translation>
 <translation id="6459411599807878608">Oplysningerne er skjult</translation>
 <translation id="646394917185284261">Filer</translation>
+<translation id="6470721056280836221">Google anvender dine brugsdata for funktioner til at anbefale opgaver og opdatere fremskridt. Du kan til enhver tid deaktivere Level Up.</translation>
 <translation id="6472069383518492189">Her finder du dine downloads</translation>
 <translation id="6476253015009698798">Prissporing er ikke tilgængelig for denne side.</translation>
 <translation id="6476284679642588870">Administrer betalingsmetoder</translation>
@@ -1763,6 +1769,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} mulig betalingsmetode er tilgængelig over dit tastatur.}one{{count} mulig betalingsmetode er tilgængelig over dit tastatur.}other{{count} mulige betalingsmetode er tilgængelige over dit tastatur.}}</translation>
 <translation id="6682680306647339111">Påmindelsen er fjernet</translation>
+<translation id="6683022854667115063">Høretelefoner</translation>
 <translation id="6684262542644248484">Log ind på et website</translation>
 <translation id="6685259053455152195">Genveje til hurtigt at ændre indstillinger og bruge funktioner via adresselinjen.</translation>
 <translation id="6689342293888598653">Hvid baggrundsfarve</translation>
@@ -1925,6 +1932,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="7233006041370588369">Vælg en adgangskode, der skal udfyldes.</translation>
 <translation id="723874023660911012">Skift profil</translation>
 <translation id="7241135764990439166">Inkognitotilstand er ikke tilgængelig</translation>
+<translation id="7245288034498365666">Få overblik, og spar tid</translation>
 <translation id="7253951228444156601">Tjekker adgangskoder…</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjælper dig med at bevare overblikket. Du kan til enhver tid ændre dette i indstillingerne.</translation>

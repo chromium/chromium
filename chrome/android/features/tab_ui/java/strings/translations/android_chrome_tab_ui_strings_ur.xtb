@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">گروپ حذف کریں</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> غیر فعال آئٹم}other{<ph name="TABS_COUNT_MANY" /> غیر فعال آئٹمز}}</translation>
 <translation id="1568067597247500137">سائٹ کی آواز بند کریں</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ٹیب نیچے منتقل کریں}other{ٹیبز نیچے منتقل کریں}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ٹیبز کا گروپ بن گیا</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1670942869417022142">خاموش کردہ آڈیو</translation>
 <translation id="1697284962337958118">اس میں شامل کریں</translation>
 <translation id="1713541401465507417">تمام ٹیبز اور گروپس کو بند کریں</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{اب <ph name="TAB_GROUPS_COUNT_ONE" /> ٹیب گروپ دستیاب نہیں ہے}other{اب <ph name="TAB_GROUPS_COUNT_MANY" /> ٹیب گروپس دستیاب نہیں ہیں}}</translation>
+<translation id="1759122978835002237">ٹیب گروپ کو اوپر منتقل کریں</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ٹیب کا گروپ بن گیا</translation>
 <translation id="1844381456014878100">‫7 دن غیر فعال ہونے کے بعد</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔ آپ کا پوشیدگی ٹیب دستیاب نہیں ہوگا۔}other{آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔ آپ کے # پوشیدگی ٹیبز دستیاب نہیں ہوں گے۔}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{سائٹ کی آواز چالو کریں}other{سائٹس کی آواز چالو کریں}}</translation>
 <translation id="2162620598375156287">اب <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> پر</translation>
+<translation id="2164232689984783657">ٹیب گروپ نیچے منتقل کریں</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ٹیب کو گروپ سے ہٹا دیں}other{ٹیبز کو گروپ سے ہٹا دیں}}</translation>
 <translation id="2271452184061378400">آپ کے ٹیب گروپس یہاں محفوظ کیے جاتے ہیں</translation>
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">اب "<ph name="TAB_GROUP_NAME" />" ٹیب گروپ دستیاب نہیں ہے</translation>
 <translation id="7402375256128852434">حالیہ ٹیبز شامل کریں</translation>
 <translation id="7452985128687107478">ٹیب گروپس آپ کے تمام آلات پر خودکار طور پر محفوظ اور اپ ڈیٹ ہوتے ہیں</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ٹیب اوپر منتقل کریں}other{ٹیبز اوپر منتقل کریں}}</translation>
 <translation id="747459581954555080">سبھی کو بحال کریں</translation>
 <translation id="7489558427602531799">ٹیب گروپ کو دائیں طرف منتقل کریں</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> آئٹم}other{‫<ph name="TABS_COUNT_MANY" /> آئٹمز}}</translation>

@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Préparation des fichiers en cours…</translation>
 <translation id="1014509239502131234">Annulation du résultat en cours…</translation>
 <translation id="1015730422737071372">Fournir des détails supplémentaires</translation>
+<translation id="1016671033299705843">Ajouter un permis de conduire en toute sécurité</translation>
 <translation id="1019413721762100891">Désactivé</translation>
 <translation id="1021753677514347426">Ce problème survient en raison d'un certificat installé, par vous ou quelqu'un d'autre, sur votre appareil. Le certificat n'est pas considéré comme fiable par Chromium, parce qu'on sait qu'il est utilisé pour surveiller et intercepter les réseaux. Certains cas requièrent de la surveillance, comme un réseau scolaire ou d'entreprise, mais Chromium vous le mentionne pour que vous sachiez que cette surveillance se produit, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire dans tous les navigateurs et toutes les applications qui accèdent au Web.</translation>
 <translation id="1024111578869940408">Les pirates tentent parfois d'imiter des sites Web en utilisant des variations subtiles d'adresses Web.</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">Présentation OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> n'a envoyé aucune donnée.</translation>
 <translation id="1393071644879491291">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de visiter pourraient tenter de vous inciter à installer un logiciel ou à révéler des renseignements tels que vos mots de passe ou vos numéros de téléphone ou de cartes de crédit. Chrome vous recommande fortement de revenir à une page sûre. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Ajouter une carte d'identité à Google Portefeuille en toute sécurité</translation>
 <translation id="1398743098754840707">Les sites que vous ajoutez ici ne seront pas utilisés comme référence pour les réponses, même si l'onglet est ouvert. Si un site que vous ajoutez est actuellement utilisé dans un fil, il peut s'écouler jusqu'à 30 minutes avant que le fil cesse d'y faire référence.</translation>
 <translation id="1405567553485452995">Vert clair</translation>
 <translation id="1406370515365284486">Vos modes de paiement resteront enregistrés</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">Tout ce que vous écrivez, toutes les pages que vous consultez ou toute autre activité sur le Web sont sous surveillance, et le contenu des sites peut être changé sans que vous le sachiez.</translation>
 <translation id="2289385804009217824">Découper</translation>
 <translation id="2292556288342944218">Votre accès à Internet est bloqué</translation>
+<translation id="2294150501457238325">Ajouter un passeport en toute sécurité</translation>
 <translation id="2295831393422400053">Activer le paramètre Améliorer les recherches et la navigation pour utiliser l'Aide à la rédaction</translation>
 <translation id="2296244067976588032">Clé d'accès • Trousseau iCloud</translation>
 <translation id="2296331629987861142">Payez en plusieurs versements faciles (sous réserve d'admissibilité, des frais s'appliquent)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">Gérer les informations de magasinage</translation>
 <translation id="2933624813161016821">Feuille de gaufrage</translation>
 <translation id="2935726091208500473">partage de vos onglets</translation>
+<translation id="2936698630976431647">Sélectionner le champ du code promotionnel pour remplir automatiquement les offres de Google Portefeuille</translation>
 <translation id="293796669683825859">Commentaires</translation>
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Pour afficher votre curseur, changer d'appli, actualiser la page ou revenir en arrière</translation>
@@ -1283,6 +1287,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3190736958609431397">Annuler le suivi</translation>
 <translation id="3194737229810486521">L'URL <ph name="URL" /> veut stocker de façon permanente des données sur votre appareil</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Ajouter un permis de conduire à Google Portefeuille</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Code de réservation</translation>
 <translation id="3196902089458890316">Toujours partager les onglets pertinents pour obtenir de meilleures réponses?</translation>
@@ -1390,6 +1395,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3380864720620200369">Numéro de client :</translation>
 <translation id="3383566085871012386">Ordre de préséance actuel</translation>
 <translation id="3383713837163550889">Vos fichiers locaux seront supprimés dans 1 minute</translation>
+<translation id="33837817515081754">Ajouter un Known Traveler Number à Google Portefeuille</translation>
 <translation id="3384522979010096022">Votre organisation ne vous permet pas d'accéder à ce site</translation>
 <translation id="3391030046425686457">Adresse de livraison</translation>
 <translation id="3391482648489541560">Modification des fichiers</translation>
@@ -1463,6 +1469,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3517264445792388751">Le système de fichiers a été désactivé par votre administrateur</translation>
 <translation id="3518941727116570328">Gestion d'objets multiples</translation>
 <translation id="3519670528214225835">Demandez à <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Ajouter un véhicule à Google Portefeuille</translation>
 <translation id="3525130752944427905">10 po x 14 po</translation>
 <translation id="3525435918300186947">Contrôler et reprogrammer des appareils MIDI?</translation>
 <translation id="3527624163937328588">Retirer la pièce jointe</translation>
@@ -1816,6 +1823,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4103249731201008433">Le numéro de série de l'appareil n'est pas valide</translation>
 <translation id="4103592298805904008">Carton (paroi simple)</translation>
 <translation id="4104702906064390950">Enregistrement des informations IBAN en cours…</translation>
+<translation id="4104995898379951162">Ajouter un Known Traveler Number en toute sécurité</translation>
 <translation id="4106101218644797743">paramètres de synchronisation</translation>
 <translation id="4106887816571530227">Contenu intégré non autorisé</translation>
 <translation id="4107047499377819067">L'installation des services de RPV en arrière-plan a commencé; cette opération peut prendre quelques minutes.</translation>
@@ -1873,6 +1881,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4195459680867822611">Bouton Afficher les astuces de Chrome, activez-le pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4196861286325780578">&amp;Rétablir le déplacement</translation>
+<translation id="4199131764832701740">Ajouter un passeport à Google Portefeuille</translation>
 <translation id="4202554117186904723">Cinquième rouleau</translation>
 <translation id="4203769790323223880">Accès à l'appareil photo non autorisé</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />De vérifier les configurations du pare-feu et de l'antivirus<ph name="END_LINK" /></translation>
@@ -2238,6 +2247,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4805128460707321168">Mettre à jour la carte d'identité en toute sécurité</translation>
 <translation id="4807098396393229769">Nom du titulaire de la carte</translation>
+<translation id="4808598252755230865">Ajouter un Known Traveler Number à Google Portefeuille en toute sécurité</translation>
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son sujet</translation>
 <translation id="4811696127853690432">Enregistrer le véhicule en toute sécurité dans Google Portefeuille</translation>
@@ -2267,6 +2277,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4855395119669662878">Votre administrateur commencera à téléverser vos fichiers sur <ph name="CLOUD_PROVIDER" /> à <ph name="DATE_TIME" />. Gardez votre appareil connecté jusqu'à ce que le téléversement de votre fichier soit terminé. Pendant le téléversement, vous ne pourrez lire que les fichiers locaux.</translation>
 <translation id="485902285759009870">Vérification du code en cours…</translation>
 <translation id="4860260582253463350">Pour continuer sur YouTube, nous devons nous assurer qu'il s'agit bien de toi. Tu recevras les paramètres que ton parent ou ton tuteur ont configurés dans Family Link.</translation>
+<translation id="4861514638281352187">Ajouter un numéro de recours en toute sécurité</translation>
 <translation id="4862642413395066333">Réponses OCSP de signature</translation>
 <translation id="4864406669374375262">Chaîne de version copiée dans le presse-papiers</translation>
 <translation id="486459320933704969">Un parent ou un tuteur doit indiquer que tu as l'autorisation de consulter ce site Web</translation>
@@ -2698,6 +2709,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="55635442646131152">Plan du document</translation>
 <translation id="5563589142503817291">Pour utiliser votre position, accordez l'accès à Chrome dans <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Ouvrir l'onglet de navigation privée</translation>
+<translation id="5565613377956908865">Ajouter une carte d'identité à Google Portefeuille</translation>
 <translation id="5565735124758917034">Actif</translation>
 <translation id="5570825185877910964">Protéger le compte</translation>
 <translation id="5571083550517324815">Impossible d'effectuer un ramassage à partir de cette adresse. Sélectionnez une autre adresse.</translation>
@@ -2885,6 +2897,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5895694128043506580">Google Chrome essaie d'afficher des infos sensibles</translation>
 <translation id="5898767305816764989">Bouton « J'aime » : appuyez sur Entrée pour envoyer un commentaire indiquant que vous aimez la suggestion <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Jaune</translation>
+<translation id="5902204772823742902">Ajouter un permis de conduire à Google Portefeuille en toute sécurité</translation>
 <translation id="5903264686717710770">Titre :</translation>
 <translation id="5905671155741555195">Votre adresse professionnelle peut vous aider à accomplir des tâches dans les services Google, comme obtenir des résultats de recherche plus pertinents et des itinéraires dans Google Maps. Vous pouvez modifier ou supprimer votre adresse dans votre <ph name="BEGIN_LINK" />compte Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronisé)</translation>
@@ -3304,6 +3317,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6613866251791999074">En savoir plus sur votre moteur de recherche dans Chrome</translation>
 <translation id="6615297766614333076">Empileur 2</translation>
 <translation id="6619496928666593220">IBAN non rempli</translation>
+<translation id="662009501953240458">Ajouter un véhicule à Google Portefeuille en toute sécurité</translation>
 <translation id="6624427990725312378">Coordonnées</translation>
 <translation id="6625629379283886932">Apprends-moi à coder</translation>
 <translation id="6628463337424475685">Recherche <ph name="ENGINE" /></translation>
@@ -3673,6 +3687,7 @@ Détails supplémentaires :
 <translation id="7261463765917514051">Payer en toute sécurité grâce au remplissage automatique</translation>
 <translation id="7265608370113700582">L'adresse n'est disponible que sur cet appareil</translation>
 <translation id="7266094331715305887">applis sur l'appareil</translation>
+<translation id="7268742523336093718">Ajouter un passeport à Google Portefeuille en toute sécurité</translation>
 <translation id="7269151392155523061">Le raccourci doit être différent du mot clé de l'agrégateur de recherche défini par <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> : <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Les fichiers que vous téléchargez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés pour déterminer s'ils contiennent des données confidentielles ou des logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise et être visibles pour votre administrateur.</translation>
 <translation id="7275334191706090484">Favoris gérés</translation>
@@ -4242,6 +4257,7 @@ Détails supplémentaires :
 <translation id="8241707690549784388">La page que vous recherchez a utilisé de l'information que vous avez envoyée. Si vous revenez sur cette page, chaque action précédemment effectuée sera peut-être répétée. Souhaitez-vous continuer?</translation>
 <translation id="8242426110754782860">Continuer</translation>
 <translation id="824620968958405573">Tâche de navigation automatique</translation>
+<translation id="8247824837030847066">Ajouter une carte d'identité en toute sécurité</translation>
 <translation id="8248406213705193919">Enregistrer la carte en toute sécurité?</translation>
 <translation id="8249296373107784235">Interrompre</translation>
 <translation id="8250094606476360498">Cette adresse est actuellement enregistrée sur cet appareil. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="ACCOUNT" />.</translation>
@@ -4661,6 +4677,7 @@ Détails supplémentaires :
 <translation id="9003639428623471314">Enveloppe Kahu</translation>
 <translation id="9004367719664099443">Séance de RV en cours</translation>
 <translation id="9005998258318286617">Échec du chargement du document PDF.</translation>
+<translation id="900686221526305417">Ajouter un véhicule en toute sécurité</translation>
 <translation id="9008201768610948239">OK</translation>
 <translation id="9010187979699879769">Crée un programme d'étude pour moi</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Aucun}=1{À partir de 1 site}one{À partir de # site}other{À partir de # sites}}</translation>
@@ -4814,6 +4831,7 @@ Détails supplémentaires :
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer un site dans Google Sites rapidement</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membres se sont joints au groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
 <translation id="949314938206378263">Tu as demandé à consulter ce site. Ton parent peut répondre dans Family Link.</translation>
+<translation id="949484466204182817">Ajouter un numéro de recours à Google Portefeuille</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="950926967802086924">Clé d'accès • Gestionnaire de mots de passe Google</translation>
 <translation id="952165179818196872">Ajoutez <ph name="PROVIDER" /> pour payer sans changer d'appli</translation>
@@ -4828,6 +4846,7 @@ Détails supplémentaires :
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses qui prétendent être autre chose que ce qu'elles sont ou qui collectent des données pouvant être utilisées pour effectuer le suivi de votre activité. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Conformément à la loi de votre région, Chromium vous demande de choisir votre moteur de recherche par défaut. Ces moteurs de recherche sont populaires dans votre région et sont affichés dans un ordre aléatoire.</translation>
 <translation id="963837307749850257">Tous les utilisateurs</translation>
+<translation id="963988220224168636">Ajouter un numéro de recours à Google Portefeuille en toute sécurité</translation>
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>
 <translation id="964681140808832181">Oui, je veux annuler</translation>
 <translation id="969892804517981540">Version officielle</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promocja powiadomień o wskazówkach zamknięta</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1045899828449635435">Wyczyścić też dane z tych stron?</translation>
+<translation id="1049461303780085993">Wypróbuj Gemini w Chrome, aby otrzymywać odpowiedzi, najważniejsze wnioski i inne dane</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Niektóre hasła są niedostępne</translation>
 <translation id="1057623954802068161">Przewiń na górę strony</translation>
@@ -1117,6 +1118,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5465437530117042974">Plansza dolna karty została zamknięta.</translation>
 <translation id="5469852975082458401">Możesz poruszać się po stronach przy użyciu kursora tekstowego. Aby wyłączyć tę opcję, naciśnij F7.</translation>
 <translation id="5471273988133666918">Nie można przenieść karty <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">Wymagany jest dostęp do urządzeń interfejsu użytkownika</translation>
 <translation id="548278423535722844">Otwórz w aplikacji z mapami</translation>
 <translation id="5489222148748465285">Pozwolić Chrome na dalsze wyszukiwanie?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, jedna z kilku wybranych kart w trybie obrazu w obrazie</translation>
@@ -1964,6 +1966,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="867914734596684889">Pokaż lub ukryj pasek zakładek</translation>
 <translation id="8683039184091909753">obraz</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, wybrana karta</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> potrzebuje uprawnień dostępu do urządzeń interfejsu użytkownika (HID) na tej stronie. Możesz to zmienić później: wybierz Ustawienia &gt; Aplikacje &gt; Aplikacje ze specjalnym dostępem</translation>
 <translation id="8696297579102085705">Wyślij na swoje urządzenie</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8700565880437506364">Przedstawiamy Gemini w Chrome</translation>

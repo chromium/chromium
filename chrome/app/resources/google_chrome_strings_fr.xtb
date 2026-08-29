@@ -89,7 +89,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recommande de suspendre l'onglet qui ralentit votre navigateur}one{Chrome recommande de suspendre l'onglet qui ralentit votre navigateur}other{Chrome recommande de suspendre les onglets qui ralentissent votre navigateur}}</translation>
 <translation id="1832046143430087831">Accélère les sites avec le moteur V8 de Chrome, mais rend Chrome légèrement moins résistant aux attaques. Ce paramètre est désactivé.</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
-<translation id="1842869163383855194">Accédez facilement à la Recherche dans Chrome partout sur votre appareil, même si Chrome est réduit.</translation>
 <translation id="1843347690926158494">Rechercher dans cet onglet avec Google Lens</translation>
 <translation id="1849248141818021764">Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Utilisez l'appli Chrome pour continuer à naviguer où que vous soyez</translation>
@@ -329,7 +328,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4173512894976930765">Les sites fonctionneront probablement comme prévu. Lorsque vous fermerez toutes les fenêtres Chrome, vous serez déconnecté de la plupart des sites, à l'exception de votre compte Google si vous êtes connecté à Chrome.</translation>
 <translation id="4175922240926474352">Chrome a bloqué ce téléchargement, car le site n'utilise pas une connexion sécurisée et le fichier a peut-être été altéré</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relancer Chrome d'ici un jour}one{Relancer Chrome d'ici # jour}other{Relancer Chrome d'ici # jours}}</translation>
-<translation id="4222394563269716113">Ouvrez la Recherche dans Chrome avec un raccourci clavier.</translation>
 <translation id="4222932583846282852">Annulation…</translation>
 <translation id="4224210481850767180">L'installation a été annulée.</translation>
 <translation id="4242034826641750751">Chrome a besoin de l'autorisation d'accéder au micro et à la caméra pour ce site</translation>
@@ -355,7 +353,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4427306783828095590">La protection renforcée assure une meilleure protection contre l'hameçonnage et les logiciels malveillants</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Partagez ce document avec Gemini dans Chrome pour obtenir un aperçu rapide et poser des questions complémentaires</translation>
-<translation id="4447327682081576371">Afficher la Recherche dans Chrome dans la barre de menu Mac et activer le raccourci clavier</translation>
 <translation id="4450664632294415862">Chrome - Connexion au réseau - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Une autre opération est en cours dans Google Chrome. Veuillez réessayer ultérieurement.</translation>
 <translation id="4493028449971051158">Erreur au démarrage : Veuillez exécuter le programme d'installation en tant qu'administrateur.</translation>
@@ -379,6 +376,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="475321580758063259">Mettez Chrome à jour pour continuer à utiliser les données Chrome dans votre compte Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Accélère les sites avec le moteur V8 de Chrome, mais rend Chrome légèrement moins résistant aux attaques</translation>
+<translation id="4768676935374695498">Rechercher dans cette vidéo avec Google Lens</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4793679854893018356">Découvrez comment Chrome vous protège</translation>
 <translation id="4799870290441980300">Active des fonctionnalités supplémentaires pour fournir les protections les plus efficaces de Chrome</translation>
@@ -445,7 +443,6 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 <translation id="5430073640787465221">Le fichier des préférences est endommagé ou n'est pas valide. 
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
-<translation id="545114101312117217">Accédez facilement à vos raccourcis depuis la Recherche dans Chrome</translation>
 <translation id="5465210843490471889">Choisissez un profil Chrome à utiliser avec <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome se lance désormais au démarrage de Windows pour que vous puissiez commencer à naviguer instantanément. Vous pouvez désactiver cette option dans les paramètres.</translation>
 <translation id="5486346529181556467">Améliorez la sécurité en ligne pour tous en signalant un site que vous jugez dangereux. En savoir plus sur le <ph name="BEGIN_LINK" />Règlement de Google concernant les sites dangereux<ph name="END_LINK" /></translation>
@@ -521,7 +518,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6166185671393271715">Importer des mots de passe dans Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Bêta</translation>
-<translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6180522807229584611">Cet onglet utilise des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à le désactiver.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6192058120268468905">Votre compte dans Chrome</translation>
@@ -729,7 +725,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8074398340364918139">Pour effectuer une recherche sur une fonctionnalité ou extension Chrome spécifique, tapez son raccourci dans la barre d'adresse, suivi de la touche de clavier de votre choix</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne dispose pas de la configuration matérielle minimale requise.</translation>
-<translation id="8093772166980702367">Afficher la Recherche dans Chrome dans la barre d'état système et activer le raccourci clavier</translation>
 <translation id="8110438089258398864">Vous pouvez rouvrir le Mode IA de la recherche Google pour poser des questions pendant que vous naviguez</translation>
 <translation id="8113883687556086139">Confirmez votre identité pour utiliser et enregistrer des données Chrome dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Personnalisation de Chrome...</translation>
@@ -773,10 +768,12 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="848851325211467878">Connexion en tant que <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, abonnement Google. Ouvrir le menu du compte</translation>
 <translation id="8496177819998570653">Gestionnaire de mots de p&amp;asse de Google</translation>
 <translation id="8498858610309223613">Une mise à jour spéciale de sécurité pour Google Chrome vient d'être installée. Veuillez redémarrer le navigateur. Vos onglets seront restaurés.</translation>
+<translation id="8502181052659370">Rechercher dans cet onglet avec Google Lens</translation>
 <translation id="8521348052903287641">Règle de trafic entrant pour Google Chrome pour les développeurs autorisant le trafic mDNS.</translation>
 <translation id="852529348814672339">Afficher Chrome dans cette langue</translation>
 <translation id="8525579356836940628">Installation interrompue</translation>
 <translation id="8533056045953418157">Définir Google Chrome comme visionneuse de PDF par défaut</translation>
+<translation id="854593887324189900">Rechercher cette image avec Google Lens</translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Rechercher dans la liste des langues</translation>
 <translation id="8575047640889685742">Utiliser votre <ph name="BEGIN_LINK" />propre phrase secrète<ph name="END_LINK" /> pour chiffrer toutes les données Chrome de votre compte Google. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.</translation>

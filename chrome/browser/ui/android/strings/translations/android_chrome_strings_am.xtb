@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">የጠቃሚ ምክሮች ማሳወቂያዎች ማስተዋወቂያ ተዘግቷል</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1045899828449635435">ከእነዚህ ጣቢያዎች የመጣ ውሂብም ይጽዳ?</translation>
+<translation id="1049461303780085993">መልሶችን፣ ቁልፍ ነጥቦችን እና ሌሎችንም ለማግኘት Gemini በChrome ውስጥን ይሞክሩ</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
 <translation id="1052842760770519282">አንዳንድ የይለፍ ቃላትዎ የሚደረሱ አይደሉም</translation>
 <translation id="1057623954802068161">ወደ ገጹ የላይኛው ክፍል ያሸብልሉ</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5465437530117042974">የትር የግርጌ ሉህ ለውጦች ተዘግተዋል።</translation>
 <translation id="5469852975082458401">ገጾችን በጽሑፍ ጠቋሚ አማካኝነት ማሰስ ይችላሉ። ለማጥፋት F7ን ይጫኑ።</translation>
 <translation id="5471273988133666918">ትር <ph name="TAB_TITLE" /> መንቀሳቀስ አይችልም</translation>
+<translation id="5478718673237429220">የሰው በይነገጽ መሣሪያ መዳረሻ ያስፈልጋል</translation>
 <translation id="548278423535722844">በካርታዎች መተግበሪያ ውስጥ ይክፈቱ</translation>
 <translation id="5489222148748465285">Chrome መፈለግ ይቀጥል?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ የሥዕል-ላይ-ሥዕል ትር</translation>
@@ -1964,6 +1966,7 @@
 <translation id="867914734596684889">የዕልባቶች አሞሌን አሳይ ወይም ደብቅ</translation>
 <translation id="8683039184091909753">ምስል</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />፣ የተመረጠው ትር</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> ለዚህ ጣቢያ የሰው በይነገጽ መሣሪያዎችን (ኤችአይዲዎች) ለመድረስ ፈቃድ ያስፈልገዋል። ይህን ቅንብር በኋላ ላይ በቅንብሮች &gt; መተግበሪያዎች &gt; ልዩ የመተግበሪያ መዳረሻ ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="8696297579102085705">ወደ የእርስዎ መሣሪያ ይላኩ</translation>
 <translation id="8699120352855309748">እነዚህን ቋንቋዎች ለመተርጎም አያቅርቡ</translation>
 <translation id="8700565880437506364">Geminiን በChrome ውስጥ በማስተዋወቅ ላይ</translation>

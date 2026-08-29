@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Vinkki-ilmoituskampanja suljettu</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1045899828449635435">Poistetaanko data?</translation>
+<translation id="1049461303780085993">Kokeile Gemini in Chromea, niin saat esimerkiksi vastauksia ja tärkeät kohdat</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Joitakin salasanojasi ei ole saatavilla</translation>
 <translation id="1057623954802068161">Vieritä sivun yläreunaan</translation>
@@ -1117,6 +1118,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5465437530117042974">Välilehtien alapaneelin muutokset suljettu.</translation>
 <translation id="5469852975082458401">Voit siirtyä sivuilla tekstikohdistimen avulla. Laita pois päältä painamalla F7.</translation>
 <translation id="5471273988133666918">Välilehteä (<ph name="TAB_TITLE" />) ei voi siirtää</translation>
+<translation id="5478718673237429220">Human Interface Device (HID) -pääsy vaaditaan</translation>
 <translation id="548278423535722844">Avaa karttasovelluksessa</translation>
 <translation id="5489222148748465285">Jatkaako Chrome etsimistä?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, monivalittu kuva kuvassa ‑välilehti</translation>
@@ -1964,6 +1966,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="867914734596684889">Näytä tai piilota kirjanmerkkipalkki</translation>
 <translation id="8683039184091909753">kuva</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, valittu välilehti</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> tarvitsee pääsyn HID-laitteisiin tällä sivustolla. Voit muuttaa asetusta myöhemmin valitsemalla Asetukset &gt; Sovellukset &gt; Sovellusten erikoiskäyttö.</translation>
 <translation id="8696297579102085705">Lähetä laitteellesi</translation>
 <translation id="8699120352855309748">Älä ehdota näiden kielten kääntämistä</translation>
 <translation id="8700565880437506364">Esittelyssä Gemini in Chrome</translation>

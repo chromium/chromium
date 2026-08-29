@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">グループを削除</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個の非アクティブ アイテム}other{<ph name="TABS_COUNT_MANY" /> 個の非アクティブ アイテム}}</translation>
 <translation id="1568067597247500137">サイトをミュート</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{タブを下に移動}other{タブを下に移動}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> 個のタブをグループ化しました</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1670942869417022142">音声ミュート中</translation>
 <translation id="1697284962337958118">追加先</translation>
 <translation id="1713541401465507417">すべてのタブとグループを閉じる</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> 個のタブグループが使用できなくなりました}other{<ph name="TAB_GROUPS_COUNT_MANY" /> 個のタブグループが使用できなくなりました}}</translation>
+<translation id="1759122978835002237">タブグループを上に移動</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> 個のタブをグループ化しました</translation>
 <translation id="1844381456014878100">アクティブでない状態で 7 日経過</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。シークレット タブは使用できなくなります。}other{閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。# 個のシークレット タブは使用できなくなります。}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
+<translation id="2164232689984783657">タブグループを下に移動</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{タブのグループ化を解除}other{タブのグループ化を解除}}</translation>
 <translation id="2271452184061378400">タブグループはここに保存されます</translation>
 <translation id="2277224997687551299">グループ名を編集</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">「<ph name="TAB_GROUP_NAME" />」タブグループは使用できなくなりました</translation>
 <translation id="7402375256128852434">最近使ったタブを追加</translation>
 <translation id="7452985128687107478">タブグループは自動的に保存され、すべてのデバイスで更新されます</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{タブを上に移動}other{タブを上に移動}}</translation>
 <translation id="747459581954555080">すべて復元</translation>
 <translation id="7489558427602531799">タブグループを右に移動</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のアイテム}other{<ph name="TABS_COUNT_MANY" /> 個のアイテム}}</translation>

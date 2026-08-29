@@ -90,7 +90,6 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chrome recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="1832046143430087831">Acelera os sitios co motor V8 de Chrome, pero fai que Chrome sexa un pouco menos resistente aos ataques. Esta opción de configuración está desactivada.</translation>
 <translation id="1838374766361614909">Borrar busca</translation>
-<translation id="1842869163383855194">Accede facilmente á Busca en Chrome en todo o teu dispositivo, mesmo se Chrome está minimizado.</translation>
 <translation id="1843347690926158494">Busca nesta pestana con Google Lens</translation>
 <translation id="1849248141818021764">Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se a esqueces ou queres cambiar esta opción de configuración, terás que <ph name="BEGIN_LINK" />eliminar os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Usa a aplicación Chrome para seguir navegando esteas onde esteas</translation>
@@ -330,7 +329,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4173512894976930765">É probable que os sitios funcionen segundo o previsto. Pecharase a túa sesión na maioría dos sitios cando peches todas as ventás de Chrome, excepto a túa Conta de Google se tes a sesión iniciada en Chrome.</translation>
 <translation id="4175922240926474352">Chrome bloqueou esta descarga porque a conexión que usa o sitio non é segura, polo que é posible que o ficheiro se manipulase</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reinicia Chrome en 1 día}other{Reinicia Chrome en # días}}</translation>
-<translation id="4222394563269716113">Abre a Busca en Chrome cun atallo de teclado.</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
 <translation id="4224210481850767180">Cancelouse a instalación.</translation>
 <translation id="4242034826641750751">Chrome necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
@@ -356,7 +354,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="4434353761996769206">Produciuse un erro co instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Comparte este documento con Gemini en Chrome para obter un resumo rápido e facer preguntas de seguimento</translation>
-<translation id="4447327682081576371">Mostrar a Busca en Chrome na barra de menú de Mac e activar atallo de teclado</translation>
 <translation id="4450664632294415862">Chrome (inicio de sesión, <ph name="PAGE_TITLE" />)</translation>
 <translation id="4458462641685292929">Hai outra operación en Google Chrome que está en curso. Téntao de novo máis tarde.</translation>
 <translation id="4493028449971051158">Produciuse un erro de inicio do sistema: Executa o instalador como persoa administradora.</translation>
@@ -380,6 +377,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="475321580758063259">Actualiza Chrome para seguir usando os datos de Chrome na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Acelera os sitios co motor V8 de Chrome, pero fai que Chrome sexa un pouco menos resistente aos ataques</translation>
+<translation id="4768676935374695498">Buscar neste vídeo con Google Lens</translation>
 <translation id="479167709087336770">Esta función utiliza o mesmo corrector ortográfico que o usado na busca de Google. O texto que escribas no navegador enviarase a Google. Podes cambiar esta opción na configuración cando queiras.</translation>
 <translation id="4793679854893018356">Descubre como te protexe Chrome</translation>
 <translation id="4799870290441980300">Activa máis funcións para proporcionar a máxima protección de Chrome</translation>
@@ -446,7 +444,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5430073640787465221">O teu ficheiro de preferencias está danado ou non é válido.
 
 Google Chrome non pode recuperar a túa configuración.</translation>
-<translation id="545114101312117217">Accede facilmente aos teus atallos desde a Busca en Chrome</translation>
 <translation id="5465210843490471889">Escolle un perfil de Chrome para usar con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Agora Chrome ábrese ao iniciar Windows para que poidas comezar a navegar ao instante. Podes desactivar esta función en Configuración.</translation>
 <translation id="5486346529181556467">Informa dos sitios que consideres daniños para mellorar a seguranza en liña para todo o mundo. Obtén máis información sobre a <ph name="BEGIN_LINK" />política de Google relativa aos sitios non seguros<ph name="END_LINK" /></translation>
@@ -522,7 +519,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6166185671393271715">Importar contrasinais en Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
-<translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6180522807229584611">Esta pestana está usando recursos adicionais. Para mellorar o rendemento, permite que Chrome a desactive.</translation>
 <translation id="6182736845697986886">Produciuse un erro na instalación debido a un erro interno do servidor de actualizacións.</translation>
 <translation id="6192058120268468905">A túa conta en Chrome</translation>
@@ -730,7 +726,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8074398340364918139">Para buscar unha extensión ou función específica de Chrome, escribe o seu atallo na barra de enderezos, seguido da tecla que seleccionases</translation>
 <translation id="8077579734294125741">Outros perfís de Chrome</translation>
 <translation id="8086881907087796310">Produciuse un erro na instalación porque o teu ordenador non cumpre os requisitos mínimos de hardware.</translation>
-<translation id="8093772166980702367">Mostrar a Busca en Chrome na bandexa do sistema e activar atallo de teclado</translation>
 <translation id="8110438089258398864">Podes volver abrir o modo IA da Busca de Google para facer preguntas mentres navegas</translation>
 <translation id="8113883687556086139">Verifica a túa identidade para usar e gardar os datos de Chrome na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8115695070094288807">Personalizando Chrome...</translation>
@@ -774,10 +769,12 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="848851325211467878">Tes a sesión iniciada como <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subscrición a Google. Abrir o menú da conta</translation>
 <translation id="8496177819998570653">Xestor de c&amp;ontrasinais de Google</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
+<translation id="8502181052659370">Buscar nesta pestana con Google Lens</translation>
 <translation id="8521348052903287641">Regra de entrada para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="852529348814672339">Mostrar Chrome neste idioma</translation>
 <translation id="8525579356836940628">Detívose a instalación</translation>
 <translation id="8533056045953418157">Define Google Chrome como o visor de PDF predeterminado</translation>
+<translation id="854593887324189900">Buscar nesta imaxe con Google Lens</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar na lista de idiomas</translation>
 <translation id="8575047640889685742">Usa a túa <ph name="BEGIN_LINK" />propia frase de acceso<ph name="END_LINK" /> para encriptar todos os datos de Chrome na túa Conta de Google. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chrome.</translation>

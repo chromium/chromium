@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">正在准备文件</translation>
 <translation id="1014509239502131234">正在撤消结果</translation>
 <translation id="1015730422737071372">提供其他详细信息</translation>
+<translation id="1016671033299705843">安全地添加驾照</translation>
 <translation id="1019413721762100891">已关闭</translation>
 <translation id="1021753677514347426">此问题是由您或他人在您设备上安装的某个证书导致的。该证书已知被用于监控和拦截网络，因此不受 Chromium 信任。尽管某些情况下的监控确实是合理的（例如监控学校网络或公司网络），但 Chromium 想确保您知道自己正被监控，即使您无法改变这一事实。监控可能会发生在已联网的任何浏览器或应用中。</translation>
 <translation id="1024111578869940408">攻击者有时会对网址做些令人难以察觉的更改来仿冒网站。</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument 演示文稿</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
 <translation id="1393071644879491291">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">安全地向 Google 钱包添加身份证</translation>
 <translation id="1398743098754840707">您在此处添加的网站即使已打开标签页，系统也不会将其用作生成回答的参考依据。如果您添加的网站当前正用于某个会话串，该会话串可能需要最多 30 分钟才会停止引用该网站。</translation>
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1406370515365284486">系统仍会保存您的支付方式</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">您输入的任何内容、查看的任何网页或从事的任何其他网络活动都在被监视。网站上的内容可能会在您不知情的情况下遭到改动。</translation>
 <translation id="2289385804009217824">裁切</translation>
 <translation id="2292556288342944218">您被禁止访问互联网</translation>
+<translation id="2294150501457238325">安全地添加护照</translation>
 <translation id="2295831393422400053">开启“改善搜索和浏览体验”设置即可使用“帮我写”功能</translation>
 <translation id="2296244067976588032">通行密钥 • iCloud 钥匙串</translation>
 <translation id="2296331629987861142">轻松分期付款（需满足资格要求，并支付相关费用）</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">管理购物信息</translation>
 <translation id="2933624813161016821">压纹箔</translation>
 <translation id="2935726091208500473">分享标签页</translation>
+<translation id="2936698630976431647">选择促销代码字段，即可自动填充 Google 钱包中的优惠信息</translation>
 <translation id="293796669683825859">评注</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> - 如需显示光标，请切换应用、重新加载页面或返回</translation>
@@ -1281,6 +1285,7 @@
 <translation id="3190736958609431397">取消跟踪</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 想在您的设备上永久存储数据</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">向 Google 钱包添加驾照</translation>
 <translation id="3195213714973468956">“<ph name="SERVER_NAME" />”上的“<ph name="PRINTER_NAME" />”</translation>
 <translation id="3196374699162453920">预订代码</translation>
 <translation id="3196902089458890316">要始终分享相关标签页，以便获得更优质的回答吗？</translation>
@@ -1388,6 +1393,7 @@
 <translation id="3380864720620200369">客户端 ID：</translation>
 <translation id="3383566085871012386">当前优先级顺序</translation>
 <translation id="3383713837163550889">您的本地文件将在 1 分钟后被删除</translation>
+<translation id="33837817515081754">向 Google 钱包添加已知旅客编号</translation>
 <translation id="3384522979010096022">贵组织不允许您查看此网站</translation>
 <translation id="3391030046425686457">递送地址</translation>
 <translation id="3391482648489541560">文件修改</translation>
@@ -1460,6 +1466,7 @@
 <translation id="3517264445792388751">管理员已停用文件系统</translation>
 <translation id="3518941727116570328">多对象处理</translation>
 <translation id="3519670528214225835">询问<ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">向 Google 钱包添加车辆信息</translation>
 <translation id="3525130752944427905">10 x 14 英寸</translation>
 <translation id="3525435918300186947">控制 MIDI 设备以及为其重新编程？</translation>
 <translation id="3527624163937328588">移除附件</translation>
@@ -1812,6 +1819,7 @@
 <translation id="4103249731201008433">设备序列号无效</translation>
 <translation id="4103592298805904008">纸板（单层）</translation>
 <translation id="4104702906064390950">正在保存 IBAN 信息</translation>
+<translation id="4104995898379951162">安全地添加已知旅客编号</translation>
 <translation id="4106101218644797743">同步设置</translation>
 <translation id="4106887816571530227">不允许嵌入内容</translation>
 <translation id="4107047499377819067">已开始安装 VPN 后台服务，这可能需要几分钟时间。</translation>
@@ -1869,6 +1877,7 @@
 <translation id="4195459680867822611">“查看 Chrome 提示”按钮，激活它即可了解各项 Chrome 功能</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4196861286325780578">恢复移动(&amp;R)</translation>
+<translation id="4199131764832701740">向 Google 钱包添加护照</translation>
 <translation id="4202554117186904723">第 5 卷</translation>
 <translation id="4203769790323223880">已拒绝授予摄像头使用权限</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />检查防火墙和防病毒配置<ph name="END_LINK" /></translation>
@@ -2234,6 +2243,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">安全地更新身份证件信息</translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
+<translation id="4808598252755230865">安全地向 Google 钱包添加已知旅客编号</translation>
 <translation id="4809079943450490359">您的设备管理员温馨提示：</translation>
 <translation id="4811450222531576619">了解其来源和主题</translation>
 <translation id="4811696127853690432">将车辆信息安全地保存到 Google 钱包</translation>
@@ -2263,6 +2273,7 @@
 <translation id="4855395119669662878">您的管理员将于 <ph name="DATE_TIME" />开始将文件上传到<ph name="CLOUD_PROVIDER" />。在文件上传完成之前，请让设备保持连接状态。在上传期间，您将只能读取本地文件。</translation>
 <translation id="485902285759009870">正在核对动态密码…</translation>
 <translation id="4860260582253463350">若要继续访问 YouTube，我们需要确认你的身份。系统将会沿用家长或监护人在 Family Link 中的设置。</translation>
+<translation id="4861514638281352187">安全地添加身份纠正识别号</translation>
 <translation id="4862642413395066333">签名 OCSP 响应</translation>
 <translation id="4864406669374375262">已将版本字符串复制到剪贴板</translation>
 <translation id="486459320933704969">你必须先征得家长或监护人同意，才能访问此网站</translation>
@@ -2694,6 +2705,7 @@
 <translation id="55635442646131152">文档大纲</translation>
 <translation id="5563589142503817291">如需使用位置信息，请在<ph name="LINK" />中授予 Chrome 访问权限。</translation>
 <translation id="5565613213060953222">打开无痕式标签页</translation>
+<translation id="5565613377956908865">向 Google 钱包添加身份证</translation>
 <translation id="5565735124758917034">主动</translation>
 <translation id="5570825185877910964">保护账号</translation>
 <translation id="5571083550517324815">无法从此地址取货。请另选一个地址。</translation>
@@ -2881,6 +2893,7 @@
 <translation id="5895694128043506580">Google Chrome 正在尝试显示敏感信息</translation>
 <translation id="5898767305816764989">“我喜欢”按钮，按 Enter 键可提交您喜欢<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />的反馈</translation>
 <translation id="5901630391730855834">黄色</translation>
+<translation id="5902204772823742902">安全地向 Google 钱包添加驾照</translation>
 <translation id="5903264686717710770">标题：</translation>
 <translation id="5905671155741555195">保留工作地址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（已同步）</translation>
@@ -3299,6 +3312,7 @@
 <translation id="6613866251791999074">详细了解 Chrome 中的搜索引擎</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
 <translation id="6619496928666593220">IBAN 未填充</translation>
+<translation id="662009501953240458">安全地向 Google 钱包添加车辆信息</translation>
 <translation id="6624427990725312378">联系信息</translation>
 <translation id="6625629379283886932">教我如何编程</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜索</translation>
@@ -3669,6 +3683,7 @@
 <translation id="7261463765917514051">使用自动填充功能安全结账</translation>
 <translation id="7265608370113700582">地址只能保存在该设备上</translation>
 <translation id="7266094331715305887">设备上的应用</translation>
+<translation id="7268742523336093718">安全地向 Google 钱包添加护照</translation>
 <translation id="7269151392155523061">下述快捷字词不能与 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 所定义的搜索聚合器关键字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
@@ -4238,6 +4253,7 @@
 <translation id="8241707690549784388">您所查找的网页要使用已输入的信息。返回此页可能需要重复已进行的所有操作。是否要继续操作？</translation>
 <translation id="8242426110754782860">继续</translation>
 <translation id="824620968958405573">自动浏览任务</translation>
+<translation id="8247824837030847066">安全地添加身份证</translation>
 <translation id="8248406213705193919">要安全保存卡信息吗？</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250094606476360498">此地址目前已保存到该设备上。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
@@ -4481,7 +4497,7 @@
 <translation id="8688672835843460752">可用</translation>
 <translation id="868922510921656628">每组页数</translation>
 <translation id="8694684557210599098">添加车辆</translation>
-<translation id="8696297579102085705">发送到您的设备</translation>
+<translation id="8696297579102085705">发送到设备</translation>
 <translation id="8698428283892912525">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了有害软件<ph name="END_LINK" />。</translation>
 <translation id="869891660844655955">失效日期</translation>
 <translation id="8699041776323235191">HID 设备</translation>
@@ -4658,6 +4674,7 @@
 <translation id="9003639428623471314">Kahu 信封</translation>
 <translation id="9004367719664099443">VR 会话正在进行中</translation>
 <translation id="9005998258318286617">未能加载 PDF 文档。</translation>
+<translation id="900686221526305417">安全地添加车辆信息</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9010187979699879769">为我制定学习计划</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
@@ -4811,6 +4828,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 协作平台中快速创建新网站</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> 位成员加入了“<ph name="GROUP_NAME" />”标签页分组</translation>
 <translation id="949314938206378263">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
+<translation id="949484466204182817">向 Google 钱包添加身份纠正识别号</translation>
 <translation id="950736567201356821">三孔（顶部）</translation>
 <translation id="950926967802086924">通行密钥 • Google 密码管理工具</translation>
 <translation id="952165179818196872">添加<ph name="PROVIDER" />，无需切换应用即可付款</translation>
@@ -4825,6 +4843,7 @@
 <translation id="962484866189421427">此内容可能会尝试安装欺骗性应用，而这些应用能够冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">根据您所在地区的法律，Chromium 要求您选择默认搜索引擎。这些搜索引擎在您所在的地区非常热门，是按随机顺序显示的。</translation>
 <translation id="963837307749850257">所有用户</translation>
+<translation id="963988220224168636">安全地向 Google 钱包添加身份纠正识别号</translation>
 <translation id="964050462028070434">管理密码和通行密钥…</translation>
 <translation id="964681140808832181">是的，我要取消</translation>
 <translation id="969892804517981540">正式版本</translation>

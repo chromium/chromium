@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Aholkuen jakinarazpenei buruzko promozioa itxita dago</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1045899828449635435">Webgune hauetako datuak ere garbitu nahi dituzu?</translation>
+<translation id="1049461303780085993">Probatu Chrome-ko Gemini erantzunak, ideia nagusiak eta abar lortzeko</translation>
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="1052842760770519282">Zure pasahitzetako batzuk ezin dira atzitu</translation>
 <translation id="1057623954802068161">Joan orriaren hasierara</translation>
@@ -1117,6 +1118,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5465437530117042974">Pantailaren behealdean ainguratutako fitxaren aldaketak itxita daude.</translation>
 <translation id="5469852975082458401">Nabigatu orrietatik testu-kurtsorea erabilita. Eginbidea desaktibatzeko, sakatu F7.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> fitxa ezin da mugitu</translation>
+<translation id="5478718673237429220">Giza interfazeko gailuak erabiltzeko baimena behar da</translation>
 <translation id="548278423535722844">Ireki mapa-aplikazio batean</translation>
 <translation id="5489222148748465285">Chrome-k bilatzen jarraitzea nahi duzu?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, pantaila txiki gainjarrian dauden fitxa bat baino gehiago hautatuta</translation>
@@ -1964,6 +1966,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="867914734596684889">Erakutsi edo ezkutatu laster-marken barra</translation>
 <translation id="8683039184091909753">irudia</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, hautatutako fitxa</translation>
+<translation id="8694622119922491927">Webgune honen izenean giza interfazeko gailuak atzitzeko baimena behar du <ph name="APP_NAME" /> aplikazioak. Ezarpen hori aldatzeko, joan Ezarpenak &gt; Aplikazioak &gt; Aplikazio-baimen bereziak atalera.</translation>
 <translation id="8696297579102085705">Bidali zure gailura</translation>
 <translation id="8699120352855309748">Ez eskaini hizkuntza hauek itzultzea</translation>
 <translation id="8700565880437506364">Chrome-ko Gemini-ren aurkezpena</translation>

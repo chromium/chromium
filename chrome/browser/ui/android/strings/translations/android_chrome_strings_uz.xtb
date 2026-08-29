@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Maslahat bildirishomalari reklamasi yopildi</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1045899828449635435">Bu saytlardagi maʼlumotlar ham tozalansinmi?</translation>
+<translation id="1049461303780085993">Javoblar, asosiy xulosalar va boshqalarni olish uchun Chrome ichida Gemini ishlating</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Ayrim parollar ochilmaydi</translation>
 <translation id="1057623954802068161">Sahifaning boshiga varaqlash</translation>
@@ -104,6 +105,7 @@
 <translation id="138181280295369883">Saqlangan maʼlumotlar va boshqalarni barcha qurilmalarda olish uchun hisobingizga kiring</translation>
 <translation id="1381838868249179644">Xavfsizlikni taʼminlash maqsadida ayrim saytlardan ruxsatlar olib tashlandi</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
+<translation id="1384568202352682721">Saqlab olish…</translation>
 <translation id="1384704387250346179">Google Lens yordamida tarjima <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Havolalarni Chrome orqali ochadigan boshqa ilovalar tarixini koʻrish mumkin. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali koʻrishingiz mumkin.</translation>
 <translation id="139752016751285248">Quyi ekrandagi narxlar statistikasi toʻliq hajmda ochildi</translation>
@@ -132,6 +134,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="147982357559798527">Oʻzgardi</translation>
 <translation id="1480287803138246127">Ayrim ochilgan sahifalar tarixi bu yerda chiqmaydi. Chromeda ochilgan barcha sahifalarni koʻrish uchun Chrome butun tarixini oching.</translation>
 <translation id="1483493594462132177">Yuborish</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> ilovasida ochish • <ph name="DEVICE_NAME" /> qurilmasidan yuborildi</translation>
 <translation id="1495677929897281669">Varaqqa qaytish</translation>
 <translation id="1496514951988037011">foydalanuvchi nomi</translation>
 <translation id="1501480321619201731">Ha</translation>
@@ -326,6 +329,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="232137538351753795">Orqaga qaytish uchun chapdan suring</translation>
 <translation id="2323763861024343754">Sayt xotirasi</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> orqali</translation>
+<translation id="232757965409810352">Sahifani saqlash…</translation>
 <translation id="2328474416100889417">“<ph name="GROUP_NAME" />” varaqlar guruhi hammada ishlamay qoladi va barcha taklif havolalar oʻchiriladi</translation>
 <translation id="2329500425421091035">Chromeda AI rejimi bilan tanishing</translation>
 <translation id="2330186936255788117">Yana bukmarklar</translation>
@@ -1117,6 +1121,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5465437530117042974">Varaq quyi ekrani yopildi.</translation>
 <translation id="5469852975082458401">Sahifalarni matn kursori bilan kezish mumkin. Rejimdan chiqish uchun F7 tugmasini bosing.</translation>
 <translation id="5471273988133666918">Varaq (<ph name="TAB_TITLE" />) boshqa joyga olinmaydi</translation>
+<translation id="5478718673237429220">HID qurilmalariga ruxsat berish kerak</translation>
 <translation id="548278423535722844">Xaritalar ilovasida ochish</translation>
 <translation id="5489222148748465285">Chrome qidirishda davom etsinmi?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, Tasvir ustida tasvirli varaq bir necha marta tanlandi</translation>
@@ -1872,6 +1877,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8313599942510782709">Vazifa hali bajarilmagan</translation>
 <translation id="8317318757008452355">Chop etish parametrlarini ochish</translation>
 <translation id="8320212361750431956">Oxirgi faollik</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" /> ilovasida ochish — <ph name="DEVICE_NAME" /> orqali yuborildi</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Bukmarklar va roʻyxatlar</translation>
 <translation id="8342727528718219152">Chrome saytlarning juda koʻp bildirishnoma yuborishi haqida xabar qiladi</translation>
@@ -1964,6 +1970,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="867914734596684889">Bukmarklar panelini ochish va yopish</translation>
 <translation id="8683039184091909753">rasm</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, tanlangan varaq</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> bu sayt uchun inson interfeysi qurilmalaridan (HID) foydalanish uchun ruxsat talab qiladi. Bu sozlamani keyinroq Sozlamalar &gt; Ilovalar &gt; Maxsus ilova ruxsati orqali oʻzgartirishingiz mumkin.</translation>
 <translation id="8696297579102085705">Qurilmangizga yuborish</translation>
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>
 <translation id="8700565880437506364">Chrome ichidagi Gemini bilan tanishing</translation>

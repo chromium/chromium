@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Preparazione file</translation>
 <translation id="1014509239502131234">Annullamento del risultato in corso…</translation>
 <translation id="1015730422737071372">Fornisci ulteriori dettagli</translation>
+<translation id="1016671033299705843">Aggiungi la patente di guida in modo sicuro</translation>
 <translation id="1019413721762100891">Off</translation>
 <translation id="1021753677514347426">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chromium. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chromium vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al Web.</translation>
 <translation id="1024111578869940408">A volte gli attaccanti imitano i siti modificando l'indirizzo web in modo poco evidente.</translation>
@@ -238,6 +239,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1392813880755413602">Presentazione OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> non ha inviato dati.</translation>
 <translation id="1393071644879491291">Gli attaccanti sul sito che hai cercato di visitare potrebbero indurti con l'inganno a installare software o a rivelare informazioni come password, numeri di telefono o delle carte di credito. Chrome consiglia vivamente di tornare indietro. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Aggiungi il documento d'identità in modo sicuro a Google Wallet</translation>
 <translation id="1398743098754840707">I siti aggiunti qui non verranno utilizzati come riferimento per le risposte, anche se la scheda è aperta. Se un sito che aggiungi è attualmente utilizzato in una conversazione, potrebbero essere necessari fino a 30 minuti prima che la conversazione smetta di farvi riferimento.</translation>
 <translation id="1405567553485452995">Verde chiaro</translation>
 <translation id="1406370515365284486">I tuoi metodi di pagamento verranno comunque salvati</translation>
@@ -771,6 +773,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2288422996159078444">Tutto ciò che digiti, tutte le pagine che visualizzi e ogni altra attività che svolgi sul Web vengono monitorati. I contenuti sui siti potrebbero essere modificati a tua insaputa.</translation>
 <translation id="2289385804009217824">Taglio</translation>
 <translation id="2292556288342944218">L'accesso a Internet è bloccato</translation>
+<translation id="2294150501457238325">Aggiungi il passaporto in modo sicuro</translation>
 <translation id="2295831393422400053">Attiva l'impostazione Migliora le ricerche e le attività di navigazione per usare Aiutami a scrivere</translation>
 <translation id="2296244067976588032">Passkey • Portachiavi iCloud</translation>
 <translation id="2296331629987861142">Paga in rate semplici (soggette a idoneità, si applicano commissioni)</translation>
@@ -1131,6 +1134,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2931453528659195355">Gestisci informazioni sugli acquisti</translation>
 <translation id="2933624813161016821">Alluminio goffrato</translation>
 <translation id="2935726091208500473">condivisione delle schede</translation>
+<translation id="2936698630976431647">Seleziona il campo del codice promozionale per compilare automaticamente le offerte di Google Wallet</translation>
 <translation id="293796669683825859">Commenti</translation>
 <translation id="2938225289965773019">Aprire i link <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: per mostrare il cursore, cambia app, ricarica la pagina o torna indietro</translation>
@@ -1280,6 +1284,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vuole memorizzare in modo definitivo i dati sul dispositivo</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Aggiungi la patente di guida a Google Wallet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> su <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Codice prenotazione</translation>
 <translation id="3196902089458890316">Condividere sempre le schede pertinenti per ottenere risposte migliori?</translation>
@@ -1387,6 +1392,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3380864720620200369">ID client:</translation>
 <translation id="3383566085871012386">Ordine di precedenza corrente</translation>
 <translation id="3383713837163550889">I tuoi file locali verranno eliminati tra 1 minuto</translation>
+<translation id="33837817515081754">Aggiungi il Known Traveler Number a Google Wallet</translation>
 <translation id="3384522979010096022">La tua organizzazione non ti consente di visualizzare questo sito</translation>
 <translation id="3391030046425686457">Indirizzo di consegna</translation>
 <translation id="3391482648489541560">modifica di file</translation>
@@ -1460,6 +1466,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3517264445792388751">Il file system è stato disattivato dall'amministratore</translation>
 <translation id="3518941727116570328">Gestione di più oggetti</translation>
 <translation id="3519670528214225835">Chiedi a <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Aggiungi il veicolo a Google Wallet</translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
 <translation id="3525435918300186947">Vuoi controllare e riprogrammare i dispositivi MIDI?</translation>
 <translation id="3527624163937328588">Rimuovi allegato</translation>
@@ -1813,6 +1820,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4103249731201008433">Il numero di serie del dispositivo non è valido</translation>
 <translation id="4103592298805904008">Cartone (a parete singola)</translation>
 <translation id="4104702906064390950">Salvataggio delle informazioni sull'IBAN in corso…</translation>
+<translation id="4104995898379951162">Aggiungi il Known Traveler Number in modo sicuro</translation>
 <translation id="4106101218644797743">impostazioni di sincronizzazione</translation>
 <translation id="4106887816571530227">Contenuti incorporati non consentiti</translation>
 <translation id="4107047499377819067">È iniziata l'installazione dei servizi in background della VPN. L'operazione potrebbe richiedere alcuni minuti.</translation>
@@ -1870,6 +1878,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4195459680867822611">Pulsante Leggi i suggerimenti di Chrome, attiva per scoprire di più sulle funzionalità di Chrome</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4196861286325780578">&amp;Ripeti spostamento</translation>
+<translation id="4199131764832701740">Aggiungi il passaporto a Google Wallet</translation>
 <translation id="4202554117186904723">Quinto rullo</translation>
 <translation id="4203769790323223880">Fotocamera non consentita</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controllare le configurazioni del firewall e antivirus<ph name="END_LINK" /></translation>
@@ -2235,6 +2244,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Aggiorna la carta d'identità in modo sicuro</translation>
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
+<translation id="4808598252755230865">Aggiungi il Known Traveler Number in modo sicuro a Google Wallet</translation>
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
 <translation id="4811450222531576619">Scopri la fonte e l'argomento</translation>
 <translation id="4811696127853690432">Salva il veicolo in modo sicuro in Google Wallet</translation>
@@ -2264,6 +2274,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4855395119669662878">L'amministratore inizierà a caricare i tuoi file su <ph name="CLOUD_PROVIDER" /> il giorno <ph name="DATE_TIME" />. Mantieni il dispositivo connesso finché il caricamento del file non è completo. Durante il caricamento, potrai leggere solo i file locali.</translation>
 <translation id="485902285759009870">Verifica del codice in corso…</translation>
 <translation id="4860260582253463350">Per continuare su YouTube, dobbiamo verificare la tua identità. Avrai le impostazioni configurate da un genitore o tutore in Family Link.</translation>
+<translation id="4861514638281352187">Aggiungi il numero di rettifica in modo sicuro</translation>
 <translation id="4862642413395066333">Firma risposte OCSP</translation>
 <translation id="4864406669374375262">Stringa di versione copiata negli appunti</translation>
 <translation id="486459320933704969">Un genitore o tutore deve autorizzarti a visitare questo sito web</translation>
@@ -2695,6 +2706,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="55635442646131152">Struttura documento</translation>
 <translation id="5563589142503817291">Per usare la posizione, concedi l'accesso a Chrome in <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Apri scheda Incognito</translation>
+<translation id="5565613377956908865">Aggiungi il documento d'identità a Google Wallet</translation>
 <translation id="5565735124758917034">Attivo</translation>
 <translation id="5570825185877910964">Proteggi account</translation>
 <translation id="5571083550517324815">Impossibile ritirare dall'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
@@ -2882,6 +2894,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5895694128043506580">Google Chrome sta cercando di mostrare informazioni sensibili</translation>
 <translation id="5898767305816764989">Pulsante Mi piace, premi Invio per inviare un feedback che indica che ti piace <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Giallo</translation>
+<translation id="5902204772823742902">Aggiungi la patente di guida in modo sicuro a Google Wallet</translation>
 <translation id="5903264686717710770">Titolo:</translation>
 <translation id="5905671155741555195">Il tuo indirizzo di lavoro può aiutarti a svolgere attività sui servizi Google, ad esempio a ricevere risultati di ricerca più pertinenti e indicazioni stradali in Google Maps. Puoi modificare o eliminare il tuo indirizzo <ph name="BEGIN_LINK" />nel tuo Account Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizzati)</translation>
@@ -3300,6 +3313,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6613866251791999074">Scopri di più sul tuo motore di ricerca in Chrome</translation>
 <translation id="6615297766614333076">Fascicolatore 2</translation>
 <translation id="6619496928666593220">IBAN non compilato</translation>
+<translation id="662009501953240458">Aggiungi il veicolo in modo sicuro a Google Wallet</translation>
 <translation id="6624427990725312378">Dati di contatto</translation>
 <translation id="6625629379283886932">Insegnami a programmare</translation>
 <translation id="6628463337424475685">Ricerca <ph name="ENGINE" /></translation>
@@ -3670,6 +3684,7 @@ Ulteriori dettagli:
 <translation id="7261463765917514051">Fai il checkout in tutta sicurezza con la compilazione automatica</translation>
 <translation id="7265608370113700582">L'indirizzo è disponibile solo su questo dispositivo</translation>
 <translation id="7266094331715305887">app sul dispositivo</translation>
+<translation id="7268742523336093718">Aggiungi il passaporto in modo sicuro a Google Wallet</translation>
 <translation id="7269151392155523061">La scorciatoia non può essere uguale alla parola chiave dell'aggregatore di ricerca definita da <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">I file che scarichi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere analizzati per rilevare dati sensibili o malware, essere archiviati in base alle policy aziendali ed essere visibili al tuo amministratore.</translation>
 <translation id="7275334191706090484">Preferiti gestiti</translation>
@@ -4239,6 +4254,7 @@ Ulteriori dettagli:
 <translation id="8241707690549784388">La pagina a cui stai tentando di accedere utilizzava informazioni inserite da te. Tornando a quella pagina, è possibile che eventuali azioni che hai eseguito vengano ripetute. Continuare?</translation>
 <translation id="8242426110754782860">Procedi</translation>
 <translation id="824620968958405573">Attività di navigazione automatica</translation>
+<translation id="8247824837030847066">Aggiungi il documento d'identità in modo sicuro</translation>
 <translation id="8248406213705193919">Salvare la carta in modo sicuro?</translation>
 <translation id="8249296373107784235">Interrompi</translation>
 <translation id="8250094606476360498">Al momento questo indirizzo è salvato su questo dispositivo. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="ACCOUNT" />.</translation>
@@ -4658,6 +4674,7 @@ Ulteriori dettagli:
 <translation id="9003639428623471314">Busta Kahu</translation>
 <translation id="9004367719664099443">Sessione VR in corso</translation>
 <translation id="9005998258318286617">Impossibile caricare il documento PDF.</translation>
+<translation id="900686221526305417">Aggiungi il veicolo in modo sicuro</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9010187979699879769">Crea un piano di studio per me</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Nessuno}=1{Da 1 sito}other{Da # siti}}</translation>
@@ -4811,6 +4828,7 @@ Ulteriori dettagli:
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo sito in Google Sites</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membri fanno ora parte del gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Hai chiesto di poter visitare questo sito. Uno dei tuoi genitori può rispondere in Family Link.</translation>
+<translation id="949484466204182817">Aggiungi il numero di rettifica a Google Wallet</translation>
 <translation id="950736567201356821">Tripla perforatura in alto</translation>
 <translation id="950926967802086924">Passkey • Gestore delle password di Google</translation>
 <translation id="952165179818196872">Aggiungi <ph name="PROVIDER" /> per pagare senza cambiare app</translation>
@@ -4825,6 +4843,7 @@ Ulteriori dettagli:
 <translation id="962484866189421427">Questi contenuti potrebbero installare app ingannevoli che si spacciano per qualcos'altro o raccolgono dati che potrebbero essere usati per monitorare la tua attività. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">In base a una legge della tua regione, Chromium ti chiede di scegliere il motore di ricerca predefinito. Questi motori di ricerca sono diffusi nella tua regione e vengono mostrati in ordine casuale.</translation>
 <translation id="963837307749850257">Tutti gli utenti</translation>
+<translation id="963988220224168636">Aggiungi il numero di rettifica in modo sicuro a Google Wallet</translation>
 <translation id="964050462028070434">Gestisci password e passkey…</translation>
 <translation id="964681140808832181">Sì, voglio annullare</translation>
 <translation id="969892804517981540">Build ufficiale</translation>

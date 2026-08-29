@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> élément inactif}one{<ph name="TABS_COUNT_MANY" /> élément inactif}other{<ph name="TABS_COUNT_MANY" /> éléments inactifs}}</translation>
 <translation id="1568067597247500137">Couper le son du site</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Déplacer l'onglet vers le bas}one{Déplacer l'onglet vers le bas}other{Déplacer les onglets vers le bas}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> onglets regroupés</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1670942869417022142">Audio désactivé</translation>
 <translation id="1697284962337958118">Ajouter à</translation>
 <translation id="1713541401465507417">Fermer tous les onglets et les groupes</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> groupe d'onglets n'est plus disponible}one{<ph name="TAB_GROUPS_COUNT_MANY" /> groupe d'onglet n'est plus disponible}other{<ph name="TAB_GROUPS_COUNT_MANY" /> groupes d'onglets ne sont plus dispos}}</translation>
+<translation id="1759122978835002237">Déplacer le groupe d'onglets vers le haut</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet regroupé</translation>
 <translation id="1844381456014878100">Après 7 jours d'inactivité</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". L'onglet de navigation privée ne sera pas disponible.}one{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglet de navigation privée ne sera pas disponible.}other{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglets de navigation privée ne seront pas disponibles.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Réactiver le son du site}one{Réactiver le son du site}other{Réactiver le son des sites}}</translation>
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Déplacer le groupe d'onglets vers le bas</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Le groupe d'onglets "<ph name="TAB_GROUP_NAME" />" n'est plus dispo</translation>
 <translation id="7402375256128852434">Ajouter des onglets récents</translation>
 <translation id="7452985128687107478">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Déplacer l'onglet vers le haut}one{Déplacer l'onglet vers le haut}other{Déplacer les onglets vers le haut}}</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="7489558427602531799">Déplacer le groupe d'onglets vers la droite</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> élément}one{<ph name="TABS_COUNT_MANY" /> élément}other{<ph name="TABS_COUNT_MANY" /> éléments}}</translation>

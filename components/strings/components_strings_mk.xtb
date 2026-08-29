@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Се подготвуваат датотеките</translation>
 <translation id="1014509239502131234">Резултатот се враќа</translation>
 <translation id="1015730422737071372">Дајте дополнителни детали</translation>
+<translation id="1016671033299705843">Додајте возачка дозвола безбедно</translation>
 <translation id="1019413721762100891">Исклучено</translation>
 <translation id="1021753677514347426">Грешкава се случува поради сертификат што вие или некој друг сте го инсталирале на уредот. Сертификатов е познато дека се користи за надзор и пресретнување мрежи и Chromium нема доверба во него. Иако постојат и легитимни случаи за надзор, како на пр., во училишна или компаниска мрежа, Chromium сака да се увери дека знаете дека постои надзор, дури и ако не може да го сопрете. Надзорот може да се случи во кој било прелистувач или апликација што пристапува на интернет.</translation>
 <translation id="1024111578869940408">Напаѓачите понекогаш имитираат сајтови, така што вршат тешко забележливи промени во интернет-адресата.</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> не испрати податоци.</translation>
 <translation id="1393071644879491291">Напаѓачите на сајтот што се обидовте да го отворите може да ве измамат да инсталирате софтвер или да откриете работи како вашите лозинки, телефонски броеви или броеви на кредитни картички. Chrome силно препорачува да се вратите на безбедно. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Додајте документ за идентификација безбедно во Google Wallet</translation>
 <translation id="1398743098754840707">Сајтовите што ги додавате овде нема да се користат како референции за одговори, дури и ако е отворена картичката. Ако сајтот што го додавате во моментов се користи во нишка, може да бидат потребни до 30 минути за да престане нишката да се повикува на него.</translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1406370515365284486">Вашите начини на плаќање и понатаму ќе се зачувуваат</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">Сѐ што ќе напишете, сите страници што ќе ги прегледате или секоја друга активност на интернет се надгледува, а содржините на сајтовите може да се променат без ваше знаење.</translation>
 <translation id="2289385804009217824">Кратење</translation>
 <translation id="2292556288342944218">Вашиот пристап на интернет е блокиран</translation>
+<translation id="2294150501457238325">Додајте пасош безбедно</translation>
 <translation id="2295831393422400053">Вклучете ја поставката „Подобрување на пребарувањата и прелистувањата“ за да користите „Помогни ми да напишам“</translation>
 <translation id="2296244067976588032">Криптографски клуч • iCloud Keychain</translation>
 <translation id="2296331629987861142">Практично плаќање на рати (зависи од подобност, се плаќаат надоместоци)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">Управувајте со податоците за купување</translation>
 <translation id="2933624813161016821">Фолија за гравирање</translation>
 <translation id="2935726091208500473">споделувањето на вашите картички</translation>
+<translation id="2936698630976431647">Изберете го полето за промотивен код за автоматско пополнување понуди од Google Wallet</translation>
 <translation id="293796669683825859">Коментари</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – за да се прикаже курсорот, сменете ја апликацијата, вчитајте ја страницата повторно или вратете се назад</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3190736958609431397">Отследи</translation>
 <translation id="3194737229810486521"><ph name="URL" /> сака трајно да складира податоци на вашиот уред</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Додајте возачка дозвола во Google Wallet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Код на резервација</translation>
 <translation id="3196902089458890316">Секогаш да се споделуваат релевантните картички за подобри одговори?</translation>
@@ -1390,6 +1395,7 @@
 <translation id="3380864720620200369">ИД на клиент:</translation>
 <translation id="3383566085871012386">Тековен редослед на предност</translation>
 <translation id="3383713837163550889">Вашите локални датотеки ќе се избришат по 1 минута</translation>
+<translation id="33837817515081754">Додајте број на познат патник во Google Wallet</translation>
 <translation id="3384522979010096022">Вашата организација не дозволува да го прегледувате сајтов</translation>
 <translation id="3391030046425686457">Адреса на испорака</translation>
 <translation id="3391482648489541560">изменување датотеки</translation>
@@ -1463,6 +1469,7 @@
 <translation id="3517264445792388751">Администраторот го оневозможил системот на датотеки</translation>
 <translation id="3518941727116570328">Постапување со повеќе објекти</translation>
 <translation id="3519670528214225835">Прашајте го <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Додајте возило во Google Wallet</translation>
 <translation id="3525130752944427905">10 x 14 инчи</translation>
 <translation id="3525435918300186947">Да се дозволи контролирање и репрограмирање на MIDI-уредите?</translation>
 <translation id="3527624163937328588">Отстрани го прилогот</translation>
@@ -1816,6 +1823,7 @@
 <translation id="4103249731201008433">Серискиот број на уредот е неважечки</translation>
 <translation id="4103592298805904008">Картон (единечен ѕид)</translation>
 <translation id="4104702906064390950">Се зачувуваат податоци за IBAN</translation>
+<translation id="4104995898379951162">Додајте број на познат патник безбедно</translation>
 <translation id="4106101218644797743">поставки за синхронизација</translation>
 <translation id="4106887816571530227">Не се дозволени вметнати содржини</translation>
 <translation id="4107047499377819067">Инсталирањето на заднинските услуги на VPN започна. Ова може да трае неколку минути.</translation>
@@ -1873,6 +1881,7 @@
 <translation id="4195459680867822611">Копче за гледање совети за Chrome, активирајте го за да дознаете за функциите на Chrome</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4196861286325780578">&amp;Повтори преместување</translation>
+<translation id="4199131764832701740">Додајте пасош во Google Wallet</translation>
 <translation id="4202554117186904723">Петта ролна</translation>
 <translation id="4203769790323223880">Камерата не е дозволена</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Да ги проверите заштитниот ѕид и антивирусните конфигурации<ph name="END_LINK" /></translation>
@@ -2238,6 +2247,7 @@
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4805128460707321168">Ажурирајте ја личната карта безбедно</translation>
 <translation id="4807098396393229769">Име на картичка</translation>
+<translation id="4808598252755230865">Додајте број на познат патник безбедно во Google Wallet</translation>
 <translation id="4809079943450490359">Упатства од администраторот на уредот:</translation>
 <translation id="4811450222531576619">Дознајте повеќе за изворот и темата</translation>
 <translation id="4811696127853690432">Зачувајте го возилото безбедно во Google Wallet</translation>
@@ -2267,6 +2277,7 @@
 <translation id="4855395119669662878">Администраторот ќе започне да ги прикачува вашите датотеки во <ph name="CLOUD_PROVIDER" /> во <ph name="DATE_TIME" />. Уредот нека остане поврзан додека да заврши прикачувањето на датотеката. Додека трае прикачувањето, ќе може само да читате локални датотеки.</translation>
 <translation id="485902285759009870">Се потврдува кодот…</translation>
 <translation id="4860260582253463350">За да продолжиш на YouTube, мора да потврдиме дека ова си навистина ти. Ќе ги добиеш поставките што ги поставил твојот родител или старател во Family Link.</translation>
+<translation id="4861514638281352187">Додајте број за ревизија безбедно</translation>
 <translation id="4862642413395066333">Најавување на одговори на OCSP</translation>
 <translation id="4864406669374375262">Низа на верзијата е копирана во привремената меморија</translation>
 <translation id="486459320933704969">Родител или старател мора да одобри за да го посетиш веб-сајтов</translation>
@@ -2698,6 +2709,7 @@
 <translation id="55635442646131152">Преглед на документ</translation>
 <translation id="5563589142503817291">За да ја користи локацијата, дајте му пристап на Chrome во <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Отвори картичка „Инкогнито“</translation>
+<translation id="5565613377956908865">Додајте документ за идентификација во Google Wallet</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5570825185877910964">Заштити ја сметката</translation>
 <translation id="5571083550517324815">Не може да се подигне од оваа адреса. Изберете друга.</translation>
@@ -2885,6 +2897,7 @@
 <translation id="5895694128043506580">Google Chrome се обидува да прикаже чувствителни податоци</translation>
 <translation id="5898767305816764989">Копче „Ми се допаѓа“, притиснете Enter за да испратите повратни информации дека ви се допаѓа, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Жолта боја</translation>
+<translation id="5902204772823742902">Додајте возачка дозвола безбедно во Google Wallet</translation>
 <translation id="5903264686717710770">Наслов:</translation>
 <translation id="5905671155741555195">Вашата адреса на работа може да ви помогне да завршувате работи во услугите на Google, како порелевантни резултати од „Пребарување“ и насоки во „Карти на Google“. Адресата може да ја измените или избришете <ph name="BEGIN_LINK" />во вашата сметка на Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизирани)</translation>
@@ -3304,6 +3317,7 @@
 <translation id="6613866251791999074">Дознајте повеќе за вашиот пребарувач во Chrome</translation>
 <translation id="6615297766614333076">Фиока за складирање 2</translation>
 <translation id="6619496928666593220">Полето за IBAN не е пополнето</translation>
+<translation id="662009501953240458">Додајте возило безбедно во Google Wallet</translation>
 <translation id="6624427990725312378">Податоци за контакт</translation>
 <translation id="6625629379283886932">Помогни ми да научам како да кодирам</translation>
 <translation id="6628463337424475685">Пребарување на <ph name="ENGINE" /></translation>
@@ -3673,6 +3687,7 @@
 <translation id="7261463765917514051">Плаќајте безбедно со „Автоматско пополнување“</translation>
 <translation id="7265608370113700582">Адресата е достапна само на овој уред</translation>
 <translation id="7266094331715305887">апликации на уредот</translation>
+<translation id="7268742523336093718">Додајте пасош безбедно во Google Wallet</translation>
 <translation id="7269151392155523061">Кратенката не може да биде иста со клучниот збор на агрегаторот за пребарување дефиниран од <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Датотеките што ги преземате се испраќаат до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци или злонамерен софтвер. Можеби ќе се складираат согласно со правилата на компанијата и ќе бидат видливи за администраторот.</translation>
 <translation id="7275334191706090484">Управувани обележувачи</translation>
@@ -4242,6 +4257,7 @@
 <translation id="8241707690549784388">Страницата што ја барате ги искористи информациите што ги внесовте. Враќањето на страницата може да предизвика да се повтори некое дејство. Дали сакате да продолжитe?</translation>
 <translation id="8242426110754782860">Продолжи</translation>
 <translation id="824620968958405573">Задача за автоматско прелистување</translation>
+<translation id="8247824837030847066">Додајте документ за идентификација безбедно</translation>
 <translation id="8248406213705193919">Да се зачува картичката безбедно?</translation>
 <translation id="8249296373107784235">Прекини</translation>
 <translation id="8250094606476360498">Во моментов, адресава е зачувана на овој уред. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
@@ -4661,6 +4677,7 @@
 <translation id="9003639428623471314">Плик Kahu</translation>
 <translation id="9004367719664099443">Во тек е сесија за VR</translation>
 <translation id="9005998258318286617">Не успеа да се вчита PDF-документот.</translation>
+<translation id="900686221526305417">Додајте возило безбедно</translation>
 <translation id="9008201768610948239">Игнорирај</translation>
 <translation id="9010187979699879769">Создај ми распоред на учење</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Нема}=1{Од 1 сајт}one{Од # сајт}other{Од # сајта}}</translation>
@@ -4815,6 +4832,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов сајт во Google Sites</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> члена се придружија во групата картички „<ph name="GROUP_NAME" />“</translation>
 <translation id="949314938206378263">Побара да го посетиш сајтов. Твојот родител може да одговори во Family Link.</translation>
+<translation id="949484466204182817">Додајте број за ревизија во Google Wallet</translation>
 <translation id="950736567201356821">Три дупки горе</translation>
 <translation id="950926967802086924">Криптографски клуч • Google Password Manager</translation>
 <translation id="952165179818196872">Додајте <ph name="PROVIDER" /> за да плаќате без да се префрлате во друга апликација</translation>
@@ -4829,6 +4847,7 @@
 <translation id="962484866189421427">Содржиниве може да се обидат да инсталираат лажни апликации што се преправаат дека се нешто друго или да собираат податоци што може да ги користат за да ве следат. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Согласно со конкретен закон во вашиот регион, Chromium бара да го изберете вашиот стандарден пребарувач. Овие пребарувачи се популарни во вашиот регион, а се прикажани по случаен редослед.</translation>
 <translation id="963837307749850257">Сите корисници</translation>
+<translation id="963988220224168636">Додајте број за ревизија безбедно во Google Wallet</translation>
 <translation id="964050462028070434">Управувајте со лозинките и криптографските клучеви…</translation>
 <translation id="964681140808832181">Да, сакам да откажам</translation>
 <translation id="969892804517981540">Официјална верзија</translation>

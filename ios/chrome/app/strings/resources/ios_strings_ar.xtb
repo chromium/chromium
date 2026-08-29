@@ -1767,6 +1767,7 @@
 <translation id="667999046851023355">مستند</translation>
 <translation id="6681791404926413601">{count,plural, =1{يتوفّر خيار واحد ({count}) لطريقة الدفع أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار لطريقة الدفع أعلى لوحة المفاتيح.}two{يتوفّر خياران ({count}) لطريقة الدفع أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات لطريقة الدفع أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا لطريقة الدفع أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار لطريقة الدفع أعلى لوحة المفاتيح.}}</translation>
 <translation id="6682680306647339111">تمت إزالة التذكير</translation>
+<translation id="6683022854667115063">سمّاعات رأس</translation>
 <translation id="6684262542644248484">تسجيل الدخول إلى موقع إلكتروني</translation>
 <translation id="6685259053455152195">اختصارات لتعديل الإعدادات بسرعة واستخدام الميزات من شريط العناوين</translation>
 <translation id="6689342293888598653">لون خلفية أبيض</translation>
@@ -1850,7 +1851,7 @@
 <translation id="6937083164784433305">{count,plural, =1{استخدمت صورة واحدة للبحث}zero{استخدمت # صورة للبحث}two{استخدمت صورتَين للبحث}few{استخدمت # صور للبحث}many{استخدمت # صورة للبحث}other{استخدمت # صورة للبحث}}</translation>
 <translation id="693761253105515415">يُرجى ضبط رمز مرور</translation>
 <translation id="6938212956536472404">لا يمكن مشاركة علامة التبويب هذه</translation>
-<translation id="6945221475159498467">تحديد</translation>
+<translation id="6945221475159498467">اختيار</translation>
 <translation id="6946722113367118030">تفكير</translation>
 <translation id="6950522403736391608">مخفي</translation>
 <translation id="6962809930976936328">‏عرض أهم النقاط باستخدام Gemini</translation>

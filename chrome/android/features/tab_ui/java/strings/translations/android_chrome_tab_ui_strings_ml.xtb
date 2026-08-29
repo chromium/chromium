@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">ഗ്രൂപ്പ് ഇല്ലാതാക്കൂ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{നിഷ്ക്രിയമായ <ph name="TABS_COUNT_ONE" /> ഇനം}other{നിഷ്ക്രിയമായ <ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ}}</translation>
 <translation id="1568067597247500137">സൈറ്റ് മ്യൂട്ട് ചെയ്യുക</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ടാബ് താഴേക്ക് നീക്കുക}other{ടാബുകൾ താഴേക്ക് നീക്കുക}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്‌തു</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1670942869417022142">മ്യൂട്ട് ചെയ്ത ഓഡിയോ</translation>
 <translation id="1697284962337958118">ഇതിലേക്ക് ചേര്‍‌ക്കുക</translation>
 <translation id="1713541401465507417">എല്ലാ ടാബുകളും ഗ്രൂപ്പുകളും അടയ്‌ക്കുക</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ടാബ് ഗ്രൂപ്പ് ഇനി ലഭ്യമല്ല}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ടാബ് ഗ്രൂപ്പുകൾ ഇനി ലഭ്യമല്ല}}</translation>
+<translation id="1759122978835002237">ടാബ് ഗ്രൂപ്പ് മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />കൂടുതലറിയുക<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ടാബ് ഗ്രൂപ്പ് ചെയ്‌തു</translation>
 <translation id="1844381456014878100">7 ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{അടച്ച ടാബുകളും ഗ്രൂപ്പുകളും 'അടുത്തിടെ തുറന്ന ടാബുകൾ' വിഭാഗത്തിൽ നിന്നും 'ടാബ് ഗ്രൂപ്പുകൾ' വിഭാഗത്തിൽ നിന്നും വീണ്ടും തുറക്കാം. നിങ്ങളുടെ അദൃശ്യ ടാബ് ലഭ്യമാകില്ല.}other{അടച്ച ടാബുകളും ഗ്രൂപ്പുകളും 'അടുത്തിടെ തുറന്ന ടാബുകൾ' വിഭാഗത്തിൽ നിന്നും 'ടാബ് ഗ്രൂപ്പുകൾ' വിഭാഗത്തിൽ നിന്നും വീണ്ടും തുറക്കാം. നിങ്ങളുടെ # അദൃശ്യ ടാബുകൾ ലഭ്യമാകില്ല.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{സൈറ്റ് അൺമ്യൂട്ട് ചെയ്യുക}other{സൈറ്റുകൾ അൺമ്യൂട്ട് ചെയ്യുക}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> -ൽ ഇപ്പോൾ <ph name="CURRENT_PRICE" />-ന് ലഭ്യം</translation>
+<translation id="2164232689984783657">ടാബ് ഗ്രൂപ്പ് താഴേക്ക് നീക്കുക</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
 <translation id="2271452184061378400">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ സംരക്ഷിക്കും</translation>
 <translation id="2277224997687551299">ഗ്രൂപ്പിന്റെ പേര് എഡിറ്റ് ചെയ്യുക</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ടാബ് ഗ്രൂപ്പ് ഇനി ലഭ്യമല്ല</translation>
 <translation id="7402375256128852434">അടുത്തിടെയുള്ള ടാബുകൾ ചേർക്കുക</translation>
 <translation id="7452985128687107478">ടാബ് ഗ്രൂപ്പുകൾ നിങ്ങളുടെ ഉപകരണങ്ങളിലുടനീളം സ്വയമേവ സംരക്ഷിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ടാബ് മുകളിലേക്ക് നീക്കുക}other{ടാബുകൾ മുകളിലേക്ക് നീക്കുക}}</translation>
 <translation id="747459581954555080">എല്ലാം പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="7489558427602531799">ടാബ് ഗ്രൂപ്പ് വലത്തേക്ക് നീക്കുക</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ഇനം}other{<ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ}}</translation>

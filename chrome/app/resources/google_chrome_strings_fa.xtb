@@ -86,7 +86,6 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{‏‫Chrome توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{‏‫Chrome توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{‏‫Chrome توصیه می‌کند زبانه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>
 <translation id="1832046143430087831">‏با این کار سرعت سایت‌ها با موتور Chrome نسخه ۸ بالاتر می‌رود اما مقاومت Chrome دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم خاموش است.</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
-<translation id="1842869163383855194">‏دست یافتن آسان به «جستجو در Chrome» در سراسر دستگاه، حتی اگر Chrome کوچک شده باشد.</translation>
 <translation id="1843347690926158494">‏این زبانه با «لنز Google» جستجو شود</translation>
 <translation id="1849248141818021764">‏فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">‏برای ادامه مرور درحرکت، از برنامه Chrome استفاده کنید</translation>
@@ -326,7 +325,6 @@
 <translation id="4173512894976930765">‏سایت‌ها احتمالاً عملکرد موردانتظار را خواهند داشت. وقتی همه پنجره‌های Chrome را ببندید از سیستم اکثر سایت‌ها خارج خواهید شد، اما اگر به سیستم Chrome وارد شده باشید از «حساب Google» خارج نخواهید شد.</translation>
 <translation id="4175922240926474352">‏‫Chrome این بارگیری را مسدود کرد زیرا این سایت از اتصال ایمن استفاده نمی‌کند و ممکن است فایل دستکاری شده باشد</translation>
 <translation id="4191857738314598978">{0,plural, =1{‏Chrome را ظرف یک روز راه‌اندازی مجدد کنید}one{‏Chrome را ظرف # روز راه‌اندازی مجدد کنید}other{‏Chrome را ظرف # روز راه‌اندازی مجدد کنید}}</translation>
-<translation id="4222394563269716113">‏«جستجو در Chrome» را با میان‌بر صفحه‌کلید باز کنید.</translation>
 <translation id="4222932583846282852">درحال لغو کردن…</translation>
 <translation id="4224210481850767180">نصب لغو شده است.</translation>
 <translation id="4242034826641750751">‏Chrome برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
@@ -352,7 +350,6 @@
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
 <translation id="4434353761996769206">خطای نصب‌کننده: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">‏این سند را با «Gemini در Chromium» هم‌رسانی کنید تا مرور کوتاهی از آن داشته باشید و سؤال‌های تعقیبی بپرسید</translation>
-<translation id="4447327682081576371">‏نشان دادن «جستجو در Chrome» در نوار منو Mac و روشن کردن میان‌بر صفحه‌کلید</translation>
 <translation id="4450664632294415862">‏Chrome - ورود به سیستم شبکه - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏عملکرد دیگری در Google Chrome درحال انجام است. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="4493028449971051158">خطای راه‌اندازی: لطفاً نصب‌کننده را با نقش سرپرست اجرا کنید.</translation>
@@ -376,6 +373,7 @@
 <translation id="475321580758063259">‏برای ادامه استفاده از داده‌های Chrome ذخیره‌شده در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />)،‏ Chrome را به‌روز کنید</translation>
 <translation id="4754614261631455953">‏Google Chrome Canary (ورودی mDNS)</translation>
 <translation id="4756182432527369254">‏سرعت سایت‌ها را با موتور V8 مرورگر Chrome بالاتر می‌برد اما مقاومت Chrome را دربرابر حمله‌ها کمی کمتر می‌کند</translation>
+<translation id="4768676935374695498">‏جستجوی این ویدیو با «لنز Google»</translation>
 <translation id="479167709087336770">‏از همان غلط‌یاب املا استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود. هروقت بخواهید می‌توانید این رفتار را در تنظیمات تغییر دهید.</translation>
 <translation id="4793679854893018356">‏ببینید Chrome چگونه ایمنی شما را حفظ می‌کند</translation>
 <translation id="4799870290441980300">‏ویژگی‌های اضافی را روشن می‌کند تا قدرتمندترین محافظت‌های Chrome را ارائه دهد</translation>
@@ -438,7 +436,6 @@
 <translation id="5402307365844630024">‏روشن/خاموش کردن Gemini در Chrome نسخه بتا</translation>
 <translation id="541844421954567481">‏با برنامه Chrome در <ph name="DEVICE_TYPE" />، گذرواژه‌ها، زبانه‌ها، و موارد دیگر را درحرکت همراه خود داشته باشید</translation>
 <translation id="5430073640787465221">‏فایل اولویت‌های شما خراب یا نامعتبر است. Google Chrome نمی‌تواند تنظیمات شما را بازیابی کند.</translation>
-<translation id="545114101312117217">‏دست یافتن آسان به میان‌برها ازطریق «جستجو در Chrome»</translation>
 <translation id="5465210843490471889">‏انتخاب کردن نمایه Chrome برای استفاده همراه با <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">‏اکنون Chrome هنگام شروع Windows راه‌اندازی می‌شود تا بتوانید بلافاصله مرور را شروع کنید. می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="5486346529181556467">‏وقتی سایتی را که فکر می‌کنید مضر است گزارش می‌کنید، به بهبود ایمنی آنلاین برای همه کمک می‌کنید. درباره <ph name="BEGIN_LINK" />خط‌مشی Google درخصوص سایت‌های ناامن<ph name="END_LINK" /> بیشتر بدانید.</translation>
@@ -514,7 +511,6 @@
 <translation id="6166185671393271715">‏وارد کردن گذرواژه‌ها به Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="6177442314419606057">‏جستجو در Chrome</translation>
 <translation id="6180522807229584611">‏این زبانه از منابع اضافی استفاده می‌کند. برای بهبود عملکرد، اجازه دهید Chrome آن را غیرفعال کند.</translation>
 <translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
 <translation id="6192058120268468905">‏حساب شما در Chrome</translation>
@@ -722,7 +718,6 @@
 <translation id="8074398340364918139">‏برای جستجو کردن افزونه یا ویژگی خاص Chrome، میان‌بر آن را در نوار نشانی تایپ کنید و به‌دنبال آن کلید صفحه‌کلید انتخابی‌تان را فشار دهید</translation>
 <translation id="8077579734294125741">‏دیگر نمایه‌های Chrome</translation>
 <translation id="8086881907087796310">نصب انجام نشد زیرا رایانه شما با حداقل شرایط سخت‌افزاری مطابقت ندارد.</translation>
-<translation id="8093772166980702367">‏نشان دادن «جستجو در Chrome» در سینی سیستم و روشن کردن میان‌بر صفحه‌کلید</translation>
 <translation id="8110438089258398864">‏می‌توانید «حالت هوشواره‌ای جستجوی Google» را دوباره باز کنید تا بتوانید هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="8113883687556086139">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، هویت خود را درستی‌سنجی کنید</translation>
 <translation id="8115695070094288807">‏درحال شخصی‌سازی Chrome…</translation>
@@ -766,10 +761,12 @@
 <translation id="848851325211467878">‏با <ph name="USER_NAME" />، <ph name="USER_EMAIL" />، عضویت Google به سیستم وارد شده‌اید. باز کردن منو حساب</translation>
 <translation id="8496177819998570653">‏مدیر گذرواژه Google</translation>
 <translation id="8498858610309223613">‏لحظاتی پیش به‌روزرسانی امنیتی ویژه‌ای برای Google Chrome اعمال شد. هم‌اکنون بازراه‌اندازی کنید و ما برگه‌هایتان را بازیابی خواهیم کرد.</translation>
+<translation id="8502181052659370">‏جستجوی این زبانه با «لنز Google»</translation>
 <translation id="8521348052903287641">‏قانون ترافیک ورودی Google Chrome نسخه Dev برای امکان دادن به ترافیک mDNS.</translation>
 <translation id="852529348814672339">‏نمایش دادن Chrome به این زبان</translation>
 <translation id="8525579356836940628">نصب متوقف شد</translation>
 <translation id="8533056045953418157">‏تنظیم Google Chrome به‌عنوان نمایشگر PDF پیش‌فرض</translation>
+<translation id="854593887324189900">‏جستجوی این تصویر با «لنز Google»</translation>
 <translation id="8555465886620020932">خطای سرویس: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">جستجوی فهرست زبان‌ها</translation>
 <translation id="8575047640889685742">‏استفاده از <ph name="BEGIN_LINK" />گذرعبارت خودتان<ph name="END_LINK" /> برای رمزگذاری همه داده‌های Chrome موجود در «حساب Google» شما. روش‌های پرداخت و نشانی‌های موجود در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.</translation>

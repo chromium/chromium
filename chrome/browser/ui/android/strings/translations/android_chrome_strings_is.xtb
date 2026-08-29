@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Kynningarblað neðst með ábendingu, lokað</translation>
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1045899828449635435">Hreinsa líka gögn af þessum svæðum?</translation>
+<translation id="1049461303780085993">Prófaðu Gemini í Chrome til að fá svör, samantekt á helstu atriðum og fleira</translation>
 <translation id="1049743911850919806">Fara huldu höfði</translation>
 <translation id="1052842760770519282">Sum aðgangsorðanna þinna eru ekki aðgengileg</translation>
 <translation id="1057623954802068161">Fletta efst á síðu</translation>
@@ -1117,6 +1118,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5465437530117042974">Breytingum á neðsta blaði flipa lokað.</translation>
 <translation id="5469852975082458401">Þú getur skoðað síður með textabendli. Ýttu á F7 til að slökkva.</translation>
 <translation id="5471273988133666918">Ekki er hægt að færa flipann „<ph name="TAB_TITLE" />“</translation>
+<translation id="5478718673237429220">Aðgangur að tæki með notandaviðmót er nauðsynlegur</translation>
 <translation id="548278423535722844">Opna í kortaforriti</translation>
 <translation id="5489222148748465285">Viltu að Chrome haldi áfram að leita?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, margvalinn mynd-í-mynd-flipi</translation>
@@ -1964,6 +1966,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="867914734596684889">Sýna eða fela bókamerkjastiku</translation>
 <translation id="8683039184091909753">mynd</translation>
 <translation id="8688183792442786085">Valinn flipi: <ph name="TAB_TITLE" /></translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> þarf heimild til að fá aðgang að notandaviðmótstækjum (HID) fyrir þetta vefsvæði. Þú getur breytt þessari stillingu síðar í „Stillingar &gt; Forrit &gt; Sérstakur aðgangur forrita“.</translation>
 <translation id="8696297579102085705">Senda í tækið þitt</translation>
 <translation id="8699120352855309748">Ekki bjóða upp á að þýða þessi tungumál</translation>
 <translation id="8700565880437506364">Við kynnum Gemini í Chrome</translation>

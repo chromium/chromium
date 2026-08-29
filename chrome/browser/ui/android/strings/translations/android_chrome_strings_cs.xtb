@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Zavřené propagační oznámení s tipy</translation>
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1045899828449635435">Vymazat data i z těchto webů?</translation>
+<translation id="1049461303780085993">Vyzkoušejte Gemini v Chromu a získejte odpovědi, klíčové poznatky a další informace</translation>
 <translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="1052842760770519282">Některá z vašich hesel nejsou přístupná</translation>
 <translation id="1057623954802068161">Přejít na začátek stránky</translation>
@@ -1117,6 +1118,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5465437530117042974">Spodní panel karty je zavřený. Změny byly dokončeny.</translation>
 <translation id="5469852975082458401">Stránky můžete procházet pomocí textového kurzoru. Tuto funkci vypnete stisknutím klávesy F7.</translation>
 <translation id="5471273988133666918">Kartu <ph name="TAB_TITLE" /> nelze přesunout</translation>
+<translation id="5478718673237429220">Je vyžadován přístup k zařízení s lidským rozhraním (HID)</translation>
 <translation id="548278423535722844">Otevřít v mapové aplikaci</translation>
 <translation id="5489222148748465285">Má Chrome pokračovat v hledání?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, jedna z několika vybraných karet s obrazem v obraze</translation>
@@ -1964,6 +1966,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="867914734596684889">Zobrazit nebo skrýt lištu záložek</translation>
 <translation id="8683039184091909753">obrázek</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, vybraná karta</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> pro tento web potřebuje oprávnění pro přístup k zařízením s lidským rozhraním (HID). Toto nastavení můžete později změnit v Nastavení &gt; Aplikace &gt; Speciální přístup aplikací.</translation>
 <translation id="8696297579102085705">Odeslat na vaše zařízení</translation>
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
 <translation id="8700565880437506364">Představujeme Gemini v Chromu</translation>

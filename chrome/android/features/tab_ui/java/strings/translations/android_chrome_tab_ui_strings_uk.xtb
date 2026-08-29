@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Видалити групу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивний об’єкт}one{<ph name="TABS_COUNT_MANY" /> неактивний об’єкт}few{<ph name="TABS_COUNT_MANY" /> неактивні об’єкти}many{<ph name="TABS_COUNT_MANY" /> неактивних об’єктів}other{<ph name="TABS_COUNT_MANY" /> неактивного об’єкта}}</translation>
 <translation id="1568067597247500137">Вимкнути звук на сайті</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Перемістити вкладку вниз}one{Перемістити вкладки вниз}few{Перемістити вкладки вниз}many{Перемістити вкладки вниз}other{Перемістити вкладки вниз}}</translation>
 <translation id="1645759014353344461">Згруповано стільки вкладок: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Перемістити вкладку вниз</translation>
 <translation id="1670942869417022142">Аудіо вимкнено</translation>
 <translation id="1697284962337958118">Додати в</translation>
 <translation id="1713541401465507417">Закрити всі вкладки й групи</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група вкладок більше не доступна}one{<ph name="TAB_GROUPS_COUNT_MANY" /> група вкладок більше не доступна}few{<ph name="TAB_GROUPS_COUNT_MANY" /> групи вкладок більше не доступні}many{<ph name="TAB_GROUPS_COUNT_MANY" /> груп вкладок більше не доступні}other{<ph name="TAB_GROUPS_COUNT_MANY" /> групи вкладок більше не доступні}}</translation>
+<translation id="1759122978835002237">Перемістити групу вкладок угору</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Докладніше<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Згруповано <ph name="TABS_COUNT_ONE" /> вкладку</translation>
 <translation id="1844381456014878100">Через 7 днів без активності</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". Анонімна вкладка буде недоступна.}one{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімна вкладка буде недоступна.}few{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімні вкладки будуть недоступні.}many{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімних вкладок будуть недоступні.}other{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімної вкладки будуть недоступні.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Увімкнути звук на сайті}one{Увімкнути звук на сайтах}few{Увімкнути звук на сайтах}many{Увімкнути звук на сайтах}other{Увімкнути звук на сайтах}}</translation>
 <translation id="2162620598375156287">Поточна ціна на сайті <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
+<translation id="2164232689984783657">Перемістити групу вкладок униз</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Розгрупувати вкладку}one{Розгрупувати вкладки}few{Розгрупувати вкладки}many{Розгрупувати вкладки}other{Розгрупувати вкладки}}</translation>
 <translation id="2271452184061378400">Тут зберігаються групи вкладок</translation>
 <translation id="2277224997687551299">Змінити назву групи</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Група вкладок "<ph name="TAB_GROUP_NAME" />" більше не доступна</translation>
 <translation id="7402375256128852434">Додати нещодавні вкладки</translation>
 <translation id="7452985128687107478">Групи вкладок автоматично зберігаються й синхронізуються з усіма вашими пристроями</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Перемістити вкладку вгору}one{Перемістити вкладки вгору}few{Перемістити вкладки вгору}many{Перемістити вкладки вгору}other{Перемістити вкладки вгору}}</translation>
 <translation id="747459581954555080">Відновити все</translation>
 <translation id="7489558427602531799">Перемістити групу вкладок праворуч</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> об’єкт}one{<ph name="TABS_COUNT_MANY" /> об’єкт}few{<ph name="TABS_COUNT_MANY" /> об’єкти}many{<ph name="TABS_COUNT_MANY" /> об’єктів}other{<ph name="TABS_COUNT_MANY" /> об’єкта}}</translation>

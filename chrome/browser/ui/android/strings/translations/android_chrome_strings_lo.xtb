@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ການແຈ້ງເຕືອນເຄັດລັບການສົ່ງເສີມປິດແລ້ວ</translation>
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1045899828449635435">ລຶບຂໍ້ມູນອອກຈາກເວັບໄຊເຫຼົ່ານີ້ນຳບໍ?</translation>
+<translation id="1049461303780085993">ລອງໃຊ້ Gemini ໃນ Chrome ເພື່ອຮັບຄຳຕອບ, ປະເດັນສຳຄັນ ແລະ ອື່ນໆ</translation>
 <translation id="1049743911850919806">ບໍ່​ເຜີຍ​ຕົວຕົນ</translation>
 <translation id="1052842760770519282">ລະຫັດຜ່ານບາງລາຍການຂອງທ່ານບໍ່ສາມາດເຂົ້າເຖິງໄດ້</translation>
 <translation id="1057623954802068161">ເລື່ອນໄປເທິງສຸດຂອງໜ້າ</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5465437530117042974">ປິດການປ່ຽນແປງແຖບຂອງຊີດລຸ່ມສຸດແລ້ວ.</translation>
 <translation id="5469852975082458401">ທ່ານສາມາດໄປຫາໜ້າຕ່າງໆດ້ວຍເຄີເຊີຂໍ້ຄວາມ. ກົດ F7 ເພື່ອປິດ.</translation>
 <translation id="5471273988133666918">ບໍ່ສາມາດຍ້າຍແຖບ <ph name="TAB_TITLE" /> ໄດ້</translation>
+<translation id="5478718673237429220">ຕ້ອງມີສິດເຂົ້າເຖິງອຸປະກອນສ່ວນຕິດຕໍ່ກັບຄົນ</translation>
 <translation id="548278423535722844">ເປີດໃນແອັບແຜນທີ່</translation>
 <translation id="5489222148748465285">ໃຫ້ Chrome ຊອກຫາຕໍ່ບໍ?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, ແຖບການສະແດງຜົນຊ້ອນກັນທີ່ເລືອກໄວ້ຫຼາຍແຖບ</translation>
@@ -1964,6 +1966,7 @@
 <translation id="867914734596684889">ສະແດງ ຫຼື ເຊື່ອງແຖບບຸກມາກ</translation>
 <translation id="8683039184091909753">ຮູບ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ແຖບທີ່ເລືອກ</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> ຕ້ອງໄດ້ຮັບການອະນຸຍາດໃຫ້ເຂົ້າເຖິງອຸປະກອນສ່ວນຕິດຕໍ່ກັບຄົນ (HID) ສຳລັບເວັບໄຊນີ້. ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ພາຍຫຼັງໃນການຕັ້ງຄ່າ &gt; ແອັບ &gt; ສິດເຂົ້າເຖິງແອັບພິເສດ.</translation>
 <translation id="8696297579102085705">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8699120352855309748">ບໍ່ສະເໜີແປພາສາເຫຼົ່ານີ້</translation>
 <translation id="8700565880437506364">ຂໍແນະນຳ Gemini ໃນ Chrome</translation>

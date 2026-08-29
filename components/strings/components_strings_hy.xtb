@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Ֆայլերի նախապատրաստում</translation>
 <translation id="1014509239502131234">Արդյունքը հետարկվում է</translation>
 <translation id="1015730422737071372">Տրամադրել լրացուցիչ տեղեկություններ</translation>
+<translation id="1016671033299705843">Ապահով կերպով ավելացրեք վարորդական վկայական</translation>
 <translation id="1019413721762100891">Անջատ</translation>
 <translation id="1021753677514347426">Այս խնդիրը կարող է առաջանալ հավաստագրի պատճառով, որը դուք կամ ինչ-որ մեկը տեղադրել եք ձեր սարքում։ Հավաստագիրն օգտագործվում է ցանցեր որսալու ու հետագծելու նպատակով։ Այն վստահելի չէ Chromium-ի համար։ Թեև լինում են օրինական հետագծման դեպքեր, օրինակ՝ դպրոցի կամ ընկերության ցանցում, Chromium-ին անհրաժեշտ է համոզվել, որ դուք գիտեք այդ մասին, նույնիսկ եթե չեք կարող դադարեցնել դա։ Հետագծումը կարող է իրականացվել ցանկացած դիտարկիչում կամ հավելվածում, որին հասանելի է համացանցը։</translation>
 <translation id="1024111578869940408">Հաքերները երբեմն ստեղծում են կայքերի կրկնօրինակներ՝ փոքր-ինչ փոփոխելով դրանց տիրույթի հասցեները, ինչը հնարավոր չէ միանգամից նկատել։</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument ներկայացում</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />-ը տվյալներ չի ուղարկել:</translation>
 <translation id="1393071644879491291">Կայքում, որը փորձում էիք այցելել, հաքերները կարող են վնասաբեր ծրագրեր տեղադրել կամ բացահայտել ձեր տեղեկությունները, այդ թվում՝ գաղտնաբառերը, հեռախոսահամարը կամ վարկային քարտերի համարները։ Chrome-ը խորհուրդ է տալիս վերադառնալ անվտանգ էջ։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Ապահով կերպով ավելացրեք ID քարտ Google Wallet-ում</translation>
 <translation id="1398743098754840707">Այստեղ ավելացված կայքերը չեն օգտագործվի պատասխաններ գեներացնելու համար, նույնիսկ եթե ներդիրը բաց լինի։ Եթե կայքը, որն ավելացնում եք, ներկայումս օգտագործվում է զրուցաշարում, կարող է մինչև 30 րոպե պահանջվել, որպեսզի զրուցաշարը դադարի հղում կատարել դրան։</translation>
 <translation id="1405567553485452995">Բաց կանաչ</translation>
 <translation id="1406370515365284486">Վճարման ձեր եղանակները չեն ջնջվի</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">Ձեր մուտքագրած տեքստերը, դիտած էջերը և ցանկացած այլ գործողություն համացանցում հետագծվում է։ Կայքերի բովանդակությունը կարող է փոխվել առանց ձեր իմացության։</translation>
 <translation id="2289385804009217824">Կտրել</translation>
 <translation id="2292556288342944218">Համացանցի մուտքն արգելափակված է</translation>
+<translation id="2294150501457238325">Ապահով կերպով ավելացրեք անձնագիր</translation>
 <translation id="2295831393422400053">«Օգնիր ինձ գրել» գործառույթն օգտագործելու համար միացրեք «Բարելավել որոնումն ու էջերի դիտումը» պարամետրը</translation>
 <translation id="2296244067976588032">Մուտքի բանալի • iCloud Keychain</translation>
 <translation id="2296331629987861142">Կատարեք տարաժամկետ վճարումներ (անհրաժեշտ է համապատասխանել պահանջներին, գործում են միջնորդավճարներ)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">Կառավարել գնումների մասին տեղեկությունները</translation>
 <translation id="2933624813161016821">Դաջման թաղանթ</translation>
 <translation id="2935726091208500473">ներդիրներով կիսվելու մասին</translation>
+<translation id="2936698630976431647">Ընտրեք պրոմոկոդի դաշտը՝ Google Wallet-ից առաջարկներն ավտոմատ լրացնելու համար</translation>
 <translation id="293796669683825859">Մեկնաբանություններ</translation>
 <translation id="2938225289965773019">Բացել <ph name="PROTOCOL" /> հղումները</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Նշորդը տեսնելու համար անցեք մեկ հավելվածից մյուսը, նորից բեռնեք էջը կամ հետ գնացեք</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3190736958609431397">Այլևս չհետագծել</translation>
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Ավելացրեք վարորդական վկայական Google Wallet-ում</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
 <translation id="3196374699162453920">Ամրագրման կոդ</translation>
 <translation id="3196902089458890316">Միշտ կիսվե՞լ համապատասխան ներդիրներով՝ ավելի լավ պատասխաններ ստանալու համար</translation>
@@ -1390,6 +1395,7 @@
 <translation id="3380864720620200369">Սպասառուի ID`</translation>
 <translation id="3383566085871012386">Կարևորության ընթացիկ հերթականություն</translation>
 <translation id="3383713837163550889">Ձեր տեղական ֆայլերը կջնջվեն 1 րոպեից</translation>
+<translation id="33837817515081754">Ավելացրեք Known Traveler Number՝ Google Wallet-ում</translation>
 <translation id="3384522979010096022">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ դիտել այս կայքը</translation>
 <translation id="3391030046425686457">Առաքման հասցեն</translation>
 <translation id="3391482648489541560">ֆայլի փոփոխում</translation>
@@ -1463,6 +1469,7 @@
 <translation id="3517264445792388751">Ձեր ադմինիստրատորն անջատել է ֆայլային համակարգը</translation>
 <translation id="3518941727116570328">Մի քանի օբյեկտների մշակում</translation>
 <translation id="3519670528214225835">Հարցրեք <ph name="KEYWORD_SUFFIX" />-ին</translation>
+<translation id="3520762308733579540">Ավելացրեք փոխադրամիջոց Google Wallet-ում</translation>
 <translation id="3525130752944427905">10 x 14 դյույմ</translation>
 <translation id="3525435918300186947">Թույլատրե՞լ MIDI սարքերի կառավարումը և վերահսկումը</translation>
 <translation id="3527624163937328588">Հեռացնել առդիրը</translation>
@@ -1814,6 +1821,7 @@
 <translation id="4103249731201008433">Սարքի սերիական համարը սխալ է</translation>
 <translation id="4103592298805904008">Ստվարաթուղթ (միաշերտ)</translation>
 <translation id="4104702906064390950">IBAN-ի մասին տեղեկությունները պահվում են</translation>
+<translation id="4104995898379951162">Ապահով կերպով ավելացրեք Known Traveler Number</translation>
 <translation id="4106101218644797743">համաժամացման կարգավորումներում</translation>
 <translation id="4106887816571530227">Զետեղված բովանդակությունն արգելված է</translation>
 <translation id="4107047499377819067">VPN-ի ֆոնային ծառայությունների տեղադրումը սկսվել է։ Այն կարող է մի քանի րոպե տևել։</translation>
@@ -1871,6 +1879,7 @@
 <translation id="4195459680867822611">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ․ ակտիվացրեք՝ Chrome-ի գործառույթների մասին տեղեկանալու համար</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4196861286325780578">&amp;Վերարկել տեղափոխումը</translation>
+<translation id="4199131764832701740">Ավելացրեք անձնագիր Google Wallet-ում</translation>
 <translation id="4202554117186904723">Հինգերորդ գլանափաթեթ</translation>
 <translation id="4203769790323223880">Տեսախցիկի օգտագործումն արգելված է</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Ստուգել հրապատի և հակավիրուսային ծրագրի կազմաձևումը<ph name="END_LINK" /></translation>
@@ -2236,6 +2245,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Ապահով կերպով թարմացրեք նույնականացման քարտը</translation>
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
+<translation id="4808598252755230865">Ապահով կերպով ավելացրեք Known Traveler Number՝ Google Wallet-ում</translation>
 <translation id="4809079943450490359">Հրահանգներ ձեր սարքի ադմինիստրատորի կողմից՝</translation>
 <translation id="4811450222531576619">Իմացեք ավելին աղբյուրի և թեմայի մասին</translation>
 <translation id="4811696127853690432">Ապահով կերպով պահեք փոխադրամիջոցի տվյալները Google Wallet-ում</translation>
@@ -2265,6 +2275,7 @@
 <translation id="4855395119669662878">Ադմինիստրատորը կսկսի ձեր ֆայլերը վերբեռնել <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />։ Մի անջատեք սարքը, մինչև ֆայլերի վերբեռնումը չավարտվի։ Վերբեռնման ընթացքում հնարավոր կլինի դիտել միայն լոկալ ֆայլերը։</translation>
 <translation id="485902285759009870">Կոդը ստուգվում է…</translation>
 <translation id="4860260582253463350">YouTube-ից օգտվելու համար դուք պետք է հաստատեք ձեր ինքնությունը։ Ձեզ հասանելի կլինեն Family Link-ում ձեր ծնողի կամ խնամակալի կողմից սահմանված կարգավորումները։</translation>
+<translation id="4861514638281352187">Ապահով կերպով ավելացրեք Redress Number</translation>
 <translation id="4862642413395066333">OCSP պատասխանների ստորագրում</translation>
 <translation id="4864406669374375262">Տարբերակի տողը պատճենվեց սեղմատախտակին</translation>
 <translation id="486459320933704969">Ծնողը կամ խնամակալը պետք է թույլատրի ձեզ այցելել այս կայք</translation>
@@ -2697,6 +2708,7 @@
 <translation id="55635442646131152">Փաստաթղթի կառուցվածքը</translation>
 <translation id="5563589142503817291">Ձեր տեղադրության տվյալներն օգտագործելու համար անցեք <ph name="LINK" /> և Chrome-ին թույլտվություն տրամադրեք։</translation>
 <translation id="5565613213060953222">Բացել ինկոգնիտո ներդիր</translation>
+<translation id="5565613377956908865">Ավելացրեք ID քարտ Google Wallet-ում</translation>
 <translation id="5565735124758917034">Ակտիվ է</translation>
 <translation id="5570825185877910964">Պաշտպանել հաշիվը</translation>
 <translation id="5571083550517324815">Տվյալ հասցեից առաքման ընդունում հնարավոր չէ: Ընտրեք այլ հասցե:</translation>
@@ -2884,6 +2896,7 @@
 <translation id="5895694128043506580">Google Chrome-ը փորձում է զգայուն տեղեկություններ ցուցադրել</translation>
 <translation id="5898767305816764989">«Լավն է» կոճակ․ սեղմեք Enter՝ հայտնելու, որ դուք հավանում եք, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Դեղին</translation>
+<translation id="5902204772823742902">Ապահով կերպով ավելացրեք վարորդական վկայական Google Wallet-ում</translation>
 <translation id="5903264686717710770">Անվանում՝</translation>
 <translation id="5905671155741555195">Երբ ձեր աշխատավայրի հասցեն նշված է, Google-ի ծառայություններից օգտվելն ավելի հեշտ է․ դուք ստանում եք ավելի ճշգրիտ երթուղիներ Google Քարտեզներում, որոնման ավելի համապատասխան արդյունքներ և այլն։ Դուք կարող եք փոփոխել կամ ջնջել ձեր հասցեն <ph name="BEGIN_LINK" /><ph name="ACCOUNT" /> Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (համաժամացված)</translation>
@@ -3303,6 +3316,7 @@
 <translation id="6613866251791999074">Իմանալ ավելին իմ որոնողական համակարգի մասին Chrome-ում</translation>
 <translation id="6615297766614333076">Շեղջիչ 2</translation>
 <translation id="6619496928666593220">IBAN համարը լրացված չէ</translation>
+<translation id="662009501953240458">Ապահով կերպով ավելացրեք փոխադրամիջոց Google Wallet-ում</translation>
 <translation id="6624427990725312378">Կոնտակտային տվյալներ</translation>
 <translation id="6625629379283886932">Սովորեցրու ինձ, թե ինչպես ծրագրավորել</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Որոնում</translation>
@@ -3672,6 +3686,7 @@
 <translation id="7261463765917514051">Ապահով վճարեք ինքնալրացման օգնությամբ</translation>
 <translation id="7265608370113700582">Հասցեն հասանելի է միայն այս սարքում</translation>
 <translation id="7266094331715305887">հավելվածներ սարքում</translation>
+<translation id="7268742523336093718">Ապահով կերպով ավելացրեք անձնագիր Google Wallet-ում</translation>
 <translation id="7269151392155523061">Դյուրանցումը չի կարող լինել նույնը, ինչ որոնման ագրեգատորի հիմնաբառն է, որը սահմանված է <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> պարամետրով՝ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Ձեր ներբեռնած ֆայլերը ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել զգայուն տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն ու տեսանելի լինել ձեր ադմինիստրատորին։</translation>
 <translation id="7275334191706090484">Կառավարվող էջանիշներ</translation>
@@ -4241,6 +4256,7 @@
 <translation id="8241707690549784388">Ձեր փնտրած էջում օգտագործվեցին ձեր մուտքագրած տեղեկությունները: Եթե վերադառնաք այդ էջ, կարող է պահանջվել, որ կրկնեք ձեր կատարած բոլոր գործողությունները: Ուզո՞ւմ եք շարունակել:</translation>
 <translation id="8242426110754782860">Շարունակել</translation>
 <translation id="824620968958405573">Առաջադրանք՝ կայքերի ավտոմատ դիտարկմամբ</translation>
+<translation id="8247824837030847066">Ապահով կերպով ավելացրեք ID քարտ</translation>
 <translation id="8248406213705193919">Ապահով պահե՞լ քարտի տվյալները</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
 <translation id="8250094606476360498">Այս հասցեն ներկայումս պահված է այս սարքում։ Պահեք հասցեն ձեր Google հաշվում (<ph name="ACCOUNT" />), որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում։</translation>
@@ -4660,6 +4676,7 @@
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR աշխատաշրջանն ակտիվ է</translation>
 <translation id="9005998258318286617">Չհաջողվեց բեռնել PDF փաստաթուղթը։</translation>
+<translation id="900686221526305417">Ապահով կերպով ավելացրեք փոխադրամիջոց</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9010187979699879769">Ստեղծիր ինձ համար ուսումնական ժամանակացույց</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Կայքեր չկան}=1{1 կայքից}one{# կայքից}other{# կայքից}}</translation>
@@ -4813,6 +4830,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Կայքերում արագ կայք ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> հոգի միացել է «<ph name="GROUP_NAME" />» ներդիրների խմբին</translation>
 <translation id="949314938206378263">Դուք այս կայքն այցելելու թույլտվություն եք խնդրել։ Ձեր ծնողը կարող է պատասխանել Family Link-ում։</translation>
+<translation id="949484466204182817">Ավելացրեք Redress Number՝ Google Wallet-ում</translation>
 <translation id="950736567201356821">Երեք անցք վերևում</translation>
 <translation id="950926967802086924">Մուտքի բանալի • Google գաղտնաբառերի կառավարիչ</translation>
 <translation id="952165179818196872">Ավելացրեք <ph name="PROVIDER" />՝ առանց այլ հավելված բացելու վճարումներ կատարելու համար</translation>
@@ -4827,6 +4845,7 @@
 <translation id="962484866189421427">Այս բովանդակությունը կարող է փորձել կեղծ հավելվածներ տեղադրել կամ տվյալներ հավաքել՝ ձեզ հետևելու համար։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Ձեր տարածաշրջանում գործող օրենքների համաձայն՝ Chromium-ը խնդրում է ձեզ ընտրել կանխադրված որոնողական համակարգ։ Այս որոնողական համակարգերը տարածված են ձեր տարածաշրջանում և ցուցադրվում են պատահական հերթականությամբ։</translation>
 <translation id="963837307749850257">Բոլոր օգտատերերը</translation>
+<translation id="963988220224168636">Ապահով կերպով ավելացրեք Redress Number՝ Google Wallet-ում</translation>
 <translation id="964050462028070434">Կառավարել գաղտնաբառերն ու մուտքի բանալիները…</translation>
 <translation id="964681140808832181">Այո, ուզում եմ չեղարկել</translation>
 <translation id="969892804517981540">Պաշտոնական տարբերակ</translation>

@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">ଗୋଷ୍ଠୀ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ନିଷ୍କ୍ରିୟ ଆଇଟମ}other{<ph name="TABS_COUNT_MANY" /> ନିଷ୍କ୍ରିୟ ଆଇଟମ}}</translation>
 <translation id="1568067597247500137">ସାଇଟ୍‌ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ଟାବକୁ ତଳକୁ ମୁଭ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ତଳକୁ ମୁଭ କରନ୍ତୁ}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଏକତ୍ର କରାଯାଇଛି</translation>
 <translation id="1657719826150349398">ଟାବ୍‍କୁ ତଳକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="1670942869417022142">ମ୍ୟୁଟ କରାଯାଇଥିବା ଅଡିଓ</translation>
 <translation id="1697284962337958118">ଏଥିରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1713541401465507417">ସମସ୍ତ ଟାବ ଓ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ}}</translation>
+<translation id="1759122978835002237">ଟାବ ଗ୍ରୁପକୁ ଉପରକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପ କରାଯାଇଛି</translation>
 <translation id="1844381456014878100">ନିଷ୍କ୍ରିୟ ରହିବାର 7 ଦିନ ପରେ</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ବନ୍ଦ କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଓ ଗ୍ରୁପଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନର ଟାବ ବିଭାଗ ଓ ଟାବ ଗ୍ରୁପ ବିଭାଗରୁ ପୁଣି ଖୋଲାଯାଇପାରିବ। ଆପଣଙ୍କର ଇନକଗ୍ନିଟୋ ଟାବ ଉପଲବ୍ଧ ହେବ ନାହିଁ।}other{ବନ୍ଦ କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଓ ଗ୍ରୁପଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନର ଟାବ ବିଭାଗ ଓ ଟାବ ଗ୍ରୁପ ବିଭାଗରୁ ପୁଣି ଖୋଲାଯାଇପାରିବ। ଆପଣଙ୍କର #ଟି ଇନକଗ୍ନିଟୋ ଟାବ ଉପଲବ୍ଧ ହେବ ନାହିଁ।}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{ସାଇଟକୁ ଅନମ୍ୟୁଟ କରନ୍ତୁ}other{ସାଇଟକୁ ଅନମ୍ୟୁଟ କରନ୍ତୁ}}</translation>
 <translation id="2162620598375156287">ବର୍ତ୍ତମାନ <ph name="SOURCE_WEBSITE" />ରେ <ph name="CURRENT_PRICE" /></translation>
+<translation id="2164232689984783657">ଟାବ ଗ୍ରୁପକୁ ତଳକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର ନାହିଁ}other{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର ନାହିଁ}}</translation>
 <translation id="2271452184061378400">ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପକୁ ଏଠାରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="2277224997687551299">ଗ୍ରୁପ ନାମ ଏଡିଟ୍ କରନ୍ତୁ</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7402375256128852434">ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7452985128687107478">ଟାବ ଗ୍ରୁପ ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ସ୍ୱତଃ ସେଭ ଏବଂ ଅପଡେଟ ହୁଏ</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ଟାବକୁ ଉପରକୁ ମୁଭ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ଉପରକୁ ମୁଭ କରନ୍ତୁ}}</translation>
 <translation id="747459581954555080">ସବୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
 <translation id="7489558427602531799">ଟାବ ଗ୍ରୁପକୁ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ଆଇଟମ}other{<ph name="TABS_COUNT_MANY" /> ଆଇଟମ}}</translation>

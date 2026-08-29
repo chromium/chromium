@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">유효기간 월</translation>
 <translation id="1150989369772528668">캘린더</translation>
 <translation id="1158134713295836892">Chrome의 Gemini</translation>
+<translation id="1159484622358475170">{count,plural, =1{비밀번호 1개 확인함}other{비밀번호 #개 확인함}}</translation>
 <translation id="1161444134753003495">로그인</translation>
 <translation id="1161663161838091892">계속하려면 탭과 방문 기록을 동기화하세요</translation>
 <translation id="1162834932051545794">{count,plural, =1{신용카드 {count}개}other{신용카드 {count}개}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">링크 URL 복사</translation>
 <translation id="199425419756152024">비밀번호 보기</translation>
 <translation id="1996318269856535896">이 기기에서 기존 인터넷 사용 기록을 계속 사용할 수 있습니다. 이를 사용하려면 관리 계정에서 로그아웃하세요.</translation>
+<translation id="2002971615187574739">AI를 사용하여 더 많은 작업 수행</translation>
 <translation id="2010008505735295285">새로고침</translation>
 <translation id="2012723204723845092">다시 방문해 주셔서 감사합니다</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">읽지 않은 상태로 표시</translation>
 <translation id="2922210239002704889">홈페이지 또는 키보드로 이동합니다.</translation>
 <translation id="2924940770243654951">새로운 시크릿 탭에서 열기</translation>
+<translation id="2934607171563543600">'비밀번호 확인' 완료 이후</translation>
 <translation id="2952278131021475699">렌즈 카메라 검색</translation>
 <translation id="2953821385349876107">다른 Google 계정을 선택하세요</translation>
 <translation id="2962516096219646456">모든 자동 완성 데이터 보기</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{비밀번호 {count}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}other{비밀번호 {count}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}}</translation>
 <translation id="3659297405161482746">결제 수단을 찾을 수 없음</translation>
 <translation id="3662966164093827811">{count,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
+<translation id="3668035568083954765">개인 정보 보호 및 보안 유지</translation>
 <translation id="3668816008081204991">읽기 목록이 숨겨져 있음</translation>
 <translation id="3670030362669914947">번호</translation>
 <translation id="3672283986707092811">전체 선택</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">문제 발견 시간: <ph name="TIME" /></translation>
 <translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="5059136629401106827">확인</translation>
+<translation id="5061202435354361813">브라우징 레벨 업</translation>
 <translation id="5062321486222145940">Google Drive 설치</translation>
 <translation id="5067540696062462445">다운로드</translation>
 <translation id="5070314445039955096">사이트를 나가면 "<ph name="SITE_DOMAIN" />" 권한이 사용 안함으로 재설정됩니다</translation>
@@ -1686,6 +1691,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6454311990702999318">잘못된 데이터</translation>
 <translation id="6459411599807878608">세부정보 숨김</translation>
 <translation id="646394917185284261">파일</translation>
+<translation id="6470721056280836221">Google은 사용자의 기능 사용 데이터를 기반으로 작업을 추천하고 진행 상황을 업데이트합니다. 언제든지 레벨 업을 사용 중지할 수 있습니다.</translation>
 <translation id="6472069383518492189">여기에서 다운로드한 파일을 확인할 수 있습니다</translation>
 <translation id="6476253015009698798">이 페이지에 가격 추적을 사용할 수 없습니다.</translation>
 <translation id="6476284679642588870">결제 수단 관리</translation>
@@ -1763,6 +1769,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="667999046851023355">문서</translation>
 <translation id="6681791404926413601">{count,plural, =1{키보드 위에 결제 수단 옵션 {count}개가 있습니다.}other{키보드 위에 결제 수단 옵션 {count}개가 있습니다.}}</translation>
 <translation id="6682680306647339111">리마인더가 삭제되었습니다.</translation>
+<translation id="6683022854667115063">헤드폰</translation>
 <translation id="6684262542644248484">웹사이트에 로그인합니다.</translation>
 <translation id="6685259053455152195">설정을 빠르게 수정하고 주소 표시줄의 기능을 사용하는 바로가기입니다</translation>
 <translation id="6689342293888598653">흰색 배경 색상</translation>
@@ -1925,6 +1932,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7233006041370588369">입력할 비밀번호를 선택하세요.</translation>
 <translation id="723874023660911012">프로필 전환</translation>
 <translation id="7241135764990439166">시크릿 모드를 사용할 수 없음</translation>
+<translation id="7245288034498365666">정리 및 시간 절약</translation>
 <translation id="7253951228444156601">비밀번호 확인 중…</translation>
 <translation id="7261217796641151584">그룹 공유</translation>
 <translation id="7266578100016339897">이렇게 하면 정리 상태를 유지할 수 있습니다. 설정에서 언제든지 변경할 수 있습니다</translation>

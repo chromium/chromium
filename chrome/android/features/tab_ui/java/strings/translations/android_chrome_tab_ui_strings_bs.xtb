@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Izbriši grupu</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktivna stavka}one{<ph name="TABS_COUNT_MANY" /> neaktivna stavka}few{<ph name="TABS_COUNT_MANY" /> neaktivne stavke}other{<ph name="TABS_COUNT_MANY" /> neaktivnih stavki}}</translation>
 <translation id="1568067597247500137">Zanemari web-lokaciju</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Pomjeri karticu nadolje}one{Pomjeri kartice nadolje}few{Pomjeri kartice nadolje}other{Pomjeri kartice nadolje}}</translation>
 <translation id="1645759014353344461">Grupisano je više kartica (ukupno <ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Pomjeranje kartice nadolje</translation>
 <translation id="1670942869417022142">Isključen zvuk</translation>
 <translation id="1697284962337958118">Dodaj na</translation>
 <translation id="1713541401465507417">Zatvori sve kartice i grupe</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grupa kartica više nije dostupna}one{<ph name="TAB_GROUPS_COUNT_MANY" /> grupa kartica više nije dostupna}few{<ph name="TAB_GROUPS_COUNT_MANY" /> grupe kartica više nisu dostupne}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grupa kartica više nije dostupno}}</translation>
+<translation id="1759122978835002237">Pomjeri grupu kartica nagore</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Grupisana je <ph name="TABS_COUNT_ONE" /> kartica</translation>
 <translation id="1844381456014878100">Nakon 7 dana neaktivnosti</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. Anonimna kartica neće biti dostupna.}one{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimna kartica neće biti dostupna.}few{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimne kartice neće biti dostupne.}other{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimnih kartica neće biti dostupno.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Uključivanje obavještenja web lokacije}one{Uključivanje obavještenja web lokacija}few{Uključivanje obavještenja web lokacija}other{Uključivanje obavještenja web lokacija}}</translation>
 <translation id="2162620598375156287">Sada je <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Pomjeri grupu kartica nadolje</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Razgrupiši karticu}one{Razgrupiši kartice}few{Razgrupiši kartice}other{Razgrupiši kartice}}</translation>
 <translation id="2271452184061378400">Grupe kartica se pohranjuju ovdje</translation>
 <translation id="2277224997687551299">Uredi naziv grupe</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Grupa kartica "<ph name="TAB_GROUP_NAME" />" više nije dostupna</translation>
 <translation id="7402375256128852434">Dodajte nedavne kartice</translation>
 <translation id="7452985128687107478">Grupe kartica se automatski pohranjuju i ažuriraju na svim uređajima</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Pomjeri karticu nagore}one{Pomjeri kartice nagore}few{Pomjeri kartice nagore}other{Pomjeri kartice nagore}}</translation>
 <translation id="747459581954555080">Vrati sve</translation>
 <translation id="7489558427602531799">Pomakni grupu kartica udesno</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> stavka}one{<ph name="TABS_COUNT_MANY" /> stavka}few{<ph name="TABS_COUNT_MANY" /> stavke}other{<ph name="TABS_COUNT_MANY" /> stavki}}</translation>

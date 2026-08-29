@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Uždaryta patarimų pranešimų reklama</translation>
 <translation id="1036348656032585052">Išjungti</translation>
 <translation id="1045899828449635435">Taip pat išvalyti duomenis iš šių svetainių?</translation>
+<translation id="1049461303780085993">Išbandykite „Gemini“ naršyklėje „Chrome“, kad gautumėte atsakymus, pagrindines išvadas ir kt.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Kai kurie slaptažodžiai nepasiekiami</translation>
 <translation id="1057623954802068161">Slinkti į puslapio viršų</translation>
@@ -1117,6 +1118,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5465437530117042974">Skirtuko apatinio lapo pakeitimai uždaryti.</translation>
 <translation id="5469852975082458401">Puslapius galite naršyti naudodami teksto žymeklį. Paspauskite F7, kad išjungtumėte.</translation>
 <translation id="5471273988133666918">Negalima perkelti skirtuko „<ph name="TAB_TITLE" />“</translation>
+<translation id="5478718673237429220">Reikalinga žmogaus sąsajos įrenginio prieiga</translation>
 <translation id="548278423535722844">Atidaryti Žemėlapių programoje</translation>
 <translation id="5489222148748465285">Leisti „Chrome“ toliau ieškoti?</translation>
 <translation id="5490848366863949315">„<ph name="TAB_TITLE" />“, kelis kartus pasirinktas vaizdo vaizde skirtukas</translation>
@@ -1964,6 +1966,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="867914734596684889">Rodyti arba slėpti žymių juostą</translation>
 <translation id="8683039184091909753">vaizdas</translation>
 <translation id="8688183792442786085">„<ph name="TAB_TITLE" />“, pasirinktas skirtukas</translation>
+<translation id="8694622119922491927">„<ph name="APP_NAME" />“ reikia leidimo, kad galėtų pasiekti žmogaus sąsajos įrenginius (ŽSĮ) šioje svetainėje. Vėliau galite pakeisti šį nustatymą skiltyje „Nustatymai“ &gt; „Programos“ &gt; „Speciali prieiga prie programų“.</translation>
 <translation id="8696297579102085705">Siųsti į įrenginį</translation>
 <translation id="8699120352855309748">Nesiūlyti versti šių kalbų</translation>
 <translation id="8700565880437506364">Pristatome „Gemini“ naršyklėje „Chrome“</translation>

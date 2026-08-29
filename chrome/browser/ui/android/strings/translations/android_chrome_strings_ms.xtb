@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Pemberitahuan petua promosi ditutup</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1045899828449635435">Kosongkan data?</translation>
+<translation id="1049461303780085993">Cuba Gemini dalam Chrome untuk mendapatkan jawapan, kesimpulan utama dan pelbagai lagi</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Sesetengah kata laluan anda tidak dapat diakses</translation>
 <translation id="1057623954802068161">Tatal kepada bahagian atas halaman</translation>
@@ -1117,6 +1118,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5465437530117042974">Perubahan Helaian Bawah Tab ditutup.</translation>
 <translation id="5469852975082458401">Anda boleh menukar halaman dengan kursor teks. Tekan F7 untuk mematikannya.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> tidak dapat dialihkan</translation>
+<translation id="5478718673237429220">Akses peranti antara muka manusia diperlukan</translation>
 <translation id="548278423535722844">Buka dalam apl peta</translation>
 <translation id="5489222148748465285">Benarkan Chrome terus mencari?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, Tab Gambar dalam Gambar dengan Berbilang Pilihan</translation>
@@ -1964,6 +1966,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="867914734596684889">Tunjukkan atau sembunyikan bar Penanda Halaman</translation>
 <translation id="8683039184091909753">imej</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> memerlukan kebenaran untuk mengakses peranti antara muka manusia (HID) untuk laman ini. Anda boleh menukar tetapan ini kemudian dalam Tetapan &gt; Apl &gt; Akses apl khas.</translation>
 <translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="8700565880437506364">Memperkenalkan Gemini dalam Chrome</translation>

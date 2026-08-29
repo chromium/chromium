@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Mes de caducidade</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1158134713295836892">Gemini en Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Comprobaches 1 contrasinal}other{Comprobaches # contrasinais}}</translation>
 <translation id="1161444134753003495">Iniciar sesión</translation>
 <translation id="1161663161838091892">Sincroniza as pestanas e o historial para continuar</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} tarxeta de crédito}other{{count} tarxetas de crédito}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Copiar URL da ligazón</translation>
 <translation id="199425419756152024">Ver contrasinal</translation>
 <translation id="1996318269856535896">Podes seguir usando os teus datos de navegación actuais neste dispositivo. Para facelo, pecha a sesión na túa conta xestionada.</translation>
+<translation id="2002971615187574739">Usa a IA para facer máis tarefas</translation>
 <translation id="2010008505735295285">Volver cargar</translation>
 <translation id="2012723204723845092">Dámosche a benvida de novo!</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Marcar como elemento non lido</translation>
 <translation id="2922210239002704889">Vai á páxina de inicio ou ao teclado</translation>
 <translation id="2924940770243654951">Abrir nunha pestana do modo de incógnito</translation>
+<translation id="2934607171563543600">desde que completaches a acción Comproba os teus contrasinais</translation>
 <translation id="2952278131021475699">Busca mediante a cámara de Lens</translation>
 <translation id="2953821385349876107">Escoller outra Conta de Google</translation>
 <translation id="2962516096219646456">Consultar todos os datos da función de autocompletar</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{Hai {count} contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({email}).}other{Hai {count} contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
 <translation id="3659297405161482746">Non se atopou ningún método de pago</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
+<translation id="3668035568083954765">Protexe a túa privacidade e mantente a salvo</translation>
 <translation id="3668816008081204991">A lista de lectura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3672283986707092811">Seleccionar todo</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Atopáronse problemas <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="5059136629401106827">Aceptar</translation>
+<translation id="5061202435354361813">Potencia a túa navegación</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
 <translation id="5070314445039955096">Os permisos de <ph name="SITE_DOMAIN" /> volverán desactivarse cando saias deste sitio</translation>
@@ -1686,6 +1691,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6454311990702999318">Datos non válidos</translation>
 <translation id="6459411599807878608">Detalles ocultados</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google utiliza os teus datos de uso das funcións para recomendarche tarefas e actualizar o progreso. Podes desactivar Level Up en calquera momento.</translation>
 <translation id="6472069383518492189">Aquí atoparás as túas descargas</translation>
 <translation id="6476253015009698798">O seguimento de prezos non está dispoñible para esta páxina.</translation>
 <translation id="6476284679642588870">Xestionar métodos de pago</translation>
@@ -1763,6 +1769,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="667999046851023355">Documento</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opción de método de pago dispoñible sobre o teu teclado.}other{{count} opcións de método de pago dispoñibles sobre o teu teclado.}}</translation>
 <translation id="6682680306647339111">Eliminouse o recordatorio</translation>
+<translation id="6683022854667115063">Auriculares</translation>
 <translation id="6684262542644248484">Inicia sesión nun sitio web</translation>
 <translation id="6685259053455152195">Atallos para modificar rapidamente a configuración e usar funcións desde a barra de enderezos.</translation>
 <translation id="6689342293888598653">Cor de fondo branca</translation>
@@ -1925,6 +1932,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7233006041370588369">Selecciona un contrasinal para inserilo.</translation>
 <translation id="723874023660911012">Cambiar de perfil</translation>
 <translation id="7241135764990439166">O modo de incógnito non está dispoñible</translation>
+<translation id="7245288034498365666">Organízate e aforra tempo</translation>
 <translation id="7253951228444156601">Comprobando contrasinais…</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Axudarache a ter todo organizado. Podes cambialo cando queiras en Configuración.</translation>

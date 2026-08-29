@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{1 件のパスワードを確認しました}other{# 件のパスワードを確認しました}}</translation>
 <translation id="1161444134753003495">ログイン</translation>
 <translation id="1161663161838091892">続行するにはタブと履歴を同期してください</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} 件のクレジット カード}other{{count} 件のクレジット カード}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">リンクの URL をコピー</translation>
 <translation id="199425419756152024">パスワードを表示</translation>
 <translation id="1996318269856535896">このデバイスの既存の閲覧データは引き続き使用できます。使用するには、管理対象アカウントからログアウトしてください。</translation>
+<translation id="2002971615187574739">AI を活用して作業を効率化</translation>
 <translation id="2010008505735295285">再読み込み</translation>
 <translation id="2012723204723845092">おかえりなさい。</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスコードを設定する必要があります。</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">未読にする</translation>
 <translation id="2922210239002704889">ホームページまたはキーボードに移動します</translation>
 <translation id="2924940770243654951">新しいシークレット タブで開く</translation>
+<translation id="2934607171563543600">「パスワードの確認」を完了してから</translation>
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2953821385349876107">別の Google アカウントを選択</translation>
 <translation id="2962516096219646456">自動入力データをすべて表示</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
 <translation id="3659297405161482746">お支払い方法が見つかりませんでした</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 件選択しました}other{# 件選択しました}}</translation>
+<translation id="3668035568083954765">プライバシーを保護して安全を確保</translation>
 <translation id="3668816008081204991">リーディング リストは非表示になっています</translation>
 <translation id="3670030362669914947">番号</translation>
 <translation id="3672283986707092811">すべて選択</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708"><ph name="TIME" />に問題が見つかりました。</translation>
 <translation id="5056587122125565772">画像を作成</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">ブラウジングをレベルアップ</translation>
 <translation id="5062321486222145940">ドライブをインストール</translation>
 <translation id="5067540696062462445">ダウンロード</translation>
 <translation id="5070314445039955096">「<ph name="SITE_DOMAIN" />」の権限は、このサイトから離れるとオフにリセットされます</translation>
@@ -1686,6 +1691,7 @@
 <translation id="6454311990702999318">無効なデータ</translation>
 <translation id="6459411599807878608">詳細を非表示にしました</translation>
 <translation id="646394917185284261">ファイル</translation>
+<translation id="6470721056280836221">Google は、機能の使用状況データを使用して、タスクの提案や進捗状況の更新を行います。Level Up はいつでもオフにできます。</translation>
 <translation id="6472069383518492189">ダウンロードはここに表示されます</translation>
 <translation id="6476253015009698798">このページでは価格のトラッキングを利用できません。</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
@@ -1763,6 +1769,7 @@
 <translation id="667999046851023355">ドキュメント</translation>
 <translation id="6681791404926413601">{count,plural, =1{キーボードの上部に利用可能なお支払い方法の候補が {count} 件表示されています。}other{キーボードの上部に利用可能なお支払い方法の候補が {count} 件表示されています。}}</translation>
 <translation id="6682680306647339111">リマインダーを削除しました</translation>
+<translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6684262542644248484">ウェブサイトにログインします</translation>
 <translation id="6685259053455152195">設定をすばやく変更したり、アドレスバーの機能を使用したりするためのショートカット。</translation>
 <translation id="6689342293888598653">白の背景色</translation>
@@ -1925,6 +1932,7 @@
 <translation id="7233006041370588369">入力するパスワードを選択してください。</translation>
 <translation id="723874023660911012">プロファイルを切り替える</translation>
 <translation id="7241135764990439166">シークレット モードは使用できません</translation>
+<translation id="7245288034498365666">スマートに整理して時間を節約</translation>
 <translation id="7253951228444156601">パスワードを確認しています…</translation>
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7266578100016339897">タブの整理に役立つこの機能は、設定でいつでも変更できます。</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">S-a încheiat promoția pentru notificările cu sfaturi</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1045899828449635435">Ștergi și datele de la aceste site-uri?</translation>
+<translation id="1049461303780085993">Încearcă Gemini în Chrome pentru a primi răspunsuri, idei principale și multe altele</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Unele dintre parolele tale nu sunt accesibile</translation>
 <translation id="1057623954802068161">Derulează în partea de sus a paginii</translation>
@@ -1117,6 +1118,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5465437530117042974">Modificările foii din partea de jos a filei au fost închise.</translation>
 <translation id="5469852975082458401">Poți să navighezi în pagini folosind cursorul pentru text. Apasă pe F7 pentru a-l dezactiva.</translation>
 <translation id="5471273988133666918">Fila <ph name="TAB_TITLE" /> nu poate fi mutată</translation>
+<translation id="5478718673237429220">Este necesar accesul la dispozitivele de interfață umană</translation>
 <translation id="548278423535722844">Deschide în aplicația Maps</translation>
 <translation id="5489222148748465285">Permiți Chrome să mai caute?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, filă picture-in-picture fixată cu selectare multiplă</translation>
@@ -1964,6 +1966,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="867914734596684889">Afișează sau ascunde bara de marcaje</translation>
 <translation id="8683039184091909753">imagine</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, filă selectată</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> are nevoie de permisiune ca să acceseze dispozitivele de interfață umană (HID-uri) pentru acest site. Poți modifica această setare mai târziu în Setări &gt; Aplicații &gt; Acces special pentru aplicații.</translation>
 <translation id="8696297579102085705">Trimite pe dispozitivul tău</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
 <translation id="8700565880437506364">Îți prezentăm Gemini în Chrome</translation>

@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Mese di scadenza</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Hai controllato 1 password}other{Hai controllato # password}}</translation>
 <translation id="1161444134753003495">Accedi</translation>
 <translation id="1161663161838091892">Sincronizza schede e cronologia per continuare</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} carta di credito}other{{count} carte di credito}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Copia l'URL del link</translation>
 <translation id="199425419756152024">Visualizza password</translation>
 <translation id="1996318269856535896">Puoi comunque usare i dati di navigazione esistenti su questo dispositivo. Per utilizzarli, esci dal tuo account gestito.</translation>
+<translation id="2002971615187574739">Aumenta la tua produttività con l'AI</translation>
 <translation id="2010008505735295285">Ricarica</translation>
 <translation id="2012723204723845092">Siamo felici di rivederti.</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Segna come da leggere</translation>
 <translation id="2922210239002704889">Vai alla home page o alla tastiera</translation>
 <translation id="2924940770243654951">Apri in nuova scheda Incognito</translation>
+<translation id="2934607171563543600">da quando hai completato "Controlla le tue password"</translation>
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
 <translation id="2953821385349876107">Scegli un Account Google diverso</translation>
 <translation id="2962516096219646456">Visualizza tutti i dati di compilazione automatica</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} password è salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google {email}.}other{{count} password sono salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google {email}.}}</translation>
 <translation id="3659297405161482746">Nessun metodo di pagamento trovato</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 elemento selezionato}other{# elementi selezionati}}</translation>
+<translation id="3668035568083954765">Proteggi la tua privacy e naviga in sicurezza</translation>
 <translation id="3668816008081204991">L'elenco di lettura è nascosto</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3672283986707092811">Seleziona tutto</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Sono stati riscontrati problemi <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Crea immagine</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Migliora la tua navigazione</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
 <translation id="5067540696062462445">Download</translation>
 <translation id="5070314445039955096">Le autorizzazioni di "<ph name="SITE_DOMAIN" />" verranno reimpostate su Disattivate quando esci dal sito</translation>
@@ -1686,6 +1691,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6454311990702999318">Dati non validi</translation>
 <translation id="6459411599807878608">Dettagli nascosti</translation>
 <translation id="646394917185284261">File</translation>
+<translation id="6470721056280836221">Google utilizza i tuoi dati sull'utilizzo delle funzionalità per suggerirti attività e aggiornare i tuoi progressi. Puoi disattivare la funzionalità "Level Up" in qualsiasi momento.</translation>
 <translation id="6472069383518492189">Troverai i tuoi download qui</translation>
 <translation id="6476253015009698798">Il monitoraggio dei prezzi non è disponibile per questa pagina.</translation>
 <translation id="6476284679642588870">Gestisci metodi di pagamento</translation>
@@ -1763,6 +1769,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="667999046851023355">Documento</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opzione per il metodo di pagamento disponibile sopra la tastiera.}other{{count} opzioni per il metodo di pagamento disponibili sopra la tastiera.}}</translation>
 <translation id="6682680306647339111">Promemoria rimosso</translation>
+<translation id="6683022854667115063">Cuffie</translation>
 <translation id="6684262542644248484">Accedi a un sito web</translation>
 <translation id="6685259053455152195">Scorciatoie per modificare rapidamente le impostazioni e utilizzare le funzionalità dalla barra degli indirizzi.</translation>
 <translation id="6689342293888598653">Colore sfondo bianco</translation>
@@ -1925,6 +1932,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7233006041370588369">Seleziona una password da inserire.</translation>
 <translation id="723874023660911012">Cambia profilo</translation>
 <translation id="7241135764990439166">Modalità Incognito non disponibile</translation>
+<translation id="7245288034498365666">Organizzati e risparmia tempo</translation>
 <translation id="7253951228444156601">Controllo delle password…</translation>
 <translation id="7261217796641151584">Condividi gruppo</translation>
 <translation id="7266578100016339897">In questo modo, è più semplice organizzarsi. Puoi modificare questa opzione nelle impostazioni in qualsiasi momento.</translation>

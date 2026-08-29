@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Preparing files</translation>
 <translation id="1014509239502131234">Undoing result</translation>
 <translation id="1015730422737071372">Provide additional details.</translation>
+<translation id="1016671033299705843">Add driving licence securely</translation>
 <translation id="1019413721762100891">Off</translation>
 <translation id="1021753677514347426">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chromium. While some legitimate cases for monitoring do exist, like on a school or company network, Chromium wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
 <translation id="1024111578869940408">Attackers sometimes mimic sites by making hard-to-see changes to the web address.</translation>
@@ -238,6 +239,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1392813880755413602">OpenDocument presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> didn’t send any data.</translation>
 <translation id="1393071644879491291">Attackers on the site that you tried visiting might trick you into installing software or revealing things like your passwords, phone or credit card numbers. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Add ID card securely to Google Wallet</translation>
 <translation id="1398743098754840707">Sites that you add here won't be referenced for responses, even if the tab is open. If a site that you add is currently being used in a thread, it can take up to 30 minutes for the thread to stop referencing it.</translation>
 <translation id="1405567553485452995">Light green</translation>
 <translation id="1406370515365284486">Your payment methods will still be saved</translation>
@@ -771,6 +773,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2288422996159078444">Anything that you type, any pages that you view or any other activity on the web is being watched. Content on sites may be changed without your knowledge.</translation>
 <translation id="2289385804009217824">Trim</translation>
 <translation id="2292556288342944218">Your Internet access is blocked</translation>
+<translation id="2294150501457238325">Add passport securely</translation>
 <translation id="2295831393422400053">Turn on the Make searches and browsing better setting to use Help me write</translation>
 <translation id="2296244067976588032">Passkey • iCloud Keychain</translation>
 <translation id="2296331629987861142">Pay in easy instalments (subject to eligibility, fees apply)</translation>
@@ -1131,6 +1134,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2931453528659195355">Manage shopping info</translation>
 <translation id="2933624813161016821">Embossing foil</translation>
 <translation id="2935726091208500473">sharing your tabs</translation>
+<translation id="2936698630976431647">Select the promo code field to autofill offers from Google Wallet</translation>
 <translation id="293796669683825859">Comments</translation>
 <translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – to show your cursor, switch apps, reload the page or go back</translation>
@@ -1283,6 +1287,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Add driving licence to Google Wallet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> on <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Booking code</translation>
 <translation id="3196902089458890316">Always share relevant tabs for better responses?</translation>
@@ -1390,6 +1395,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3380864720620200369">Client ID:</translation>
 <translation id="3383566085871012386">Current precedence order</translation>
 <translation id="3383713837163550889">Your local files will be deleted in 1 minute</translation>
+<translation id="33837817515081754">Add Known Traveler Number to Google Wallet</translation>
 <translation id="3384522979010096022">Your organisation doesn’t allow you to view this site</translation>
 <translation id="3391030046425686457">Delivery address</translation>
 <translation id="3391482648489541560">file editing</translation>
@@ -1463,6 +1469,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3517264445792388751">The file system has been disabled by your administrator</translation>
 <translation id="3518941727116570328">Multiple objects handling</translation>
 <translation id="3519670528214225835">Ask <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Add vehicle to Google Wallet</translation>
 <translation id="3525130752944427905">10 in x 14 in</translation>
 <translation id="3525435918300186947">Control and reprogramme MIDI devices?</translation>
 <translation id="3527624163937328588">Remove attachment</translation>
@@ -1816,6 +1823,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4103249731201008433">Device serial number is invalid</translation>
 <translation id="4103592298805904008">Cardboard (single wall)</translation>
 <translation id="4104702906064390950">Saving IBAN info</translation>
+<translation id="4104995898379951162">Add Known Traveler Number securely</translation>
 <translation id="4106101218644797743">sync settings</translation>
 <translation id="4106887816571530227">Embedded content not allowed</translation>
 <translation id="4107047499377819067">Installation of VPN background services has started, this may take a few minutes.</translation>
@@ -1873,6 +1881,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4195459680867822611">See Chrome tips button, activate to learn about Chrome features</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>
+<translation id="4199131764832701740">Add passport to Google Wallet</translation>
 <translation id="4202554117186904723">Fifth roll</translation>
 <translation id="4203769790323223880">Camera not allowed</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Checking firewall and antivirus configurations<ph name="END_LINK" /></translation>
@@ -2238,6 +2247,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Update identity card securely</translation>
 <translation id="4807098396393229769">Name on card</translation>
+<translation id="4808598252755230865">Add Known Traveler Number securely to Google Wallet</translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
 <translation id="4811450222531576619">Learn about its source and topic</translation>
 <translation id="4811696127853690432">Save vehicle securely in Google Wallet</translation>
@@ -2267,6 +2277,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4855395119669662878">Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER" /> at <ph name="DATE_TIME" />. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.</translation>
 <translation id="485902285759009870">Verifying code…</translation>
 <translation id="4860260582253463350">To continue to YouTube, we need to make sure that it's you. You'll get the settings that your parent or guardian set up in Family Link.</translation>
+<translation id="4861514638281352187">Add redress number securely</translation>
 <translation id="4862642413395066333">Signing OCSP Responses</translation>
 <translation id="4864406669374375262">Copied version string to clipboard</translation>
 <translation id="486459320933704969">A parent or guardian has to say that it's OK for you to visit this website</translation>
@@ -2698,6 +2709,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="55635442646131152">Document outline</translation>
 <translation id="5563589142503817291">To use your location, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Open incognito tab</translation>
+<translation id="5565613377956908865">Add ID card to Google Wallet</translation>
 <translation id="5565735124758917034">Active</translation>
 <translation id="5570825185877910964">Protect account</translation>
 <translation id="5571083550517324815">Can’t pick up from this address. Select a different address.</translation>
@@ -2885,6 +2897,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5895694128043506580">Google Chrome is trying to show sensitive info</translation>
 <translation id="5898767305816764989">Thumbs-up button, press Enter to submit feedback that you like, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Yellow</translation>
+<translation id="5902204772823742902">Add driving licence securely to Google Wallet</translation>
 <translation id="5903264686717710770">Title:</translation>
 <translation id="5905671155741555195">Your work address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
@@ -3304,6 +3317,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6613866251791999074">Learn more about your search engine in Chrome</translation>
 <translation id="6615297766614333076">Stacker 2</translation>
 <translation id="6619496928666593220">IBAN not filled in</translation>
+<translation id="662009501953240458">Add vehicle securely to Google Wallet</translation>
 <translation id="6624427990725312378">Contact Info</translation>
 <translation id="6625629379283886932">Teach me how to code</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
@@ -3674,6 +3688,7 @@ Additional details:
 <translation id="7261463765917514051">Check out securely with autofill</translation>
 <translation id="7265608370113700582">Address is only available on this device</translation>
 <translation id="7266094331715305887">apps on device</translation>
+<translation id="7268742523336093718">Add passport securely to Google Wallet</translation>
 <translation id="7269151392155523061">Shortcut can't be the same as the search aggregator keyword defined by <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Files you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="7275334191706090484">Managed Bookmarks</translation>
@@ -4243,6 +4258,7 @@ Additional details:
 <translation id="8241707690549784388">The page that you're looking for used information that you entered. Returning to that page might cause any action that you took to be repeated. Do you want to continue?</translation>
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="824620968958405573">Auto browse task</translation>
+<translation id="8247824837030847066">Add ID card securely</translation>
 <translation id="8248406213705193919">Save card securely?</translation>
 <translation id="8249296373107784235">Abort</translation>
 <translation id="8250094606476360498">This address is currently saved to this device. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT" />.</translation>
@@ -4662,6 +4678,7 @@ Additional details:
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR session in progress</translation>
 <translation id="9005998258318286617">Failed to load PDF document.</translation>
+<translation id="900686221526305417">Add vehicle securely</translation>
 <translation id="9008201768610948239">Ignore</translation>
 <translation id="9010187979699879769">Create a study schedule for me</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{None}=1{From 1 site}other{From # sites}}</translation>
@@ -4816,6 +4833,7 @@ Additional details:
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new site in Google Sites quickly</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> members joined '<ph name="GROUP_NAME" />' tab group</translation>
 <translation id="949314938206378263">You asked to visit this site. Your parent can reply in Family Link.</translation>
+<translation id="949484466204182817">Add redress number to Google Wallet</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
 <translation id="952165179818196872">Add <ph name="PROVIDER" /> to pay without switching apps</translation>
@@ -4830,6 +4848,7 @@ Additional details:
 <translation id="962484866189421427">This content might try to install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Based on a law in your region, Chromium asks you to choose your default search engine. These search engines are popular in your region and are shown in random order.</translation>
 <translation id="963837307749850257">All users</translation>
+<translation id="963988220224168636">Add redress number securely to Google Wallet</translation>
 <translation id="964050462028070434">Manage passwords and passkeys…</translation>
 <translation id="964681140808832181">Yes, I want to cancel</translation>
 <translation id="969892804517981540">Official Build</translation>

@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Anda akan memadamkan {password_count} kata laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
+<translation id="1081948304372277788">Matikan Level Up</translation>
 <translation id="1082554859195167538">Ulasan produk untuk anda</translation>
 <translation id="1084365883616172403">Catatan Facebook selesai.</translation>
 <translation id="108485301461714610">AI Mode Google Search dan apl yang disambungkan</translation>
@@ -51,6 +52,7 @@
 <translation id="1149401351239820326">Bulan tamat tempoh</translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1158134713295836892">Gemini dalam Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Anda menyemak 1 kata laluan}other{Anda menyemak # kata laluan}}</translation>
 <translation id="1161444134753003495">Log masuk</translation>
 <translation id="1161663161838091892">Segerakkan tab dan sejarah untuk meneruskan proses</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kad kredit}other{{count} kad kredit}}</translation>
@@ -334,6 +336,7 @@
 <translation id="1993126639825654370">Salin URL pautan</translation>
 <translation id="199425419756152024">Lihat Kata Laluan</translation>
 <translation id="1996318269856535896">Anda masih boleh menggunakan data semakan imbas sedia ada anda pada peranti ini. Untuk menggunakan data tersebut, log keluar dari akaun terurus anda.</translation>
+<translation id="2002971615187574739">Gunakan AI untuk menyelesaikan lebih banyak tugasan</translation>
 <translation id="2010008505735295285">Muat semula</translation>
 <translation id="2012723204723845092">Selamat kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
@@ -604,6 +607,7 @@
 <translation id="2918688092312652908">Tandakan sebagai Belum Dibaca</translation>
 <translation id="2922210239002704889">Akses halaman utama atau papan kekunci anda</translation>
 <translation id="2924940770243654951">Buka dalam tab Inkognito baharu</translation>
+<translation id="2934607171563543600">sejak melengkapkan "Semak kata laluan anda"</translation>
 <translation id="2952278131021475699">Carian Kamera Lens</translation>
 <translation id="2953821385349876107">Pilih Google Account yang lain</translation>
 <translation id="2962516096219646456">Lihat semua data autolengkap</translation>
@@ -809,6 +813,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda, {email}.}other{{count} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda, {email}.}}</translation>
 <translation id="3659297405161482746">Tiada kaedah pembayaran ditemukan</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 dipilih}other{# dipilih}}</translation>
+<translation id="3668035568083954765">Lindungi privasi anda dan kekal selamat</translation>
 <translation id="3668816008081204991">Senarai bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nombor</translation>
 <translation id="3672283986707092811">Pilih Semua</translation>
@@ -1237,6 +1242,7 @@
 <translation id="5056446788882570708">Isu ditemukan pada <ph name="TIME" /></translation>
 <translation id="5056587122125565772">Buat imej</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Tingkatkan penyemakan imbas anda</translation>
 <translation id="5062321486222145940">Pasang Google Drive</translation>
 <translation id="5067540696062462445">Muat turun</translation>
 <translation id="5070314445039955096">Kebenaran "<ph name="SITE_DOMAIN" />" akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini</translation>
@@ -1686,6 +1692,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6454311990702999318">Data tidak sah</translation>
 <translation id="6459411599807878608">Butiran tersembunyi</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google menggunakan data penggunaan ciri anda untuk mengesyorkan tugasan dan mengemaskinikan kemajuan. Anda boleh mematikan Naik Tahap pada bila-bila masa.</translation>
 <translation id="6472069383518492189">Anda akan menemukan muat turun anda di sini</translation>
 <translation id="6476253015009698798">Penjejakan harga tidak tersedia untuk halaman ini.</translation>
 <translation id="6476284679642588870">Urus kaedah pembayaran</translation>
@@ -1763,6 +1770,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="667999046851023355">Dokumen</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} pilihan kaedah pembayaran tersedia pada sebelah atas papan kekunci anda.}other{{count} pilihan kaedah pembayaran tersedia pada sebelah atas papan kekunci anda.}}</translation>
 <translation id="6682680306647339111">Peringatan dialih keluar</translation>
+<translation id="6683022854667115063">Fon kepala</translation>
 <translation id="6684262542644248484">Log masuk ke laman web</translation>
 <translation id="6685259053455152195">Pintasan untuk mengubah suai tetapan dengan pantas dan menggunakan ciri daripada bar alamat.</translation>
 <translation id="6689342293888598653">Warna latar putih</translation>
@@ -1925,6 +1933,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="7233006041370588369">Pilih kata laluan untuk diisi.</translation>
 <translation id="723874023660911012">Tukar Profil</translation>
 <translation id="7241135764990439166">Mod Inkognito tidak tersedia</translation>
+<translation id="7245288034498365666">Pastikan semuanya teratur dan jimatkan masa</translation>
 <translation id="7253951228444156601">Menyemak kata laluan…</translation>
 <translation id="7261217796641151584">Kumpulan Kongsi</translation>
 <translation id="7266578100016339897">Langkah ini membantu anda kekal teratur. Anda boleh menukar pilihan ini dalam tetapan pada bila-bila masa.</translation>

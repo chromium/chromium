@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">ग्रुप मिटाएं</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> इनऐक्टिव आइटम}one{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}other{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}}</translation>
 <translation id="1568067597247500137">साइट म्यूट करें</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{टैब को नीचे की ओर ले जाएं}one{टैब को नीचे की ओर ले जाएं}other{टैब नीचे की ओर ले जाएं}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टैब ग्रुप में शामिल किए गए</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1670942869417022142">ऑडियो म्यूट किया गया है</translation>
 <translation id="1697284962337958118">इनमें शामिल करें</translation>
 <translation id="1713541401465507417">सभी टैब और ग्रुप बंद करें</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> टैब ग्रुप अब मौजूद नहीं है}one{<ph name="TAB_GROUPS_COUNT_MANY" /> टैब ग्रुप अब मौजूद नहीं है}other{<ph name="TAB_GROUPS_COUNT_MANY" /> टैब ग्रुप अब मौजूद नहीं हैं}}</translation>
+<translation id="1759122978835002237">टैब ग्रुप को ऊपर की ओर ले जाएं</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टैब ग्रुप में शामिल किया गया</translation>
 <translation id="1844381456014878100">7 दिनों तक कोई गतिविधि न होने पर</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}one{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}other{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेंगे.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{साइट अनम्यूट करें}one{साइट अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
+<translation id="2164232689984783657">टैब ग्रुप को नीचे ले जाएं</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टैब को ग्रुप से अलग करें}one{टैब को ग्रुप से अलग करें}other{टैब को ग्रुप से अलग करें}}</translation>
 <translation id="2271452184061378400">आपके टैब ग्रुप यहां सेव किए जाते हैं</translation>
 <translation id="2277224997687551299">ग्रुप के नाम में बदलाव करें</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" टैब ग्रुप अब मौजूद नहीं है</translation>
 <translation id="7402375256128852434">हाल ही में खोले गए टैब जोड़ें</translation>
 <translation id="7452985128687107478">टैब ग्रुप आपके सभी डिवाइसों पर, अपने-आप सेव और अपडेट हो जाते हैं</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{टैब को ऊपर की ओर ले जाएं}one{टैब को ऊपर की ओर ले जाएं}other{टैब ऊपर की ओर ले जाएं}}</translation>
 <translation id="747459581954555080">सभी को पुनर्स्थापित करें</translation>
 <translation id="7489558427602531799">टैब ग्रुप को दाईं ओर ले जाएं</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> आइटम}one{<ph name="TABS_COUNT_MANY" /> आइटम}other{<ph name="TABS_COUNT_MANY" /> आइटम}}</translation>

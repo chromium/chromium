@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Tips notifications promo closed</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1045899828449635435">Also clear data from these sites?</translation>
+<translation id="1049461303780085993">Try Gemini in Chrome to get answers, key takeaways and more</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Some of your passwords aren't accessible</translation>
 <translation id="1057623954802068161">Scroll to top of page</translation>
@@ -1117,6 +1118,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5465437530117042974">Tab bottom sheet changes closed.</translation>
 <translation id="5469852975082458401">You can navigate pages with a text cursor. Press F7 to turn off.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> can't be moved</translation>
+<translation id="5478718673237429220">Human interface device access required</translation>
 <translation id="548278423535722844">Open in maps app</translation>
 <translation id="5489222148748465285">Let Chrome keep looking?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, multi-selected picture-in-picture tab</translation>
@@ -1964,6 +1966,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="867914734596684889">Show or hide bookmarks bar</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, selected tab</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> needs permission to access human interface devices (HIDs) for this site. You can change this setting later in Settings &gt; Apps &gt; Special app access.</translation>
 <translation id="8696297579102085705">Send to your device</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
 <translation id="8700565880437506364">Introducing Gemini in Chrome</translation>

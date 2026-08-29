@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Ablaufmonat</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Du hast 1 Passwort geprüft,}other{Du hast # Passwörter geprüft,}}</translation>
 <translation id="1161444134753003495">Anmelden</translation>
 <translation id="1161663161838091892">Tabs und Verlauf synchronisieren, um fortzufahren</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} Kreditkarte}other{{count} Kreditkarten}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Link‑URL kopieren</translation>
 <translation id="199425419756152024">Passwort anzeigen</translation>
 <translation id="1996318269856535896">Du kannst vorhandene Browserdaten auf diesem Gerät weiterhin verwenden. Dazu musst du dich von deinem verwalteten Konto abmelden.</translation>
+<translation id="2002971615187574739">Mit KI mehr erledigen</translation>
 <translation id="2010008505735295285">Aktualisieren</translation>
 <translation id="2012723204723845092">Willkommen zurück!</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Als ungelesen markieren</translation>
 <translation id="2922210239002704889">Rufe die Startseite oder Tastatur auf</translation>
 <translation id="2924940770243654951">In neuem Inkognitotab öffnen</translation>
+<translation id="2934607171563543600">seitdem du „Passwörter prüfen“ abgeschlossen hast</translation>
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2953821385349876107">Anderes Google-Konto auswählen</translation>
 <translation id="2962516096219646456">Alle Autofill-Daten ansehen</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {email}.}other{{count} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="3659297405161482746">Keine Zahlungsmethoden gefunden</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
+<translation id="3668035568083954765">Privatsphäre schützen und sicher bleiben</translation>
 <translation id="3668816008081204991">Leseliste ist ausgeblendet</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3672283986707092811">Alle auswählen</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Probleme <ph name="TIME" /> gefunden.</translation>
 <translation id="5056587122125565772">Bild erstellen</translation>
 <translation id="5059136629401106827">Ok</translation>
+<translation id="5061202435354361813">Surfe jetzt auf einem neuen Level</translation>
 <translation id="5062321486222145940">Google Drive installieren</translation>
 <translation id="5067540696062462445">Downloads</translation>
 <translation id="5070314445039955096">Die Berechtigungen für „<ph name="SITE_DOMAIN" />“ werden zurückgesetzt und damit deaktiviert, wenn du diese Website verlässt.</translation>
@@ -1686,6 +1691,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6454311990702999318">Ungültige Daten</translation>
 <translation id="6459411599807878608">Details ausgeblendet</translation>
 <translation id="646394917185284261">Dateien</translation>
+<translation id="6470721056280836221">Google verwendet deine Daten zur Funktionsnutzung, um Aufgaben zu empfehlen und den Fortschritt zu aktualisieren. Du kannst Level Up jederzeit deaktivieren.</translation>
 <translation id="6472069383518492189">Hier findest du deine Downloads</translation>
 <translation id="6476253015009698798">Preis-Tracking ist für diese Seite nicht verfügbar.</translation>
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
@@ -1763,6 +1769,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} Zahlungsmethode oben auf der Tastatur verfügbar.}other{{count} verschiedene Zahlungsmethoden oben auf der Tastatur verfügbar.}}</translation>
 <translation id="6682680306647339111">Erinnerung entfernt</translation>
+<translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6684262542644248484">Melde dich auf einer Website an</translation>
 <translation id="6685259053455152195">Verknüpfungen zum schnellen Anpassen der Einstellungen oder Zugreifen auf Funktionen über die Adressleiste.</translation>
 <translation id="6689342293888598653">Hintergrund in Weiß</translation>
@@ -1925,6 +1932,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7233006041370588369">Wähle ein Passwort für das automatische Ausfüllen aus.</translation>
 <translation id="723874023660911012">Profil wechseln</translation>
 <translation id="7241135764990439166">Inkognitomodus ist nicht verfügbar</translation>
+<translation id="7245288034498365666">Organisiert bleiben und Zeit sparen</translation>
 <translation id="7253951228444156601">Passwörter werden geprüft…</translation>
 <translation id="7261217796641151584">Gruppe freigeben</translation>
 <translation id="7266578100016339897">So behältst du den Überblick. Das kannst du in den Einstellungen jederzeit ändern.</translation>

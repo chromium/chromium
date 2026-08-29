@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Borrar grupo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento inactivo}other{<ph name="TABS_COUNT_MANY" /> elementos inactivos}}</translation>
 <translation id="1568067597247500137">Silenciar el sitio</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Mover la pestaña hacia abajo}other{Mover las pestañas hacia abajo}}</translation>
 <translation id="1645759014353344461">Se agruparon <ph name="TABS_COUNT_MANY" /> pestañas</translation>
 <translation id="1657719826150349398">Mover la pestaña hacia abajo</translation>
 <translation id="1670942869417022142">Audio silenciado</translation>
 <translation id="1697284962337958118">Agregar a</translation>
 <translation id="1713541401465507417">Cerrar todos los grupos y las pestañas</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grupo de pestañas ya no está disponible}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grupos de pestañas ya no están disponibles}}</translation>
+<translation id="1759122978835002237">Mover el grupo de pestañas hacia arriba</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Se agrupó <ph name="TABS_COUNT_ONE" /> pestaña</translation>
 <translation id="1844381456014878100">Después de 7 días de inactividad</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas. Tu pestaña de incógnito no estará disponible.}other{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas. Tus # pestañas de incógnito no estarán disponibles.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Activar el sonido del sitio}other{Activar el sonido de los sitios}}</translation>
 <translation id="2162620598375156287">Ahora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Mover el grupo de pestañas hacia abajo</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar pestaña}other{Desagrupar pestañas}}</translation>
 <translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2277224997687551299">Editar nombre del grupo</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">El grupo "<ph name="TAB_GROUP_NAME" />" ya no está disponible</translation>
 <translation id="7402375256128852434">Agregar pestañas recientes</translation>
 <translation id="7452985128687107478">Los grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Mover la pestaña hacia arriba}other{Mover las pestañas hacia arriba}}</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
 <translation id="7489558427602531799">Mover el grupo de pestañas a la derecha</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento}other{<ph name="TABS_COUNT_MANY" /> elementos}}</translation>

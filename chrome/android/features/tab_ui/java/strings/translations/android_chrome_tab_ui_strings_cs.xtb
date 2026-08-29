@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Smazat skupinu</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktivní položka}few{<ph name="TABS_COUNT_MANY" /> neaktivní položky}many{<ph name="TABS_COUNT_MANY" /> neaktivní položky}other{<ph name="TABS_COUNT_MANY" /> neaktivních položek}}</translation>
 <translation id="1568067597247500137">Ztlumit web</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Přesunout kartu dolů}few{Přesunout karty dolů}many{Přesunout karty dolů}other{Přesunout karty dolů}}</translation>
 <translation id="1645759014353344461">Byl seskupen tento počet karet: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Přesunout kartu dolů</translation>
 <translation id="1670942869417022142">Ztlumený zvuk</translation>
 <translation id="1697284962337958118">Přidat do</translation>
 <translation id="1713541401465507417">Zavřít všechny karty a skupiny</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> skupina karet už není dostupná}few{<ph name="TAB_GROUPS_COUNT_MANY" /> skupiny karet už nejsou dostupné}many{<ph name="TAB_GROUPS_COUNT_MANY" /> skupiny karet už není dostupných}other{<ph name="TAB_GROUPS_COUNT_MANY" /> skupin karet už není dostupných}}</translation>
+<translation id="1759122978835002237">Posunout skupinu karet nahoru</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Další informace<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Byla seskupena <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1844381456014878100">Po 7 dnech bez aktivity</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. Vaše anonymní karta nebude k dispozici.}few{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaše anonymní karty nebudou k dispozici.}many{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaší anonymní karty nebude k dispozici.}other{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vašich anonymních karet nebude k dispozici.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Zapnout zvuk webu}few{Zapnout zvuk webů}many{Zapnout zvuk webů}other{Zapnout zvuk webů}}</translation>
 <translation id="2162620598375156287">Nyní <ph name="CURRENT_PRICE" /> na webu <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Přesunout skupinu karet dolů</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Zrušit seskupení karty}few{Zrušit seskupení karet}many{Zrušit seskupení karet}other{Zrušit seskupení karet}}</translation>
 <translation id="2271452184061378400">Tady jsou uloženy vaše skupiny karet</translation>
 <translation id="2277224997687551299">Upravit název skupiny</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Skupina karet „<ph name="TAB_GROUP_NAME" />“ už není dostupná</translation>
 <translation id="7402375256128852434">Přidat nedávno otevřené karty</translation>
 <translation id="7452985128687107478">Skupiny karet se automaticky ukládají a aktualizují na všech vašich zařízeních</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Přesunout kartu nahoru}few{Posunout karty nahoru}many{Posunout karty nahoru}other{Posunout karty nahoru}}</translation>
 <translation id="747459581954555080">Obnovit vše</translation>
 <translation id="7489558427602531799">Přesunout skupinu karet doprava</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> položka}few{<ph name="TABS_COUNT_MANY" /> položky}many{<ph name="TABS_COUNT_MANY" /> položky}other{<ph name="TABS_COUNT_MANY" /> položek}}</translation>

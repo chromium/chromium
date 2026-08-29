@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promo notifikasi tips ditutup</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1045899828449635435">Hapus data dari situs ini juga?</translation>
+<translation id="1049461303780085993">Coba Gemini di Chrome untuk mendapatkan jawaban, poin-poin penting, dan lainnya</translation>
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1052842760770519282">Beberapa sandi Anda tidak dapat diakses</translation>
 <translation id="1057623954802068161">Scroll ke bagian atas halaman</translation>
@@ -1117,6 +1118,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5465437530117042974">Perubahan Panel Bawah Tab ditutup.</translation>
 <translation id="5469852975082458401">Anda dapat membuka halaman dengan kursor teks. Tekan F7 untuk menonaktifkan.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> tidak dapat dipindahkan</translation>
+<translation id="5478718673237429220">Akses perangkat antarmuka manusia (HID) diperlukan</translation>
 <translation id="548278423535722844">Buka di aplikasi peta</translation>
 <translation id="5489222148748465285">Izinkan Chrome terus mencari?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, Tab Picture-in-Picture yang Banyak Dipilih</translation>
@@ -1964,6 +1966,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="867914734596684889">Tampilkan atau sembunyikan kolom Bookmark</translation>
 <translation id="8683039184091909753">gambar</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> memerlukan izin guna mengakses perangkat antarmuka manusia (HID) untuk situs ini. Anda dapat mengubah setelan ini nanti di Setelan &gt; Aplikasi &gt; Akses aplikasi khusus.</translation>
 <translation id="8696297579102085705">Kirim ke perangkat Anda</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
 <translation id="8700565880437506364">Memperkenalkan Gemini di Chrome</translation>

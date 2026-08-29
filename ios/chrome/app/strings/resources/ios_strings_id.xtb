@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1158134713295836892">Gemini di Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Anda telah memeriksa 1 sandi}other{Anda telah memeriksa # sandi}}</translation>
 <translation id="1161444134753003495">Login</translation>
 <translation id="1161663161838091892">Sinkronkan tab dan histori untuk melanjutkan</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kartu kredit}other{{count} kartu kredit}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Salin URL link</translation>
 <translation id="199425419756152024">Lihat Sandi</translation>
 <translation id="1996318269856535896">Anda masih dapat menggunakan data penjelajahan yang ada di perangkat ini. Untuk menggunakannya, logout dari akun terkelola Anda.</translation>
+<translation id="2002971615187574739">Gunakan AI untuk meningkatkan produktivitas</translation>
 <translation id="2010008505735295285">Muat ulang</translation>
 <translation id="2012723204723845092">Selamat datang kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Tandai Belum Dibaca</translation>
 <translation id="2922210239002704889">Buka halaman beranda atau keyboard Anda</translation>
 <translation id="2924940770243654951">Buka di tab Samaran baru</translation>
+<translation id="2934607171563543600">sejak menyelesaikan "Periksa sandi Anda"</translation>
 <translation id="2952278131021475699">Penelusuran Kamera Lens</translation>
 <translation id="2953821385349876107">Pilih Akun Google lain</translation>
 <translation id="2962516096219646456">Lihat semua data isi otomatis</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}other{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}}</translation>
 <translation id="3659297405161482746">Metode pembayaran tidak ditemukan</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 dipilih}other{# dipilih}}</translation>
+<translation id="3668035568083954765">Lindungi privasi Anda dan tetap aman</translation>
 <translation id="3668816008081204991">Daftar bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nomor</translation>
 <translation id="3672283986707092811">Pilih Semua</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Masalah ditemukan <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Buat gambar</translation>
 <translation id="5059136629401106827">Oke</translation>
+<translation id="5061202435354361813">Tingkatkan pengalaman penjelajahan Anda</translation>
 <translation id="5062321486222145940">Instal Google Drive</translation>
 <translation id="5067540696062462445">Download</translation>
 <translation id="5070314445039955096">Izin "<ph name="SITE_DOMAIN" />" akan direset ke nonaktif saat Anda menutup situs ini</translation>
@@ -1686,6 +1691,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6454311990702999318">Data tidak valid</translation>
 <translation id="6459411599807878608">Detail disembunyikan</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google menggunakan data penggunaan fitur Anda untuk merekomendasikan tugas dan memperbarui progres. Anda dapat menonaktifkan Level Up kapan saja.</translation>
 <translation id="6472069383518492189">Anda akan menemukan hasil download di sini</translation>
 <translation id="6476253015009698798">Pemantauan harga tidak tersedia untuk halaman ini.</translation>
 <translation id="6476284679642588870">Kelola metode pembayaran</translation>
@@ -1763,6 +1769,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="667999046851023355">Dokumen</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opsi metode pembayaran tersedia di atas keyboard Anda.}other{{count} opsi metode pembayaran tersedia di atas keyboard Anda.}}</translation>
 <translation id="6682680306647339111">Pengingat dihapus</translation>
+<translation id="6683022854667115063">Headphone</translation>
 <translation id="6684262542644248484">Login ke situs</translation>
 <translation id="6685259053455152195">Pintasan untuk mengubah setelan dan menggunakan fitur dari kolom URL dengan cepat.</translation>
 <translation id="6689342293888598653">Warna latar belakang putih</translation>
@@ -1925,6 +1932,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="7233006041370588369">Pilih sandi untuk diisi.</translation>
 <translation id="723874023660911012">Ganti Profil</translation>
 <translation id="7241135764990439166">Mode Samaran tidak tersedia</translation>
+<translation id="7245288034498365666">Lebih teratur dan hemat waktu</translation>
 <translation id="7253951228444156601">Memeriksa sandi…</translation>
 <translation id="7261217796641151584">Bagikan Grup</translation>
 <translation id="7266578100016339897">Tindakan ini membantu Anda tetap teratur. Anda dapat mengubahnya di setelan kapan saja.</translation>

@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Vervalmaand</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Jy het 1 wagwoord nagegaan}other{Jy het # wagwoorde nagegaan}}</translation>
 <translation id="1161444134753003495">Meld aan</translation>
 <translation id="1161663161838091892">Sinkroniseer oortjies en geskiedenis om voort te gaan</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kredietkaart}other{{count} kredietkaarte}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopieer skakel-URL</translation>
 <translation id="199425419756152024">Bekyk wagwoord</translation>
 <translation id="1996318269856535896">Jy kan steeds jou bestaande blaaierdata op hierdie toestel gebruik. Meld af by jou bestuurde rekening om dit te gebruik.</translation>
+<translation id="2002971615187574739">Gebruik KI om meer gedoen te kry</translation>
 <translation id="2010008505735295285">Herlaai</translation>
 <translation id="2012723204723845092">Welkom terug!</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Merk as ongelees</translation>
 <translation id="2922210239002704889">Gaan na jou tuisblad of sleutelbord</translation>
 <translation id="2924940770243654951">Maak in nuwe Incognito-oortjie oop</translation>
+<translation id="2934607171563543600">sedert die voltooiing van “Gaan jou wagwoorde na”</translation>
 <translation id="2952278131021475699">Lens-kamerasoektog</translation>
 <translation id="2953821385349876107">Kies ’n ander Google-rekening</translation>
 <translation id="2962516096219646456">Sien alle outovuldata</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, {email}, om dit op jou ander toestelle te gebruik.}other{{count} wagwoorde word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {email}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="3659297405161482746">Geen betaalmetodes is gevind nie</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 is gekies}other{# is gekies}}</translation>
+<translation id="3668035568083954765">Beskerm jou privaatheid en bly veilig</translation>
 <translation id="3668816008081204991">Leeslys word versteek</translation>
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="3672283986707092811">Kies alles</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Kwessies <ph name="TIME" /> gekry.</translation>
 <translation id="5056587122125565772">Skep prent</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Neem jou blaaiery na die volgende vlak</translation>
 <translation id="5062321486222145940">Installeer Google Drive</translation>
 <translation id="5067540696062462445">Aflaaie</translation>
 <translation id="5070314445039955096">“<ph name="SITE_DOMAIN" />”-toestemmings sal na af teruggestel word wanneer jy hierdie werf verlaat.</translation>
@@ -1686,6 +1691,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6454311990702999318">Ongeldige data</translation>
 <translation id="6459411599807878608">Besonderhede is versteek</translation>
 <translation id="646394917185284261">Lêers</translation>
+<translation id="6470721056280836221">Google gebruik jou kenmerkgebruikdata om take aan te beveel en vordering op te dateer. Jy kan enige tyd Level Up afskakel.</translation>
 <translation id="6472069383518492189">Jy sal jou aflaaie hier kry</translation>
 <translation id="6476253015009698798">Prysnasporing is nie vir hierdie bladsy beskikbaar nie.</translation>
 <translation id="6476284679642588870">Bestuur betaalmetodes</translation>
@@ -1763,6 +1769,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opsie vir betaalmetode is bo jou sleutelbord beskikbaar.}other{{count} opsies vir betaalmetode is bo jou sleutelbord beskikbaar.}}</translation>
 <translation id="6682680306647339111">Onthounota is verwyder</translation>
+<translation id="6683022854667115063">Oorfone</translation>
 <translation id="6684262542644248484">Meld by ’n webwerf aan</translation>
 <translation id="6685259053455152195">Kortpaaie om instellings vinnig te wysig en kenmerke van die adresbalk af te gebruik.</translation>
 <translation id="6689342293888598653">Wit agtergrondkleur</translation>
@@ -1925,6 +1932,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="7233006041370588369">Kies ’n wagwoord om in te vul.</translation>
 <translation id="723874023660911012">Wissel profiele</translation>
 <translation id="7241135764990439166">Incognito-modus is onbeskikbaar</translation>
+<translation id="7245288034498365666">Raak georganiseerd en bespaar tyd</translation>
 <translation id="7253951228444156601">Gaan tans wagwoorde na …</translation>
 <translation id="7261217796641151584">Deel groep</translation>
 <translation id="7266578100016339897">Dit help jou om georganiseerd te bly. Jy kan dit enige tyd in instellings verander.</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Пропозицію отримувати сповіщення з порадами закрито</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1045899828449635435">Видалити дані з цих сайтів?</translation>
+<translation id="1049461303780085993">Спробуйте Gemini у Chrome, щоб отримувати відповіді, важливу інформацію тощо</translation>
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1052842760770519282">Деякі паролі недоступні</translation>
 <translation id="1057623954802068161">Прокрутити вгору сторінки</translation>
@@ -745,7 +746,7 @@
 <translation id="4000670338830950598">Налаштовуйте й керуйте Google Chrome за допомогою виділених елементів</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 пароль у вашому обліковому записі Google зламано}one{# пароль у вашому обліковому записі Google зламано}few{# паролі у вашому обліковому записі Google зламано}many{# паролів у вашому обліковому записі Google зламано}other{# пароля у вашому обліковому записі Google зламано}}</translation>
 <translation id="4023638601467301498">Щоб отримати доступ до закладок і інших даних на всіх своїх пристроях, увійдіть у Chrome</translation>
-<translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
+<translation id="4024768890073681126">Цим вебпереглядачем керує один із твоїх батьків</translation>
 <translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# год}one{# год}few{# год}many{# год}other{# год}}</translation>
 <translation id="4042941173059740150">Продовжте використовувати обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>
@@ -1117,6 +1118,7 @@
 <translation id="5465437530117042974">Нижній екран вкладки закрито.</translation>
 <translation id="5469852975082458401">Ви можете оглядати сторінки за допомогою текстового курсора. Щоб вимкнути цей режим, натисніть F7.</translation>
 <translation id="5471273988133666918">Не можна перемістити вкладку "<ph name="TAB_TITLE" />"</translation>
+<translation id="5478718673237429220">Потрібен доступ до пристроїв взаємодії з людиною (HID)</translation>
 <translation id="548278423535722844">Відкрити в додатку Карти</translation>
 <translation id="5489222148748465285">Дозволити Chrome шукати далі?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" /> (одна з вибраних вкладок у режимі "картинка в картинці")</translation>
@@ -1964,6 +1966,7 @@
 <translation id="867914734596684889">Показати або сховати панель закладок</translation>
 <translation id="8683039184091909753">зображення</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> (вибрана вкладка)</translation>
+<translation id="8694622119922491927">Додаток <ph name="APP_NAME" /> запитує доступ до пристроїв взаємодії з людиною (HID) для цього сайту. Цей параметр можна змінити пізніше в розділі "Налаштування" &gt; "Додатки" &gt; "Спеціальний доступ".</translation>
 <translation id="8696297579102085705">Надіслати на ваш пристрій</translation>
 <translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
 <translation id="8700565880437506364">Представляємо Gemini у Chrome</translation>

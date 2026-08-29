@@ -90,7 +90,6 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chromeનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}one{Chromeનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}other{Chromeનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યાં હોય એવા ટૅબને થોભાવી દો}}</translation>
 <translation id="1832046143430087831">Chromeના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromeને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે. આ સેટિંગ બંધ છે.</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
-<translation id="1842869163383855194">તમારા સમગ્ર ડિવાઇસ પર Chromeમાં Searchનો ઉપયોગ કરવા માટે સરળ ઍક્સેસ, પછી ભલેને Chrome નાનું કર્યું હોય.</translation>
 <translation id="1843347690926158494">Google Lens વડે આ ટૅબ શોધો</translation>
 <translation id="1849248141818021764">તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો તમારે <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chrome ડેટા ડિલીટ કરવો<ph name="END_LINK" /> જરૂરી રહેશે.</translation>
 <translation id="1856809424654973980">મુસાફરીમાં બ્રાઉઝ કરવાનું ચાલુ રાખવા માટે Chrome ઍપનો ઉપયોગ કરો</translation>
@@ -330,7 +329,6 @@
 <translation id="4173512894976930765">સાઇટ અપેક્ષા મુજબ કામ કરે તેમ બની શકે છે. જો તમે Chromeમાં સાઇન ઇન કર્યું હોય, તો જ્યારે તમે તમારા Google એકાઉન્ટ સિવાયની બધી Chrome વિન્ડો બંધ કરશો, ત્યારે તમે મોટાભાગની સાઇટમાંથી સાઇન આઉટ થઈ જશો.</translation>
 <translation id="4175922240926474352">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે આ સાઇટ કોઈ સુરક્ષિત કનેક્શનનો ઉપયોગ કરી રહી નથી તેમજ ફાઇલ સાથે ચેડાં કરવામાં આવ્યા હોઈ શકે છે</translation>
 <translation id="4191857738314598978">{0,plural, =1{એક દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}one{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}other{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}}</translation>
-<translation id="4222394563269716113">કીબોર્ડ શૉર્ટકટ વડે Chromeમાં Search ખોલો.</translation>
 <translation id="4222932583846282852">રદ કરી રહ્યાં છીએ…</translation>
 <translation id="4224210481850767180">ઇન્સ્ટૉલેશન રદ કરવામાં આવ્યું છે.</translation>
 <translation id="4242034826641750751">આ સાઇટ માટે Chromeને કૅમેરા અને માઇક્રોફોનની પરવાનગીઓની જરૂર છે</translation>
@@ -356,7 +354,6 @@
 <translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
 <translation id="4434353761996769206">ઇન્સ્ટૉલરની ભૂલ <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">ઝડપી ઓવરવ્યૂ મેળવવા અને ફૉલોઅપ પ્રશ્નો પૂછવા માટે, આ દસ્તાવેજને Gemini in Chrome સાથે શેર કરો</translation>
-<translation id="4447327682081576371">Mac મેનૂ બારમાં Chromeમાં Search બતાવો અને કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="4450664632294415862">Chrome - નેટવર્ક સાઇન ઇન - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome પર બીજી ક્રિયા ચાલુ છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="4493028449971051158">સ્ટાર્ટઅપ દરમિયાન ભૂલ: કૃપા કરીને ઇન્સ્ટૉલરને ઍડમિનિસ્ટ્રેટર તરીકે ચલાવો.</translation>
@@ -380,6 +377,7 @@
 <translation id="475321580758063259">તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં Chrome ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે Chrome અપડેટ કરો</translation>
 <translation id="4754614261631455953">Google Chrome કૅનેરી (mDNS-In)</translation>
 <translation id="4756182432527369254">Chromeના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromeને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે</translation>
+<translation id="4768676935374695498">Google Lens વડે આ વીડિયો શોધો</translation>
 <translation id="479167709087336770">આ પણ Google Searchમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
 <translation id="4793679854893018356">Chromeની તમને સલામત રાખવાની રીત વિશે જાણો</translation>
 <translation id="4799870290441980300">Chromeની સૌથી સશક્ત સુરક્ષા પ્રદાન કરવા માટે વધારાની સુવિધાઓ ચાલુ કરે છે</translation>
@@ -446,7 +444,6 @@
 <translation id="5430073640787465221">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
 Google Chrome તમારા સેટિંગને રિકવર કરી શકતું નથી.</translation>
-<translation id="545114101312117217">Chromeમાં Searchમાંથી તમારા શૉર્ટકટનો સરળ ઍક્સેસ</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> સાથે ઉપયોગમાં લેવા માટે Chrome પ્રોફાઇલ પસંદ કરો</translation>
 <translation id="547202872422499512">હવે Windows શરૂ થાય ત્યારે Chrome લૉન્ચ થાય છે, જેથી તમે તરત જ બ્રાઉઝ કરવાનું શરૂ કરી શકો. તમે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="5486346529181556467">જ્યારે તમે તમને હાનિકારક લાગતી સાઇટની જાણ કરો, ત્યારે દરેક જણ માટે ઑનલાઇન સલામતી બહેતર બનાવો. <ph name="BEGIN_LINK" />Googleની અસુરક્ષિત સાઇટ પૉલિસી<ph name="END_LINK" /> વિશે વધુ જાણો.</translation>
@@ -522,7 +519,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6166185671393271715">Chrome માં પાસવર્ડ્સને આયાત કરો</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome બીટા</translation>
-<translation id="6177442314419606057">Chromeમાં શોધો</translation>
 <translation id="6180522807229584611">આ ટૅબ વધારાના સંસાધનોનો ઉપયોગ કરી રહ્યું છે. તમારા પર્ફોર્મન્સને બહેતર બનાવવા માટે, Chromeને તેને નિષ્ક્રિય કરવા દો.</translation>
 <translation id="6182736845697986886">કોઈ અપડેટ સર્વરની આંતરિક ભૂલને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="6192058120268468905">Chromeમાં તમારું એકાઉન્ટ</translation>
@@ -730,7 +726,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8074398340364918139">Chromeની કોઈ ચોક્કસ સુવિધા કે એક્સ્ટેન્શન શોધવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી પસંદ કરેલા તમારા કીબોર્ડની કી ટાઇપ કરો</translation>
 <translation id="8077579734294125741">અન્ય Chrome પ્રોફાઇલ</translation>
 <translation id="8086881907087796310">તમારું કમ્પ્યૂટર, હાર્ડવેરની ઓછામાં ઓછી આવશ્યકતાઓ પૂર્ણ ન કરી શકવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
-<translation id="8093772166980702367">સિસ્ટમ ટ્રેમાં Chromeમાં Search બતાવો અને કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="8110438089258398864">તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Search AI મોડ ફરીથી ખોલી શકો છો</translation>
 <translation id="8113883687556086139">તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="8115695070094288807">Chromeને તમારું બનાવી રહ્યા છીએ...</translation>
@@ -774,10 +769,12 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google મેમ્બરશિપ તરીકે સાઇન ઇન કર્યું. એકાઉન્ટ મેનૂ ખોલો</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Google Chrome માટેનું વિશેષ સુરક્ષા અપડેટ હમણાં જ લાગુ કરવામાં આવ્યું. ફરી શરૂ કરો અને અમે તમારાં ટૅબની પુનઃસ્થાપના કરીશું.</translation>
+<translation id="8502181052659370">Google Lens વડે આ ટૅબ શોધો</translation>
 <translation id="8521348052903287641">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome Dev માટે ઇનબાઉન્ડ નિયમ.</translation>
 <translation id="852529348814672339">આ ભાષામાં Chrome બતાવો</translation>
 <translation id="8525579356836940628">ઇન્સ્ટૉલેશનની પ્રક્રિયા રોકી</translation>
 <translation id="8533056045953418157">Google Chromeને તમારા ડિફૉલ્ટ PDF વ્યૂઅર તરીકે સેટ કરો</translation>
+<translation id="854593887324189900">Google Lens વડે આ છબી શોધો</translation>
 <translation id="8555465886620020932">સેવામાં ભૂલ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">ભાષાની સૂચિ શોધો</translation>
 <translation id="8575047640889685742">તમારા Google એકાઉન્ટમાંનો Chromeનો બધો ડેટા એન્ક્રિપ્ટ કરવા માટે તમારા <ph name="BEGIN_LINK" />પોતાના પાસફ્રેઝ<ph name="END_LINK" />નો ઉપયોગ કરો. Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંનો બ્રાઉઝિંગ ઇતિહાસ સિંક કરવામાં આવશે નહીં.</translation>

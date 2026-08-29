@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">درحال آماده‌سازی فایل‌ها</translation>
 <translation id="1014509239502131234">درحال واگرداندن نتیجه</translation>
 <translation id="1015730422737071372">جزئیات اضافی ارائه دهید</translation>
+<translation id="1016671033299705843">افزودن امن گواهینامه رانندگی</translation>
 <translation id="1019413721762100891">خاموش</translation>
 <translation id="1021753677514347426">‏علت این مشکل وجود یکی از گواهی‌هایی است که شما یا فردی دیگر در دستگاهتان نصب کرده‌اید. از این گواهی برای نظارت بر شبکه‌ها و رهگیری آن‌ها استفاده می‌شود و مورداعتماد Chromium نیست. علی‌رغم وجود برخی موارد قانونی برای نظارت، مثلاً نظارت بر شبکه‌های مدارس و شرکت‌ها، Chromium می‌خواهد مطمئن شود که شما از این جریان آگاهی دارید، حتی اگر نتوانید آن را متوقف کنید. نظارت ممکن است در هر مرورگر یا برنامه‌ای که به وب دسترسی دارد انجام شود.</translation>
 <translation id="1024111578869940408">گاهی‌اوقات مهاجمان با ایجاد تغییراتی بسیار جزئی در نشانی وب، سایت‌ها را جعل می‌کنند.</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">‏ارائه OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> داده‌ای ارسال نکرد.</translation>
 <translation id="1393071644879491291">‏مهاجمان ممکن است در سایتی که می‌خواستید بازدید کنید شما را فریب دهند تا نرم‌افزاری نصب کنید یا مواردی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری‌تان را افشا کنید. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">‏افزودن امن کارت شناسایی به «کیف پول Google»</translation>
 <translation id="1398743098754840707">سایت‌هایی که در اینجا اضافه می‌کنید برای پاسخ‌ها ارجاع داده نخواهند شد، حتی اگر زبانه باز باشد. اگر سایتی که اضافه می‌کنید درحال‌حاضر در رشته‌ای استفاده می‌شود، ممکن است تا ۳۰ دقیقه طول بکشد تا ارجاع رشته به آن متوقف شود.</translation>
 <translation id="1405567553485452995">سبز روشن</translation>
 <translation id="1406370515365284486">روش‌های پرداختتان همچنان ذخیره خواهند ماند</translation>
@@ -772,6 +774,7 @@
 <translation id="2288422996159078444">هرچه تایپ می‌کنید، هر صفحه‌ای که می‌ببینید، یا هر فعالیتی که در وب تماشا می‌شود. محتوای سایت‌ها ممکن است بدون اطلاع شما تغییر کند.</translation>
 <translation id="2289385804009217824">برش دادن</translation>
 <translation id="2292556288342944218">دسترسی شما به اینترنت مسدود است</translation>
+<translation id="2294150501457238325">افزودن امن گذرنامه</translation>
 <translation id="2295831393422400053">برای استفاده از «کمک به نوشتن»، تنظیم «بهبود جستجوها و مرور» را روشن کنید</translation>
 <translation id="2296244067976588032">‏گذرکلید • iCloud Keychain</translation>
 <translation id="2296331629987861142">با اقساط آسان پرداخت کنید (مشروط به واجدشرایط بودن، کارمزد اعمال می‌شود)</translation>
@@ -1132,6 +1135,7 @@
 <translation id="2931453528659195355">مدیریت اطلاعات خرید</translation>
 <translation id="2933624813161016821">فویل حکاکی</translation>
 <translation id="2935726091208500473">درحال هم‌رسانی زبانه‌ها</translation>
+<translation id="2936698630976431647">‏فیلد کد ترویجی را انتخاب کنید تا پیشنهادهای ویژه از «کیف پول Google» به‌طور خودکار تکمیل شود</translation>
 <translation id="293796669683825859">نظرها</translation>
 <translation id="2938225289965773019">باز کردن پیوندهای <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706">‫<ph name="ORIGIN" /> – برای نمایش مکان‌نما، بین برنامه‌ها جابه‌جا شوید، صفحه را مجدد بار کنید، یا برگردید</translation>
@@ -1284,6 +1288,7 @@
 <translation id="3190736958609431397">لغو پیگیری</translation>
 <translation id="3194737229810486521"><ph name="URL" /> می‌خواهد داده‌ها را برای همیشه در دستگاهتان ذخیره کند</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">‏افزودن گواهینامه رانندگی به «کیف پول Google»</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> در <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">کد رزرو</translation>
 <translation id="3196902089458890316">همیشه زبانه‌های مرتبط برای دریافت پاسخ‌های بهتر هم‌رسانی شوند؟</translation>
@@ -1391,6 +1396,7 @@
 <translation id="3380864720620200369">شناسه سرویس‌گیرنده:</translation>
 <translation id="3383566085871012386">ترتیب اولویت کنونی</translation>
 <translation id="3383713837163550889">فایل‌های محلی شما تا ۱ دقیقه دیگر حذف خواهد شد</translation>
+<translation id="33837817515081754">‏افزودن «شناسه مسافر شناخته‌شده» به «کیف پول Google»</translation>
 <translation id="3384522979010096022">سازمانتان اجازه مشاهده این سایت را به شما نمی‌دهد</translation>
 <translation id="3391030046425686457">نشانی تحویل کالا</translation>
 <translation id="3391482648489541560">ویرایش فایل</translation>
@@ -1464,6 +1470,7 @@
 <translation id="3517264445792388751">سرپرستتان سیستم فایل را غیرفعال کرده است</translation>
 <translation id="3518941727116570328">کار با چند شیء</translation>
 <translation id="3519670528214225835">پرسیدن از <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">‏افزودن وسیله نقلیه به «کیف پول Google»</translation>
 <translation id="3525130752944427905">۱۴ × ۱۰ اینچ</translation>
 <translation id="3525435918300186947">‏دستگاه‌های MIDI کنترل و مجدداً برنامه‌ریزی شود؟</translation>
 <translation id="3527624163937328588">برداشتن پیوست</translation>
@@ -1817,6 +1824,7 @@
 <translation id="4103249731201008433">شماره سریال دستگاه نامعتبر است</translation>
 <translation id="4103592298805904008">مقوا (تک‌جداره)</translation>
 <translation id="4104702906064390950">‏درحال ذخیره کردن اطلاعات IBAN</translation>
+<translation id="4104995898379951162">افزودن امن «شناسه مسافر شناخته‌شده»</translation>
 <translation id="4106101218644797743">تنظیمات همگام‌سازی</translation>
 <translation id="4106887816571530227">محتوای جاسازی‌شده مجاز نیست</translation>
 <translation id="4107047499377819067">نصب سرویس‌های پس‌زمینه‌ای وی‌پی‌ان شروع شد و ممکن است چند دقیقه طول بکشد.</translation>
@@ -1874,6 +1882,7 @@
 <translation id="4195459680867822611">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، آن را فعال کنید</translation>
 <translation id="4195643157523330669">باز کردن در زبانه جدید</translation>
 <translation id="4196861286325780578">&amp;انجام مجدد انتقال</translation>
+<translation id="4199131764832701740">‏افزودن گذرنامه به «کیف پول Google»</translation>
 <translation id="4202554117186904723">رول پنجم</translation>
 <translation id="4203769790323223880">دوربین مجاز نیست</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />بررسی پیکربندی آنتی‌ویروس و دیوار آتش<ph name="END_LINK" /></translation>
@@ -2239,6 +2248,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">به‌روز کردن «کارت شناسایی» به‌طور امن</translation>
 <translation id="4807098396393229769">نام روی کارت</translation>
+<translation id="4808598252755230865">‏افزودن امن «شناسه مسافر شناخته‌شده» به «کیف پول Google»</translation>
 <translation id="4809079943450490359">دستورالعمل‌ها از سرپرست دستگاهتان:</translation>
 <translation id="4811450222531576619">آشنا شدن با منبع و موضوع آن</translation>
 <translation id="4811696127853690432">‏ذخیره کردن اطلاعات خودرو به‌طور امن در «کیف پول Google»</translation>
@@ -2268,6 +2278,7 @@
 <translation id="4855395119669662878">‏سرپرستتان بارگذاری فایل‌ها در <ph name="CLOUD_PROVIDER" /> را در ‎<ph name="DATE_TIME" /> شروع خواهد کرد. تا زمانی‌که بارگذاری فایل کامل نشده است، اتصال دستگاه را قطع نکنید. درطول فرایند بارگذاری، فقط می‌توانید فایل‌های محلی را بخوانید.</translation>
 <translation id="485902285759009870">درحال تأیید کد…</translation>
 <translation id="4860260582253463350">‏برای رفتن به YouTube باید مطمئن شویم این فرد واقعاً شما هستید. تنظیماتی را که ولی یا سرپرستتان در Family Link تنظیم کرده است دریافت خواهید کرد.</translation>
+<translation id="4861514638281352187">افزودن امن «شناسه جبران خطای تطبیق»</translation>
 <translation id="4862642413395066333">‏امضا کردن پاسخ‌های OCSP</translation>
 <translation id="4864406669374375262">رشته نسخه در بریده‌دان کپی شد</translation>
 <translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
@@ -2699,6 +2710,7 @@
 <translation id="55635442646131152">طرح کلی سند</translation>
 <translation id="5563589142503817291">‏برای استفاده از مکان، در <ph name="LINK" /> به Chrome دسترسی دهید.</translation>
 <translation id="5565613213060953222">باز کردن «زبانه ناشناس»</translation>
+<translation id="5565613377956908865">‏افزودن کارت شناسایی به «کیف پول Google»</translation>
 <translation id="5565735124758917034">فعال</translation>
 <translation id="5570825185877910964">محافظت از حساب</translation>
 <translation id="5571083550517324815">تحویل گرفتن از این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
@@ -2886,6 +2898,7 @@
 <translation id="5895694128043506580">‏‫Google Chrome می‌خواهد اطلاعات حساس را نشان دهد</translation>
 <translation id="5898767305816764989">‏دکمه رأی موافق. برای ارسال بازخورد درباره دلیل پسندیدن، کلید Enter را فشار دهید، <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">زرد</translation>
+<translation id="5902204772823742902">‏افزودن امن گواهینامه رانندگی به «کیف پول Google»</translation>
 <translation id="5903264686717710770">عنوان:</translation>
 <translation id="5905671155741555195">‏نشانی محل کار می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید در<ph name="BEGIN_LINK" />در «حساب Google» خود (<ph name="ACCOUNT" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (همگام‌سازی‌شده)</translation>
@@ -3305,6 +3318,7 @@
 <translation id="6613866251791999074">‏درباره موتور جستجویتان در Chrome بیشتر بدانید</translation>
 <translation id="6615297766614333076">پشته‌ساز ۲</translation>
 <translation id="6619496928666593220">‏IBAN تکمیل نشده است</translation>
+<translation id="662009501953240458">‏افزودن امن خودرو به «کیف پول Google»</translation>
 <translation id="6624427990725312378">اطلاعات تماس</translation>
 <translation id="6625629379283886932">به من آموزش بدهید چطور کدنویسی کنم</translation>
 <translation id="6628463337424475685">جستجوی <ph name="ENGINE" /></translation>
@@ -3675,6 +3689,7 @@
 <translation id="7261463765917514051">با تکمیل خودکار، ایمن تصفیه حساب کنید</translation>
 <translation id="7265608370113700582">نشانی فقط در این دستگاه دردسترس است</translation>
 <translation id="7266094331715305887">برنامه‌های موجود در دستگاه.</translation>
+<translation id="7268742523336093718">‏افزودن امن گذرنامه به «کیف پول Google»</translation>
 <translation id="7269151392155523061">میان‌بر نباید با کلیدواژه جمع‌کننده جستجو که <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> تعریف کرده است یکسان باشد: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏فایل‌هایی که بارگیری می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود و برای سرپرست شما قابل‌مشاهده باشد.</translation>
 <translation id="7275334191706090484">نشانک‌های مدیریت شده</translation>
@@ -4244,6 +4259,7 @@
 <translation id="8241707690549784388">صفحه‌ای که جستجو می‌کنید از اطلاعاتی استفاده می‌کند که شما وارد کرده‌اید. بازگشت به آن صفحه ممکن است باعث شود اقدامی را که قبلاً انجام دادید دوباره تکرار کنید. آیا می‌خواهید ادامه دهید؟</translation>
 <translation id="8242426110754782860">ادامه دادن</translation>
 <translation id="824620968958405573">تکلیف مرور خودکار</translation>
+<translation id="8247824837030847066">افزودن امن کارت شناسایی</translation>
 <translation id="8248406213705193919">کارت به‌طور ایمن ذخیره شود؟</translation>
 <translation id="8249296373107784235">لغو</translation>
 <translation id="8250094606476360498">‏این نشانی درحال‌حاضر در این دستگاه ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="ACCOUNT" />) ذخیره کنید.</translation>
@@ -4663,6 +4679,7 @@
 <translation id="9003639428623471314">پاکت کاهو</translation>
 <translation id="9004367719664099443">‏جلسه VR درحال انجام است</translation>
 <translation id="9005998258318286617">‏سند PDF بارگیری نشد.</translation>
+<translation id="900686221526305417">افزودن امن وسیله نقلیه</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9010187979699879769">برنامه درسی برای من بسازید</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{هیچ‌کدام}=1{از ۱ سایت}one{از # سایت}other{از # سایت}}</translation>
@@ -4817,6 +4834,7 @@
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع سایت جدید در Google Sites، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="949026252328034572">‫<ph name="MEMBER_COUNT" /> عضو به گروه زبانه «<ph name="GROUP_NAME" />» پیوستند</translation>
 <translation id="949314938206378263">‏درخواست کرده‌اید از این سایت بازدید کنید. ولی‌تان می‌تواند در Family Link پاسخ دهد.</translation>
+<translation id="949484466204182817">‏افزودن «شناسه جبران خطای تطبیق» به «کیف پول Google»</translation>
 <translation id="950736567201356821">سه سوراخ در بالا</translation>
 <translation id="950926967802086924">‏گذرکلید • مدیر گذرواژه Google</translation>
 <translation id="952165179818196872">برای پرداخت بدون عوض کردن برنامه، <ph name="PROVIDER" /> اضافه شود</translation>
@@ -4831,6 +4849,7 @@
 <translation id="962484866189421427">این محتوا ممکن است برنامه‌های فریب‌دهنده‌ای نصب کند که وانمود می‌کنند برنامه دیگری هستند یا اینکه داده‌هایی برای ردیابی شما جمع‌آوری می‌کنند. <ph name="BEGIN_LINK" />درهرصورت نشان داده شود<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">‏طبق قانونی در منطقه‌تان، Chromium از شما می‌خواهد موتور جستجوی پیش‌فرضتان را انتخاب کنید. این موتورهای جستجو در منطقه شما پرطرفدار هستند و ترتیب نمایش آن‌ها تصادفی است.</translation>
 <translation id="963837307749850257">همه کاربران</translation>
+<translation id="963988220224168636">‏افزودن امن «شناسه جبران خطای تطبیق» به «کیف پول Google»</translation>
 <translation id="964050462028070434">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>
 <translation id="964681140808832181">بله، می‌خواهم لغو کنم</translation>
 <translation id="969892804517981540">ساخت رسمی</translation>

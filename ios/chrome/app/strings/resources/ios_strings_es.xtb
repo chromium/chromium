@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Mes de caducidad</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1158134713295836892">Gemini en Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Has comprobado 1 contraseña}other{Has comprobado # contraseñas}}</translation>
 <translation id="1161444134753003495">Iniciar sesión</translation>
 <translation id="1161663161838091892">Sincroniza las pestañas y el historial para continuar</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} tarjeta de crédito}other{{count} tarjetas de crédito}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Copiar URL de enlace</translation>
 <translation id="199425419756152024">Ver contraseña</translation>
 <translation id="1996318269856535896">Puedes seguir usando los datos de navegación de este dispositivo. Para usarlos, cierra sesión en tu cuenta gestionada.</translation>
+<translation id="2002971615187574739">Usa la IA para hacer más cosas</translation>
 <translation id="2010008505735295285">Volver a cargar</translation>
 <translation id="2012723204723845092">¡Hola de nuevo!</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes configurar una contraseña en tu dispositivo.</translation>
@@ -462,7 +464,7 @@
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} elemento del historial}other{{count} elementos del historial}}</translation>
-<translation id="2461070143328828326">Ajustes de contraseña</translation>
+<translation id="2461070143328828326">Configuración de contraseñas</translation>
 <translation id="2462736546165239215">Aquí puedes encontrar todo tu historial de navegación.</translation>
 <translation id="2466518891828668184">Guarda tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Marcar como no leído</translation>
 <translation id="2922210239002704889">Ve a la página principal o al teclado</translation>
 <translation id="2924940770243654951">Abrir en Incógnito</translation>
+<translation id="2934607171563543600">desde que completaste "Comprobar tus contraseñas"</translation>
 <translation id="2952278131021475699">Búsqueda mediante la cámara con Lens</translation>
 <translation id="2953821385349876107">Elegir otra cuenta de Google</translation>
 <translation id="2962516096219646456">Ver todos los datos de Autocompletar</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google: {email}.}other{{count} contraseñas solo se guardan en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google: {email}.}}</translation>
 <translation id="3659297405161482746">No se ha encontrado ningún método de pago</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 seleccionada}other{# seleccionadas}}</translation>
+<translation id="3668035568083954765">Protege tu privacidad y mantén la seguridad</translation>
 <translation id="3668816008081204991">La lista de lectura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3672283986707092811">Seleccionar todo</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Problemas detectados <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Crear imagen</translation>
 <translation id="5059136629401106827">Aceptar</translation>
+<translation id="5061202435354361813">Mejora tu experiencia de navegación</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
 <translation id="5070314445039955096">Se volverán a desactivar los permisos de "<ph name="SITE_DOMAIN" />" cuando salgas de este sitio</translation>
@@ -1686,6 +1691,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6454311990702999318">Datos no válidos</translation>
 <translation id="6459411599807878608">Se han ocultado los detalles</translation>
 <translation id="646394917185284261">Archivos</translation>
+<translation id="6470721056280836221">Google usa tus datos de uso de funciones para recomendarte tareas y actualizar el progreso. Puedes desactivar Level Up en cualquier momento.</translation>
 <translation id="6472069383518492189">Aquí se mostrarán tus descargas</translation>
 <translation id="6476253015009698798">El seguimiento de precios no está disponible para esta página.</translation>
 <translation id="6476284679642588870">Gestionar métodos de pago</translation>
@@ -1763,6 +1769,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="667999046851023355">Documento</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opción de método de pago disponible encima de tu teclado.}other{{count} opciones de método de pago disponibles encima de tu teclado.}}</translation>
 <translation id="6682680306647339111">Recordatorio eliminado</translation>
+<translation id="6683022854667115063">Auriculares</translation>
 <translation id="6684262542644248484">Inicia sesión en un sitio web</translation>
 <translation id="6685259053455152195">Accesos directos para modificar rápidamente la configuración y usar funciones de la barra de direcciones.</translation>
 <translation id="6689342293888598653">Color de fondo blanco</translation>
@@ -1925,6 +1932,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7233006041370588369">Selecciona la contraseña que quieras rellenar.</translation>
 <translation id="723874023660911012">Cambiar de perfil</translation>
 <translation id="7241135764990439166">El modo Incógnito no está disponible</translation>
+<translation id="7245288034498365666">Organízate y ahorra tiempo</translation>
 <translation id="7253951228444156601">Comprobando contraseñas…</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Esto te ayuda a mantener el orden. Puedes cambiarlo en los ajustes en cualquier momento.</translation>
@@ -1990,7 +1998,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7471557245617580330">Crear nueva pestaña</translation>
 <translation id="7473555040328423550">Añadir pestaña</translation>
 <translation id="7476548258282096076">En esta tarjeta se muestran los sitios que más visitas.</translation>
-<translation id="7482823403440483089">Función Autocompletar mejorado</translation>
+<translation id="7482823403440483089">Autocompletar mejorado</translation>
 <translation id="7484645889979462775">Jamás para este sitio</translation>
 <translation id="7486006552035434095">Mantén tus dispositivos sincronizados</translation>
 <translation id="7491131399623468277">Ir a Ajustes…</translation>

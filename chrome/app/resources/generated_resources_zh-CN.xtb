@@ -2499,6 +2499,7 @@
 <translation id="2926708162326352948">主题已更新为上传的图片</translation>
 <translation id="2927017729816812676">缓存空间</translation>
 <translation id="2928030851119977280">已保存选择，您的选择将在您登录其他 Google 服务时生效。</translation>
+<translation id="2928361271496576301">接受快捷键</translation>
 <translation id="2928795416630981206">允许跟踪您的摄像头位置</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 撤消了 1 个网站的权限}other{Chrome 撤消了 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="2931157624143513983">适合可打印区域</translation>
@@ -2589,6 +2590,7 @@
 <translation id="2992754757708650257">要离开此网站并结束任务吗？</translation>
 <translation id="2992931425024192067">显示所有通知内容</translation>
 <translation id="2993517869960930405">应用信息</translation>
+<translation id="2994495699095559601">为了提供更贴合需求的回答，Google 会使用所分享标签页的内容和网址。系统会在新对话中分享当前标签页。您可以随时更改此设置。</translation>
 <translation id="2994804273850542871">第 4 层级：Ultra</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组}other{您可以保留这些分组，以便日后添加标签页；如果不再想访问它们，也可以退出分组}}</translation>
 <translation id="2996071302059856125">详细了解 AI 如何影响您的体验，以及 Chrome 提供的控制功能</translation>
@@ -3105,6 +3107,7 @@
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
 <translation id="339722927132407568">卡顿</translation>
 <translation id="3399432415385675819">通知将被停用</translation>
+<translation id="3400036602686830681">您的密码遭遇了数据泄露。请立即更改此密码，或在<ph name="BEGIN_LINK" />密码安全检查<ph name="END_LINK" />中查看所有问题。</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> 赫兹） - 交错</translation>
 <translation id="3401484564516348917">读取您的浏览器、操作系统、设备、已安装软件、注册表值和文件的相关信息</translation>
 <translation id="3402255108239926910">选择头像</translation>
@@ -3533,6 +3536,7 @@
 <translation id="3711945201266135623">通过打印服务器找到了 <ph name="NUM_PRINTERS" /> 台打印机</translation>
 <translation id="3712143870407382523">选择这一侧的窗口</translation>
 <translation id="3712897371525859903">网页另存为(&amp;A)...</translation>
+<translation id="3712966523643024813">新变化</translation>
 <translation id="371300529209814631">后退/前进</translation>
 <translation id="371302509916403935">下划线</translation>
 <translation id="3713047097299026954">此安全密钥不含任何登录数据</translation>
@@ -3696,6 +3700,7 @@
 <translation id="3812525830114410218">证书有误</translation>
 <translation id="3813296892522778813">如果您找不到要查找的内容，请参阅 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 帮助<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">翻译页面和快速解答时使用的语言</translation>
+<translation id="381485723922188688">Option 键</translation>
 <translation id="3815668647912194650">您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组。</translation>
 <translation id="3816118180265633665">Chrome 颜色</translation>
 <translation id="3817524650114746564">打开您计算机的代理设置</translation>
@@ -4810,6 +4815,7 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4699473989647132421">海岸线</translation>
+<translation id="4700734033170984447">使用 Gemini 总结此页面</translation>
 <translation id="4701335814944566468">昨天看过</translation>
 <translation id="4705082603944362042">{MIN_PIN_LENGTH,plural, =1{请输入新 PIN 码。PIN 码必须包含至少 1 个字符，且可以包含字母、数字和其他字符。}other{请输入新 PIN 码。PIN 码必须包含至少 # 个字符，且可以包含字母、数字和其他字符。}}</translation>
 <translation id="470644585772471629">颜色反转</translation>
@@ -4894,6 +4900,7 @@
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
 <translation id="4772914216048388646">有序</translation>
 <translation id="4773122030389014189">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
+<translation id="4773299976671772492">已停止</translation>
 <translation id="477548766361111120">允许扩展程序读取和更改此网站的数据</translation>
 <translation id="4775646243557794597">已删除<ph name="TIME_PERIOD" />的浏览记录</translation>
 <translation id="4776311127346151860">已连接<ph name="DEVICE_NAME" /></translation>
@@ -5590,6 +5597,7 @@
 <translation id="5298315677001348398">要继续操作并允许此软件对您的设备进行更改吗？</translation>
 <translation id="5299109548848736476">不跟踪</translation>
 <translation id="5299558715747014286">查看和管理您的标签页组</translation>
+<translation id="5300667117276823109">您与 Gemini 的对话以及您的 <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace 数据<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />不会经过审核，也不会用于改进生成式 AI 模型。Gemini 是一款 AI 工具，可能会出错。</translation>
 <translation id="5301398529256275325">请尝试提出“总结此页面”之类的请求，或提出您自己的问题。</translation>
 <translation id="5301954838959518834">知道了</translation>
 <translation id="5302032366299160685">请先等待文件打开，然后重试</translation>
@@ -5986,6 +5994,7 @@
 <translation id="5625225435499354052">在 Google Pay 中修改</translation>
 <translation id="5627832140542566187">显示屏方向</translation>
 <translation id="5628434207686266338">设置设备密码</translation>
+<translation id="5628652442614339066">使用以下快捷键轻松打开：</translation>
 <translation id="562935524653278697">您的管理员已停止同步您的书签、历史记录、密码及其他设置。</translation>
 <translation id="5631017369956619646">CPU 使用情况</translation>
 <translation id="5631272057151918206">此操作最多可释放离线文件占用的 <ph name="OFFLINE_STORAGE_SIZE" /> 空间。部分文件仍可离线访问。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -6347,6 +6356,7 @@
 <translation id="5926936390113611560">打开所有资料</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
 <translation id="5930567261594625340">夜空</translation>
+<translation id="5931292892421325763">打开书签管理器(&amp;O)</translation>
 <translation id="5932194499818201827">在无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
 <translation id="59324397759951282">由<ph name="MANUFACTURER_NAME" />生产的 USB 设备</translation>
@@ -6449,6 +6459,7 @@
 <translation id="6003143259071779217">移除 eSIM 卡移动网络</translation>
 <translation id="6003479444341796444">标题栏现已显示</translation>
 <translation id="6003582434972667631">主题由贵单位设定</translation>
+<translation id="6005010326905893430">自行修改</translation>
 <translation id="6005045517426700202">砖砌建筑</translation>
 <translation id="6006484371116297560">经典</translation>
 <translation id="6007053304250788613">在镜像模式下只能排除一个显示屏</translation>
@@ -6823,6 +6834,7 @@
 <translation id="6305627295927385295">删除以下内容：</translation>
 <translation id="6305702903308659374">即使在 ChromeVox 朗读时也以正常音量播放音频</translation>
 <translation id="6307268917612054609">系统服务以及具有摄像头使用权限的应用和网站可以使用您的摄像头</translation>
+<translation id="6307884029666635765">创建二维码(&amp;Q)</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
 <translation id="6308778163698400658">添加到工具栏</translation>
 <translation id="6308937455967653460">链接另存为(&amp;K)...</translation>
@@ -7378,6 +7390,7 @@
 <translation id="6740234557573873150">“<ph name="FILE_NAME" />”已暂停</translation>
 <translation id="6743841972744298686">同步设置</translation>
 <translation id="6744397361782514824">与左侧视图交换</translation>
+<translation id="6745569635660688171">区域选择屏幕截图</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="67465227497040338">显示 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="6746834324024491643">如需将您的密码等信息同步到您的所有设备上，请以 <ph name="EMAIL" /> 的身份登录</translation>
@@ -7454,6 +7467,7 @@
 <translation id="6801435275744557998">校准触摸屏</translation>
 <translation id="6801920212017470190">随时随地了解所有降价信息</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
+<translation id="6802825994120702390">选择一个区域或整个屏幕，即可为问题添加背景信息</translation>
 <translation id="6803766346203101854">此网站可以将数据保存在您的设备上。</translation>
 <translation id="6805236548654699520">将设置恢复为安全的默认设置，以移除恶意弹出式窗口、修复网络问题等等。</translation>
 <translation id="6805478749741295868">这是一项实验性 AI 功能，有时可能会出错。</translation>
@@ -8723,6 +8737,7 @@
 <translation id="7777624210360383048">“<ph name="EXTENSION_NAME" />”的快捷方式 <ph name="SHORTCUT" /></translation>
 <translation id="777852709704682967">打开书签管理器(&amp;O)</translation>
 <translation id="7779840061887151693">显示屏</translation>
+<translation id="7780716468751073938">您与 Gemini 的对话以及您的 <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace 数据<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />不会经过审核，也不会用于改进生成式 AI 模型。Gemini 是一款 AI 工具，可能会出错。部分内容可能并不适合所有人。</translation>
 <translation id="7782102568078991263">Google 无法提供其他任何建议</translation>
 <translation id="7782717250816686129">存储登录屏幕上的持久性数据，并将凭据插入到会话中。</translation>
 <translation id="7784020347632229094">详细了解键盘快捷键</translation>
@@ -8786,6 +8801,7 @@
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
 <translation id="7834832693620032149">若要分享音频，请改为分享标签页或窗口</translation>
 <translation id="7836850009646241041">请再次尝试轻触您的安全密钥</translation>
+<translation id="7837994938322273689">为窗口命名…</translation>
 <translation id="7838838951812478896">未能保存由“<ph name="DEVICE_NAME" />”分享的“<ph name="NETWORK_NAME" />”</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}other{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="7839696104613959439">渲染选择的网络</translation>
@@ -10402,6 +10418,7 @@
 <translation id="9071664234353284876">无身份验证</translation>
 <translation id="9072220108592671115">安装了版本 <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">您已授权 Gemini 登录这些网站，代您完成任务</translation>
+<translation id="9074190188883314952">使用智能镜头按钮分享屏幕上的内容</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 个内核}other{{CORE_COUNT} 个内核}}</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9075413375877487220">增强型安全浏览功能不信任此扩展程序。</translation>
@@ -10554,6 +10571,7 @@
 <translation id="9195969368671142407">如果您所在的组织限制您将内容保存到 Google 账号，您将无法分享或加入标签页分组</translation>
 <translation id="9197456336762295195">请使用存有 google.com 通行密钥的设备的摄像头扫描此二维码</translation>
 <translation id="919840898042157087">固定焦点移动</translation>
+<translation id="9198797990125364460">随时随地向 Google 提问</translation>
 <translation id="9199503643457729322">点击即可退出“隐私保护指南”。</translation>
 <translation id="9199695835892108985">重置所有串行端口权限？</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>

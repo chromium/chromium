@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">ჯგუფის წაშლა</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არააქტიური ერთეული}other{<ph name="TABS_COUNT_MANY" /> არააქტიური ერთეული}}</translation>
 <translation id="1568067597247500137">საიტის დადუმება</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ჩანართის ქვემოთ გადატანა}other{ჩანართების ქვემოთ გადატანა}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1670942869417022142">აუდიო დადუმებულია</translation>
 <translation id="1697284962337958118">დამატება აქ:</translation>
 <translation id="1713541401465507417">ყველა ჩანართისა და ჯგუფის დახურვა</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{ჩანართების <ph name="TAB_GROUPS_COUNT_ONE" /> ჯგუფი აღარ არის ხელმისაწვდომი}other{ჩანართების <ph name="TAB_GROUPS_COUNT_MANY" /> ჯგუფი აღარ არის ხელმისაწვდომი}}</translation>
+<translation id="1759122978835002237">ჩანართების ჯგუფის ზემოთ გადატანა</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1844381456014878100">7-დღიანი უმოქმედობის შემდეგ</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{თქვენი დახურული ჩანართებისა და ჯგუფების ხელახლა გახსნა შესაძლებელია ბოლო ჩანართების სექციიდან და ჩანართების ჯგუფების სექციიდან. თქვენი ინკოგნიტო ჩანართი მიუწვდომელი იქნება.}other{თქვენი დახურული ჩანართებისა და ჯგუფების ხელახლა გახსნა შესაძლებელია ბოლო ჩანართების სექციიდან და ჩანართების ჯგუფების სექციიდან. თქვენი # ინკოგნიტო ჩანართი მიუწვდომელი იქნება.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{საიტის დადუმების მოხსნა}other{საიტების დადუმების მოხსნა}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" />-ზე ახლა <ph name="CURRENT_PRICE" /> ღირს</translation>
+<translation id="2164232689984783657">ჩანართების ჯგუფის ქვემოთ გადატანა</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ჩანართის დაჯგუფების გაუქმება}other{ჩანართების დაჯგუფების გაუქმება}}</translation>
 <translation id="2271452184061378400">თქვენი ჩანართების ჯგუფები აქ ინახება</translation>
 <translation id="2277224997687551299">ჯგუფის სახელის რედაქტირება</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">ჩანართების ჯგუფი „<ph name="TAB_GROUP_NAME" />“ აღარაა ხელმისაწვდომი</translation>
 <translation id="7402375256128852434">ბოლო ჩანართების დამატება</translation>
 <translation id="7452985128687107478">ჩანართების ჯგუფები ავტომატურად შეინახება და განახლდება თქვენს ყველა მოწყობილობაში</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ჩანართის ზემოთ გადატანა}other{ჩანართების ზემოთ გადატანა}}</translation>
 <translation id="747459581954555080">ყველას აღდგენა</translation>
 <translation id="7489558427602531799">ჩანართების ჯგუფის მარჯვნივ გადატანა</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ერთეული}other{<ph name="TABS_COUNT_MANY" /> ერთეული}}</translation>

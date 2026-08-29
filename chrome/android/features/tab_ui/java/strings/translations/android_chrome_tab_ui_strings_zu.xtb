@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Susa iqembu</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Into e-<ph name="TABS_COUNT_ONE" /> engasebenzi}one{Izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezingasebenzi}other{Izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezingasebenzi}}</translation>
 <translation id="1568067597247500137">Thulisa isayithi</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Yisa ithebhu phansi}one{Yisa amathebhu phansi}other{Yisa amathebhu phansi}}</translation>
 <translation id="1645759014353344461">Amathebhu angu-<ph name="TABS_COUNT_MANY" /> aqoqiwe</translation>
 <translation id="1657719826150349398">Yisa ithebhu phansi</translation>
 <translation id="1670942869417022142">Okulalelwayo okuthulisiwe</translation>
 <translation id="1697284962337958118">Engeza ku-</translation>
 <translation id="1713541401465507417">Vala wonke amathebhu namaqembu</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{Iqembu lethebu elingu-<ph name="TAB_GROUPS_COUNT_ONE" /> alisatholakali}one{Amaqembu ethebhu angu-<ph name="TAB_GROUPS_COUNT_MANY" /> akasatholakali}other{Amaqembu ethebhu angu-<ph name="TAB_GROUPS_COUNT_MANY" /> akasatholakali}}</translation>
+<translation id="1759122978835002237">Yisa iqembu lethebhu phezulu</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Funda kabanzi<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Iqembu lethebhu elingu-<ph name="TABS_COUNT_ONE" /></translation>
 <translation id="1844381456014878100">Ngemva kwezinsuku eziyisi-7 ingasebenzi</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu Akamuva kanye nesigaba Samaqembu amathebhu. Ithebhu yakho ye-Incognito ngeke itholakale.}one{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu. Amathebhu akho angu-# e-Incognito ngeke atholakale.}other{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu. Amathebhu akho angu-# e-Incognito ngeke atholakale.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Susa ukuthula kusayithi}one{Susa ukuthula kumasayithi}other{Susa ukuthula kumasayithi}}</translation>
 <translation id="2162620598375156287">Manje ngu-<ph name="CURRENT_PRICE" /> ku-<ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Yisa iqembu lethebhu phansi</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Hlukanisa ithebhu}one{Hlukanisa amathebhu}other{Hlukanisa amathebhu}}</translation>
 <translation id="2271452184061378400">Amaqembu wakho amathebhu alondolozwe lapha</translation>
 <translation id="2277224997687551299">Hlela igama leqembu</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Leli qembu lethebhu "<ph name="TAB_GROUP_NAME" />" alisatholakali</translation>
 <translation id="7402375256128852434">Yengeza amathebhu akamuva</translation>
 <translation id="7452985128687107478">Amaqembu wamathebhu alondoloza ngokuzenzekela futhi abuyekeze kuwo wonke amadivayisi wakho</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Yisa ithebhu phezulu}one{Yisa amathebhu phezulu}other{Yisa amathebhu phezulu}}</translation>
 <translation id="747459581954555080">Buyisela konke</translation>
 <translation id="7489558427602531799">Yisa iqembu lethebhu kwesokudla</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{Into engu-<ph name="TABS_COUNT_ONE" />}one{Izinto ezingu-<ph name="TABS_COUNT_MANY" />}other{Izinto ezingu-<ph name="TABS_COUNT_MANY" />}}</translation>

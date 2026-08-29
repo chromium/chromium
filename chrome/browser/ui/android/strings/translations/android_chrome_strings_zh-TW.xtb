@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">提示通知宣傳內容已關閉</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1045899828449635435">要一併清除這些網站中的資料嗎？</translation>
+<translation id="1049461303780085993">試用 Chrome 內建 Gemini，取得解答、重點摘要等資訊</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1052842760770519282">無法存取部分密碼</translation>
 <translation id="1057623954802068161">捲動到頁面頂端</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5465437530117042974">分頁底部功能表已改為關閉。</translation>
 <translation id="5469852975082458401">你可以透過文字游標瀏覽頁面。按下 F7 鍵即可關閉這項功能。</translation>
 <translation id="5471273988133666918">無法移動分頁「<ph name="TAB_TITLE" />」</translation>
+<translation id="5478718673237429220">需要人機介面裝置存取權</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5489222148748465285">要讓 Chrome 繼續搜尋嗎？</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />，多選的子母畫面分頁</translation>
@@ -1964,6 +1966,7 @@
 <translation id="867914734596684889">顯示或隱藏書籤列</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，選取的分頁</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> 需要相關權限，才能讓這個網站使用人機介面裝置 (HID)。你之後可以前往「設定」&gt;「應用程式」&gt;「特殊應用程式存取權」變更這項設定。</translation>
 <translation id="8696297579102085705">傳送到裝置</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
 <translation id="8700565880437506364">隆重推出 Chrome 內建 Gemini</translation>

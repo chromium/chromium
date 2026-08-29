@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Bitmə ayı</translation>
 <translation id="1150989369772528668">Təqvim</translation>
 <translation id="1158134713295836892">Gemini Chrome-da</translation>
+<translation id="1159484622358475170">{count,plural, =1{1 parolu yoxladınız}other{# parolu yoxladınız}}</translation>
 <translation id="1161444134753003495">Daxil olun</translation>
 <translation id="1161663161838091892">Davam etmək üçün tabları və tarixçəni sinxronlaşdırın</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kredit kartı}other{{count} kredit kartı}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">URL linkini kopiyalayın</translation>
 <translation id="199425419756152024">Parola Baxın</translation>
 <translation id="1996318269856535896">Hələ də bu cihazda mövcud axtarış datasından istifadə edə bilərsiniz. Ondan istifadə etmək üçün idarə olunan hesabınızdan çıxın.</translation>
+<translation id="2002971615187574739">Daha çox iş görmək üçün Sİ-dən istifadə edin</translation>
 <translation id="2010008505735295285">Yenidən yükləyin</translation>
 <translation id="2012723204723845092">Xoş gəlmisiniz!</translation>
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Oxunmamış kimi qeyd edin</translation>
 <translation id="2922210239002704889">Əsas səhifə və ya klaviaturaya keçin</translation>
 <translation id="2924940770243654951">Yeni Anonim tabda açın</translation>
+<translation id="2934607171563543600">"Parolları yoxlayın" tamamlandıqdan sonra</translation>
 <translation id="2952278131021475699">Linza kamera axtarışı</translation>
 <translation id="2953821385349876107">Fərqli Google Hesabı seçin</translation>
 <translation id="2962516096219646456">Bütün Avto doldurma datasına baxın</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}other{{count} parol yalnız bu cihazda yadda saxlanır. Onları digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}}</translation>
 <translation id="3659297405161482746">Ödəniş metodu tapılmadı</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 seçilib}other{# seçilib}}</translation>
+<translation id="3668035568083954765">Məxfiliyinizi qoruyun və təhlükəsiz qalın</translation>
 <translation id="3668816008081204991">Oxu siyahısı gizlədilib</translation>
 <translation id="3670030362669914947">Nömrə</translation>
 <translation id="3672283986707092811">Hamısını seçin</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Problemlər tapıldı: <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Şəkil yaradın</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Axtarış təcrübənizi təkmilləşdirin</translation>
 <translation id="5062321486222145940">Google Diski quraşdırın</translation>
 <translation id="5067540696062462445">Endirmələr</translation>
 <translation id="5070314445039955096">Bu saytdan çıxdığınız zaman "<ph name="SITE_DOMAIN" />" icazələri sıfırlanaraq deaktiv olacaq</translation>
@@ -1686,6 +1691,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6454311990702999318">Yanlış data</translation>
 <translation id="6459411599807878608">Detallar gizlədildi</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google tapşırıqlar tövsiyə etmək və irəliləyişi güncəlləmək üçün funksiyadan istifadə datanızdan istifadə edir. İstənilən vaxt Level Up-ı deaktiv edə bilərsiniz.</translation>
 <translation id="6472069383518492189">Endirmələr burada olacaq</translation>
 <translation id="6476253015009698798">Bu səhifədə qiymətləri izləmək mümkün deyil.</translation>
 <translation id="6476284679642588870">Ödəniş metodlarını idarə edin</translation>
@@ -1763,6 +1769,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="667999046851023355">Sənəd</translation>
 <translation id="6681791404926413601">{count,plural, =1{Ödəniş metodu üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}other{Ödəniş metodu üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="6682680306647339111">Xatırladıcı silindi</translation>
+<translation id="6683022854667115063">Qulaqlıq</translation>
 <translation id="6684262542644248484">Veb-sayta daxil olun</translation>
 <translation id="6685259053455152195">Ayarları tez dəyişmək və ünvan panelindəki funksiyalardan istifadə etmək üçün qısayollar.</translation>
 <translation id="6689342293888598653">Ağ fon rəngi</translation>
@@ -1925,6 +1932,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7233006041370588369">Daxil etmək üçün parol seçin.</translation>
 <translation id="723874023660911012">Profilləri dəyişin</translation>
 <translation id="7241135764990439166">Anonim rejim əlçatan deyil</translation>
+<translation id="7245288034498365666">Səliqəli olun və vaxta qənaət edin</translation>
 <translation id="7253951228444156601">Parollar yoxlanılır…</translation>
 <translation id="7261217796641151584">Qrupu paylaşın</translation>
 <translation id="7266578100016339897">Bu, səliqəli olmağınızı təmin edir. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.</translation>

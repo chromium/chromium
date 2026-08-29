@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Suprimeix el grup</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element inactiu}other{<ph name="TABS_COUNT_MANY" /> elements inactius}}</translation>
 <translation id="1568067597247500137">Silencia el lloc web</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Mou la pestanya cap avall}other{Mou les pestanyes cap avall}}</translation>
 <translation id="1645759014353344461">S'han agrupat <ph name="TABS_COUNT_MANY" /> pestanyes</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1670942869417022142">L'àudio està silenciat</translation>
 <translation id="1697284962337958118">Afegeix a</translation>
 <translation id="1713541401465507417">Tanca totes les pestanyes i tots els grups</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grup de pestanyes ja no està disponible}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grups de pestanyes ja no estan disponibles}}</translation>
+<translation id="1759122978835002237">Mou el grup de pestanyes cap amunt</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Més informació<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">S'ha agrupat <ph name="TABS_COUNT_ONE" /> pestanya</translation>
 <translation id="1844381456014878100">Després de 7 dies d'inactivitat</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Pots tornar a obrir la pestanya i el grup tancats des de les seccions Pestanyes recents i Grups de pestanyes. La pestanya d'incògnit no estarà disponible.}other{Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes. # pestanyes d'incògnit no estaran disponibles.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Deixa de silenciar el lloc web}other{Deixa de silenciar els llocs web}}</translation>
 <translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Mou el grup de pestanyes cap avall</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupa la pestanya}other{Desagrupa les pestanyes}}</translation>
 <translation id="2271452184061378400">Els teus grups de pestanyes es desen aquí</translation>
 <translation id="2277224997687551299">Edita el nom del grup</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Grup de pestanyes "<ph name="TAB_GROUP_NAME" />" no disponible</translation>
 <translation id="7402375256128852434">Afegeix pestanyes recents</translation>
 <translation id="7452985128687107478">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els dispositius</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Mou la pestanya cap amunt}other{Mou les pestanyes cap amunt}}</translation>
 <translation id="747459581954555080">Restaura'ls tots</translation>
 <translation id="7489558427602531799">Mou el grup de pestanyes cap a la dreta</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element}other{<ph name="TABS_COUNT_MANY" /> elements}}</translation>

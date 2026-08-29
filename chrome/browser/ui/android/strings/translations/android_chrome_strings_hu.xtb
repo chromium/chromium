@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Tippekre vonatkozó értesítések promóciója bezárva</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1045899828449635435">Törli az e webhelyekről származó adatokat is?</translation>
+<translation id="1049461303780085993">Próbálja ki a Geminit a Chrome-ban, amellyel például válaszokat és fontos információkat kaphat</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="1052842760770519282">Bizonyos jelszavai nem állnak rendelkezésre</translation>
 <translation id="1057623954802068161">Görgetés az oldal tetejére</translation>
@@ -1117,6 +1118,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5465437530117042974">A lap alsó lapjának módosításai bezárva.</translation>
 <translation id="5469852975082458401">Az oldalakon szövegkurzorral navigálhat. A funkciót az F7 gombbal kapcsolhatja ki.</translation>
 <translation id="5471273988133666918">A(z) <ph name="TAB_TITLE" /> lapot nem lehet áthelyezni</translation>
+<translation id="5478718673237429220">Emberi interfészeszközhöz való hozzáférés szükséges</translation>
 <translation id="548278423535722844">Megnyitás térképalkalmazásban</translation>
 <translation id="5489222148748465285">A Chrome folytassa a keresést?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, több másik mellett kiválasztott lap kép a képben módban</translation>
@@ -1964,6 +1966,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="867914734596684889">Könyvjelzősáv megjelenítése vagy elrejtése</translation>
 <translation id="8683039184091909753">kép</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, kiválasztott lap</translation>
+<translation id="8694622119922491927">A(z) <ph name="APP_NAME" /> engedélyt igényel ahhoz, hogy hozzáférjen a humán interfészeszközökhöz ennél a webhelynél. Ezt a beállítást később a Beállítások &gt; Alkalmazások &gt; Különleges alkalmazás-hozzáférés menüpontban módosíthatja.</translation>
 <translation id="8696297579102085705">Küldés az eszközére</translation>
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>
 <translation id="8700565880437506364">Bemutatjuk a Gemini a Chrome-ban szolgáltatást</translation>

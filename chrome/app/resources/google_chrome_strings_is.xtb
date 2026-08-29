@@ -90,7 +90,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome mælir með því að gera hlé á flipanum sem er að hægja á vafranum þínum}one{Chrome mælir með því að gera hlé á flipunum sem eru að hægja á vafranum þínum}other{Chrome mælir með því að gera hlé á flipunum sem eru að hægja á vafranum þínum}}</translation>
 <translation id="1832046143430087831">Styttir hleðslutíma vefsvæða með V8-vél Chrome en gerir Chrome örlítið berskjaldaðri gagnvart árásum. Slökkt er á þessari stillingu.</translation>
 <translation id="1838374766361614909">Hreinsa leit</translation>
-<translation id="1842869163383855194">Einfalt aðgengi að Gemini í Chrome í öðrum tækjum, jafnvel þó Chrome sé minnkað.</translation>
 <translation id="1843347690926158494">Leita á þessum flipa með Google-linsu</translation>
 <translation id="1849248141818021764">Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu þarftu að <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Notaðu Chrome-forritið til að halda áfram að vafra á ferðinni</translation>
@@ -330,7 +329,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4173512894976930765">Vefsvæði munu líklega virka sem skyldi. Þú skráist út af flestum vefsvæðum þegar þú lokar öllum Chrome-gluggum en ekki út af Google-reikningnum þínum ef þú hefur skráð þig inn á Chrome.</translation>
 <translation id="4175922240926474352">Chrome lokaði á þetta niðurhal vegna þess að vefsvæðið notar ekki örugga tengingu og hugsanlega er búið að eiga við skrána</translation>
 <translation id="4191857738314598978">{0,plural, =1{Endurræstu Chrome innan eins dags}one{Endurræstu Chrome innan # dags}other{Endurræstu Chrome innan # daga}}</translation>
-<translation id="4222394563269716113">Opnaðu „Leit“ í Chrome með flýtilykli.</translation>
 <translation id="4222932583846282852">Hættir við...</translation>
 <translation id="4224210481850767180">Hætt hefur verið við uppsetninguna.</translation>
 <translation id="4242034826641750751">Chrome verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>
@@ -356,7 +354,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4434353761996769206">Uppsetningarvilla: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Deildu þessu skjali með Gemini í Chrome til að fá fljótlegt yfirlit og spyrja frekari spurninga</translation>
-<translation id="4447327682081576371">Sýna „Leit“ í Chrome á Mac-valmyndarstiku og kveikja á flýtilykli</translation>
 <translation id="4450664632294415862">Chrome – innskráning á net – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Önnur aðgerð er í gangi í Google Chrome. Reyndu aftur síðar.</translation>
 <translation id="4493028449971051158">Villa í ræsingu: keyrðu uppsetningarforritið sem kerfisstjóri.</translation>
@@ -380,6 +377,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="475321580758063259">Uppfærðu Chrome til að halda áfram að nota Chrome-gögnin á Google-reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-inn)</translation>
 <translation id="4756182432527369254">Styttir hleðslutíma vefsvæða með V8-vél Chrome en gerir Chrome örlítið berskjaldaðri gagnvart árásum</translation>
+<translation id="4768676935374695498">Leita í þessu vídeói með Google-linsu</translation>
 <translation id="479167709087336770">Þetta notar sömu ritvilluleit og er notuð í Google-leit. Textinn sem þú skrifar í vafranum er sendur til Google. Þú getur alltaf breytt þessu í stillingunum.</translation>
 <translation id="4793679854893018356">Kynntu þér hvernig Chrome gætir að öryggi þínu</translation>
 <translation id="4799870290441980300">Kveikir á viðbótareiginleikum til að veita öflugustu vörn Chrome</translation>
@@ -446,7 +444,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5430073640787465221">Kjörstillingaskráin þín er skemmd eða ógild.
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
-<translation id="545114101312117217">Einfaldur aðgangur að flýtileiðunum þínum úr „Leit“ í Chrome</translation>
 <translation id="5465210843490471889">Veldu Chrome-prófíl til að nota með <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome ræsist nú þegar Windows ræsist, svo að þú getur byrjað að vafra samstundis. Þú getur slökkt á þessu í stillingunum.</translation>
 <translation id="5486346529181556467">Auktu netöryggi allra með því að tilkynna vefsvæði sem þú telur að sé skaðlegt. Nánar um <ph name="BEGIN_LINK" />reglur Google um óörugg vefsvæði.<ph name="END_LINK" /></translation>
@@ -522,7 +519,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6166185671393271715">Flytja inn aðgangsorð í Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - tilraunaútgáfa Google Chrome</translation>
-<translation id="6177442314419606057">Leita í Chrome</translation>
 <translation id="6180522807229584611">Þessi flipi notar aukagögn. Leyfðu Chrome að óvirkja hann til að bæta afköstin.</translation>
 <translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
 <translation id="6192058120268468905">Reikningurinn þinn í Chrome</translation>
@@ -729,7 +725,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8074398340364918139">Til að leita að tilteknum eiginleika eða viðbót Chrome skaltu slá inn flýtileiðina í veffangastikuna og ýta svo á valinn flýtilykil</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="8086881907087796310">Uppsetning mistókst vegna þess að tölvan þín uppfyllir ekki lágmarksskilyrði um vélbúnað.</translation>
-<translation id="8093772166980702367">Sýna „Leit“ í Chrome í kerfisbakka og kveikja á flýtilykli</translation>
 <translation id="8110438089258398864">Þú getur opnað gervigreindarstillingu Google-leitar aftur til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="8113883687556086139">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Verið er að sérsníða Chrome...</translation>
@@ -773,10 +768,12 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="848851325211467878">Skráð(ur) inn sem <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-aðild. Opna reikningsvalmyndina</translation>
 <translation id="8496177819998570653">Google-aðgangsorðastjórnun</translation>
 <translation id="8498858610309223613">Sérstök öryggisuppfærsla fyrir Google Chrome var tekin í notkun. Endurræstu núna og við opnum flipana þína aftur.</translation>
+<translation id="8502181052659370">Leita á þessum flipa með Google-linsu</translation>
 <translation id="8521348052903287641">Innleiðarregla til að láta Google Chrome Dev leyfa mDNS-umferð.</translation>
 <translation id="852529348814672339">Birta Chrome á þessu tungumáli</translation>
 <translation id="8525579356836940628">Uppsetning var stöðvuð</translation>
 <translation id="8533056045953418157">Stilltu Google Chrome sem sjálfgefinn PDF-lesara</translation>
+<translation id="854593887324189900">Leita að þessari mynd með Google-linsu</translation>
 <translation id="8555465886620020932">Þjónustuvilla: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Leita í lista tungumála</translation>
 <translation id="8575047640889685742">Notaðu <ph name="BEGIN_LINK" />eigið aðgangsorð<ph name="END_LINK" /> til að dulkóða öll Chrome-gögn á Google-reikningnum þínum. Upplýsingar um greiðslumáta og heimilisföng úr Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.</translation>

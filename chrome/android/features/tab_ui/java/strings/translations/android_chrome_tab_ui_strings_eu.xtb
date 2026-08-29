@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Ezabatu taldea</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elementu inaktibo}other{<ph name="TABS_COUNT_MANY" /> elementu inaktibo}}</translation>
 <translation id="1568067597247500137">Aktibatu webguneko audioa</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Eraman fitxa behera}other{Eraman fitxak behera}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> fitxa taldekatu dira</translation>
 <translation id="1657719826150349398">Eraman fitxa behera</translation>
 <translation id="1670942869417022142">Audioa desaktibatuta</translation>
 <translation id="1697284962337958118">Gehitu hemen:</translation>
 <translation id="1713541401465507417">Itxi fitxa eta talde guztiak</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> fitxa talde ez dago erabilgarri jada}other{<ph name="TAB_GROUPS_COUNT_MANY" /> fitxa talde ez daude erabilgarri jada}}</translation>
+<translation id="1759122978835002237">Eraman fitxa taldea gora</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fitxa taldekatu da</translation>
 <translation id="1844381456014878100">7 egunez inaktibo egon ostean</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Aktibatu webguneko audioa}other{Aktibatu webguneetako audioa}}</translation>
 <translation id="2162620598375156287">Orain, <ph name="CURRENT_PRICE" /> balio du <ph name="SOURCE_WEBSITE" /> webgunean</translation>
+<translation id="2164232689984783657">Eraman fitxa taldea behera</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Kendu fitxa taldetik}other{Kendu fitxak taldetik}}</translation>
 <translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>
 <translation id="2277224997687551299">Editatu taldearen izena</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" fitxa taldea jada ez dago erabilgarri</translation>
 <translation id="7402375256128852434">Gehitu azkenaldiko fitxak</translation>
 <translation id="7452985128687107478">Fitxa taldeak automatikoki gordetzen eta eguneratzen dira zure gailu guztietan</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Eraman fitxa gora}other{Eraman fitxak gora}}</translation>
 <translation id="747459581954555080">Leheneratu guztiak</translation>
 <translation id="7489558427602531799">Eraman fitxa taldea eskuinera</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elementu}other{<ph name="TABS_COUNT_MANY" /> elementu}}</translation>

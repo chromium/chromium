@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Ջնջել խումբը</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ոչ ակտիվ տարր}one{<ph name="TABS_COUNT_MANY" /> ոչ ակտիվ տարր}other{<ph name="TABS_COUNT_MANY" /> ոչ ակտիվ տարր}}</translation>
 <translation id="1568067597247500137">Անջատել կայքի ձայնը</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Տեղափոխել ներդիրը ներքև}one{Տեղափոխել ներդիրը ներքև}other{Տեղափոխել ներդիրները ներքև}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ներդիր խմբավորվեց</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1670942869417022142">Ձայնն անջատված է</translation>
 <translation id="1697284962337958118">Ավելացնել</translation>
 <translation id="1713541401465507417">Փակել բոլոր ներդիրներն ու խմբերը</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ներդիրների խումբ այլևս հասանելի չէ}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ներդիրների խումբ այլևս հասանելի չէ}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ներդիրների խումբ այլևս հասանելի չէ}}</translation>
+<translation id="1759122978835002237">Ներդիրների խումբը տեղափոխել վերև</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ներդիր խմբավորվեց</translation>
 <translation id="1844381456014878100">7 օր հետո ներդիրը կդառնա ոչ ակտիվ</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր ինկոգնիտո ներդիրը հասանելի չի լինի։}one{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր # ինկոգնիտո ներդիր հասանելի չի լինի։}other{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր # ինկոգնիտո ներդիր հասանելի չի լինի։}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Միացնել կայքի ձայնը}one{Միացնել կայքի ձայնը}other{Միացնել կայքերի ձայնը}}</translation>
 <translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
+<translation id="2164232689984783657">Ներդիրների խումբը տեղափոխել ներքև</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Հեռացնել ներդիրը խմբից}one{Հեռացնել ներդիրը խմբից}other{Հեռացնել ներդիրները խմբից}}</translation>
 <translation id="2271452184061378400">Ձեր ներդիրների խմբերը պահվում են այստեղ</translation>
 <translation id="2277224997687551299">Փոփոխել խմբի անունը</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">«<ph name="TAB_GROUP_NAME" />» ներդիրների խումբն այլևս հասանելի չէ</translation>
 <translation id="7402375256128852434">Ավելացնել վերջին ներդիրները</translation>
 <translation id="7452985128687107478">Ներդիրների խմբերն ավտոմատ պահվում և թարմացվում են ձեր բոլոր սարքերում</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Տեղափոխել ներդիրը վերև}one{Տեղափոխել ներդիրը վերև}other{Տեղափոխել ներդիրները վերև}}</translation>
 <translation id="747459581954555080">Վերականգնել բոլորը</translation>
 <translation id="7489558427602531799">Ներդիրների խումբը տեղափոխել աջ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> տարր}one{<ph name="TABS_COUNT_MANY" /> տարր}other{<ph name="TABS_COUNT_MANY" /> տարր}}</translation>

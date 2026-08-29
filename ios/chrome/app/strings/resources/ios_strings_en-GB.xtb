@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">You are about to delete {password_count} passwords and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="1076421457278169141">Code scanned</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
+<translation id="1081948304372277788">Turn off Level Up</translation>
 <translation id="1082554859195167538">Product reviews for you</translation>
 <translation id="1084365883616172403">Facebook post completed.</translation>
 <translation id="108485301461714610">Google Search AI Mode and connected apps</translation>
@@ -51,6 +52,7 @@
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{You checked 1 password}other{You checked # passwords}}</translation>
 <translation id="1161444134753003495">Sign in</translation>
 <translation id="1161663161838091892">Sync tabs and history to continue</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} credit card}other{{count} credit cards}}</translation>
@@ -334,6 +336,7 @@
 <translation id="1993126639825654370">Copy link URL</translation>
 <translation id="199425419756152024">View password</translation>
 <translation id="1996318269856535896">You can still use your existing browsing data on this device. To use it, sign out of your managed account.</translation>
+<translation id="2002971615187574739">Use AI to get more done</translation>
 <translation id="2010008505735295285">Reload</translation>
 <translation id="2012723204723845092">Welcome back!</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
@@ -604,6 +607,7 @@
 <translation id="2918688092312652908">Mark as unread</translation>
 <translation id="2922210239002704889">Go to your homepage or keyboard</translation>
 <translation id="2924940770243654951">Open in new Incognito tab</translation>
+<translation id="2934607171563543600">since completing 'Check your passwords'</translation>
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2953821385349876107">Choose a different Google Account</translation>
 <translation id="2962516096219646456">See all autofill data</translation>
@@ -809,6 +813,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} password is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
 <translation id="3659297405161482746">No payment methods found</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 selected}other{# selected}}</translation>
+<translation id="3668035568083954765">Protect your privacy and stay safe</translation>
 <translation id="3668816008081204991">Reading list is hidden</translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3672283986707092811">Select all</translation>
@@ -1237,6 +1242,7 @@
 <translation id="5056446788882570708">Issues found <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Create image</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Level up your browsing</translation>
 <translation id="5062321486222145940">Install Google Drive</translation>
 <translation id="5067540696062462445">Downloads</translation>
 <translation id="5070314445039955096">'<ph name="SITE_DOMAIN" />' permissions will reset to off when you leave this site</translation>
@@ -1686,6 +1692,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6454311990702999318">Invalid data</translation>
 <translation id="6459411599807878608">Details hidden</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google uses your feature usage data to recommend tasks and update progress. You can turn off Level Up at any time.</translation>
 <translation id="6472069383518492189">You'll find your downloads here</translation>
 <translation id="6476253015009698798">Price tracking isn't available for this page.</translation>
 <translation id="6476284679642588870">Manage payment methods</translation>
@@ -1763,6 +1770,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="667999046851023355">Document</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} option for payment method available above your keyboard.}other{{count} options for payment method available above your keyboard.}}</translation>
 <translation id="6682680306647339111">Reminder removed</translation>
+<translation id="6683022854667115063">Headphones</translation>
 <translation id="6684262542644248484">Sign in to a website</translation>
 <translation id="6685259053455152195">Shortcuts to quickly modify settings and use features from the address bar.</translation>
 <translation id="6689342293888598653">White background colour</translation>
@@ -1925,6 +1933,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7233006041370588369">Select a password to fill.</translation>
 <translation id="723874023660911012">Switch profiles</translation>
 <translation id="7241135764990439166">Incognito mode is unavailable</translation>
+<translation id="7245288034498365666">Get organised and save time</translation>
 <translation id="7253951228444156601">Checking passwords…</translation>
 <translation id="7261217796641151584">Share group</translation>
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>

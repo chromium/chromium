@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Đang chuẩn bị tệp</translation>
 <translation id="1014509239502131234">Đang huỷ kết quả</translation>
 <translation id="1015730422737071372">Cung cấp chi tiết bổ sung</translation>
+<translation id="1016671033299705843">Thêm giấy phép lái xe một cách an toàn</translation>
 <translation id="1019413721762100891">Đang tắt</translation>
 <translation id="1021753677514347426">Sự cố này xảy ra do một chứng chỉ mà bạn hoặc ai đó đã cài đặt trên thiết bị của bạn. Chromium không tin cậy chứng chỉ này vì chứng chỉ được xác định là dùng để chặn và giám sát mạng. Mặc dù có một số trường hợp trong đó hoạt động giám sát là hợp pháp, chẳng hạn như mạng của trường học hay công ty, nhưng Chromium muốn đảm bảo rằng bạn biết điều này, ngay cả khi bạn không thể ngăn chặn. Hoạt động giám sát có thể diễn ra trong bất kỳ trình duyệt hoặc ứng dụng nào có quyền truy cập vào web.</translation>
 <translation id="1024111578869940408">Đôi khi, kẻ tấn công giả mạo các trang web bằng cách thực hiện các thay đổi đối với địa chỉ web mà bạn khó nhận ra.</translation>
@@ -238,6 +239,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1392813880755413602">Bản trình bày OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> không gửi bất kỳ dữ liệu nào.</translation>
 <translation id="1393071644879491291">Những kẻ tấn công trên trang web bạn đã cố truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng. Bạn nên quay lại trang an toàn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Thêm thẻ căn cước một cách an toàn vào Google Wallet</translation>
 <translation id="1398743098754840707">Các trang web bạn thêm vào đây sẽ không được tham khảo để đưa ra câu trả lời, ngay cả khi thẻ đó đang mở. Nếu một trang web mà bạn thêm hiện đang được dùng trong một chuỗi, thì có thể mất đến 30 phút để chuỗi ngừng tham khảo trang web đó.</translation>
 <translation id="1405567553485452995">Xanh lục nhạt</translation>
 <translation id="1406370515365284486">Các phương thức thanh toán của bạn vẫn sẽ được lưu</translation>
@@ -771,6 +773,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2288422996159078444">Mọi thông tin bạn nhập, mọi trang bạn xem hoặc mọi hoạt động khác trên web đều sẽ bị theo dõi. Nội dung trên các trang web có thể bị thay đổi mà bạn không hề hay biết.</translation>
 <translation id="2289385804009217824">Cắt bỏ</translation>
 <translation id="2292556288342944218">Quyền truy cập Internet của bạn bị chặn</translation>
+<translation id="2294150501457238325">Thêm hộ chiếu một cách an toàn</translation>
 <translation id="2295831393422400053">Bật chế độ cài đặt Cải thiện tính năng tìm kiếm và duyệt web để sử dụng tính năng Giúp tôi viết</translation>
 <translation id="2296244067976588032">Khoá truy cập • Chuỗi khoá iCloud</translation>
 <translation id="2296331629987861142">Thanh toán theo hình thức trả góp phù hợp với khả năng chi trả (phải đủ điều kiện, có tính phí)</translation>
@@ -1131,6 +1134,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2931453528659195355">Quản lý thông tin mua sắm</translation>
 <translation id="2933624813161016821">Nhũ nổi</translation>
 <translation id="2935726091208500473">chia sẻ các thẻ của bạn</translation>
+<translation id="2936698630976431647">Chọn trường mã khuyến mãi để tự động điền ưu đãi từ Google Wallet</translation>
 <translation id="293796669683825859">Nhận xét</translation>
 <translation id="2938225289965773019">Mở đường liên kết <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Để hiện con trỏ, hãy chuyển ứng dụng, tải lại trang hoặc quay lại</translation>
@@ -1283,6 +1287,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3190736958609431397">Bỏ theo dõi</translation>
 <translation id="3194737229810486521"><ph name="URL" /> muốn lưu trữ vĩnh viễn dữ liệu trên thiết bị của bạn</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Thêm giấy phép lái xe vào Google Wallet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> trên <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Mã đặt chỗ</translation>
 <translation id="3196902089458890316">Luôn chia sẻ các thẻ có liên quan để nhận được câu trả lời phù hợp hơn?</translation>
@@ -1390,6 +1395,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3380864720620200369">ID ứng dụng khách:</translation>
 <translation id="3383566085871012386">Thứ tự ưu tiên hiện tại</translation>
 <translation id="3383713837163550889">Các tệp trên máy của bạn sẽ bị xoá sau 1 phút</translation>
+<translation id="33837817515081754">Thêm mã số Known Traveler Number vào Google Wallet</translation>
 <translation id="3384522979010096022">Tổ chức của bạn không cho phép bạn xem trang web này</translation>
 <translation id="3391030046425686457">Địa chỉ giao hàng</translation>
 <translation id="3391482648489541560">chỉnh sửa tệp</translation>
@@ -1463,6 +1469,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3517264445792388751">Quản trị viên của bạn đã tắt hệ thống tệp này</translation>
 <translation id="3518941727116570328">Xử lý nhiều đối tượng</translation>
 <translation id="3519670528214225835">Hỏi <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Thêm xe vào Google Wallet</translation>
 <translation id="3525130752944427905">10 x 14 inch</translation>
 <translation id="3525435918300186947">Điều khiển và lập trình lại thiết bị MIDI?</translation>
 <translation id="3527624163937328588">Xoá tệp đính kèm</translation>
@@ -1816,6 +1823,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4103249731201008433">Số sê-ri thiết bị không hợp lệ</translation>
 <translation id="4103592298805904008">Bìa cứng (Một lớp)</translation>
 <translation id="4104702906064390950">Đang lưu thông tin IBAN</translation>
+<translation id="4104995898379951162">Thêm mã số Known Traveler Number một cách an toàn</translation>
 <translation id="4106101218644797743">phần cài đặt đồng bộ hoá</translation>
 <translation id="4106887816571530227">Không cho phép nội dung đã nhúng</translation>
 <translation id="4107047499377819067">Quá trình cài đặt dịch vụ nền VPN đã bắt đầu. Quá trình này có thể mất vài phút.</translation>
@@ -1873,6 +1881,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4195459680867822611">Nút Xem các mẹo khi dùng Chrome, hãy nhấn nút này để tìm hiểu về các tính năng của Chrome</translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4196861286325780578">&amp;Làm lại di chuyển</translation>
+<translation id="4199131764832701740">Thêm hộ chiếu vào Google Wallet</translation>
 <translation id="4202554117186904723">Cuộn thứ năm</translation>
 <translation id="4203769790323223880">Không cho phép truy cập máy ảnh</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kiểm tra tường lửa và cấu hình diệt vi-rút<ph name="END_LINK" /></translation>
@@ -2238,6 +2247,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Cập nhật thẻ căn cước một cách an toàn</translation>
 <translation id="4807098396393229769">Tên trên thẻ</translation>
+<translation id="4808598252755230865">Thêm mã số Known Traveler Number một cách an toàn vào Google Wallet</translation>
 <translation id="4809079943450490359">Hướng dẫn từ quản trị viên thiết bị:</translation>
 <translation id="4811450222531576619">Tìm hiểu về nguồn và chủ đề của trang</translation>
 <translation id="4811696127853690432">Lưu thông tin xe một cách an toàn vào Google Wallet</translation>
@@ -2267,6 +2277,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4855395119669662878">Quản trị viên của bạn sẽ bắt đầu tải các tệp của bạn lên <ph name="CLOUD_PROVIDER" /> vào <ph name="DATE_TIME" />. Hãy duy trì kết nối thiết bị cho đến khi quá trình tải tệp lên hoàn tất. Trong quá trình tải lên, bạn sẽ chỉ có thể đọc các tệp trên máy.</translation>
 <translation id="485902285759009870">Đang xác minh mã...</translation>
 <translation id="4860260582253463350">Để giúp bạn truy cập YouTube, chúng tôi cần xác minh danh tính của bạn. Bạn sẽ sử dụng các chế độ cài đặt mà cha mẹ hoặc người giám hộ thiết lập trong Family Link.</translation>
+<translation id="4861514638281352187">Thêm mã số Redress Number một cách an toàn</translation>
 <translation id="4862642413395066333">Ký Phản hồi OCSP</translation>
 <translation id="4864406669374375262">Đã sao chép chuỗi phiên bản vào bảng nhớ tạm</translation>
 <translation id="486459320933704969">Bạn phải được cha mẹ hoặc người giám hộ cho phép truy cập trang web này</translation>
@@ -2698,6 +2709,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="55635442646131152">Đường viền tài liệu</translation>
 <translation id="5563589142503817291">Để cho phép Chrome dùng thông tin vị trí, hãy cấp quyền sử dụng trong <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Mở thẻ ẩn danh</translation>
+<translation id="5565613377956908865">Thêm thẻ căn cước vào Google Wallet</translation>
 <translation id="5565735124758917034">Đang hoạt động</translation>
 <translation id="5570825185877910964">Bảo vệ tài khoản</translation>
 <translation id="5571083550517324815">Không thể nhận hàng từ địa chỉ này. Chọn một địa chỉ khác.</translation>
@@ -2885,6 +2897,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5895694128043506580">Google Chrome đang cố gắng hiển thị thông tin nhạy cảm</translation>
 <translation id="5898767305816764989">Nút Thích, nhấn phím Enter để gửi phản hồi cho biết bạn thích, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Vàng</translation>
+<translation id="5902204772823742902">Thêm giấy phép lái xe một cách an toàn vào Google Wallet</translation>
 <translation id="5903264686717710770">Tiêu đề:</translation>
 <translation id="5905671155741555195">Địa chỉ nơi làm việc có thể giúp bạn hoàn thành công việc trên các dịch vụ của Google, như đường đi trên Google Maps và kết quả phù hợp hơn trên Tìm kiếm. Bạn có thể chỉnh sửa hoặc xoá địa chỉ <ph name="BEGIN_LINK" />trong Tài khoản Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (được đồng bộ hóa)</translation>
@@ -3304,6 +3317,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6613866251791999074">Tìm hiểu thêm về công cụ tìm kiếm của bạn trong Chrome</translation>
 <translation id="6615297766614333076">Khay xếp chồng 2</translation>
 <translation id="6619496928666593220">Chưa điền IBAN</translation>
+<translation id="662009501953240458">Thêm thông tin xe một cách an toàn vào Google Wallet</translation>
 <translation id="6624427990725312378">Thông tin liên hệ</translation>
 <translation id="6625629379283886932">Dạy tôi cách lập trình</translation>
 <translation id="6628463337424475685">Tìm kiếm trên <ph name="ENGINE" /></translation>
@@ -3674,6 +3688,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7261463765917514051">Thanh toán an toàn nhờ tính năng tự động điền</translation>
 <translation id="7265608370113700582">Địa chỉ chỉ dùng được trên thiết bị này</translation>
 <translation id="7266094331715305887">ứng dụng trên thiết bị</translation>
+<translation id="7268742523336093718">Thêm hộ chiếu một cách an toàn vào Google Wallet</translation>
 <translation id="7269151392155523061">Lối tắt không được giống với từ khoá của công cụ tổng hợp nội dung tìm kiếm do <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> xác định: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Các tệp bạn tải xuống được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: Các tệp này có thể được quét để tìm xem có dữ liệu nhạy cảm hoặc phần mềm độc hại hay không và có thể được lưu trữ dựa trên chính sách của công ty. Quản trị viên cũng có thể thấy các tệp này.</translation>
 <translation id="7275334191706090484">Dấu trang được quản lý</translation>
@@ -4243,6 +4258,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8241707690549784388">Trang mà bạn đang tìm sử dụng thông tin bạn đã nhập vào. Việc quay lại trang đó có thể lặp lại bất kỳ tác vụ nào bạn đã thực hiện. Bạn có muốn tiếp tục không?</translation>
 <translation id="8242426110754782860">Tiếp tục</translation>
 <translation id="824620968958405573">Nhiệm vụ tự động duyệt web</translation>
+<translation id="8247824837030847066">Thêm thẻ căn cước một cách an toàn</translation>
 <translation id="8248406213705193919">Bạn muốn lưu thẻ một cách an toàn?</translation>
 <translation id="8249296373107784235">Hủy bỏ</translation>
 <translation id="8250094606476360498">Địa chỉ này hiện được lưu vào thiết bị này. Để sử dụng địa chỉ này trên các sản phẩm của Google, hãy lưu địa chỉ vào Tài khoản Google <ph name="ACCOUNT" /> của bạn.</translation>
@@ -4663,6 +4679,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9003639428623471314">Phong bì Kahu</translation>
 <translation id="9004367719664099443">Phiên thực tế ảo đang diễn ra</translation>
 <translation id="9005998258318286617">Không tải được tài liệu PDF.</translation>
+<translation id="900686221526305417">Thêm xe một cách an toàn</translation>
 <translation id="9008201768610948239">Bỏ qua</translation>
 <translation id="9010187979699879769">Lập thời gian biểu học tập cho tôi</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Không có}=1{Từ 1 trang web}other{Từ # trang web}}</translation>
@@ -4817,6 +4834,7 @@ Thông tin chi tiết bổ sung:
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh một trang web mới trong Google Sites</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> thành viên đã tham gia nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Bạn đã xin phép truy cập trang web này. Cha mẹ bạn có thể trả lời trong Family Link.</translation>
+<translation id="949484466204182817">Thêm mã số Redress Number vào Google Wallet</translation>
 <translation id="950736567201356821">Đục 3 lỗ trên cùng</translation>
 <translation id="950926967802086924">Khoá truy cập • Trình quản lý mật khẩu của Google</translation>
 <translation id="952165179818196872">Thêm <ph name="PROVIDER" /> để thanh toán mà không cần chuyển đổi ứng dụng</translation>
@@ -4831,6 +4849,7 @@ Thông tin chi tiết bổ sung:
 <translation id="962484866189421427">Nội dung này có thể tìm cách cài đặt ứng dụng lừa đảo giả mạo nội dung khác hoặc thu thập dữ liệu có thể được dùng để theo dõi bạn. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Dựa trên luật tại khu vực của bạn, Chromium sẽ yêu cầu bạn chọn công cụ tìm kiếm mặc định. Đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn và được hiển thị theo thứ tự ngẫu nhiên.</translation>
 <translation id="963837307749850257">Tất cả người dùng</translation>
+<translation id="963988220224168636">Thêm mã số Redress Number một cách an toàn vào Google Wallet</translation>
 <translation id="964050462028070434">Quản lý mật khẩu và khoá đăng nhập…</translation>
 <translation id="964681140808832181">Có, tôi muốn huỷ</translation>
 <translation id="969892804517981540">Phiên bản chính thức</translation>

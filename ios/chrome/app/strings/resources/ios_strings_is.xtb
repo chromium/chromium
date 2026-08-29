@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Fyrningarmánuður</translation>
 <translation id="1150989369772528668">Dagatal</translation>
 <translation id="1158134713295836892">Gemini í Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Þú athugaðir eitt aðgangsorð}one{Þú athugaðir # aðgangsorð}other{Þú athugaðir # aðgangsorð}}</translation>
 <translation id="1161444134753003495">Skrá inn</translation>
 <translation id="1161663161838091892">Samstilltu flipa og feril til að halda áfram</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditkort}one{{count} kreditkort}other{{count} kreditkort}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Afrita vefslóð tengils</translation>
 <translation id="199425419756152024">Sýna aðgangsorð</translation>
 <translation id="1996318269856535896">Þú getur áfram notað núverandi vefskoðunargögn í þessu tæki. Skráðu þig út af stýrða reikningnum þínum til að nota þau.</translation>
+<translation id="2002971615187574739">Notaðu gervigreind til að koma meiru í verk</translation>
 <translation id="2010008505735295285">Endurhlaða</translation>
 <translation id="2012723204723845092">Velkomin(n) aftur!</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Merkja sem ólesið</translation>
 <translation id="2922210239002704889">Farðu á heimaskjáinn eða lyklaborðið</translation>
 <translation id="2924940770243654951">Opna í nýjum huliðsflipa</translation>
+<translation id="2934607171563543600">frá því að „Athuga aðgangsorð“ var lokið</translation>
 <translation id="2952278131021475699">Myndavélarleit Linsu</translation>
 <translation id="2953821385349876107">Veldu annan Google-reikning</translation>
 <translation id="2962516096219646456">Sjá öll gögn sjálfvirkrar útfyllingar</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum, {email}.}one{{count} aðgangsorð er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}other{{count} aðgangsorð eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}}</translation>
 <translation id="3659297405161482746">Engir greiðslumátar fundust</translation>
 <translation id="3662966164093827811">{count,plural, =1{Eitt valið}one{# valið}other{# valin}}</translation>
+<translation id="3668035568083954765">Verndaðu friðhelgi þína og vertu örugg(ur)</translation>
 <translation id="3668816008081204991">Leslisti er falinn</translation>
 <translation id="3670030362669914947">Númer</translation>
 <translation id="3672283986707092811">Velja allt</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Vandamál fundust <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Búa til mynd</translation>
 <translation id="5059136629401106827">Í lagi</translation>
+<translation id="5061202435354361813">Færðu netvafrið upp á næsta stig</translation>
 <translation id="5062321486222145940">Setja upp Google Drive</translation>
 <translation id="5067540696062462445">Niðurhal</translation>
 <translation id="5070314445039955096">Heimildir „<ph name="SITE_DOMAIN" />“ verða endurstilltar á „Slökkt“ þegar þú lokar vefsvæðinu</translation>
@@ -1686,6 +1691,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6454311990702999318">Ógild gögn</translation>
 <translation id="6459411599807878608">Upplýsingar faldar</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google notar gögn um notkun þína á eiginleikum til að mæla með verkefnum og uppfæra framvindu. Þú getur slökkt á „Upp á næsta stig“ hvenær sem er.</translation>
 <translation id="6472069383518492189">Þú finnur niðurhal hér</translation>
 <translation id="6476253015009698798">Verðvöktun er ekki í boði á þessari síðu.</translation>
 <translation id="6476284679642588870">Stjórna greiðslumátum</translation>
@@ -1763,6 +1769,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="667999046851023355">Skjal</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} greiðslumáti tiltækur ofan við lyklaborðið.}one{{count} greiðslumáti tiltækur ofan við lyklaborðið.}other{{count} greiðslumátar tiltækir ofan við lyklaborðið.}}</translation>
 <translation id="6682680306647339111">Áminning fjarlægð</translation>
+<translation id="6683022854667115063">Heyrnartól</translation>
 <translation id="6684262542644248484">Skráðu þig inn á vefsvæði</translation>
 <translation id="6685259053455152195">Flýtileiðir til að breyta stillingum og nota eiginleika á veffangastikunni á fljótlegan hátt.</translation>
 <translation id="6689342293888598653">Hvítur bakgrunnslitur</translation>
@@ -1925,6 +1932,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7233006041370588369">Veldu aðgangsorð til að fylla inn.</translation>
 <translation id="723874023660911012">Skipta um prófíl</translation>
 <translation id="7241135764990439166">Huliðsstilling er ekki í boði</translation>
+<translation id="7245288034498365666">Komdu skipulagi á hlutina og sparaðu tíma</translation>
 <translation id="7253951228444156601">Athugar aðgangsorð…</translation>
 <translation id="7261217796641151584">Deila hópi</translation>
 <translation id="7266578100016339897">Þetta hjálpar þér að halda skipulagi. Þú getur breytt þessu í stillingum hvenær sem er.</translation>

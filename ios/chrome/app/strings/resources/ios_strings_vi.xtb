@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Tháng hết hạn</translation>
 <translation id="1150989369772528668">Lịch</translation>
 <translation id="1158134713295836892">Gemini trong Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Bạn đã kiểm tra 1 mật khẩu}other{Bạn đã kiểm tra # mật khẩu}}</translation>
 <translation id="1161444134753003495">Đăng nhập</translation>
 <translation id="1161663161838091892">Đồng bộ hoá các thẻ và nhật ký để tiếp tục</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} thẻ tín dụng}other{{count} thẻ tín dụng}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Sao chép URL đường liên kết</translation>
 <translation id="199425419756152024">Xem mật khẩu</translation>
 <translation id="1996318269856535896">Bạn vẫn có thể sử dụng dữ liệu duyệt web hiện có trên thiết bị này. Để sử dụng dữ liệu đó, hãy đăng xuất khỏi tài khoản được quản lý.</translation>
+<translation id="2002971615187574739">Dùng AI để làm được nhiều việc hơn</translation>
 <translation id="2010008505735295285">Tải lại</translation>
 <translation id="2012723204723845092">Chào mừng bạn quay lại!</translation>
 <translation id="2015722694326466240">Để xem mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Đánh dấu là chưa đọc</translation>
 <translation id="2922210239002704889">Chuyển đến trang chủ hoặc bàn phím</translation>
 <translation id="2924940770243654951">Mở trong thẻ Ẩn danh mới</translation>
+<translation id="2934607171563543600">kể từ khi hoàn tất bước "Kiểm tra mật khẩu"</translation>
 <translation id="2952278131021475699">Tìm kiếm bằng máy ảnh thông qua Ống kính</translation>
 <translation id="2953821385349876107">Chọn một Tài khoản Google khác</translation>
 <translation id="2962516096219646456">Xem tất cả dữ liệu tự động điền</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu trong Tài khoản Google {email} của bạn.}other{{count} mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng những mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu trong Tài khoản Google {email} của bạn.}}</translation>
 <translation id="3659297405161482746">Không tìm thấy phương thức thanh toán nào</translation>
 <translation id="3662966164093827811">{count,plural, =1{Đã chọn 1}other{Đã chọn #}}</translation>
+<translation id="3668035568083954765">Bảo vệ quyền riêng tư và đảm bảo an toàn cho bạn</translation>
 <translation id="3668816008081204991">Danh sách đọc đang bị ẩn</translation>
 <translation id="3670030362669914947">Số</translation>
 <translation id="3672283986707092811">Chọn tất cả</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Đã phát hiện thấy sự cố <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Tạo hình ảnh</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Nâng tầm trải nghiệm duyệt web</translation>
 <translation id="5062321486222145940">Cài đặt Google Drive</translation>
 <translation id="5067540696062462445">Tệp đã tải xuống</translation>
 <translation id="5070314445039955096">Các quyền của "<ph name="SITE_DOMAIN" />" sẽ được đặt lại thành tắt khi bạn rời khỏi trang web này</translation>
@@ -1686,6 +1691,7 @@
 <translation id="6454311990702999318">Dữ liệu không hợp lệ</translation>
 <translation id="6459411599807878608">Đã ẩn thông tin chi tiết</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google sử dụng dữ liệu sử dụng tính năng của bạn để đề xuất các nhiệm vụ và cập nhật tiến trình. Bạn có thể tắt Level Up bất cứ lúc nào.</translation>
 <translation id="6472069383518492189">Bạn sẽ thấy tệp đã tải xuống ở đây</translation>
 <translation id="6476253015009698798">Tính năng theo dõi giá không hoạt động trên trang này.</translation>
 <translation id="6476284679642588870">Quản lý phương thức thanh toán</translation>
@@ -1763,6 +1769,7 @@
 <translation id="667999046851023355">Tài liệu</translation>
 <translation id="6681791404926413601">{count,plural, =1{Có {count} phương thức thanh toán xuất hiện phía trên bàn phím.}other{Có {count} phương thức thanh toán xuất hiện phía trên bàn phím.}}</translation>
 <translation id="6682680306647339111">Đã xoá lời nhắc</translation>
+<translation id="6683022854667115063">Tai nghe</translation>
 <translation id="6684262542644248484">Đăng nhập vào một trang web</translation>
 <translation id="6685259053455152195">Phím tắt cho phép bạn nhanh chóng sửa đổi chế độ cài đặt và sử dụng các tính năng từ thanh địa chỉ.</translation>
 <translation id="6689342293888598653">Màu nền trắng</translation>
@@ -1925,6 +1932,7 @@
 <translation id="7233006041370588369">Chọn mật khẩu cần điền.</translation>
 <translation id="723874023660911012">Chuyển đổi Hồ sơ</translation>
 <translation id="7241135764990439166">Không dùng được chế độ ẩn danh</translation>
+<translation id="7245288034498365666">Sắp xếp khoa học và tiết kiệm thời gian</translation>
 <translation id="7253951228444156601">Đang kiểm tra mật khẩu…</translation>
 <translation id="7261217796641151584">Chia sẻ nhóm</translation>
 <translation id="7266578100016339897">Chế độ này sẽ giúp bạn sắp xếp mọi thứ hợp lý. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần cài đặt.</translation>

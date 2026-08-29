@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Топту жок кылуу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> жигерсиз өтмөк}other{<ph name="TABS_COUNT_MANY" /> жигерсиз өтмөк}}</translation>
 <translation id="1568067597247500137">Сайттын үнүн өчүрүү</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Өтмөктү ылдый жылдыруу}other{Өтмөктөрдү ылдый жылдыруу}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> өтмөк топтолду</translation>
 <translation id="1657719826150349398">Өтмөктү төмөн жылдыруу</translation>
 <translation id="1670942869417022142">Аудионун үнү басылды</translation>
 <translation id="1697284962337958118">Төмөнкүгө кошуу:</translation>
 <translation id="1713541401465507417">Бардык өтмөктөрдү жана топторду жабуу</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> өтмөктөр тобу мындан ары жеткиликсиз}other{<ph name="TAB_GROUPS_COUNT_MANY" /> өтмөктөр тобу мындан ары жеткиликсиз}}</translation>
+<translation id="1759122978835002237">Өтмөктөр тобун өйдө жылдыруу</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Кеңири маалымат<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> өтмөк топтолду</translation>
 <translation id="1844381456014878100">7 күндөн бери жигерсиз болсо</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. Жашыруун өтмөк жеткиликсиз болот.}other{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. # жашыруун өтмөк жеткиликсиз болот.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Сайттын үнүн чыгаруу}other{Сайттардын үнүн чыгаруу}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
+<translation id="2164232689984783657">Өтмөктөр тобун ылдый жылдыруу</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Өтмөктү топтон ажыратуу}other{Өтмөктөрдү топтон ажыратуу}}</translation>
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" өтмөктөр тобу мындан ары жеткиликсиз</translation>
 <translation id="7402375256128852434">Акыркы өтмөктөрдү кошуу</translation>
 <translation id="7452985128687107478">Өтмөк топтору автоматтык түрдө сакталып, бардык түзмөктөрдө жаңыртылат</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Өтмөктү өйдө жылдыруу}other{Өтмөктөрдү өйдө жылдыруу}}</translation>
 <translation id="747459581954555080">Баарын калыбына келтирүү</translation>
 <translation id="7489558427602531799">Өтмөктөр тобун оңго жылдыруу</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> нерсе}other{<ph name="TABS_COUNT_MANY" /> нерсе}}</translation>

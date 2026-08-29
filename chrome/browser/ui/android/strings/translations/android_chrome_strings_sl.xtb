@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promocija obvestil z nasveti je zaprta</translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1045899828449635435">Želite tudi izbrisati podatke s teh mest?</translation>
+<translation id="1049461303780085993">Preizkusite Geminija v Chromu in prejmite odgovore, ključne poudarke in drugo</translation>
 <translation id="1049743911850919806">Anonimni način</translation>
 <translation id="1052842760770519282">Nekatera gesla niso dostopna</translation>
 <translation id="1057623954802068161">Pomik na vrh strani</translation>
@@ -1117,6 +1118,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5465437530117042974">Spremembe razdelka na dnu zaslona za zavihek so zaprte.</translation>
 <translation id="5469852975082458401">Po straneh se lahko premikate s kazalcem besedila. Pritisnite F7 za izklop.</translation>
 <translation id="5471273988133666918">Zavihka <ph name="TAB_TITLE" /> ni mogoče premakniti</translation>
+<translation id="5478718673237429220">Potreben je dostop do vnosne naprave</translation>
 <translation id="548278423535722844">Odpiranje v aplikaciji z zemljevidi</translation>
 <translation id="5489222148748465285">Naj Chrome še naprej išče?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, večkrat izbrani zavihek s sliko v sliki</translation>
@@ -1964,6 +1966,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="867914734596684889">Prikaz ali skrivanje vrstice z zaznamki</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, izbrani zavihek</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> potrebuje dovoljenje za dostop do vnosnih naprav za to spletno mesto. To nastavitev lahko pozneje spremenite v Nastavitve &gt; Aplikacije &gt; Posebni dostop aplikacij.</translation>
 <translation id="8696297579102085705">Pošlji v napravo</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
 <translation id="8700565880437506364">Predstavljamo Geminija v Chromu</translation>

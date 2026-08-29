@@ -2500,6 +2500,7 @@
 <translation id="2926708162326352948">थिम अपडेट गरी अपलोड गरिएको फोटो भएको थिम लागू गरिएको छ</translation>
 <translation id="2927017729816812676">केस भण्डारण</translation>
 <translation id="2928030851119977280">छनौट सेभ गरियो। तपाईंले Google का अन्य सेवाहरूमा साइन इन गर्दा तपाईंले छनौट गरेको सेटिङ लागू हुने छ।</translation>
+<translation id="2928361271496576301">हटकी स्वीकार गर्नुहोस्</translation>
 <translation id="2928795416630981206">तपाईंको क्यामेराको स्थिति ट्र्याक गर्न अनुमति दिइएका साइटहरू</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ले एउटा साइटलाई दिइएका अनुमति रद्द गरेको छ}other{Chrome ले {NUM_SITES} वटा साइटलाई दिइएका अनुमति रद्द गरेको छ}}</translation>
 <translation id="2931157624143513983">छाप्न मिल्ने क्षेत्रमा ठ्याक्कै अट्ने बनाउनुहोस्</translation>
@@ -2590,6 +2591,7 @@
 <translation id="2992754757708650257">साइट छाड्ने र कार्य अन्त्य गर्ने हो?</translation>
 <translation id="2992931425024192067">नोटिफिकेसनका सबै कन्टेन्ट देखाउनुहोस्</translation>
 <translation id="2993517869960930405">एप जानकारी...</translation>
+<translation id="2994495699095559601">अझ सान्दर्भिक जवाफहरू दिन Google ले सेयर गरिएका ट्याबमा भएको कन्टेन्ट र URL प्रयोग गर्छ। तपाईंको हालको ट्याब नयाँ च्याटहरूमा सेयर गरिन्छ। तपाईं जुनसुकै बेला यो सेटिङ परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="2994804273850542871">श्रेणी ४: अल्ट्रा</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो समूह एक्सेस गर्न चाहनुहुन्न भने यो समूह छाड्नुहोस्}other{ट्याबहरू पछि हाल्न यी समूहहरू राखिराख्नुहोस् वा तपाईं अबदेखि यी समूहहरू एक्सेस गर्न चाहनुहुन्न भने यी समूहहरू छाड्नुहोस्}}</translation>
 <translation id="2996071302059856125">AI ले तपाईंलाई कसरी अझ राम्रो अनुभव प्रदान गर्छ र Chrome ले तपाईंलाई के कस्ता कन्ट्रोलहरू उपलब्ध गराएका छन् भन्ने कुराका बारेमा थप जान्नुहोस्</translation>
@@ -3106,6 +3108,7 @@
 <translation id="3394850431319394743">संरक्षित सामग्री प्ले गर्न आइडेन्टिफायर प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="339722927132407568">भिडियो अड्किन्छ</translation>
 <translation id="3399432415385675819">सूचनाहरू प्राप्त गर्ने सुविधालाई असक्षम पारिनेछ</translation>
+<translation id="3400036602686830681">तपाईंको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ अहिले नै पासवर्ड परिवर्तन गर्नुहोस् वा <ph name="BEGIN_LINK" />पासवर्ड जाँच<ph name="END_LINK" />मा गई सबै समस्याहरूको समीक्षा गर्नुहोस्।</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - अन्तर्गर्भित</translation>
 <translation id="3401484564516348917">तपाईंका ब्राउजर, OS, डिभाइस, इन्स्टल गरिएका सफ्टवेयर, रेजिस्ट्री मान र फाइलहरूसम्बन्धी जानकारी पढ्नुहोस्</translation>
 <translation id="3402255108239926910">कुनै अवतार रोज्नुहोस्</translation>
@@ -3534,6 +3537,7 @@
 <translation id="3711945201266135623">प्रिन्ट सर्भरमा <ph name="NUM_PRINTERS" /> प्रिन्टरहरू फेला परे</translation>
 <translation id="3712143870407382523">यो साइडमा राख्ने विन्डो चयन गर्नुहोस्</translation>
 <translation id="3712897371525859903">यस रूपमा &amp;पृष्ठ बचत गर्नुहोस्...</translation>
+<translation id="3712966523643024813">नयाँ के छ</translation>
 <translation id="371300529209814631">पछाडि/अगाडि जानुहोस्</translation>
 <translation id="371302509916403935">अधोरेखाङ्कन</translation>
 <translation id="3713047097299026954">यो सुरक्षा साँचोमा साइन इन गर्न चाहिने कुनै पनि डेटा छैन</translation>
@@ -3697,6 +3701,7 @@
 <translation id="3812525830114410218">खराब प्रमाणपत्र</translation>
 <translation id="3813296892522778813">आफूले खोजी गरेका वस्तुहरू भेट्टाउनु भएन भने <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome सम्बन्धी मद्दत<ph name="END_LINK_CHROMIUM" /> मा जानुहोस्</translation>
 <translation id="3813358687923336574">पेज अनुवाद गर्न र द्रुत जवाफ देखाउन प्रयोग गरिने भाषा</translation>
+<translation id="381485723922188688">Option</translation>
 <translation id="3815668647912194650">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो समूह एक्सेस गर्न चाहनुहुन्न भने यो समूह छाड्नुहोस्।</translation>
 <translation id="3816118180265633665">Chrome का रङ्गहरू</translation>
 <translation id="3817524650114746564">आफ्नो कम्प्युटरको प्रोक्सी सेटिङ खोल्नुहोस्</translation>
@@ -4811,6 +4816,7 @@
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4699357559218762027">(स्वत: सुरुवात गरिएको)</translation>
 <translation id="4699473989647132421">तट रेखा</translation>
+<translation id="4700734033170984447">Gemini प्रयोग गरी यो पेजको सारांश बनाउनुहोस्</translation>
 <translation id="4701335814944566468">हिजो हेरिएको</translation>
 <translation id="4705082603944362042">{MIN_PIN_LENGTH,plural, =1{आफ्नो नयाँ PIN हाल्नुहोस्। PIN कम्तीमा एक वर्णको हुनु पर्छ र यसमा अक्षर, अङ्क तथा अन्य वर्णहरू समावेश गर्न सकिन्छ।}other{आफ्नो नयाँ PIN हाल्नुहोस्। PIN कम्तीमा # वर्णको हुनु पर्छ र यसमा अक्षर, अङ्क तथा अन्य वर्णहरू समावेश गर्न सकिन्छ।}}</translation>
 <translation id="470644585772471629">कलर इन्भर्सन</translation>
@@ -4895,6 +4901,7 @@
 <translation id="4770119228883592393">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न ⌘ + Option + डाउन एरो थिच्नुहोस्</translation>
 <translation id="4772914216048388646">व्यवस्थित</translation>
 <translation id="4773122030389014189">"<ph name="GROUP_NAME" />" ट्याब समूह सेयर गर्नुहोस्</translation>
+<translation id="4773299976671772492">रोकियो</translation>
 <translation id="477548766361111120">एक्स्टेन्सनलाई यो साइट रिड गर्न र परिवर्तन गर्न अनुमति दिनुहोस्</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> मेटाइएको छ</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> कनेक्ट गरिएको छ</translation>
@@ -5593,6 +5600,7 @@
 <translation id="5298315677001348398">तपाईं जारी राख्न र यो सफ्टवेयरलाई आफ्नो डिभाइसमा परिवर्तन गर्न दिन चाहनुहुन्छ?</translation>
 <translation id="5299109548848736476">ट्रयाक नगर्नुहोस्</translation>
 <translation id="5299558715747014286">आफ्ना ट्याब समूहहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5300667117276823109">Gemini सँग तपाईंले गरेका कुराकानी र <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace मा भएको तपाईंको जानकारी<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />को समीक्षा गरिने छैन वा जेनेरेटिभ AI मोडेलहरूको गुणस्तर सुधार्ने प्रयोजनका लागि तिनको प्रयोग गरिने छैन। Gemini AI हो र यसले गलत जानकारी दिन सक्छ।</translation>
 <translation id="5301398529256275325">“यो पेजको सारांश बनाउनुहोस्” जस्तो प्रश्न वा आफ्नै प्रश्न सोधी हेर्नुहोस्।</translation>
 <translation id="5301954838959518834">ठिक छ, बुझेँ</translation>
 <translation id="5302032366299160685">फेरि प्रयास गर्नुअघि फाइल नखुलुन्जेल कुर्नुहोस्</translation>
@@ -5991,6 +5999,7 @@
 <translation id="5625225435499354052">Google Pay मा गई जानकारी परिवर्तन गर्नुहोस्</translation>
 <translation id="5627832140542566187">डिस्प्लेको झुकाव</translation>
 <translation id="5628434207686266338">डिभाइसको पासवर्ड सेट गर्नुहोस्</translation>
+<translation id="5628652442614339066">यो सर्टकट प्रयोग गरी सजिलैसँग खोल्नुहोस्</translation>
 <translation id="562935524653278697">तपाईंको प्रशासकले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूको सिंक गर्ने सेवालाई असक्षम पार्नुभएको छ।</translation>
 <translation id="5631017369956619646">CPU प्रयोग</translation>
 <translation id="5631272057151918206">तपाईंले यसो गर्नुभयो भने तपाईंका अफलाइन फाइलहरूले ओगटेका बढीमा <ph name="OFFLINE_STORAGE_SIZE" /> ठाउँ खाली गरिने छ। केही फाइलहरू भने अझै पनि अफलाइन उपलब्ध हुने छन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -6350,6 +6359,7 @@
 <translation id="5926936390113611560">सबै प्रोफाइलहरू खोल्नुहोस्</translation>
 <translation id="592880897588170157">PDF फाइलहरूलाई Chrome मा स्वतः खोल्नुको सट्टा डाउनलोड गर्नुहोस्</translation>
 <translation id="5930567261594625340">रात्रि आकाश</translation>
+<translation id="5931292892421325763">बुकमार्क म्यानेजर &amp;खोल्नुहोस्</translation>
 <translation id="5932194499818201827">इन्कोग्निटो विन्डोमा लिंक खोल्नुहोस्</translation>
 <translation id="5932224571077948991">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> को USB यन्त्र</translation>
@@ -6453,6 +6463,7 @@
 <translation id="6003143259071779217">मोबाइल नेटवर्कको eSIM प्रोफाइल हटाउनुहोस्</translation>
 <translation id="6003479444341796444">अहिले टाइटल बार देखाइँदै छ</translation>
 <translation id="6003582434972667631">तपाईंको सङ्गठनले थिम व्यवस्थापन गर्छ</translation>
+<translation id="6005010326905893430">किबोर्टको सर्टकट चाहेअनुसार परिवर्तन गर्नुहोस्</translation>
 <translation id="6005045517426700202">इँटाको पर्खाल</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007053304250788613">मिरर मोडमा एउटा मात्र डिस्प्ले समावेश नगर्न सकिन्छ</translation>
@@ -6827,6 +6838,7 @@
 <translation id="6305627295927385295">निम्न सामग्री मेटाउनुहोस्:</translation>
 <translation id="6305702903308659374">ChromeVox बोलिरहेको भए तापनि अडियो कम आवाजमा बजाउनुहोस्</translation>
 <translation id="6307268917612054609">क्यामेरा प्रयोग गर्ने अनुमति दिइएका एप तथा वेबसाइटका साथै सिस्टमका सेवाहरू तपाईंको डिभाइसको क्यामेरा प्रयोग गर्न सक्छन्</translation>
+<translation id="6307884029666635765">&amp;QR कोड बनाउनुहोस्</translation>
 <translation id="6307990684951724544">प्रणाली व्यस्त</translation>
 <translation id="6308778163698400658">टुलबारमा हाल्नुहोस्</translation>
 <translation id="6308937455967653460">लि&amp;ङ्कलाई यसको रूपमा बचत गर्नुहोस्...</translation>
@@ -7382,6 +7394,7 @@
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> रोकियो</translation>
 <translation id="6743841972744298686">सिंकसम्बन्धी सेटिङहरू</translation>
 <translation id="6744397361782514824">बायाँ भ्यूसँग अदलबदल गर्नुहोस्</translation>
+<translation id="6745569635660688171">क्षेत्र चयन गरी स्क्रिनसट लिने सुविधा</translation>
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> को पासवर्ड देखाउनुहोस्</translation>
 <translation id="6746834324024491643">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
@@ -7458,6 +7471,7 @@
 <translation id="6801435275744557998">टचस्क्रिनलाई क्यालिब्रेट गर्नुहोस्</translation>
 <translation id="6801920212017470190">आफूले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा जुनसुकै बेला जहाँसुकै हुँदा पनि जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
+<translation id="6802825994120702390">कुनै क्षेत्र वा आफ्नो पूरै स्क्रिन चयन गरेर आफ्नो प्रश्नमा सन्दर्भ हाल्नुहोस्</translation>
 <translation id="6803766346203101854">यो साइटलाई तपाईंको डिभाइसमा डेटा सेभ गर्ने अनुमति दिइएको छ।</translation>
 <translation id="6805236548654699520">आफ्ना सेटिङ रिसेट गरी सुरक्षित डिफल्ट सेटिङ बनाई अनावश्यक पप-अप हटाउनुहोस्, नेटवर्कसम्बन्धी समस्या समाधान गर्नुहोस् र अन्य कार्यहरू गर्नुहोस्।</translation>
 <translation id="6805478749741295868">यो सुविधा AI को परीक्षणको चरणमा रहेको एउटा सुविधा हो र यसले सधैँ सही जवाफ नदिन सक्छ।</translation>
@@ -8726,6 +8740,7 @@
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> का लागि सर्टकट <ph name="SHORTCUT" /></translation>
 <translation id="777852709704682967">&amp;बुकमार्क म्यानेजर खोल्नुहोस्</translation>
 <translation id="7779840061887151693">डिस्प्ले</translation>
+<translation id="7780716468751073938">Gemini सँग तपाईंले गरेका कुराकानी र <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace मा भएको तपाईंको जानकारी<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />को समीक्षा गरिने छैन वा जेनेरेटिभ AI मोडेलहरूको गुणस्तर सुधार्ने प्रयोजनका लागि तिनको प्रयोग गरिने छैन। Gemini AI हो र यसले गलत जानकारी दिन सक्छ। केही कन्टेन्ट सबैका लागि उपयुक्त नहुन सक्छन्।</translation>
 <translation id="7782102568078991263">गुगलबाट कुनै थप सुझाव छैन</translation>
 <translation id="7782717250816686129">लग इन स्क्रिनमा निरन्तर डेटा भण्डारण गर्नुहोस् र सत्रमा प्रमाणपत्रहरू प्रविष्टि होस्।</translation>
 <translation id="7784020347632229094">किबोर्ड सर्टकटका बारेमा थप जान्नुहोस्</translation>
@@ -8789,6 +8804,7 @@
 <translation id="7833720883933317473">सुरक्षित गरिएका आफू अनुकूलका शब्दहरू यहाँ देखापर्ने छन्</translation>
 <translation id="7834832693620032149">अडियो सेयर गर्न यसको साटो ट्याब वा विन्डो सेयर गर्नुहोस्</translation>
 <translation id="7836850009646241041">आफ्नो सुरक्षा साँचो फेरि छोई हेर्नुहोस्</translation>
+<translation id="7837994938322273689">विन्डोको नाम राख्नुहोस्...</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> बाट प्राप्त गरिएको '<ph name="NETWORK_NAME" />' को पासवर्ड सेभ गर्न सकिएन</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /><ph name="DEVICE_NAME" /> मा पठाइएको छ}other{<ph name="ATTACHMENTS" /><ph name="DEVICE_NAME" /> मा पठाइएको छ}}</translation>
 <translation id="7839696104613959439">नेटवर्क चयन गर्ने कार्य रेन्डर गर्नुहोस्</translation>
@@ -10405,6 +10421,7 @@
 <translation id="9071664234353284876">प्रमाणीकरण गरिएको छैन</translation>
 <translation id="9072220108592671115">इन्स्टल गरिएको संस्करण <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">तपाईंले Gemini लाई तपाईंका लागि कार्यहरू पूरा गर्ने प्रयोजनका लागि यी साइटहरूमा साइन इन गर्ने अनुमति दिनुभएको छ</translation>
+<translation id="9074190188883314952">आफ्नो स्क्रिनमा देखिएका कुरा सेयर गर्न लेन्स बटन प्रयोग गर्नुहोस्</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{एउटा कोर}other{{CORE_COUNT} वटा कोर}}</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9075413375877487220">परिष्कृत Safe Browsing का अनुसार यो एक्स्टेन्सन सुरक्षित छैन।</translation>
@@ -10557,6 +10574,7 @@
 <translation id="9195969368671142407">तपाईंको सङ्गठनले तपाईंको Google खातामा सेभ गर्न पाइने कुराहरूको सीमा तोकेका अवस्थामा तपाईं ट्याब समूह सेयर गर्न वा तिनमा सामेल हुन पाउनुहुन्न</translation>
 <translation id="9197456336762295195">google.com को पासकी भएको डिभाइसको क्यामेरा प्रयोग गरी यो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="919840898042157087">स्थिर चाल</translation>
+<translation id="9198797990125364460">जुनसुकै ठाउँबाट Google लाई सोध्नुहोस्</translation>
 <translation id="9199503643457729322">गोपनीयतासम्बन्धी गाइडबाट बाहिरिन क्लिक गर्नुहोस्।</translation>
 <translation id="9199695835892108985">सिरियल पोर्टलाई दिइएका सबै अनुमति रिसेट गर्ने हो?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू परिवर्तन गर्न सक्ने छ</translation>

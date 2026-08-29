@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">ລຶບກຸ່ມ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້}other{<ph name="TABS_COUNT_MANY" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້}}</translation>
 <translation id="1568067597247500137">ປິດເວັບໄຊ</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ຍ້າຍແຖບລົງ}other{ຍ້າຍແຖບລົງ}}</translation>
 <translation id="1645759014353344461">ຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ</translation>
 <translation id="1657719826150349398">ຍ້າຍແຖບລົງ</translation>
 <translation id="1670942869417022142">ປິດສຽງແລ້ວ</translation>
 <translation id="1697284962337958118">ເພີ່ມໃສ່</translation>
 <translation id="1713541401465507417">ປິດແຖບ ແລະ ກຸ່ມທັງໝົດ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{ກຸ່ມແຖບ <ph name="TAB_GROUPS_COUNT_ONE" /> ລາຍການບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ}other{ກຸ່ມແຖບ <ph name="TAB_GROUPS_COUNT_MANY" /> ລາຍການບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ}}</translation>
+<translation id="1759122978835002237">ຍ້າຍກຸ່ມແຖບຂຶ້ນ</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">ຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບແລ້ວ</translation>
 <translation id="1844381456014878100">ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 7 ມື້</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}other{ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ # ແຖບຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{ເຊົາປິດສຽງເວັບໄຊ}other{ເຊົາປິດສຽງເວັບໄຊ}}</translation>
 <translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">ຍ້າຍກຸ່ມແຖບລົງ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ຍົກເລີກການຈັດກຸ່ມແຖບ}other{ຍົກເລີກການຈັດກຸ່ມແຖບ}}</translation>
 <translation id="2271452184061378400">ລະບົບຈະບັນທຶກກຸ່ມແຖບຂອງທ່ານໄວ້ບ່ອນນີ້</translation>
 <translation id="2277224997687551299">ແກ້ໄຂຊື່ກຸ່ມ</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">ກຸ່ມແຖບ "<ph name="TAB_GROUP_NAME" />" ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="7402375256128852434">ເພີ່ມແຖບຫຼ້າສຸດ</translation>
 <translation id="7452985128687107478">ກຸ່ມແຖບຈະບັນທຶກ ແລະ ອັບເດດໃນທຸກອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ຍ້າຍແຖບຂຶ້ນ}other{ຍ້າຍແຖບຂຶ້ນ}}</translation>
 <translation id="747459581954555080">ກູ້ຄືນທັງໝົດ</translation>
 <translation id="7489558427602531799">ຍ້າຍກຸ່ມແຖບໄປທາງຂວາ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລາຍການ}other{<ph name="TABS_COUNT_MANY" /> ລາຍການ}}</translation>

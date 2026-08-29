@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">میعاد کے اختتام کا مہینہ</translation>
 <translation id="1150989369772528668">کیلنڈر</translation>
 <translation id="1158134713295836892">‏‫Chrome میں Gemini</translation>
+<translation id="1159484622358475170">{count,plural, =1{آپ نے 1 پاس ورڈ چیک کیا}other{آپ نے # پاس ورڈز چیک کیے}}</translation>
 <translation id="1161444134753003495">سائن ان کریں</translation>
 <translation id="1161663161838091892">جاری رکھنے کے لیے ٹیبز اور سرگزشت کو سنک کریں</translation>
 <translation id="1162834932051545794">{count,plural, =1{‫{count} کریڈٹ کارڈ}other{‫{count} کریڈٹ کارڈز}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">‏لنک کا URL کاپی کریں</translation>
 <translation id="199425419756152024">پاس ورڈ دیکھیں</translation>
 <translation id="1996318269856535896">آپ اب بھی اس آلے پر اپنا موجودہ براؤزنگ ڈیٹا استعمال کر سکتے ہیں۔ اسے استعمال کرنے کے لیے، اپنے نظم کردہ اکاؤنٹ سے سائن آؤٹ کریں۔</translation>
+<translation id="2002971615187574739">‏‫AI کی مدد سے زیادہ کام کریں</translation>
 <translation id="2010008505735295285">دوبارہ لوڈ کریں</translation>
 <translation id="2012723204723845092">پھر سے خوش آمدید!</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہیے۔</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">بغیر پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="2922210239002704889">اپنے ہوم پیج یا کی بورڈ پر جائیں</translation>
 <translation id="2924940770243654951">نئے پوشیدگی ٹیب میں کھولیں</translation>
+<translation id="2934607171563543600">"اپنے پاس ورڈز چیک کریں" مکمل کرنے کے بعد سے</translation>
 <translation id="2952278131021475699">لینز کیمرا کے ذریعے تلاش</translation>
 <translation id="2953821385349876107">‏ایک مختلف Google اکاؤنٹ منتخب کریں</translation>
 <translation id="2962516096219646456">تمام آٹو فل ڈیٹا دیکھیں</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{‏{count} پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {email} میں محفوظ کریں۔}other{‏{count} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="3659297405161482746">ادائیگی کا کوئی طریقہ نہیں ملا</translation>
 <translation id="3662966164093827811">{count,plural, =1{‫1 کو منتخب کیا گیا}other{‫# کو منتخب کیا گیا}}</translation>
+<translation id="3668035568083954765">اپنی رازداری کی حفاظت کریں اور محفوظ رہیں</translation>
 <translation id="3668816008081204991">پڑھنے کی فہرست چھپی ہوئی ہے</translation>
 <translation id="3670030362669914947">نمبر</translation>
 <translation id="3672283986707092811">سبھی منتخب کریں</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> مسائل کا پتا چلا۔</translation>
 <translation id="5056587122125565772">تصویر تخلیق کریں</translation>
 <translation id="5059136629401106827">ٹھیک ہے</translation>
+<translation id="5061202435354361813">اپنی براؤزنگ کے لیول میں اضافہ کریں</translation>
 <translation id="5062321486222145940">‏Google Drive انسٹال کریں</translation>
 <translation id="5067540696062462445">ڈاؤن لوڈز</translation>
 <translation id="5070314445039955096">آپ کے اس سائٹ کو چھوڑنے پر "<ph name="SITE_DOMAIN" />" سے متعلق اجازتیں آف پر ری سیٹ ہو جائیں گی</translation>
@@ -1686,6 +1691,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6454311990702999318">غلط ڈیٹا</translation>
 <translation id="6459411599807878608">تفصیلات پوشیدہ ہیں</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">‏‫Google ٹاسکس کی تجویز کرنے اور پیش رفت کو اپ ڈیٹ کرنے کے لیے آپ کی خصوصیت کے استعمال کا ڈیٹا استعمال کرتا ہے۔ آپ کسی بھی وقت 'لیول میں اضافہ' کو آف کر سکتے ہیں۔</translation>
 <translation id="6472069383518492189">آپ کو اپنے ڈاؤن لوڈز یہاں ملیں گے</translation>
 <translation id="6476253015009698798">اس صفحے کے لیے قیمت کو ٹریک کرنے کی سہولت دستیاب نہیں ہے۔</translation>
 <translation id="6476284679642588870">ادائیگی کے طریقوں کا نظم کریں</translation>
@@ -1763,6 +1769,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="667999046851023355">دستاویز</translation>
 <translation id="6681791404926413601">{count,plural, =1{آپ کے کی بورڈ کے اوپر ادائیگی کے طریقے کے لیے {count} اختیار دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر ادائیگی کے طریقے کے لیے {count} اختیارات دستیاب ہیں۔}}</translation>
 <translation id="6682680306647339111">یاد دہانی ہٹا دی گئی</translation>
+<translation id="6683022854667115063">ہیڈ فونز</translation>
 <translation id="6684262542644248484">ویب سائٹ میں سائن ان کریں</translation>
 <translation id="6685259053455152195">ترتیبات میں تیزی سے ترمیم کرنے اور ایڈریس بار سے خصوصیات کو استعمال کرنے کے لیے شارٹ کٹس۔</translation>
 <translation id="6689342293888598653">سفید پس منظر کا رنگ</translation>
@@ -1925,6 +1932,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7233006041370588369">پُر کرنے کیلئے پاس ورڈ منتخب کریں۔</translation>
 <translation id="723874023660911012">پروفائلز سوئچ کریں</translation>
 <translation id="7241135764990439166">پوشیدگی وضع دستیاب نہیں ہے</translation>
+<translation id="7245288034498365666">منظم ہو جائیں اور وقت بچائیں</translation>
 <translation id="7253951228444156601">پاسورڈز چیک ہو رہے ہیں…</translation>
 <translation id="7261217796641151584">گروپ کا اشتراک کریں</translation>
 <translation id="7266578100016339897">اس سے آپ کو منظم رہنے میں مدد ملتی ہے۔ آپ کسی بھی وقت ترتیبات میں اسے تبدیل کر سکتے ہیں۔</translation>

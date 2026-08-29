@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ปิดการโปรโมตการแจ้งเตือนเคล็ดลับแล้ว</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1045899828449635435">ล้างข้อมูลเว็บไซต์เหล่านี้ด้วยไหม</translation>
+<translation id="1049461303780085993">ลองใช้ Gemini ใน Chrome เพื่อรับคำตอบ ประเด็นสำคัญ และอื่นๆ</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1052842760770519282">รหัสผ่านบางรายการเข้าถึงไม่ได้</translation>
 <translation id="1057623954802068161">เลื่อนไปที่ด้านบนของหน้า</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5465437530117042974">ปิดการเปลี่ยนแปลง Bottom Sheet ของแท็บแล้ว</translation>
 <translation id="5469852975082458401">คุณไปยังส่วนต่างๆ ของหน้าได้ด้วยเคอร์เซอร์ข้อความ กด F7 เพื่อปิด</translation>
 <translation id="5471273988133666918">ย้ายแท็บ <ph name="TAB_TITLE" /> ไม่ได้</translation>
+<translation id="5478718673237429220">ต้องได้รับสิทธิ์ให้เข้าถึงอุปกรณ์ที่โต้ตอบกับมนุษย์โดยตรง</translation>
 <translation id="548278423535722844">เปิดในแอปแผนที่</translation>
 <translation id="5489222148748465285">ให้ Chrome ค้นหาต่อไหม</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" /> แท็บในโหมดการแสดงภาพซ้อนภาพที่เลือกไว้หลายแท็บ</translation>
@@ -1964,6 +1966,7 @@
 <translation id="867914734596684889">แสดงหรือซ่อนแถบบุ๊กมาร์ก</translation>
 <translation id="8683039184091909753">รูปภาพ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, แท็บที่เลือก</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> ต้องการสิทธิ์เข้าถึงอุปกรณ์ที่โต้ตอบกับมนุษย์โดยตรง (HID) สำหรับเว็บไซต์นี้ คุณเปลี่ยนการตั้งค่านี้ได้ภายหลังในการตั้งค่า &gt; แอป &gt; สิทธิ์เข้าถึงพิเศษของแอป</translation>
 <translation id="8696297579102085705">ส่งไปที่อุปกรณ์</translation>
 <translation id="8699120352855309748">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>
 <translation id="8700565880437506364">ขอแนะนำ Gemini ใน Chrome</translation>

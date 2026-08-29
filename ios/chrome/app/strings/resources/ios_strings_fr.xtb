@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1158134713295836892">Gemini dans Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Vous avez vérifié 1 mot de passe}one{Vous avez vérifié # mot de passe}other{Vous avez vérifié # mots de passe}}</translation>
 <translation id="1161444134753003495">Se connecter</translation>
 <translation id="1161663161838091892">Synchronisez les onglets et l'historique pour continuer</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} carte de crédit}one{{count} carte de crédit}other{{count} cartes de crédit}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Copier l'URL du lien</translation>
 <translation id="199425419756152024">Afficher le mot de passe</translation>
 <translation id="1996318269856535896">Vous pourrez toujours utiliser vos données de navigation existantes sur cet appareil. Pour cela, déconnectez-vous de votre compte géré.</translation>
+<translation id="2002971615187574739">Faites-en plus avec l'IA</translation>
 <translation id="2010008505735295285">Actualiser</translation>
 <translation id="2012723204723845092">Bon retour parmi nous !</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Marquer comme non lu</translation>
 <translation id="2922210239002704889">Accédez à la page d'accueil ou au clavier</translation>
 <translation id="2924940770243654951">Ouvrir dans nouvel onglet nav. privée</translation>
+<translation id="2934607171563543600">depuis que vous avez terminé "Vérifier vos mots de passe"</translation>
 <translation id="2952278131021475699">Recherche Lens avec l'appareil photo</translation>
 <translation id="2953821385349876107">Choisir un autre compte Google</translation>
 <translation id="2962516096219646456">Voir toutes les données de saisie automatique</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}one{{count} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}other{{count} mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}}</translation>
 <translation id="3659297405161482746">Aucun mode de paiement trouvé</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 sélectionné}one{# sélectionné}other{# sélectionnés}}</translation>
+<translation id="3668035568083954765">Protégez votre confidentialité et restez en sécurité</translation>
 <translation id="3668816008081204991">La liste de lecture est masquée</translation>
 <translation id="3670030362669914947">Numéro</translation>
 <translation id="3672283986707092811">Tout sélectionner</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Problèmes identifiés <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Créer une image</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Améliorez votre navigation</translation>
 <translation id="5062321486222145940">Installer Google Drive</translation>
 <translation id="5067540696062462445">Téléchargements</translation>
 <translation id="5070314445039955096">Les autorisations du site <ph name="SITE_DOMAIN" /> seront désactivées quand vous le quitterez</translation>
@@ -1686,6 +1691,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6454311990702999318">Données incorrectes</translation>
 <translation id="6459411599807878608">Informations masquées</translation>
 <translation id="646394917185284261">Fichiers</translation>
+<translation id="6470721056280836221">Google utilise vos données d'utilisation de fonctionnalités pour vous recommander des tâches et mettre à jour votre progression. Vous pouvez désactiver Level Up à tout moment.</translation>
 <translation id="6472069383518492189">Vos téléchargements s'afficheront ici</translation>
 <translation id="6476253015009698798">Le suivi des prix n'est pas disponible pour cette page.</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
@@ -1763,6 +1769,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="667999046851023355">Document</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} option de mode de paiement disponible au-dessus de votre clavier.}one{{count} option de mode de paiement disponible au-dessus de votre clavier.}other{{count} options de mode de paiement disponibles au-dessus de votre clavier.}}</translation>
 <translation id="6682680306647339111">Rappel supprimé</translation>
+<translation id="6683022854667115063">Casque audio</translation>
 <translation id="6684262542644248484">Connectez-vous à un site Web</translation>
 <translation id="6685259053455152195">Raccourcis pour modifier rapidement les paramètres et utiliser les fonctionnalités de la barre d'adresse.</translation>
 <translation id="6689342293888598653">Couleur d'arrière-plan blanche</translation>
@@ -1925,6 +1932,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="7233006041370588369">Sélectionnez un mot de passe à renseigner.</translation>
 <translation id="723874023660911012">Changer de profil</translation>
 <translation id="7241135764990439166">Mode navigation privée indisponible</translation>
+<translation id="7245288034498365666">Organisez-vous et gagnez du temps</translation>
 <translation id="7253951228444156601">Vérification des mots de passe…</translation>
 <translation id="7261217796641151584">Partager le groupe</translation>
 <translation id="7266578100016339897">Cela vous aide à rester organisé. Vous pouvez modifier cette option à tout moment dans les paramètres.</translation>

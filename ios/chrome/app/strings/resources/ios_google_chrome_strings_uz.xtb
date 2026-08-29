@@ -42,6 +42,7 @@ Bularni hisobga olish kerak:
 <translation id="1580570086594302477">Chromeda yangi inkognito varaq ochadi.</translation>
 <translation id="1605168141396675642">Nusxalashga hojat qolmasin. Havolalarni bevosita Chrome orqali oching.</translation>
 <translation id="1646463005043273333">Chromeni birlamchi brauzer etib belgilash Chrome sozlamasini ochadi.</translation>
+<translation id="1668930590094369898">Chromeni birlamchi brauzer etib belgilash</translation>
 <translation id="1670609221633730681">Chrome maslahati: Manzillar qatori joylashuvini tanlang</translation>
 <translation id="1683863426423719967">Chrome varaqlar haqidagi bildirishnomalarini olish uchun iOS sozlamalari orqali bildirishnomalarni yoqing.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -58,6 +59,7 @@ Bularni hisobga olish kerak:
 <translation id="1973910962341002002">“<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” sozlamalarida “Chrome” parametrini yoqing</translation>
 <translation id="1984705450038014246">Chrome axborotini sinxronlash</translation>
 <translation id="1987779152850321833">Chromedan maksimal foydalanish uchun quyidagi tavsiya etilgan amallarni bajaring.</translation>
+<translation id="2049569996960148258">“Chromeni birlamchi brauzer etib belgilash” taklifini berkitish</translation>
 <translation id="2055826352861631739">iPad uchun Chrome birlamchi brauzer boʻlsin</translation>
 <translation id="2056123005618757196">Oddiy, xavfsiz va har qachongidan tezkor Google Chrome brauzerida koʻplab imkoniyatlar.</translation>
 <translation id="2120238739383482109">Chrome bukmarklarini ochadi.</translation>
@@ -75,6 +77,7 @@ Bularni hisobga olish kerak:
 <translation id="2427791862912929107">Google Chrome brauzerida Internet maʼlumotlarini qayta ishlash parametrlari va sahifalarning yuklanish tezligini belgilash mumkin.
 <ph name="BEGIN_LINK" />Batafsil axborot<ph name="END_LINK" /></translation>
 <translation id="2450221499140985490">Xabarlar va hujjatlardagi havolalarni bevosita Chrome orqali oching.</translation>
+<translation id="2459400997522001951">Tezkor vazifalarni bajaring va Chromedan unumli foydalanish yoʻllarini bilib oling:</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}other{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}}</translation>
 <translation id="2561231791489583059">Internetni xavfsiz kezish va parollaringizni himoyalashda Chrome birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="2574249610672786438">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
@@ -262,6 +265,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> sahifasida ochish mumkin.</translation>
 <translation id="6922332667202044570">Chrome brauzeri maʼlumotlarini oʻchirish.</translation>
 <translation id="6924922227983877439">Havolalarni doim Chromeda oching</translation>
+<translation id="6926395711547387358">Chromeni birlamchi brauzer etib belgilash</translation>
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>
 <translation id="7001031184470316752">Chromeni dok-panelga oling</translation>
 <translation id="7038674195294813388">iOS sozlamalarida Birlamchi ilovalar sahifasini ochib, “Brauzer ilovasi” ustiga bosing va Chromiumni tanlang.</translation>

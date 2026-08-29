@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">فائلز تیار ہو رہی ہیں</translation>
 <translation id="1014509239502131234">نتیجہ کی آخری تبدیلی کو کالعدم کیا جا رہا ہے</translation>
 <translation id="1015730422737071372">اضافی تفصیلات فراہم کریں</translation>
+<translation id="1016671033299705843">ڈرائیونگ لائسنس کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="1019413721762100891">آف</translation>
 <translation id="1021753677514347426">‏آپ کے آلہ پر آپ یا کسی اور کے ذریعہ انسٹال کردہ سرٹیفکیٹ کی وجہ سے یہ مسئلہ پیش آتا ہے۔ اس سرٹیفکیٹ کو نیٹ ورکس مانیٹر کرنے اور منقطع کرنے کے استعمال کے لیے جانا جاتا ہے، اور یہ Chromium کی طرف سے قابل اعتماد نہیں ہے۔ جبکہ مانیٹرنگ کے لئے کچھ جائز صورتیں موجود ہیں، جیسے اسکول یا کمپنی کے نیٹ ورک پر، Chromium یقینی بنانا چاہتا ہے کہ آپ اس ہونے والی چیززں سے وافق ہیں، چاہے آپ اسے روک نہیں سکتے۔ مانیٹرنگ کسی بھی براؤزر یا ایپلیکیشن میں ہو سکتی ہے جسے ویب تک رسائی حاصل ہے۔</translation>
 <translation id="1024111578869940408">بعض اوقات حملہ آور ویب پتے میں مشکل سے نظر آنے والی تبدیلیاں کر کے سائٹس کی نقل کرتے ہیں۔</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">‏‫OpenDocument پیشکش</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> نے کوئی ڈیٹا نہیں بھیجا۔</translation>
 <translation id="1393071644879491291">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش کی ہے، اس پر حملہ آور دھوکے سے آپ سے سافٹ ویئر انسٹال کروا سکتے ہیں یا آپ کے پاس ورڈز، فون یا کریڈٹ کارڈ نمبرز جیسی چیزیں افشاء کروا سکتے ہیں۔ ‫Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">‏‫Google والٹ میں ID کارڈ کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="1398743098754840707">یہاں شامل کردہ سائٹس کو جوابات کے لیے حوالہ نہیں دیا جائے گا، چاہے ٹیب کھلا ہو۔ اگر آپ کی شامل کردہ سائٹ فی الحال کسی سلسلہ میں استعمال ہو رہی ہے تو سلسلہ کو اس کا حوالہ دینا بند کرنے میں 30 منٹ تک لگ سکتے ہیں۔</translation>
 <translation id="1405567553485452995">ہلکا سبز</translation>
 <translation id="1406370515365284486">آپ کے ادائیگی کے طریقے اب بھی محفوظ کیے جائیں گے</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">آپ جو بھی ٹائپ کرتے ہیں، جو بھی صفحات آپ دیکھتے ہیں، یا ویب پر دیکھی جانے والی کوئی بھی دوسری سرگرمی، اور سائٹس پر موجود کسی بھی مواد کو آپ کی معلومات کے بغیر تبدیل کیا جا سکتا ہے۔</translation>
 <translation id="2289385804009217824">تراشیں</translation>
 <translation id="2292556288342944218">انٹرنیٹ تک آپ کی رسائی مسدود ہے</translation>
+<translation id="2294150501457238325">پاسپورٹ کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="2295831393422400053">لکھنے میں میری مدد کریں کا استعمال کرنے کے لیے تلاشوں اور براؤزنگ کو بہتر بنائیں کو آن کریں</translation>
 <translation id="2296244067976588032">‏پاس کی • iCloud Keychain</translation>
 <translation id="2296331629987861142">آسان قسطوں میں ادائیگی کریں (اہلیت کے ساتھ مشروط، فیس لاگو ہوتی ہے)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">خریداری کی معلومات کا نظم کریں</translation>
 <translation id="2933624813161016821">ایمبوسنگ فوئل</translation>
 <translation id="2935726091208500473">اپنے ٹیبز کا اشتراک کرنا</translation>
+<translation id="2936698630976431647">‏‫Google والٹ سے پیشکشوں کو آٹو فل کرنے کے لیے پرومو کوڈ فیلڈ کو منتخب کریں</translation>
 <translation id="293796669683825859">تبصرے</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – اپنا کرسر دکھانے کے لیے، ایپس کو سوئچ کریں، صفحہ کو دوبارہ لوڈ کریں یا واپس جائیں</translation>
@@ -1284,6 +1288,7 @@
 <translation id="3190736958609431397">ٹریک کو کالعدم کریں</translation>
 <translation id="3194737229810486521"><ph name="URL" /> آپ کے آلے پر مستقل طور پر ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">‏‫Google والٹ میں ڈرائیونگ لائسنس شامل کریں</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> پر <ph name="PRINTER_NAME" /></translation>
 <translation id="3196374699162453920">بکنگ کوڈ</translation>
 <translation id="3196902089458890316">بہتر ریسپانسز کے لیے ہمیشہ متعلقہ ٹیبز کا اشتراک کریں؟</translation>
@@ -1391,6 +1396,7 @@
 <translation id="3380864720620200369">‏کلائنٹ ID:</translation>
 <translation id="3383566085871012386">موجودہ ترجیحی ترتیب</translation>
 <translation id="3383713837163550889">آپ کی مقامی فائلز 1 منٹ میں حذف ہو جائیں گی</translation>
+<translation id="33837817515081754">‏معلوم ٹریولر نمبر کو Google والٹ میں شامل کریں</translation>
 <translation id="3384522979010096022">آپ کی تنظیم آپ کو اس سائٹ کا ملاحظہ کرنے کی اجازت نہیں دیتی ہے</translation>
 <translation id="3391030046425686457">ڈیلیوری پتہ</translation>
 <translation id="3391482648489541560">فائل میں ترمیم کرنا</translation>
@@ -1464,6 +1470,7 @@
 <translation id="3517264445792388751">آپ کے منتظم نے فائل سسٹم کو غیر فعال کر دیا ہے</translation>
 <translation id="3518941727116570328">متعدد آبجیکٹس کو ہینڈل کرنا</translation>
 <translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> سے پوچھیں</translation>
+<translation id="3520762308733579540">‏‫Google والٹ میں گاڑی شامل کریں</translation>
 <translation id="3525130752944427905">‏‎10 x 14 انچ</translation>
 <translation id="3525435918300186947">‏MIDI آلات کو کنٹرول اور دوبارہ پروگرام کریں؟</translation>
 <translation id="3527624163937328588">منسلکہ ہٹائیں</translation>
@@ -1817,6 +1824,7 @@
 <translation id="4103249731201008433">آلہ کا سیریل نمبر غلط ہے</translation>
 <translation id="4103592298805904008">کارڈ بورڈ (سنگل وال)</translation>
 <translation id="4104702906064390950">‏‫IBAN کی معلومات کو محفوظ کیا جا رہا ہے</translation>
+<translation id="4104995898379951162">معلوم مسافر نمبر کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="4106101218644797743">مطابقت پذیری کی ترتیبات</translation>
 <translation id="4106887816571530227">سرایت کردہ مواد کی اجازت نہیں ہے</translation>
 <translation id="4107047499377819067">‏‫VPN کی پس منظر سروسز کی انسٹالیشن شروع ہو گئی ہے، اس میں چند منٹ لگ سکتے ہیں۔</translation>
@@ -1874,6 +1882,7 @@
 <translation id="4195459680867822611">‏Chrome کی تجاویز دیکھیں بٹن، Chrome کی خصوصیات کے بارے میں فعال کریں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4196861286325780578">منتقلی &amp;واپس لائیں</translation>
+<translation id="4199131764832701740">‏‫Google والٹ میں پاسپورٹ شامل کریں</translation>
 <translation id="4202554117186904723">پانچواں رول</translation>
 <translation id="4203769790323223880">کیمرے کی اجازت نہیں ہے</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />فائروال اور اینٹی وائرس کنفیگریشنز کو چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
@@ -2239,6 +2248,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">شناختی کارڈ کو محفوظ طریقے سے اپ ڈیٹ کریں</translation>
 <translation id="4807098396393229769">کارڈ پر نام</translation>
+<translation id="4808598252755230865">‏معلوم مسافر نمبر کو محفوظ طریقے سے Google والٹ میں شامل کریں</translation>
 <translation id="4809079943450490359">آپ کے آلہ کے منتظم کی طرف سے ہدایات:</translation>
 <translation id="4811450222531576619">اس کے ماخذ اور موضوع کے بارے میں جانیں</translation>
 <translation id="4811696127853690432">‏‫Google والٹ میں گاڑی کو محفوظ طریقے سے محفوظ کریں</translation>
@@ -2268,6 +2278,7 @@
 <translation id="4855395119669662878">آپ کا منتظم آپ کی فائلز کو <ph name="CLOUD_PROVIDER" /> میں <ph name="DATE_TIME" /> بجے اپ لوڈ کرنا شروع کر دے گا۔ اپنے آلے کو اس وقت تک منسلک رکھیں جب تک آپ کی فائل اپ لوڈ مکمل نہ ہو جائے۔ اپ لوڈ کے دوران، آپ صرف مقامی فائلز پڑھ سکیں گے۔</translation>
 <translation id="485902285759009870">کوڈ کی توثیق ہو رہی ہے...</translation>
 <translation id="4860260582253463350">‏‫YouTube پر جاری رکھنے کے لیے، ہمیں اس بات کو یقینی بنانا ہوگا کہ یہ آپ ہی ہیں۔ آپ کو وہ ترتیبات ملیں گی جن کا آپ کے والدین یا سرپرست نے Family Link میں سیٹ اپ کیا ہے۔</translation>
+<translation id="4861514638281352187">‏‫Redress نمبر کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="4862642413395066333">‏سائننگ OCSP جوابات</translation>
 <translation id="4864406669374375262">ورژن اسٹرنگ کلپ بورڈ پر کاپی ہو گئی</translation>
 <translation id="486459320933704969">یہ سائٹ ملاحظہ کرنے کے لئے آپ کے والد/والدہ یا سرپرست کو کہنا ہوگا کہ یہ آپ کے لئے ٹھیک ہے</translation>
@@ -2699,6 +2710,7 @@
 <translation id="55635442646131152">دستاویز کی آؤٹ لائن</translation>
 <translation id="5563589142503817291">‏اپنے مقام کا استعمال کرنے کے لیے، <ph name="LINK" /> میں Chrome کو رسائی فراہم کریں۔</translation>
 <translation id="5565613213060953222">پوشیدگی ٹیب کھولیں</translation>
+<translation id="5565613377956908865">‏‫Google والٹ میں ID کارڈ شامل کریں</translation>
 <translation id="5565735124758917034">فعال</translation>
 <translation id="5570825185877910964">اکاؤنٹ محفوظ کریں</translation>
 <translation id="5571083550517324815">اس پتے سے پِک اپ نہیں کر سکتے۔ کوئی مختلف پتہ منتخب کریں۔</translation>
@@ -2886,6 +2898,7 @@
 <translation id="5895694128043506580">‏‫Google Chrome حساس معلومات دکھانے کی کوشش کر رہا ہے</translation>
 <translation id="5898767305816764989">‏اظہار پسندیدگی کا بٹن، اپنے پسندیدہ تاثرات جمع کرانے کیلئے Enter دبائیں، <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">پیلا</translation>
+<translation id="5902204772823742902">‏‫Google والٹ میں ڈرائیونگ لائسنس کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="5903264686717710770">عنوان:</translation>
 <translation id="5905671155741555195">‏آپ کے دفتر کا پتہ Google Maps میں تلاش کے مزید متعلقہ نتائج اور ڈائریکشنز جیسی تمام Google سروسز پر کام کرنے میں آپ کی مدد کر سکتا ہے۔ آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں<ph name="END_LINK" /> اپنے پتے میں ترمیم یا حذف کر سکتے ہیں۔</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (مطابقت پذیری کردہ)</translation>
@@ -3306,6 +3319,7 @@
 <translation id="6613866251791999074">‏Chrome میں اپنے سرچ انجن کے بارے میں مزید جانیں</translation>
 <translation id="6615297766614333076">اسٹیکر 2</translation>
 <translation id="6619496928666593220">‏IBAN پُر نہیں ہو سکا</translation>
+<translation id="662009501953240458">‏‫Google والٹ میں گاڑی کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="6624427990725312378">رابطے کی معلومات</translation>
 <translation id="6625629379283886932">مجھے کوڈنگ کرنے کا طریقہ سکھائیں</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> تلاش</translation>
@@ -3675,6 +3689,7 @@
 <translation id="7261463765917514051">آٹو فل کے ساتھ محفوظ طریقے سے چیک آؤٹ کریں</translation>
 <translation id="7265608370113700582">پتہ صرف اس آلہ پر دستیاب ہے</translation>
 <translation id="7266094331715305887">آلے پر انسٹال کردہ ایپس</translation>
+<translation id="7268742523336093718">‏‫Google والٹ میں پاسپورٹ کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="7269151392155523061">شارٹ کٹ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> کے ذریعہ وضاحت کردہ تلاش کے جمع کنندہ کلیدی لفظ سے مماثل نہیں ہو سکتا: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏جن فائلز کو آپ ڈاؤن لوڈ کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کے لیے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے اور یہ آپ کے منتظم کو دکھائی دے سکتی ہیں۔</translation>
 <translation id="7275334191706090484">منظم کردہ بُک مارکس</translation>
@@ -4244,6 +4259,7 @@
 <translation id="8241707690549784388">آپ جو صفحہ تلاش کر رہے ہیں اس نے آپ کی درج کردہ معلومات کا استعمال کیا۔ اس صفحہ پر واپس جانا کسی ایسی کارروائی کا سبب بن سکتا ہے جسے آپ نے دہرائے جانے کیلئے کیا۔ کیا آپ جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="8242426110754782860">آگے بڑھیں</translation>
 <translation id="824620968958405573">آٹو براؤز ٹاسک</translation>
+<translation id="8247824837030847066">‏‫ID کارڈ کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="8248406213705193919">کارڈ کو محفوظ طریقے سے محفوظ کریں؟</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="8250094606476360498">‏یہ پتہ فی الحال اس آلے میں محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ کریں۔</translation>
@@ -4663,6 +4679,7 @@
 <translation id="9003639428623471314">‏Kahu لفافہ</translation>
 <translation id="9004367719664099443">‏VR سیشن پیشرفت میں ہے</translation>
 <translation id="9005998258318286617">‏PDF دستاویز لوڈ نہیں ہو سکی۔</translation>
+<translation id="900686221526305417">گاڑی کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
 <translation id="9010187979699879769">میرے لیے مطالعہ کا شیڈول بنائیں</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{کوئی نہیں}=1{‫1 سائٹ سے}other{‫# سائٹس سے}}</translation>
@@ -4817,6 +4834,7 @@
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Sites میں تیزی سے ایک نئی سائٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="949026252328034572">‫<ph name="MEMBER_COUNT" /> اراکین "<ph name="GROUP_NAME" />" ٹیب گروپ میں شامل ہوئے</translation>
 <translation id="949314938206378263">‏آپ نے یہ سائٹ ملاحظہ کرنے کی اجازت مانگی ہے۔ آپ کے والد/والدہ Family Link میں جواب دے سکتے ہیں۔</translation>
+<translation id="949484466204182817">‏‫Google والٹ میں ریڈریس نمبر شامل کریں</translation>
 <translation id="950736567201356821">اوپر تین بار سوراخ</translation>
 <translation id="950926967802086924">‏پاس کی • Google پاس ورڈ مینیجر</translation>
 <translation id="952165179818196872">ایپس سوئچ کیے بغیر ادائیگی کرنے کے لیے <ph name="PROVIDER" /> شامل کریں</translation>
@@ -4831,6 +4849,7 @@
 <translation id="962484866189421427">ہو سکتا ہے کہ یہ مواد ایسی پُر فریب ایپس انسٹال کرنے کی کوشش کرے جو کچھ اور ہونے کا دکھاوا کریں یا آپ کی براؤزنگ سرگرمیوں پر نظر رکھنے کیلئے استعمال کیا جانے والا ڈیٹا جمع کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">‏آپ کے علاقے کے قانون کی بنیاد پر، Chromium آپ سے آپ کا ڈیفالٹ سرچ انجن منتخب کرنے کو کہتا ہے۔ یہ سرچ انجنز آپ کے علاقے میں مقبول ہیں اور بے ترتیب آرڈر میں دکھائے جاتے ہیں۔</translation>
 <translation id="963837307749850257">تمام صارفین</translation>
+<translation id="963988220224168636">‏‫Google والٹ میں ریڈریس نمبر کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="964050462028070434">پاس ورڈز اور پاس کیز کا نظم کریں…</translation>
 <translation id="964681140808832181">ہاں، میں منسوخ کرنا چاہتا ہوں</translation>
 <translation id="969892804517981540">آفیشل بلڈ</translation>

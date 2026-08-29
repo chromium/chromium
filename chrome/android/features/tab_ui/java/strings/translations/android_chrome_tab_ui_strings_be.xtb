@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Выдаліць групу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактыўны элемент}one{<ph name="TABS_COUNT_MANY" /> неактыўны элемент}few{<ph name="TABS_COUNT_MANY" /> неактыўныя элементы}many{<ph name="TABS_COUNT_MANY" /> неактыўных элементаў}other{<ph name="TABS_COUNT_MANY" /> неактыўнага элемента}}</translation>
 <translation id="1568067597247500137">Выключыць гук сайта</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Перамясціць укладку ўніз}one{Перамясціць укладкі ўніз}few{Перамясціць укладкі ўніз}many{Перамясціць укладкі ўніз}other{Перамясціць укладкі ўніз}}</translation>
 <translation id="1645759014353344461">Укладак згрупавана: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Перамясціць укладку ніжэй</translation>
 <translation id="1670942869417022142">Гук выключаны</translation>
 <translation id="1697284962337958118">Дадаць у</translation>
 <translation id="1713541401465507417">Закрыць усе ўкладкі і групы</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група ўкладак больш не даступная}one{<ph name="TAB_GROUPS_COUNT_MANY" /> група ўкладак больш не даступная}few{<ph name="TAB_GROUPS_COUNT_MANY" /> групы ўкладак больш не даступныя}many{<ph name="TAB_GROUPS_COUNT_MANY" /> груп укладак больш не даступныя}other{<ph name="TAB_GROUPS_COUNT_MANY" /> групы ўкладак больш не даступныя}}</translation>
+<translation id="1759122978835002237">Перамясціць групу ўкладак уверх</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Згрупавана <ph name="TABS_COUNT_ONE" /> укладка</translation>
 <translation id="1844381456014878100">Праз 7 дзён бяздзейнасці</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – укладка ў рэжыме інкогніта.}one{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладка ў рэжыме інкогніта.}few{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}many{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладак у рэжыме інкогніта.}other{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Уключыць гук на сайце}one{Уключыць гук на сайтах}few{Уключыць гук на сайтах}many{Уключыць гук на сайтах}other{Уключыць гук на сайтах}}</translation>
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
+<translation id="2164232689984783657">Перамясціць групу ўкладак уніз</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Выдаліць укладку з групы}one{Выдаліць укладкі з групы}few{Выдаліць укладкі з групы}many{Выдаліць укладкі з групы}other{Выдаліць укладкі з групы}}</translation>
 <translation id="2271452184061378400">Тут захоўваюцца групы ўкладак</translation>
 <translation id="2277224997687551299">Змяніць назву групы</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Група ўкладак "<ph name="TAB_GROUP_NAME" />" больш не даступная</translation>
 <translation id="7402375256128852434">Дадаць нядаўнія ўкладкі</translation>
 <translation id="7452985128687107478">Групы ўкладак аўтаматычна захоўваюцца і абнаўляюцца на ўсіх вашых прыладах</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Перамясціць укладку ўверх}one{Перамясціць укладкі ўверх}few{Перамясціць укладкі ўверх}many{Перамясціць укладкі ўверх}other{Перамясціць укладкі ўверх}}</translation>
 <translation id="747459581954555080">Аднавіць усе</translation>
 <translation id="7489558427602531799">Перамясціць групу ўкладак управа</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> элемент}one{<ph name="TABS_COUNT_MANY" /> элемент}few{<ph name="TABS_COUNT_MANY" /> элементы}many{<ph name="TABS_COUNT_MANY" /> элементаў}other{<ph name="TABS_COUNT_MANY" /> элемента}}</translation>

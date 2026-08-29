@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">ಗುಂಪನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂ}one{<ph name="TABS_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂಗಳು}other{<ph name="TABS_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂಗಳು}}</translation>
 <translation id="1568067597247500137">ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1657719826150349398">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1670942869417022142">ಮ್ಯೂಟ್ ಮಾಡಲಾದ ಆಡಿಯೋ</translation>
 <translation id="1697284962337958118">ಇದಕ್ಕೆ ಸೇರಿಸಿ</translation>
 <translation id="1713541401465507417">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ}}</translation>
+<translation id="1759122978835002237">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1844381456014878100">7 ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ನಿಮ್ಮ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಇತ್ತೀಚಿನವು ಎಂಬ ಟ್ಯಾಬ್‌ಗಳ ವಿಭಾಗ ಹಾಗೂ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಎಂಬ ವಿಭಾಗದಿಂದ ಪುನಃ ತೆರೆಯಬಹುದು. ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ಲಭ್ಯವಿರುವುದಿಲ್ಲ.}one{ನಿಮ್ಮ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಇತ್ತೀಚಿನವು ಎಂಬ ಟ್ಯಾಬ್‌ಗಳ ವಿಭಾಗ ಹಾಗೂ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಎಂಬ ವಿಭಾಗದಿಂದ ಪುನಃ ತೆರೆಯಬಹುದು. ನಿಮ್ಮ # ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.}other{ನಿಮ್ಮ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಇತ್ತೀಚಿನವು ಎಂಬ ಟ್ಯಾಬ್‌ಗಳ ವಿಭಾಗ ಹಾಗೂ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಎಂಬ ವಿಭಾಗದಿಂದ ಪುನಃ ತೆರೆಯಬಹುದು. ನಿಮ್ಮ # ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="2162620598375156287">ಇದೀಗ <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> ನಲ್ಲಿ</translation>
+<translation id="2164232689984783657">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್‌ನ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}one{ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}other{ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}}</translation>
 <translation id="2271452184061378400">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2277224997687551299">ಗುಂಪಿನ ಹೆಸರನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7402375256128852434">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7452985128687107478">ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್‌ ಆಗುತ್ತವೆ ಮತ್ತು ಅಪ್‌ಡೇಟ್‌ ಆಗುತ್ತವೆ</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ}}</translation>
 <translation id="747459581954555080">ಎಲ್ಲವನ್ನು ಮರುಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="7489558427602531799">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಐಟಂ}one{<ph name="TABS_COUNT_MANY" /> ಐಟಂಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಐಟಂಗಳು}}</translation>

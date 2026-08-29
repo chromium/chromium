@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Избриши групу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна ставка}one{<ph name="TABS_COUNT_MANY" /> неактивна ставка}few{<ph name="TABS_COUNT_MANY" /> неактивне ставке}other{<ph name="TABS_COUNT_MANY" /> неактивних ставки}}</translation>
 <translation id="1568067597247500137">Искључи звук сајта</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Премести картицу надоле}one{Премести картице надоле}few{Премести картице надоле}other{Премести картице надоле}}</translation>
 <translation id="1645759014353344461">Картице су груписане (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Преместите картицу надоле</translation>
 <translation id="1670942869417022142">Звук је искључен</translation>
 <translation id="1697284962337958118">Додајте на/у</translation>
 <translation id="1713541401465507417">Затвори све картице и групе</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група картица више није доступна}one{<ph name="TAB_GROUPS_COUNT_MANY" /> група картица више није доступна}few{<ph name="TAB_GROUPS_COUNT_MANY" /> групе картица више нису доступне}other{<ph name="TAB_GROUPS_COUNT_MANY" /> група картица више није доступно}}</translation>
+<translation id="1759122978835002237">Премести групу картица нагоре</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> картица је груписана</translation>
 <translation id="1844381456014878100">После 7 дана неактивности</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Затворене картице и групе можете поново да отворите у одељку Недавне картице и одељку Групе картица. Картица без архивирања неће бити доступна.}one{Затворене картице и групе можете поново да отворите у одељку Недавне картице и одељку Групе картица. # картица без архивирања неће бити доступна.}few{Затворене картице и групе можете поново да отворите у одељку Недавне картице и одељку Групе картица. # картице без архивирања неће бити доступне.}other{Затворене картице и групе можете поново да отворите у одељку Недавне картице и одељку Групе картица. # картица без архивирања неће бити доступно.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Укључи звук сајта}one{Укључи звук сајтова}few{Укључи звук сајтова}other{Укључи звук сајтова}}</translation>
 <translation id="2162620598375156287">Цена је сада <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Премести групу картица надоле</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Опозови груписање картице}one{Опозови груписање картица}few{Опозови груписање картица}other{Опозови груписање картица}}</translation>
 <translation id="2271452184061378400">Групе картица се чувају овде</translation>
 <translation id="2277224997687551299">Измените име групе</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Група картица <ph name="TAB_GROUP_NAME" /> више није доступна</translation>
 <translation id="7402375256128852434">Додајте недавне картице</translation>
 <translation id="7452985128687107478">Групе картица се аутоматски чувају и ажурирају на свим уређајима</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Премести картицу нагоре}one{Премести картице нагоре}few{Премести картице нагоре}other{Премести картице нагоре}}</translation>
 <translation id="747459581954555080">Врати све</translation>
 <translation id="7489558427602531799">Премести групу картица надесно</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ставка}one{<ph name="TABS_COUNT_MANY" /> ставка}few{<ph name="TABS_COUNT_MANY" /> ставке}other{<ph name="TABS_COUNT_MANY" /> ставки}}</translation>

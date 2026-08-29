@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Miesiąc utraty ważności</translation>
 <translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1158134713295836892">Gemini w Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Sprawdzono 1 hasło}few{Sprawdzono # hasła}many{Sprawdzono # haseł}other{Sprawdzono # hasła}}</translation>
 <translation id="1161444134753003495">Zaloguj się</translation>
 <translation id="1161663161838091892">Aby kontynuować, zsynchronizuj karty i historię</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} karta kredytowa}few{{count} karty kredytowe}many{{count} kart kredytowych}other{{count} karty kredytowej}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopiuj URL linku</translation>
 <translation id="199425419756152024">Wyświetl hasło</translation>
 <translation id="1996318269856535896">Nadal masz dostęp do dotychczasowych danych przeglądania na tym urządzeniu. Aby ich użyć, wyloguj się z konta zarządzanego.</translation>
+<translation id="2002971615187574739">Zwiększ produktywność dzięki AI</translation>
 <translation id="2010008505735295285">Załaduj ponownie</translation>
 <translation id="2012723204723845092">Witamy ponownie!</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Oznacz jako nieprzeczytane</translation>
 <translation id="2922210239002704889">Otwórz stronę główną lub klawiaturę</translation>
 <translation id="2924940770243654951">Otwórz w nowej karcie incognito</translation>
+<translation id="2934607171563543600">od czasu ukończenia działania „Sprawdź hasła”</translation>
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2953821385349876107">Wybierz inne konto Google</translation>
 <translation id="2962516096219646456">Zobacz wszystkie dane autouzupełniania</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google {email}.}few{{count} hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
 <translation id="3659297405161482746">Nie znaleziono form płatności</translation>
 <translation id="3662966164093827811">{count,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
+<translation id="3668035568083954765">Chroń swoją prywatność i dbaj o bezpieczeństwo</translation>
 <translation id="3668816008081204991">Lista Do przeczytania jest ukryta</translation>
 <translation id="3670030362669914947">Numer</translation>
 <translation id="3672283986707092811">Zaznacz wszystko</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Znaleziono problemy <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Kolejny poziom przeglądania</translation>
 <translation id="5062321486222145940">Zainstaluj Dysk Google</translation>
 <translation id="5067540696062462445">Pobrane</translation>
 <translation id="5070314445039955096">Uprawnienia „<ph name="SITE_DOMAIN" />” zostaną wyłączone, gdy opuścisz tę stronę</translation>
@@ -1686,6 +1691,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6454311990702999318">Nieprawidłowe dane</translation>
 <translation id="6459411599807878608">Szczegóły zostały ukryte</translation>
 <translation id="646394917185284261">Pliki</translation>
+<translation id="6470721056280836221">Google używa danych o korzystaniu z funkcji, aby polecać zadania i aktualizować postępy. Funkcję Kolejny poziom możesz wyłączyć w każdej chwili</translation>
 <translation id="6472069383518492189">Tutaj znajdziesz pobrane pliki</translation>
 <translation id="6476253015009698798">W przypadku tej strony monitorowanie cen jest niedostępne.</translation>
 <translation id="6476284679642588870">Zarządzaj formami płatności</translation>
@@ -1763,6 +1769,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja formy płatności.}few{Nad klawiaturą dostępne są {count} opcje formy płatności.}many{Nad klawiaturą dostępnych jest {count} opcji formy płatności.}other{Nad klawiaturą dostępne jest {count} opcji formy płatności.}}</translation>
 <translation id="6682680306647339111">Przypomnienie usunięte</translation>
+<translation id="6683022854667115063">Słuchawki</translation>
 <translation id="6684262542644248484">Zaloguj się na stronie</translation>
 <translation id="6685259053455152195">Skróty pozwalające na szybką zmianę ustawień i korzystanie z funkcji z paska adresu.</translation>
 <translation id="6689342293888598653">Kolor tła: biały</translation>
@@ -1925,6 +1932,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7233006041370588369">Wybierz hasło do wpisania.</translation>
 <translation id="723874023660911012">Przełącz profile</translation>
 <translation id="7241135764990439166">Tryb incognito jest niedostępny</translation>
+<translation id="7245288034498365666">Zorganizuj się i zaoszczędź czas</translation>
 <translation id="7253951228444156601">Sprawdzam hasła…</translation>
 <translation id="7261217796641151584">Udostępnij grupę</translation>
 <translation id="7266578100016339897">To pomoże Ci zachować porządek. W dowolnej chwili możesz to zmienić w ustawieniach.</translation>

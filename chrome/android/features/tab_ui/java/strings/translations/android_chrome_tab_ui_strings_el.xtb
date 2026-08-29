@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Διαγραφή ομάδας</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ανενεργό στοιχείο}other{<ph name="TABS_COUNT_MANY" /> ανενεργά στοιχεία}}</translation>
 <translation id="1568067597247500137">Σίγαση ιστοτόπου</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Μετακίνηση καρτέλας προς τα κάτω}other{Μετακίνηση καρτελών προς τα κάτω}}</translation>
 <translation id="1645759014353344461">Ομαδοποιήθηκαν <ph name="TABS_COUNT_MANY" /> καρτέλες</translation>
 <translation id="1657719826150349398">Μετακίνηση καρτέλας κάτω</translation>
 <translation id="1670942869417022142">Ήχος σε σίγαση</translation>
 <translation id="1697284962337958118">Προσθήκη σε</translation>
 <translation id="1713541401465507417">Κλείσιμο όλων των καρτελών και των ομάδων</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ομάδα καρτελών δεν είναι πλέον διαθέσιμη}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ομάδες καρτελών δεν είναι πλέον διαθέσιμες}}</translation>
+<translation id="1759122978835002237">Μετακίνηση ομάδας καρτελών προς τα επάνω</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Μάθετε περισσότερα<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Ομαδοποιήθηκε <ph name="TABS_COUNT_ONE" /> καρτέλα</translation>
 <translation id="1844381456014878100">Μετά από 7 ημέρες αδράνειας</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών. Η καρτέλα ανώνυμης περιήγησης δεν θα είναι διαθέσιμη.}other{Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών. Οι # καρτέλες ανώνυμης περιήγησης δεν θα είναι διαθέσιμες.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Κατάργηση σίγασης ιστοτόπου}other{Κατάργηση σίγασης ιστοτόπων}}</translation>
 <translation id="2162620598375156287">Τώρα <ph name="CURRENT_PRICE" /> στο <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Μετακίνηση ομάδας καρτελών προς τα κάτω</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Κατάργηση ομαδοπ. καρτέλας}other{Κατάργηση ομαδοπ. καρτελών}}</translation>
 <translation id="2271452184061378400">Οι ομάδες καρτελών αποθηκεύονται εδώ</translation>
 <translation id="2277224997687551299">Επεξεργασία ονόματος ομάδας</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Η ομάδα καρτελών <ph name="TAB_GROUP_NAME" /> δεν διατίθεται πλέον</translation>
 <translation id="7402375256128852434">Προσθήκη πρόσφατων καρτελών</translation>
 <translation id="7452985128687107478">Οι ομάδες καρτελών αποθηκεύονται και ενημερώνονται αυτόματα σε όλες τις συσκευές σας</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Μετακίνηση καρτέλας προς τα επάνω}other{Μετακίνηση καρτελών προς τα επάνω}}</translation>
 <translation id="747459581954555080">Επαναφορά όλων</translation>
 <translation id="7489558427602531799">Μετακίνηση ομάδας καρτελών προς τα δεξιά</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> στοιχείο}other{<ph name="TABS_COUNT_MANY" /> στοιχεία}}</translation>

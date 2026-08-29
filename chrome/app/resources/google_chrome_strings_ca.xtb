@@ -86,7 +86,6 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomana posar en pausa la pestanya que està alentint el navegador}other{Chrome recomana posar en pausa les pestanyes que estan alentint el navegador}}</translation>
 <translation id="1832046143430087831">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs. Aquesta opció de configuració està desactivada.</translation>
 <translation id="1838374766361614909">Esborra la cerca</translation>
-<translation id="1842869163383855194">Accedeix fàcilment a la Cerca a Chrome en tot el dispositiu, fins i tot si Chrome està minimitzat.</translation>
 <translation id="1843347690926158494">Cerca en aquesta pestanya amb Google Lens</translation>
 <translation id="1849248141818021764">Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, has de <ph name="BEGIN_LINK" />suprimir les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Utilitza l'aplicació Chrome per continuar navegant mentre et desplaces</translation>
@@ -326,7 +325,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4173512894976930765">És probable que els llocs web funcionin de la manera prevista. Quan tanquis totes les finestres de Chrome, se't tancarà la sessió de la majoria de llocs web, tret del Compte de Google si tens la sessió iniciada a Chrome.</translation>
 <translation id="4175922240926474352">Chrome ha bloquejat aquesta baixada perquè el lloc web no utilitza una connexió segura i és possible que el fitxer s'hagi manipulat</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reinicia Chrome en 1 dia}other{Reinicia Chrome en # dies}}</translation>
-<translation id="4222394563269716113">Obre la Cerca a Chrome amb tecles de drecera.</translation>
 <translation id="4222932583846282852">S'està cancel·lant...</translation>
 <translation id="4224210481850767180">S'ha cancel·lat la instal·lació.</translation>
 <translation id="4242034826641750751">Chrome necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
@@ -352,7 +350,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Comparteix aquest document amb Gemini a Chrome per obtenir-ne una visió general ràpida i fer preguntes de seguiment</translation>
-<translation id="4447327682081576371">Mostra la Cerca a Chrome a la barra de menú de Mac i activa les tecles de drecera</translation>
 <translation id="4450664632294415862">Chrome - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hi ha una altra operació en curs a Google Chrome. Torna-ho a provar més tard.</translation>
 <translation id="4493028449971051158">Error d'arrencada: executa l'instal·lador com a administrador.</translation>
@@ -376,6 +373,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="475321580758063259">Actualitza Chrome per continuar utilitzant les dades de Chrome al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs</translation>
+<translation id="4768676935374695498">Cerca en aquest vídeo amb Google Lens</translation>
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
 <translation id="4799870290441980300">Activa funcions addicionals per proporcionar les proteccions més eficaces de Chrome</translation>
@@ -438,7 +436,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5402307365844630024">Commuta Gemini a Chrome Beta</translation>
 <translation id="541844421954567481">Mentre et desplaces, porta amb tu les teves contrasenyes, pestanyes i més amb l'aplicació Chrome al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
-<translation id="545114101312117217">Accedeix fàcilment a les teves dreceres des de la Cerca a Chrome</translation>
 <translation id="5465210843490471889">Tria un perfil de Chrome per utilitzar-lo amb <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Ara Chrome s'obre quan s'inicia Windows perquè puguis començar a navegar a l'instant. Pots desactivar aquesta opció a la configuració.</translation>
 <translation id="5486346529181556467">Millora la seguretat en línia per a tothom informant d'un lloc web que creus que és perjudicial. Obtén més informació sobre la <ph name="BEGIN_LINK" />política de llocs web no segurs de Google<ph name="END_LINK" />.</translation>
@@ -514,7 +511,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6166185671393271715">Importeu contrasenyes a Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="6177442314419606057">Fes cerques a Chrome</translation>
 <translation id="6180522807229584611">Aquesta pestanya utilitza recursos addicionals. Per millorar el rendiment, permet que Chrome la desactivi.</translation>
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6192058120268468905">El teu compte a Chrome</translation>
@@ -722,7 +718,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="8074398340364918139">Per cercar una funció o una extensió específiques de Chrome, escriu la seva drecera a la barra d'adreces, seguida de la tecla que hagis seleccionat</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
-<translation id="8093772166980702367">Mostra la Cerca a Chrome a la safata del sistema i activa les tecles de drecera</translation>
 <translation id="8110438089258398864">Pots tornar a obrir el mode IA de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="8113883687556086139">Verifica la teva identitat per utilitzar i desar les dades de Chrome al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">S'està personalitzant Chrome...</translation>
@@ -766,10 +761,12 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="848851325211467878">Has iniciat la sessió com a <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subscripció a Google. Obre el menú del compte</translation>
 <translation id="8496177819998570653">G&amp;estor de contrasenyes de Google</translation>
 <translation id="8498858610309223613">S'acaba d'aplicar una actualització de seguretat especial per a Google Chrome. Reinicia el navegador i restaurarem les pestanyes.</translation>
+<translation id="8502181052659370">Cerca en aquesta pestanya amb Google Lens</translation>
 <translation id="8521348052903287641">Regla d'entrada de Google Chrome Dev per permetre el trànsit d'mDNS.</translation>
 <translation id="852529348814672339">Mostra Chrome en aquest idioma</translation>
 <translation id="8525579356836940628">La instal·lació s'ha aturat</translation>
 <translation id="8533056045953418157">Defineix Google Chrome com el visor de PDF predeterminat</translation>
+<translation id="854593887324189900">Cerca en aquesta imatge amb Google Lens</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Cerca a la llista d'idiomes</translation>
 <translation id="8575047640889685742">Utilitza la <ph name="BEGIN_LINK" />teva frase de contrasenya<ph name="END_LINK" /> per encriptar totes les dades de Chrome al teu Compte de Google Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.</translation>

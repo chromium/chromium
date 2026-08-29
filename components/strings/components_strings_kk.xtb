@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Файлдар дайындалуда</translation>
 <translation id="1014509239502131234">Нәтиже қайтарылып жатыр.</translation>
 <translation id="1015730422737071372">Қосымша мәліметтер беру</translation>
+<translation id="1016671033299705843">Жүргізуші куәлігін қауіпсіз түрде қосу</translation>
 <translation id="1019413721762100891">Өшірулі</translation>
 <translation id="1021753677514347426">Құрылғыңызға сіз немесе әлдекім орнатқан сертификатқа байланысты осы қате шығып тұрған болуы мүмкін. Бұл сертификат сенімді болып саналмайды, әдетте ол желідегі деректерді қадағалауға және ұстап қалуға пайдаланылады. Мұндай әрекеттерге құрылғы оқу орнында немесе жұмыста болған кезде рұқсат етіледі. Қалай болғанда да Chrome мұндай сертификаттың болатынын ескертеді. Әрекетті қадағалау интернетке кіретін кез келген браузерде немесе қолданбада жүреді.</translation>
 <translation id="1024111578869940408">Кейде шабуылдаушылар белгілі бір сайттарды көшіріп, олардың вебмекенжайын өзгертіп қояды.</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument презентациясы</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ешқандай дерек жібермеді.</translation>
 <translation id="1393071644879491291">Сіз кіргелі жатқан сайттағы шабуылдаушылар бағдарламалық құралды алдап орнатқызуы мүмкін немесе құпия сөздер, телефон не несиелік карта нөмірлері сияқты ақпаратты алдап алуы мүмкін. Chrome міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Жеке куәлікті Google Wallet-ке қауіпсіз түрде қосу</translation>
 <translation id="1398743098754840707">Қойынды ашық болса да, мұнда қосылған сайттар жауаптар үшін сілтеме ретінде пайдаланылмайды. Сіз қосқан сайт қазіргі уақытта тізбекте пайдаланылып жатса, тізбектің оған сілтеме жасауын тоқтатуға 30 минутқа дейін уақыт кетуі мүмкін.</translation>
 <translation id="1405567553485452995">Ашық жасыл</translation>
 <translation id="1406370515365284486">Төлеу әдістеріңіз сақтала береді.</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">Терген мәтініңіз, көрген беттеріңіз не желідегі басқа да әрекеттеріңіз бақыланады. Сайттардағы контент сізге хабарланбай өзгертілуі мүмкін.</translation>
 <translation id="2289385804009217824">Кесу</translation>
 <translation id="2292556288342944218">Интернетке кіруге тыйым салынған</translation>
+<translation id="2294150501457238325">Паспортты қауіпсіз түрде қосу</translation>
 <translation id="2295831393422400053">"Жазуға көмек керек" функциясын пайдалану үшін "Іздеу және браузерді қолдану нәтижелерін жақсарту" параметрін қосыңыз</translation>
 <translation id="2296244067976588032">Кіру кілті • iCloud кілттер тізбегі</translation>
 <translation id="2296331629987861142">Бөліп төлейсіз (талаптарға сай болуы керек, комиссия алынады).</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">Сауда-саттық туралы ақпаратты басқару</translation>
 <translation id="2933624813161016821">Бедерлі фольга</translation>
 <translation id="2935726091208500473">қойындыларды бөлісу</translation>
+<translation id="2936698630976431647">Google Wallet-тегі ұсыныстарды автоматты түрде толтыру үшін промокод өрісін таңдаңыз.</translation>
 <translation id="293796669683825859">Пікірлер</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />: курсорды көрсету үшін қолданбаларды ауыстырыңыз, бетті қайта жүктеңіз немесе артқа оралыңыз.</translation>
@@ -1282,6 +1286,7 @@
 <translation id="3190736958609431397">Бақылауды тоқтату</translation>
 <translation id="3194737229810486521"><ph name="URL" /> деректерді құрылғыңызда біржола сақтағысы келеді</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Жүргізуші куәлігін Google Wallet-ке қосу</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> серверіндегі <ph name="PRINTER_NAME" /></translation>
 <translation id="3196374699162453920">Брондау коды</translation>
 <translation id="3196902089458890316">Жақсырақ жауаптар алу үшін әрдайым сәйкес қойындыларды бөлісу керек пе?</translation>
@@ -1389,6 +1394,7 @@
 <translation id="3380864720620200369">Клиент идентификаторы:</translation>
 <translation id="3383566085871012386">Ағымдағы кезек реті</translation>
 <translation id="3383713837163550889">Жергілікті файлдар 1 минуттан кейін жойылады</translation>
+<translation id="33837817515081754">Known Traveler Number нөмірін Google Wallet-ке қосу</translation>
 <translation id="3384522979010096022">Ұйымыңыз бұл сайтты көруіңізге рұқсат бермейді</translation>
 <translation id="3391030046425686457">Жеткізу мекенжайы</translation>
 <translation id="3391482648489541560">файлды өңдеу</translation>
@@ -1462,6 +1468,7 @@
 <translation id="3517264445792388751">Файл жүйесін әкімші өшірді.</translation>
 <translation id="3518941727116570328">Бірнеше нысанды өңдеу</translation>
 <translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> көмекшісінен сұрау</translation>
+<translation id="3520762308733579540">Көлікті Google Wallet-ке қосу</translation>
 <translation id="3525130752944427905">10 x 14 дюйм</translation>
 <translation id="3525435918300186947">MIDI құрылғыларын басқару және қайта бағдарламалау керек пе?</translation>
 <translation id="3527624163937328588">Тіркемені өшіру</translation>
@@ -1815,6 +1822,7 @@
 <translation id="4103249731201008433">Құрылғы сериялық нөмірі жарамсыз болып табылады</translation>
 <translation id="4103592298805904008">Картон (бір қабатты)</translation>
 <translation id="4104702906064390950">IBAN туралы ақпарат сақталып жатыр</translation>
+<translation id="4104995898379951162">Known Traveler Number нөмірін қауіпсіз түрде қосу</translation>
 <translation id="4106101218644797743">синхрондау параметрлері</translation>
 <translation id="4106887816571530227">Ендірілген контент рұқсат етілмеген</translation>
 <translation id="4107047499377819067">VPN фондық қызметтерін орнату басталды. Ол бірнеше минутқа созылуы мүмкін.</translation>
@@ -1872,6 +1880,7 @@
 <translation id="4195459680867822611">"Chrome кеңестерін көру" түймесі, Chrome функциялары туралы білу үшін белсендіріңіз</translation>
 <translation id="4195643157523330669">Жаңа қойындыда ашу</translation>
 <translation id="4196861286325780578">Тасымалдауды &amp;қайта орындау</translation>
+<translation id="4199131764832701740">Паспортты Google Wallet-ке қосу</translation>
 <translation id="4202554117186904723">Бесінші орам</translation>
 <translation id="4203769790323223880">Камераға рұқсат берілмеді.</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Брандмауэр және антивирус конфигурацияларын тексеру<ph name="END_LINK" /></translation>
@@ -2237,6 +2246,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Жеке куәлікті қауіпсіз жаңартыңыз</translation>
 <translation id="4807098396393229769">Картадағы ат</translation>
+<translation id="4808598252755230865">Known Traveler Number нөмірін Google Wallet-ке қауіпсіз түрде қосу</translation>
 <translation id="4809079943450490359">Құрылғы әкімшісінің нұсқаулары:</translation>
 <translation id="4811450222531576619">Бет дереккөзі мен тақырыбы туралы ақпарат алыңыз.</translation>
 <translation id="4811696127853690432">Көлік құралы туралы деректерді Google Wallet-ке қауіпсіз сақтаңыз</translation>
@@ -2266,6 +2276,7 @@
 <translation id="4855395119669662878">Әкімшіңіз файлдарыңызды <ph name="CLOUD_PROVIDER" /> қызметіне жүктеп салуды <ph name="DATE_TIME" /> уақытында бастайды. Файл жүктеп салынғанша құрылғыны қосулы күйінде қалдырыңыз. Жүктеп салу кезінде жергілікті файлдарды тек оқи аласыз.</translation>
 <translation id="485902285759009870">Код тексерілуде…</translation>
 <translation id="4860260582253463350">YouTube-ке өтуіңіз үшін, алдымен жеке басыңызды растаңыз. Ата-анаңыз немесе қамқоршыңыз орнатқан параметрлерді Family Link-тен аласыз.</translation>
+<translation id="4861514638281352187">Redress Control Number нөмірін қауіпсіз түрде қосу</translation>
 <translation id="4862642413395066333">OCSP жауаптарына қол қою</translation>
 <translation id="4864406669374375262">Нұсқа жолы буферге көшірілді</translation>
 <translation id="486459320933704969">Ата-ана немесе қамқоршы бұл веб-сайтқа кіре алатыныңызды хабарлауы керек.</translation>
@@ -2697,6 +2708,7 @@
 <translation id="55635442646131152">Құжат құрылымы</translation>
 <translation id="5563589142503817291">Локацияны пайдалану үшін <ph name="LINK" /> бөлімінде Chrome-ға рұқсат беріңіз.</translation>
 <translation id="5565613213060953222">Инкогнито қойындысын ашу</translation>
+<translation id="5565613377956908865">Жеке куәлікті Google Wallet-ке қосу</translation>
 <translation id="5565735124758917034">Белсенді</translation>
 <translation id="5570825185877910964">Аккаунтты қорғау</translation>
 <translation id="5571083550517324815">Бұл мекенжайдан таңдалмайды. Басқа мекенжайды таңдаңыз.</translation>
@@ -2884,6 +2896,7 @@
 <translation id="5895694128043506580">Google Chrome құпия ақпаратты көрсеткелі жатыр.</translation>
 <translation id="5898767305816764989">"Ұнайды" түймесі. Сізге "<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />" ұнағаны туралы пікір жіберу үшін Enter пернесін басыңыз.</translation>
 <translation id="5901630391730855834">Сары</translation>
+<translation id="5902204772823742902">Жүргізуші куәлігін Google Wallet-ке қауіпсіз түрде қосу</translation>
 <translation id="5903264686717710770">Атауы:</translation>
 <translation id="5905671155741555195">Жұмыс мекенжайы сәйкес іздеу нәтижелері және Google Maps-тегі бағыттар сияқты Google қызметтерінде көп тапсырма орындауға мүмкіндік береді. Мекенжайды <ph name="BEGIN_LINK" />Google аккаунтында (<ph name="ACCOUNT" />)<ph name="END_LINK" /> өзгертуге немесе жоюға болады.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхрондалған)</translation>
@@ -3303,6 +3316,7 @@
 <translation id="6613866251791999074">Chrome-дағы іздеу жүйесі туралы толық ақпарат</translation>
 <translation id="6615297766614333076">2-жинастырушы</translation>
 <translation id="6619496928666593220">IBAN толтырылмады</translation>
+<translation id="662009501953240458">Көлікті Google Wallet-ке қауіпсіз түрде қосу</translation>
 <translation id="6624427990725312378">Байланыс ақпараты</translation>
 <translation id="6625629379283886932">Маған кодтауды үйрет</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
@@ -3672,6 +3686,7 @@
 <translation id="7261463765917514051">Автотолтыру көмегімен қауіпсіз төлеңіз</translation>
 <translation id="7265608370113700582">Мекенжай тек осы құрылғыда қолжетімді</translation>
 <translation id="7266094331715305887">құрылғыдағы қолданбалар</translation>
+<translation id="7268742523336093718">Паспортты Google Wallet-ке қауіпсіз түрде қосу</translation>
 <translation id="7269151392155523061">Жылдам пәрмен <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> анықтаған іздеу топтаушысы кілтсөзімен бірдей болмауы керек: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Сіз жүктеп алатын файлдар Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, олар құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
 <translation id="7275334191706090484">Басқарылатын бетбелгілер</translation>
@@ -4241,6 +4256,7 @@
 <translation id="8241707690549784388">Ізделіп жатқан бет сіз енгізген ақпаратты пайдаланды. Аталмыш бетке қайту сіз орындаған әрекетті қайталауға себеп болуы мүмкін. Жалғастыру керек пе?</translation>
 <translation id="8242426110754782860">Жалғастыру</translation>
 <translation id="824620968958405573">Автоматты түрде шолу тапсырмасы</translation>
+<translation id="8247824837030847066">Жеке куәлікті қауіпсіз түрде қосу</translation>
 <translation id="8248406213705193919">Картаны қауіпсіз сақтау қажет пе?</translation>
 <translation id="8249296373107784235">Доғару</translation>
 <translation id="8250094606476360498">Қазіргі уақытта бұл мекенжай осы құрылғыда сақталған. Оны Google өнімдерінде пайдалану үшін оны Google аккаунтыңызда (<ph name="ACCOUNT" />) сақтаңыз.</translation>
@@ -4660,6 +4676,7 @@
 <translation id="9003639428623471314">Kahu хатқалтасы</translation>
 <translation id="9004367719664099443">VR сеансы жүруде</translation>
 <translation id="9005998258318286617">PDF құжаты жүктелмеді</translation>
+<translation id="900686221526305417">Көлікті қауіпсіз түрде қосу</translation>
 <translation id="9008201768610948239">Елемеу</translation>
 <translation id="9010187979699879769">Мен үшін оқу кестесін жаса</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
@@ -4813,6 +4830,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-та жылдам жаңа сайт жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> қатысушы "<ph name="GROUP_NAME" />" қойындылар тобына қосылды.</translation>
 <translation id="949314938206378263">Осы сайтқа кіруді сұрадыңыз. Ата-анаңыз Family Link-те жауап бере алады.</translation>
+<translation id="949484466204182817">Redress Control Number нөмірін Google Wallet-ке қосу</translation>
 <translation id="950736567201356821">Жоғарғы жағын үш рет тесу</translation>
 <translation id="950926967802086924">Кіру кілті • Google Password Manager</translation>
 <translation id="952165179818196872">Қолданбаларды ауыстырмай төлеу үшін <ph name="PROVIDER" /> әмиянын қосыңыз</translation>
@@ -4827,6 +4845,7 @@
 <translation id="962484866189421427">Бұл контент жалған қолданбалар орнатуы мүмкін, олар басқа біреудің атын жамылуы немесе сізді бақылау үшін пайдаланылатын деректерді жинауы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Аймағыңыздағы заңға байланысты Chromium сізден әдепкі іздеу жүйесін таңдауды сұрайды. Бұл іздеу жүйелері аймағыңызда танымал және кездейсоқ ретпен көрсетілген.</translation>
 <translation id="963837307749850257">Барлық пайдаланушы</translation>
+<translation id="963988220224168636">Redress Control Number нөмірін Google Wallet-ке қауіпсіз түрде қосу</translation>
 <translation id="964050462028070434">Құпия сөздер мен кіру кілттерін басқару…</translation>
 <translation id="964681140808832181">Иә, бас тартқым келеді</translation>
 <translation id="969892804517981540">Ресми жинақ</translation>

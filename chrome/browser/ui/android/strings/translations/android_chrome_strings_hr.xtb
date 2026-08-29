@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promotivna obavijest o savjetima je zatvorena</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1045899828449635435">Izbrisati i podatke s ovih web-lokacija?</translation>
+<translation id="1049461303780085993">Isprobajte Gemini u Chromeu da biste dobili odgovore, ključne zaključke i drugo</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="1052842760770519282">Neke od vaših zaporki nisu dostupne</translation>
 <translation id="1057623954802068161">Pomicanje na vrh stranice</translation>
@@ -1117,6 +1118,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5465437530117042974">Promjene kartice donje tablice su zatvorene.</translation>
 <translation id="5469852975082458401">Stranicama se možete kretati pomoću pokazivača za tekst. Pritisnite F7 da biste isključili tu značajku.</translation>
 <translation id="5471273988133666918">Kartica <ph name="TAB_TITLE" /> ne može se premjestiti</translation>
+<translation id="5478718673237429220">Trebate omogućiti pristup uređajima s ljudskim sučeljem</translation>
 <translation id="548278423535722844">Otvori u aplikaciji za karte</translation>
 <translation id="5489222148748465285">Hoće li Chrome i dalje tražiti?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, višestruko odabrana kartica sa slikom u slici</translation>
@@ -1964,6 +1966,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="867914734596684889">Prikaz ili skrivanje trake oznaka</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, odabrana kartica</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> treba dopuštenje za pristup uređajima s ljudskim sučeljem (HID-ovima) za ovu web-lokaciju. Tu postavku možete promijeniti kasnije u odjeljku Postavke &gt; Aplikacije &gt; Poseban pristup aplikacijama.</translation>
 <translation id="8696297579102085705">Pošaljite na svoj uređaj</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8700565880437506364">Predstavljamo Gemini u Chromeu</translation>

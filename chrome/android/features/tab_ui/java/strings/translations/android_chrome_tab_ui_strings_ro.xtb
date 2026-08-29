@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Șterge grupul</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element inactiv}few{<ph name="TABS_COUNT_MANY" /> elemente inactive}other{<ph name="TABS_COUNT_MANY" /> de elemente inactive}}</translation>
 <translation id="1568067597247500137">Dezactivează sunetul pentru site</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Mută fila în jos}few{Mută filele în jos}other{Mută filele în jos}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> file grupate</translation>
 <translation id="1657719826150349398">Mută fila mai jos</translation>
 <translation id="1670942869417022142">Sunet dezactivat</translation>
 <translation id="1697284962337958118">Adaugă în</translation>
 <translation id="1713541401465507417">Închide toate filele și grupurile</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grup de file nu mai este disponibil}few{<ph name="TAB_GROUPS_COUNT_MANY" /> grupuri de file nu mai sunt disponibile}other{<ph name="TAB_GROUPS_COUNT_MANY" /> de grupuri de file nu mai sunt disponibile}}</translation>
+<translation id="1759122978835002237">Mută grupul de file în sus</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> filă grupată</translation>
 <translation id="1844381456014878100">După 7 zile de inactivitate</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Fila incognito nu va fi disponibilă.}few{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # file incognito nu vor fi disponibile.}other{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # de file incognito nu vor fi disponibile.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Activează sunetul pentru site}few{Activează sunetul pentru site-uri}other{Activează sunetul pentru site-uri}}</translation>
 <translation id="2162620598375156287">Acum la <ph name="CURRENT_PRICE" /> pe <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Mută grupul de file în jos</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Elimină fila din grup}few{Elimină filele din grup}other{Elimină filele din grup}}</translation>
 <translation id="2271452184061378400">Grupurile de file se salvează aici</translation>
 <translation id="2277224997687551299">Editează numele grupului</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Grupul de file <ph name="TAB_GROUP_NAME" /> nu mai este disponibil</translation>
 <translation id="7402375256128852434">Adaugă file recente</translation>
 <translation id="7452985128687107478">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Mută fila în sus}few{Mută filele în sus}other{Mută filele în sus}}</translation>
 <translation id="747459581954555080">Restabilește-le pe toate</translation>
 <translation id="7489558427602531799">Mută grupul de file la dreapta</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element}few{<ph name="TABS_COUNT_MANY" /> elemente}other{<ph name="TABS_COUNT_MANY" /> de elemente}}</translation>

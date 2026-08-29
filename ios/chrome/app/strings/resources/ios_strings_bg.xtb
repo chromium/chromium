@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1158134713295836892">Gemini в Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Проверихте 1 парола}other{Проверихте # пароли}}</translation>
 <translation id="1161444134753003495">Вход</translation>
 <translation id="1161663161838091892">Синхронизирайте разделите и историята, за да продължите</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} кредитна карта}other{{count} кредитни карти}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Копиране на URL адреса на връзката</translation>
 <translation id="199425419756152024">Преглед на паролата</translation>
 <translation id="1996318269856535896">Пак можете да използвате съществуващите си данни за сърфирането на това устройство. За целта излезте от управлявания си профил.</translation>
+<translation id="2002971615187574739">Използвайте AI, за да вършите повече неща</translation>
 <translation id="2010008505735295285">Презареждане</translation>
 <translation id="2012723204723845092">Добре дошли отново!</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Означаване като непрочетено</translation>
 <translation id="2922210239002704889">Отворете началната страница или клавиатурата.</translation>
 <translation id="2924940770243654951">Отваряне в нов раздел „инкогнито“</translation>
+<translation id="2934607171563543600">от завършването на проверката на паролите ви</translation>
 <translation id="2952278131021475699">Търсене чрез камерата с Обектив</translation>
 <translation id="2953821385349876107">Изберете друг профил в Google</translation>
 <translation id="2962516096219646456">Преглед на всички данни за автоматично попълване</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} парола ще се запази само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google ({email}).}other{{count} пароли ще се запазят само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google ({email}).}}</translation>
 <translation id="3659297405161482746">Няма намерени начини на плащане</translation>
 <translation id="3662966164093827811">{count,plural, =1{Избрахте 1}other{Избрахте #}}</translation>
+<translation id="3668035568083954765">Защитете поверителността си и бъдете в безопасност</translation>
 <translation id="3668816008081204991">Списъкът за четене е скрит</translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3672283986707092811">Избиране на всички</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Бяха намерени проблеми <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Създаване на изображение</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Подобрете сърфирането си</translation>
 <translation id="5062321486222145940">Инсталиране на Google Диск</translation>
 <translation id="5067540696062462445">Изтегляния</translation>
 <translation id="5070314445039955096">Разрешенията за сайта <ph name="SITE_DOMAIN" /> ще бъдат изключени, когато го напуснете</translation>
@@ -1686,6 +1691,7 @@
 <translation id="6454311990702999318">Невалидни данни</translation>
 <translation id="6459411599807878608">Подробностите са скрити</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google използва данните ви за употребата на функциите, за да препоръчва задачи и да актуализира напредъка. Можете да изключите подобряването по всяко време.</translation>
 <translation id="6472069383518492189">Тук ще намерите изтеглянията си</translation>
 <translation id="6476253015009698798">Следенето на цените не е възможно за тази страница.</translation>
 <translation id="6476284679642588870">Управление на начините на плащане</translation>
@@ -1763,6 +1769,7 @@
 <translation id="667999046851023355">Документ</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} опция за начин на плащане е налице над клавиатурата ви.}other{{count} опции за начин на плащане са налице над клавиатурата ви.}}</translation>
 <translation id="6682680306647339111">Напомнянето е премахнато</translation>
+<translation id="6683022854667115063">Слушалки</translation>
 <translation id="6684262542644248484">Влезте в уебсайт</translation>
 <translation id="6685259053455152195">Преки пътища за бърза промяна на настройките и за използване на функции от адресната лента.</translation>
 <translation id="6689342293888598653">Бял цвят на фона</translation>
@@ -1925,6 +1932,7 @@
 <translation id="7233006041370588369">Изберете парола, която да се попълни.</translation>
 <translation id="723874023660911012">Превключване на потребителските профили</translation>
 <translation id="7241135764990439166">Режимът „инкогнито“ не е налице</translation>
+<translation id="7245288034498365666">Организирайте и пестете време</translation>
 <translation id="7253951228444156601">Паролите се проверяват…</translation>
 <translation id="7261217796641151584">Споделяне на групата</translation>
 <translation id="7266578100016339897">Тази функция ви помага с организирането. По всяко време можете да промените това в настройките.</translation>

@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">အဖွဲ့ကို ဖျက်ရန်</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{အသုံးမပြုသောတဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{အသုံးမပြုသောတဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="1568067597247500137">ဝဘ်ဆိုက် ဖျောက်ထားရန်</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{တဘ်ကို အောက်သို့ရွှေ့ရန်}other{တဘ်များကို အောက်သို့ရွှေ့ရန်}}</translation>
 <translation id="1645759014353344461">တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1657719826150349398">တဘ်ကို အောက်သို့ ရွှေ့ရန်</translation>
 <translation id="1670942869417022142">အသံပိတ်ထားသည်</translation>
 <translation id="1697284962337958118">အောက်ပါသို့ ထည့်ပါ</translation>
 <translation id="1713541401465507417">တဘ်နှင့် အုပ်စုအားလုံး ပိတ်ရန်</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{တဘ်အုပ်စု <ph name="TAB_GROUPS_COUNT_ONE" /> ကို မရတော့ပါ}other{တဘ်အုပ်စု <ph name="TAB_GROUPS_COUNT_MANY" /> ကို မရတော့ပါ}}</translation>
+<translation id="1759122978835002237">တဘ်အုပ်စုကို အပေါ်သို့ရွှေ့ရန်</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1844381456014878100">၇ ရက်ကြာ အသုံးမပြုသည့်နောက်</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ ကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}other{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ # ခုကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{ဝဘ်ဆိုက် အသံပြန်ဖွင့်ရန်}other{ဝဘ်ဆိုက်များ အသံပြန်ဖွင့်ရန်}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> တွင်ယခု <ph name="CURRENT_PRICE" /> ဖြစ်သည်</translation>
+<translation id="2164232689984783657">တဘ်အုပ်စုကို အောက်သို့ရွှေ့ရန်</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖြုတ်ရန်}other{တဘ်များ အုပ်စုဖြုတ်ရန်}}</translation>
 <translation id="2271452184061378400">တဘ်အုပ်စုများကို ဤနေရာတွင် သိမ်းထားသည်</translation>
 <translation id="2277224997687551299">အဖွဲ့အမည်ကို တည်းဖြတ်ရန်</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">“<ph name="TAB_GROUP_NAME" />” တဘ်အုပ်စုကို မရတော့ပါ</translation>
 <translation id="7402375256128852434">လတ်တလောတဘ်များ ထည့်ရန်</translation>
 <translation id="7452985128687107478">တဘ်အုပ်စုများကို သင့်စက်အားလုံးတွင် အလိုအလျောက်သိမ်းပြီး အပ်ဒိတ်လုပ်ပါသည်</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{တဘ်ကို အပေါ်သို့ရွှေ့ရန်}other{တဘ်များကို အပေါ်သို့ရွှေ့ရန်}}</translation>
 <translation id="747459581954555080">အားလုံး ပြန်လည်သိုလှောင်</translation>
 <translation id="7489558427602531799">တဘ်အုပ်စုကို ညာသို့ ရွှေ့ရန်</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{ဖိုင် <ph name="TABS_COUNT_ONE" /> ဖိုင်}other{ဖိုင် <ph name="TABS_COUNT_MANY" /> ဖိုင်}}</translation>

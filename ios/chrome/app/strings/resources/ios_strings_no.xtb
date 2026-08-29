@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Utløpsmåned</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1158134713295836892">Gemini i Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Du har sjekket 1 passord}other{Du har sjekket # passord}}</translation>
 <translation id="1161444134753003495">Logg på</translation>
 <translation id="1161663161838091892">Synkroniser faner og logg for å fortsette</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kredittkort}other{{count} kredittkort}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopier nettadressen for linken</translation>
 <translation id="199425419756152024">Vis passordet</translation>
 <translation id="1996318269856535896">Du kan fortsatt bruke de eksisterende nettlesingsdataene dine på denne enheten. Logg av den administrerte kontoen din for å bruke dem.</translation>
+<translation id="2002971615187574739">Bruk AI for å få mer gjort</translation>
 <translation id="2010008505735295285">Last inn på nytt</translation>
 <translation id="2012723204723845092">Velkommen tilbake!</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Merk som ulest</translation>
 <translation id="2922210239002704889">Gå til startsiden eller tastaturet</translation>
 <translation id="2924940770243654951">Åpne på ny inkognitofane</translation>
+<translation id="2934607171563543600">siden du fullførte «Sjekk passordene dine»</translation>
 <translation id="2952278131021475699">Lens-kamerasøk</translation>
 <translation id="2953821385349876107">Velg en annen Google-konto</translation>
 <translation id="2962516096219646456">Se alle autofylldata</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord lagres bare på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
 <translation id="3659297405161482746">Fant ingen betalingsmåter</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 er valgt}other{# er valgt}}</translation>
+<translation id="3668035568083954765">Ivareta personvernet og hold deg trygg</translation>
 <translation id="3668816008081204991">Leselisten er skjult</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3672283986707092811">Velg alle</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Fant problemer <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Lag bilde</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Ta nettlesingen til neste nivå</translation>
 <translation id="5062321486222145940">Installer Google Disk</translation>
 <translation id="5067540696062462445">Nedlastinger</translation>
 <translation id="5070314445039955096">Tillatelsene for «<ph name="SITE_DOMAIN" />» blir tilbakestilt til å være avslått når du forlater dette nettstedet</translation>
@@ -1686,6 +1691,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6454311990702999318">Ugyldige data</translation>
 <translation id="6459411599807878608">Detaljene er skjult</translation>
 <translation id="646394917185284261">Filer</translation>
+<translation id="6470721056280836221">Google bruker data om funksjonsbruk til å anbefale oppgaver og oppdatere fremdriften. Du kan når som helst slå av Level Up.</translation>
 <translation id="6472069383518492189">Du finner nedlastingene dine her</translation>
 <translation id="6476253015009698798">Prissporing er ikke tilgjengelig for denne siden.</translation>
 <translation id="6476284679642588870">Administrer betalingsmåter</translation>
@@ -1763,6 +1769,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} alternativ for betalingsmåte er tilgjengelig over tastaturet.}other{{count} alternativer for betalingsmåte er tilgjengelige over tastaturet.}}</translation>
 <translation id="6682680306647339111">Påminnelsen er fjernet</translation>
+<translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6684262542644248484">Logg på et nettsted</translation>
 <translation id="6685259053455152195">Hurtigtaster for å endre innstillinger raskt og bruke funksjoner fra adressefeltet.</translation>
 <translation id="6689342293888598653">Hvit bakgrunnsfarge</translation>
@@ -1925,6 +1932,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="7233006041370588369">Velg passordet du vil fylle ut.</translation>
 <translation id="723874023660911012">Bytt profil</translation>
 <translation id="7241135764990439166">Inkognitomodus er ikke tilgjengelig</translation>
+<translation id="7245288034498365666">Få orden og spar tid</translation>
 <translation id="7253951228444156601">Sjekker passord …</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjelper deg med å holde orden. Du kan når som helst endre dette i innstillingene.</translation>

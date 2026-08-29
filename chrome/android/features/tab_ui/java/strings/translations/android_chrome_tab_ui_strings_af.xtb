@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Vee groep uit</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onaktiewe item}other{<ph name="TABS_COUNT_MANY" /> onaktiewe items}}</translation>
 <translation id="1568067597247500137">Demp werf</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Skuif oortjie af}other{Skuif oortjies af}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> oortjies gegroepeer</translation>
 <translation id="1657719826150349398">Skuif oortjie ondertoe</translation>
 <translation id="1670942869417022142">Gedempte oudio</translation>
 <translation id="1697284962337958118">Voeg by</translation>
 <translation id="1713541401465507417">Maak alle oortjies en groepe toe</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> oortjiegroep is nie meer beskikbaar nie}other{<ph name="TAB_GROUPS_COUNT_MANY" /> oortjiegroepe is nie meer beskikbaar nie}}</translation>
+<translation id="1759122978835002237">Skuif oortjiegroep op</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Meer inligting<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> oortjie gegroepeer</translation>
 <translation id="1844381456014878100">Ná 7 dae onaktief</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Jou toegemaakte oortjies en groepe kan weer uit die Onlangse oortjies-afdeling en die Oortjiegroepe-afdeling oopgemaak word. Jou Incognito-oortjie sal nie beskikbaar wees nie.}other{Jou toegemaakte oortjies en groepe kan weer uit die Onlangse oortjies-afdeling en die Oortjiegroepe-afdeling oopgemaak word. Jou # Incognito-oortjies sal nie beskikbaar wees nie.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Ontdemp werf}other{Ontdemp werwe}}</translation>
 <translation id="2162620598375156287">Nou <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Skuif oortjiegroep af</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ongroepeer oortjie}other{Ongroepeer oortjies}}</translation>
 <translation id="2271452184061378400">Jou oortjiegroepe word hier gestoor</translation>
 <translation id="2277224997687551299">Wysig groep se naam</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">“<ph name="TAB_GROUP_NAME" />”-oortjiegroep nie meer beskikbaar nie</translation>
 <translation id="7402375256128852434">Voeg onlangse oortjies by</translation>
 <translation id="7452985128687107478">Oortjiegroepe stoor en dateer outomaties op al jou toestelle op</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Skuif oortjie op}other{Skuif oortjies op}}</translation>
 <translation id="747459581954555080">Stel alles terug</translation>
 <translation id="7489558427602531799">Skuif oortjiegroep na regs</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item}other{<ph name="TABS_COUNT_MANY" /> items}}</translation>

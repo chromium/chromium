@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Та {password_count} нууц үг болон нэвтрэх мэдээлэл хэзээ ч хадгалахгүй байхаар сонгосон сайт, аппын жагсаалтыг устгах гэж байна. Таны сайт, аппад зориулж үүсгэсэн аливаа бүртгэлийг устгахгүй.</translation>
 <translation id="1076421457278169141">Кодыг скан хийсэн</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} таб}other{{count} таб}}</translation>
+<translation id="1081948304372277788">Level Up-г унтраах</translation>
 <translation id="1082554859195167538">Танд зориулсан бүтээгдэхүүний шүүмж</translation>
 <translation id="1084365883616172403">Facebook дээр постолж дууслаа.</translation>
 <translation id="108485301461714610">Google Хайлтын ХОУ-ы горим болон холбоотой аппууд</translation>
@@ -51,6 +52,7 @@
 <translation id="1149401351239820326">Хугацаа дуусах сар</translation>
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1158134713295836892">Chrome дахь Gemini</translation>
+<translation id="1159484622358475170">{count,plural, =1{Та 1 нууц үг шалгасан}other{Та # нууц үг шалгасан}}</translation>
 <translation id="1161444134753003495">Нэвтрэх</translation>
 <translation id="1161663161838091892">Үргэлжлүүлэхийн тулд таб, түүхийг синк хийх</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} кредит карт}other{{count} кредит карт}}</translation>
@@ -334,6 +336,7 @@
 <translation id="1993126639825654370">Холбоосны URL-г хуулах</translation>
 <translation id="199425419756152024">Нууц үгийг харах</translation>
 <translation id="1996318269856535896">Та энэ төхөөрөмж дээр одоо байгаа интернэтээр үзсэн өгөгдлөө ашигласаар байх боломжтой. Үүнийг ашиглахын тулд тохиргоо хийгдсэн бүртгэлээсээ гарна уу.</translation>
+<translation id="2002971615187574739">Илүү ихийг хийхэд ХОУ-ыг ашиглаарай</translation>
 <translation id="2010008505735295285">Дахин ачаалах</translation>
 <translation id="2012723204723845092">Эргээд тавтай морилно уу!</translation>
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
@@ -604,6 +607,7 @@
 <translation id="2918688092312652908">Уншаагүй гэж тэмдэглэх</translation>
 <translation id="2922210239002704889">Нүүр хуудас эсвэл гар луугаа очно уу</translation>
 <translation id="2924940770243654951">Шинэ нууцлалтай табд нээх</translation>
+<translation id="2934607171563543600">"Нууц үгээ шалгах" үйлдлийг гүйцэтгэснээс хойш</translation>
 <translation id="2952278131021475699">Lens-н Камерын хайлт</translation>
 <translation id="2953821385349876107">Өөр Google Бүртгэл сонгоно уу</translation>
 <translation id="2962516096219646456">Автоматаар бөглөх бүх өгөгдлийг харах</translation>
@@ -809,6 +813,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}other{{count} нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="3659297405161482746">Ямар ч төлбөрийн хэрэгсэл олдсонгүй</translation>
 <translation id="3662966164093827811">{count,plural, =1{1-ийг сонгосон}other{#-г сонгосон}}</translation>
+<translation id="3668035568083954765">Нууцлалаа хамгаалж, аюулгүй байгаарай</translation>
 <translation id="3668816008081204991">Унших жагсаалтыг нуусан</translation>
 <translation id="3670030362669914947">Тоо</translation>
 <translation id="3672283986707092811">Бүгдийг сонгох</translation>
@@ -1237,6 +1242,7 @@
 <translation id="5056446788882570708">Асуудлыг <ph name="TIME" />-д олсон</translation>
 <translation id="5056587122125565772">Зураг үүсгэх</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Үзэлтээ түвшин ахиулаарай</translation>
 <translation id="5062321486222145940">Google Drive суулгах</translation>
 <translation id="5067540696062462445">Татаж авсан файл</translation>
 <translation id="5070314445039955096">Таныг энэ сайтаас гарах үед "<ph name="SITE_DOMAIN" />"-н зөвшөөрлийг унтраасан болгож шинэчилнэ</translation>
@@ -1686,6 +1692,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6454311990702999318">Өгөгдөл буруу байна</translation>
 <translation id="6459411599807878608">Дэлгэрэнгүй мэдээллийг нуусан</translation>
 <translation id="646394917185284261">Файлс</translation>
+<translation id="6470721056280836221">Google таны онцлогийн ашиглалтын өгөгдлийг ажил зөвлөж, явцыг шинэчлэхэд ашигладаг. Та Level Up-г хүссэн үедээ унтраах боломжтой.</translation>
 <translation id="6472069383518492189">Та татаж авсан файлаа эндээс олно</translation>
 <translation id="6476253015009698798">Энэ хуудсанд үнэ хянах боломжгүй байна.</translation>
 <translation id="6476284679642588870">Төлбөрийн хэрэгсэл удирдах</translation>
@@ -1763,6 +1770,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="667999046851023355">Бичиг баримт</translation>
 <translation id="6681791404926413601">{count,plural, =1{Таны гарын дээр төлбөрийн хэрэгслийн {count} сонголт боломжтой байна.}other{Таны гарын дээр төлбөрийн хэрэгслийн {count} сонголт боломжтой байна.}}</translation>
 <translation id="6682680306647339111">Сануулагчийг хассан</translation>
+<translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6684262542644248484">Вебсайтад нэвтэрнэ үү</translation>
 <translation id="6685259053455152195">Тохиргоог шуурхай өөрчлөх болон хаяг оруулах хэсгээс онцлогуудыг ашиглах товчлол.</translation>
 <translation id="6689342293888598653">Цагаан дэвсгэр өнгө</translation>
@@ -1925,6 +1933,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7233006041370588369">Бөглөх нууц үгийг сонгоно уу.</translation>
 <translation id="723874023660911012">Профайл сэлгэх</translation>
 <translation id="7241135764990439166">Нууцлалын горим боломжгүй байна</translation>
+<translation id="7245288034498365666">Цэгцтэй болж, цаг хэмнээрэй</translation>
 <translation id="7253951228444156601">Нууц үгсийг шалгаж байна…</translation>
 <translation id="7261217796641151584">Бүлэг хуваалцах</translation>
 <translation id="7266578100016339897">Энэ нь танд цэгцтэй байхад тусална. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>

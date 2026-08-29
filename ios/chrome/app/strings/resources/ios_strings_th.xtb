@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">เดือนที่หมดอายุ</translation>
 <translation id="1150989369772528668">ปฏิทิน</translation>
 <translation id="1158134713295836892">Gemini ใน Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{คุณได้ตรวจสอบรหัสผ่าน 1 รายการ}other{คุณได้ตรวจสอบรหัสผ่าน # รายการ}}</translation>
 <translation id="1161444134753003495">ลงชื่อเข้าใช้</translation>
 <translation id="1161663161838091892">ซิงค์แท็บและประวัติการเข้าชมเพื่อดำเนินการต่อ</translation>
 <translation id="1162834932051545794">{count,plural, =1{บัตรเครดิต {count} ใบ}other{บัตรเครดิต {count} ใบ}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">คัดลอก URL ของลิงก์</translation>
 <translation id="199425419756152024">ดูรหัสผ่าน</translation>
 <translation id="1996318269856535896">คุณจะยังใช้ข้อมูลการท่องเว็บที่มีอยู่ในอุปกรณ์นี้ต่อไปได้ หากต้องการใช้งาน ให้ออกจากระบบบัญชีที่จัดการ</translation>
+<translation id="2002971615187574739">ใช้ AI เพื่อทำสิ่งต่างๆ ได้มากขึ้น</translation>
 <translation id="2010008505735295285">โหลดซ้ำ</translation>
 <translation id="2012723204723845092">ยินดีต้อนรับกลับมา</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">ทำเครื่องหมายว่ายังไม่ได้อ่าน</translation>
 <translation id="2922210239002704889">ไปที่หน้าแรกหรือแป้นพิมพ์</translation>
 <translation id="2924940770243654951">เปิดในแท็บใหม่ที่ไม่ระบุตัวตน</translation>
+<translation id="2934607171563543600">นับตั้งแต่ทำขั้นตอน "ตรวจสอบรหัสผ่าน" เสร็จสิ้น</translation>
 <translation id="2952278131021475699">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
 <translation id="2953821385349876107">เลือกบัญชี Google บัญชีอื่น</translation>
 <translation id="2962516096219646456">ดูข้อมูลการป้อนข้อความอัตโนมัติทั้งหมด</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
 <translation id="3659297405161482746">ไม่พบวิธีการชำระเงิน</translation>
 <translation id="3662966164093827811">{count,plural, =1{เลือกไว้ 1 รายการ}other{เลือกไว้ # รายการ}}</translation>
+<translation id="3668035568083954765">ปกป้องความเป็นส่วนตัวและรักษาความปลอดภัย</translation>
 <translation id="3668816008081204991">เรื่องรออ่านซ่อนอยู่</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
 <translation id="3672283986707092811">เลือกทั้งหมด</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">พบปัญหาเมื่อ <ph name="TIME" /></translation>
 <translation id="5056587122125565772">สร้างรูปภาพ</translation>
 <translation id="5059136629401106827">ตกลง</translation>
+<translation id="5061202435354361813">ยกระดับประสบการณ์การท่องเว็บของคุณ</translation>
 <translation id="5062321486222145940">ติดตั้ง Google ไดรฟ์</translation>
 <translation id="5067540696062462445">รายการดาวน์โหลด</translation>
 <translation id="5070314445039955096">สิทธิ์ "<ph name="SITE_DOMAIN" />" จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
@@ -1686,6 +1691,7 @@
 <translation id="6454311990702999318">ข้อมูลไม่ถูกต้อง</translation>
 <translation id="6459411599807878608">ซ่อนรายละเอียดแล้ว</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google ใช้ข้อมูลการใช้งานฟีเจอร์ของคุณเพื่อแนะนำงานและอัปเดตความคืบหน้า คุณปิดใช้การยกระดับได้ทุกเมื่อ</translation>
 <translation id="6472069383518492189">คุณจะเห็นการดาวน์โหลดที่นี่</translation>
 <translation id="6476253015009698798">การติดตามราคาใช้ไม่ได้กับหน้านี้</translation>
 <translation id="6476284679642588870">จัดการวิธีการชำระเงิน</translation>
@@ -1763,6 +1769,7 @@
 <translation id="667999046851023355">เอกสาร</translation>
 <translation id="6681791404926413601">{count,plural, =1{ตัวเลือกวิธีการชำระเงิน {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ตัวเลือกวิธีการชำระเงิน {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="6682680306647339111">นำการช่วยเตือนออกแล้ว</translation>
+<translation id="6683022854667115063">หูฟัง</translation>
 <translation id="6684262542644248484">ลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="6685259053455152195">ทางลัดเพื่อแก้ไขการตั้งค่าและใช้ฟีเจอร์ต่างๆ จากแถบที่อยู่ได้อย่างรวดเร็ว</translation>
 <translation id="6689342293888598653">สีพื้นหลังสีขาว</translation>
@@ -1925,6 +1932,7 @@
 <translation id="7233006041370588369">เลือกรหัสผ่านเพื่อกรอก</translation>
 <translation id="723874023660911012">สลับโปรไฟล์</translation>
 <translation id="7241135764990439166">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
+<translation id="7245288034498365666">จัดระเบียบและประหยัดเวลา</translation>
 <translation id="7253951228444156601">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="7261217796641151584">แชร์กลุ่ม</translation>
 <translation id="7266578100016339897">ซึ่งจะช่วยให้คุณจัดระเบียบข้อมูลได้ คุณสามารถเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>

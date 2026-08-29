@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Padamkan kumpulan</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item tidak aktif}other{<ph name="TABS_COUNT_MANY" /> item tidak aktif}}</translation>
 <translation id="1568067597247500137">Redam tapak</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Alihkan tab ke bawah}other{Alihkan tab ke bawah}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab dihimpunkan</translation>
 <translation id="1657719826150349398">Alihkan tab ke bawah</translation>
 <translation id="1670942869417022142">Audio diredamkan</translation>
 <translation id="1697284962337958118">Tambahkan pada</translation>
 <translation id="1713541401465507417">Tutup semua tab dan kumpulan</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> kumpulan tab tidak tersedia lagi}other{<ph name="TAB_GROUPS_COUNT_MANY" /> kumpulan tab tidak tersedia lagi}}</translation>
+<translation id="1759122978835002237">Alihkan kumpulan tab ke atas</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Ketahui lebih lanjut<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab dihimpunkan</translation>
 <translation id="1844381456014878100">Selepas tidak aktif selama 7 hari</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab. Tab Inkognito anda tidak akan tersedia.}other{Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab. # tab Inkognito anda tidak akan tersedia.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Nyahredamkan laman}other{Nyahredamkan laman}}</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> pada <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Alihkan kumpulan tab ke bawah</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Nyahkumpulkan tab}other{Nyahkumpulkan tab}}</translation>
 <translation id="2271452184061378400">Kumpulan tab anda disimpan di sini</translation>
 <translation id="2277224997687551299">Edit nama kumpulan</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Kumpulan tab "<ph name="TAB_GROUP_NAME" />" tidak tersedia lagi</translation>
 <translation id="7402375256128852434">Tambahkan tab terbaharu</translation>
 <translation id="7452985128687107478">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Alihkan tab ke atas}other{Alihkan tab ke atas}}</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
 <translation id="7489558427602531799">Alihkan kumpulan tab ke kanan</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item}other{<ph name="TABS_COUNT_MANY" /> item}}</translation>

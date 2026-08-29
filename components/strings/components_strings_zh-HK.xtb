@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">正在準備檔案</translation>
 <translation id="1014509239502131234">正在復原結果</translation>
 <translation id="1015730422737071372">提供額外詳情</translation>
+<translation id="1016671033299705843">安全地新增駕駛執照</translation>
 <translation id="1019413721762100891">關閉</translation>
 <translation id="1021753677514347426">此問題由您或其他人在裝置上安裝的憑證而導致。由於憑證曾用作監控及網絡攔截，因此不獲 Chromium 信任。雖然有些監控理由合理 (例如學校或公司網絡)，且無法停止有關監控，但 Chromium 仍希望就此通知您。任何使用網絡的瀏覽器和應用程式都可能受到監控。</translation>
 <translation id="1024111578869940408">攻擊者有時會在網址中加入難以辨識的變更來仿冒網站。</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument 簡報</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 沒有傳送任何資料。</translation>
 <translation id="1393071644879491291">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這類網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">安全地新增身分證至「Google 錢包」</translation>
 <translation id="1398743098754840707">即使分頁已開啟，系統亦不會根據此處新增的網站內容提供答覆。如果訊息串目前在使用你加入的網站，可能需要最多 30 分鐘才會停止參考該網站。</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406370515365284486">你的付款方法仍會保存</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">您輸入的內容、瀏覽的網頁或其他網絡活動都會被監視，且網站內容可能會在您不知情的情況下變更。</translation>
 <translation id="2289385804009217824">修剪</translation>
 <translation id="2292556288342944218">您的互聯網存取權已被封鎖</translation>
+<translation id="2294150501457238325">安全地新增護照</translation>
 <translation id="2295831393422400053">開啟「改善搜尋和瀏覽體驗」即可使用「幫我寫」功能</translation>
 <translation id="2296244067976588032">密鑰 • iCloud 鑰匙圈</translation>
 <translation id="2296331629987861142">輕鬆分期付款 (須符合資格並額外付費)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">管理購物資料</translation>
 <translation id="2933624813161016821">燙金浮雕壓印</translation>
 <translation id="2935726091208500473">分享分頁</translation>
+<translation id="2936698630976431647">揀宣傳代碼欄位，自動填入「Google 錢包」入面嘅優惠</translation>
 <translation id="293796669683825859">留言</translation>
 <translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" />：如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在您的裝置上永久儲存數據</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">新增駕駛執照至「Google 錢包」</translation>
 <translation id="3195213714973468956">「<ph name="SERVER_NAME" />」上的 <ph name="PRINTER_NAME" /></translation>
 <translation id="3196374699162453920">預訂編號</translation>
 <translation id="3196902089458890316">要一律分享相關分頁，以獲得更貼題的答覆嗎？</translation>
@@ -1390,6 +1395,7 @@
 <translation id="3380864720620200369">用戶端 ID：</translation>
 <translation id="3383566085871012386">目前的優先順序</translation>
 <translation id="3383713837163550889">本機檔案將於 1 分鐘後刪除</translation>
+<translation id="33837817515081754">新增已知旅客號碼至「Google 錢包」</translation>
 <translation id="3384522979010096022">機構不允許您查看此網站</translation>
 <translation id="3391030046425686457">送貨地址</translation>
 <translation id="3391482648489541560">編輯檔案</translation>
@@ -1462,6 +1468,7 @@
 <translation id="3517264445792388751">管理員已停用檔案系統</translation>
 <translation id="3518941727116570328">多物件處理</translation>
 <translation id="3519670528214225835">詢問 <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">新增車輛至「Google 錢包」</translation>
 <translation id="3525130752944427905">10 x 14 吋</translation>
 <translation id="3525435918300186947">要控制 MIDI 裝置及將其重新編程嗎？</translation>
 <translation id="3527624163937328588">移除附件</translation>
@@ -1815,6 +1822,7 @@
 <translation id="4103249731201008433">裝置序號無效</translation>
 <translation id="4103592298805904008">紙板 (單層瓦楞紙)</translation>
 <translation id="4104702906064390950">儲存緊 IBAN 資料</translation>
+<translation id="4104995898379951162">安全地新增已知旅客號碼</translation>
 <translation id="4106101218644797743">同步設定</translation>
 <translation id="4106887816571530227">唔批准嵌入嘅內容</translation>
 <translation id="4107047499377819067">VPN 背景服務已開始安裝，可能需時幾分鐘。</translation>
@@ -1872,6 +1880,7 @@
 <translation id="4195459680867822611">睇 Chrome 提示按鈕，啟用之後就可以了解解各項 Chrome 功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196861286325780578">重做移動(&amp;R)</translation>
+<translation id="4199131764832701740">新增護照至「Google 錢包」</translation>
 <translation id="4202554117186904723">第五卷</translation>
 <translation id="4203769790323223880">唔批准用攝錄機</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />檢查防火牆和防毒軟件設定<ph name="END_LINK" /></translation>
@@ -2237,6 +2246,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">安全地更新身分證</translation>
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
+<translation id="4808598252755230865">安全地新增已知旅客號碼至「Google 錢包」</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4811450222531576619">瞭解頁面的來源和主題</translation>
 <translation id="4811696127853690432">將車輛資料安全地儲存至「Google 錢包」</translation>
@@ -2266,6 +2276,7 @@
 <translation id="4855395119669662878">管理員將於 <ph name="DATE_TIME" />開始上載檔案至 <ph name="CLOUD_PROVIDER" />。請保持裝置連線，直至檔案上載完成。上載期間，你只能讀取本機檔案。</translation>
 <translation id="485902285759009870">正在確認驗證碼…</translation>
 <translation id="4860260582253463350">前往 YouTube 之前，我們需要先確認你的身分。系統將會套用家長或監護人在 Family Link 所作的設定。</translation>
+<translation id="4861514638281352187">安全地新增糾正號碼</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
 <translation id="4864406669374375262">複製咗版本字串去剪貼簿</translation>
 <translation id="486459320933704969">您必須獲得家長或監護人許可，才能瀏覽此網站</translation>
@@ -2697,6 +2708,7 @@
 <translation id="55635442646131152">文件大綱</translation>
 <translation id="5563589142503817291">如要使用位置，請在<ph name="LINK" />向 Chrome 授予存取權。</translation>
 <translation id="5565613213060953222">開啟無痕式分頁</translation>
+<translation id="5565613377956908865">新增身分證至「Google 錢包」</translation>
 <translation id="5565735124758917034">啟用</translation>
 <translation id="5570825185877910964">保護帳戶</translation>
 <translation id="5571083550517324815">無法在此地址取貨，請選取其他地址。</translation>
@@ -2884,6 +2896,7 @@
 <translation id="5895694128043506580">Google Chrome 正嘗試顯示敏感資料</translation>
 <translation id="5898767305816764989">鍾意掣，㩒 Enter 鍵就可以俾意見，表示你鍾意「<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
 <translation id="5901630391730855834">黃色</translation>
+<translation id="5902204772823742902">安全地新增駕駛執照至「Google 錢包」</translation>
 <translation id="5903264686717710770">標題：</translation>
 <translation id="5905671155741555195">設定公司地址可讓你透過不同 Google 服務處理大小事務，例如取得更切合需求的搜尋結果和「Google 地圖」路線指示。你可前往 <ph name="BEGIN_LINK" />Google 帳戶 (<ph name="ACCOUNT" />) <ph name="END_LINK" />編輯或刪除地址。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
@@ -3303,6 +3316,7 @@
 <translation id="6613866251791999074">進一步了解你喺 Chrome 入面嘅搜尋引擎</translation>
 <translation id="6615297766614333076">堆疊器 2</translation>
 <translation id="6619496928666593220">未填入 IBAN</translation>
+<translation id="662009501953240458">安全地新增車輛至「Google 錢包」</translation>
 <translation id="6624427990725312378">聯絡人資料</translation>
 <translation id="6625629379283886932">教我如何編碼</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜尋</translation>
@@ -3673,6 +3687,7 @@
 <translation id="7261463765917514051">使用自動填入功能安全結帳</translation>
 <translation id="7265608370113700582">地址只可以喺呢部裝置上面用</translation>
 <translation id="7266094331715305887">裝置上的應用程式</translation>
+<translation id="7268742523336093718">安全地新增護照至「Google 錢包」</translation>
 <translation id="7269151392155523061">快速鍵不得與 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 定義的搜尋聚合器關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">你下載的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
@@ -4242,6 +4257,7 @@
 <translation id="8241707690549784388">您尋找的網頁使用了您輸入的資料。返回該頁會重複您剛才的動作。您確定要繼續嗎？</translation>
 <translation id="8242426110754782860">繼續</translation>
 <translation id="824620968958405573">自動瀏覽工作</translation>
+<translation id="8247824837030847066">安全地新增身分證</translation>
 <translation id="8248406213705193919">想安全地儲存信用卡？</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250094606476360498">此地址目前已儲存在此裝置上。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
@@ -4661,6 +4677,7 @@
 <translation id="9003639428623471314">Kahu 信封</translation>
 <translation id="9004367719664099443">正在執行 VR 工作階段</translation>
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
+<translation id="900686221526305417">安全地新增車輛</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9010187979699879769">建立溫習時間表</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
@@ -4814,6 +4831,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺「Google 協作平台」度快速建立新版網站</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> 位成員已加入「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="949314938206378263">您已要求瀏覽此網站。家長可透過 Family Link 回覆要求。</translation>
+<translation id="949484466204182817">新增糾正號碼至「Google 錢包」</translation>
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="950926967802086924">密鑰 • Google 密碼管理工具</translation>
 <translation id="952165179818196872">新增 <ph name="PROVIDER" />，無需切換應用程式即可付款</translation>
@@ -4828,6 +4846,7 @@
 <translation id="962484866189421427">此內容可能會嘗試安裝欺詐應用程式來冒充其他內容，或收集可用來追蹤您的資料。<ph name="BEGIN_LINK" />一律顯示<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">根據你所在地區的法律規定，Chromium 會要求你選擇預設搜尋引擎。這些搜尋引擎是你所在地區的熱門之選，次序隨機排列。</translation>
 <translation id="963837307749850257">所有使用者</translation>
+<translation id="963988220224168636">安全地新增糾正號碼至「Google 錢包」</translation>
 <translation id="964050462028070434">管理密碼和密鑰…</translation>
 <translation id="964681140808832181">是，我想取消</translation>
 <translation id="969892804517981540">正式版本</translation>

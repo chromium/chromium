@@ -86,7 +86,6 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome zaleca wstrzymanie karty, która spowalnia przeglądarkę}few{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}many{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}other{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}}</translation>
 <translation id="1832046143430087831">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chrome, ale będzie ona trochę mniej odporna na ataki. To ustawienie jest wyłączone.</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
-<translation id="1842869163383855194">Łatwy dostęp do wyszukiwarki w Chrome na całym urządzeniu, nawet wtedy, gdy przeglądarka Chrome jest zminimalizowana.</translation>
 <translation id="1843347690926158494">Wyszukaj na tej karcie za pomocą Obiektywu Google</translation>
 <translation id="1849248141818021764">Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, musisz <ph name="BEGIN_LINK" />usunąć dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Używaj aplikacji Chrome, aby przeglądać internet, gdziekolwiek jesteś</translation>
@@ -325,7 +324,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4173512894976930765">Strony będą prawdopodobnie działać zgodnie z oczekiwaniami. Gdy zamkniesz wszystkie okna Chrome, nastąpi wylogowanie z większości stron. Jeśli będziesz zalogowany(-a) w Chrome, nie wylogujemy Cię z konta Google.</translation>
 <translation id="4175922240926474352">Pobieranie zostało zablokowane przez Chrome, ponieważ strona nie korzysta z bezpiecznego połączenia, a plik mógł zostać zmodyfikowany</translation>
 <translation id="4191857738314598978">{0,plural, =1{Ponowne uruchomienie Chrome nastąpi w ciągu 1 dnia}few{Ponowne uruchomienie Chrome nastąpi w ciągu # dni}many{Ponowne uruchomienie Chrome nastąpi w ciągu # dni}other{Ponowne uruchomienie Chrome nastąpi w ciągu # dnia}}</translation>
-<translation id="4222394563269716113">Otwieraj wyszukiwarkę w Chrome za pomocą skrótu klawiszowego.</translation>
 <translation id="4222932583846282852">Anuluję...</translation>
 <translation id="4224210481850767180">Instalacja została anulowana.</translation>
 <translation id="4242034826641750751">Ta strona musi mieć w Chrome dostęp do aparatu i mikrofonu</translation>
@@ -351,7 +349,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Udostępnij ten dokument Gemini w Chrome, aby uzyskać szybki przegląd i zadać dodatkowe pytania</translation>
-<translation id="4447327682081576371">Pokaż wyszukiwarkę w Chrome na pasku menu Maca i włącz skrót klawiszowy</translation>
 <translation id="4450664632294415862">Chrome – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
@@ -375,6 +372,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="475321580758063259">Zaktualizuj Chrome, aby nadal korzystać z danych Chrome na koncie <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chrome, ale będzie ona trochę mniej odporna na ataki</translation>
+<translation id="4768676935374695498">Wyszukaj ten film za pomocą Obiektywu Google</translation>
 <translation id="479167709087336770">Będzie stosowany ten sam mechanizm sprawdzania pisowni, który jest używany w wyszukiwarce Google. Tekst wpisywany w przeglądarce jest wysyłany do Google. Zawsze możesz to zmienić w ustawieniach.</translation>
 <translation id="4793679854893018356">Jak Chrome dba o Twoje bezpieczeństwo</translation>
 <translation id="4799870290441980300">Włącza dodatkowe funkcje, aby zapewnić najsilniejszą ochronę w Chrome</translation>
@@ -437,7 +435,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5402307365844630024">Włącz lub wyłącz Gemini w Chrome Beta</translation>
 <translation id="541844421954567481">Zabierz ze sobą hasła, karty i inne dane dzięki aplikacji Chrome na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Plik ustawień jest uszkodzony lub nieprawidłowy. Google Chrome nie może odzyskać ustawień.</translation>
-<translation id="545114101312117217">Łatwy dostęp do skrótów z poziomu wyszukiwarki w Chrome</translation>
 <translation id="5465210843490471889">Wybierz profil Chrome, którego chcesz używać z <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome uruchamia się teraz po uruchomieniu systemu Windows, dzięki czemu możesz od razu zacząć przeglądać strony. Możesz to wyłączyć w ustawieniach.</translation>
 <translation id="5486346529181556467">Zgłoś witrynę, która Twoim zdaniem jest szkodliwa, aby zwiększyć bezpieczeństwo online wszystkich użytkowników. Więcej informacji o <ph name="BEGIN_LINK" />zasadach Google dotyczących niebezpiecznych witryn<ph name="END_LINK" /></translation>
@@ -513,7 +510,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6166185671393271715">Importowanie haseł do Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
-<translation id="6177442314419606057">Szukaj w Chrome</translation>
 <translation id="6180522807229584611">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome ją dezaktywować.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6192058120268468905">Twoje konto w Chrome</translation>
@@ -721,7 +717,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8074398340364918139">Aby wyszukać konkretną funkcję lub rozszerzenie Chrome, wpisz skrót do danego elementu na pasku adresu i naciśnij wybrany klawisz</translation>
 <translation id="8077579734294125741">Inne profile Chrome</translation>
 <translation id="8086881907087796310">Instalacja się nie udała, ponieważ komputer nie spełnia minimalnych wymagań sprzętowych.</translation>
-<translation id="8093772166980702367">Pokaż wyszukiwarkę w Chrome w obszarze powiadomień i włącz skrót klawiszowy</translation>
 <translation id="8110438089258398864">Możesz ponownie otworzyć tryb AI w wyszukiwarce Google, aby zadawać pytania podczas przeglądania</translation>
 <translation id="8113883687556086139">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="8115695070094288807">Dostosowuję Chrome…</translation>
@@ -765,10 +760,12 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="848851325211467878">Zalogowano jako <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subskrypcja Google. Otwórz menu konta</translation>
 <translation id="8496177819998570653">Menedżer &amp;haseł Google</translation>
 <translation id="8498858610309223613">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Google Chrome. Uruchom ponownie Chrome teraz. Karty zostaną przywrócone.</translation>
+<translation id="8502181052659370">Wyszukaj na tej karcie za pomocą Obiektywu Google</translation>
 <translation id="8521348052903287641">Reguła dla ruchu przychodzącego w wersji deweloperskiej Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="852529348814672339">Wyświetlaj Chrome w tym języku</translation>
 <translation id="8525579356836940628">Instalacja zatrzymana</translation>
 <translation id="8533056045953418157">Ustaw Google Chrome jako domyślną przeglądarkę plików PDF</translation>
+<translation id="854593887324189900">Wyszukaj ten obraz za pomocą Obiektywu Google</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Przeszukaj listę języków</translation>
 <translation id="8575047640889685742">Używaj <ph name="BEGIN_LINK" />własnego hasła<ph name="END_LINK" /> do szyfrowania wszystkich danych Chrome na koncie Google Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.</translation>

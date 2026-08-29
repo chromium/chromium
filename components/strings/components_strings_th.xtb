@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">กำลังเตรียมไฟล์</translation>
 <translation id="1014509239502131234">กำลังเลิกทำผลลัพธ์</translation>
 <translation id="1015730422737071372">ให้รายละเอียดเพิ่มเติม</translation>
+<translation id="1016671033299705843">เพิ่มใบขับขี่อย่างปลอดภัย</translation>
 <translation id="1019413721762100891">ปิด</translation>
 <translation id="1021753677514347426">ปัญหานี้เกิดจากใบรับรองที่คุณหรือคนอื่นติดตั้งไว้ในอุปกรณ์ เป็นที่ทราบกันว่า ใบรับรองนี้ใช้สำหรับการตรวจสอบและสกัดกั้นเครือข่าย และ Chromium ไม่เชื่อถือ แม้ว่าจะมีบางกรณีที่การตรวจสอบชอบด้วยกฎหมาย เช่น เครือข่ายของบริษัทหรือโรงเรียน แต่ Chromium ก็ยังอยากจะแน่ใจว่าคุณรับรู้ว่ามีการตรวจสอบถึงแม้จะหยุดการตรวจสอบนั้นไม่ได้ก็ตาม การตรวจสอบอาจเกิดขึ้นได้ในทุกเบราว์เซอร์หรือแอปพลิเคชันที่เข้าถึงเว็บ</translation>
 <translation id="1024111578869940408">บางครั้งผู้โจมตีจะเลียนแบบเว็บไซต์ต่างๆ โดยทำการเปลี่ยนแปลงที่สังเกตเห็นได้ยากกับที่อยู่เว็บ</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">งานนำเสนอ OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ไม่ส่งข้อมูลใดๆ</translation>
 <translation id="1393071644879491291">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์ Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">เพิ่มบัตรประชาชนลงใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="1398743098754840707">ระบบจะไม่นำเว็บไซต์ที่คุณเพิ่มไว้ที่นี่มาอ้างอิงสำหรับคำตอบ แม้ว่าแท็บจะเปิดอยู่ก็ตาม หากเว็บไซต์ที่คุณเพิ่มมีการใช้งานอยู่ในชุดข้อความ ระบบอาจใช้เวลาสูงสุด 30 นาทีในการหยุดอ้างอิงเว็บไซต์ดังกล่าวในชุดข้อความ</translation>
 <translation id="1405567553485452995">เขียวอ่อน</translation>
 <translation id="1406370515365284486">ระบบจะยังคงบันทึกวิธีการชำระเงินของคุณไว้</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">มีการสอดแนมทุกอย่างที่คุณพิมพ์ หน้าที่คุณเข้าชม หรือกิจกรรมอื่นใดที่คุณทำในหน้าเว็บ อาจมีการเปลี่ยนแปลงเนื้อหาในเว็บไซต์โดยไม่แจ้งให้คุณทราบ</translation>
 <translation id="2289385804009217824">ตัด</translation>
 <translation id="2292556288342944218">การเข้าถึงอินเทอร์เน็ตของคุณถูกบล็อก</translation>
+<translation id="2294150501457238325">เพิ่มหนังสือเดินทางอย่างปลอดภัย</translation>
 <translation id="2295831393422400053">เปิดการตั้งค่า "ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น" เพื่อใช้ฟีเจอร์ช่วยฉันเขียน</translation>
 <translation id="2296244067976588032">พาสคีย์ • พวงกุญแจ iCloud</translation>
 <translation id="2296331629987861142">ผ่อนชำระได้ง่ายๆ (ขึ้นอยู่กับสิทธิ์และมีค่าธรรมเนียม)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">จัดการข้อมูลการช็อปปิ้ง</translation>
 <translation id="2933624813161016821">ฟอยล์ลายนูน</translation>
 <translation id="2935726091208500473">การแชร์แท็บ</translation>
+<translation id="2936698630976431647">เลือกช่องรหัสโปรโมชันเพื่อป้อนข้อเสนอจาก Google Wallet โดยอัตโนมัติ</translation>
 <translation id="293796669683825859">ความคิดเห็น</translation>
 <translation id="2938225289965773019">เปิดลิงก์ <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – หากต้องการแสดงเคอร์เซอร์ ให้สลับแอป โหลดหน้าเว็บซ้ำ หรือย้อนกลับ</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3190736958609431397">ยกเลิกการติดตาม</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ต้องการจัดเก็บข้อมูลอย่างถาวรในอุปกรณ์ของคุณ</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">เพิ่มใบขับขี่ลงใน Google Wallet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ใน <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">รหัสการจอง</translation>
 <translation id="3196902089458890316">แชร์แท็บที่เกี่ยวข้องอยู่เสมอเพื่อให้ได้คำตอบที่ดียิ่งขึ้นไหม</translation>
@@ -1390,6 +1395,7 @@
 <translation id="3380864720620200369">รหัสลูกค้า:</translation>
 <translation id="3383566085871012386">ลำดับที่มีความสำคัญสูงกว่าในปัจจุบัน</translation>
 <translation id="3383713837163550889">ระบบจะลบไฟล์ในเครื่องของคุณใน 1 นาที</translation>
+<translation id="33837817515081754">เพิ่มหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN) ลงใน Google Wallet</translation>
 <translation id="3384522979010096022">องค์กรไม่อนุญาตให้ดูเว็บไซต์นี้</translation>
 <translation id="3391030046425686457">ที่อยู่สำหรับจัดส่ง</translation>
 <translation id="3391482648489541560">การแก้ไขไฟล์</translation>
@@ -1462,6 +1468,7 @@
 <translation id="3517264445792388751">ผู้ดูแลระบบปิดใช้ระบบไฟล์</translation>
 <translation id="3518941727116570328">การจัดการออบเจ็กต์หลายรายการ</translation>
 <translation id="3519670528214225835">ถาม <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">เพิ่มยานพาหนะลงใน Google Wallet</translation>
 <translation id="3525130752944427905">10 x 14 นิ้ว</translation>
 <translation id="3525435918300186947">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ไหม</translation>
 <translation id="3527624163937328588">นำไฟล์แนบออก</translation>
@@ -1815,6 +1822,7 @@
 <translation id="4103249731201008433">หมายเลขซีเรียลของอุปกรณ์ไม่ถูกต้อง</translation>
 <translation id="4103592298805904008">กระดาษแข็ง (3 ชั้น)</translation>
 <translation id="4104702906064390950">กำลังบันทึกข้อมูล IBAN</translation>
+<translation id="4104995898379951162">เพิ่มหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN) อย่างปลอดภัย</translation>
 <translation id="4106101218644797743">การตั้งค่าการซิงค์</translation>
 <translation id="4106887816571530227">ไม่อนุญาตให้มีเนื้อหาที่ฝัง</translation>
 <translation id="4107047499377819067">การติดตั้งบริการ VPN ที่ทำงานอยู่เบื้องหลังได้เริ่มขึ้นแล้ว ซึ่งอาจใช้เวลาสักครู่</translation>
@@ -1872,6 +1880,7 @@
 <translation id="4195459680867822611">ปุ่มดูเคล็ดลับในการใช้ Chrome เปิดใช้งานเพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4196861286325780578">&amp;ทำซ้ำการย้าย</translation>
+<translation id="4199131764832701740">เพิ่มหนังสือเดินทางลงใน Google Wallet</translation>
 <translation id="4202554117186904723">ม้วนกระดาษ 5</translation>
 <translation id="4203769790323223880">ไม่อนุญาตให้ใช้กล้องถ่ายรูป</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ตรวจสอบไฟร์วอลล์และการกำหนดค่าการป้องกันไวรัส<ph name="END_LINK" /></translation>
@@ -2237,6 +2246,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">อัปเดตบัตรประจำตัวอย่างปลอดภัย</translation>
 <translation id="4807098396393229769">ชื่อบนบัตร</translation>
+<translation id="4808598252755230865">เพิ่มหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN) ลงใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="4809079943450490359">วิธีการจากผู้ดูแลระบบอุปกรณ์ของคุณ</translation>
 <translation id="4811450222531576619">ดูข้อมูลเกี่ยวกับแหล่งที่มาและหัวข้อ</translation>
 <translation id="4811696127853690432">บันทึกยานพาหนะอย่างปลอดภัยใน Google Wallet</translation>
@@ -2266,6 +2276,7 @@
 <translation id="4855395119669662878">ผู้ดูแลระบบจะเริ่มอัปโหลดไฟล์ของคุณไปยัง <ph name="CLOUD_PROVIDER" /> ในวันที่ <ph name="DATE_TIME" /> โปรดเชื่อมต่ออุปกรณ์ไว้จนกว่าการอัปโหลดไฟล์จะเสร็จสมบูรณ์ ในระหว่างการอัปโหลด คุณจะสามารถอ่านไฟล์ในเครื่องได้เท่านั้น</translation>
 <translation id="485902285759009870">กำลังยืนยันรหัส...</translation>
 <translation id="4860260582253463350">เราต้องตรวจสอบว่าเป็นคุณจริงๆ เพื่อดำเนินการต่อบน YouTube คุณจะได้รับการตั้งค่าที่พ่อแม่หรือผู้ปกครองตั้งไว้ใน Family Link</translation>
+<translation id="4861514638281352187">เพิ่มหมายเลข Redress อย่างปลอดภัย</translation>
 <translation id="4862642413395066333">การเซ็นชื่อในการตอบสนอง OCSP</translation>
 <translation id="4864406669374375262">คัดลอกสตริงเวอร์ชันไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="486459320933704969">พ่อแม่หรือผู้ปกครองต้องระบุว่าคุณเข้าชมเว็บไซต์นี้ได้</translation>
@@ -2697,6 +2708,7 @@
 <translation id="55635442646131152">โครงร่างเอกสาร</translation>
 <translation id="5563589142503817291">หากต้องการใช้ตำแหน่ง โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="LINK" /></translation>
 <translation id="5565613213060953222">เปิดแท็บที่ไม่ระบุตัวตน</translation>
+<translation id="5565613377956908865">เพิ่มบัตรประชาชนลงใน Google Wallet</translation>
 <translation id="5565735124758917034">ใช้งานอยู่</translation>
 <translation id="5570825185877910964">ปกป้องบัญชี</translation>
 <translation id="5571083550517324815">ไม่สามารถรับสินค้าจากที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
@@ -2884,6 +2896,7 @@
 <translation id="5895694128043506580">Google Chrome กำลังพยายามแสดงข้อมูลที่ละเอียดอ่อน</translation>
 <translation id="5898767305816764989">ปุ่มชอบ กด Enter เพื่อส่งความคิดเห็นว่าคุณชอบ<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
+<translation id="5902204772823742902">เพิ่มใบขับขี่ลงใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="5903264686717710770">ชื่อ:</translation>
 <translation id="5905671155741555195">ที่อยู่ที่ทำงานจะช่วยให้คุณทำสิ่งต่างๆ ให้เสร็จด้วยบริการของ Google ได้ เช่น ผลการค้นหาที่เกี่ยวข้องมากขึ้นและเส้นทางใน Google Maps คุณแก้ไขหรือลบที่อยู่ใน<ph name="BEGIN_LINK" />บัญชี Google ของคุณ (<ph name="ACCOUNT" />)<ph name="END_LINK" /> ได้</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ซิงค์แล้ว)</translation>
@@ -3303,6 +3316,7 @@
 <translation id="6613866251791999074">ดูข้อมูลเพิ่มเติมเกี่ยวกับเครื่องมือค้นหาใน Chrome</translation>
 <translation id="6615297766614333076">สแต็กเกอร์ 2</translation>
 <translation id="6619496928666593220">ไม่ได้กรอก IBAN</translation>
+<translation id="662009501953240458">เพิ่มยานพาหนะลงใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="6624427990725312378">ข้อมูลติดต่อ</translation>
 <translation id="6625629379283886932">สอนวิธีเขียนโค้ดให้ฉันหน่อย</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ค้นหา</translation>
@@ -3673,6 +3687,7 @@
 <translation id="7261463765917514051">ชำระเงินอย่างปลอดภัยด้วยการป้อนข้อความอัตโนมัติ</translation>
 <translation id="7265608370113700582">ที่อยู่จะใช้งานได้เฉพาะบนอุปกรณ์นี้เท่านั้น</translation>
 <translation id="7266094331715305887">แอปในอุปกรณ์</translation>
+<translation id="7268742523336093718">เพิ่มหนังสือเดินทางลงใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="7269151392155523061">ทางลัดต้องไม่เหมือนกับคีย์เวิร์ดของผู้รวบรวมข้อมูลการค้นหาที่กำหนดโดย <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ไฟล์ที่คุณดาวน์โหลดจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อนหรือมัลแวร์ และอาจจัดเก็บตามนโยบายบริษัทและผู้ดูแลระบบมองเห็นได้</translation>
 <translation id="7275334191706090484">บุ๊กมาร์กที่มีการจัดการ</translation>
@@ -4242,6 +4257,7 @@
 <translation id="8241707690549784388">หน้าที่คุณกำลังมองหาใช้ข้อมูลที่คุณได้ป้อนไว้แล้ว การกลับไปสู่หน้านั้นอาจทำให้คุณต้องทำซ้ำการดำเนินการใดๆ ที่คุณทำแล้ว คุณต้องการดำเนินการต่อหรือไม่</translation>
 <translation id="8242426110754782860">ดำเนินการต่อ</translation>
 <translation id="824620968958405573">งานท่องเว็บอัตโนมัติ</translation>
+<translation id="8247824837030847066">เพิ่มบัตรประชาชนอย่างปลอดภัย</translation>
 <translation id="8248406213705193919">บันทึกบัตรไว้อย่างปลอดภัยไหม</translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
 <translation id="8250094606476360498">บันทึกที่อยู่นี้ไว้ในอุปกรณ์นี้แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
@@ -4662,6 +4678,7 @@
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">เซสชัน VR กำลังทำงาน</translation>
 <translation id="9005998258318286617">ไม่สามารถโหลดเอกสาร PDF</translation>
+<translation id="900686221526305417">เพิ่มยานพาหนะอย่างปลอดภัย</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
 <translation id="9010187979699879769">สร้างตารางอ่านหนังสือให้ฉันหน่อย</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{ไม่มี}=1{จากเว็บไซต์ 1 แห่ง}other{จากเว็บไซต์ # แห่ง}}</translation>
@@ -4815,6 +4832,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างเว็บไซต์แบบใหม่ใน Google Sites อย่างรวดเร็ว</translation>
 <translation id="949026252328034572">สมาชิก <ph name="MEMBER_COUNT" /> คนเข้าร่วมกลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">คุณขอเข้าชมเว็บไซต์นี้ ผู้ปกครองจะตอบกลับได้ใน Family Link</translation>
+<translation id="949484466204182817">เพิ่มหมายเลข Redress ลงใน Google Wallet</translation>
 <translation id="950736567201356821">เจาะรูด้านบน 3 รู</translation>
 <translation id="950926967802086924">พาสคีย์ • เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="952165179818196872">เพิ่ม <ph name="PROVIDER" /> เพื่อชำระเงินโดยไม่ต้องเปลี่ยนแอป</translation>
@@ -4829,6 +4847,7 @@
 <translation id="962484866189421427">เนื้อหานี้อาจพยายามติดตั้งแอปที่หลอกลวงซึ่งปลอมเป็นเนื้อหาอย่างอื่นหรือรวบรวมข้อมูลที่อาจนำไปใช้ติดตามคุณ <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Chromium จะขอให้คุณเลือกเครื่องมือค้นหาเริ่มต้นตามกฎหมายในภูมิภาคของคุณ เครื่องมือค้นหาเหล่านี้ได้รับความนิยมในภูมิภาคดังกล่าว และแสดงแบบสุ่มลำดับ</translation>
 <translation id="963837307749850257">ผู้ใช้ทุกคน</translation>
+<translation id="963988220224168636">เพิ่มหมายเลข Redress ลงใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="964050462028070434">จัดการรหัสผ่านและพาสคีย์…</translation>
 <translation id="964681140808832181">ใช่ ฉันต้องการยกเลิก</translation>
 <translation id="969892804517981540">รุ่นที่เป็นทางการ</translation>

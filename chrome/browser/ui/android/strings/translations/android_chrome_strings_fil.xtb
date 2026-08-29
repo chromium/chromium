@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Isinara ang promo na mga notification tungkol sa mga tip</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1045899828449635435">I-clear ang data sa mga site?</translation>
+<translation id="1049461303780085993">Subukan ang Gemini sa Chrome para makakuha ng mga sagot, pangunahing takeaway, at higit pa</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Hindi ma-access ang ilan sa iyong mga password</translation>
 <translation id="1057623954802068161">Mag-scroll pataas ng page</translation>
@@ -1117,6 +1118,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5465437530117042974">Isinara ang mga pagbabago sa Bottom Sheet ng Tab.</translation>
 <translation id="5469852975082458401">Puwede kang mag-navigate sa mga page gamit ang text cursor. Pindutin ang F7 para i-off.</translation>
 <translation id="5471273988133666918">Hindi maililipat ang tab na <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">Nire-require ang access sa human interface device</translation>
 <translation id="548278423535722844">Buksan sa app na mga mapa</translation>
 <translation id="5489222148748465285">Hayaang maghanap pa ang Chrome?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, Naka-multiselect na Picture-in-Picture na Tab</translation>
@@ -1964,6 +1966,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="867914734596684889">Ipakita o i-hide ang Bookmarks bar</translation>
 <translation id="8683039184091909753">larawan</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Napiling Tab</translation>
+<translation id="8694622119922491927">Kailangan ng <ph name="APP_NAME" /> ng pahintulot na i-access ang mga human interface device (mga HID) para sa site na ito. Puwede mong baguhin ang setting na ito sa ibang pagkakataon sa Mga Setting &gt; Mga App &gt; Espesyal na access sa app.</translation>
 <translation id="8696297579102085705">Ipadala sa iyong device</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
 <translation id="8700565880437506364">Ipinapakilala ang Gemini sa Chrome</translation>

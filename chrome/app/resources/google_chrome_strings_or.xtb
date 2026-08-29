@@ -90,7 +90,6 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବକୁ ବିରତ କରିବାକୁ ସୁପାରିଶ କରେ}other{Chrome ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବଗୁଡ଼ିକୁ ବିରତ କରିବାକୁ ସୁପାରିଶ କରେ}}</translation>
 <translation id="1832046143430087831">Chromeର V8 ଇଞ୍ଜିନ ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକର ସ୍ପିଡ ବଢ଼ାଏ କିନ୍ତୁ Chromeକୁ ଆକ୍ରମଣ ପ୍ରତି ସାମାନ୍ୟ କମ ପ୍ରତିରୋଧୀ କରିଥାଏ। ଏହି ସେଟିଂ ବନ୍ଦ ଅଛି।</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
-<translation id="1842869163383855194">Chromeକୁ ଛୋଟ କରାଯାଇଥିଲେ ମଧ୍ୟ, ଆପଣଙ୍କର ସମଗ୍ର ଡିଭାଇସରେ Chromeରେ ସର୍ଚ୍ଚକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସହଜ ଆକ୍ସେସ।</translation>
 <translation id="1843347690926158494">Google Lens ମାଧ୍ୟମରେ ଏହି ଟାବକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1849248141818021764">କେବଳ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଥିବା କେହି ଜଣେ ବ୍ୟକ୍ତି ଆପଣଙ୍କ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ପଢ଼ିପାରିବେ। ଏହି ପାସଫ୍ରେଜ Googleକୁ ପଠାଯାଏ ନାହିଁ କିମ୍ବା ଏହା ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଏ ନାହିଁ। ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଭୁଲି ଯାଆନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହାଁନ୍ତି, ତେବେ ଆପଣଙ୍କୁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରିବା<ph name="END_LINK" /> ଆବଶ୍ୟକ।</translation>
 <translation id="1856809424654973980">ଯାତ୍ରା କରିବା ସମୟରେ ବ୍ରାଉଜିଂ ଜାରି ରଖିବା ପାଇଁ Chrome ଆପ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -329,7 +328,6 @@
 <translation id="4173512894976930765">ସାଇଟଗୁଡ଼ିକ ସମ୍ଭବତଃ ଆଶା କରାଯାଉଥିବା ପରି କାମ କରିବ। ଯଦି ଆପଣ Chromeରେ ସାଇନ ଇନ କରିଛନ୍ତି ତେବେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ବ୍ୟତୀତ ଆପଣ ସମସ୍ତ Chrome ୱିଣ୍ଡୋକୁ ବନ୍ଦ କଲେ ଆପଣଙ୍କୁ ଅଧିକାଂଶ ସାଇଟରୁ ସାଇନ ଆଉଟ କରାଯିବ।</translation>
 <translation id="4175922240926474352">Chrome ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି କାରଣ ଏହି ସାଇଟ ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରୁ ନାହିଁ ଏବଂ ଫାଇଲଟି ଟେମ୍ପର ହୋଇଥାଇପାରେ</translation>
 <translation id="4191857738314598978">{0,plural, =1{ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}other{# ଦିନ ମଧ୍ୟରେ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}}</translation>
-<translation id="4222394563269716113">ଏକ କୀବୋର୍ଡ ସର୍ଟକଟ ମାଧ୍ୟମରେ Chromeରେ ସର୍ଚ୍ଚକୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="4222932583846282852">ବାତିଲ୍ ହେଉଛି...</translation>
 <translation id="4224210481850767180">ଇନଷ୍ଟଲେସନକୁ ବାତିଲ କରାଯାଇଛି।</translation>
 <translation id="4242034826641750751">ଏହି ସାଇଟ୍ ପାଇଁ Chrome କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
@@ -355,7 +353,6 @@
 <translation id="4427306783828095590">ଉନ୍ନତ ସୁରକ୍ଷା ଫିସିଂ ଓ ମାଲୱେୟାରକୁ ବ୍ଲକ୍ କରିବାକୁ ଅନେକ କିଛି କରେ</translation>
 <translation id="4434353761996769206">ଇନଷ୍ଟଲର ତ୍ରୁଟି: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">ଏକ କୁଇକ ଓଭରଭ୍ୟୁ ପାଇବା ଏବଂ ଫଲୋ-ଅପ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ Chromeରେ Gemini ସହ ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସେୟାର କରନ୍ତୁ</translation>
-<translation id="4447327682081576371">Mac ମେନୁ ବାରରେ Chromeରେ ସର୍ଚ୍ଚକୁ ଦେଖାନ୍ତୁ ଏବଂ କୀବୋର୍ଡ ସର୍ଟକଟ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4450664632294415862">Chrome - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chromeରେ ଅନ୍ୟ ଏକ କାର୍ଯ୍ୟ ପ୍ରକ୍ରିୟାରତ ଅଛି। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4493028449971051158">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: ଦୟାକରି ଆଡମିନିଷ୍ଟ୍ରେଟର ଭାବେ ଇନଷ୍ଟଲର ଚଲାନ୍ତୁ।</translation>
@@ -379,6 +376,7 @@
 <translation id="475321580758063259">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ Chrome ଡାଟା ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ Chromeକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Chromeର V8 ଇଞ୍ଜିନ ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକର ସ୍ପିଡ ବଢ଼ାଏ କିନ୍ତୁ Chromeକୁ ଆକ୍ରମଣ ପ୍ରତି ସାମାନ୍ୟ କମ ପ୍ରତିରୋଧୀ କରିଥାଏ</translation>
+<translation id="4768676935374695498">Google Lens ମାଧ୍ୟମରେ ଏହି ଭିଡିଓକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="479167709087336770">ଏହା Google ସନ୍ଧାନରେ ବ୍ୟବହୃତ ହେଉଥିବା ସମାନବନାନ ଯାଞ୍ଚକାରୀ ବ୍ୟବହାର କରେ। ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଯାଏ। ଆପଣ ସର୍ବଦା ସେଟିଂସ୍‌ରେ ଏହି ଆଚରଣ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="4793679854893018356">Chrome ଆପଣଙ୍କୁ କିପରି ସୁରକ୍ଷିତ ରଖେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="4799870290441980300">Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପ୍ରଦାନ କରିବା ପାଇଁ ଅତିରିକ୍ତ ଫିଚରକୁ ଚାଲୁ କରେ</translation>
@@ -445,7 +443,6 @@
 <translation id="5430073640787465221">ଆପଣଙ୍କର ଅଗ୍ରାଧିକାର ଫାଇଲ୍‌ ଖରାପ କିମ୍ବା ଅବୈଧ ଅଟେ।
 
 ଆପଣଙ୍କର ସେଟିଂସ୍‌ ପୁନରୁଦ୍ଧାର କରିବାକୁ Google Chrome ଅକ୍ଷମ ଅଟେ।</translation>
-<translation id="545114101312117217">Chromeରେ ସର୍ଚ୍ଚରୁ ଆପଣଙ୍କ ସର୍ଟକଟକୁ ସହଜ ଆକ୍ସେସ</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ସହ ବ୍ୟବହାର କରିବାକୁ ଏକ Chrome ପ୍ରୋଫାଇଲ ବାଛନ୍ତୁ</translation>
 <translation id="547202872422499512">Windows ଆରମ୍ଭ ହେଲେ Chrome ବର୍ତ୍ତମାନ ଲଞ୍ଚ ହୁଏ ଯାହା ଫଳରେ ଆପଣ ତୁରନ୍ତ ବ୍ରାଉଜ କରିବା ଆରମ୍ଭ କରିପାରିବେ। ଆପଣ ସେଟିଂସରେ ଏହାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="5486346529181556467">ଆପଣ କ୍ଷତିକାରକ ବୋଲି ଭାବୁଥିବା ଏକ ସାଇଟର ରିପୋର୍ଟ କଲେ ସମସ୍ତଙ୍କ ପାଇଁ ଅନଲାଇନ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରନ୍ତୁ। <ph name="BEGIN_LINK" />Googleର ଅସୁରକ୍ଷିତ ସାଇଟ ନୀତି<ph name="END_LINK" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
@@ -521,7 +518,6 @@
 <translation id="6166185671393271715">Chromeକୁ ପାସ୍‍ୱର୍ଡ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ବିଟା</translation>
-<translation id="6177442314419606057">Chromeରେ ଖୋଜନ୍ତୁ</translation>
 <translation id="6180522807229584611">ଏହି ଟାବ ଅତିରିକ୍ତ ରିସୋର୍ସ ବ୍ୟବହାର କରୁଛି। ଆପଣଙ୍କ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବା ପାଇଁ Chromeକୁ ଏହା ନିଷ୍କ୍ରିୟ କରିବାକୁ ଦିଅନ୍ତୁ।</translation>
 <translation id="6182736845697986886">ଅପଡେଟ ସର୍ଭରରେ ଏକ ଇଣ୍ଟର୍ନଲ ତ୍ରୁଟି ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="6192058120268468905">Chromeରେ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ</translation>
@@ -729,7 +725,6 @@
 <translation id="8074398340364918139">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ Chrome ଫିଚର କିମ୍ବା ଏକ୍ସଟେନସନ ସର୍ଚ୍ଚ କରିବାକୁ ଠିକଣା ବାରରେ ଏହାର ସର୍ଟକଟ ଟାଇପ କରିବା ପରେ ଆପଣଙ୍କ ଚୟନିତ କୀବୋର୍ଡର କୀ'କୁ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="8077579734294125741">ଅନ୍ୟ Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="8086881907087796310">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ସର୍ବନିମ୍ନ ହାର୍ଡୱେର ଆବଶ୍ୟକତାକୁ ପୂରଣ କରୁନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
-<translation id="8093772166980702367">ସିଷ୍ଟମ ଟ୍ରେରେ Chromeରେ ସର୍ଚ୍ଚକୁ ଦେଖାନ୍ତୁ ଏବଂ କୀବୋର୍ଡ ସର୍ଟକଟ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8110438089258398864">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ Google Search AI ମୋଡକୁ ପୁଣି ଖୋଲିପାରିବେ</translation>
 <translation id="8113883687556086139">ଆପଣଙ୍କ <ph name="ACCOUNT_EMAIL" /> ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8115695070094288807">ଆପଣଙ୍କ ପସନ୍ଦ ଅନୁଯାୟୀ Chromeକୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି...</translation>
@@ -773,10 +768,12 @@
 <translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google ସଦସ୍ୟତା ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। ଆକାଉଣ୍ଟ ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">କିଛି ସମୟ ପୂର୍ବରୁ Google Chrome ପାଇଁ ଏକ ବିଶେଷ ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍ ଲାଗୁ କରାଯାଇଛି। ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ ଏବଂ ଆମେ ଆପଣଙ୍କ ଟାବ୍ ରିଷ୍ଟୋର୍ କରିବୁ।</translation>
+<translation id="8502181052659370">Google Lens ମାଧ୍ୟମରେ ଏହି ଟାବକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8521348052903287641">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବାକୁ Google Chrome Dev ପାଇଁ ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>
 <translation id="852529348814672339">ଏହି ଭାଷାରେ Chrome ଡିସପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="8525579356836940628">ଇନଷ୍ଟଲେସନ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="8533056045953418157">Google Chromeକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ PDF ଭ୍ୟୁଅର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
+<translation id="854593887324189900">Google Lens ମାଧ୍ୟମରେ ଏହି ଇମେଜକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8555465886620020932">ସେବା ତ୍ରୁଟି: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ଭାଷାର ତାଲିକା ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8575047640889685742">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଥିବା ସମସ୍ତ Chrome ଡାଟା ଏନକ୍ରିପ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="BEGIN_LINK" />ନିଜର ପାସଫ୍ରେଜ<ph name="END_LINK" /> ବ୍ୟବହାର କରନ୍ତୁ। ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ Google Payରୁ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯିବ ନାହିଁ। Chromeରୁ ବ୍ରାଉଜିଂ ଇତିହାସ ସିଙ୍କ କରାଯିବ ନାହିଁ।</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promoteringen av varsler med tips er lukket</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1045899828449635435">Vil du også slette data fra disse nettstedene?</translation>
+<translation id="1049461303780085993">Prøv Gemini i Chrome for å få svar, hovedpunkter og mer</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Noen av passordene dine er ikke tilgjengelige</translation>
 <translation id="1057623954802068161">Rull til toppen av siden</translation>
@@ -1117,6 +1118,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5465437530117042974">Endringene i felt nederst for faner er lukket.</translation>
 <translation id="5469852975082458401">Du kan navigere på sider med en tekstmarkør. Trykk på F7 for å slå av dette.</translation>
 <translation id="5471273988133666918">Fanen <ph name="TAB_TITLE" /> kan ikke flyttes</translation>
+<translation id="5478718673237429220">Tilgang til Human Interface Devices (HID) kreves</translation>
 <translation id="548278423535722844">Åpne i en kartapp</translation>
 <translation id="5489222148748465285">Skal Chrome fortsette letingen?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, flervalgte bilde-i-bilde-faner</translation>
@@ -1964,6 +1966,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="867914734596684889">Vis eller skjul bokmerkeraden</translation>
 <translation id="8683039184091909753">bilde</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> – valgt fane</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> trenger tilgang til HID-enheter (Human Interface Devices) for dette nettstedet. Du kan endre denne innstillingen senere i Innstillinger &gt; Apper &gt; Spesiell apptilgang.</translation>
 <translation id="8696297579102085705">Send til enheten din</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
 <translation id="8700565880437506364">Vi lanserer Gemini i Chrome</translation>

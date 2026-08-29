@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Promotion des notifications de conseils fermée</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1045899828449635435">Effacer les données de ces sites ?</translation>
+<translation id="1049461303780085993">Essayez Gemini dans Chrome pour obtenir des réponses, dégager les points clés à retenir et plus encore</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1052842760770519282">Certains de vos mots de passe ne sont pas accessibles</translation>
 <translation id="1057623954802068161">Faire défiler la page vers le haut</translation>
@@ -1117,6 +1118,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5465437530117042974">Modifications apportées à la bottom sheet de l'onglet fermées.</translation>
 <translation id="5469852975082458401">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Appuyez sur F7 pour la désactiver.</translation>
 <translation id="5471273988133666918">Impossible de déplacer l'onglet <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">Accès aux périphériques d'interface humaine requis</translation>
 <translation id="548278423535722844">Ouvrir dans une application de plans</translation>
 <translation id="5489222148748465285">Laisser Chrome continuer à chercher ?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, onglet multisélectionné en Picture-in-picture</translation>
@@ -1964,6 +1966,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="867914734596684889">Afficher ou masquer la barre de favoris</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, onglet sélectionné</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> a besoin de votre autorisation afin d'accéder aux périphériques d'interface humaine (HID) pour ce site. Vous pourrez modifier ce paramètre plus tard dans Paramètres &gt; Applications &gt; Accès spéciaux des applis.</translation>
 <translation id="8696297579102085705">Envoyer sur votre appareil</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8700565880437506364">Découvrez Gemini dans Chrome</translation>

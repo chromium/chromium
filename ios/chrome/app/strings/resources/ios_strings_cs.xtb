@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Měsíc vypršení platnosti</translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1158134713295836892">Gemini v Chromu</translation>
+<translation id="1159484622358475170">{count,plural, =1{Bylo zkontrolováno 1 heslo}few{Byla zkontrolována # hesla}many{Bylo zkontrolováno # hesla}other{Bylo zkontrolováno # hesel}}</translation>
 <translation id="1161444134753003495">Přihlásit se</translation>
 <translation id="1161663161838091892">Pokud chcete pokračovat, synchronizujte karty a historii</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} platební karta}few{{count} platební karty}many{{count} platební karty}other{{count} platebních karet}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopírovat adresu URL odkazu</translation>
 <translation id="199425419756152024">Zobrazit heslo</translation>
 <translation id="1996318269856535896">Na tomhle zařízení můžete dál používat své stávající údaje o prohlížení. Pokud je chcete použít, odhlaste se ze svého spravovaného účtu.</translation>
+<translation id="2002971615187574739">Zvládněte víc věcí s pomocí AI</translation>
 <translation id="2010008505735295285">Načíst znovu</translation>
 <translation id="2012723204723845092">Vítejte zpět!</translation>
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Označit jako nepřečtené</translation>
 <translation id="2922210239002704889">Přejděte na svou domovskou stránku nebo klávesnici.</translation>
 <translation id="2924940770243654951">Otevřít na nové anonymní kartě</translation>
+<translation id="2934607171563543600">od dokončení akce Kontrola hesel</translation>
 <translation id="2952278131021475699">Vyhledávání Lens fotoaparátem</translation>
 <translation id="2953821385349876107">Vyberte jiný účet Google</translation>
 <translation id="2962516096219646456">Zobrazit všechna data automatického vyplňování</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} heslo je uloženo pouze na tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google {email}.}few{{count} hesla jsou uložena pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}many{{count} hesla je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}other{{count} hesel je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}}</translation>
 <translation id="3659297405161482746">Nebyly nalezeny žádné platební metody</translation>
 <translation id="3662966164093827811">{count,plural, =1{Je vybrána 1 položka}few{Jsou vybrány # položky}many{Je vybráno # položky}other{Je vybráno # položek}}</translation>
+<translation id="3668035568083954765">Chraňte své soukromí a bezpečí</translation>
 <translation id="3668816008081204991">Seznam četby je skrytý</translation>
 <translation id="3670030362669914947">Číslo</translation>
 <translation id="3672283986707092811">Vybrat vše</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Byly zjištěny problémy (<ph name="TIME" />).</translation>
 <translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Posuňte své prohlížení na vyšší úroveň</translation>
 <translation id="5062321486222145940">Instalace Disku Google</translation>
 <translation id="5067540696062462445">Stažené soubory</translation>
 <translation id="5070314445039955096">Až web <ph name="SITE_DOMAIN" /> opustíte, jeho oprávnění se resetují na Vypnuto.</translation>
@@ -1686,6 +1691,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6454311990702999318">Neplatná data</translation>
 <translation id="6459411599807878608">Podrobnosti jsou skryty</translation>
 <translation id="646394917185284261">Soubory</translation>
+<translation id="6470721056280836221">K doporučování úkolů a aktualizaci postupu používá Google vaše data o využití funkcí. Funkci Další úroveň můžete kdykoli vypnout.</translation>
 <translation id="6472069383518492189">Tady najdete své stažené soubory</translation>
 <translation id="6476253015009698798">Sledování ceny pro tuto stránku není k dispozici.</translation>
 <translation id="6476284679642588870">Správa platebních metod</translation>
@@ -1763,6 +1769,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681791404926413601">{count,plural, =1{Nad klávesnicí je k dispozici {count} možnost platební metody.}few{Nad klávesnicí jsou k dispozici {count} možnosti platebních metod.}many{Nad klávesnicí je k dispozici {count} možnosti platební metody.}other{Nad klávesnicí je k dispozici {count} možností platebních metod.}}</translation>
 <translation id="6682680306647339111">Bylo odstraněno připomenutí</translation>
+<translation id="6683022854667115063">Sluchátka</translation>
 <translation id="6684262542644248484">Přihlaste se na web</translation>
 <translation id="6685259053455152195">Zkratky k rychlé úpravě nastavení a používání funkcí z adresního řádku.</translation>
 <translation id="6689342293888598653">Bílá barva pozadí</translation>
@@ -1925,6 +1932,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="7233006041370588369">Vyberte heslo, které chcete vyplnit.</translation>
 <translation id="723874023660911012">Přepnout profil</translation>
 <translation id="7241135764990439166">Anonymní režim není k dispozici</translation>
+<translation id="7245288034498365666">Udělejte si ve věcech pořádek a ušetřete čas</translation>
 <translation id="7253951228444156601">Kontrola hesel…</translation>
 <translation id="7261217796641151584">Sdílet skupinu</translation>
 <translation id="7266578100016339897">Tahle funkce vám pomůže mít v kartách pořádek. V nastavení můžete toto chování kdykoli změnit.</translation>

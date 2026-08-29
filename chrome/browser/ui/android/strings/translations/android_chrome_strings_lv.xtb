@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Padomu paziņojumu reklāma ir aizvērta</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1045899828449635435">Vai dzēst arī šo vietņu datus?</translation>
+<translation id="1049461303780085993">Izmēģiniet pakalpojumu Gemini pārlūkā Chrome, lai iegūtu atbildes, galvenos secinājumus un citu informāciju.</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Dažas jūsu paroles nav pieejamas.</translation>
 <translation id="1057623954802068161">Ritināt līdz lapas augšdaļai</translation>
@@ -1117,6 +1118,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5465437530117042974">Cilnes ekrāna apakšdaļas lapas izmaiņas ir aizvērtas.</translation>
 <translation id="5469852975082458401">Lapās varat pārvietoties, izmantojot teksta kursoru. Lai izslēgtu šo funkciju, nospiediet taustiņu F7.</translation>
 <translation id="5471273988133666918">Cilni <ph name="TAB_TITLE" /> nevar pārvietot</translation>
+<translation id="5478718673237429220">Nepieciešama piekļuve cilvēka saskarnes ierīcei</translation>
 <translation id="548278423535722844">Atvērt karšu lietotnē</translation>
 <translation id="5489222148748465285">Vai ļaut Chrome turpināt meklēt?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm, kas tiek rādītas režīmā “Attēls attēlā”</translation>
@@ -1964,6 +1966,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="867914734596684889">Rādīt vai paslēpt grāmatzīmju joslu</translation>
 <translation id="8683039184091909753">attēls</translation>
 <translation id="8688183792442786085">“<ph name="TAB_TITLE" />”, atlasītā cilne</translation>
+<translation id="8694622119922491927">Lietotnei <ph name="APP_NAME" /> ir nepieciešama atļauja piekļūt cilvēka saskarnes ierīcēm (HID) šajā tīmekļa vietnē. Vēlāk šo iestatījumu varēsiet mainīt sadaļā Iestatījumi &gt; Lietotnes &gt; Īpaša piekļuve lietotnēm.</translation>
 <translation id="8696297579102085705">Nosūtīt uz jūsu ierīci</translation>
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>
 <translation id="8700565880437506364">Iepazīšanās ar Gemini pārlūkā Chrome</translation>

@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Məsləhət bildirişləri tanıtımı bağlandı</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1045899828449635435">Bu saytlardan da data silinsin?</translation>
+<translation id="1049461303780085993">Cavablar, əsas məqamlar və daha çoxunu əldə etmək üçün Chrome-da Gemini-ı sınayın</translation>
 <translation id="1049743911850919806">Gizli Rejim</translation>
 <translation id="1052842760770519282">Parollarınızdan bəziləri əlçatan deyil</translation>
 <translation id="1057623954802068161">Səhifənin yuxarısına sürüşdürün</translation>
@@ -1117,6 +1118,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5465437530117042974">Tab üzrə aşağıdakı vərəq dəyişiklikləri bağlandı.</translation>
 <translation id="5469852975082458401">Səhifələri mətn kursoru ilə vərəqləyə bilərsiniz. Deaktiv etmək üçün F7 düyməsini basın.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> tabını köçürmək olmur</translation>
+<translation id="5478718673237429220">İnsan interfeysi cihazına giriş tələb olunur</translation>
 <translation id="548278423535722844">Xəritə tətbiqində açın</translation>
 <translation id="5489222148748465285">Chrome axtarmağa davam etsin?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, Çoxseçimli şəkildə şəkil tabı</translation>
@@ -1962,6 +1964,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="867914734596684889">Əlfəcin panelini göstərin və ya gizlədin</translation>
 <translation id="8683039184091909753">şəkil</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, seçilmiş tab</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> bu sayt üçün insan interfeysi cihazlarına (HID) daxil olmaq icazəsi tələb edir. Bu ayarı daha sonra Ayarlar &gt; Tətbiqlər &gt; Xüsusi tətbiq girişi bölməsində dəyişə bilərsiniz.</translation>
 <translation id="8696297579102085705">Cihazınıza göndərin</translation>
 <translation id="8699120352855309748">Bu dillərin tərcümə edilməsini təklif etməyin</translation>
 <translation id="8700565880437506364">Chrome-da Gemini ilə tanış olun</translation>

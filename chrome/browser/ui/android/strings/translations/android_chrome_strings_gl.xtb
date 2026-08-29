@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Mensaxe promocional de notificacións de consellos pechada</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1045899828449635435">Queres borrar tamén os datos destes sitios?</translation>
+<translation id="1049461303780085993">Proba Gemini en Chrome para obter respostas, extraer puntos clave e moito máis</translation>
 <translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="1052842760770519282">Non se pode acceder a algúns dos teus contrasinais</translation>
 <translation id="1057623954802068161">Desprazarse á parte superior da páxina</translation>
@@ -1117,6 +1118,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5465437530117042974">Pecháronse os cambios no panel inferior da pestana.</translation>
 <translation id="5469852975082458401">Podes navegar polas páxinas cun cursor de texto. Preme F7 para desactivar esta función.</translation>
 <translation id="5471273988133666918">A pestana <ph name="TAB_TITLE" /> non se pode mover</translation>
+<translation id="5478718673237429220">Requírese acceso ao dispositivo de interface humana</translation>
 <translation id="548278423535722844">Abrir na aplicación de mapas</translation>
 <translation id="5489222148748465285">Queres que Chrome siga buscando?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, pestana do modo de pantalla superposta multiseleccionada</translation>
@@ -1964,6 +1966,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="867914734596684889">Mostrar ou ocultar a barra de marcadores</translation>
 <translation id="8683039184091909753">imaxe</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestana seleccionada</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> necesita permiso para acceder aos dispositivos de interface humana deste sitio. Podes cambiar esta opción de configuración máis tarde en Configuración &gt; Aplicacións &gt; Acceso especial das aplicacións.</translation>
 <translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
 <translation id="8700565880437506364">Presentámosche Gemini en Chrome</translation>

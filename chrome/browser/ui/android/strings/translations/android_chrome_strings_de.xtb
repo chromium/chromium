@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">Werbeangebot zu Benachrichtigungen mit Tipps geschlossen</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1045899828449635435">Auch Daten dieser Websites löschen?</translation>
+<translation id="1049461303780085993">Probiere Gemini in Chrome aus – für schnelle Antworten, nützliche Informationen und mehr</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Auf einige deiner Passwörter kann nicht zugegriffen werden</translation>
 <translation id="1057623954802068161">Zum Seitenanfang scrollen</translation>
@@ -1117,6 +1118,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5465437530117042974">Änderungen an der Tab-Ansicht am unteren Rand sind geschlossen.</translation>
 <translation id="5469852975082458401">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Wenn du die Tastaturnavigation deaktivieren möchtest, drücke F7.</translation>
 <translation id="5471273988133666918">Der Tab „<ph name="TAB_TITLE" />“ kann nicht verschoben werden</translation>
+<translation id="5478718673237429220">Zugriff auf Human Interface Device erforderlich</translation>
 <translation id="548278423535722844">In einer Karten-App öffnen</translation>
 <translation id="5489222148748465285">Soll Chrome weiter suchen?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, mehrfach ausgewählter Tab im Bild-im-Bild-Modus</translation>
@@ -1964,6 +1966,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="867914734596684889">Lesezeichenleiste ein- oder ausblenden</translation>
 <translation id="8683039184091909753">Bild</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ausgewählter Tab</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> benötigt für diese Website die Berechtigung, auf Human Interface Devices (HID) zuzugreifen. Du kannst dies später in den Einstellungen unter „Apps“ &gt; „Spezieller App-Zugriff“ ändern.</translation>
 <translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
 <translation id="8700565880437506364">Neu: Gemini in Chrome</translation>

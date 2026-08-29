@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">ヒント通知のプロモーションが閉じられました</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1045899828449635435">これらのサイトのデータも削除しますか？</translation>
+<translation id="1049461303780085993">質問の回答や重要なポイントなどを確認できる Gemini in Chrome をお試しください</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1052842760770519282">一部のパスワードにアクセスできません</translation>
 <translation id="1057623954802068161">ページの一番上までスクロール</translation>
@@ -1117,6 +1118,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5465437530117042974">タブのボトムシートが閉じられました。</translation>
 <translation id="5469852975082458401">テキスト カーソルを使ってページ内を移動できます。オフにするには F7 キーを押します。</translation>
 <translation id="5471273988133666918">タブ <ph name="TAB_TITLE" /> を移動できません</translation>
+<translation id="5478718673237429220">ヒューマン インターフェース デバイスへのアクセスが必要です</translation>
 <translation id="548278423535722844">マップアプリで開く</translation>
 <translation id="5489222148748465285">Chrome で検索を続けますか？</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />、複数選択されたピクチャー イン ピクチャーのタブ</translation>
@@ -1964,6 +1966,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="867914734596684889">ブックマーク バーの表示と非表示を切り替える</translation>
 <translation id="8683039184091909753">画像</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />、選択したタブ</translation>
+<translation id="8694622119922491927">このサイトを利用するには、<ph name="APP_NAME" /> でヒューマン インターフェース デバイス（HID）の使用を許可する必要があります。この設定は、[設定] &gt; [アプリ] &gt; [特別なアプリアクセス] でいつでも変更できます。</translation>
 <translation id="8696297579102085705">デバイスに送信</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
 <translation id="8700565880437506364">Gemini in Chrome のご紹介</translation>

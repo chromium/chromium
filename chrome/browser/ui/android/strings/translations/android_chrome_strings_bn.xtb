@@ -12,6 +12,7 @@
 <translation id="1035113036584565771">পরামর্শ বিজ্ঞপ্তি প্রোমো বন্ধ করা হয়েছে</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1045899828449635435">এই সাইটগুলির ডেটাও কি মুছে ফলতে চান?</translation>
+<translation id="1049461303780085993">উত্তর, মূল বিষয় ও আরও অনেক কিছু পেতে, Chrome-এ Gemini ব্যবহার করে দেখুন।</translation>
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1052842760770519282">আপনার কিছু পাসওয়ার্ড অ্যাক্সেস করা যাচ্ছে না</translation>
 <translation id="1057623954802068161">স্ক্রল করে পৃষ্ঠার একদম উপরে যান</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5465437530117042974">ট্যাব বটম শিটে করা পরিবর্তন বন্ধ করা হয়েছে।</translation>
 <translation id="5469852975082458401">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে পারবেন। ক্যারেট ব্রাউজিং বন্ধ করার জন্য F7 শর্টকাট প্রেস করুন।</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ট্যাব সরানো যাবে না</translation>
+<translation id="5478718673237429220">হিউম্যান ইন্টারফেস ডিভাইস অ্যাক্সেস করার অনুমতি দিতে হবে</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
 <translation id="5489222148748465285">Chrome-কে খোঁজা চালিয়ে যেতে দেবেন?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া ছবির-মধ্যে-ছবি ট্যাব</translation>
@@ -1964,6 +1966,7 @@
 <translation id="867914734596684889">বুকমার্ক বার দেখুন বা লুকান</translation>
 <translation id="8683039184091909753">ছবি</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, বেছে নেওয়া ট্যাব</translation>
+<translation id="8694622119922491927">এই সাইটের জন্য <ph name="APP_NAME" /> অ্যাপকে হিউম্যান ইন্টারফেস ডিভাইস (HID) অ্যাক্সেস করার অনুমতি দিতে হবে। আপনি পরে 'সেটিংস &gt; অ্যাপ &gt; বিশেষ অ্যাপ অ্যাক্সেস' বিকল্প থেকে এই সেটিংস পরিবর্তন করতে পারবেন।</translation>
 <translation id="8696297579102085705">আপনার ডিভাইসে পাঠান</translation>
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
 <translation id="8700565880437506364">Chrome-এ Gemini চালু করা হচ্ছে</translation>

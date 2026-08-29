@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Viimeinen voimassaolokuukausi</translation>
 <translation id="1150989369772528668">Kalenteri</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Tarkistit yhden salasanan}other{Tarkistit # salasanaa}}</translation>
 <translation id="1161444134753003495">Kirjaudu</translation>
 <translation id="1161663161838091892">Jatka synkronoimalla välilehdet ja historia</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} credit-kortti}other{{count} credit-korttia}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopioi linkin URL-osoite</translation>
 <translation id="199425419756152024">Näytä salasana</translation>
 <translation id="1996318269856535896">Voit edelleen käyttää nykyistä selausdataasi tällä laitteella. Voit käyttää sitä kirjautumalla ulos hallinnoidulta tililtä.</translation>
+<translation id="2002971615187574739">Tekoälyn avulla saat enemmän aikaan</translation>
 <translation id="2010008505735295285">Päivitä</translation>
 <translation id="2012723204723845092">Tervetuloa takaisin!</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Merkitse lukemattomaksi</translation>
 <translation id="2922210239002704889">Siirry etusivulle tai näppäimistölle</translation>
 <translation id="2924940770243654951">Avaa incognito-tilassa</translation>
+<translation id="2934607171563543600">sen jälkeen, kun olet tarkistanut salasanat</translation>
 <translation id="2952278131021475699">Lens-kamerahaku</translation>
 <translation id="2953821385349876107">Valitse toinen Google-tili</translation>
 <translation id="2962516096219646456">Näytä kaikki automaattisen täytön data</translation>
@@ -809,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi ({email}).}other{{count} salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi ({email}).}}</translation>
 <translation id="3659297405161482746">Maksutapoja ei löytynyt</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 valittu}other{# valittu}}</translation>
+<translation id="3668035568083954765">Suojaa yksityisyyttäsi ja pysy turvassa</translation>
 <translation id="3668816008081204991">Lukulista on piilotettu</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3672283986707092811">Valitse kaikki</translation>
@@ -1237,6 +1241,7 @@
 <translation id="5056446788882570708">Ongelmia havaittiin <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Luo kuva</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Nosta selaaminen uudelle tasolle</translation>
 <translation id="5062321486222145940">Asenna Google Drive</translation>
 <translation id="5067540696062462445">Lataukset</translation>
 <translation id="5070314445039955096">Luvat (<ph name="SITE_DOMAIN" />) nollataan, kun poistut sivustolta</translation>
@@ -1686,6 +1691,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6454311990702999318">Virheellinen data</translation>
 <translation id="6459411599807878608">Tiedot piilotettu</translation>
 <translation id="646394917185284261">Tiedostot</translation>
+<translation id="6470721056280836221">Google käyttää ominaisuuksien käyttödataa tehtävien suosittelemiseen ja edistymisen päivittämiseen. Voit laittaa Level Upin pois päältä milloin tahansa.</translation>
 <translation id="6472069383518492189">Löydät lataukset täältä</translation>
 <translation id="6476253015009698798">Hintaseuranta ei ole käytettävissä tällä sivulla.</translation>
 <translation id="6476284679642588870">Ylläpidä maksutapoja</translation>
@@ -1763,6 +1769,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="667999046851023355">Dokumentti</translation>
 <translation id="6681791404926413601">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} maksutapa.}other{Näppäimistön yläpuolella on saatavilla {count} maksutapaa.}}</translation>
 <translation id="6682680306647339111">Muistutus poistettu</translation>
+<translation id="6683022854667115063">Kuulokkeet</translation>
 <translation id="6684262542644248484">Kirjaudu sisään sivustolle</translation>
 <translation id="6685259053455152195">Pikakuvakkeilla voit muuttaa asetuksia ja käyttää ominaisuuksia osoitepalkin kautta nopeasti.</translation>
 <translation id="6689342293888598653">Valkoinen taustaväri</translation>
@@ -1925,6 +1932,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="7233006041370588369">Valitse täytettävä salasana.</translation>
 <translation id="723874023660911012">Vaihda profiilia</translation>
 <translation id="7241135764990439166">Incognito-tila ei ole käytettävissä</translation>
+<translation id="7245288034498365666">Pidä asiat järjestyksessä ja säästä aikaa</translation>
 <translation id="7253951228444156601">Tarkistetaan salasanoja…</translation>
 <translation id="7261217796641151584">Jaa ryhmä</translation>
 <translation id="7266578100016339897">Näin pysyt järjestyksessä. Voit muuttaa tätä asetuksista koska tahansa.</translation>

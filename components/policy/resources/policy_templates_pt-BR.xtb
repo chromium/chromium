@@ -5361,6 +5361,22 @@ Observação: esta política substituiu a política <ph name="ARC_GLS_POLICY_NAM
 <translation id="4363057787588706121">Permitir a mescla de políticas de lista de diferentes fontes</translation>
 <translation id="4363101430102811068">Ativa a detecção de vazamento para credenciais digitadas</translation>
 <translation id="436581050240847513">Relatar interfaces de redes de dispositivos</translation>
+<translation id="4366420138981318392">Lista de padrões do URL. Solicitações de rede iniciadas em sites com as mesmas origens não ficam sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
+
+Para saber mais sobre padrões do URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
+
+Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">Os scripts para workers (como Web workers, service workers etc.) usam a verificação não rigorosa de tipo MIME. Os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão funcionar.</translation>
 <translation id="4370937370030117032">Desativar o envio do nome de usuário e do nome de arquivo para impressoras nativas</translation>
 <translation id="4372704773119750918">Não permitir que o usuário corporativo faça parte de diversos perfis (primários ou secundários)</translation>
@@ -6149,6 +6165,22 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4826977043372474305">As credenciais do Wi-Fi do quiosque são armazenadas no nível do quiosque</translation>
 <translation id="4827727182370777723">Configuração padrão de permissão das fontes locais</translation>
 <translation id="482803100714220060">Exibir URLs completos</translation>
+<translation id="4830717535196994979">Lista de padrões do URL. Solicitações de rede iniciadas em sites que têm as mesmas origens são bloqueadas e não podem solicitar <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se as origens não corresponderem aos padrões especificados aqui, a configuração pessoal do usuário será aplicada.
+
+Para saber mais sobre padrões do URL válidos, acesse https://chromeenterprise.google/policies/url-patterns/.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
+
+Várias políticas listam origens que afetam as solicitações para o dispositivo local e para endpoints da rede local. Se mais de uma das políticas abaixo estiver associada à origem, elas serão aplicadas nesta ordem:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls
+  - LoopbackNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> aceita formulários XFA em documentos PDF.
 
 Se esta política for definida como verdadeira, o suporte a formulários XFA será ativado.
@@ -9467,6 +9499,19 @@ configurados.</translation>
 <translation id="6757613329154374267">Backup e restauração ativados</translation>
 <translation id="6758659208493449452">Esta política controla se os usuários inscritos no Programa Proteção Avançada recebem segurança extra. Alguns desses recursos podem envolver o compartilhamento de dados com o Google. Por exemplo, usuários do Proteção Avançada poderão enviar os downloads ao Google para verificação de malware. Se a política for definida como "verdadeira" ou não for configurada, os usuários inscritos receberão proteções extras. Se for definida como "falsa", os usuários do Proteção Avançada receberão apenas os recursos padrão do consumidor.</translation>
 <translation id="6763023079133439068">Permitir certificados sem uma extensão subjectAlternativeName quando emitidos por âncoras de confiança locais</translation>
+<translation id="6765476642902721793">Se esta política for ativada, as solicitações de <ph name="LOCAL_NETWORK_ACCESS" />
+só vão mostrar avisos no <ph name="CHROME_DEVTOOLS_NAME" /> devido a falhas nas verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se ela for desativada ou não for definida, as solicitações de <ph name="LOCAL_NETWORK_ACCESS" /> vão usar o
+gerenciamento padrão.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).
+
+Esta política corporativa é temporária e será removida após a versão M163.
+
+A longo prazo, a política <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+pode ser usada para permitir padrões de URL que devem receber automaticamente
+a permissão <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="6766216162565713893">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo Bluetooth próximo</translation>
 <translation id="6770454900105963262">Denunciar informações sobre sessões de quiosque ativas</translation>
 <translation id="6770703270685871935">Limpeza automática de dados locais</translation>

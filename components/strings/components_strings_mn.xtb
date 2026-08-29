@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">Файлуудыг бэлтгэж байна</translation>
 <translation id="1014509239502131234">Үр дүнг гаргахаа больж байна</translation>
 <translation id="1015730422737071372">Дэлгэрэнгүй мэдээлэл өгөх</translation>
+<translation id="1016671033299705843">Жолооны үнэмлэхийг аюулгүй нэмэх</translation>
 <translation id="1019413721762100891">Унтраалттай</translation>
 <translation id="1021753677514347426">Та эсвэл өөр хэн нэгэн таны төхөөрөмж дээр суулгасан сертификатын улмаас ийм асуудал гардаг. Сертификатыг сүлжээнд хяналт хийх болон дундаас нь өгөгдөл цуглуулахад ашигладаг гэж мэдэгдсэн бөгөөд Chromium түүнд итгэхгүй байна. Сургууль эсвэл компанийн сүлжээнд хяналт хийх зэрэг хууль ёсны зарим тохиолдол байдаг бөгөөд Chromium нь та хяналтыг зогсоож чадахгүй байсан ч хяналт хийгдэж байгаа тухай таныг мэдэж байгаа эсэхийг шалгах хүсэлтэй байна. Вэбэд ханддаг аливаа хөтөч эсвэл аппликэйшн дээр хяналт хийж болзошгүй.</translation>
 <translation id="1024111578869940408">Халдагч этгээдүүд заримдаа харахад хэцүү өөрчлөлтийг веб хаягт оруулах замаар сайтуудыг дуурайдаг.</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ямар ч өгөгдөл илгээгээгүй.</translation>
 <translation id="1393071644879491291">Таны зочлохоор оролдсон сайт дээрх халдагчид танаар программ хангамж суулгуулах эсвэл нууц үг, утасны дугаар, кредит картын дугаар зэрэг зүйлсээ илчлэх үйлдэл хийлгэхээр таныг хуурч магадгүй. Chrome аюулгүй байдал руу буцаж очихыг нухацтай зөвлөж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Google Wallet-д иргэний үнэмлэхийг аюулгүй нэмэх</translation>
 <translation id="1398743098754840707">Таб нээлттэй байсан ч таны энд нэмсэн сайтуудыг хариултад лавлахгүй. Хэрэв таны нэмсэн сайтыг одоогоор уялдаанд ашиглаж байгаа бол тухайн уялдаа уг сайтыг лавлахаа зогсооход 30 хүртэлх минут зарцуулж болно.</translation>
 <translation id="1405567553485452995">Цайвар ногоон</translation>
 <translation id="1406370515365284486">Таны төлбөрийн хэрэгслийг хадгалсан хэвээр байх болно</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">Таны бичдэг дурын зүйл, таны үздэг дурын хуудас эсвэл веб дээрх бусад дурын үйл ажиллагааг хянан үзэж байна. Сайтуудын контентыг танд мэдэгдэлгүйгээр өөрчилж болзошгүй.</translation>
 <translation id="2289385804009217824">Тайрах</translation>
 <translation id="2292556288342944218">Таны интернэт холболтыг блоклосон байна</translation>
+<translation id="2294150501457238325">Паспортыг аюулгүй нэмэх</translation>
 <translation id="2295831393422400053">Надад бичихэд тусал онцлогийг ашиглахын тулд Хайлт болон үзэх явцыг сайжруулах тохиргоог асаана уу</translation>
 <translation id="2296244067976588032">Нэвтрэх түлхүүр • iCloud Keychain</translation>
 <translation id="2296331629987861142">Хялбархан хэсэгчлэн төлөх (зохих эрхтэй тохиолдолд, хураамжтай)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">Худалдан авалтын мэдээллийг удирдах</translation>
 <translation id="2933624813161016821">Товгор тугалган цаас</translation>
 <translation id="2935726091208500473">таны табыг хуваалцаж байна</translation>
+<translation id="2936698630976431647">Google Wallet-н саналуудыг автоматаар бөглөхийн тулд урамшууллын кодын талбарыг сонгоно уу</translation>
 <translation id="293796669683825859">Сэтгэгдэл</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> холбоосуудыг нээх</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Курсороо харуулахын тулд апп сэлгэх, хуудсыг дахин ачаалах эсвэл буцна уу</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3190736958609431397">Хянахаа болих</translation>
 <translation id="3194737229810486521"><ph name="URL" /> таны төхөөрөмжид өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Google Wallet-д жолооны үнэмлэх нэмэх</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> дээрх <ph name="PRINTER_NAME" /></translation>
 <translation id="3196374699162453920">Захиалгын код</translation>
 <translation id="3196902089458890316">Илүү сайн хариулт авахын тулд хамааралтай табуудыг үргэлж хуваалцах уу?</translation>
@@ -1391,6 +1396,7 @@
 <translation id="3380864720620200369">Хэрэглэгчийн ID:</translation>
 <translation id="3383566085871012386">Одоогийн давуу эрхтэй дараалал</translation>
 <translation id="3383713837163550889">Таны дотоод файлуудыг 1 минутын дараа устгана</translation>
+<translation id="33837817515081754">Google Wallet-д Бүртгэлтэй зорчигчийн дугаар (Known Traveler Number) нэмэх</translation>
 <translation id="3384522979010096022">Танай байгууллага танд энэ сайтыг харахыг зөвшөөрдөггүй</translation>
 <translation id="3391030046425686457">Хүргэлтийн хаяг</translation>
 <translation id="3391482648489541560">файл засах</translation>
@@ -1464,6 +1470,7 @@
 <translation id="3517264445792388751">Файлын системийг танай администратор идэвхгүй болгосон</translation>
 <translation id="3518941727116570328">Олон объектын удирдлага</translation>
 <translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" />-с асуух</translation>
+<translation id="3520762308733579540">Google Wallet-д тээврийн хэрэгсэл нэмэх</translation>
 <translation id="3525130752944427905">10 x 14 инч</translation>
 <translation id="3525435918300186947">MIDI төхөөрөмжүүдийг хянаж, дахин программчлах уу?</translation>
 <translation id="3527624163937328588">Хавсралт хасах</translation>
@@ -1817,6 +1824,7 @@
 <translation id="4103249731201008433">Төхөөрөмжийн сериал дугаар буруу байна</translation>
 <translation id="4103592298805904008">Цаасан хайрцаг (дан)</translation>
 <translation id="4104702906064390950">IBAN-н мэдээллийг хадгалж байна</translation>
+<translation id="4104995898379951162">Бүртгэлтэй зорчигчийн дугаарыг (Known Traveler Number) аюулгүй нэмэх</translation>
 <translation id="4106101218644797743">синк хийх тохиргоо</translation>
 <translation id="4106887816571530227">Оруулсан контентыг зөвшөөрдөггүй</translation>
 <translation id="4107047499377819067">VPN-н дэвсгэрийн үйлчилгээг суулгаж эхэлсэн. Үүнд цөөн хэдэн минут зарцуулж магадгүй.</translation>
@@ -1874,6 +1882,7 @@
 <translation id="4195459680867822611">Chrome-н зөвлөгөө харах товчлуур, Chrome-н онцлогуудын талаар мэдэж авахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
+<translation id="4199131764832701740">Google Wallet-д паспорт нэмэх</translation>
 <translation id="4202554117186904723">Тав дахь хуйлмал</translation>
 <translation id="4203769790323223880">Камерыг зөвшөөрөөгүй</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Галт хана болон вирусын эсрэг оновчилгоог шалгаж байна<ph name="END_LINK" /></translation>
@@ -2239,6 +2248,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Биеийн байцаалтыг аюулгүй шинэчлээрэй</translation>
 <translation id="4807098396393229769">Картан дээрх нэр</translation>
+<translation id="4808598252755230865">Google Wallet-д Бүртгэлтэй зорчигчийн дугаарыг (Known Traveler Number) аюулгүй нэмэх</translation>
 <translation id="4809079943450490359">Таны төхөөрөмжийн администраторын зааварчилгаа:</translation>
 <translation id="4811450222531576619">Үүний эх сурвалж болон сэдвийн талаар мэдэж авах</translation>
 <translation id="4811696127853690432">Google Wallet-д тээврийн хэрэгслийг аюулгүй хадгалаарай</translation>
@@ -2268,6 +2278,7 @@
 <translation id="4855395119669662878">Танай администратор <ph name="DATE_TIME" />-д таны файлуудыг <ph name="CLOUD_PROVIDER" />-д байршуулж эхэлнэ. Файлаа байршуулж дуусах хүртэл төхөөрөмжөө холбоотой байлгана уу. Байршуулах үеэр та зөвхөн дотоод файлуудыг унших боломжтой болно.</translation>
 <translation id="485902285759009870">Кодыг баталгаажуулж байна...</translation>
 <translation id="4860260582253463350">YouTube рүү үргэлжлүүлэхийн тулд бид таныг мөн болохыг баталгаажуулах шаардлагатай. Та эцэг эх эсвэл асран хамгаалагчийнхаа Family Link-д тохируулсан тохиргоог авна.</translation>
+<translation id="4861514638281352187">Залруулгын хяналтын дугаарыг (redress number) аюулгүй нэмэх</translation>
 <translation id="4862642413395066333">OCSP хариултууд руу нэвтэрч байна</translation>
 <translation id="4864406669374375262">Хувилбарын мөрийг түр санах ойд хуулсан</translation>
 <translation id="486459320933704969">Эцэг эх эсвэл асран хамгаалагч таныг энэ вебсайтад зочилж БОЛНО гэж хэлэх ёстой</translation>
@@ -2699,6 +2710,7 @@
 <translation id="55635442646131152">Баримт бичгийн тойм</translation>
 <translation id="5563589142503817291">Байршлаа ашиглахын тулд <ph name="LINK" />-д Chrome-д хандах эрх өгнө үү.</translation>
 <translation id="5565613213060953222">Нууцлалтай табыг нээх</translation>
+<translation id="5565613377956908865">Google Wallet-д биеийн байцаалт нэмэх</translation>
 <translation id="5565735124758917034">Идэвхтэй</translation>
 <translation id="5570825185877910964">Бүртгэлийг хамгаалах</translation>
 <translation id="5571083550517324815">Энэ хаягаас авах боломжгүй тул өөр хаяг сонгоно уу.</translation>
@@ -2886,6 +2898,7 @@
 <translation id="5895694128043506580">Google Chrome эмзэг мэдээлэл харуулахаар оролдож байна</translation>
 <translation id="5898767305816764989">"Сайн" товч, танд <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> таалагдсан талаарх санал хүсэлт илгээхийн тулд Enter дарна уу</translation>
 <translation id="5901630391730855834">Шар</translation>
+<translation id="5902204772823742902">Google Wallet-д жолооны үнэмлэхийг аюулгүй нэмэх</translation>
 <translation id="5903264686717710770">Гарчиг:</translation>
 <translation id="5905671155741555195">Таны ажлын хаяг танд илүү хамааралтай Хайлтын илэрц харах, Google Газрын зураг дахь илүү нарийвчилсан чиглэл авах зэрэг Google-н үйлчилгээн дээр зүйлсийг хийж гүйцэтгэхэд туслах боломжтой. Та <ph name="BEGIN_LINK" />өөрийн <ph name="ACCOUNT" /> Google Бүртгэл<ph name="END_LINK" /> дэх хаягаа засах, устгах боломжтой.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синк хийсэн)</translation>
@@ -3304,6 +3317,7 @@
 <translation id="6613866251791999074">Chrome-н хайлтын системийнхээ талаар нэмэлт мэдээлэл авах</translation>
 <translation id="6615297766614333076">Гарах цаасыг зэрэгцүүлэх тавцан 2</translation>
 <translation id="6619496928666593220">Олон улсын банк акаунтны дугаарыг бөглөөгүй</translation>
+<translation id="662009501953240458">Google Wallet-д тээврийн хэрэгслийг аюулгүй нэмэх</translation>
 <translation id="6624427990725312378">Харилцагчийн мэдээлэл</translation>
 <translation id="6625629379283886932">Надад хэрхэн код бичихийг зааж өгнө үү</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Хайх</translation>
@@ -3673,6 +3687,7 @@
 <translation id="7261463765917514051">Автоматаар бөглөх хэсгээр аюулгүй тооцоо хийх</translation>
 <translation id="7265608370113700582">Хаяг зөвхөн энэ төхөөрөмжид боломжтой</translation>
 <translation id="7266094331715305887">төхөөрөмж дээрх аппууд</translation>
+<translation id="7268742523336093718">Google Wallet-д паспортыг аюулгүй нэмэх</translation>
 <translation id="7269151392155523061">Товчлол нь <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />-с тодорхойлсон хайлтын хуримтлуулагч түлхүүр үгтэй ижил байх боломжгүй: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Таны татсан файлуудыг дүн шинжилгээ хийлгэхээр Google Cloud эсвэл гуравдагч талууд руу илгээдэг. Жишээ нь тэдгээрт эмзэг өгөгдөл эсвэл хортой программ байгаа эсэхийг скан хийж магадгүй бөгөөд тэдгээрийг компанийн бодлогод тулгуурлан хадгалж болох ба танай администратор харна.</translation>
 <translation id="7275334191706090484">Ажилласан хайлтын жагсаалтууд</translation>
@@ -4242,6 +4257,7 @@
 <translation id="8241707690549784388">Таны хайж буй хуудас нь таны оруулсан мэдээллийг ашиглаж байна.  Энэ хуудас руу буцсанаар та хийсэн үйлдлээ дахин давтах хэрэгтэй болж магадгүй. Та үргэлжлүүлэхийг хүсч байна уу?</translation>
 <translation id="8242426110754782860">Үргэлжлүүлнэ үү</translation>
 <translation id="824620968958405573">Автомат хөтчийн даалгавар</translation>
+<translation id="8247824837030847066">Иргэний үнэмлэхийг аюулгүй нэмэх</translation>
 <translation id="8248406213705193919">Картыг аюулгүй хадгалах уу?</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="8250094606476360498">Энэ хаягийг одоогоор энэ төхөөрөмжид хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд <ph name="ACCOUNT" /> Google Бүртгэлдээ хадгална уу.</translation>
@@ -4661,6 +4677,7 @@
 <translation id="9003639428623471314">Кахү дугтуй</translation>
 <translation id="9004367719664099443">Виртуал орчны (VR) харилцан үйлдлийг хийж байна</translation>
 <translation id="9005998258318286617">PDF документыг ачаалж чадсангүй.</translation>
+<translation id="900686221526305417">Тээврийн хэрэгслийг аюулгүй нэмэх</translation>
 <translation id="9008201768610948239">Алгас</translation>
 <translation id="9010187979699879769">Надад сургалтын хуваарь үүсгэнэ үү</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас}other{# сайтаас}}</translation>
@@ -4815,6 +4832,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Сайтад шинэ сайт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> гишүүн "<ph name="GROUP_NAME" />" табын бүлэгт нэгдсэн</translation>
 <translation id="949314938206378263">Та энэ сайтад зочлохыг хүссэн. Таны эцэг эх Family Link-д хариу бичих боломжтой.</translation>
+<translation id="949484466204182817">Google Wallet-д залруулгын хяналтын дугаар (redress number) нэмэх</translation>
 <translation id="950736567201356821">Баруун дээд буланд гурван нүх цоолох</translation>
 <translation id="950926967802086924">Нэвтрэх түлхүүр • Google Нууц үгний менежер</translation>
 <translation id="952165179818196872">Апп сэлгэхгүй төлбөр төлөхийн тулд <ph name="PROVIDER" />-г нэмнэ үү</translation>
@@ -4829,6 +4847,7 @@
 <translation id="962484866189421427">Энэ контент ямар нэг дүр эсгэсэн эсвэл таныг хянахын тулд өгөгдөл цуглуулах зорилготой хуурамч апп суулгахыг оролдож болзошгүй. <ph name="BEGIN_LINK" />Ямартай ч харуулах<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Танай бүс нутгийн хуулийн дагуу Chromium танаас өгөгдмөл хайлтын системээ сонгохыг хүсэж байна. Эдгээр хайлтын систем нь танай бүс нутагт эрэлттэй бөгөөд эдгээрийг санамсаргүй дарааллаар харуулсан.</translation>
 <translation id="963837307749850257">Бүх хэрэглэгч</translation>
+<translation id="963988220224168636">Google Wallet-д залруулгын хяналтын дугаарыг (redress number) аюулгүй нэмэх</translation>
 <translation id="964050462028070434">Нууц үг болон Passkey-г удирдах…</translation>
 <translation id="964681140808832181">Тийм, би цуцлахыг хүсэж байна</translation>
 <translation id="969892804517981540">Албан ёсоор бий болгох</translation>
