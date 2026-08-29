@@ -7157,6 +7157,12 @@
       base_feature: "none",
     },
     {
+      name: "WebTransportDatagramsWritable",
+      status: "experimental",
+      base_feature: "none",
+      depends_on: ["WebTransportSendGroup"],
+    },
+    {
       name: "WebTransportDraining",
       status: "experimental",
     },

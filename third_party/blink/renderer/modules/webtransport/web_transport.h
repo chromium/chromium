@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -50,8 +51,10 @@ class ReadableStream;
 class ReadableByteStreamController;
 class ScriptState;
 class WebTransportCloseInfo;
+class WebTransportDatagramsWritable;
 class WebTransportOptions;
 class WebTransportSendGroup;
+class WebTransportSendOptions;
 class WebTransportSendStreamOptions;
 class WritableStream;
 
@@ -89,6 +92,10 @@ class MODULES_EXPORT WebTransport final
   ReadableStream* incomingBidirectionalStreams();
 
   DatagramDuplexStream* datagrams();
+  WebTransportDatagramsWritable* CreateDatagramsWritable(
+      ScriptState*,
+      WebTransportSendOptions*,
+      ExceptionState&);
   WritableStream* datagramWritable();
   ReadableStream* datagramReadable();
   void close(WebTransportCloseInfo*);
@@ -111,6 +118,7 @@ class MODULES_EXPORT WebTransport final
   Headers* responseHeaders() const;
 
   void SetNextSendGroupIdForTesting(uint32_t id) { next_send_group_id_ = id; }
+  wtf_size_t DatagramSinksWithPendingWritesSizeForTesting() const;
 
   // Flushes the connector_ Mojo remote so a pending Connect() call is
   // delivered to the bound receiver. Used by tests that inspect Connect args.
@@ -216,6 +224,9 @@ class MODULES_EXPORT WebTransport final
   void OnConnectionError();
   void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void HandlePendingGetStatsResolvers(v8::Local<v8::Value> error);
+  void ForgetDatagramUnderlyingSink(DatagramUnderlyingSink*);
+  void RetainDatagramUnderlyingSinkWithPendingWrites(DatagramUnderlyingSink*);
+  void ReleaseDatagramUnderlyingSinkWithPendingWrites(DatagramUnderlyingSink*);
 
   // Result type for ExtractSendStreamOptions().
   struct SendStreamOptions {
@@ -268,7 +279,16 @@ class MODULES_EXPORT WebTransport final
 
   // This corresponds to the [[SentDatagrams]] internal slot in the standard.
   Member<WritableStream> outgoing_datagrams_;
-  Member<DatagramUnderlyingSink> datagram_underlying_sink_;
+  // Tracks the legacy sink and each createWritable() sink without keeping
+  // abandoned streams alive. Sinks unregister on abort (and the legacy sink
+  // also unregisters on close), while Cleanup() takes a strong snapshot before
+  // invoking script.
+  HeapLinkedHashSet<WeakMember<DatagramUnderlyingSink>>
+      datagram_underlying_sinks_;
+  // Keeps createWritable() sinks alive while sends are pending. Entries are
+  // released after the last send callback or during cleanup.
+  HeapHashSet<Member<DatagramUnderlyingSink>>
+      datagram_underlying_sinks_with_pending_writes_;
 
   base::TimeDelta outgoing_datagram_expiration_duration_;
 

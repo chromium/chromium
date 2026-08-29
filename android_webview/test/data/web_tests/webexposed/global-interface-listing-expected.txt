@@ -11956,12 +11956,20 @@ interface WebTransportDatagramDuplexStream
     getter readable
     getter writable
     method constructor
+    method createWritable
     setter incomingHighWaterMark
     setter incomingMaxAge
     setter incomingMaxBufferedDatagrams
     setter outgoingHighWaterMark
     setter outgoingMaxAge
     setter outgoingMaxBufferedDatagrams
+interface WebTransportDatagramsWritable : WritableStream
+    attribute @@toStringTag
+    getter sendGroup
+    getter sendOrder
+    method constructor
+    setter sendGroup
+    setter sendOrder
 interface WebTransportError : DOMException
     attribute @@toStringTag
     getter source

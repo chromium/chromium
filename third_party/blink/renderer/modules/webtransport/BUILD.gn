@@ -21,6 +21,8 @@ blink_modules_sources("webtransport") {
     "send_stream.h",
     "web_transport.cc",
     "web_transport.h",
+    "web_transport_datagrams_writable.cc",
+    "web_transport_datagrams_writable.h",
     "web_transport_error.cc",
     "web_transport_error.h",
     "web_transport_receive_stream.cc",

@@ -8,6 +8,9 @@
     SecureContext,
     ImplementedAs=DatagramDuplexStream
 ] interface WebTransportDatagramDuplexStream {
+  [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebTransportDatagramsWritable, MeasureAs=WebTransportDatagramDuplexStreamCreateWritable]
+  WebTransportDatagramsWritable createWritable(
+      optional WebTransportSendOptions options = {});
   readonly attribute ReadableStream readable;
   readonly attribute WritableStream writable;
 

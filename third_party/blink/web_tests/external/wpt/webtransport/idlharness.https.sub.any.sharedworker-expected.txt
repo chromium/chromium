@@ -1,23 +1,5 @@
 This is a testharness.js-based test.
-Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramsWritable interface object length
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramsWritable interface object name
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramsWritable interface: attribute sendGroup
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramsWritable interface: attribute sendOrder
-  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
-[FAIL] WebTransportDatagramDuplexStream interface: operation createWritable(optional WebTransportSendOptions)
-  assert_own_property: interface prototype object missing non-static operation expected property "createWritable" missing
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebTransport interface: operation exportKeyingMaterial(BufferSource, BufferSource, unsigned long)
   assert_own_property: interface prototype object missing non-static operation expected property "exportKeyingMaterial" missing
 [FAIL] WebTransport interface: attribute reliability

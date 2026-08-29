@@ -6,7 +6,19 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_options.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_datagrams_writable.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
 namespace blink {
+
+WebTransportDatagramsWritable* DatagramDuplexStream::createWritable(
+    ScriptState* script_state,
+    WebTransportSendOptions* options,
+    ExceptionState& exception_state) {
+  return web_transport_->CreateDatagramsWritable(script_state, options,
+                                                 exception_state);
+}
 
 void DatagramDuplexStream::setIncomingMaxAge(std::optional<double> max_age) {
   if (!max_age.has_value() || max_age.value() > 0) {

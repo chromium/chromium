@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_datagrams_writable.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_group.h"
@@ -177,9 +179,14 @@ void WebTransport::RecentlyForgottenStreamIdSet::Erase(uint32_t stream_id) {
 // Sends a datagram on write().
 class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
  public:
-  DatagramUnderlyingSink(WebTransport* web_transport,
-                         DatagramDuplexStream* datagrams)
-      : web_transport_(web_transport), datagrams_(datagrams) {}
+  DatagramUnderlyingSink(ScriptState* script_state,
+                         WebTransport* web_transport,
+                         DatagramDuplexStream* datagrams,
+                         bool detach_on_close)
+      : script_state_(script_state),
+        web_transport_(web_transport),
+        datagrams_(datagrams),
+        detach_on_close_(detach_on_close) {}
 
   ScriptPromise<IDLUndefined> start(ScriptState* script_state,
                                     WritableStreamDefaultController*,
@@ -199,7 +206,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
           isolate, v8chunk, exception_state);
       if (exception_state.HadException())
         return EmptyPromise();
-      return SendDatagram(data->ByteSpan());
+      return SendDatagram(script_state, data->ByteSpan());
     }
 
     if (v8chunk->IsArrayBufferView()) {
@@ -208,7 +215,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
               isolate, v8chunk, exception_state);
       if (exception_state.HadException())
         return EmptyPromise();
-      return SendDatagram(data->ByteSpan());
+      return SendDatagram(script_state, data->ByteSpan());
     }
 
     exception_state.ThrowTypeError(
@@ -218,18 +225,35 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
   ScriptPromise<IDLUndefined> close(ScriptState* script_state,
                                     ExceptionState&) override {
-    web_transport_ = nullptr;
+    if (detach_on_close_) {
+      if (web_transport_) {
+        web_transport_->ForgetDatagramUnderlyingSink(this);
+      }
+      web_transport_ = nullptr;
+    }
     return ToResolvedUndefinedPromise(script_state);
   }
 
   ScriptPromise<IDLUndefined> abort(ScriptState* script_state,
                                     ScriptValue reason,
                                     ExceptionState&) override {
+    while (!pending_datagrams_resolvers_.empty()) {
+      pending_datagrams_resolvers_.TakeFirst()->Detach();
+    }
+    pending_datagrams_.clear();
+    if (web_transport_) {
+      web_transport_->ForgetDatagramUnderlyingSink(this);
+    }
     web_transport_ = nullptr;
     return ToResolvedUndefinedPromise(script_state);
   }
 
+  void SetStream(WritableStream* stream) { stream_ = stream; }
+
   void SendPendingDatagrams() {
+    if (!web_transport_) {
+      return;
+    }
     DCHECK(web_transport_->transport_remote_.is_bound());
     for (const auto& datagram : pending_datagrams_) {
       web_transport_->transport_remote_->SendDatagram(
@@ -241,24 +265,43 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(script_state_);
     visitor->Trace(web_transport_);
     visitor->Trace(datagrams_);
+    visitor->Trace(stream_);
     visitor->Trace(pending_datagrams_resolvers_);
     UnderlyingSinkBase::Trace(visitor);
   }
 
-  void RejectPendingResolvers(v8::Local<v8::Value> error) {
+  void Error(v8::Local<v8::Value> error) {
+    ScriptState* script_state = script_state_.Get();
+    if (!script_state->ContextIsValid()) {
+      web_transport_ = nullptr;
+      pending_datagrams_.clear();
+      pending_datagrams_resolvers_.clear();
+      return;
+    }
+    ScriptState::Scope scope(script_state);
     while (!pending_datagrams_resolvers_.empty()) {
       pending_datagrams_resolvers_.TakeFirst()->Reject(error);
     }
     pending_datagrams_.clear();
+    web_transport_ = nullptr;
+    if (stream_ && stream_->Controller()) {
+      stream_->Controller()->error(
+          script_state, ScriptValue(script_state->GetIsolate(), error));
+    }
   }
 
  private:
-  ScriptPromise<IDLUndefined> SendDatagram(base::span<const uint8_t> data) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-        web_transport_->script_state_);
+  ScriptPromise<IDLUndefined> SendDatagram(ScriptState* script_state,
+                                           base::span<const uint8_t> data) {
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
     pending_datagrams_resolvers_.push_back(resolver);
+    if (!detach_on_close_) {
+      web_transport_->RetainDatagramUnderlyingSinkWithPendingWrites(this);
+    }
 
     if (web_transport_->transport_remote_.is_bound()) {
       web_transport_->transport_remote_->SendDatagram(
@@ -276,18 +319,44 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
         static_cast<wtf_size_t>(max_buffered_datagrams)) {
       // In this case we pretend that the datagram is processed immediately, to
       // get more requests from the stream.
-      return ToResolvedUndefinedPromise(web_transport_->script_state_.Get());
+      resolver->Promise().MarkAsHandled();
+      resolver->SuppressDetachCheck();
+      return ToResolvedUndefinedPromise(script_state);
     }
     return resolver->Promise();
   }
 
   void OnDatagramProcessed(bool sent) {
-    DCHECK(!pending_datagrams_resolvers_.empty());
-    pending_datagrams_resolvers_.TakeFirst()->Resolve();
+    // Ignore a reply that arrives after connection cleanup rejected and
+    // removed all pending writes.
+    if (pending_datagrams_resolvers_.empty()) {
+      return;
+    }
+    auto resolver = pending_datagrams_resolvers_.TakeFirst();
+    ScriptState* script_state = script_state_.Get();
+    if (!script_state->ContextIsValid()) {
+      resolver->Detach();
+      MaybeReleasePendingWriteRetention();
+      return;
+    }
+    resolver->Resolve();
+    MaybeReleasePendingWriteRetention();
   }
 
+  void MaybeReleasePendingWriteRetention() {
+    if (!detach_on_close_ && web_transport_ &&
+        pending_datagrams_resolvers_.empty()) {
+      web_transport_->ReleaseDatagramUnderlyingSinkWithPendingWrites(this);
+    }
+  }
+
+  const Member<ScriptState> script_state_;
   Member<WebTransport> web_transport_;
   const Member<DatagramDuplexStream> datagrams_;
+  // The legacy writable preserves its previous detach-on-close behavior.
+  const bool detach_on_close_;
+  // Used to propagate connection errors to the owning stream's controller.
+  Member<WritableStream> stream_;
   Vector<Vector<uint8_t>> pending_datagrams_;
   HeapDeque<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_datagrams_resolvers_;
@@ -1008,6 +1077,54 @@ DatagramDuplexStream* WebTransport::datagrams() {
   return datagrams_;
 }
 
+WebTransportDatagramsWritable* WebTransport::CreateDatagramsWritable(
+    ScriptState* script_state,
+    WebTransportSendOptions* options,
+    ExceptionState& exception_state) {
+  CHECK(options);
+  if (!connector_.is_bound() && !transport_remote_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "No connection.");
+    return nullptr;
+  }
+
+  WebTransportSendGroup* send_group = options->sendGroup();
+  if (send_group && send_group->GetTransport() != this) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The sendGroup belongs to a different WebTransport instance.");
+    return nullptr;
+  }
+
+  auto* sink = MakeGarbageCollected<DatagramUnderlyingSink>(
+      script_state, this, datagrams_,
+      /*detach_on_close=*/false);
+  auto* stream = MakeGarbageCollected<WebTransportDatagramsWritable>(
+      script_state, this, send_group, options->sendOrder());
+  stream->Init(script_state, sink, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  sink->SetStream(stream);
+  datagram_underlying_sinks_.insert(sink);
+  return stream;
+}
+
+void WebTransport::ForgetDatagramUnderlyingSink(DatagramUnderlyingSink* sink) {
+  datagram_underlying_sinks_.erase(sink);
+  ReleaseDatagramUnderlyingSinkWithPendingWrites(sink);
+}
+
+void WebTransport::RetainDatagramUnderlyingSinkWithPendingWrites(
+    DatagramUnderlyingSink* sink) {
+  datagram_underlying_sinks_with_pending_writes_.insert(sink);
+}
+
+void WebTransport::ReleaseDatagramUnderlyingSinkWithPendingWrites(
+    DatagramUnderlyingSink* sink) {
+  datagram_underlying_sinks_with_pending_writes_.erase(sink);
+}
+
 WritableStream* WebTransport::datagramWritable() {
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kQuicTransportDatagramApis);
@@ -1157,7 +1274,11 @@ void WebTransport::OnConnectionEstablished(
 
   latest_stats_ = ConvertStatsFromMojom(std::move(initial_stats));
 
-  datagram_underlying_sink_->SendPendingDatagrams();
+  for (auto& sink : datagram_underlying_sinks_) {
+    if (sink) {
+      sink->SendPendingDatagrams();
+    }
+  }
 
   received_streams_underlying_source_->NotifyOpened();
   received_bidirectional_streams_underlying_source_->NotifyOpened();
@@ -1240,6 +1361,10 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
 
 bool WebTransport::HasPendingClosedStreamForTesting(uint32_t stream_id) const {
   return closed_potentially_pending_streams_.Contains(stream_id);
+}
+
+wtf_size_t WebTransport::DatagramSinksWithPendingWritesSizeForTesting() const {
+  return datagram_underlying_sinks_with_pending_writes_.size();
 }
 
 void WebTransport::OnReceivedResetStream(uint32_t stream_id,
@@ -1440,7 +1565,8 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(received_datagrams_controller_);
   visitor->Trace(datagram_underlying_source_);
   visitor->Trace(outgoing_datagrams_);
-  visitor->Trace(datagram_underlying_sink_);
+  visitor->Trace(datagram_underlying_sinks_);
+  visitor->Trace(datagram_underlying_sinks_with_pending_writes_);
   visitor->Trace(script_state_);
   visitor->Trace(create_stream_resolvers_);
   visitor->Trace(connector_);
@@ -1681,10 +1807,13 @@ void WebTransport::Init(const String& url_for_diagnostics,
   // 2. Keeping datagrams in the renderer would be confusing for the timer for
   //    the datagram queue in the network service, because the timestamp is
   //    taken when the datagram is added to the queue.
-  datagram_underlying_sink_ =
-      MakeGarbageCollected<DatagramUnderlyingSink>(this, datagrams_);
+  auto* datagram_underlying_sink = MakeGarbageCollected<DatagramUnderlyingSink>(
+      script_state_, this, datagrams_,
+      /*detach_on_close=*/true);
   outgoing_datagrams_ = WritableStream::CreateWithCountQueueingStrategy(
-      script_state_, datagram_underlying_sink_, 1);
+      script_state_, datagram_underlying_sink, 1);
+  datagram_underlying_sink->SetStream(outgoing_datagrams_);
+  datagram_underlying_sinks_.insert(datagram_underlying_sink);
 
   received_streams_underlying_source_ =
       StreamVendingUnderlyingSource::CreateWithVendor<ReceiveStreamVendor>(
@@ -1739,8 +1868,23 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   HandlePendingGetStatsResolvers(error);
   ScriptValue error_value(isolate, error);
   datagram_underlying_source_->Error(received_datagrams_controller_, error);
-  datagram_underlying_sink_->RejectPendingResolvers(error);
-  outgoing_datagrams_->Controller()->error(script_state_, error_value);
+  // Error() enters V8 and may trigger GC. Keep strong references so every sink
+  // registered when cleanup starts is processed and its pending write promises
+  // are rejected. A WeakMember-only snapshot could lose a later sink during
+  // that GC.
+  HeapVector<Member<DatagramUnderlyingSink>> datagram_underlying_sinks;
+  datagram_underlying_sinks.ReserveInitialCapacity(
+      datagram_underlying_sinks_.size());
+  for (auto& sink : datagram_underlying_sinks_) {
+    if (sink) {
+      datagram_underlying_sinks.push_back(sink);
+    }
+  }
+  datagram_underlying_sinks_.clear();
+  datagram_underlying_sinks_with_pending_writes_.clear();
+  for (auto& sink : datagram_underlying_sinks) {
+    sink->Error(error);
+  }
 
   // We use local variables to avoid re-entrant problems.
   auto* incoming_bidirectional_streams_source =

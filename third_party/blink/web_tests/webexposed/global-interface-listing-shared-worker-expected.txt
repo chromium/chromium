@@ -3577,12 +3577,20 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method constructor
+[Worker]     method createWritable
 [Worker]     setter incomingHighWaterMark
 [Worker]     setter incomingMaxAge
 [Worker]     setter incomingMaxBufferedDatagrams
 [Worker]     setter outgoingHighWaterMark
 [Worker]     setter outgoingMaxAge
 [Worker]     setter outgoingMaxBufferedDatagrams
+[Worker] interface WebTransportDatagramsWritable : WritableStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter sendGroup
+[Worker]     getter sendOrder
+[Worker]     method constructor
+[Worker]     setter sendGroup
+[Worker]     setter sendOrder
 [Worker] interface WebTransportError : DOMException
 [Worker]     attribute @@toStringTag
 [Worker]     getter source

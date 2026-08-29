@@ -18,6 +18,9 @@
 namespace blink {
 
 class ReadableStream;
+class ScriptState;
+class WebTransportDatagramsWritable;
+class WebTransportSendOptions;
 class WritableStream;
 
 // Minimum value for incomingMaxBufferedDatagrams and
@@ -47,6 +50,10 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   WritableStream* writable() const {
     return web_transport_->datagramWritable();
   }
+
+  WebTransportDatagramsWritable* createWritable(ScriptState*,
+                                                WebTransportSendOptions*,
+                                                ExceptionState&);
 
   uint32_t maxDatagramSize() const { return max_datagram_size_; }
   std::optional<double> incomingMaxAge() const { return incoming_max_age_; }

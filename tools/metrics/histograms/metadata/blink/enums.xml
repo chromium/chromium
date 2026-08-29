@@ -6732,6 +6732,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5996"
       label="ConnectionAllowlistEmbeddedEnforcementAllowedByDeliveredAllowlist"/>
   <int value="5997" label="ConnectionAllowlistEmbeddedEnforcementBlocked"/>
+  <int value="5998" label="WebTransportDatagramDuplexStreamCreateWritable"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
