@@ -422,11 +422,13 @@ public class TabsSettingsUnitTest {
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference switchPref =
                 tabsSettings.findPreference(
-                        TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+                        TabsSettings.PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH);
         assertTrue(switchPref.isVisible());
         assertEquals(
-                mActivity.getString(
-                        R.string.share_browsing_data_with_on_device_intelligence_setting_text),
+                mActivity.getString(R.string.chrome_suggestions_in_other_apps_title),
+                switchPref.getTitle());
+        assertEquals(
+                mActivity.getString(R.string.chrome_suggestions_in_other_apps_summary),
                 switchPref.getSummary());
         assertTrue(switchPref.isChecked());
 
@@ -446,7 +448,7 @@ public class TabsSettingsUnitTest {
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference switchPref =
                 tabsSettings.findPreference(
-                        TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+                        TabsSettings.PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH);
         assertTrue(switchPref.isVisible());
         assertFalse(switchPref.isChecked());
 
@@ -463,25 +465,25 @@ public class TabsSettingsUnitTest {
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference switchPref =
                 tabsSettings.findPreference(
-                        TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+                        TabsSettings.PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH);
         assertFalse(switchPref.isVisible());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
-    public void testSearchableIndex_isShareBrowsingDataWithOnDeviceIntelligenceEnabled_True() {
+    public void testSearchableIndex_isChromeSuggestionsInOtherAppsEnabled_True() {
         var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
         indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
-        String pref = TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH;
+        String pref = TabsSettings.PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH;
         verify(mSearchIndexDataMock, times(0)).removeEntry(indexProvider.getUniqueId(pref));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
-    public void testSearchableIndex_isShareBrowsingDataWithOnDeviceIntelligenceEnabled_False() {
+    public void testSearchableIndex_isChromeSuggestionsInOtherAppsEnabled_False() {
         var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
         indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
-        String pref = TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH;
+        String pref = TabsSettings.PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH;
         verify(mSearchIndexDataMock).removeEntry(indexProvider.getUniqueId(pref));
     }
 
@@ -492,18 +494,17 @@ public class TabsSettingsUnitTest {
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference switchPref =
                 tabsSettings.findPreference(
-                        TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+                        TabsSettings.PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH);
         assertFalse(switchPref.isVisible());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION)
-    public void
-            testSearchableIndex_isShareBrowsingDataWithOnDeviceIntelligenceEnabled_DeviceNotSupported() {
+    public void testSearchableIndex_isChromeSuggestionsInOtherAppsEnabled_DeviceNotSupported() {
         when(mAuxiliarySearchHooksMock.isBrowsingDataDonationSupported()).thenReturn(false);
         var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
         indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
-        String pref = TabsSettings.PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH;
+        String pref = TabsSettings.PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH;
         verify(mSearchIndexDataMock).removeEntry(indexProvider.getUniqueId(pref));
     }
 }

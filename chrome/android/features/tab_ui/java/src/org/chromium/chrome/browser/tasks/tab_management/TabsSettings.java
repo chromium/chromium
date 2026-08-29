@@ -63,8 +63,8 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
             "share_titles_and_urls_with_os_learn_more";
 
     @VisibleForTesting
-    static final String PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH =
-            "share_browsing_data_with_on_device_intelligence_switch";
+    static final String PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH =
+            "chrome_suggestions_in_other_apps_switch";
 
     @VisibleForTesting
     static final String LEARN_MORE_URL = "https://support.google.com/chrome/?p=share_titles_urls";
@@ -79,7 +79,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
 
         configureAutoOpenSyncedTabGroupsSwitch();
         configureShareTitlesAndUrlsWithOsSwitch();
-        configureShareBrowsingDataWithOnDeviceIntelligenceSwitch();
+        configureChromeSuggestionsInOtherAppsSwitch();
     }
 
     @Override
@@ -181,23 +181,23 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                                 new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
     }
 
-    private void configureShareBrowsingDataWithOnDeviceIntelligenceSwitch() {
-        ChromeSwitchPreference shareBrowsingDataSwitch =
+    private void configureChromeSuggestionsInOtherAppsSwitch() {
+        ChromeSwitchPreference chromeSuggestionsSwitch =
                 (ChromeSwitchPreference)
-                        findPreference(PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH);
+                        findPreference(PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH);
 
-        // LINT.IfChange(isShareBrowsingDataWithOnDeviceIntelligenceEnabled)
-        if (!isShareBrowsingDataWithOnDeviceIntelligenceEnabled()) {
-            shareBrowsingDataSwitch.setVisible(false);
+        // LINT.IfChange(isChromeSuggestionsInOtherAppsEnabled)
+        if (!isChromeSuggestionsInOtherAppsEnabled()) {
+            chromeSuggestionsSwitch.setVisible(false);
             return;
         }
-        // LINT.ThenChange(:isShareBrowsingDataWithOnDeviceIntelligenceEnabledIndex)
+        // LINT.ThenChange(:isChromeSuggestionsInOtherAppsEnabledIndex)
 
         PrefService prefService = UserPrefs.get(getProfile());
         boolean isEnabled =
                 prefService.getBoolean(Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED);
-        shareBrowsingDataSwitch.setChecked(isEnabled);
-        shareBrowsingDataSwitch.setOnPreferenceChangeListener(
+        chromeSuggestionsSwitch.setChecked(isEnabled);
+        chromeSuggestionsSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean enabled = (boolean) newValue;
                     prefService.setBoolean(
@@ -229,7 +229,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         return AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible();
     }
 
-    private static boolean isShareBrowsingDataWithOnDeviceIntelligenceEnabled() {
+    private static boolean isChromeSuggestionsInOtherAppsEnabled() {
         return AuxiliarySearchDonationServiceUtils.isBrowsingDataDonationEnabled();
     }
 
@@ -256,12 +256,12 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                             getUniqueId(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
                     // LINT.ThenChange(:isShareTitlesAndUrlsEnabled)
 
-                    // LINT.IfChange(isShareBrowsingDataWithOnDeviceIntelligenceEnabledIndex)
-                    if (!isShareBrowsingDataWithOnDeviceIntelligenceEnabled()) {
-                        String pref = PREF_SHARE_BROWSING_DATA_WITH_ON_DEVICE_INTELLIGENCE_SWITCH;
+                    // LINT.IfChange(isChromeSuggestionsInOtherAppsEnabledIndex)
+                    if (!isChromeSuggestionsInOtherAppsEnabled()) {
+                        String pref = PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH;
                         indexData.removeEntry(getUniqueId(pref));
                     }
-                    // LINT.ThenChange(:isShareBrowsingDataWithOnDeviceIntelligenceEnabled)
+                    // LINT.ThenChange(:isChromeSuggestionsInOtherAppsEnabled)
                 }
             };
 }
