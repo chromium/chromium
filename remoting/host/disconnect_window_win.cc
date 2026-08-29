@@ -4,12 +4,14 @@
 
 #include <windows.h>
 
+#include <commctrl.h>
 #include <shellapi.h>
 #include <stddef.h>
 
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -151,6 +153,7 @@ class DisconnectWindowWin : public HostWindow {
 
   HWND hwnd_ = nullptr;
   HWND hwnd_toggle_button_ = nullptr;
+  HWND hwnd_tooltip_ = nullptr;
   bool has_hotkey_ = false;
   base::win::ScopedGDIObject<HPEN> border_pen_;
 
@@ -353,6 +356,11 @@ void DisconnectWindowWin::EndDialog() {
     has_hotkey_ = false;
   }
 
+  if (hwnd_tooltip_) {
+    DestroyWindow(hwnd_tooltip_);
+    hwnd_tooltip_ = nullptr;
+  }
+
   if (hwnd_) {
     DestroyWindow(hwnd_);
     hwnd_ = nullptr;
@@ -488,9 +496,32 @@ void DisconnectWindowWin::OnCooldownExpired() {
 }
 
 void DisconnectWindowWin::UpdateToggleButtonText() {
-  if (hwnd_toggle_button_) {
-    SetWindowText(hwnd_toggle_button_,
-                  (g_current_anchor == WindowAnchor::kBottom) ? L"▲" : L"▼");
+  if (!hwnd_toggle_button_) {
+    return;
+  }
+
+  SetWindowText(hwnd_toggle_button_,
+                (g_current_anchor == WindowAnchor::kBottom) ? L"▲" : L"▼");
+
+  int string_id = (g_current_anchor == WindowAnchor::kBottom)
+                      ? IDS_MOVE_TO_TOP_BUTTON
+                      : IDS_MOVE_TO_BOTTOM_BUTTON;
+  const wchar_t* string_ptr = nullptr;
+  int string_length = LoadStringW(CURRENT_MODULE(), string_id,
+                                  reinterpret_cast<wchar_t*>(&string_ptr), 0);
+  std::wstring tooltip_text;
+  if (string_length > 0 && string_ptr) {
+    tooltip_text.assign(string_ptr, string_length);
+  }
+
+  if (hwnd_tooltip_) {
+    TOOLINFO tool_info = {sizeof(tool_info)};
+    tool_info.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+    tool_info.hwnd = hwnd_;
+    tool_info.uId = reinterpret_cast<UINT_PTR>(hwnd_toggle_button_);
+    tool_info.lpszText = tooltip_text.data();
+    SendMessage(hwnd_tooltip_, TTM_UPDATETIPTEXT, 0,
+                reinterpret_cast<LPARAM>(&tool_info));
   }
 }
 
@@ -547,6 +578,22 @@ bool DisconnectWindowWin::SetStrings() {
   hwnd_toggle_button_ = GetDlgItem(hwnd_, IDC_TOGGLE_ALIGNMENT);
   if (!hwnd_button || !hwnd_message || !hwnd_toggle_button_) {
     return false;
+  }
+
+  if (!hwnd_tooltip_) {
+    hwnd_tooltip_ =
+        CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, nullptr,
+                       WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX, CW_USEDEFAULT,
+                       CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd_,
+                       nullptr, CURRENT_MODULE(), nullptr);
+    if (hwnd_tooltip_) {
+      TOOLINFO tool_info = {sizeof(tool_info)};
+      tool_info.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+      tool_info.hwnd = hwnd_;
+      tool_info.uId = reinterpret_cast<UINT_PTR>(hwnd_toggle_button_);
+      SendMessage(hwnd_tooltip_, TTM_ADDTOOL, 0,
+                  reinterpret_cast<LPARAM>(&tool_info));
+    }
   }
 
   UpdateToggleButtonText();

@@ -736,6 +736,12 @@
       <message desc="Label for the 'stop sharing' button on the host-side. Clicking this button disconnects the client." name="IDS_STOP_SHARING_BUTTON">
         Stop Sharing
       </message>
+      <message desc="Accessibility label and tooltip for the button that moves the desktop sharing indicator to the top of the screen." name="IDS_MOVE_TO_TOP_BUTTON">
+        Move to top
+      </message>
+      <message desc="Accessibility label and tooltip for the button that moves the desktop sharing indicator to the bottom of the screen." name="IDS_MOVE_TO_BOTTOM_BUTTON">
+        Move to bottom
+      </message>
       <message desc="The tool-tip shown when the user hovers over the 'refresh host list' button. Clicking this button reloads the host list without reloading the app." name="IDS_TOOLTIP_REFRESH" formatter_data="android_java">
         Refresh the list of hosts
       </message>
