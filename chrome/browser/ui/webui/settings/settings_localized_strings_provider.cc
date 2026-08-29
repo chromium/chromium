@@ -507,7 +507,7 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"aiSuggestionsConsider2Link",
        IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2_LINK},
 
-      // Dictation (Voice typing) strings.
+      // Dictation (Talk to type) strings.
       {"dictationSettingLabel", IDS_SETTINGS_DICTATION_SETTING_LABEL},
       {"dictationSettingSublabel", IDS_SETTINGS_DICTATION_SETTING_SUBLABEL},
       {"dictationPreferencesHeader", IDS_SETTINGS_DICTATION_PREFERENCES_HEADER},
