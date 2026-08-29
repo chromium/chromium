@@ -65,9 +65,13 @@ suite('ReadabilityImageClassifier', function() {
         img.src = imgSrc;
       } else {
         // Generate an SVG `src` to control dimensions if one wasn't provided.
-        const svg = `<svg width="${naturalWidth}" height="${
+        const svg = `<svg id="${id}" width="${naturalWidth}" height="${
             naturalHeight}" xmlns="http://www.w3.org/2000/svg"></svg>`;
         img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      }
+
+      if (img.complete) {
+        resolve(img);
       }
     });
   }
@@ -79,7 +83,7 @@ suite('ReadabilityImageClassifier', function() {
   });
 
   teardown(() => {
-    document.body.removeChild(testContainer);
+    testContainer.remove();
   });
 
   test('should classify images and apply correct classes', async () => {
@@ -99,41 +103,37 @@ suite('ReadabilityImageClassifier', function() {
       // 3. Inline via Metadata
       createImageTest(
           'math_class', safeNonDominantWidth, 100, 'p', '<img>',
-          {class: 'tex', src: 'url1.jpg'}),
+          {class: 'tex', style: 'max-width: 50%;'}),
       createImageTest(
           'math_filename', safeNonDominantWidth, 100, 'p', '<img>',
-          {src: '/foo/icon.svg'}),
+          {src: '/foo/icon.svg', style: 'max-width: 50%;'}),
       createImageTest(
           'math_alt', safeNonDominantWidth, 100, 'p', '<img>',
-          {alt: 'E=mc^2', src: 'url2.jpg'}),
+          {alt: 'E=mc^2', style: 'max-width: 50%;'}),
 
       // 4. Definitely Full-width (Structure)
       createImageTest(
           'figure_with_caption', 400, 300, 'figure',
           '<img><figcaption>Test</figcaption>'),
-      createImageTest(
-          'sole_content_in_p', 400, 300, 'p', '<img>', {src: 'url3.jpg'}),
-      createImageTest(
-          'sole_content_with_br', 400, 300, 'p', '<img><br>',
-          {src: 'url4.jpg'}),
+      createImageTest('sole_content_in_p', 400, 300, 'p', '<img>'),
+      createImageTest('sole_content_with_br', 400, 300, 'p', '<img><br>'),
       createImageTest(
           'figure_with_caption_nested_picture', 400, 300, 'figure',
-          '<img><figcaption>Test</figcaption>', {src: 'url_nested_picture.jpg'},
-          ['div', 'picture']),
+          '<img><figcaption>Test</figcaption>', {}, ['div', 'picture']),
       createImageTest(
-          'sole_content_nested_picture', 400, 300, 'p', '<img>',
-          {src: 'url_sole_nested.jpg'}, ['picture']),
+          'sole_content_nested_picture', 400, 300, 'p', '<img>', {},
+          ['picture']),
       createImageTest(
           'nested_picture_with_text_sibling', 200, 100, 'p', 'Some text <img>',
-          {src: 'url_nested_with_text.jpg'}, ['picture']),
+          {}, ['picture']),
 
       // 5. Fallback
       createImageTest(
           'fallback_wide', inlineWidthFallbackUpperBoundDp + 50, 200, 'p',
-          'Some text <img>'),
+          'Some text <img>', {style: 'max-width: 50%;'}),
       createImageTest(
           'fallback_narrow', inlineWidthFallbackUpperBoundDp - 50, 200, 'p',
-          'Some text <img>'),
+          'Some text <img>', {style: 'max-width: 50%;'}),
     ];
 
     await Promise.all(imagePromises);
@@ -245,15 +245,21 @@ suite('ReadabilityImageClassifier', function() {
   });
 
   test('should deduplicate nearby identical images', async () => {
-    const src = 'https://example.com/dup.jpg';
+    const src = 'data:image/svg+xml,<svg id="dup"></svg>';
     const alt = 'Duplicate Alt';
 
     const imagePromises = [
       createImageTest('img0', 100, 100, 'p', '<img>', {src, alt}),
       createImageTest('img1', 100, 100, 'p', '<img>', {src, alt}),
-      createImageTest('img2', 100, 100, 'p', '<img>', {src: 'other.jpg'}),
-      createImageTest('img3', 100, 100, 'p', '<img>', {src: 'other2.jpg'}),
-      createImageTest('img4', 100, 100, 'p', '<img>', {src: 'other3.jpg'}),
+      createImageTest(
+          'img2', 100, 100, 'p', '<img>',
+          {src: 'data:image/svg+xml,<svg id="other1"></svg>'}),
+      createImageTest(
+          'img3', 100, 100, 'p', '<img>',
+          {src: 'data:image/svg+xml,<svg id="other2"></svg>'}),
+      createImageTest(
+          'img4', 100, 100, 'p', '<img>',
+          {src: 'data:image/svg+xml,<svg id="other3"></svg>'}),
       createImageTest('img5', 100, 100, 'p', '<img>', {src, alt}),
     ];
 
@@ -269,7 +275,7 @@ suite('ReadabilityImageClassifier', function() {
   });
 
   test('should remove parent FIGURE when deduplicating', async () => {
-    const src = 'https://example.com/dup_fig.jpg';
+    const src = 'data:image/svg+xml,<svg id="dup_fig"></svg>';
     const alt = 'Figure Alt';
 
     const imagePromises = [
@@ -302,23 +308,26 @@ suite('ReadabilityImageClassifier', function() {
         const imagePromises = [
           // 1. Standard transparent formats
           createImageTest(
-              'img_png', 50, 50, 'p', '<img>',
-              {src: 'https://example.com/logo.png'}),
-          createImageTest('img_gif', 50, 50, 'p', '<img>', {src: 'anim.gif'}),
-          createImageTest('img_avif', 50, 50, 'p', '<img>', {src: 'pic.avif'}),
+              'img_png', 50, 50, 'p', '<img>', {src: '/images/logo.png'}),
+          createImageTest(
+              'img_gif', 50, 50, 'p', '<img>', {src: '/images/anim.gif'}),
+          createImageTest(
+              'img_avif', 50, 50, 'p', '<img>', {src: '/images/pic.avif'}),
 
           // 2. URLs with query parameters and hashes
           createImageTest(
               'img_svg_query', 50, 50, 'p', '<img>',
-              {src: 'https://example.com/icon.svg?v=123'}),
+              {src: '/images/icon.svg?v=123'}),
           createImageTest(
               'img_webp_hash', 50, 50, 'p', '<img>',
               {src: '/images/asset.webp#anchor'}),
 
           // 3. Opaque formats, should not get the class
-          createImageTest('img_jpg', 50, 50, 'p', '<img>', {src: 'photo.jpg'}),
           createImageTest(
-              'img_jpeg', 50, 50, 'p', '<img>', {src: 'photo.jpeg?size=large'}),
+              'img_jpg', 50, 50, 'p', '<img>', {src: '/images/photo.jpg'}),
+          createImageTest(
+              'img_jpeg', 50, 50, 'p', '<img>',
+              {src: '/images/photo.jpeg?size=large'}),
 
           // 4. Data URIs (Base64)
           createImageTest(
@@ -329,7 +338,7 @@ suite('ReadabilityImageClassifier', function() {
               {src: 'data:image/svg+xml;charset=utf-8,...'}),
           createImageTest(
               'data_jpg', 50, 50, 'p', '<img>',
-            { src: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...' }),
+              {src: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...'}),
         ];
 
         await Promise.all(imagePromises);

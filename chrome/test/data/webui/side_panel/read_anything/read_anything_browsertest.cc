@@ -341,14 +341,8 @@ class ReadAnythingWithReadabilityMochaTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug.com/502274118): Flaky on some windows builders.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ReadabilityImageClassifier DISABLED_ReadabilityImageClassifier
-#else
-#define MAYBE_ReadabilityImageClassifier ReadabilityImageClassifier
-#endif
 IN_PROC_BROWSER_TEST_F(ReadAnythingWithReadabilityMochaTest,
-                       MAYBE_ReadabilityImageClassifier) {
+                       ReadabilityImageClassifier) {
   RunSidePanelTest(
       "side_panel/read_anything/readability_image_classifier_test.js",
       "mocha.run()");
