@@ -29,8 +29,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_paths.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -62,14 +60,6 @@ ash::ShellWindowId kLockScreen = ash::kShellWindowId_LockSystemModalContainer;
 ash::ShellWindowId kLoginScreen = ash::kShellWindowId_LockSystemModalContainer;
 ash::ShellWindowId kUserSessionScreen =
     ash::kShellWindowId_SystemModalContainer;
-
-void LoadUiTestResources() {
-  base::FilePath ui_test_pak_path;
-  ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
-  ui::ResourceBundle::CleanupSharedInstance();
-  ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
-  ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources("en-US");
-}
 
 gfx::NativeView GetParentContainer(ash::ShellWindowId container) {
   return ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
@@ -138,13 +128,6 @@ class It2MeConfirmationDialogChromeOSTest
  public:
   It2MeConfirmationDialogChromeOSTest()
       : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  void SetUp() override {
-    ash::AshTestBase::SetUp();
-
-    // It2MeConfirmationDialogChromeOS requires the UI resource bundle.
-    LoadUiTestResources();
-  }
 
   void TearDown() override {
     dialog_.reset();
@@ -570,6 +553,21 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
 
   ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
   ASSERT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::OK);
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ModalDialogDefaultButtonIsCancel) {
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  EXPECT_EQ(GetDialogDelegate().GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kCancel));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ModalDialogDisallowsKeyEventsDuringInputProtection) {
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback());
+
+  EXPECT_FALSE(GetDialogDelegate().ShouldAllowKeyEventsDuringInputProtection());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -455,9 +455,18 @@ source_set("run_all_unittests") {
     deps += [ ":security_key_socket_name" ]
   }
   if (is_chromeos) {
-    deps += [ "//chromeos/ash/components:test_support" ]
-    data = [ "$root_out_dir/locales/en-US.pak" ]
-    data_deps = [ "//ui/resources:ui_test_pak_data" ]
+    deps += [
+      "//chromeos/ash/components:test_support",
+      "//ui/base",
+    ]
+    data = [
+      "$root_out_dir/locales/en-US.pak",
+      "$root_out_dir/remoting_locales/en-US.pak",
+    ]
+    data_deps = [
+      "//remoting/resources",
+      "//ui/resources:ui_test_pak_data",
+    ]
   }
 }
 

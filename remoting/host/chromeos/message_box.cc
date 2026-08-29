@@ -58,6 +58,7 @@ class MessageBoxCore : public views::DialogDelegateView {
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   void SetMessageLabel(const std::u16string& message_label);
 
@@ -89,6 +90,7 @@ MessageBoxCore::MessageBoxCore(const std::u16string& title_label,
       message_box_(message_box),
       message_box_view_(new views::MessageBoxView(message_label)) {
   DCHECK(message_box_);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kCancel));
   SetButtonLabel(ui::mojom::DialogButton::kOk, ok_label);
   SetButtonLabel(ui::mojom::DialogButton::kCancel, cancel_label);
 
@@ -170,6 +172,10 @@ views::Widget* MessageBoxCore::GetWidget() {
 
 const views::Widget* MessageBoxCore::GetWidget() const {
   return message_box_view_->GetWidget();
+}
+
+bool MessageBoxCore::ShouldAllowKeyEventsDuringInputProtection() const {
+  return false;
 }
 
 void MessageBoxCore::SetMessageLabel(const std::u16string& message_label) {
