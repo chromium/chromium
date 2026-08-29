@@ -801,12 +801,6 @@ void VideoCaptureController::RequestRefreshFrame() {
   launched_device_->RequestRefreshFrame();
 }
 
-void VideoCaptureController::InvalidateBuffers() {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
-  CHECK(launched_device_, base::NotFatalUntil::M152);
-  launched_device_->InvalidateBuffers();
-}
-
 void VideoCaptureController::SetDesktopCaptureWindowIdAsync(
     gfx::NativeViewId window_id,
     base::OnceClosure done_cb) {

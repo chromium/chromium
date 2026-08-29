@@ -578,15 +578,6 @@ void VideoCaptureManager::DisconnectClient(
   // Detach client from controller.
   const media::VideoCaptureSessionId session_id =
       controller->RemoveClient(client_id, client_handler);
-
-  if (error == media::VideoCaptureError::kNone &&
-      (controller->HasActiveClient() || controller->HasPausedClient())) {
-    // Rotate buffers to prevent cross-renderer information leaks if the
-    // renderer was compromised and retained buffer handles.
-    // There is no need to invalidate buffers if the controller is being
-    // destroyed, since the device and its buffer pool will be destroyed anyway.
-    InvalidateBuffersForClient(controller);
-  }
   std::ostringstream string_stream;
   string_stream << "DisconnectClient: session_id = " << session_id;
   EmitLogMessage(string_stream.str(), 1);
@@ -645,18 +636,6 @@ void VideoCaptureManager::RequestRefreshFrameForClient(
     if (!controller->IsDeviceAlive())
       return;
     controller->RequestRefreshFrame();
-  }
-}
-
-void VideoCaptureManager::InvalidateBuffersForClient(
-    VideoCaptureController* controller) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (IsControllerPointerValid(controller)) {
-    if (!controller->IsDeviceAlive()) {
-      return;
-    }
-    controller->InvalidateBuffers();
   }
 }
 
