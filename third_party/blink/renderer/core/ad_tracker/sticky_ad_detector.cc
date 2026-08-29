@@ -35,22 +35,23 @@ bool IsStickyAdCandidate(Element* element) {
     return false;
   }
 
-  const ComputedStyle* style = nullptr;
   LayoutView* layout_view = element->GetDocument().GetLayoutView();
   LayoutObject* object = element->GetLayoutObject();
 
   DCHECK_NE(object, layout_view);
 
+  LayoutObject* candidate = nullptr;
   for (; object != layout_view; object = object->Container()) {
     DCHECK(object);
-    style = object->Style();
+    candidate = object;
   }
 
-  DCHECK(style);
+  DCHECK(candidate);
 
   // 'style' is now the ComputedStyle for the object whose position depends
   // on the document.
-  return style->GetPosition() != EPosition::kStatic;
+  const ComputedStyle& style = candidate->StyleRef();
+  return style.GetPosition() != EPosition::kStatic;
 }
 
 }  // namespace

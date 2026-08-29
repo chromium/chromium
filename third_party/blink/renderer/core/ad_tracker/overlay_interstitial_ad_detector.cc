@@ -33,28 +33,29 @@ constexpr double kLargeAdSizeToViewportSizeThreshold = 0.1;
 // ancestors (including itself), the 2nd to the top (where the top should always
 // be the <body>) has absolute position.
 bool IsOverlayCandidate(Element* element) {
-  const ComputedStyle* style = nullptr;
   LayoutView* layout_view = element->GetDocument().GetLayoutView();
   LayoutObject* object = element->GetLayoutObject();
 
   DCHECK_NE(object, layout_view);
 
+  LayoutObject* candidate = nullptr;
   for (; object != layout_view; object = object->Container()) {
     DCHECK(object);
-    style = object->Style();
+    candidate = object;
   }
 
-  DCHECK(style);
+  DCHECK(candidate);
 
   // 'style' is now the ComputedStyle for the object whose position depends
   // on the document.
-  if (style->GetPosition() == EPosition::kFixed ||
-      style->HasStickyConstrainedPosition()) {
+  const ComputedStyle& style = candidate->StyleRef();
+  if (style.GetPosition() == EPosition::kFixed ||
+      style.HasStickyConstrainedPosition()) {
     return true;
   }
 
-  if (style->GetPosition() == EPosition::kAbsolute) {
-    return !object->StyleRef().ScrollsOverflow();
+  if (style.GetPosition() == EPosition::kAbsolute) {
+    return !layout_view->StyleRef().ScrollsOverflow();
   }
 
   return false;
