@@ -461,7 +461,7 @@ void ManifestAssetManager::RefreshSolutions() {
 
 void ManifestAssetManager::UninstallModels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  model_execution::prefs::ClearAllUseCaseUsages(&*local_state_);
+  usage_tracker_->ClearAllUseCaseUsages();
   active_assets_by_id_.clear();
   background_download_assets_by_id_.clear();
 
@@ -497,16 +497,13 @@ bool ManifestAssetManager::VerifyInstallation(const base::FilePath& install_dir,
   return base::PathExists(install_dir);
 }
 
-void ManifestAssetManager::OnDeviceEligibleUseCaseUsed(
+void ManifestAssetManager::OnPriorityIncrease(
     const std::string& use_case_name,
-    bool is_first_usage) {
+    std::optional<UsageTracker::Priority> previous_priority) {
   TRACE_EVENT("optimization_guide",
-              "ManifestAssetManager::OnDeviceEligibleUseCaseUsed",
-              perfetto::Flow::FromPointer(this), "use_case_name", use_case_name,
-              "is_first_usage", is_first_usage);
-  if (is_first_usage) {
-    UpdateActiveAssets();
-  }
+              "ManifestAssetManager::OnPriorityIncrease",
+              perfetto::Flow::FromPointer(this), "use_case_name", use_case_name);
+  UpdateActiveAssets();
 }
 
 // Get all assets required by used use cases in usage_tracker.
@@ -515,7 +512,7 @@ void ManifestAssetManager::UpdateActiveAssets() {
   std::vector<Manifest::UseCaseName> active_use_cases;
   for (const auto& [use_case, _] :
        factory_->manifest().GetDeviceCategoryConfig().use_cases()) {
-    if (usage_tracker_->WasUseCaseRecentlyUsed(use_case)) {
+    if (usage_tracker_->GetPriority(use_case)) {
       active_use_cases.push_back(use_case);
     }
   }

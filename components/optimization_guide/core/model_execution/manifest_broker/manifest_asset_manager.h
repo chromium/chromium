@@ -240,8 +240,9 @@ class ManifestAssetManager : public UsageTracker::Observer {
   };
 
   // UsageTracker::Observer:
-  void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name,
-                                   bool is_first_usage) override;
+  void OnPriorityIncrease(
+      const std::string& use_case_name,
+      std::optional<UsageTracker::Priority> previous_priority) override;
 
   // Updates the set of assets required by the active use cases.
   void UpdateActiveAssets();

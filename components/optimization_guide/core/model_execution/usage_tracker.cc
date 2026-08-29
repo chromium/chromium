@@ -22,45 +22,39 @@ UsageTracker::UsageTracker(PrefService* local_state)
 
 UsageTracker::~UsageTracker() = default;
 
-void UsageTracker::OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature) {
-  TRACE_EVENT("optimization_guide", "UsageTracker::OnDeviceEligibleFeatureUsed",
-              "feature", base::ToString(feature));
+void UsageTracker::RaisePriority(const std::string& use_case_name,
+                                 Priority priority) {
+  TRACE_EVENT("optimization_guide", "UsageTracker::RaisePriority", "use_case",
+              use_case_name, "priority", static_cast<int>(priority));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool was_first_usage = !WasOnDeviceEligibleFeatureRecentlyUsed(feature);
-  model_execution::prefs::RecordFeatureUsage(local_state_, feature);
-
-  for (auto& o : observers_) {
-    o.OnDeviceEligibleUseCaseUsed(ToUseCaseName(feature), was_first_usage);
+  std::optional<Priority> previous_priority = GetPriority(use_case_name);
+  if (priority == Priority::kUserBlocking) {
+    user_blocking_use_cases_.insert(use_case_name);
   }
-}
-
-void UsageTracker::OnDeviceEligibleUseCaseUsed(
-    const std::string& use_case_name) {
-  TRACE_EVENT("optimization_guide", "UsageTracker::OnDeviceEligibleUseCaseUsed",
-              "use_case", use_case_name);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool was_first_usage = !WasUseCaseRecentlyUsed(use_case_name);
   model_execution::prefs::RecordUseCaseUsage(local_state_, use_case_name);
 
-  for (auto& o : observers_) {
-    o.OnDeviceEligibleUseCaseUsed(use_case_name, was_first_usage);
+  bool priority_increased =
+      !previous_priority.has_value() || priority > *previous_priority;
+
+  if (priority_increased) {
+    for (auto& o : observers_) {
+      o.OnPriorityIncrease(use_case_name, previous_priority);
+    }
   }
 }
 
-bool UsageTracker::WasOnDeviceEligibleFeatureRecentlyUsed(
-    mojom::OnDeviceFeature feature) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_execution::prefs::WasFeatureRecentlyUsed(&*local_state_,
-                                                        feature);
-}
-
-bool UsageTracker::WasUseCaseRecentlyUsed(
+std::optional<UsageTracker::Priority> UsageTracker::GetPriority(
     const std::string& use_case_name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_execution::prefs::WasUseCaseRecentlyUsed(&*local_state_,
-                                                        use_case_name);
+  if (user_blocking_use_cases_.contains(use_case_name)) {
+    return Priority::kUserBlocking;
+  }
+  if (model_execution::prefs::WasUseCaseRecentlyUsed(&*local_state_,
+                                                        use_case_name)) {
+    return Priority::kBestEffort;
+  }
+  return std::nullopt;
 }
 
 void UsageTracker::AddObserver(Observer* observer) {
@@ -73,14 +67,24 @@ void UsageTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void UsageTracker::SetUseCaseRequested(const std::string& use_case_name,
-                                       bool requested) {
+void UsageTracker::SetPriority(const std::string& use_case_name,
+                               std::optional<Priority> priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (requested) {
-    OnDeviceEligibleUseCaseUsed(use_case_name);
-  } else {
+  if (!priority.has_value()) {
+    user_blocking_use_cases_.erase(use_case_name);
     model_execution::prefs::ClearUseCaseUsage(&*local_state_, use_case_name);
+    return;
   }
+  RaisePriority(use_case_name, *priority);
+  if (*priority != Priority::kUserBlocking) {
+    user_blocking_use_cases_.erase(use_case_name);
+  }
+}
+
+void UsageTracker::ClearAllUseCaseUsages() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  user_blocking_use_cases_.clear();
+  model_execution::prefs::ClearAllUseCaseUsages(&*local_state_);
 }
 
 }  // namespace optimization_guide

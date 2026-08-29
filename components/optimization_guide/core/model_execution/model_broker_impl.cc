@@ -108,7 +108,8 @@ void ModelBrokerImpl::RequestAssetsForInternal(
     std::move(bad_message_callback).Run("Unsupported use case");
     return;
   }
-  usage_tracker_->OnDeviceEligibleUseCaseUsed(use_case);
+  usage_tracker_->RaisePriority(use_case,
+                                UsageTracker::Priority::kUserBlocking);
 }
 
 ModelBrokerImpl::SolutionProvider& ModelBrokerImpl::GetSolutionProvider(
@@ -138,7 +139,8 @@ std::vector<mojom::BrokerUseCaseInfoPtr> ModelBrokerImpl::GetBrokerUseCaseInfo()
   for (const auto& [use_case, provider] : solution_providers_) {
     auto info = mojom::BrokerUseCaseInfo::New();
     info->name = use_case;
-    info->assets_requested = usage_tracker_->WasUseCaseRecentlyUsed(use_case);
+    info->assets_requested =
+        usage_tracker_->GetPriority(use_case).has_value();
     info->unavailable_reason = AvailabilityFromEligibilityReason(
         provider.solution().error_or(OnDeviceModelEligibilityReason::kSuccess));
     use_cases.push_back(std::move(info));
