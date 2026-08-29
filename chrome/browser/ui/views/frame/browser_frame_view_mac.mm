@@ -504,20 +504,17 @@ void BrowserFrameViewMac::OnPaint(gfx::Canvas* canvas) {
       GetFrameColor(BrowserFrameActiveState::kUseCurrent);
 
   if (is_glass_frame_eligible_) {
-    // In glass mode, paint only the region outside the glass frame
-    // bounds with the frame color.
-    const gfx::Rect opaque_frame_bounds = GetOpaqueFrameBounds();
-    if (!opaque_frame_bounds.IsEmpty()) {
-      canvas->FillRect(opaque_frame_bounds, frame_color);
-    }
-  } else {
-    canvas->DrawColor(frame_color);
+    // In glass mode, painting to frame color happens in the opaque background
+    // view instead.
+    return;
+  }
 
-    auto* theme_service = ThemeServiceFactory::GetForProfile(
-        GetBrowserView()->browser()->GetProfile());
-    if (!theme_service->UsingSystemTheme()) {
-      PaintThemedFrame(canvas);
-    }
+  canvas->DrawColor(frame_color);
+
+  auto* theme_service = ThemeServiceFactory::GetForProfile(
+      GetBrowserView()->browser()->GetProfile());
+  if (!theme_service->UsingSystemTheme()) {
+    PaintThemedFrame(canvas);
   }
 }
 
@@ -614,20 +611,4 @@ void BrowserFrameViewMac::OnGlassFrameEligibilityChanged(bool is_eligible) {
   is_glass_frame_eligible_ = is_eligible;
   layer()->SetFillsBoundsOpaquely(!is_glass_frame_eligible_);
   SchedulePaint();
-}
-
-gfx::Rect BrowserFrameViewMac::GetOpaqueFrameBounds() const {
-  if (!browser_widget() || !browser_widget()->browser_native_widget()) {
-    return gfx::Rect();
-  }
-
-  const gfx::Rect glass_bounds =
-      browser_widget()->browser_native_widget()->GetGlassFrameBounds();
-  if (glass_bounds.IsEmpty()) {
-    return GetLocalBounds();
-  }
-
-  gfx::Rect opaque_bounds = GetLocalBounds();
-  opaque_bounds.Subtract(glass_bounds);
-  return opaque_bounds;
 }

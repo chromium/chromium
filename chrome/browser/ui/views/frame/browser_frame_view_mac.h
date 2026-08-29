@@ -105,8 +105,6 @@ class BrowserFrameViewMac : public BrowserFrameView,
 
   void OnGlassFrameEligibilityChanged(bool is_eligible);
 
-  gfx::Rect GetOpaqueFrameBounds() const;
-
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
   base::ScopedObservation<web_app::WebAppRegistrar,

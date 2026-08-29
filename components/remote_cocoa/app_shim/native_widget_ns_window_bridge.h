@@ -62,6 +62,11 @@ using remote_cocoa::NativeWidgetNSWindowHostHelper;
 using remote_cocoa::CocoaMouseCapture;
 using remote_cocoa::CocoaMouseCaptureDelegate;
 
+// Identifier for the native opaque background view used to prevent transparency
+// when glass frame is active.
+REMOTE_COCOA_APP_SHIM_EXPORT extern NSString* const
+    kOpaqueFrameBackgroundViewIdentifier;
+
 // A bridge to an NSWindow managed by an instance of NativeWidgetMac or
 // DesktopNativeWidgetMac. Serves as a helper class to bridge requests from the
 // NativeWidgetMac to the Cocoa window. Behaves a bit like an aura::Window.

@@ -82,6 +82,13 @@ CG_EXTERN CGError CGSSetWindowCaptureExcludeShape(CGSConnectionID cid,
                                                   CGRegionRef region);
 CG_EXTERN CGRegionRef CGRegionCreateWithRect(CGRect rect);
 
+namespace remote_cocoa {
+
+NSString* const kOpaqueFrameBackgroundViewIdentifier =
+    @"OpaqueFrameBackgroundView";
+
+}  // namespace remote_cocoa
+
 namespace {
 constexpr auto kUIPaintTimeout = base::Milliseconds(500);
 
@@ -109,7 +116,14 @@ bool IsBackgroundEffectView(NSView* view) {
   }
 
   if (@available(macOS 26, *)) {
-    return [view isKindOfClass:[NSGlassEffectView class]];
+    if ([view isKindOfClass:[NSGlassEffectView class]]) {
+      return true;
+    }
+  }
+
+  if ([view.identifier
+          isEqualToString:remote_cocoa::kOpaqueFrameBackgroundViewIdentifier]) {
+    return true;
   }
 
   return false;

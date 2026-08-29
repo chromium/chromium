@@ -69,7 +69,6 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   bool ShouldRestorePreviousBrowserWidgetState() const override;
   bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
   void AnnounceTextInInProcessWindow(const std::u16string& text) override;
-  gfx::Rect GetGlassFrameBounds() const override;
 
  protected:
   ~BrowserNativeWidgetMac() override;
@@ -114,8 +113,9 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
 
   raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.
   BrowserWindowTouchBarViewsDelegate* __strong touch_bar_delegate_;
-  NSView* __strong background_view_;
+  NSView* __strong glass_background_view_;
   NSView* __strong tint_view_;
+  NSView* __strong opaque_background_view_;
 
   std::optional<SkColor> last_theme_color_;
   std::optional<bool> last_is_vertical_tabs_;

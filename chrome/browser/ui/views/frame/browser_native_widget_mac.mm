@@ -153,6 +153,18 @@ API_AVAILABLE(macos(26.0))
 }
 @end
 
+@interface OpaqueFrameBackgroundView : NSView
+@end
+
+@implementation OpaqueFrameBackgroundView
+- (NSView*)hitTest:(NSPoint)point {
+  return nil;
+}
+- (BOOL)isOpaque {
+  return YES;
+}
+@end
+
 // Bridge Obj-C class for WindowTouchBarDelegate and
 // BrowserWindowTouchBarController.
 @interface BrowserWindowTouchBarViewsDelegate
@@ -362,13 +374,17 @@ void BrowserNativeWidgetMac::OnWidgetDestroyed(views::Widget* widget) {
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_FORWARD, this);
   }
   touch_bar_delegate_ = nullptr;
-  if (background_view_) {
-    [background_view_ removeFromSuperview];
-    background_view_ = nil;
+  if (glass_background_view_) {
+    [glass_background_view_ removeFromSuperview];
+    glass_background_view_ = nil;
   }
   if (tint_view_) {
     [tint_view_ removeFromSuperview];
     tint_view_ = nil;
+  }
+  if (opaque_background_view_) {
+    [opaque_background_view_ removeFromSuperview];
+    opaque_background_view_ = nil;
   }
   browser_view_ = nullptr;
   last_theme_color_.reset();
@@ -895,41 +911,6 @@ void BrowserNativeWidgetMac::AnnounceTextInInProcessWindow(
   }
 }
 
-gfx::Rect BrowserNativeWidgetMac::GetGlassFrameBounds() const {
-  if (!background_view_ || !GetNSWindowHost()) {
-    return gfx::Rect();
-  }
-
-  NSWindow* const ns_window = GetNSWindowHost()->GetInProcessNSWindow();
-  if (!ns_window) {
-    return gfx::Rect();
-  }
-
-  NSView* const content_view = [ns_window contentView];
-
-  const int content_width = static_cast<int>(content_view.bounds.size.width);
-  const int content_height = static_cast<int>(content_view.bounds.size.height);
-
-  const std::optional<int> target_width = GetGlassFrameWidth();
-  const std::optional<int> target_height = GetGlassFrameHeight();
-
-  int glass_x = 0;
-  int glass_y = 0;
-  int glass_width = content_width;
-  int glass_height = content_height;
-
-  if (target_width.has_value()) {
-    glass_width = *target_width;
-    glass_x = base::i18n::IsRTL() ? (content_width - glass_width) : 0;
-  }
-
-  if (target_height.has_value()) {
-    glass_height = *target_height;
-  }
-
-  return gfx::Rect(glass_x, glass_y, glass_width, glass_height);
-}
-
 void BrowserNativeWidgetMac::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
   last_theme_color_.reset();
@@ -977,13 +958,17 @@ void BrowserNativeWidgetMac::UpdateGlassEligibility(bool is_glass_eligible) {
   if (!is_glass_eligible) {
     [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
     [ns_window setOpaque:YES];
-    if (background_view_) {
-      [background_view_ removeFromSuperview];
-      background_view_ = nil;
+    if (glass_background_view_) {
+      [glass_background_view_ removeFromSuperview];
+      glass_background_view_ = nil;
     }
     if (tint_view_) {
       [tint_view_ removeFromSuperview];
       tint_view_ = nil;
+    }
+    if (opaque_background_view_) {
+      [opaque_background_view_ removeFromSuperview];
+      opaque_background_view_ = nil;
     }
     last_theme_color_.reset();
     last_is_vertical_tabs_.reset();
@@ -1000,7 +985,7 @@ void BrowserNativeWidgetMac::UpdateGlassEligibility(bool is_glass_eligible) {
     [ns_window setBackgroundColor:[[NSColor windowBackgroundColor]
                                       colorWithAlphaComponent:0.001]];
 
-    if (!background_view_) {
+    if (!glass_background_view_) {
       NSView* const content_view = [ns_window contentView];
 
       NSGlassEffectView* const glass_view =
@@ -1018,10 +1003,21 @@ void BrowserNativeWidgetMac::UpdateGlassEligibility(bool is_glass_eligible) {
       tint_view_ = tint_view;
       [glass_view addSubview:tint_view_];
 
-      background_view_ = glass_view;
-      [content_view addSubview:background_view_
+      glass_background_view_ = glass_view;
+      [content_view addSubview:glass_background_view_
                     positioned:NSWindowBelow
                     relativeTo:nil];
+
+      NSView* opaque_view =
+          [[OpaqueFrameBackgroundView alloc] initWithFrame:content_view.bounds];
+      opaque_view.identifier =
+          remote_cocoa::kOpaqueFrameBackgroundViewIdentifier;
+      opaque_view.wantsLayer = YES;
+      opaque_view.layer.opaque = YES;
+      opaque_background_view_ = opaque_view;
+      [content_view addSubview:opaque_background_view_
+                    positioned:NSWindowBelow
+                    relativeTo:glass_background_view_];
     }
 
     UpdateBackgroundGeometry();
@@ -1030,7 +1026,7 @@ void BrowserNativeWidgetMac::UpdateGlassEligibility(bool is_glass_eligible) {
 }
 
 void BrowserNativeWidgetMac::UpdateBackgroundGeometry() {
-  if (!background_view_ || !GetNSWindowHost()) {
+  if (!glass_background_view_ || !GetNSWindowHost()) {
     return;
   }
 
@@ -1072,15 +1068,37 @@ void BrowserNativeWidgetMac::UpdateBackgroundGeometry() {
   const NSRect glass_frame =
       NSMakeRect(glass_x, glass_y, glass_width, glass_height);
 
-  background_view_.frame = glass_frame;
-  background_view_.autoresizingMask = mask;
+  glass_background_view_.frame = glass_frame;
+  glass_background_view_.autoresizingMask = mask;
   if (tint_view_) {
-    tint_view_.frame = background_view_.bounds;
+    tint_view_.frame = glass_background_view_.bounds;
   }
 
-  if (browser_view_ && browser_view_->browser_widget() &&
-      browser_view_->browser_widget()->GetFrameView()) {
-    browser_view_->browser_widget()->GetFrameView()->SchedulePaint();
+  if (opaque_background_view_) {
+    int opaque_x = 0;
+    int opaque_y = 0;
+    int opaque_width = content_width;
+    int opaque_height = content_height;
+    NSAutoresizingMaskOptions opaque_mask = 0;
+
+    // Compute the bounds for the opaque view which is basically covers
+    // the remaining portion of the window that isn't occupied by glass.
+    // Unlike glass view, opaque view must resize in both directions.
+    if (target_width.has_value()) {
+      opaque_width = std::max(0, content_width - glass_width);
+      opaque_x = base::i18n::IsRTL() ? 0 : glass_width;
+      opaque_mask = NSViewWidthSizable | NSViewHeightSizable;
+    }
+
+    if (target_height.has_value()) {
+      opaque_height = std::max(0, content_height - glass_height);
+      opaque_y = 0;
+      opaque_mask = NSViewWidthSizable | NSViewHeightSizable;
+    }
+
+    opaque_background_view_.frame =
+        NSMakeRect(opaque_x, opaque_y, opaque_width, opaque_height);
+    opaque_background_view_.autoresizingMask = opaque_mask;
   }
 }
 
@@ -1113,4 +1131,9 @@ void BrowserNativeWidgetMac::UpdateBackgroundColor() {
 
   tint_view_.layer.backgroundColor =
       [NSColor colorWithSRGBRed:r green:g blue:b alpha:a].CGColor;
+
+  if (opaque_background_view_) {
+    opaque_background_view_.layer.backgroundColor =
+        [NSColor colorWithSRGBRed:r green:g blue:b alpha:1.0].CGColor;
+  }
 }

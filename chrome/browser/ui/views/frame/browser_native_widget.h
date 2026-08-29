@@ -78,10 +78,6 @@ class BrowserNativeWidget {
   // window, has no effect. This enables screen reader announcements for
   // installed web apps (PWAs) on Mac. See crbug.com/40802438.
   virtual void AnnounceTextInInProcessWindow(const std::u16string& text) {}
-
-  // Returns the bounds of the glass frame effect in window coordinates.
-  // Returns empty if glass frame is not active.
-  virtual gfx::Rect GetGlassFrameBounds() const = 0;
 #endif
 
  protected:
