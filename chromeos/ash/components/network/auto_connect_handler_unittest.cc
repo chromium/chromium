@@ -1047,4 +1047,101 @@ TEST_F(AutoConnectHandlerTest,
   }));
 }
 
+TEST_F(AutoConnectHandlerTest,
+       AllowOnlyPolicyWiFiToConnectIfAvailableUserPolicyNoNetworksEffects) {
+  std::string wifi0_service_path =
+      ConfigureService(kConfigWifi0UnmanagedSharedConnectable);
+  ASSERT_FALSE(wifi0_service_path.empty());
+  std::string wifi1_service_path =
+      ConfigureService(kConfigWifi1ManagedSharedConnectable);
+  ASSERT_FALSE(wifi1_service_path.empty());
+
+  const auto* wifi_device =
+      helper().network_state_handler()->GetDeviceStateByType(
+          NetworkTypePattern::WiFi());
+  ASSERT_NE(nullptr, wifi_device);
+
+  // Apply 'AllowOnlyPolicyWiFiToConnectIfAvailable' policy as a device policy
+  // and configure a managed network "wifi1" in device policy.
+  auto global_config = base::DictValue().Set(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      true);
+  SetupDevicePolicy(kPolicy, global_config);
+
+  helper().manager_test()->SetBestServiceToConnect(wifi1_service_path);
+
+  // Trigger an initial scan before login so that `initial_scan_done_` is true.
+  helper().manager_test()->SetAutoCompleteScan(true);
+  helper().network_state_handler()->RequestScan(NetworkTypePattern::WiFi());
+
+  LoginToRegularUser();
+  StartNetworkCertLoader();
+
+  // No auto-connect event should have fired yet because user policy has not
+  // been applied yet.
+  EXPECT_EQ(0, test_observer_->num_auto_connect_events());
+
+  // Prevent scans from auto-completing so we can observe the waiting-for-scan
+  // state when user policy is applied.
+  helper().manager_test()->SetAutoCompleteScan(false);
+
+  // Apply an empty user policy (no networks). Because device policy enables
+  // AllowOnlyPolicyWiFiToConnectIfAvailable, this should trigger a new scan,
+  // schedule a connection request to the best network, and reset
+  // `initial_scan_done_` to false.
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  // A manual connection attempt should be vetoed because `initial_scan_done_`
+  // was reset to false and a fresh scan has not finished yet.
+  EXPECT_EQ(
+      ConnectToNetworkRequestVerdict::kVetoWaitingForScan,
+      auto_connect_handler_->ConnectToNetworkRequested(wifi0_service_path));
+
+  // The auto-connect event has not fired yet because the scan is still pending.
+  EXPECT_EQ(0, test_observer_->num_auto_connect_events());
+
+  // Complete the scan.
+  helper().manager_test()->TriggerScanCompleted(wifi_device->path());
+
+  // After the scan completes, manual connections are allowed and the scheduled
+  // auto-connect event has fired with AUTO_CONNECT_REASON_POLICY_APPLIED.
+  EXPECT_TRUE(base::test::RunUntil([=, this]() {
+    return auto_connect_handler_->ConnectToNetworkRequested(
+               wifi0_service_path) == ConnectToNetworkRequestVerdict::kProceed;
+  }));
+  EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(1, test_network_connection_handler_->num_auto_connect_events());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
+            test_observer_->auto_connect_reasons());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
+            test_network_connection_handler_->auto_connect_reasons());
+
+  // Re-apply the empty user policy. This verifies that `initial_scan_done_` is
+  // also reset and a new connection request is scheduled on policy updates.
+  SetupUserPolicy(/*network_configs_json=*/std::string());
+
+  // Connection should be vetoed again until the new scan finishes.
+  EXPECT_EQ(
+      ConnectToNetworkRequestVerdict::kVetoWaitingForScan,
+      auto_connect_handler_->ConnectToNetworkRequested(wifi0_service_path));
+  EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+
+  helper().manager_test()->TriggerScanCompleted(wifi_device->path());
+
+  EXPECT_TRUE(base::test::RunUntil([=, this]() {
+    return auto_connect_handler_->ConnectToNetworkRequested(
+               wifi0_service_path) == ConnectToNetworkRequestVerdict::kProceed;
+  }));
+  EXPECT_EQ(2, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(2, test_network_connection_handler_->num_auto_connect_events());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
+            test_observer_->auto_connect_reasons());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
+            test_network_connection_handler_->auto_connect_reasons());
+}
+
 }  // namespace ash

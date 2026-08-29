@@ -181,15 +181,27 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
     user_policy_applied_ = true;
   }
 
-  DisconnectWiFiIfPolicyRequires();
-  DisconnectCellularIfPolicyRequires();
-
-  // Request to connect to the best network only if there is at least one
-  // managed network. Otherwise only process existing requests.
-  if (managed_configuration_handler_->HasAnyPolicyNetwork(userhash)) {
+  // Request to connect to the best network
+  // - if `userhash` policy has at least one policy-managed network
+  // - or if `AllowOnlyPolicyWiFiToConnectIfAvailable` is active even if
+  //   `userhash` policy has no policy-managed networks.
+  //   This is useful because `AllowOnlyPolicyWiFiToConnectIfAvailable` becomes
+  //   active after applying user policy. If `userhash` represents user policy
+  //   with no policy-provided networks, but device policy has at least one
+  //   network and `AllowOnlyPolicyWiFiToConnectIfAvailable` is active, the
+  //   device should ensure that it is connected to a device policy network now.
+  if (managed_configuration_handler_->HasAnyPolicyNetwork(userhash) ||
+      ShouldEnforceIsAllowOnlyPolicyWiFiToConnectIfAvailable()) {
     AddBestConnectionRequest(
         AutoConnectReason::AUTO_CONNECT_REASON_POLICY_APPLIED);
+    // Processing the added request will trigger a fresh scan.
+    // Enforcement of AllowOnlyPolicyWiFiToConnectIfAvailable should only start
+    // when the system's visible SSID list is not stale.
+    initial_scan_done_ = false;
   }
+
+  DisconnectWiFiIfPolicyRequires();
+  DisconnectCellularIfPolicyRequires();
 
   ProcessPendingBestConnectionRequests();
 }
@@ -303,10 +315,6 @@ void AutoConnectHandler::ProcessPendingBestConnectionRequests() {
     //  - client certificate patterns resolved
     if (!user_policy_applied_ || !client_certs_resolved_)
       return;
-
-    // The scan started here will be seen as an "initial" scan after user
-    // login.
-    initial_scan_done_ = false;
   }
 
   request_best_connection_pending_ = false;
