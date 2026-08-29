@@ -39,6 +39,17 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="VoiceTyping.SessionUrlCategory" enum="DictationUrlCategory"
+    expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Records the active UI surface or URL context (e.g. standard Web page vs.
+    Gemini in Chrome / Glic UI) where Voice Typing was engaged. Recorded
+    whenever a new Dictation session is started.
+  </summary>
+</histogram>
+
 <histogram name="VoiceTyping.StreamStartTrigger"
     enum="DictationStreamStartTrigger" expires_after="2027-06-01">
   <owner>amyasinghal@google.com</owner>
