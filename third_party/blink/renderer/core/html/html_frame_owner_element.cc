@@ -248,8 +248,7 @@ void HTMLFrameOwnerElement::DidChangeIsInCanvasSubtree() {
       root->SetIsInCanvasSubtree(IsInCanvasSubtree());
       if (auto* layout_view = inner_document->GetLayoutView()) {
         layout_view->SetNeedsPaintPropertyUpdate();
-        layout_view->SetShouldDoFullPaintInvalidation();
-        layout_view->SetBackgroundNeedsFullPaintInvalidation();
+        layout_view->SetSubtreeShouldDoFullPaintInvalidation();
       }
     }
   }

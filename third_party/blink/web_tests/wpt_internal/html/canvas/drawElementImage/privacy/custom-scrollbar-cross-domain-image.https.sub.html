@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>HTML-in-Canvas Reftest: Custom scrollbar moveBefore privacy cache invalidation</title>
+<link rel="match" href="custom-scrollbar-cross-domain-image-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style> body { margin: 0; }</style>
+<canvas id="canvas" layoutsubtree width="200" height="200"></canvas>
+
+<script>
+(async () => {
+  const ctx = canvas.getContext('2d');
+  const imageUrl = 'https://{{hosts[alt][]}}:{{ports[https][0]}}/images/red.png';
+
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'width: 150px; height: 150px; border: none;';
+  const iframeLoaded = new Promise(resolve => { iframe.onload = resolve; });
+  iframe.srcdoc = `
+    <!DOCTYPE html>
+    <style>
+      ::-webkit-scrollbar {
+        width: 50px; height: 50px;
+        background-image: url('${imageUrl}');
+        background-color: green;
+      }
+      body { margin: 0; height: 500px; overflow-y: scroll; }
+    </style>
+    <img id="preload" src="${imageUrl}" style="visibility:hidden">
+  `;
+  document.body.appendChild(iframe);
+  await iframeLoaded;
+  await iframe.contentDocument.getElementById('preload').decode();
+
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  canvas.moveBefore(iframe, null);
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  ctx.drawElementImage(iframe, 0, 0);
+  takeScreenshot();
+})();
+</script>

@@ -4518,8 +4518,7 @@ bool Element::IsCanvasOrInCanvasSubtree() const {
 void Element::DidChangeIsInCanvasSubtree() {
   if (auto* layout_object = GetLayoutObject()) {
     layout_object->SetNeedsPaintPropertyUpdate();
-    layout_object->SetShouldDoFullPaintInvalidation();
-    layout_object->SetBackgroundNeedsFullPaintInvalidation();
+    layout_object->SetSubtreeShouldDoFullPaintInvalidation();
   }
 }
 

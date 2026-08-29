@@ -2853,6 +2853,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // track paint invalidation reasons separately. To indicate that the
   // background needs full invalidation, use
   // SetBackgroundNeedsFullPaintInvalidation().
+  // This doesn't directly invalidate custom scrollbar parts which are separate
+  // LayoutObjects.
   void SetShouldDoFullPaintInvalidation(
       PaintInvalidationReason = PaintInvalidationReason::kLayout);
   void SetShouldDoFullPaintInvalidationWithoutLayoutChange(
@@ -2901,6 +2903,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetMayNeedPaintInvalidationAnimatedBackgroundImage();
 
+  // Sets the whole layout subtree to do full paint invalidation, including
+  // this object and all descendants, all backgrounds, and custom scrollbar
+  // parts.
   void SetSubtreeShouldDoFullPaintInvalidation(
       PaintInvalidationReason reason = PaintInvalidationReason::kSubtree);
   bool SubtreeShouldDoFullPaintInvalidation() const {
