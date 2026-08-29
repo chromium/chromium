@@ -19,6 +19,7 @@ interface AuxiliarySearchModuleProperties {
     WritableObjectPropertyKey<OnClickListener> MODULE_SECOND_BUTTON_ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    WritableIntPropertyKey MODULE_TITLE_TEXT_RES_ID = new WritableIntPropertyKey();
     WritableIntPropertyKey MODULE_CONTENT_TEXT_RES_ID = new WritableIntPropertyKey();
     WritableIntPropertyKey MODULE_FIRST_BUTTON_TEXT_RES_ID = new WritableIntPropertyKey();
     WritableIntPropertyKey MODULE_SECOND_BUTTON_TEXT_RES_ID = new WritableIntPropertyKey();
@@ -27,6 +28,7 @@ interface AuxiliarySearchModuleProperties {
             new PropertyKey[] {
                 MODULE_FIRST_BUTTON_ON_CLICK_LISTENER,
                 MODULE_SECOND_BUTTON_ON_CLICK_LISTENER,
+                MODULE_TITLE_TEXT_RES_ID,
                 MODULE_CONTENT_TEXT_RES_ID,
                 MODULE_FIRST_BUTTON_TEXT_RES_ID,
                 MODULE_SECOND_BUTTON_TEXT_RES_ID

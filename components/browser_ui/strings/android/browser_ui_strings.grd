@@ -1157,6 +1157,15 @@
       </message>
 
       <!-- Auxiliary search Magic Stack strings -->
+      <message name="IDS_AUXILIARY_SEARCH_BROWSING_DATA_MODULE_NAME" desc="Name of the auxiliary search module on NTP for browsing data donation." translateable="false">
+        Get Chrome suggestions in other apps
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_BROWSING_DATA_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the auxiliary search browsing data card." translateable="false">
+        Hide Get Chrome suggestions in other apps
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_BROWSING_DATA_MODULE_CONTENT" desc="Content of the auxiliary search module on NTP for browsing data donation." translateable="false">
+        Chrome can now show you suggestions in other apps based on your browsing data, such as recent browsing history. This data is processed securely on your device. You can turn this off anytime in Chrome settings.
+      </message>
       <message name="IDS_AUXILIARY_SEARCH_MODULE_NAME" desc="Name of the auxiliary search module on NTP.">
         View tabs in your app list
       </message>

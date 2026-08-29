@@ -240,8 +240,23 @@ chromium-metrics-reviews@google.com.
   <owner>clank-start@google.com</owner>
   <summary>
     Records the type of the button that the user clicked on the auxiliary search
-    module which is shown on the magic stack. The histogram is logged when the
-    user clicks a button on the module. Android-only.
+    tab donation promo module (&quot;View tabs in your app list&quot;) on the
+    Magic Stack. The histogram is logged when the user clicks a button on the
+    card. Note: Clicks on the browsing data donation card are recorded to
+    Search.AuxiliarySearch.Module.ClickInfo.BrowsingData instead. Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.Module.ClickInfo.BrowsingData"
+    enum="ClickInfo" expires_after="2027-10-01">
+  <owner>mlcui@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the type of the button that the user clicked on the auxiliary search
+    browsing data donation promo module (&quot;Get Chrome suggestions in other
+    apps&quot;) on the Magic Stack. The histogram is logged when the user clicks
+    a button on the card. Note: Clicks on the tab donation card are recorded to
+    Search.AuxiliarySearch.Module.ClickInfo instead. Android-only.
   </summary>
 </histogram>
 

@@ -62,6 +62,14 @@ public class AuxiliarySearchModuleViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testSetTitleTextResId() {
+        int resId = 10;
+        mPropertyModel.set(AuxiliarySearchModuleProperties.MODULE_TITLE_TEXT_RES_ID, resId);
+        verify(mView).setTitleTextResId(eq(resId));
+    }
+
+    @Test
+    @SmallTest
     public void testSetContentTextResId() {
         int resId = 10;
         mPropertyModel.set(AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID, resId);

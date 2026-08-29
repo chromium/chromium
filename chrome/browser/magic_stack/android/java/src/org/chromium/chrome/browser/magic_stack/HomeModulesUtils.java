@@ -32,6 +32,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonationServiceUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -143,6 +144,11 @@ public class HomeModulesUtils {
                 // All tips use the same name.
                 return context.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:
+                // TODO(crbug.com/512359034): Remove this dependency on auxiliary search after we
+                // implement a better UX flow.
+                if (AuxiliarySearchDonationServiceUtils.isBrowsingDataDonationEnabled()) {
+                    return context.getString(R.string.auxiliary_search_browsing_data_module_name);
+                }
                 return context.getString(R.string.auxiliary_search_module_name);
             default:
                 assert false : "Module type not supported!";

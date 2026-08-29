@@ -239,6 +239,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchTopSiteProviderBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleViewBinderUnitTest.java",
   ]

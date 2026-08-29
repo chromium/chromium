@@ -437,6 +437,10 @@ public class TabsSettingsUnitTest {
         assertFalse(switchPref.isChecked());
         verify(mPrefServiceMock)
                 .setBoolean(Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED, false);
+        verify(mHomeModulesRankingHelperJniMock)
+                .notifyCardInteracted(
+                        eq(mProfileMock),
+                        eq(HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH)));
     }
 
     @Test
@@ -457,6 +461,10 @@ public class TabsSettingsUnitTest {
         assertTrue(switchPref.isChecked());
         verify(mPrefServiceMock)
                 .setBoolean(Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED, true);
+        verify(mHomeModulesRankingHelperJniMock)
+                .notifyCardInteracted(
+                        eq(mProfileMock),
+                        eq(HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH)));
     }
 
     @Test

@@ -135,4 +135,35 @@ public class AuxiliarySearchMetricsUnitTest {
         AuxiliarySearchMetrics.recordTimeToCreateControllerInCustomTab(timeToCreateControllerMs);
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testRecordClickButtonInfo() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AuxiliarySearchMetrics.HISTOGRAM_MODULE_CONSENT,
+                                AuxiliarySearchMetrics.ClickInfo.OPT_IN)
+                        .expectNoRecords(
+                                AuxiliarySearchMetrics.HISTOGRAM_MODULE_CONSENT_BROWSING_DATA)
+                        .build();
+
+        AuxiliarySearchMetrics.recordClickButtonInfo(
+                AuxiliarySearchMetrics.ClickInfo.OPT_IN, /* isBrowsingDataDonation= */ false);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordClickButtonInfo_BrowsingDataDonation() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AuxiliarySearchMetrics.HISTOGRAM_MODULE_CONSENT_BROWSING_DATA,
+                                AuxiliarySearchMetrics.ClickInfo.OPT_IN)
+                        .expectNoRecords(AuxiliarySearchMetrics.HISTOGRAM_MODULE_CONSENT)
+                        .build();
+
+        AuxiliarySearchMetrics.recordClickButtonInfo(
+                AuxiliarySearchMetrics.ClickInfo.OPT_IN, /* isBrowsingDataDonation= */ true);
+        histogramWatcher.assertExpected();
+    }
 }

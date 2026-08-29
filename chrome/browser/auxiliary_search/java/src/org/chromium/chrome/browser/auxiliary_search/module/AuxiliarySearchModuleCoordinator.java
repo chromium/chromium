@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.auxiliary_search.module;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonationServiceUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -49,6 +50,10 @@ public class AuxiliarySearchModuleCoordinator implements ModuleProvider {
 
     @Override
     public String getModuleContextMenuHideText(Context context) {
+        if (AuxiliarySearchDonationServiceUtils.isBrowsingDataDonationEnabled()) {
+            return context.getString(
+                    R.string.auxiliary_search_browsing_data_module_context_menu_hide);
+        }
         return context.getString(R.string.auxiliary_search_module_context_menu_hide);
     }
 }

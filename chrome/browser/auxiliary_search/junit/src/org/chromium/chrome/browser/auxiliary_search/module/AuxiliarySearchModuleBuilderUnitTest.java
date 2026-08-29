@@ -127,4 +127,33 @@ public class AuxiliarySearchModuleBuilderUnitTest {
         InputContext inputContext = mBuilder.createInputContext();
         assertEquals(1f, inputContext.getEntryValue("auxiliary_search_available").floatValue, 0.01);
     }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
+    public void testIsEligible_BrowsingDataDonation() {
+        when(mHooks.isEnabled()).thenReturn(false);
+        when(mHooks.isBrowsingDataDonationSupported()).thenReturn(true);
+        assertFalse(mFactory.isEnabled());
+        assertTrue(mBuilder.isEligible());
+
+        when(mHooks.isEnabled()).thenReturn(true);
+        when(mHooks.isBrowsingDataDonationSupported()).thenReturn(false);
+        assertTrue(mFactory.isEnabled());
+        assertTrue(mBuilder.isEligible());
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
+        assertTrue(mFactory.isEnabled());
+        assertFalse(mBuilder.isEligible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
+    public void testCreateInputContext_BrowsingDataDonation() {
+        when(mHooks.isBrowsingDataDonationSupported()).thenReturn(true);
+        InputContext inputContext = mBuilder.createInputContext();
+        assertEquals(1f, inputContext.getEntryValue("auxiliary_search_available").floatValue, 0.01);
+    }
 }

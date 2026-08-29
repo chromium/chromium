@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonationServiceUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -60,8 +61,11 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder {
 
     @Override
     public boolean isEligible() {
-        return ChromeFeatureList.sAndroidAppIntegrationModule.isEnabled()
-                && AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible();
+        if (!ChromeFeatureList.sAndroidAppIntegrationModule.isEnabled()) {
+            return false;
+        }
+        return AuxiliarySearchDonationServiceUtils.isBrowsingDataDonationEnabled()
+                || AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible();
     }
 
     @Override

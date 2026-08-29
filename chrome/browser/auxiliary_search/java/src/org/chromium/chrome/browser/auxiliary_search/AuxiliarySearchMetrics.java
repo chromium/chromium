@@ -174,8 +174,15 @@ public class AuxiliarySearchMetrics {
             "Search.AuxiliarySearch.Schedule.Favicon.FetchTime";
     private static final String HISTOGRAM_SHARE_TABS_WITH_OS =
             "Search.AuxiliarySearch.ShareTabsWithOs";
-    private static final String HISTOGRAM_MODULE_CONSENT =
-            "Search.AuxiliarySearch.Module.ClickInfo";
+
+    /** Captures user click info on the tab donation module on the magic stack. */
+    @VisibleForTesting
+    public static final String HISTOGRAM_MODULE_CONSENT = "Search.AuxiliarySearch.Module.ClickInfo";
+
+    /** Captures user click info on the browsing data donation module on the magic stack. */
+    @VisibleForTesting
+    public static final String HISTOGRAM_MODULE_CONSENT_BROWSING_DATA =
+            "Search.AuxiliarySearch.Module.ClickInfo.BrowsingData";
 
     private static final String HISTOGRAM_LAUNCHED_FROM_EXTERNAL_APP_PREFIX =
             "Search.AuxiliarySearch.LaunchedFromExternalApp.";
@@ -327,10 +334,19 @@ public class AuxiliarySearchMetrics {
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_SHARE_TABS_WITH_OS, enabled);
     }
 
-    /** Records the type of the button clicked on the module. */
-    public static void recordClickButtonInfo(@ClickInfo int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_MODULE_CONSENT, type, ClickInfo.NUM_ENTRIES);
+    /**
+     * Records the type of the button clicked on the module.
+     *
+     * @param type The type of click (e.g. opt-in, open settings).
+     * @param isBrowsingDataDonation True if the card was shown for browsing data donation, false if
+     *     it was shown for tab donation.
+     */
+    public static void recordClickButtonInfo(@ClickInfo int type, boolean isBrowsingDataDonation) {
+        String histogram =
+                isBrowsingDataDonation
+                        ? HISTOGRAM_MODULE_CONSENT_BROWSING_DATA
+                        : HISTOGRAM_MODULE_CONSENT;
+        RecordHistogram.recordEnumeratedHistogram(histogram, type, ClickInfo.NUM_ENTRIES);
     }
 
     @VisibleForTesting

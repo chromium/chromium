@@ -18,6 +18,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 /** The view for the auxiliary search module. */
 @NullMarked
 public class AuxiliarySearchModuleView extends LinearLayout {
+    private TextViewWithLeading mTitleView;
     private TextViewWithLeading mContentView;
     private Button mFirstButtonView;
     private Button mSecondButtonView;
@@ -30,6 +31,7 @@ public class AuxiliarySearchModuleView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mTitleView = findViewById(R.id.auxiliary_search_module_title);
         mContentView = findViewById(R.id.auxiliary_search_module_content);
         mFirstButtonView = findViewById(R.id.auxiliary_search_first_button);
         mSecondButtonView = findViewById(R.id.auxiliary_search_second_button);
@@ -53,6 +55,10 @@ public class AuxiliarySearchModuleView extends LinearLayout {
 
     void setSecondButtonText(String text) {
         mSecondButtonView.setText(text);
+    }
+
+    void setTitleTextResId(int resId) {
+        mTitleView.setText(getContext().getString(resId));
     }
 
     void setContentTextResId(int resId) {

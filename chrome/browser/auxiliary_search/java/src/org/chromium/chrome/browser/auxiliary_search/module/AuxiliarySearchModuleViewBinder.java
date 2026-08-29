@@ -25,6 +25,9 @@ public class AuxiliarySearchModuleViewBinder {
                     model.get(
                             AuxiliarySearchModuleProperties
                                     .MODULE_SECOND_BUTTON_ON_CLICK_LISTENER));
+        } else if (AuxiliarySearchModuleProperties.MODULE_TITLE_TEXT_RES_ID == propertyKey) {
+            moduleView.setTitleTextResId(
+                    model.get(AuxiliarySearchModuleProperties.MODULE_TITLE_TEXT_RES_ID));
         } else if (AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID == propertyKey) {
             moduleView.setContentTextResId(
                     model.get(AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID));

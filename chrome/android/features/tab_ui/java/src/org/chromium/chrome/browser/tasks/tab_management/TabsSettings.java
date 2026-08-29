@@ -202,6 +202,9 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                     boolean enabled = (boolean) newValue;
                     prefService.setBoolean(
                             Pref.AUXILIARY_SEARCH_BROWSING_DATA_DONATION_ENABLED, enabled);
+                    HomeModulesRankingHelper.notifyCardInteracted(
+                            getProfile(),
+                            HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH));
                     return true;
                 });
     }
