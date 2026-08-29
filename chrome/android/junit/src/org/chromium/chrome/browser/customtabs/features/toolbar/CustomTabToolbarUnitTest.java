@@ -84,7 +84,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /** Tests AMP url handling in the CustomTab Toolbar. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -108,7 +107,6 @@ public class CustomTabToolbarUnitTest {
     @Mock MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     @Mock HistoryDelegate mHistoryDelegate;
-    @Mock BooleanSupplier mPartnerHomepageEnabledSupplier;
     @Mock UserEducationHelper mUserEducationHelper;
     @Mock Tracker mTracker;
     @Mock Tab mTab;
