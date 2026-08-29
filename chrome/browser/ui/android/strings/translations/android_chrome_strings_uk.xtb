@@ -715,7 +715,7 @@
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 пароль у вашому обліковому записі Google зламано}one{# пароль у вашому обліковому записі Google зламано}few{# паролі у вашому обліковому записі Google зламано}many{# паролів у вашому обліковому записі Google зламано}other{# пароля у вашому обліковому записі Google зламано}}</translation>
 <translation id="4023638601467301498">Щоб отримати доступ до закладок і інших даних на всіх своїх пристроях, увійдіть у Chrome</translation>
-<translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
+<translation id="4024768890073681126">Цим вебпереглядачем керує один із твоїх батьків</translation>
 <translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# год}one{# год}few{# год}many{# год}other{# год}}</translation>
 <translation id="4042941173059740150">Продовжте використовувати обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>

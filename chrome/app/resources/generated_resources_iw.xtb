@@ -402,7 +402,7 @@
 <translation id="1277597051786235230">&amp;חיפוש '<ph name="SEARCH_TERMS" />' ב-<ph name="SEARCH_ENGINE" /> בכרטיסייה חדשה</translation>
 <translation id="127849925363482083">צריך ללחוץ שוב על <ph name="SHORTCUT_TEXT" /> כדי לסגור את הכרטיסייה המוצמדת</translation>
 <translation id="1279024913354609713">אין אישור</translation>
-<translation id="127946606521051357">מכשיר בקרבת מקום מנסה לבצע שיתוף</translation>
+<translation id="127946606521051357">מכשיר בסביבה מנסה לבצע שיתוף</translation>
 <translation id="1280332775949918163">הצמדת חלון</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{לא ניתן לפתוח את הקובץ}one{לא ניתן לפתוח את הקבצים}two{לא ניתן לפתוח את הקבצים}other{לא ניתן לפתוח את הקבצים}}</translation>
 <translation id="1282311502488501110">אני לא רוצה להיכנס</translation>
@@ -701,7 +701,7 @@
 <translation id="1525740877599838384">‏קביעת מיקום רק באמצעות Wi-Fi</translation>
 <translation id="1526560967942511387">מסמך ללא שם</translation>
 <translation id="1527336312600375509">קצב הרענון של הצג</translation>
-<translation id="152913213824448541">אנשי קשר לשיתוף בקרבת מקום</translation>
+<translation id="152913213824448541">אנשי קשר לשיתוף מהיר</translation>
 <translation id="1529769834253316556">גובה השורה</translation>
 <translation id="1529891865407786369">מקור חשמל</translation>
 <translation id="1530376661400379364">‏‫Chrome איפס את ההגדרות האלה</translation>
@@ -864,7 +864,7 @@
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{סיסמה אחת נוספת לא יובאה כי הפורמט שלה שגוי}one{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}two{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}other{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}}</translation>
 <translation id="1642299742557467312">הקובץ הזה עלול להזיק למכשיר</translation>
 <translation id="1642492862748815878">‏קיים חיבור אל <ph name="DEVICE" /> ול-<ph name="NUMBER_OF_DEVICES" /> מכשירי Bluetooth נוספים</translation>
-<translation id="1643921258693943800">‏כדי להשתמש באפשרות 'שיתוף בקרבת מקום', יש להפעיל את Bluetooth ו-Wi-Fi</translation>
+<translation id="1643921258693943800">‏כדי להשתמש באפשרות 'שיתוף מהיר', יש להפעיל את Bluetooth ו-Wi-Fi</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1644852018355792105">‏עליך להזין את קוד הסיסמה של ה-Bluetooth למכשיר <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">מקור לא מוכר</translation>
@@ -880,7 +880,7 @@
 <translation id="1651008383952180276">עליך להזין אותו ביטוי סיסמה פעמיים</translation>
 <translation id="1651609627703324721">‏הכרטיסייה הזו מציגה תוכן VR במשקפי VR</translation>
 <translation id="1652281434788353738">מהורהר</translation>
-<translation id="1652326691684645429">הפעלה של 'שיתוף בקרבת מקום'</translation>
+<translation id="1652326691684645429">הפעלה של 'שיתוף מהיר'</translation>
 <translation id="1652862280638399816">‏כדי להשתמש במנהל הסיסמאות של Google עם מערכת 'צרור מפתחות של macOS', צריך להפעיל מחדש את Chromium ולהתיר גישה אל 'צרור מפתחות'. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
 <translation id="165448107578581061">‏‫Gemini עובד על המשימה…</translation>
 <translation id="1654580009054503925">אין הרשאה להציג בקשות</translation>
@@ -1055,7 +1055,7 @@
 <translation id="1780152987505130652">סגירת הקבוצה</translation>
 <translation id="1780273119488802839">מייבא סימניות...</translation>
 <translation id="1780572199786401845">דיווח על תוכן פוגעני או לא בטוח.</translation>
-<translation id="178092663238929451">הגדרת 'שיתוף בקרבת מקום' מאפשרת לך לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
+<translation id="178092663238929451">הגדרת 'שיתוף מהיר' מאפשרת לך לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
 <translation id="1781164264587898620">החלת סינון רעשים ושיפורים באודיו.</translation>
 <translation id="1781291988450150470">קוד אימות נוכחי</translation>
 <translation id="1781502536226964113">פתיחת הדף 'כרטיסייה חדשה'</translation>
@@ -1270,7 +1270,7 @@
 <translation id="1928696683969751773">עדכונים</translation>
 <translation id="1929343511231420085">יציאה טורית כלשהי</translation>
 <translation id="1929546189971853037">קריאת היסטוריית הגלישה שלך בכל המכשירים שאליהם נכנסת</translation>
-<translation id="1929774028758671973">אנשי קשר יכולים לשתף איתך כשהם נמצאים בקרבת מקום. תוצג לך בקשה לאשר את הבקשות האלה. אין צורך לאשר את השיתוף בין מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" />.</translation>
+<translation id="1929774028758671973">אנשי קשר יכולים לשתף איתך כשהם נמצאים בסביבה. תוצג לך בקשה לאשר את הבקשות האלה. אין צורך לאשר את השיתוף בין מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">לא מותקנים רכיבים.</translation>
 <translation id="1931410639376954712">ההתקנה של <ph name="DEVICE_OS" /> מתבצעת</translation>
 <translation id="1932125073382155239">לגבות את הנתונים שלך?</translation>
@@ -1544,7 +1544,7 @@
 <translation id="2144557304298909478">‏פיתוח אפליקציות ל-Android ב-Linux</translation>
 <translation id="2145468727756963476">‏‫Gemini מתרענן…</translation>
 <translation id="2145688286532368277">‏האופטימיזציה של JavaScript מושבתת באתר הזה.</translation>
-<translation id="2145917706968602070">‏צריך לוודא שהטלפון נמצא בקרבת מקום ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים</translation>
+<translation id="2145917706968602070">‏צריך לוודא שהטלפון נמצא בסביבה ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים</translation>
 <translation id="2146263598007866206">כדי לחסוך זמן, אתרים עשויים להוריד קבצים קשורים יחד, באופן אוטומטי</translation>
 <translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
 <translation id="2147282432401652483">‏מקש Command</translation>
@@ -1845,7 +1845,7 @@
 <translation id="236588788378837122">‏כדי לפתוח את החיפוש בכרטיסיות, צריך ללחוץ על Ctrl +‏ Shift +‏ A. מעכשיו אפשר לחפש ולסגור את הכרטיסיות כאן. אפשר לבטל את ההצמדה הזו בכל שלב.</translation>
 <translation id="2367972762794486313">הצגת אפליקציות</translation>
 <translation id="2369058545741334020">פתיחה במצב קריאה</translation>
-<translation id="236939127352773362">בזמן שיתוף ממכשירים בקרבת מקום</translation>
+<translation id="236939127352773362">בזמן שיתוף ממכשירים קרובים</translation>
 <translation id="2371076942591664043">פתיחה &amp;בסיום</translation>
 <translation id="237336063998926520">‏שימוש בכתובת ה-IP לאיתור המיקום</translation>
 <translation id="2373499590298659902">משתמשים במקש "0" כדי ללחוץ לחיצה ארוכה על כפתור העכבר</translation>
@@ -2154,7 +2154,7 @@
 <translation id="2589658397149952302">‏אין להציג קובצי Drive אף פעם</translation>
 <translation id="2593499352046705383">‏לפני שמתחילים, צריך לוודא שיש גיבוי של הנתונים. התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבכונן הקשיח שלך. מידע נוסף זמין בכתובת g.co/flex/InstallGuide.</translation>
 <translation id="2595508219468433076">מצב כבוי, ללא מיקוד בשורה, באפשרויות הסגנון</translation>
-<translation id="2597073208962000830">‏התכונה 'שיתוף בקרבת מקום' מחפשת מכשירים בקרבת מקום באמצעות Bluetooth.</translation>
+<translation id="2597073208962000830">‏התכונה 'שיתוף מהיר' מחפשת מכשירים קרובים באמצעות Bluetooth.</translation>
 <translation id="2598136842498757793">התאמה אישית של כפתורי סרגל הכלים</translation>
 <translation id="2598710988533271874">‏יש גרסה חדשה זמינה של Chrome</translation>
 <translation id="2599048253926156421">שם המשתמש הועתק ללוח</translation>
@@ -2181,7 +2181,7 @@
 <translation id="2613535083491958306">ל-<ph name="ORIGIN" /> תהיה הרשאה לערוך את <ph name="FILENAME" /></translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{פתיחה ועריכה של <ph name="FILE1" /> בתוסף הזה}one{פתיחה ועריכה של <ph name="FILE1" /> באפליקציה הזו}two{פתיחה ועריכה של <ph name="FILE1" /> באפליקציה הזו}other{פתיחה ועריכה של <ph name="FILE1" /> באפליקציה הזו}}</translation>
 <translation id="2616366145935564096">לקרוא ולשנות את הנתונים שלך ב-<ph name="WEBSITE_1" /></translation>
-<translation id="2618797463720777311">הגדרת 'שיתוף בקרבת מקום'</translation>
+<translation id="2618797463720777311">הגדרת 'שיתוף מהיר'</translation>
 <translation id="2619305858360733464">‫<ph name="SHARED_STATE" /> קבוצה ללא שם - <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">הפעלה או השהיה</translation>
 <translation id="261953424982546039">Chrome &amp;Labs…</translation>
@@ -2446,7 +2446,7 @@
 <translation id="2792697226874849938">תמונת הגבלה</translation>
 <translation id="2794522004398861033">‏יש להתחבר לרשת Wi-Fi או אתרנט כדי להגדיר eSIM</translation>
 <translation id="2794977172822818797">הוספת האתרים שפתוחים כרגע</translation>
-<translation id="2795716239552913152">אתרים משתמשים בדרך כלל במיקום המכשיר כדי לתמוך בתכונות או פרטים רלוונטיים, כמו חדשות מקומיות או חנויות בקרבת מקום</translation>
+<translation id="2795716239552913152">אתרים משתמשים בדרך כלל במיקום המכשיר כדי לתמוך בתכונות או פרטים רלוונטיים, כמו חדשות מקומיות או חנויות בסביבה</translation>
 <translation id="2797712124653482791">הסתרה למשך <ph name="DISMISS_DAYS" /> ימים</translation>
 <translation id="2798347533012571708">המשך קבלת עדכונים</translation>
 <translation id="2798481792334355468">יש הרשאה להשתמש בחיישני תנועה ותאורה</translation>
@@ -2669,13 +2669,13 @@
 <translation id="29618148602069201">נושא</translation>
 <translation id="2963151496262057773">הפלאגין הבא אינו מגיב: <ph name="PLUGIN_NAME" /> האם ברצונך לכבות אותו?</translation>
 <translation id="2964193600955408481">‏השבתת Wi-Fi</translation>
-<translation id="2964245677645334031">הרשאות גישה לשיתוף בקרבת מקום</translation>
+<translation id="2964245677645334031">הרשאות גישה לשיתוף מהיר</translation>
 <translation id="2964387589834028666">התרגשות</translation>
 <translation id="2965227184985674128">להפעיל את הגישה למיקרופון?</translation>
 <translation id="2966705348606485669">אפשרויות נוספות לתיקיית הסימניות <ph name="FOLDER_TITLE" /></translation>
 <translation id="2967926928600500959">‏כתובות ה‑URL שמתאימות לכללים האלה יאולצו להיפתח בדפדפן מסוים.</translation>
 <translation id="2969411787010981955">יוצאו נתונים למיקום שנבחר</translation>
-<translation id="2970766364519518369">אנשי קשר שייבחרו יכולים לשתף איתך כשהם בקרבת מקום. תוצג לך בקשה לאשר את הבקשות האלה. אין צורך לאשר את השיתוף בין מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" />.</translation>
+<translation id="2970766364519518369">אנשי קשר שייבחרו יכולים לשתף איתך כשהם בסביבה. תוצג לך בקשה לאשר את הבקשות האלה. אין צורך לאשר את השיתוף בין מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="2970982365449313350">‏דפדפן Chrome עם החשבון הזה ב-Google</translation>
 <translation id="2972557485845626008">קושחה</translation>
 <translation id="2972581237482394796">&amp;ביצוע חוזר</translation>
@@ -2772,7 +2772,7 @@
 <translation id="3023464535986383522">הקראה</translation>
 <translation id="3024374909719388945">שימוש בשעון של 24 שעות</translation>
 <translation id="3025905136198521738">סידור התצוגה המפוצלת – התצוגה השמאלית פעילה</translation>
-<translation id="3027296729579831126">הפעלה של 'שיתוף בקרבת מקום'</translation>
+<translation id="3027296729579831126">הפעלה של 'שיתוף מהיר'</translation>
 <translation id="3027644380269727216">על סמך הפעילות שלך באתר מסוים. ההגדרה הזו פועלת.</translation>
 <translation id="3028445648481691885">ההורדה בוטלה</translation>
 <translation id="3029466929721441205">הצגה של כלי סטיילוס במדף</translation>
@@ -2820,7 +2820,7 @@
 <translation id="3058498974290601450">אפשר להפעיל את הסנכרון בכל זמן דרך ההגדרות</translation>
 <translation id="3060694926634506594">מיומנויות</translation>
 <translation id="3060952009917586498">שינוי השפה במכשיר. השפה הנוכחית היא <ph name="LANGUAGE" />.</translation>
-<translation id="3060987956645097882">‏לא הצלחנו להתחבר לטלפון שלך. יש לוודא שהטלפון נמצא בקרבת מקום, אינו נעול, ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
+<translation id="3060987956645097882">‏לא הצלחנו להתחבר לטלפון שלך. יש לוודא שהטלפון נמצא בסביבה, אינו נעול, ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
 <translation id="3061302636956643119">‏הטקסט יישלח אל Google לעיבוד.</translation>
 <translation id="306166624240243643">‏בדיקת עדכוני השם וכתובת ה-URL</translation>
 <translation id="3062037978804523418">‏‫<ph name="TASK_TITLE" />: אם לא תתקבל ממך תגובה בקרוב, Gemini יפסיק לעבוד על המשימה הזו כדי לחסוך בסוללה</translation>
@@ -2903,7 +2903,7 @@
 <translation id="3129173833825111527">שוליים שמאליים</translation>
 <translation id="3130863904455712965">היסטוריה ועוד</translation>
 <translation id="313205617302240621">שכחת את הסיסמה?</translation>
-<translation id="3132277757485842847">‏לא הצלחנו לשמור על החיבור לטלפון שלך. יש לוודא שהטלפון נמצא בקרבת מקום, אינו נעול, ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
+<translation id="3132277757485842847">‏לא הצלחנו לשמור על החיבור לטלפון שלך. יש לוודא שהטלפון נמצא בסביבה, אינו נעול, ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
 <translation id="3132896062549112541">כלל</translation>
 <translation id="3132996321662585180">רענון מדי יום</translation>
 <translation id="3134312457920437826">לא ניתן להתקין את התוסף כי הוא משתמש בגרסה של המניפסט שלא נתמכת.</translation>
@@ -3092,7 +3092,7 @@
 <translation id="3275464924531706548">כיווץ של <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">פתיחה כחלון</translation>
 <translation id="3277214528693754078">ניווט באמצעות סמן הטקסט (דפדוף עם סמן הטקסט)</translation>
-<translation id="3279092821516760512">אנשי הקשר שנבחרו יוכלו לשתף איתך כשהם יימצאו בקרבת מקום. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
+<translation id="3279092821516760512">אנשי הקשר שנבחרו יוכלו לשתף איתך כשהם יהיו בסביבה. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
 <translation id="3280237271814976245">שמירה &amp;בשם...</translation>
 <translation id="3280243678470289153">‏להישאר ב-Chrome</translation>
 <translation id="3282210178675490297">המערכת משתפת כרטיסייה עם האפליקציה <ph name="APP_NAME" /></translation>
@@ -3950,7 +3950,7 @@
 <translation id="3875777964669698078">בתהליך תמלול...</translation>
 <translation id="3875815154304214043">האפליקציה <ph name="APP_NAME" /> הוגדרה כך שתיפתח בכרטיסייה חדשה בדפדפן. גם הקישורים הנתמכים ייפתחו בדפדפן. <ph name="BEGIN_LINK_LEARN_MORE" />למידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">שינוי גודל החלונות למעלה</translation>
-<translation id="3877075909000773256">הגדרות שיתוף בקרבת מקום למכשיר של <ph name="USER_NAME" />. השיתוף יתבצע בשם <ph name="USER_EMAIL" />.</translation>
+<translation id="3877075909000773256">הגדרות שיתוף מהיר למכשיר של <ph name="USER_NAME" />. השיתוף יתבצע בשם <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">אפשר לבחור אם להציג שימוש בזיכרון ותמונות בכרטיס התצוגה המקדימה שמופיע כשמעבירים את העכבר מעל לכרטיסייה</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3880513902716032002">חלק מהדפים שאליהם עוברים נטענים מראש</translation>
@@ -3996,7 +3996,7 @@
 <translation id="3916445069167113093">סוג קובץ זה עלול לגרום נזק למחשב שלך. האם ברצונך לשמור את <ph name="FILE_NAME" /> בכל מקרה?</translation>
 <translation id="3917644013202553949">אין מספיק נפח אחסון לסנכרון הקבצים. כדאי לפנות מקום.</translation>
 <translation id="3919145445993746351">כדי לקבל גישה אל התוספים שלך בכל המחשבים שברשותך, יש להפעיל את הסנכרון</translation>
-<translation id="3919229493046408863">השבתת ההתראה כשמזוהים מכשירים בקרבת מקום</translation>
+<translation id="3919229493046408863">השבתת ההתראות כשמזוהים מכשירים קרובים</translation>
 <translation id="3919262972282962508">‏גרסאות ישנות של אפליקציות Chrome לא ייפתחו במכשירי Mac אחרי דצמבר 2022. עליך לפנות לאדמין כדי לעדכן לגרסה חדשה או להסיר את האפליקציה הזו.</translation>
 <translation id="3919376399641777316">‏נעשה שימוש בנפח האחסון ב-Google Drive</translation>
 <translation id="3919798653937160644">‏הדפים המוצגים בחלון זה לא יופיעו בהיסטוריית הדפדפן, ולאחר סגירת כל חלונות האורח הפתוחים, לא יותירו במחשב עקבות, כמו קובצי Cookie. עם זאת, כל הקבצים שיורדו יישמרו.</translation>
@@ -4089,7 +4089,7 @@
 <translation id="3979395879372752341">תוסף חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3980708588513986958">פתיחה וניהול המיומנויות</translation>
 <translation id="398095528354975981">הסתרת הכרטיסיות האלה</translation>
-<translation id="3981058120448670012">המכשיר גלוי למכשירים בקרבת מקום בתור <ph name="DEVICE_NAME" /> למשך <ph name="REMAINING_TIME" />…</translation>
+<translation id="3981058120448670012">המכשיר גלוי למכשירים קרובים בתור <ph name="DEVICE_NAME" /> למשך <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">הוזן סוג שמירה לא חוקי.</translation>
 <translation id="3983400541576569538">ייתכן אובדן של נתונים מכמה אפליקציות</translation>
 <translation id="3983586614702900908">מכשירים מספק לא ידוע</translation>
@@ -4180,10 +4180,10 @@
 <translation id="4048295959689903187">בחירת פלט אודיו</translation>
 <translation id="4048384495227695211">הצגה של <ph name="FILE_NAME" /> בתיקייה</translation>
 <translation id="404894744863342743">כשמסיימים להשתמש בקובץ שהורד צריך למחוק אותו, כדי שאנשים אחרים שמשתמשים במכשיר לא יוכלו לראות את הסיסמאות שבו.</translation>
-<translation id="4049783682480068824">{COUNT,plural, =1{‏איש קשר אחד לא זמין. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.}one{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}two{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}other{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}}</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{‏איש קשר אחד לא זמין. כדי להשתמש ב'שיתוף מהיר' עם אנשי הקשר שלך, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.}one{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף מהיר' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}two{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף מהיר' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}other{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף מהיר' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}}</translation>
 <translation id="4050225813016893843">שיטת אימות</translation>
 <translation id="4050379682069019014">יכול להיות שהתנועה '<ph name="MAIN_GESTURE" />' חופפת לתנועה '<ph name="CONFLICTING_GESTURE" />'. אם אפשר, כדאי לבחור תנועה אחרת.</translation>
-<translation id="4050534976465737778">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. אם השיתוף נעשה עם Chromebook שאינו רשום באנשי הקשר שלך, יש לוודא שהופעלו הרשאות הגישה בקרבת מקום (יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה בקרבת מקום). <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="4050534976465737778">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. אם השיתוף נעשה עם Chromebook שאינו רשום באנשי הקשר שלך, יש לוודא שהופעלו הרשאות הגישה למכשירים בסביבה (יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה למכשירים בסביבה). <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">כדי לעבור לשיטת הקלט שבה נעשה שימוש לאחרונה, לוחצים על <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">חיפוש + חץ ימינה</translation>
 <translation id="4051505866566398331">נתיב ההתקנה:</translation>
@@ -4421,7 +4421,7 @@
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - תוכן הכרטיסייה שותף</translation>
 <translation id="4253168017788158739">הערה</translation>
 <translation id="4253183225471855471">‏לא נמצאה רשת. לפני שמנסים שוב, יש להכניס את כרטיס ה-SIM ולהפעיל את המכשיר מחדש.</translation>
-<translation id="425411422794688815">‏משהו השתבש. צריך לוודא שהטלפון נמצא בקרבת מקום ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים.</translation>
+<translation id="425411422794688815">‏משהו השתבש. צריך לוודא שהטלפון נמצא בסביבה ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים.</translation>
 <translation id="4254414375763576535">מצביע גדול</translation>
 <translation id="4254813446494774748">שפת התרגום:</translation>
 <translation id="4255016471934258618">פותחים את הפה לרווחה</translation>
@@ -4990,7 +4990,7 @@
 <translation id="467907880657121641">אייפון</translation>
 <translation id="4680105648806843642">הצלילים הושתקו בדף הזה</translation>
 <translation id="4680112532510845139">משחררים את התמונה כאן</translation>
-<translation id="4681453295291708042">השבתה של 'שיתוף בקרבת מקום'</translation>
+<translation id="4681453295291708042">השבתה של 'שיתוף מהיר'</translation>
 <translation id="4681512854288453141">מדיניות המקור</translation>
 <translation id="4681930562518940301">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
 <translation id="4682481611456523884">תוכן מוטמע באתר הזה לא יכול להשתמש במידע שנשמר עליך</translation>
@@ -5130,7 +5130,7 @@
 <translation id="4786430656008801173">‏AI במכשיר</translation>
 <translation id="4787471921443575924">עריכת מפתח הגישה של שם המשתמש: <ph name="USER_EMAIL" /></translation>
 <translation id="4789348252524569426">לא ניתן להתקין את קובצי זיהוי הדיבור. צריך לעדכן את המכשיר. כדאי להפעיל מחדש את המכשיר ולנסות שוב.</translation>
-<translation id="4789550509729954245">הצגת התראות כשמתבצע שיתוף על ידי מכשירים בקרבת מקום</translation>
+<translation id="4789550509729954245">הצגת התראות כשמתבצע שיתוף על ידי מכשירים קרובים</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4791793693640849493">שמירת הפריטים בחשבון</translation>
 <translation id="4792290259143007505">‏הפעלת האצה של TrackPoint</translation>
@@ -5827,7 +5827,7 @@
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
 <translation id="5302032366299160685">צריך להמתין לפתיחה של הקובץ לפני שמנסים שוב</translation>
 <translation id="5302048478445481009">שפה</translation>
-<translation id="5302435492906794790">מתבצע חיפוש של מכשירים שגלויים בקרבת מקום...</translation>
+<translation id="5302435492906794790">מתבצע חיפוש של מכשירים גלויים בסביבה...</translation>
 <translation id="5302932258331363306">הצגת התחליפים</translation>
 <translation id="5304952564528359007">השבתת הרחבה אוטומטית של הכרטיסיות</translation>
 <translation id="5305145881844743843">החשבון הזה מנוהל על ידי <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -5894,7 +5894,7 @@
 <translation id="5372529912055771682">מצב ההרשמה שסופק אינו נתמך על ידי גרסה זו של מערכת ההפעלה. יש לוודא שפועלת הגרסה החדשה ביותר ולנסות שוב.</translation>
 <translation id="5372579129492968947">ביטול הצמדת התוסף</translation>
 <translation id="5372632722660566343">המשך ללא חשבון</translation>
-<translation id="5375318608039113175">‏כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר האלה, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.</translation>
+<translation id="5375318608039113175">‏כדי להשתמש ב'שיתוף מהיר' עם אנשי הקשר האלה, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.</translation>
 <translation id="5375374982898812658">הגישה שלך לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="5375517140689139594">מצב קריאה (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">אתרים יכולים לעזור לאמת שלא מדובר בבוט</translation>
@@ -6273,7 +6273,7 @@
 <translation id="5647989922796038257">שיתוף גם של כל פלטי האודיו</translation>
 <translation id="5648021990716966815">שקע מיקרופון</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
-<translation id="5651308944918885595">יכולת גילוי של 'שיתוף בקרבת מקום'</translation>
+<translation id="5651308944918885595">יכולת גילוי של 'שיתוף מהיר'</translation>
 <translation id="5653154844073528838">יש לך <ph name="PRINTER_COUNT" /> מדפסות שמורות.</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{הוסרו ההרשאות לאתר אחד}one{הוסרו ההרשאות ל-{NUM_SITES} אתרים}two{הוסרו ההרשאות ל-{NUM_SITES} אתרים}other{הוסרו ההרשאות ל-{NUM_SITES} אתרים}}</translation>
 <translation id="565461030474814383">לשמור בחשבון?</translation>
@@ -6369,7 +6369,7 @@
 <translation id="5739235828260127894">בהמתנה לאימות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">גדול מאוד</translation>
 <translation id="5740126560802162366">לאתרים יש הרשאה לשמור נתונים במכשיר שלך</translation>
-<translation id="5740328398383587084">שיתוף בקרבת מקום</translation>
+<translation id="5740328398383587084">שיתוף מהיר</translation>
 <translation id="5740709157181662145">יציבות ותמיכה בחומרה של <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">שיקוף מסך</translation>
 <translation id="574209121243317957">גובה צליל</translation>
@@ -6873,7 +6873,7 @@
 <translation id="6129938384427316298">‏הערה לאישור Netscape</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6130692320435119637">‏הוספת Wi-Fi</translation>
-<translation id="6130807998512240230">‏Phone Hub, שיתוף בקרבת מקום</translation>
+<translation id="6130807998512240230">‏Phone Hub, שיתוף מהיר</translation>
 <translation id="6130887916931372608">מקש במקלדת</translation>
 <translation id="6131511889181741773">נתזים</translation>
 <translation id="6132251717264923430">הכפתור הוצמד</translation>
@@ -7088,7 +7088,7 @@
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
 <translation id="6287288864483377583">אפשר לייבא רק אישור אחד</translation>
 <translation id="6287828400772161253">‏טלפון Android ‏(<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6290613030083731160">אין מכשירים זמינים שמשתפים בקרבת מקום. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="6290613030083731160">אין מכשירים זמינים שמשתפים בסביבה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6291741848715722067">קוד אישור</translation>
 <translation id="6291953229176937411">‏&amp;הצגה ב-Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> במצב כבוי</translation>
@@ -7185,7 +7185,7 @@
 <translation id="6367196786591004737">מחיקת הרשומה</translation>
 <translation id="6367396429435748845">כדי להשהות את השליטה בעכבר מהמקלדת או להמשיך אותה, לוחצים על <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367853307713830174">‏‫Gemini מציג את השלבים שהוא עובר ומנסה לקבל אישור לפני שהוא עושה פעולות רגישות. תמיד אפשר להפסיק את הפעולה או להמשיך אותה באופן עצמאי.</translation>
-<translation id="6367985768157257101">האם לקבל באמצעות 'שיתוף בקרבת מקום'?</translation>
+<translation id="6367985768157257101">האם לקבל באמצעות 'שיתוף מהיר'?</translation>
 <translation id="6368157733310917710">כתובות ועוד</translation>
 <translation id="6368276408895187373">מופעלת – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
@@ -7333,7 +7333,7 @@
 <translation id="6479881432656947268">‏לחנות האינטרנט של Chrome</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="6480532238409319936">פעולת העדכון נכשלה</translation>
-<translation id="6481749622989211463">שיתוף של קבצים ופריטים אחרים עם מכשירים בקרבת מקום. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="6481749622989211463">שיתוף של קבצים ופריטים אחרים עם מכשירים קרובים. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="648204537326351595">אישור ל-<ph name="SPECIFIC_NAME" /> לגשת למיקרופון</translation>
 <translation id="6482559668224714696">זכוכית מגדלת במסך מלא</translation>
 <translation id="6483485061007832714">פתיחת הקובץ שהורדת</translation>
@@ -7439,7 +7439,7 @@
 <translation id="6562117348069327379">אחסון יומני מערכת בספרייה 'הורדות'.</translation>
 <translation id="656293578423618167">הנתיב או שם הקובץ ארוך מדי. יש לשמור אותו בשם קצר יותר או במיקום אחר.</translation>
 <translation id="6563002009564846727">‏הצגת אישורים שיובאו מ-Windows</translation>
-<translation id="6563055593659435495">‏החיבור לטלפון לא יציב. צריך לוודא שהטלפון נמצא בקרבת מקום ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים.</translation>
+<translation id="6563055593659435495">‏החיבור לטלפון לא יציב. צריך לוודא שהטלפון נמצא בסביבה ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים.</translation>
 <translation id="6564343790052433242">‏כדי ליצור מפתח גישה ל-<ph name="APP_NAME" />, צריך להפעיל את מנהל הסיסמאות של Google</translation>
 <translation id="6565899972286925956">אפשר ליצור כל דבר</translation>
 <translation id="6566648465417201421">פתיחה מחדש של התצוגה המפוצלת שנסגרה</translation>
@@ -7540,7 +7540,7 @@
 <translation id="6630452975878488444">קיצור דרך של בחירה</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> מעוניין בגישה קבועה לאישור כדי לאמת את עצמו בשמך.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{יציאה מהקבוצה}one{יציאה מהקבוצות}two{יציאה מהקבוצות}other{יציאה מהקבוצות}}</translation>
-<translation id="6635362468090274700">אף אחד לא יכול לשתף איתך אם המכשיר לא יוגדר כגלוי.<ph name="BR" /><ph name="BR" />כדי שהמכשיר יהיה גלוי באופן זמני, יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה בקרבת מקום.</translation>
+<translation id="6635362468090274700">אף אחד לא יכול לשתף איתך אם המכשיר לא יוגדר כגלוי.<ph name="BR" /><ph name="BR" />כדי שהמכשיר יהיה גלוי באופן זמני, יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה למכשירים בסביבה.</translation>
 <translation id="663569763553406962">הצגת התוספים שיש להם הרשאה לקרוא או לשנות אתר</translation>
 <translation id="6636258750460740634">היסטוריה</translation>
 <translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
@@ -8008,7 +8008,7 @@
 <translation id="6965978654500191972">מכשיר</translation>
 <translation id="6966831944134814478">השבתה</translation>
 <translation id="6968288415730398122">יש להזין את הסיסמה כדי להגדיר את נעילת המסך</translation>
-<translation id="6969047215179982698">כיבוי של 'שיתוף בקרבת מקום'</translation>
+<translation id="6969047215179982698">כיבוי של 'שיתוף מהיר'</translation>
 <translation id="6969216690072714773">הזנת פרטים חדשים או עדכון פרטים קיימים שישויכו למכשיר הזה.</translation>
 <translation id="696942486482903620">‏כששומרים סיסמאות בחשבון Google, אפשר להשתמש בהן במכשיר הזה ובכל מכשיר אחר שבו נכנסים לחשבון</translation>
 <translation id="6970480684834282392">סוג הפעלה</translation>
@@ -8266,7 +8266,7 @@
 <translation id="7167486101654761064">&amp;פתיחה תמיד של קבצים מסוג זה</translation>
 <translation id="716810439572026343">הורדת <ph name="FILE_NAME" /> מתבצעת</translation>
 <translation id="7168109975831002660">גודל גופן מינימלי</translation>
-<translation id="7169122689956315694">הפעלת ההתראה כשמזוהים מכשירים בקרבת מקום</translation>
+<translation id="7169122689956315694">הפעלת ההתראות כשמזוהים מכשירים קרובים</translation>
 <translation id="7171000599584840888">הוספת פרופיל...</translation>
 <translation id="7171259390164035663">אני לא רוצה להירשם</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{הוספת כרטיסייה לקבוצה חדשה}one{הוספת כרטיסיות לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
@@ -8398,7 +8398,7 @@
 <translation id="7268412955622368206">‏הצגת התראה קופצת להתקני USB חדשים.</translation>
 <translation id="7269229526547981029">הפרופיל הזה מנוהל על ידי <ph name="PROFILE_MANAGER" />. יצירת פרופיל חדש לחשבון <ph name="USER_EMAIL_ADDRESS" /> נדרשת על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="7269396617844178680">&amp;תרגום של "<ph name="SELECTION" />" ל<ph name="LANGUAGE" /></translation>
-<translation id="7269736181983384521">שימוש בחבילת הגלישה לשיתוף בקרבת מקום</translation>
+<translation id="7269736181983384521">שימוש בחבילת הגלישה לשיתוף מהיר</translation>
 <translation id="7270447384127135313">‏במהלך הגלישה, אפשר לשאול את Gemini בקלות על הכרטיסיות שמשתפים.</translation>
 <translation id="7271278495464744706">הפעלת תיאורים מפורטים</translation>
 <translation id="7272674038937250585">לא סופק תיאור</translation>
@@ -8509,7 +8509,7 @@
 <translation id="7349010927677336670">הפעלת סרטונים חלקה</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{סיסמה אחת ({COUNT}) שמורה רק במכשיר הזה}one{{COUNT} סיסמאות שמורות רק במכשיר הזה}two{{COUNT} סיסמאות שמורות רק במכשיר הזה}other{{COUNT} סיסמאות שמורות רק במכשיר הזה}}</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
-<translation id="7353261921908507769">אנשי הקשר יוכלו לשתף איתך כשהם בקרבת מקום. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
+<translation id="7353261921908507769">אנשי הקשר יוכלו לשתף איתך כשהם בסביבה. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
 <translation id="7353432112255316844">אימות הזהות שלך</translation>
 <translation id="7356506068433555887">עץ דקל</translation>
 <translation id="7356696499551368971">ההרשאות שבחרת יוסרו</translation>
@@ -8549,7 +8549,7 @@
 <translation id="7380162005366861509">ל-<ph name="ORIGIN" /> תהיה הרשאה לגשת לקובץ <ph name="FILENAME" /> וליצור ממנו עותקים משלו</translation>
 <translation id="7380253436337781870">{NUM_SITES,plural, =1{צריך לבדוק אתר אחד ששלח הרבה התראות לאחרונה}one{צריך לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות לאחרונה}two{צריך לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות לאחרונה}other{צריך לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות לאחרונה}}</translation>
 <translation id="7380272457268061606">להשבית את שחזור הנתונים המקומיים?</translation>
-<translation id="7380459290951585794">‏חשוב לוודא שהטלפון נמצא בקרבת מקום, שהוא לא נעול ושה‑Bluetooth וה‑Wi‑Fi פועלים</translation>
+<translation id="7380459290951585794">‏חשוב לוודא שהטלפון נמצא בסביבה, שהוא לא נעול ושה‑Bluetooth וה‑Wi‑Fi פועלים</translation>
 <translation id="7380622428988553498">שם המכשיר מכיל תווים לא חוקיים</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> עודכנה</translation>
 <translation id="7382009635620830394">‏אם הכרטיס הזה מושבת, גם הכרטיסים של Microsoft כמו SharePoint ו-OneDrive ו-Outlook Calendar יושבתו.</translation>
@@ -9053,7 +9053,7 @@
 <translation id="7752832973194460442">‏מידע על אפליקציות ל-Android</translation>
 <translation id="7754704193130578113">לשאול איפה לשמור כל קובץ לפני ההורדה</translation>
 <translation id="7757592200364144203">האם לשנות את שם המכשיר?</translation>
-<translation id="7757739382819740102">אנשי קשר שנמצאים בקרבת מקום יוכלו לשתף איתך. יהיה עליך לאשר את השיתוף.</translation>
+<translation id="7757739382819740102">אנשי קשר שנמצאים בסביבה יוכלו לשתף איתך. יהיה עליך לאשר את השיתוף.</translation>
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">הוספת חיפוש באתר</translation>
@@ -9659,7 +9659,7 @@
 <translation id="819953863048845575">הגנה על הגלישה</translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8202827109322349110">פתיחה בכלי לעריכה בסיסית</translation>
-<translation id="8203152941016626022">הגדרת שם המכשיר לשיתוף בקרבת מקום</translation>
+<translation id="8203152941016626022">הגדרת שם המכשיר לשיתוף מהיר</translation>
 <translation id="8203732864715032075">המערכת שולחת לך התראות ומגדירה את המחשב הזה כברירת מחדל לשליחת ההודעות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
 <translation id="8204712121332316335">הפקודה הסתיימה עם הקוד <ph name="EXIT_CODE" /></translation>
@@ -9794,7 +9794,7 @@
 <translation id="8295449579927246485">תרגום בזמן אמת</translation>
 <translation id="8295450130892483256">‏התקנת Microsoft 365</translation>
 <translation id="8297292446125062288">‏הגדרות מכשיר ממשק אנושי (HID)</translation>
-<translation id="8298429963694909221">‏התראות שהתקבלו בטלפון שלך יופיעו עכשיו גם במכשיר <ph name="DEVICE_TYPE" />. סגירת התראות במכשיר <ph name="DEVICE_TYPE" /> תסגור אותן גם בטלפון שלך. יש לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
+<translation id="8298429963694909221">‏התראות שהתקבלו בטלפון שלך יופיעו עכשיו גם במכשיר <ph name="DEVICE_TYPE" />. סגירת התראות במכשיר <ph name="DEVICE_TYPE" /> תסגור אותן גם בטלפון שלך. יש לוודא שהטלפון נמצא בסביבה ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
 <translation id="829923460755755423">‏ניתן להוסיף קיצור דרך למנהל הסיסמאות של Google</translation>
 <translation id="8299319456683969623">אינך מחובר לאינטרנט כרגע</translation>
 <translation id="829937697336000302">הגברת הפרודוקטיביות</translation>
@@ -9844,7 +9844,7 @@
 <translation id="8328228852664998535">לאחר המשך הפעולה, הסיסמאות, מפתחות הגישה ונתונים אחרים יימחקו באופן סופי מ<ph name="BRAND" />. חשבונות שיצרת לאתרים או לאפליקציות לא יימחקו.</translation>
 <translation id="8328777765163860529">סגירת הכול</translation>
 <translation id="8330617762701840933">רשימת האתרים שמפנים לדפדפן חלופי.</translation>
-<translation id="8330689128072902965">אנשי קשר בקרבת מקום יכולים לשתף איתך. אפשר ללחוץ כדי לשנות.</translation>
+<translation id="8330689128072902965">אנשי קשר בסביבה יכולים לשתף איתך. אפשר ללחוץ כדי לשנות.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{סוג הקובץ הנתמך: <ph name="FILE_TYPE1" />}=2{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ועוד {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{סוגי הקבצים הנתמכים: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ועוד {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
 <translation id="8331822764922665615">‏נותנים שם לקבוצה, בוחרים צבע ומקישים על Esc</translation>
 <translation id="833256022891467078">‏תיקיות משותפות של Crostini</translation>
@@ -10581,7 +10581,7 @@
 <translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="8875736897340638404">בחירת הרשאות הגישה שלך</translation>
 <translation id="8876307312329369159">לא ניתן לשנות את ההגדרה הזו בסשן להדגמה.</translation>
-<translation id="8876965259056847565">‏ב<ph name="FEATURE_NAME" /> מתבצע חיפוש של מכשירים בקרבת מקום באמצעות Bluetooth.</translation>
+<translation id="8876965259056847565">‏ב<ph name="FEATURE_NAME" /> מתבצע חיפוש של מכשירים קרובים באמצעות Bluetooth.</translation>
 <translation id="8877448029301136595">[ספריית אב]</translation>
 <translation id="8879284080359814990">הצ&amp;גה ככרטיסייה</translation>
 <translation id="8879921471468674457">שמירת פרטי הכניסה</translation>

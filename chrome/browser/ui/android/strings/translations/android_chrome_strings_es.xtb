@@ -473,7 +473,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2972109037780336501">Eliminar permisos automáticamente</translation>
 <translation id="2976550651269220761">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google.\nEspera unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="2977350910003566746">Ordenados por última apertura</translation>
-<translation id="297771753501244313">Ordenar: último abierto</translation>
+<translation id="297771753501244313">Ordenar por último abierto</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
 <translation id="2980545254049127870">Abre fácilmente enlaces de mensajes, documentos y otras aplicaciones</translation>
 <translation id="2983102365694924129">Se basa en tu actividad en un sitio. Esta opción está desactivada.</translation>
@@ -585,7 +585,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3488199663160411179">nombre</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="350276055892098337">El más antiguo primero</translation>
+<translation id="350276055892098337">Ordenar por más antiguo</translation>
 <translation id="3507132249039706973">La protección estándar está activada</translation>
 <translation id="3509330069915219067">No hay conexión. Chrome no puede comprobar si hay actualizaciones.</translation>
 <translation id="3513019849832307207">Unirme y abrir</translation>
@@ -1725,7 +1725,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8006630792898017994">Espacio o Tabulador</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, pestaña de Incógnito que comparte contenido en selección múltiple fijada</translation>
-<translation id="8025972204417227828">Añadir nueva</translation>
+<translation id="8025972204417227828">Añadir nuevo</translation>
 <translation id="8027863900915310177">Elige dónde descargarlo</translation>
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032569120109842252">Siguiendo</translation>

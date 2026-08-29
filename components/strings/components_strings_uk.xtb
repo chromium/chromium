@@ -672,7 +672,7 @@
 <translation id="2066969741541525119">Адміністратор вашої організації заблокував указаний сайт</translation>
 <translation id="2069913043427250781">Безпека транспорту й дорожнього руху</translation>
 <translation id="2071156619270205202">Указаний номер не підходить для віртуальної картки.</translation>
-<translation id="2071852865256799872">Вашим веб-переглядачем керує організація, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="2071852865256799872">Цим вебпереглядачем керує ваша організація, а профілем – домен <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Інформацію збережено лише на пристрої</translation>
 <translation id="2074733626795553847">Розблокувати тему "<ph name="TOPIC" />"</translation>
@@ -1831,7 +1831,7 @@
 <translation id="382115839591654906">Код CVC для картки <ph name="CARD_NAME" /></translation>
 <translation id="3822492359574576064">блокування й використання миші</translation>
 <translation id="3823019343150397277">IBAN</translation>
-<translation id="3823402221513322552">Вашим веб-переглядачем керує <ph name="BROWSER_DOMAIN" />, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="3823402221513322552">Цим вебпереглядачем керує домен <ph name="BROWSER_DOMAIN" />, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Якщо ви використовуєте проксі-сервер…</translation>
 <translation id="3826050100957962900">Вхід через сторонні сервіси</translation>
 <translation id="3827112369919217609">Абсолютна</translation>

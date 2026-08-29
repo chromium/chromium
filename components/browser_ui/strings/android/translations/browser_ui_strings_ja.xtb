@@ -140,7 +140,7 @@
 <translation id="2390272837142897736">拡大</translation>
 <translation id="2397689164757137845">許可 • 正確</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
-<translation id="2403474027143565107">正確</translation>
+<translation id="2403474027143565107">正確な位置</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}}</translation>
 <translation id="2404857459073803936">このサイトの位置情報アクセス</translation>
 <translation id="2410940059315936967">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。こうした他のサイトによって設定された Cookie は「サードパーティ Cookie」と呼ばれます。</translation>
@@ -156,7 +156,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> で管理</translation>
 <translation id="2498359688066513246">ヘルプとフィードバック</translation>
 <translation id="2501278716633472235">戻る</translation>
-<translation id="2536779053640817375">一時的に許可 • 正確</translation>
+<translation id="2536779053640817375">一時的に許可 • 正確な位置</translation>
 <translation id="2544997614631598250">テーマカラー ダーク</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2553552004849639664">Chrome の最高水準のセキュリティでオンラインの脅威から保護</translation>
@@ -222,7 +222,7 @@
 <translation id="3165022941318558018">サイトにサードパーティ Cookie の使用を許可する</translation>
 <translation id="3167868116600277716">Discover フィード</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
-<translation id="3199078925536734975">一時的に許可 • おおよそ</translation>
+<translation id="3199078925536734975">一時的に許可 • おおよその位置</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
 <translation id="3223425961342298674">位置情報は許可されていません</translation>
@@ -308,7 +308,7 @@
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
-<translation id="4042597221652780603">おおよそ</translation>
+<translation id="4042597221652780603">おおよその位置</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="4077310749977440510">コピーしたテキストの書式を保持したりするため、サイトでクリップボードを読み取る場合があります</translation>
 <translation id="4082080074595021446">Android デバイスに十分な RAM がないため、特定のウェブサイトの例外は許可されません。</translation>
@@ -364,7 +364,7 @@
 <translation id="4644713492825682049">削除してリセット</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4651224148644053314">その他の色とオプション</translation>
-<translation id="4652266463001779298">ブロック</translation>
+<translation id="4652266463001779298">許可されていません</translation>
 <translation id="4655846733459137112">[はい] をタップすると、次回ログイン時にこのパスワードを簡単に使用できます</translation>
 <translation id="4663373278480897665">カメラを使用できます</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>

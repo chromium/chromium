@@ -1208,7 +1208,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} 個付款方式，共 {count} 個}other{{position} 個付款方式，共 {count} 個}}</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
 <translation id="5076534614343816664">價格追蹤</translation>
-<translation id="507762438756999615">根據貴機構的政策，你無法共用檔案</translation>
+<translation id="507762438756999615">根據貴機構的政策，無法共用檔案</translation>
 <translation id="5078303485429639424">開啟「<ph name="FEATURE_NAME" />」的通知</translation>
 <translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>
@@ -2326,7 +2326,7 @@
 <translation id="8692689525339542358">守護網頁瀏覽安全，有效防堵危險網站、下載內容和擴充功能。</translation>
 <translation id="8692897097252418799">選擇要匯出的資料</translation>
 <translation id="8694281486652655615">顯示這個項目</translation>
-<translation id="8696297579102085705">傳送到你的裝置</translation>
+<translation id="8696297579102085705">傳送到裝置</translation>
 <translation id="8697136149718343437">將網址列移至底部</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8706253136355675497">溫度</translation>

@@ -485,7 +485,7 @@
 <translation id="2559843230610279254">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ。</translation>
 <translation id="257088987046510401">テーマ</translation>
 <translation id="2573117291489209663">完了</translation>
-<translation id="2577522251608256362">近隣地域</translation>
+<translation id="2577522251608256362">周辺エリア</translation>
 <translation id="2579713773888829241">共有ドライブ</translation>
 <translation id="2580306219079937316">翻訳の設定を開く</translation>
 <translation id="2583688836549072561">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ、新しいアクティビティ。</translation>
@@ -2326,7 +2326,7 @@
 <translation id="8692689525339542358">危険性のあるサイト、ダウンロード、拡張機能から保護してください。</translation>
 <translation id="8692897097252418799">書き出すデータを選択します</translation>
 <translation id="8694281486652655615">このアイテムを表示</translation>
-<translation id="8696297579102085705">お使いのデバイスに送信</translation>
+<translation id="8696297579102085705">デバイスに送信</translation>
 <translation id="8697136149718343437">アドレスバーを一番下に移動</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8706253136355675497">温度</translation>
