@@ -2480,6 +2480,10 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.window.html?* [ Failure Skip Timeout ]
 external/wpt/webrtc/idlharness.https.window.html?* [ Skip Timeout ]
 
+# Temporarily accept both sides of the libwebrtc scaling-default roll.
+crbug.com/344943229 crbug.com/383911311 external/wpt/webrtc/RTCRtpParameters-encodings.html?interop-2026 [ Failure Pass Timeout ]
+crbug.com/344943229 crbug.com/383911311 external/wpt/webrtc/RTCRtpParameters-encodings.html?rest [ Failure Pass Timeout ]
+
 # Flaky and slow `webrtc/` tests
 crbug.com/488071544 external/wpt/webrtc/RTCDTMFSender-insertDTMF.https.html [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html?rest [ Skip Timeout ]
@@ -2502,7 +2506,7 @@ crbug.com/488071544 external/wpt/webrtc/protocol/bundle.https.html?interop-2026 
 crbug.com/488071544 external/wpt/webrtc/protocol/bundle.https.html?rest [ Failure Skip Timeout ]
 crbug.com/488071544 external/wpt/webrtc/protocol/candidate-exchange.https.html?interop-2026 [ Failure Skip Timeout ]
 crbug.com/488071544 external/wpt/webrtc/protocol/candidate-exchange.https.html?rest [ Failure Skip Timeout ]
-crbug.com/488071544 external/wpt/webrtc/simulcast/negotiation-encodings.https.html?interop-2026 [ Pass Timeout ]
+crbug.com/488071544 external/wpt/webrtc/simulcast/negotiation-encodings.https.html?interop-2026 [ Failure Pass Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?interop-2026 [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?rest [ Failure Timeout ]
 
@@ -3547,10 +3551,6 @@ crbug.com/384233292 [ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RT
 crbug.com/384233292 [ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-serviceworker-failure.https.html [ Timeout ]
 crbug.com/383880387 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/383880387 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
-crbug.com/383911311 [ Mac13 ] external/wpt/webrtc/RTCRtpParameters-encodings.html?interop-2026 [ Timeout ]
-crbug.com/383911311 [ Mac13 ] external/wpt/webrtc/RTCRtpParameters-encodings.html?rest [ Timeout ]
-crbug.com/383911311 [ Mac15 ] external/wpt/webrtc/RTCRtpParameters-encodings.html?interop-2026 [ Timeout ]
-crbug.com/383911311 [ Mac15 ] external/wpt/webrtc/RTCRtpParameters-encodings.html?rest [ Timeout ]
 crbug.com/383999274 [ Mac13 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
 crbug.com/383999274 [ Win10.20h2 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
 crbug.com/383814062 [ Mac13 ] virtual/disable-raster-inducing-scroll/external/wpt/acid/acid2/reftest.html [ Failure ]
