@@ -1,0 +1,25 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++menu name='File Menu'
+++++++++menuItem name='Open File'
+++++++++++staticText name='Open'
+++++++++++++inlineTextBox name='Open'
+++++++++++staticText name=' '
+++++++++++++inlineTextBox name=' '
+++++++++++staticText name='File'
+++++++++++++inlineTextBox name='File'
+++++++++menuItemCheckBox name='Wrap Lines' checkedState=true
+++++++++++staticText name='Wrap'
+++++++++++++inlineTextBox name='Wrap'
+++++++++++staticText name=' '
+++++++++++++inlineTextBox name=' '
+++++++++++staticText name='Lines'
+++++++++++++inlineTextBox name='Lines'
+++++++++menuItemRadio name='Read Only' checkedState=false
+++++++++++staticText name='Read'
+++++++++++++inlineTextBox name='Read'
+++++++++++staticText name=' '
+++++++++++++inlineTextBox name=' '
+++++++++++staticText name='Only'
+++++++++++++inlineTextBox name='Only'

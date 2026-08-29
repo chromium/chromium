@@ -82,6 +82,12 @@ class MockContentClient : public TestContentClient {
         return u"On";
       case IDS_AX_TOGGLE_BUTTON_OFF:
         return u"Off";
+      case IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_X_OPTIONS_AVAILABLE:
+        return u"$1 options available";
+      case IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT:
+        return u"Options available";
+      case IDS_AX_COMBOBOX_EXPANDED:
+        return u"Expanded";
       default:
         return std::u16string();
     }
@@ -1615,10 +1621,16 @@ TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_AttributeChange) {
 
   BrowserAccessibilityManagerAndroid* android_manager =
       ToBrowserAccessibilityManagerAndroid(manager.get());
+  auto* root_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(1));
+  auto* button_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(2));
+  int32_t root_unique_id = root_node->GetUniqueId();
+  int32_t button_unique_id = button_node->GetUniqueId();
   const auto& actual = android_manager->nodes_already_cleared_for_test();
   EXPECT_EQ(2, actual.size());
-  EXPECT_TRUE(actual.contains(1));
-  EXPECT_TRUE(actual.contains(2));
+  EXPECT_TRUE(actual.contains(root_unique_id));
+  EXPECT_TRUE(actual.contains(button_unique_id));
 
   ui::AXUpdatesAndEvents updates_and_events;
   updates_and_events.updates.resize(1);
@@ -1630,8 +1642,8 @@ TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_AttributeChange) {
   manager->OnAccessibilityEvents(updates_and_events);
 
   EXPECT_EQ(2, actual.size());
-  EXPECT_TRUE(actual.contains(1));
-  EXPECT_TRUE(actual.contains(2));
+  EXPECT_TRUE(actual.contains(root_unique_id));
+  EXPECT_TRUE(actual.contains(button_unique_id));
 }
 
 // TODO(crbug.com/541249028): Re-enable once flakiness is fixed.
@@ -2415,6 +2427,248 @@ TEST_F(BrowserAccessibilityAndroidTest,
   ASSERT_NE(nullptr, node4);
   EXPECT_FALSE(node4->IsLeaf());
   EXPECT_EQ(2U, node4->PlatformChildCount());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestListBoxOptionInterestingWithoutFocusability) {
+  ui::AXNodeData option;
+  option.id = 2;
+  option.role = ax::mojom::Role::kListBoxOption;
+  option.SetName("Aspirin 500mg");
+
+  ui::AXNodeData listbox;
+  listbox.id = 10;
+  listbox.role = ax::mojom::Role::kListBox;
+  listbox.child_ids = {option.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {listbox.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, listbox, option), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  auto* option_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(option.id));
+  ASSERT_NE(nullptr, option_node);
+  EXPECT_TRUE(option_node->IsInterestingOnAndroid());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestListBoxOptionComputeIsLeafWithChildren) {
+  ui::AXNodeData text_node;
+  text_node.id = 3;
+  text_node.role = ax::mojom::Role::kStaticText;
+  text_node.SetName("Ibuprofen 200mg");
+
+  ui::AXNodeData option;
+  option.id = 2;
+  option.role = ax::mojom::Role::kListBoxOption;
+  option.SetName("Ibuprofen 200mg");
+  option.SetNameFrom(ax::mojom::NameFrom::kContents);
+  option.child_ids = {text_node.id};
+
+  ui::AXNodeData listbox;
+  listbox.id = 10;
+  listbox.role = ax::mojom::Role::kListBox;
+  listbox.child_ids = {option.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {listbox.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, listbox, option, text_node),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto* option_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(option.id));
+  ASSERT_NE(nullptr, option_node);
+  EXPECT_TRUE(option_node->IsLeaf());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestComboboxWithAriaControlsToPortalListboxExpandedText) {
+  ui::AXNodeData opt1;
+  opt1.id = 11;
+  opt1.role = ax::mojom::Role::kListBoxOption;
+  opt1.SetName("Aspirin 500mg");
+
+  ui::AXNodeData opt2;
+  opt2.id = 12;
+  opt2.role = ax::mojom::Role::kListBoxOption;
+  opt2.SetName("Ibuprofen 200mg");
+
+  ui::AXNodeData opt3;
+  opt3.id = 13;
+  opt3.role = ax::mojom::Role::kListBoxOption;
+  opt3.SetName("Paracetamol 500mg");
+
+  ui::AXNodeData listbox;
+  listbox.id = 10;
+  listbox.role = ax::mojom::Role::kListBox;
+  listbox.child_ids = {opt1.id, opt2.id, opt3.id};
+  listbox.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, 3);
+
+  ui::AXNodeData combobox;
+  combobox.id = 2;
+  combobox.role = ax::mojom::Role::kComboBoxSelect;
+  combobox.AddState(ax::mojom::State::kExpanded);
+  combobox.AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
+                               {listbox.id});
+
+  ui::AXNodeData portal_container;
+  portal_container.id = 9;
+  portal_container.role = ax::mojom::Role::kGenericContainer;
+  portal_container.child_ids = {listbox.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {combobox.id, portal_container.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, combobox, portal_container, listbox,
+                                     opt1, opt2, opt3),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto* combobox_node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(combobox.id));
+  ASSERT_NE(nullptr, combobox_node);
+  EXPECT_EQ(u"3 options available", combobox_node->GetComboboxExpandedText());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestListBoxOptionWithAttributeNameIsLeaf) {
+  ui::AXNodeData text_node;
+  text_node.id = 3;
+  text_node.role = ax::mojom::Role::kStaticText;
+  text_node.SetName("Aspirin 500mg");
+
+  ui::AXNodeData option;
+  option.id = 2;
+  option.role = ax::mojom::Role::kListBoxOption;
+  option.AddState(ax::mojom::State::kFocusable);
+  option.SetName("Aspirin 500mg");
+  option.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  option.child_ids = {text_node.id};
+
+  ui::AXNodeData listbox;
+  listbox.id = 10;
+  listbox.role = ax::mojom::Role::kListBox;
+  listbox.child_ids = {option.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {listbox.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, listbox, option, text_node),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto* option_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(option.id));
+  ASSERT_NE(nullptr, option_node);
+  EXPECT_TRUE(option_node->IsLeaf());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestMenuItemCheckBoxAndRadioInterestingAndLeaf) {
+  ui::AXNodeData cb_text;
+  cb_text.id = 3;
+  cb_text.role = ax::mojom::Role::kStaticText;
+  cb_text.SetName("Auto Save");
+
+  ui::AXNodeData menu_item_cb;
+  menu_item_cb.id = 2;
+  menu_item_cb.role = ax::mojom::Role::kMenuItemCheckBox;
+  menu_item_cb.SetName("Auto Save");
+  menu_item_cb.SetNameFrom(ax::mojom::NameFrom::kContents);
+  menu_item_cb.child_ids = {cb_text.id};
+
+  ui::AXNodeData radio_text;
+  radio_text.id = 5;
+  radio_text.role = ax::mojom::Role::kStaticText;
+  radio_text.SetName("Dark Theme");
+
+  ui::AXNodeData menu_item_radio;
+  menu_item_radio.id = 4;
+  menu_item_radio.role = ax::mojom::Role::kMenuItemRadio;
+  menu_item_radio.SetName("Dark Theme");
+  menu_item_radio.SetNameFrom(ax::mojom::NameFrom::kContents);
+  menu_item_radio.child_ids = {radio_text.id};
+
+  ui::AXNodeData menu;
+  menu.id = 10;
+  menu.role = ax::mojom::Role::kMenu;
+  menu.child_ids = {menu_item_cb.id, menu_item_radio.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {menu.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, menu, menu_item_cb, cb_text,
+                                     menu_item_radio, radio_text),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto* cb_node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(menu_item_cb.id));
+  ASSERT_NE(nullptr, cb_node);
+  EXPECT_TRUE(cb_node->IsInterestingOnAndroid());
+  EXPECT_TRUE(cb_node->IsLeaf());
+
+  auto* radio_node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(menu_item_radio.id));
+  ASSERT_NE(nullptr, radio_node);
+  EXPECT_TRUE(radio_node->IsInterestingOnAndroid());
+  EXPECT_TRUE(radio_node->IsLeaf());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TestTreeItemInterestingAndLeaf) {
+  ui::AXNodeData text_node;
+  text_node.id = 3;
+  text_node.role = ax::mojom::Role::kStaticText;
+  text_node.SetName("Documents");
+
+  ui::AXNodeData tree_item;
+  tree_item.id = 2;
+  tree_item.role = ax::mojom::Role::kTreeItem;
+  tree_item.AddState(ax::mojom::State::kFocusable);
+  tree_item.SetName("Documents");
+  tree_item.SetNameFrom(ax::mojom::NameFrom::kContents);
+  tree_item.child_ids = {text_node.id};
+
+  ui::AXNodeData tree;
+  tree.id = 10;
+  tree.role = ax::mojom::Role::kTree;
+  tree.child_ids = {tree_item.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {tree.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, tree, tree_item, text_node),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto* item_node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(tree_item.id));
+  ASSERT_NE(nullptr, item_node);
+  EXPECT_TRUE(item_node->IsInterestingOnAndroid());
+  EXPECT_TRUE(item_node->IsLeaf());
 }
 
 }  // namespace content

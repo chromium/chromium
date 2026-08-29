@@ -1,0 +1,34 @@
+<!--
+@BLINK-ALLOW:controlsIds*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:value*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="combo"
+       role="combobox"
+       tabindex="0"
+       aria-expanded="true"
+       aria-haspopup="listbox"
+       aria-controls="listbox-portal">
+    <span>Favorite</span> <span>City</span>
+  </div>
+
+  <div id="portal">
+    <ul id="listbox-portal" role="listbox" aria-label="Cities">
+      <li id="opt1" role="option" aria-selected="false">
+        <span>San</span> <span>Francisco</span>
+      </li>
+      <li id="opt2" role="option" aria-selected="true">
+        <span>New</span> <span>York</span>
+      </li>
+      <li id="opt3" role="option" aria-selected="false">
+        <span>Los</span> <span>Angeles</span>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

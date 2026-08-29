@@ -1,0 +1,42 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++comboBoxMenuButton value='Favorite City' haspopup=listbox controlsIds=listBox
+++++++++staticText name='Favorite'
+++++++++++inlineTextBox name='Favorite'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++staticText name='City'
+++++++++++inlineTextBox name='City'
+++++++genericContainer
+++++++++listBox name='Cities' setSize=3
+++++++++++listBoxOption name='San Francisco' setSize=3 posInSet=1 selected=false
+++++++++++++none ignored
+++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++staticText name='San'
+++++++++++++++inlineTextBox name='San'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++staticText name='Francisco'
+++++++++++++++inlineTextBox name='Francisco'
+++++++++++listBoxOption name='New York' setSize=3 posInSet=2 selected=true
+++++++++++++none ignored
+++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++staticText name='New'
+++++++++++++++inlineTextBox name='New'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++staticText name='York'
+++++++++++++++inlineTextBox name='York'
+++++++++++listBoxOption name='Los Angeles' setSize=3 posInSet=3 selected=false
+++++++++++++none ignored
+++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++staticText name='Los'
+++++++++++++++inlineTextBox name='Los'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++staticText name='Angeles'
+++++++++++++++inlineTextBox name='Angeles'

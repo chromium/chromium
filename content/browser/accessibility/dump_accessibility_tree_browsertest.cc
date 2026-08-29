@@ -731,6 +731,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityComboboxDetachedListboxPortal) {
+  RunHtmlTest(FILE_PATH_LITERAL("combobox-detached-listbox-portal.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaMenuItems) {
+  RunHtmlTest(FILE_PATH_LITERAL("aria-menu-items.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityMultiSelectable) {
   RunHtmlTest(FILE_PATH_LITERAL("multi-selectable.html"));
 }

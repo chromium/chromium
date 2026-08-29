@@ -4246,6 +4246,9 @@ data/accessibility/html/area-serialization-crash-expected-blink.txt
 data/accessibility/html/area-with-aria-owns-expected-blink.txt
 data/accessibility/html/area-with-aria-owns.html
 data/accessibility/html/area.html
+data/accessibility/html/aria-menu-items-expected-android.txt
+data/accessibility/html/aria-menu-items-expected-blink.txt
+data/accessibility/html/aria-menu-items.html
 data/accessibility/html/article-expected-android-assist-data.txt
 data/accessibility/html/article-expected-android-external.txt
 data/accessibility/html/article-expected-android.txt
@@ -4526,6 +4529,9 @@ data/accessibility/html/colgroup-expected-mac.txt
 data/accessibility/html/colgroup-expected-uia-win.txt
 data/accessibility/html/colgroup-expected-win.txt
 data/accessibility/html/colgroup.html
+data/accessibility/html/combobox-detached-listbox-portal-expected-android.txt
+data/accessibility/html/combobox-detached-listbox-portal-expected-blink.txt
+data/accessibility/html/combobox-detached-listbox-portal.html
 data/accessibility/html/combobox-item-visibility-expected-android-assist-data.txt
 data/accessibility/html/combobox-item-visibility-expected-android-external.txt
 data/accessibility/html/combobox-item-visibility-expected-android.txt
