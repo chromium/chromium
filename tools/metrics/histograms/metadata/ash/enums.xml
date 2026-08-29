@@ -2167,27 +2167,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="20" label="Toggle toolbar location to bottom center (Obsolete)"/>
 </enum>
 
-<enum name="QsButtonCatalogName">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="SignOutButton"/>
-  <int value="2" label="LockButton"/>
-  <int value="3" label="PowerButton"/>
-  <int value="4" label="SettingsButton"/>
-  <int value="5" label="DateViewButton"/>
-  <int value="6" label="BatteryButton"/>
-  <int value="7" label="ManagedButton"/>
-  <int value="8" label="AvatarButton"/>
-  <int value="9" label="CollapseButton"/>
-  <int value="10" label="FeedBackButton"/>
-  <int value="11" label="VersionButton"/>
-  <int value="12" label="PowerOffMenuButton"/>
-  <int value="13" label="PowerRestartMenuButton"/>
-  <int value="14" label="PowerSignoutMenuButton"/>
-  <int value="15" label="PowerLockMenuButton"/>
-  <int value="16" label="SupervisedButton"/>
-  <int value="19" label="ExtendedUpdatesNoticeButton"/>
-</enum>
-
 <enum name="QsFeatureCatalogName">
   <int value="0" label="Unknown"/>
   <int value="1" label="Network"/>

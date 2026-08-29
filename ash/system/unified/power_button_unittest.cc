@@ -19,7 +19,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "components/user_manager/user_type.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -148,18 +147,11 @@ class PowerButtonTest : public NoSessionAshTestBase {
   bool IsUpChevron() { return ChevronIconsMatch(/*use_up_chevron=*/true); }
 
   bool IsDownChevron() { return ChevronIconsMatch(/*use_up_chevron=*/false); }
-
-  base::HistogramTester histogram_tester_;
 };
 
-// `PowerButton` should be with the correct view id and have the UMA tracking
-// with the correct catalog name.
-TEST_F(PowerButtonTest, PowerButtonHasCorrectViewIdAndUma) {
+// `PowerButton` should be with the correct view id.
+TEST_F(PowerButtonTest, PowerButtonHasCorrectViewId) {
   SimulateUserLogin(kRegularUserLoginInfo);
-
-  // No metrics logged before clicking on any buttons.
-  histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/0);
 
   // The power button is visible and with the corresponding id.
   EXPECT_TRUE(GetPowerButton()->GetVisible());
@@ -168,87 +160,6 @@ TEST_F(PowerButtonTest, PowerButtonHasCorrectViewIdAndUma) {
   // Clicks on the power button.
   SimulatePowerButtonPress();
   EXPECT_TRUE(IsMenuShowing());
-
-  histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/1);
-  histogram_tester_.ExpectBucketCount("Ash.QuickSettings.Button.Activated",
-                                      QsButtonCatalogName::kPowerButton,
-                                      /*expected_count=*/1);
-}
-
-TEST_F(PowerButtonTest, LockMenuButtonRecordsUma) {
-  SimulateUserLogin(kRegularUserLoginInfo);
-  // TOOD(crbug.com/383442863): Move this to SimulateUserLogin.
-  GetSessionControllerClient()->SetCanLockScreen(true);
-  SimulatePowerButtonPress();
-
-  LeftClickOn(GetLockButton());
-
-  // Expect a count of 2 because the power button was activated above.
-  histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/2);
-  histogram_tester_.ExpectBucketCount("Ash.QuickSettings.Button.Activated",
-                                      QsButtonCatalogName::kPowerLockMenuButton,
-                                      /*expected_count=*/1);
-}
-
-TEST_F(PowerButtonTest, SignOutMenuButtonRecordsUma) {
-  SimulateUserLogin(kRegularUserLoginInfo);
-  SimulatePowerButtonPress();
-
-  LeftClickOn(GetSignOutButton());
-
-  // Expect a count of 2 because the power button was activated above.
-  histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/2);
-  histogram_tester_.ExpectBucketCount(
-      "Ash.QuickSettings.Button.Activated",
-      QsButtonCatalogName::kPowerSignoutMenuButton,
-      /*expected_count=*/1);
-}
-
-TEST_F(PowerButtonTest, RestartMenuButtonRecordsUma) {
-  SimulateUserLogin(kRegularUserLoginInfo);
-  SimulatePowerButtonPress();
-
-  LeftClickOn(GetRestartButton());
-
-  // Expect a count of 2 because the power button was activated above.
-  histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/2);
-  histogram_tester_.ExpectBucketCount(
-      "Ash.QuickSettings.Button.Activated",
-      QsButtonCatalogName::kPowerRestartMenuButton,
-      /*expected_count=*/1);
-}
-
-TEST_F(PowerButtonTest, PowerOffMenuButtonRecordsUma) {
-  SimulateUserLogin(kRegularUserLoginInfo);
-  SimulatePowerButtonPress();
-
-  LeftClickOn(GetPowerOffButton());
-
-  // Expect a count of 2 because the power button was activated above.
-  histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/2);
-  histogram_tester_.ExpectBucketCount("Ash.QuickSettings.Button.Activated",
-                                      QsButtonCatalogName::kPowerOffMenuButton,
-                                      /*expected_count=*/1);
-}
-
-TEST_F(PowerButtonTest, EmailMenuButtonRecordsUma) {
-  SimulateUserLogin(kRegularUserLoginInfo);
-  SimulatePowerButtonPress();
-
-  LeftClickOn(GetEmailButton());
-
-  // Expect a count of 2 because the power button was activated above.
-  histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/2);
-  histogram_tester_.ExpectBucketCount(
-      "Ash.QuickSettings.Button.Activated",
-      QsButtonCatalogName::kPowerEmailMenuButton,
-      /*expected_count=*/1);
 }
 
 // No lock and sign out buttons in the menu before login.

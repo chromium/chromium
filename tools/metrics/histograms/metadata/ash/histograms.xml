@@ -6832,15 +6832,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.QuickSettings.Button.Activated" enum="QsButtonCatalogName"
-    expires_after="2025-04-13">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded when any button in the quick settings view is activated.
-  </summary>
-</histogram>
-
 <histogram name="Ash.QuickSettings.FeaturePod.{FeaturePodBehavior}"
     enum="QsFeatureCatalogName" expires_after="2026-07-05">
   <owner>jiamingc@google.com</owner>
@@ -6857,19 +6848,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ToggledOn" summary="Toggle to enable the feature"/>
     <variant name="Visible" summary="The feature pod is shown"/>
   </token>
-</histogram>
-
-<histogram name="Ash.QuickSettings.PageCountOnClose" units="pages"
-    expires_after="2024-09-29">
-  <owner>etuck@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    The number of quick settings pagination pages in the new quick settings UI.
-    This metric is recorded each time the quick settings are closed. Note that
-    this will also get recorded when the user opens and then closes the status
-    area calendar (even if they never viewed the quick settings), until
-    b/285280977 is fixed.
-  </summary>
 </histogram>
 
 <histogram name="Ash.QuickSettings.Slider.{SliderBehavior}"
@@ -6898,22 +6876,6 @@ chromium-metrics-reviews@google.com.
     button. Starts measuring time whenever the QS bubble is opened, and records
     metric when the QS bubble is closed.
   </summary>
-</histogram>
-
-<histogram name="Ash.QuickSettings.{DeviceMode}.FeaturePodCountOnOpen"
-    units="count" expires_after="2024-09-29">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    The number of feature pods (e.g. WiFi, Bluetooth, IME, Accessibility, etc.)
-    in the system tray quick settings when it is opened, including pods that
-    overflow to other pages. This metric is logged by 2 different types of
-    {DeviceMode}: &quot;Clamshell&quot; and &quot;Tablet&quot;.
-  </summary>
-  <token key="DeviceMode">
-    <variant name="Clamshell" summary="Regular mode"/>
-    <variant name="Tablet" summary="Tablet mode"/>
-  </token>
 </histogram>
 
 <histogram

@@ -13,7 +13,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -66,7 +65,6 @@ class QuickSettingsNoticeViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  base::HistogramTester histogram_tester_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<TestQuickSettingsNoticeView> view_ = nullptr;
 };
@@ -74,21 +72,12 @@ class QuickSettingsNoticeViewTest : public AshTestBase {
 TEST_F(QuickSettingsNoticeViewTest, ButtonPress) {
   EXPECT_TRUE(view_->GetVisible());
   EXPECT_EQ(view_->pressed_count(), 0);
-  histogram_tester_.ExpectUniqueSample("Ash.QuickSettings.Button.Activated",
-                                       QsButtonCatalogName::kEolNoticeButton,
-                                       view_->pressed_count());
 
   LeftClickOn(view_);
   EXPECT_EQ(view_->pressed_count(), 1);
-  histogram_tester_.ExpectUniqueSample("Ash.QuickSettings.Button.Activated",
-                                       QsButtonCatalogName::kEolNoticeButton,
-                                       view_->pressed_count());
 
   LeftClickOn(view_);
   EXPECT_EQ(view_->pressed_count(), 2);
-  histogram_tester_.ExpectUniqueSample("Ash.QuickSettings.Button.Activated",
-                                       QsButtonCatalogName::kEolNoticeButton,
-                                       view_->pressed_count());
 }
 
 TEST_F(QuickSettingsNoticeViewTest, ShortText) {

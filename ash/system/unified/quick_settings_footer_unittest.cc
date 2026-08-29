@@ -15,7 +15,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/test/views_test_utils.h"
@@ -82,7 +81,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
 
 // Tests that all buttons are with the correct view id, catalog name and UMA
 // tracking.
-TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
+TEST_F(QuickSettingsFooterTest, ButtonNamesAndVisibility) {
   auto primary = SimulateUserLogin(kRegularUserLoginInfo);
   SimulateUserLogin({"user1@tray"});
   SwitchActiveUser(primary);
@@ -92,11 +91,6 @@ TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
   // `QsButtonCatalogName` has an extra `kUnknown` type.
   EXPECT_EQ(VIEW_ID_QS_MAX - VIEW_ID_QS_MIN,
             static_cast<int>(QsButtonCatalogName::kMaxValue) - 1);
-
-  // No metrics logged before clicking on any buttons.
-  auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/0);
 
   // All buttons are visible and with the corresponding id.
   EXPECT_TRUE(GetSettingsButton()->GetVisible());
@@ -111,25 +105,6 @@ TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
 
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
   EXPECT_EQ(VIEW_ID_QS_BATTERY_BUTTON, GetBatteryButton()->GetID());
-
-  // Test the UMA tracking.
-  LeftClickOn(GetPowerButton());
-
-  histogram_tester->ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/1);
-  histogram_tester->ExpectBucketCount("Ash.QuickSettings.Button.Activated",
-                                      QsButtonCatalogName::kPowerButton,
-                                      /*expected_count=*/1);
-
-  // Close the power button menu.
-  PressAndReleaseKey(ui::VKEY_ESCAPE);
-
-  LeftClickOn(GetBatteryButton());
-  histogram_tester->ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                     /*count=*/2);
-  histogram_tester->ExpectBucketCount("Ash.QuickSettings.Button.Activated",
-                                      QsButtonCatalogName::kBatteryButton,
-                                      /*expected_count=*/1);
 }
 
 // Settings button and avatar button are hidden before login.
@@ -250,19 +225,12 @@ TEST_F(QuickSettingsFooterTest, SignOutShowsWithMultipleAccounts) {
   EXPECT_FALSE(GetUserAvatar());
 }
 
-TEST_F(QuickSettingsFooterTest, SignOutButtonRecordsUmaAndSignsOut) {
+TEST_F(QuickSettingsFooterTest, SignOutButtonSignsOut) {
   GetSessionControllerClient()->set_existing_users_count(2);
   SimulateUserLogin(kRegularUserLoginInfo);
   SetUpView();
 
-  base::HistogramTester histogram_tester;
   LeftClickOn(GetSignOutButton());
-
-  histogram_tester.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
-                                    /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount("Ash.QuickSettings.Button.Activated",
-                                     QsButtonCatalogName::kSignOutButton,
-                                     /*expected_count=*/1);
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return GetSessionControllerClient()->request_sign_out_count() == 1;

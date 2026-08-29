@@ -17,7 +17,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/wm/container_finder.h"
@@ -76,14 +75,6 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 }
 
 UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
-  // Record the number of quick settings pages.
-  auto page_count = unified_system_tray_controller()
-                        ->model()
-                        ->pagination_model()
-                        ->total_pages();
-  DCHECK_GT(page_count, 0);
-  quick_settings_metrics_util::RecordQsPageCountOnClose(page_count);
-
   if (controller_->showing_calendar_view()) {
     unified_system_tray_->NotifyLeavingCalendarView();
   }
