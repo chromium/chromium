@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -46,16 +47,12 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/icons/extension_icon_set.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
-#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -388,7 +385,6 @@ bool IsMojoJsEnabledForExtension(const Extension* extension,
   return registry && registry->IsMojoJsEnabled(*extension);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 DseNtpOverrideType GetDseNtpOverrideType(const Extension& extension) {
   enum Flags {
     kNone = 0,
@@ -422,7 +418,6 @@ DseNtpOverrideType GetDseNtpOverrideType(const Extension& extension) {
       return DseNtpOverrideType::kNone;
   }
 }
-#endif
 
 GURL GetCWSWritingReviewUrl(const ExtensionId& extension_id,
                             CWSReviewSource source) {
@@ -447,4 +442,4 @@ GURL GetCWSWritingReviewUrl(const ExtensionId& extension_id,
   return net::AppendQueryParameter(review_url, "source", source_str);
 }
 
-} // namespace extensions::util
+}  // namespace extensions::util

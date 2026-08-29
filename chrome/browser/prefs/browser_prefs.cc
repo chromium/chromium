@@ -251,6 +251,7 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
 #include "chrome/browser/extensions/preinstalled_extensions.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
@@ -1952,6 +1953,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions::ActivityLog::RegisterProfilePrefs(registry);
   extensions::PermissionsManager::RegisterProfilePrefs(registry);
   extensions::ExtensionPrefs::RegisterProfilePrefs(registry);
+  extensions::LowTrustPolicyInstallBlockManager::RegisterProfilePrefs(registry);
   extensions::RuntimeAPI::RegisterPrefs(registry);
   extensions::CommandService::RegisterProfilePrefs(registry);
   extensions::util::RegisterProfilePrefs(registry);

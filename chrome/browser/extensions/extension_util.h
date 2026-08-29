@@ -107,7 +107,6 @@ GURL GetExtensionsPageUrl(const ExtensionId& extension_id);
 bool IsMojoJsEnabledForExtension(const Extension* extension,
                                  content::BrowserContext* context);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Represents the type of settings override configured by the extension.
 // DSE = Default Search Engine.
 // NTP = New Tab Page.
@@ -116,10 +115,15 @@ enum class DseNtpOverrideType {
   kDse = 1,
   kNtp = 2,
   kBoth = 3,
+  kMaxValue = kBoth,
 };
 
+constexpr bool IsValidDseNtpOverrideType(int value) {
+  return value >= static_cast<int>(DseNtpOverrideType::kNone) &&
+         value <= static_cast<int>(DseNtpOverrideType::kMaxValue);
+}
+
 DseNtpOverrideType GetDseNtpOverrideType(const Extension& extension);
-#endif
 
 // Sources from which the CWS write review dialog can be launched.
 enum class CWSReviewSource {
