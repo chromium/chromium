@@ -174,25 +174,27 @@ bool IsSaveAsynchronous(EntityType type,
 
 void PrefetchAmbientAutofillContext(AutofillClient& client,
                                     AutofillManager& manager) {
-  DenseSet<EntityType> relevant_types;
+  DenseSet<EntityType> types;
   manager.ForEachCachedForm([&](const FormStructure& form) {
-    relevant_types.insert_all(GetRelevantEntityTypesForFields(form.fields()));
+    types.insert_all(GetRelevantEntityTypesForFields(form.fields()));
   });
-  if (relevant_types.empty()) {
+
+  // Filter for allowed types in a separate pass to avoid redundant
+  // `MayPerformAutofillAiAction` calls.
+  for (EntityType type : types) {
+    if (!MayPerformAutofillAiAction(
+            client, AutofillAiAction::kTypeSupportsAmbientAutofillData, type)) {
+      types.erase(type);
+    }
+  }
+
+  if (types.empty()) {
     return;
   }
 
   if (AutofillAiPersonalContextAccessManager* access_manager =
           client.GetAutofillAiPersonalContextAccessManager()) {
-    base::flat_set<EntityType> requested_types(std::from_range, relevant_types);
-    base::EraseIf(requested_types, [&](const EntityType& type) {
-      return !MayPerformAutofillAiAction(
-          client, AutofillAiAction::kTypeSupportsAmbientAutofillData, type);
-    });
-    if (requested_types.empty()) {
-      return;
-    }
-    access_manager->PrefetchContext(requested_types);
+    access_manager->PrefetchContext(types);
   }
 }
 

@@ -65,6 +65,7 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 using ::testing::WithArg;
 
 using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
@@ -85,7 +86,7 @@ MATCHER_P2(MatchContextFetchRequest, expected_types, expected_presence, "") {
       const personal_context::proto::ContextMemoryAmbientAutofillRequest&>(arg);
 
   return req.return_spii_presence() == expected_presence &&
-         ExplainMatchResult(ElementsAreArray(expected_types),
+         ExplainMatchResult(UnorderedElementsAreArray(expected_types),
                             req.requested_types(), result_listener);
 }
 
@@ -101,7 +102,7 @@ MATCHER_P3(MatchContextFetchRequestWithClientId,
 
   return req.return_spii_presence() == expected_presence &&
          req.client_id() == expected_client_id &&
-         ExplainMatchResult(ElementsAreArray(expected_types),
+         ExplainMatchResult(UnorderedElementsAreArray(expected_types),
                             req.requested_types(), result_listener);
 }
 
@@ -215,14 +216,14 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
   // - `spii_response`: The mocked response for the subsequent SPII-specific
   //   request, if any SPII types are expected.
   void PrefetchContextSync(
-      const std::vector<EntityType>& requested_types,
-      const std::vector<EntityType>& expected_spii_types,
+      DenseSet<EntityType> requested_types,
+      DenseSet<EntityType> expected_spii_types,
       const personal_context::proto::ContextMemoryAmbientAutofillResponse&
           non_spii_and_presence_response,
       const personal_context::proto::ContextMemoryAmbientAutofillResponse&
           spii_response = {}) {
     std::vector<personal_context::proto::EntityType> proto_types;
-    for (const EntityType& type : requested_types) {
+    for (EntityType type : requested_types) {
       if (!access_manager().IsTypePrefetched(type)) {
         proto_types.push_back(
             AutofillEntityTypeToPersonalContextEntityType(type));
@@ -230,7 +231,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
     }
 
     std::vector<personal_context::proto::EntityType> proto_spii_types;
-    for (const EntityType& type : expected_spii_types) {
+    for (EntityType type : expected_spii_types) {
       proto_spii_types.push_back(
           AutofillEntityTypeToPersonalContextEntityType(type));
     }
@@ -322,7 +323,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
 // Tests that PrefetchContext successfully requests context from the backend and
 // parses the returned entities, notifying observers about the result.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextSuccess) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse
@@ -407,7 +408,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   // 2. Now call PrefetchContext for both Passport and Driver's
   // License. It should only request Driver's License.
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kPassport),
       EntityType(EntityTypeName::kDriversLicense)};
 
@@ -453,7 +454,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // No network request should be made.
   EXPECT_CALL(mock_personal_context_service(), FetchContext).Times(0);
 
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kPassport)};
   access_manager().PrefetchContext(requested_types);
 }
@@ -461,7 +462,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // Tests that PrefetchContext does not mark types as prefetched when the fetch
 // context request fails.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextFailure) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
   ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
@@ -485,7 +486,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextFailure) {
 // correctly logged.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContextTriggerResultLogging) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
   // Initial Prefetch (Cache Empty)
@@ -673,7 +674,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        GetUnmaskedSpiiEntityRequestLatencyLogging) {
   // Prefetch passport.
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kPassport)};
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       presence_response;
@@ -721,7 +722,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // require a single request) is correctly recorded.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchTotalLatencyLogging_NonSpii) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse
@@ -844,7 +845,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchLatencyLogging_NonSpii) {
   base::HistogramTester histogram_tester;
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse
@@ -887,7 +888,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // response is empty.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContextEmptyResponse) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder),
       EntityType(EntityTypeName::kPassport)};
 
@@ -1444,7 +1445,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
 // Tests that a pending request blocks subsequent requests for the same type.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PendingRequestBlocksSubsequent) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
   base::test::TestFuture<personal_context::FetchContextCallback> future;
@@ -1481,7 +1482,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
 // Tests that failed requests trigger exponential backoff.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest, FailureTriggersBackoff) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
   ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
@@ -2002,11 +2003,11 @@ class AutofillAiPersonalContextAccessManagerImplSpiiCacheTest
   // Prefetches personal context for `requested_types` in a single request as
   // expected when `kAutofillAmbientAutofillSpiiCache` is enabled.
   void PrefetchContextSync(
-      const std::vector<EntityType>& requested_types,
+      DenseSet<EntityType> requested_types,
       const personal_context::proto::ContextMemoryAmbientAutofillResponse&
           response) {
     std::vector<personal_context::proto::EntityType> proto_types;
-    for (const EntityType& type : requested_types) {
+    for (EntityType type : requested_types) {
       if (!access_manager().IsTypePrefetched(type)) {
         proto_types.push_back(
             AutofillEntityTypeToPersonalContextEntityType(type));
@@ -2094,7 +2095,7 @@ class AutofillAiPersonalContextAccessManagerImplSpiiCacheTest
 // directly marks the type as prefetched.
 TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
        PrefetchContext_SpiiTypesOnlySendsSingleRequest) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kPassport)};
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
@@ -2131,7 +2132,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
 // as prefetched.
 TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
        PrefetchContext_MixedTypesOnlySendsSingleRequest) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder),
       EntityType(EntityTypeName::kPassport)};
 
@@ -2179,7 +2180,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
 // but the requested type is still marked as prefetched.
 TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
        PrefetchContext_EncryptedEntityDecryptionFails) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kPassport)};
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
@@ -2205,7 +2206,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
 // it is filtered out and not returned to observers.
 TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
        PrefetchContext_FiltersUnrequestedDecryptedTypes) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kPassport)};
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
@@ -2233,7 +2234,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
 // Tests prefetching multiple encrypted entities in the same response.
 TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
        PrefetchContext_MultipleEncryptedEntities) {
-  const std::vector<EntityType> requested_types = {
+  const DenseSet<EntityType> requested_types = {
       EntityType(EntityTypeName::kPassport),
       EntityType(EntityTypeName::kDriversLicense)};
 

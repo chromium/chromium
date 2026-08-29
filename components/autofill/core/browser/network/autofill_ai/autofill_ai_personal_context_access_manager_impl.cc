@@ -72,11 +72,11 @@ bool IsPersonalContextEligible(
 }
 
 personal_context::proto::ContextMemoryAmbientAutofillRequest
-CreateAmbientAutofillRequest(base::span<const EntityType> types,
+CreateAmbientAutofillRequest(DenseSet<EntityType> types,
                              bool return_spii_presence,
                              std::string client_id) {
   personal_context::proto::ContextMemoryAmbientAutofillRequest request;
-  for (const EntityType& type : types) {
+  for (EntityType type : types) {
     request.add_requested_types(
         AutofillEntityTypeToPersonalContextEntityType(type));
   }
@@ -192,28 +192,26 @@ AutofillAiPersonalContextAccessManagerImpl::
     ~AutofillAiPersonalContextAccessManagerImpl() = default;
 
 void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
-    base::span<const EntityType> requested_types) {
+    DenseSet<EntityType> requested_types) {
   // Types to request in Request 1 (which includes all non-SPII types and any
   // SPII types for which we want to check presence signals).
-  std::vector<EntityType> non_spii_and_presence_to_request;
-  non_spii_and_presence_to_request.reserve(requested_types.size());
+  DenseSet<EntityType> non_spii_and_presence_to_request;
   // SPII types for which we want to fetch the actual masked entity data in
   // Request 2.
-  std::vector<EntityType> spii_to_request;
-  spii_to_request.reserve(requested_types.size());
+  DenseSet<EntityType> spii_to_request;
 
   DenseSet<PersonalContextPrefetchTriggerResult> unique_trigger_results;
-  for (const EntityType& type : requested_types) {
+  for (EntityType type : requested_types) {
     PersonalContextPrefetchTriggerResult trigger_result =
         DeterminePrefetchTriggerResult(type);
     unique_trigger_results.insert(trigger_result);
 
     if (trigger_result == PersonalContextPrefetchTriggerResult::kInitiated) {
-      non_spii_and_presence_to_request.push_back(type);
+      non_spii_and_presence_to_request.insert(type);
       SetTypeStatus(type, RequestStatus::kPending);
 
       if (IsPersonalContextSpiiType(type)) {
-        spii_to_request.push_back(type);
+        spii_to_request.insert(type);
       }
     }
   }
@@ -241,12 +239,11 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
         personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
         request,
         /*options=*/{},
-        base::BindOnce(&AutofillAiPersonalContextAccessManagerImpl::
-                           OnPrefetchContextRequestComplete,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(non_spii_and_presence_to_request),
-                       RequestType::kNonSpiiAndPresence,
-                       base::TimeTicks::Now()));
+        base::BindOnce(
+            &AutofillAiPersonalContextAccessManagerImpl::
+                OnPrefetchContextRequestComplete,
+            weak_factory_.GetWeakPtr(), non_spii_and_presence_to_request,
+            RequestType::kNonSpiiAndPresence, base::TimeTicks::Now()));
   }
 
   // Request 2: collects spii entities without asking for spii presence.
@@ -263,14 +260,14 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
         /*options=*/{},
         base::BindOnce(&AutofillAiPersonalContextAccessManagerImpl::
                            OnPrefetchContextRequestComplete,
-                       weak_factory_.GetWeakPtr(), std::move(spii_to_request),
+                       weak_factory_.GetWeakPtr(), spii_to_request,
                        RequestType::kSpiiMasked, base::TimeTicks::Now()));
   }
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::
     OnPrefetchContextRequestComplete(
-        std::vector<EntityType> requested_types,
+        DenseSet<EntityType> requested_types,
         RequestType request_type,
         base::TimeTicks request_start_time,
         personal_context::FetchContextResult result) {
@@ -290,18 +287,17 @@ void AutofillAiPersonalContextAccessManagerImpl::
     return;
   }
 
-  std::vector<EntityType> prefetched_types;
-  for (const EntityType& type : requested_types) {
+  DenseSet<EntityType> prefetched_types;
+  for (EntityType type : requested_types) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillAmbientAutofillSpiiCache) ||
         request_type == RequestType::kSpiiMasked ||
         !IsPersonalContextSpiiType(type)) {
-      prefetched_types.push_back(type);
+      prefetched_types.insert(type);
     }
   }
 
-  ProcessPrefetchedEntities(std::move(prefetched_types),
-                            std::move(requested_types),
+  ProcessPrefetchedEntities(prefetched_types, requested_types,
                             std::move(*parsed_entities));
 }
 
@@ -498,14 +494,12 @@ void AutofillAiPersonalContextAccessManagerImpl::ResetStateForType(
                     *this, type);
 }
 
-// TODO(crbug.com/40100455): Change std::vector<EntityType> parameters to
-// DenseSet<EntityType>.
 void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
-    std::vector<EntityType> prefetched_types,
-    std::vector<EntityType> requested_types,
+    DenseSet<EntityType> prefetched_types,
+    DenseSet<EntityType> requested_types,
     std::vector<ParsedEntity> parsed_entities) {
   // Evict existing entities for the `prefetched_types`.
-  for (const EntityType& type : prefetched_types) {
+  for (EntityType type : prefetched_types) {
     LogPrefetchTotalLatency(type);
     ResetStateForType(type);
     SetTypeStatus(type, RequestStatus::kSuccess);
@@ -527,14 +521,14 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
   for (ParsedEntity& entity : parsed_entities) {
     if (const auto* signal =
             std::get_if<SpiiEntityPresenceSignal>(&entity.instance)) {
-      if (std::ranges::contains(requested_types, *signal)) {
+      if (requested_types.contains(*signal)) {
         CachePresenceSignal(*signal);
       }
       continue;
     }
 
     EntityInstance& instance = std::get<EntityInstance>(entity.instance);
-    if (!std::ranges::contains(requested_types, instance.type())) {
+    if (!requested_types.contains(instance.type())) {
       continue;
     }
 
@@ -727,9 +721,9 @@ void AutofillAiPersonalContextAccessManagerImpl::SetTypeStatus(
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::HandleFailedResponse(
-    base::span<const EntityType> requested_types,
+    DenseSet<EntityType> requested_types,
     RequestType request_type) {
-  for (const EntityType& type : requested_types) {
+  for (EntityType type : requested_types) {
     if (request_type == RequestType::kNonSpiiAndPresence &&
         IsPersonalContextSpiiType(type)) {
       continue;

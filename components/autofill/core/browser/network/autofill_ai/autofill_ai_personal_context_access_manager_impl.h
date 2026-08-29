@@ -86,7 +86,7 @@ class AutofillAiPersonalContextAccessManagerImpl
   ~AutofillAiPersonalContextAccessManagerImpl() override;
 
   // AutofillAiPersonalContextAccessManager:
-  void PrefetchContext(base::span<const EntityType> requested_types) override;
+  void PrefetchContext(DenseSet<EntityType> requested_types) override;
   RequestStatus GetPrefetchStatusByEntityType(EntityType type) const override;
   void GetUnmaskedSpiiEntity(const EntityInstance::EntityId& id,
                              GetUnmaskedSpiiEntityCallback callback) override;
@@ -142,7 +142,7 @@ class AutofillAiPersonalContextAccessManagerImpl
 
   // Handles the asynchronous result of the personal context fetch.
   void OnPrefetchContextRequestComplete(
-      std::vector<EntityType> requested_types,
+      DenseSet<EntityType> requested_types,
       RequestType request_type,
       base::TimeTicks request_start_time,
       personal_context::FetchContextResult result);
@@ -165,10 +165,8 @@ class AutofillAiPersonalContextAccessManagerImpl
   // - Scheduling eviction of the prefetched types.
   // - Scheduling eviction of spii presence signals.
   // - Notifying observers.
-  // TODO(crbug.com/40100455): Change std::vector<EntityType> parameters to
-  // DenseSet<EntityType>.
-  void ProcessPrefetchedEntities(std::vector<EntityType> prefetched_types,
-                                 std::vector<EntityType> requested_types,
+  void ProcessPrefetchedEntities(DenseSet<EntityType> prefetched_types,
+                                 DenseSet<EntityType> requested_types,
                                  std::vector<ParsedEntity> parsed_entities);
 
   PersonalContextPrefetchTriggerResult DeterminePrefetchTriggerResult(
@@ -200,7 +198,7 @@ class AutofillAiPersonalContextAccessManagerImpl
   // If `requested_spii_presence` is true, SPII types are excluded from the
   // failure status, as their outcome is governed by the dedicated SPII data
   // request.
-  void HandleFailedResponse(base::span<const EntityType> requested_types,
+  void HandleFailedResponse(DenseSet<EntityType> requested_types,
                             RequestType request_type);
 
   // Logs the total latency for a prefetch request of a specific `type`.
