@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -85,7 +86,14 @@ class DictationOverlayContentsView : public views::View {
     waveform_view->SetProperty(
         views::kElementIdentifierKey,
         DictationOverlayView::kWaveformElementIdForTesting);
-    waveform_view->SetVisible(false);
+    if (kSessionEndsOnStreamEnd.Get()) {
+      // When `kSessionEndsOnStreamEnd` is enabled, there is no point
+      // in showing the mic. It cannot start a new stream.
+      mic_button_->SetVisible(false);
+      waveform_view->SetVisible(true);
+    } else {
+      waveform_view->SetVisible(false);
+    }
     waveform_view_ = AddChildView(std::move(waveform_view));
   }
 
@@ -99,15 +107,21 @@ class DictationOverlayContentsView : public views::View {
 
     bool mic_visible = false;
     bool waveform_visible = false;
-    switch (state) {
-      case UiState::kInactive:
-      case UiState::kInitializing:
-        mic_visible = true;
-        break;
-      case UiState::kTranscribing:
-      case UiState::kFinalizing:
-        waveform_visible = true;
-        break;
+    if (kSessionEndsOnStreamEnd.Get()) {
+      // When `kSessionEndsOnStreamEnd` is enabled, there is no point
+      // in showing the mic. It cannot start a new stream.
+      waveform_visible = true;
+    } else {
+      switch (state) {
+        case UiState::kInactive:
+        case UiState::kInitializing:
+          mic_visible = true;
+          break;
+        case UiState::kTranscribing:
+        case UiState::kFinalizing:
+          waveform_visible = true;
+          break;
+      }
     }
 
     mic_button_->SetVisible(mic_visible);

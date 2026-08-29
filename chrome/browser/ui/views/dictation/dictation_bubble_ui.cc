@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
@@ -166,9 +167,12 @@ void DictationToastView::UpdateForState(UiState state) {
   if (toggle_button_) {
     switch (state) {
       case UiState::kInactive:
+        // Note that when `kSessionEndsOnStreamEnd` is enabled, the button does
+        // not toggle streams, it can only end both the stream and session.
         // TODO(b/510738735): Finalize placeholder strings.
-        toggle_button_->SetText(
-            l10n_util::GetStringUTF16(IDS_DICTATION_BUTTON_START));
+        toggle_button_->SetText(l10n_util::GetStringUTF16(
+            kSessionEndsOnStreamEnd.Get() ? IDS_DONE
+                                          : IDS_DICTATION_BUTTON_START));
         toggle_button_->SetEnabled(true);
         break;
       case UiState::kInitializing:

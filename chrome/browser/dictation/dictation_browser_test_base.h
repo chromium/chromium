@@ -28,6 +28,7 @@ struct TargetDetails;
 class DictationBrowserTestBase : public PlatformBrowserTest {
  public:
   DictationBrowserTestBase();
+  explicit DictationBrowserTestBase(bool session_ends_on_stream_end);
   ~DictationBrowserTestBase() override;
 
   // PlatformBrowserTest:

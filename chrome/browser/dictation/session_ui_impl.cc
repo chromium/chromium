@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -172,6 +173,13 @@ void SessionUiImpl::OnDictationBubbleCloseClicked() {
 }
 
 void SessionUiImpl::OnToggleActiveStreamClicked() {
+  if (kSessionEndsOnStreamEnd.Get()) {
+    // This configuration does not start new streams within a session. We just
+    // end the session.
+    controller_->FinalizeAndShutdown();
+    return;
+  }
+
   switch (controller_->GetState()) {
     case SessionState::kStreamInitializing:
     case SessionState::kTranscribing:

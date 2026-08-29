@@ -9,6 +9,7 @@
 #include <numbers>
 
 #include "base/check_op.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -103,6 +104,11 @@ size_t WaveformView::GetCenterBarIndex() const {
   return bars_.size() / 2;
 }
 
+bool WaveformView::IsCollapsedInParent() const {
+  return !kSessionEndsOnStreamEnd.Get() &&
+         (state_ == UiState::kInactive || state_ == UiState::kInitializing);
+}
+
 void WaveformView::SetState(UiState state) {
   if (state_ == state) {
     return;
@@ -115,6 +121,10 @@ void WaveformView::SetState(UiState state) {
   }
   if (state_ == UiState::kInactive) {
     std::fill(audio_history_.begin(), audio_history_.end(), 0.0f);
+    for (auto& bar : bars_) {
+      bar.height = kMinBarHeight;
+      bar.target_height = kMinBarHeight;
+    }
     active_volume_ = std::nullopt;
     last_volume_ = 0.0f;
     previous_read_empty_ = false;
@@ -164,7 +174,7 @@ WaveformView::AnimationState WaveformView::GetFinalizingAnimationState(
 
 gfx::Size WaveformView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  if (state_ == UiState::kInactive || state_ == UiState::kInitializing) {
+  if (IsCollapsedInParent()) {
     return gfx::Size(0, 0);
   }
   const auto* const layout_provider = ChromeLayoutProvider::Get();
@@ -178,7 +188,7 @@ gfx::Size WaveformView::CalculatePreferredSize(
 void WaveformView::OnPaint(gfx::Canvas* canvas) {
   // Painting is skipped in kInactive and kInitializing states as the parent
   // view is expected to hide or collapse this view in those states.
-  if (state_ == UiState::kInactive || state_ == UiState::kInitializing) {
+  if (IsCollapsedInParent()) {
     return;
   }
 
@@ -186,12 +196,23 @@ void WaveformView::OnPaint(gfx::Canvas* canvas) {
       full_size_ ? kFullSizeBarSpacing : kNonFullSizeBarSpacing;
   const float total_bars_width = (bars_.size() - 1) * bar_spacing + kBarWidth;
   const float start_x = (width() - total_bars_width) / 2.0f;
-  const int baseline_y = height() / 2;
+  const float baseline_y = height() / 2.0f;
 
   cc::PaintFlags flags;
   flags.setColor(GetColorProvider()->GetColor(ui::kColorSysOnSurface));
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
+
+  if (state_ == UiState::kInactive || state_ == UiState::kInitializing) {
+    for (size_t i = 0; i < bars_.size(); ++i) {
+      const float dot_x = start_x + i * bar_spacing + kBarWidth / 2.0f;
+      const gfx::RectF rect(dot_x - kFinalizingBaseDotSize / 2.0f,
+                            baseline_y - kFinalizingBaseDotSize / 2.0f,
+                            kFinalizingBaseDotSize, kFinalizingBaseDotSize);
+      canvas->DrawRoundRect(rect, kFinalizingBaseDotSize / 2.0f, flags);
+    }
+    return;
+  }
 
   if (state_ == UiState::kFinalizing) {
     const base::TimeTicks now = base::TimeTicks::Now();
@@ -235,30 +256,28 @@ void WaveformView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void WaveformView::UpdatePhysics(base::TimeDelta delta) {
-  if (state_ == UiState::kFinalizing) {
+  if (state_ != UiState::kTranscribing) {
     return;
   }
 
-  if (state_ == UiState::kTranscribing) {
-    // Propagate the audio level from the center outwards.
-    history_timer_ += delta;
-    if (history_timer_ >= base::Milliseconds(45)) {
-      history_timer_ = base::TimeDelta();
-      for (size_t i = audio_history_.size() - 1; i > 0; --i) {
-        audio_history_[i] = audio_history_[i - 1];
-      }
-      if (active_volume_.has_value()) {
-        previous_read_empty_ = false;
-        last_volume_ = active_volume_.value();
-        audio_history_[0] = active_volume_.value();
-        active_volume_ = std::nullopt;
+  // Propagate the audio level from the center outwards.
+  history_timer_ += delta;
+  if (history_timer_ >= base::Milliseconds(45)) {
+    history_timer_ = base::TimeDelta();
+    for (size_t i = audio_history_.size() - 1; i > 0; --i) {
+      audio_history_[i] = audio_history_[i - 1];
+    }
+    if (active_volume_.has_value()) {
+      previous_read_empty_ = false;
+      last_volume_ = active_volume_.value();
+      audio_history_[0] = active_volume_.value();
+      active_volume_ = std::nullopt;
+    } else {
+      if (!previous_read_empty_) {
+        audio_history_[0] = last_volume_;
+        previous_read_empty_ = true;
       } else {
-        if (!previous_read_empty_) {
-          audio_history_[0] = last_volume_;
-          previous_read_empty_ = true;
-        } else {
-          audio_history_[0] = 0.0f;
-        }
+        audio_history_[0] = 0.0f;
       }
     }
   }

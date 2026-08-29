@@ -28,9 +28,11 @@
 
 namespace dictation {
 
-class DictationOverlayViewTest : public ChromeViewsTestBase {
+class DictationOverlayViewTest : public ChromeViewsTestBase,
+                                 public testing::WithParamInterface<bool> {
  public:
-  DictationOverlayViewTest() = default;
+  DictationOverlayViewTest()
+      : scoped_feature_list_(CreateEnablingFeatureList(GetParam())) {}
   DictationOverlayViewTest(const DictationOverlayViewTest&) = delete;
   DictationOverlayViewTest& operator=(const DictationOverlayViewTest&) = delete;
   ~DictationOverlayViewTest() override = default;
@@ -49,11 +51,10 @@ class DictationOverlayViewTest : public ChromeViewsTestBase {
 
  protected:
   std::unique_ptr<views::Widget> parent_widget_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      CreateEnablingFeatureList()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DictationOverlayViewTest, ShowAndReposition) {
+TEST_P(DictationOverlayViewTest, ShowAndReposition) {
   auto overlay = std::make_unique<DictationOverlayView>(
       parent_widget_->GetNativeView(), base::DoNothing());
 
@@ -67,7 +68,7 @@ TEST_F(DictationOverlayViewTest, ShowAndReposition) {
   EXPECT_EQ(overlay->GetAnchorRect(), gfx::Rect(selection_point, gfx::Size()));
 }
 
-TEST_F(DictationOverlayViewTest, TeardropShape_LTR) {
+TEST_P(DictationOverlayViewTest, TeardropShape_LTR) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale("en");
   auto overlay = std::make_unique<DictationOverlayView>(
       parent_widget_->GetNativeView(), base::DoNothing());
@@ -79,7 +80,7 @@ TEST_F(DictationOverlayViewTest, TeardropShape_LTR) {
             gfx::RoundedCornersF(4.0f, 16.0f, 16.0f, 16.0f));
 }
 
-TEST_F(DictationOverlayViewTest, TeardropShape_RTL) {
+TEST_P(DictationOverlayViewTest, TeardropShape_RTL) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale("he");
   auto overlay = std::make_unique<DictationOverlayView>(
       parent_widget_->GetNativeView(), base::DoNothing());
@@ -91,7 +92,11 @@ TEST_F(DictationOverlayViewTest, TeardropShape_RTL) {
             gfx::RoundedCornersF(16.0f, 4.0f, 16.0f, 16.0f));
 }
 
-TEST_F(DictationOverlayViewTest, StateTransitionsUpdateSubviews) {
+TEST_P(DictationOverlayViewTest, StateTransitionsUpdateSubviews) {
+  if (GetParam()) {
+    GTEST_SKIP() << "UI state behaviour differs in this config.";
+  }
+
   auto overlay = std::make_unique<DictationOverlayView>(
       parent_widget_->GetNativeView(), base::DoNothing());
 
@@ -142,7 +147,7 @@ TEST_F(DictationOverlayViewTest, StateTransitionsUpdateSubviews) {
   EXPECT_FALSE(waveform_view->GetVisible());
 }
 
-TEST_F(DictationOverlayViewTest, AudioLevelPropagatesToWaveform) {
+TEST_P(DictationOverlayViewTest, AudioLevelPropagatesToWaveform) {
   auto overlay = std::make_unique<DictationOverlayView>(
       parent_widget_->GetNativeView(), base::DoNothing());
   overlay->Show();
@@ -168,7 +173,7 @@ TEST_F(DictationOverlayViewTest, AudioLevelPropagatesToWaveform) {
   EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.05f);
 }
 
-TEST_F(DictationOverlayViewTest, SubviewSizingAndMargin) {
+TEST_P(DictationOverlayViewTest, SubviewSizingAndMargin) {
   auto overlay = std::make_unique<DictationOverlayView>(
       parent_widget_->GetNativeView(), base::DoNothing());
   overlay->Show();
@@ -200,7 +205,7 @@ TEST_F(DictationOverlayViewTest, SubviewSizingAndMargin) {
   EXPECT_EQ(contents_view->GetPreferredSize(), gfx::Size(32, 32));
 }
 
-TEST_F(DictationOverlayViewTest, ClicksToggleActiveStream) {
+TEST_P(DictationOverlayViewTest, ClicksToggleActiveStream) {
   int toggle_count = 0;
   auto overlay = std::make_unique<DictationOverlayView>(
       parent_widget_->GetNativeView(),
@@ -224,19 +229,31 @@ TEST_F(DictationOverlayViewTest, ClicksToggleActiveStream) {
   ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), base::TimeTicks::Now(), 0, 0);
 
-  views::test::ButtonTestApi(views::AsViewClass<views::Button>(mic_button))
-      .NotifyClick(click_event);
-  EXPECT_EQ(toggle_count, 1);
+  const bool session_ends_on_stream_end = GetParam();
 
-  overlay->SetState(UiState::kInitializing);
-  views::test::ButtonTestApi(views::AsViewClass<views::Button>(mic_button))
-      .NotifyClick(click_event);
-  EXPECT_EQ(toggle_count, 2);
+  if (session_ends_on_stream_end) {
+    overlay->SetState(UiState::kInitializing);
+    overlay->SetState(UiState::kTranscribing);
+    views::test::ButtonTestApi(views::AsViewClass<views::Button>(waveform_view))
+        .NotifyClick(click_event);
+    EXPECT_EQ(toggle_count, 1);
+  } else {
+    views::test::ButtonTestApi(views::AsViewClass<views::Button>(mic_button))
+        .NotifyClick(click_event);
+    EXPECT_EQ(toggle_count, 1);
 
-  overlay->SetState(UiState::kTranscribing);
-  views::test::ButtonTestApi(views::AsViewClass<views::Button>(waveform_view))
-      .NotifyClick(click_event);
-  EXPECT_EQ(toggle_count, 3);
+    overlay->SetState(UiState::kInitializing);
+    views::test::ButtonTestApi(views::AsViewClass<views::Button>(mic_button))
+        .NotifyClick(click_event);
+    EXPECT_EQ(toggle_count, 2);
+
+    overlay->SetState(UiState::kTranscribing);
+    views::test::ButtonTestApi(views::AsViewClass<views::Button>(waveform_view))
+        .NotifyClick(click_event);
+    EXPECT_EQ(toggle_count, 3);
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, DictationOverlayViewTest, testing::Bool());
 
 }  // namespace dictation

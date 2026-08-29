@@ -44,6 +44,19 @@ base::test::ScopedFeatureList CreateEnablingFeatureList() {
   return feature_list;
 }
 
+base::test::ScopedFeatureList CreateEnablingFeatureList(
+    bool session_ends_on_stream_end) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kDictation,
+        {{"use_component_extension", "false"},
+         {"session_ends_on_stream_end",
+          session_ends_on_stream_end ? "true" : "false"}}},
+       {blink::features::kPopulateDOMNodeIdInFocusedNodeDetails, {}}},
+      {});
+  return feature_list;
+}
+
 const extensions::Extension* LoadTestExtensionInManualMode(Profile* profile) {
   extensions::ExtensionRegistryTestHelper observer(
       std::string(kDictationTestExtensionId).c_str(), profile);
