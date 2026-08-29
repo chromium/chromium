@@ -51,7 +51,6 @@ class PdfToolbarViewBinder {
             view.findViewById(R.id.zoom_increase_button).setOnClickListener(listener);
             view.findViewById(R.id.zoom_decrease_button).setOnClickListener(listener);
             view.findViewById(R.id.fit_to_page_button).setOnClickListener(listener);
-            view.findViewById(R.id.more_menu_button).setOnClickListener(listener);
             view.findViewById(R.id.download_button).setOnClickListener(listener);
             view.findViewById(R.id.print_button).setOnClickListener(listener);
             view.findViewById(R.id.done_button).setOnClickListener(listener);
