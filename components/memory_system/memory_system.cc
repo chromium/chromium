@@ -37,8 +37,8 @@
 #endif
 
 #if HEAP_PROFILING_SUPPORTED
+#include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"  // nogncheck
-#include "components/services/heap_profiling/public/cpp/profiling_client.h"  // nogncheck
 #endif
 
 #if HEAP_PROFILING_SUPPORTED
@@ -164,7 +164,7 @@ MemorySystem::Impl::Impl() {
   // order to allocate storage for a higher slot number. Since malloc is hooked,
   // this causes re-entrancy into the allocator shim, while the TLS object is
   // partially-initialized, which the TLS object is supposed to protect again.
-  heap_profiling::InitTLSSlot();
+  base::SamplingHeapProfiler::Init();
 #endif
 }
 

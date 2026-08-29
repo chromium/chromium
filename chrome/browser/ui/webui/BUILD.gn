@@ -48,7 +48,6 @@ source_set("configs") {
 
   deps = [
     ":gcm_internals_ui",
-    ":memory_internals_ui",
     ":net_export_ui",
     ":ntp_tiles_internals_ui",
     ":signin_internals_ui",
@@ -883,23 +882,6 @@ source_set("signin_internals_ui") {
     "//chrome/browser/signin",
     "//components/signin/public/base",
     "//ui/webui",
-  ]
-}
-
-source_set("memory_internals_ui") {
-  sources = [ "memory_internals_ui.cc" ]
-  public = [ "memory_internals_ui.h" ]
-
-  public_deps = [ "//chrome/common" ]
-
-  deps = [
-    "//base",
-    "//chrome/browser/profiling_host",
-    "//chrome/browser/resources/memory_internals:resources",
-    "//chrome/browser/ui/select_file_policy",
-    "//components/heap_profiling/multi_process",
-    "//mojo/public/cpp/system",
-    "//ui/shell_dialogs",
   ]
 }
 

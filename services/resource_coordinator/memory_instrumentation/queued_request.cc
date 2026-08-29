@@ -61,13 +61,4 @@ std::vector<mojom::MemDumpFlags> QueuedRequest::memory_dump_flags() const {
   return {};
 }
 
-QueuedVmRegionRequest::Response::Response() = default;
-QueuedVmRegionRequest::Response::~Response() = default;
-
-QueuedVmRegionRequest::QueuedVmRegionRequest(
-    uint64_t dump_guid,
-    mojom::HeapProfilerHelper::GetVmRegionsForHeapProfilerCallback callback)
-    : dump_guid(dump_guid), callback(std::move(callback)) {}
-QueuedVmRegionRequest::~QueuedVmRegionRequest() = default;
-
 }  // namespace memory_instrumentation
