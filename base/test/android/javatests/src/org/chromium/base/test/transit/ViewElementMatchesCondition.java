@@ -4,17 +4,16 @@
 
 package org.chromium.base.test.transit;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-
 import android.view.View;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 
 import org.chromium.build.annotations.NullMarked;
 
 /** A {@link Condition} that checks if a {@link ViewElement} matches a {@link Matcher<View>}. */
 @NullMarked
-public class ViewElementMatchesCondition extends InstrumentationThreadCondition {
+public class ViewElementMatchesCondition extends UiThreadCondition {
 
     private final ViewElement<? extends View> mViewElement;
     private final Matcher<View> mViewMatcher;
@@ -26,12 +25,16 @@ public class ViewElementMatchesCondition extends InstrumentationThreadCondition 
     }
 
     @Override
-    protected ConditionStatus checkWithSuppliers() throws Exception {
-        try {
-            mViewElement.check(matches(mViewMatcher));
+    protected ConditionStatus checkWithSuppliers() {
+        View view = mViewElement.get();
+        assert view != null;
+        if (mViewMatcher.matches(view)) {
             return fulfilled();
-        } catch (AssertionError e) {
-            return notFulfilled(e.getMessage());
+        } else {
+            StringDescription description = new StringDescription();
+            mViewMatcher.describeMismatch(view, description);
+            String mismatch = description.toString();
+            return notFulfilled(mismatch.isEmpty() ? "does not match " + mViewMatcher : mismatch);
         }
     }
 
