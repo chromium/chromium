@@ -66,6 +66,7 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
     @Override
     public TabBottomSheetContent createContent(
             View contentView,
+            float defaultHeightRatio,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
@@ -73,6 +74,7 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
             Runnable onBackPressed) {
         return new GlicBottomSheetContent(
                 contentView,
+                defaultHeightRatio,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,

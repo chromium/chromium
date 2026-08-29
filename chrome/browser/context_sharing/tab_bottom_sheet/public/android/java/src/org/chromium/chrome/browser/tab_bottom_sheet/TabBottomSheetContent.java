@@ -24,7 +24,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 @NullMarked
 public abstract class TabBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
+    private final float mDefaultHeightRatio;
+
+    @SuppressWarnings(
+            "UnusedVariable") // Used by getMaxResizeContentHeightRatio() in downstream CL.
     private final float mFullHeightRatio;
+
     private final @ColorInt int mBackgroundColor;
     private final @Px int mPeekViewHeight;
     private final Runnable mOnBackPressed;
@@ -33,6 +38,7 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
      * Constructor.
      *
      * @param contentView The inflated view for the bottom sheet.
+     * @param defaultHeightRatio The default height ratio for the bottom sheet.
      * @param fullHeightRatio The full height ratio for the bottom sheet.
      * @param backgroundColor The background color for the bottom sheet.
      * @param peekViewHeight The height of the peek view in pixels.
@@ -41,12 +47,14 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
      */
     public TabBottomSheetContent(
             View contentView,
+            float defaultHeightRatio,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
             Runnable onBackPressed) {
         mContentView = contentView;
+        mDefaultHeightRatio = defaultHeightRatio;
         mFullHeightRatio = fullHeightRatio;
         mBackgroundColor = backgroundColor;
         mPeekViewHeight = peekViewHeight;
@@ -123,17 +131,10 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        if (ChromeFeatureList.sTabBottomSheetHalfHeight.isEnabled()) {
-            return (float)
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                            ChromeFeatureList.TAB_BOTTOM_SHEET_HALF_HEIGHT,
-                            "half_height_ratio",
-                            mFullHeightRatio);
-        }
         // TODO(crbug.com/502611927): Update this for AIM.
         return (ChromeFeatureList.sTabBottomSheet.isEnabled()
                         && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled())
-                ? mFullHeightRatio
+                ? mDefaultHeightRatio
                 : HeightMode.DISABLED;
     }
 

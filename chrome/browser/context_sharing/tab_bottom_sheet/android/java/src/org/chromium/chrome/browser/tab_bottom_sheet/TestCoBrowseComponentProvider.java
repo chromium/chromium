@@ -48,6 +48,7 @@ public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider 
     @Override
     public TabBottomSheetContent createContent(
             View contentView,
+            float defaultHeightRatio,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
@@ -55,6 +56,7 @@ public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider 
             Runnable onBackPressed) {
         return new TestTabBottomSheetContent(
                 contentView,
+                defaultHeightRatio,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,

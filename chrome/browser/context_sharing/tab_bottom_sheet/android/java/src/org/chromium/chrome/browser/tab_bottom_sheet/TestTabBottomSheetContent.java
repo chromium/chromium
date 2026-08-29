@@ -20,8 +20,20 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpe
 @NullMarked
 public class TestTabBottomSheetContent extends TabBottomSheetContent {
 
+    /**
+     * Constructor.
+     *
+     * @param contentView The inflated view for the bottom sheet.
+     * @param defaultHeightRatio The default height ratio for the bottom sheet.
+     * @param fullHeightRatio The full height ratio for the bottom sheet.
+     * @param backgroundColor The background color for the bottom sheet.
+     * @param peekViewHeight The height of the peek view in pixels.
+     * @param peekViewContainerId The resource ID for the peek view container.
+     * @param onBackPressed Callback run when the back button/swipe is triggered.
+     */
     public TestTabBottomSheetContent(
             View contentView,
+            float defaultHeightRatio,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
@@ -29,6 +41,7 @@ public class TestTabBottomSheetContent extends TabBottomSheetContent {
             Runnable onBackPressed) {
         super(
                 contentView,
+                defaultHeightRatio,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,

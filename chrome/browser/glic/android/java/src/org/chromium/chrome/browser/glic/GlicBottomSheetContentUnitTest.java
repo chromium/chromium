@@ -73,6 +73,7 @@ public class GlicBottomSheetContentUnitTest {
                 new GlicBottomSheetContent(
                         mContentView,
                         0.7f,
+                        1.0f,
                         0xFFFFFFFF,
                         /* peekViewHeight= */ 100,
                         /* peekViewContainerId= */ 12345,

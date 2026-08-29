@@ -51,6 +51,7 @@ public class ContextualTaskBottomSheetComponentProvider implements CoBrowseCompo
     @Override
     public TabBottomSheetContent createContent(
             View contentView,
+            float defaultHeightRatio,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
@@ -58,6 +59,7 @@ public class ContextualTaskBottomSheetComponentProvider implements CoBrowseCompo
             Runnable onBackPressed) {
         return new ContextualTaskBottomSheetContent(
                 contentView,
+                defaultHeightRatio,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,

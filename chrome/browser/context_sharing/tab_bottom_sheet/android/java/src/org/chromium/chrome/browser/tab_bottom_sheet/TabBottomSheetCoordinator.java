@@ -221,6 +221,7 @@ public class TabBottomSheetCoordinator {
         mSheetContent =
                 provider.createContent(
                         mContentView,
+                        getDefaultHeightRatio(),
                         TabBottomSheetUtils.getFullHeightRatio(),
                         mCoBrowseViews.getBackgroundColor(),
                         mContentView

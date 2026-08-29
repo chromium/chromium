@@ -22,7 +22,8 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public final class TabBottomSheetUtils {
     // Values are not final and may need tuning.
-    public static final float FULL_HEIGHT_RATIO = 0.7f;
+    public static final float DEFAULT_HEIGHT_RATIO = 0.7f;
+    public static final float FULL_HEIGHT_RATIO = 1.0f;
     public static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
     public static final String FULL_HEIGHT_RATIO_PARAM = "full_height_ratio";
     public static final String HALF_HEIGHT_RATIO_PARAM = "half_height_ratio";
@@ -66,7 +67,17 @@ public final class TabBottomSheetUtils {
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return SMALL_SCREEN_HEIGHT_RATIO;
         }
-        return isKeyboardShowing ? SMALL_SCREEN_HEIGHT_RATIO : getFullHeightRatio();
+        if (isKeyboardShowing) {
+            return SMALL_SCREEN_HEIGHT_RATIO;
+        }
+        if (ChromeFeatureList.sTabBottomSheetHalfHeight.isEnabled()) {
+            return (float)
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                            ChromeFeatureList.TAB_BOTTOM_SHEET_HALF_HEIGHT,
+                            HALF_HEIGHT_RATIO_PARAM,
+                            DEFAULT_HEIGHT_RATIO);
+        }
+        return DEFAULT_HEIGHT_RATIO;
     }
 
     /**

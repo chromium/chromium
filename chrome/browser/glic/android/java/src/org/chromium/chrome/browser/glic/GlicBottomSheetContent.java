@@ -36,6 +36,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
      * Constructor.
      *
      * @param contentView The inflated view for the bottom sheet.
+     * @param defaultHeightRatio The default height ratio for the bottom sheet.
      * @param fullHeightRatio The full height ratio for the bottom sheet.
      * @param backgroundColor The background color for the bottom sheet.
      * @param peekViewHeight The height of the peek view in pixels.
@@ -45,6 +46,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
      */
     public GlicBottomSheetContent(
             View contentView,
+            float defaultHeightRatio,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
@@ -53,6 +55,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
             Profile profile) {
         super(
                 contentView,
+                defaultHeightRatio,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,

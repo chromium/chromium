@@ -31,7 +31,8 @@ public interface TabBottomSheetComponentProvider {
      * Instantiates a new instance of {@link TabBottomSheetContent}.
      *
      * @param contentView The content view shown inside the bottom sheet.
-     * @param fullHeightRatio The target height ratio of the sheet in full state.
+     * @param defaultHeightRatio The default height ratio of the sheet.
+     * @param fullHeightRatio The full height ratio for the sheet.
      * @param backgroundColor The background color of the sheet.
      * @param peekViewHeight The height of the peek view in pixels.
      * @param peekViewContainerId The resource ID for the peek view container.
@@ -41,6 +42,7 @@ public interface TabBottomSheetComponentProvider {
      */
     TabBottomSheetContent createContent(
             View contentView,
+            float defaultHeightRatio,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
