@@ -23,7 +23,7 @@ public final class ModalDialogFeatureMap extends FeatureMap {
     private static final ModalDialogFeatureMap sInstance = new ModalDialogFeatureMap();
 
     public static final CachedFlag sDialogsOnLargeFormFactors =
-            new CachedFlag(sInstance, ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS, false);
+            new CachedFlag(sInstance, ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS, true);
     public static final CachedFlag sModalDialogLayoutWithSystemInsets =
             new CachedFlag(
                     sInstance, ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS, true);
