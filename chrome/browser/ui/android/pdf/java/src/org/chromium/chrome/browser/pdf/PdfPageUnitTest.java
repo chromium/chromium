@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.pdf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -693,6 +695,80 @@ public class PdfPageUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testUpdateForUrl_WithChanges_ShowsReloadDialog() throws Exception {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        encodedUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+
+        View view = pdfPage.mPdfCoordinator.getView();
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(view);
+        ShadowLooper.idleMainLooper();
+
+        // Simulate changes applied
+        ((PdfCoordinator) pdfPage.mPdfCoordinator).onEditsApplied();
+
+        pdfPage.updateForUrl(encodedUrl);
+
+        // Verify reload dialog is shown
+        AlertDialog latestDialog = (AlertDialog) ShadowDialog.getLatestDialog();
+        Assert.assertNotNull("Dialog should be shown on reload with changes", latestDialog);
+        Assert.assertTrue("Dialog should be showing", latestDialog.isShowing());
+
+        contentView.removeView(view);
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testUpdateForUrl_IdenticalUrl_WithoutChanges_DoesNotShowReloadDialog()
+            throws Exception {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        encodedUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+
+        View view = pdfPage.mPdfCoordinator.getView();
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(view);
+        ShadowLooper.idleMainLooper();
+
+        Assert.assertTrue(
+                "Pdf should be loaded when attached to window.",
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
+
+        // Calling updateForUrl with identical URL and no changes should return early (no-op).
+        pdfPage.updateForUrl(encodedUrl);
+        ShadowLooper.idleMainLooper();
+
+        AlertDialog latestDialog = (AlertDialog) ShadowDialog.getLatestDialog();
+        if (latestDialog != null) {
+            Assert.assertFalse("Dialog should not be showing", latestDialog.isShowing());
+        }
+
+        Assert.assertTrue(
+                "Pdf should remain loaded.",
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
+
+        contentView.removeView(view);
+        pdfPage.destroy();
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testReload_WebPdf_WithChanges_ShowsDialog() throws Exception {
@@ -728,8 +804,7 @@ public class PdfPageUnitTest {
         pdfPage.reload();
 
         // Verify loadUrl was NOT called yet (since dialog should be shown)
-        org.mockito.Mockito.verify(mMockNativePageHost, org.mockito.Mockito.never())
-                .loadUrl(any(), org.mockito.Mockito.anyBoolean());
+        verify(mMockNativePageHost, never()).loadUrl(any(), anyBoolean());
 
         // Verify dialog is shown
         AlertDialog latestDialog = (AlertDialog) ShadowDialog.getLatestDialog();
@@ -745,8 +820,7 @@ public class PdfPageUnitTest {
         // Now verify loadUrl WAS called
         ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
         ArgumentCaptor<Boolean> incognitoCaptor = ArgumentCaptor.forClass(Boolean.class);
-        org.mockito.Mockito.verify(mMockNativePageHost)
-                .loadUrl(paramsCaptor.capture(), incognitoCaptor.capture());
+        verify(mMockNativePageHost).loadUrl(paramsCaptor.capture(), incognitoCaptor.capture());
 
         LoadUrlParams capturedParams = paramsCaptor.getValue();
         Assert.assertEquals("Should load original PDF link", PDF_LINK, capturedParams.getUrl());
@@ -765,6 +839,26 @@ public class PdfPageUnitTest {
         }
 
         contentView.removeView(view);
+        pdfPage.destroy();
+    }
+
+    @Test
+    public void testDestroy_WhenUserDataHostAlreadyDestroyed_DoesNotThrow() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        Assert.assertNotNull(pdfPage);
+
+        // Simulate Tab destroying its UserDataHost before destroying the native page.
+        mUserDataHost.destroy();
+
+        // Destroying the PdfPage should not throw IllegalStateException.
         pdfPage.destroy();
     }
 }

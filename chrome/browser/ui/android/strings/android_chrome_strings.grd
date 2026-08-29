@@ -5053,6 +5053,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PDF_FIT_PAGE" desc="Menu option to fit the PDF page to the screen.">
         Fit to page
       </message>
+      <message name="IDS_PDF_DOWNLOADING" desc="Toast message shown when the PDF document is downloading.">
+        Downloading PDF
+      </message>
       <message name="IDS_PDF_FIT_WIDTH" desc="Menu option to fit the PDF page width to the screen.">
         Fit to width
       </message>

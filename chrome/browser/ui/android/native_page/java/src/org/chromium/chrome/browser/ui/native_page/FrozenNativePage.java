@@ -30,6 +30,9 @@ public class FrozenNativePage implements NativePage {
 
     /** Creates a FrozenNativePage to replace the given NativePage and destroys the NativePage. */
     public static FrozenNativePage freeze(NativePage nativePage) {
+        // TODO(crbug.com/553143700): Evaluate persisting annotations on frozen PDF tabs. Currently,
+        // in-progress annotations are discarded when a tab is frozen because freezing destroys the
+        // page synchronously before asynchronous file writes can complete.
         FrozenNativePage fnp = new FrozenNativePage(nativePage);
         nativePage.destroy();
         return fnp;
