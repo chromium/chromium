@@ -12,8 +12,10 @@
 -AutofillAgentTest.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs
 -AutofillAgentTest.CheckIfSuggestionsAvailable_NonUserInitiatedActivity
 -AutofillAgentTest.DriverFillSpecificFormField
+-AutofillAgentTest.DriverFillSpecificFormField_ReplaceSelectionForAtMemory
 -AutofillAgentTest.DriverPreviewSpecificFormField
 -AutofillAgentTest.FillSpecificFormField
+-AutofillAgentTest.ScrollFieldIntoView
 -AutofillAgentTest.onSuggestionsReady_ClearForm
 -AutofillAgentTest.onSuggestionsReady_ClearFormWithGPay
 -AutofillAgentTest.showAutofillPopup_EmptyIconInCreditCardSuggestion
@@ -60,6 +62,9 @@
 -FillJsTest.GetCanonicalActionForForm
 -FillJsTest.GetUniqueIDInAllJavaScriptContentWorlds
 -FillJsTest.GetUniqueIDReturnsNotSetWhenInvalidIDInDOM
+-FillJsTest.InsertInputElementValueAtCursorCursorPosition
+-FillJsTest.InsertInputElementValueAtCursorInsertAtCursor
+-FillJsTest.InsertInputElementValueAtCursorReplaceSelection
 -FillJsTest.ShouldAutocompleteOneTimeCode
 
 # TODO(crbug.com/40945941): Test currently fails on iOS blink.
@@ -134,6 +139,7 @@
 -PasswordFormHelperTest.FindPasswordFormsInView
 -PasswordFormHelperTest.ExtractPasswordFormData
 -PasswordFormHelperTest.HandleFormSubmittedMessage
+-PasswordFormHelperTest.HandleFormSubmittedMessage_NoUserInteraction
 -PasswordFormHelperTest.HandleFormSubmittedMessage_CantExtractFormData
 -PasswordFormHelperTest.HandleFormSubmittedMessage_InvalidFormat
 -PasswordFormHelperTest.HandleFormSubmittedMessage_NoFormMatchingId
@@ -149,6 +155,7 @@
 -PasswordFormHelperTest.FillPasswordIntoForm_UserTypedUsername_FillFromPassword
 -PasswordFormHelperTest.FillPasswordIntoForm_UserTypedUsername_FillFromUsername
 -PasswordFormHelperTest.FillUsernameAndPassword_MissingFillResultField
+-PasswordFormHelperTest.FillUsernameAndPassword_TriggerSubmission
 
 # TODO(crbug.com/40281649): Test currently fails on iOS blink.
 -SharedPasswordControllerTest.PasswordManagerIsNotNotifiedAboutHeuristicsPredictions
@@ -188,6 +195,7 @@
 -AccountConsistencyServiceTest.SigninAddCookieOnMainDomains
 -AccountConsistencyServiceTest.AddChromeConnectedCookiesOnCookiesRemoved
 -AccountConsistencyServiceTest.ChromeManageAccountsDefault
+-AccountConsistencyServiceTest.ChromeManageAccountsIgnoredInSubframe
 -AccountConsistencyServiceTest.ChromeManageAccountsNoHeader
 -AccountConsistencyServiceTest.ChromeManageAccountsNotOnGaia
 -AccountConsistencyServiceTest.ChromeManageAccountsShowAddAccount
@@ -270,8 +278,12 @@
 
 # TODO(crbug.com/370751353): These tests have been failing since
 # https://crrev.com/c/5873728.
+-RemoteFrameTokenRegistrationTest.ChildFrameAcceptsAncestorRegistration
+-RemoteFrameTokenRegistrationTest.ChildFrameIgnoresNonParentRegistration
 -RemoteFrameTokenRegistrationTest.ChildFrameRegistersItself
+-RemoteFrameTokenRegistrationTest.MainFrameIgnoresRegistrationCommand
 -RemoteFrameTokenRegistrationTest.MainFrameRegistersItself
+-RemoteFrameTokenRegistrationTest.ParentFrameIgnoresChildRegistration
 
 # TODO(crbug.com/371838042): These tests have been failing since
 # https://crrev.com/c/5888544.
@@ -346,6 +358,22 @@
 -ChildProcessJavaScriptFeatureTest.ChildFrameMessaging
 -ChildProcessJavaScriptFeatureTest.GrandChildFrameMessaging
 -ChildProcessJavaScriptFeatureTest.MainAndChildFrameMessaging
+-All/FillContentEditableJsTest.FillContentEditableReplaceContent/0
+-All/FillContentEditableJsTest.FillContentEditableReplaceContent/1
+-All/FillContentEditableJsTest.FillContentEditableWithChildTags/0
+-All/FillContentEditableJsTest.FillContentEditableWithChildTags/1
+-All/FillContentEditableJsTest.FillContentEditableWithSibling/0
+-All/FillContentEditableJsTest.FillContentEditableWithSibling/1
+-All/FillContentEditableJsTest.FillNestedContentEditable/0
+-All/FillContentEditableJsTest.FillNestedContentEditable/1
+-All/FillContentEditableJsTest.FillSimpleContentEditable/0
+-All/FillContentEditableJsTest.FillSimpleContentEditable/1
+-All/FormContentEditableTest.FocusContentEditable/0
+-All/FormContentEditableTest.FocusContentEditable/1
+-All/FormContentEditableTest.FocusContentEditableChildElement/0
+-All/FormContentEditableTest.FocusContentEditableChildElement/1
+-All/FormContentEditableTest.FocusContentEditableSiblingElement/0
+-All/FormContentEditableTest.FocusContentEditableSiblingElement/1
 -FillJsTest.SanitizeValueForInputElement
 -FormActivityTest.TestCheckbox
 -FormActivityTest.TestCrossFrameObserving
@@ -458,6 +486,7 @@
 -FieldLogUkmMetricTest/LogFocusedComplexFormAtFormRemoveTest.TestEmittedUKM/ablation_study
 -FieldLogUkmMetricTest/LogFocusedComplexFormAtFormRemoveTest.TestEmittedUKM/ablation_study_in_dry_run_mode
 -PolicyLoggerTest.DeleteOldLogsMultithreaded
+-PrivateAiNetworkDriverIOSTest.CreateNetworkContext
 -UmaPageLoadMetricsObserverTest.TestTracingDomContentLoadedEventStart
 -UmaPageLoadMetricsObserverTest.TestTracingLoadEventStart
 

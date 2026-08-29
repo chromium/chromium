@@ -42,6 +42,7 @@
 # https://crrev.com/c/7893748, https://crrev.com/c/8132523,
 # https://crrev.com/c/8161746, https://crrev.com/c/8194052, and
 # https://crrev.com/c/8267284 on the bot.
+-SurfaceEmbedBrowserTest.AttachToFocusedEmbedHasPageFocus
 -SurfaceEmbedBrowserTest.Crash
 -SurfaceEmbedBrowserTest.CrashEarly
 -SurfaceEmbedBrowserTest.CrashThenReattach

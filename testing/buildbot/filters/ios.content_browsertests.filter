@@ -241,6 +241,7 @@
 -All/AccessibilityHitTestingBrowserTest.HitTestInPopup/ZoomFactor1
 -All/AccessibilityHitTestingBrowserTest.HitTestInPopup/ZoomFactor2
 -All/DumpAccessibilityTreeTest.AccessibilityInputDate/blink
+-All/DumpAccessibilityTreeTest.AccessibilityApgPatternThirdPartyButtonIdl/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputDateDisabled/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpenMultiple/blink
 -All/DumpAccessibilityTreeTest.AccessibilityInputMonth/blink
@@ -464,6 +465,7 @@
 # https://crrev.com/c/6777074.
 -All/IndexedDBBrowserTest.SchedulingPriority/WithLevelDb
 -All/IndexedDBBrowserTest.SchedulingPriority/WithSqlite
+-All/InlineScriptCodeCacheBrowserTest.NotProducedForShortScript/0
 
 # TODO(crbug.com/437957113): The test has been failing since
 # https://crrev.com/c/6566111.
@@ -531,14 +533,22 @@
 -All/StartupTracingTest.TestEnableTracing/4
 -All/StartupTracingTest.TestEnableTracing/5
 -AutoSpeculationRulesPrerenderBrowserTestWithHoldback.Metrics/1
+-DeclarativePerformanceObserverBrowserTest.SendsReportImmediatelyOnBFCacheEntry
 -DevToolsProtocolTest.CookiePermissions
 -FileSystemAccessSyncAccessHandleBrowserTest.WriteRejectsOversizedBuffer
 -FileSystemURLDragDropBrowserTest.FileSystemFileLeave
+-HidTest.FrameDetachDuringRunChooser
+-IdpSigninStatusBrowserTest.EarlyHintsSameOriginSubresource
 -IsolatedOriginTest.LocalStorage_EmptyLocalFrameToken
 -MojoBindingsTestBrowserTest.InvokeMojoEmptyConstructor
 -NetworkServiceBrowserCacheResetTest.CacheResetTest
 -NetworkServiceBrowserCacheResetTest.PRE_CacheResetTest
+-ObservedServiceRemoteBrowserTest.Lifecycle
+-RenderWidgetHostSitePerProcessTest.VerifyPopupCreatorFrameIdPlumbing
 -RustMojoTestBrowserTest.LoadRustMojoService
+-RustMojoTestBrowserTestWithCommandLineSwitch.LoadRustMojoServiceWithCommandLineSwitch
+-RustMojoTestBrowserTestWithFeatureEnabled.LoadRustMojoServiceWithFeatureEnabled
+-ServiceProcessHostBrowserTest.PerInstanceObserverIsolation
 -StorageBucketsIntegrationTestSuite/ClearSiteDataHandlerStorageBucketsBrowserTest.StorageBucketsIntegrationTest/0
 -WebThemeEngineImplDefaultBrowserTest.ActiveLinkAndVisitedTextAreDistinctInDarkMode
 -WebThemeEngineImplDefaultBrowserTest.FieldAndCanvasAreDistinctInDarkMode
