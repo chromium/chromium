@@ -92,9 +92,13 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // Creates a compositor frame that can be sent to the display compositor.
   // `begin_frame_ack` is a token that needs to be attached to the compositor
   // frame being created.
-  // `auto_update` if true means that we are continuously submitting frames
+  // - `client_resource_provider` is used to prepare transferable resources for
+  // export to the display compositor.
+  // - `resource_pool` provides pooled resources (textures/SharedImages) to draw
+  // frame content and enables resource reuse across frames.
+  // - `auto_update` if true means that we are continuously submitting frames
   // asynchronously and should redraw full surface regardless of damage.
-  // `last_submitted_frame_size` and `last_submitted_frame_dsf`
+  // - `last_submitted_frame_size` and `last_submitted_frame_dsf`
   // can be used to determine if a new surface needs to be identified on the
   // `host_window_`.
   // Returns nullptr if a compositor frame cannot be created.

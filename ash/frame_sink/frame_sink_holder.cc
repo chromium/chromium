@@ -242,10 +242,6 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
     return false;
   }
 
-  for (const auto& resource : frame->resource_list) {
-    exported_resources_.insert(resource.id);
-  }
-
   SubmitCompositorFrameInternal(std::move(frame));
 
   return true;
@@ -301,9 +297,7 @@ void FrameSinkHolder::ReclaimResources(
   }
   client_resource_provider_->ReceiveReturnsFromParent(std::move(resources));
 
-  bool has_exported_resources = !exported_resources_.empty();
-
-  if (WaitingToScheduleDelete() && !has_exported_resources) {
+  if (WaitingToScheduleDelete() && exported_resources_.empty()) {
     ScheduleDelete();
   }
 }
