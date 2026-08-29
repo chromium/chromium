@@ -159,9 +159,10 @@ class AppMenuBuilder {
       return *this;
     }
     if (build_submenu.has_value()) {
-      AppMenuBuilder sub_builder(item.get(), bg_color_);
+      AppMenuBuilder sub_builder(item.get());
       (*build_submenu)(sub_builder);
     }
+
     item->SetPopulateChildrenCallback(std::move(populate_callback));
     item->PopulateChildItems();
     parent_->AddChild(std::move(item));

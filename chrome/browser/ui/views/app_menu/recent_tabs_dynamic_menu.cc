@@ -31,6 +31,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
+#include "ui/color/color_id.h"
 
 RecentTabsDynamicMenu::RecentTabsDynamicMenu(BrowserWindowInterface* browser)
     : browser_window_interface_(browser) {}
@@ -138,46 +139,48 @@ RecentTabsDynamicMenu::GetInvokeCallback(RecentTabItem recent_item,
 
 void RecentTabsDynamicMenu::CreateRecentTabsAction(
     actions::BaseAction* parent_item,
-    const std::vector<RecentTabItem>& recent_items) {
-  if (!parent_item || recent_items.empty()) {
+    const std::vector<RecentTabItem>& recent_tabs) {
+  if (!parent_item || recent_tabs.empty()) {
     return;
   }
 
   WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
-  for (const auto& current_item : recent_items) {
+  for (const auto& recent_tab : recent_tabs) {
     std::unique_ptr<actions::BaseAction> action_item;
-    if (current_item.type() == RecentTabItem::Type::kHeader) {
+    if (recent_tab.type() == RecentTabItem::Type::kHeader) {
       action_item =
-          std::make_unique<AppMenuSectionActionItem>(current_item.title());
+          std::make_unique<AppMenuSectionActionItem>(recent_tab.title());
     } else {
-      if (current_item.action_id().has_value()) {
+      if (recent_tab.action_id().has_value()) {
         action_item = ActionAppMenuManager::CreateIndirectActionItem(
-            current_item.action_id().value(),
-            ActionAppMenuManager::DisplayType::kRow,
-            kColorAppMenuYourChromeBackground);
+            recent_tab.action_id().value(),
+            ActionAppMenuManager::DisplayType::kRow);
 
-        action_item.get()->GetActionItem()->SetText(current_item.title());
-        action_item.get()->GetActionItem()->SetImage(current_item.icon());
+        action_item.get()->GetActionItem()->SetText(recent_tab.title());
+        action_item.get()->GetActionItem()->SetImage(recent_tab.icon());
+        action_item.get()->GetActionItem()->SetProperty(
+            ActionAppMenuManager::kContainerColorKey, ui::kColorMenuBackground);
       } else {
         auto builder = actions::ActionItem::Builder();
-        builder.SetText(current_item.title())
-            .SetImage(current_item.icon())
-            .SetEnabled(current_item.enabled())
-            .SetInvokeActionCallback(
-                GetInvokeCallback(current_item, disposition));
+        builder.SetText(recent_tab.title())
+            .SetImage(recent_tab.icon())
+            .SetEnabled(recent_tab.enabled())
+            .SetInvokeActionCallback(GetInvokeCallback(recent_tab, disposition))
+            .SetProperty(ActionAppMenuManager::kContainerColorKey,
+                         ui::kColorMenuBackground);
 
         action_item = std::move(builder).Build();
       }
 
-      if (current_item.type() == RecentTabItem::Type::kTab &&
-          !current_item.url().is_empty()) {
-        FetchFavicon(action_item.get()->GetActionItem(), current_item);
+      if (recent_tab.type() == RecentTabItem::Type::kTab &&
+          !recent_tab.url().is_empty()) {
+        FetchFavicon(action_item.get()->GetActionItem(), recent_tab);
       }
     }
 
-    if (!current_item.children().empty()) {
-      CreateRecentTabsAction(action_item.get(), current_item.children());
+    if (!recent_tab.children().empty()) {
+      CreateRecentTabsAction(action_item.get(), recent_tab.children());
     }
 
     parent_item->AddChild(std::move(action_item));

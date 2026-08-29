@@ -17,6 +17,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "ui/actions/actions.h"
@@ -90,6 +92,9 @@ void BookmarksDynamicMenu::AddBookmarkNodeAction(
       }
     }
 
+    builder.SetProperty(ActionAppMenuManager::kContainerColorKey,
+                        ui::kColorMenuBackground);
+
     GURL url = node->url();
     builder.SetInvokeActionCallback(base::BindRepeating(
         [](BrowserWindowInterface* browser, GURL url, actions::ActionItem* item,
@@ -122,7 +127,9 @@ void BookmarksDynamicMenu::AddBookmarkFolderAction(
   auto builder = actions::ActionItem::Builder();
   builder.SetText(underlying_nodes[0]->GetTitle())
       .SetImage(chrome::GetBookmarkFolderIcon(
-          chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon));
+          chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon))
+      .SetProperty(ActionAppMenuManager::kContainerColorKey,
+                   ui::kColorMenuBackground);
   auto folder_action = std::move(builder).Build();
 
   if (children.size() == 0) {

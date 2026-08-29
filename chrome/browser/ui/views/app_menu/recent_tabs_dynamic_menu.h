@@ -33,7 +33,7 @@ class RecentTabsDynamicMenu {
 
  private:
   void CreateRecentTabsAction(actions::BaseAction* parent_item,
-                              const std::vector<RecentTabItem>& recent_items);
+                              const std::vector<RecentTabItem>& recent_tabs);
 
   void FetchFavicon(actions::ActionItem* action_item,
                     const RecentTabItem& item);
