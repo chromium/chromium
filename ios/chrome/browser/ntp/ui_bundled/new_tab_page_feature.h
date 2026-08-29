@@ -81,9 +81,6 @@ BASE_DECLARE_FEATURE(kConsistentLogoDoodleHeight);
 // padding and styling updates.
 BASE_DECLARE_FEATURE(kNewTabPageUICleanup);
 
-// Feature flag to enable the pinned omnibox colors.
-BASE_DECLARE_FEATURE(kNewTabPagePinnedOmniboxColorUpdate);
-
 // Feature flag to place the Most Visited Tiles in the bottom sheet.
 BASE_DECLARE_FEATURE(kMVTInBottomSheet);
 
@@ -159,9 +156,6 @@ bool IsNewTabPageUICleanupFakeboxOnlyEnabled();
 
 // Returns the enabled variation of feature kNewTabPageUICleanup.
 NTPUICleanupVariation GetNewTabPageUICleanupVariation();
-
-// Whether the pinned omnibox color updates are enabled.
-bool IsNewTabPagePinnedOmniboxColorUpdateEnabled();
 
 // Returns the active arm for the AimButtonRefactor feature.
 AimButtonRefactorArm GetAimButtonRefactorArm();

@@ -1493,12 +1493,6 @@ inline constexpr char kNewTabPageFieldTrialDescription[] =
     "Enables new tab page features that are available on first run for new "
     "Chrome iOS users.";
 
-inline constexpr char kNewTabPagePinnedOmniboxColorUpdateName[] =
-    "New Tab Page pinned omnibox color update";
-inline constexpr char kNewTabPagePinnedOmniboxColorUpdateDescription[] =
-    "Updates the pinned omnibox colors on the New Tab Page to match the "
-    "updated omnibox introduced behind New Tab Page UI cleanup.";
-
 inline constexpr char kNewTabPageRedesignName[] = "New Tab Page Redesign";
 inline constexpr char kNewTabPageRedesignDescription[] =
     "Enables the redesigned New Tab Page on iOS (iPhone only).";
