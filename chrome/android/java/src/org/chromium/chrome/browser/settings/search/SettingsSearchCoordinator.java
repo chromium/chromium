@@ -450,7 +450,7 @@ public class SettingsSearchCoordinator
     public void onTitleUpdated() {
         boolean reset = (assumeNonNull(getSettingsFragmentManager()).getBackStackEntryCount() == 0);
         if (reset && (mFragmentState == FS_SEARCH || mFragmentState == FS_RESULTS)) {
-            exitSearchState(/* clearFragment= */ false);
+            exitSearchState();
         }
     }
 
@@ -599,7 +599,7 @@ public class SettingsSearchCoordinator
                                 // a closed state. We cancel the operation, and revert the state
                                 // back to FS_SETTINGS. See https://crbug.com/482946558.
                                 if (mFragmentState == FS_SEARCH) {
-                                    exitSearchState(/* clearFragment= */ false);
+                                    exitSearchState();
                                 }
                                 showUiInSingleColumn(searchBox, /* show= */ true);
                                 disableBackgroundTalkbackNavigation();
@@ -786,7 +786,7 @@ public class SettingsSearchCoordinator
             // Do nothing. Let the default back action handler take care of it.
             return false;
         } else if (mFragmentState == FS_SEARCH) {
-            exitSearchState(/* clearFragment= */ true);
+            exitSearchState();
         } else if (mFragmentState == FS_RESULTS) {
             stepBackInResultState();
         } else {
@@ -952,7 +952,7 @@ public class SettingsSearchCoordinator
     }
 
     @VisibleForTesting(otherwise = PRIVATE)
-    void exitSearchState(boolean clearFragment) {
+    void exitSearchState() {
         // Back action in search state. Restore the settings fragment and search UI.
         View searchBox = requireViewById(R.id.search_box);
         View queryContainer = requireViewById(R.id.search_query_container);
@@ -968,12 +968,19 @@ public class SettingsSearchCoordinator
         EditText queryEdit = requireViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
 
-        // Clearing the fragment before popping the back stack. Otherwise the existing
-        // fragment is visible behind the popped one through the transparent background.
-        if (clearFragment) {
-            clearFragment(/* imageId= */ 0, /* addToBackStack= */ false, emptyRunnable());
+        // Remove search fragments before popping the back stack. Otherwise, un-backstacked
+        // search results or empty fragments would remain visible in the container behind the
+        // restored detail fragment.
+        FragmentManager fragmentManager = assumeNonNull(getSettingsFragmentManager());
+        Fragment resultFragment = fragmentManager.findFragmentByTag(RESULT_FRAGMENT);
+        Fragment emptyFragment = fragmentManager.findFragmentByTag(EMPTY_FRAGMENT);
+        if (resultFragment != null || emptyFragment != null) {
+            var transaction = fragmentManager.beginTransaction();
+            if (resultFragment != null) transaction.remove(resultFragment);
+            if (emptyFragment != null) transaction.remove(emptyFragment);
+            transaction.setReorderingAllowed(true).commitNowAllowingStateLoss();
         }
-        assumeNonNull(getSettingsFragmentManager()).popBackStack();
+        fragmentManager.popBackStack();
         if (mMultiColumnSettings != null
                 && !mUseMultiColumn
                 && mMultiColumnSettings.isLayoutOpen()
@@ -1067,9 +1074,6 @@ public class SettingsSearchCoordinator
                 showBackArrowInSingleColumnMode(false);
             }
         }
-        // Clearing the fragment before popping the back stack. Otherwise the existing
-        // fragment is visible behind the popped one through the transparent background.
-        clearFragment(/* imageId= */ 0, /* addToBackStack= */ false, emptyRunnable());
         fragmentManager.popBackStack();
     }
 
@@ -1486,7 +1490,7 @@ public class SettingsSearchCoordinator
             // For UI consistency, we revert to default state (FS_SETTINGS) after clearing
             // the fragment to prevent fragments overlapping crbug.com/511065590.
             if (mFragmentState == FS_SEARCH && !showingMain) {
-                exitSearchState(/* clearFragment= */ true);
+                exitSearchState();
                 mUpdateFirstVisibleTitle.onResult(0);
                 return;
             }

@@ -199,7 +199,7 @@ public class SettingsSearchCoordinatorTest {
                             HistogramWatcher.newSingleRecordWatcher(
                                     "Settings.Search.ExitReason",
                                     SettingsSearchCoordinator.ExitReason.ABANDONED_RESULTS);
-                    getSearchCoordinator().exitSearchState(/* clearFragment= */ true);
+                    getSearchCoordinator().exitSearchState();
                     histograms2.assertExpected();
                 });
     }
@@ -227,7 +227,7 @@ public class SettingsSearchCoordinatorTest {
         // Do not click on search results but just exit -> emit "abandoned-results"
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getSearchCoordinator().exitSearchState(/* clearFragment= */ true);
+                    getSearchCoordinator().exitSearchState();
                     histograms.assertExpected();
                 });
     }
@@ -251,7 +251,7 @@ public class SettingsSearchCoordinatorTest {
         // Just exit when there's no result -> emit "abandoned-no-results"
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getSearchCoordinator().exitSearchState(/* clearFragment= */ true);
+                    getSearchCoordinator().exitSearchState();
                     histograms.assertExpected();
                 });
     }

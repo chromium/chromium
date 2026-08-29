@@ -257,6 +257,26 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         showDetailFragment(initialDetail, /* addToBackStack= */ false, /* tag= */ null);
     }
 
+    /**
+     * Handles back stack becoming empty after FragmentManager finishes executing transactions. In
+     * two-column mode, populates the initial detail fragment so the detail pane does not remain
+     * blank. In single-column mode, closes the sliding pane and restores header focusability when
+     * no detail fragment remains.
+     */
+    private void onBackStackEmpty() {
+        if (getView() == null) return;
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() != 0) return;
+
+        if (isTwoColumn()) {
+            ensureInitialDetailFragment();
+        } else if (fragmentManager.findFragmentById(R.id.preferences_detail) == null) {
+            getSlidingPaneLayout().closePane();
+            updateHeaderPaneFocusability();
+        }
+    }
+
     void setPendingFragmentIntent(Intent intent) {
         mPendingFragmentIntent = intent;
     }
@@ -1176,21 +1196,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                                         .postDelayed(
                                                 mOnBackPressedCallback::updateEnabledState, 100);
                             }
-                            // When the back stack becomes empty (e.g. after popping a detail
-                            // fragment added in single-column mode or finishing a subpage):
-                            // - In two-column mode, populate the initial detail fragment so the
-                            //   detail pane does not remain blank.
-                            // - In single-column mode, close the sliding pane and restore header
-                            //   focusability when no detail fragment remains.
+                            // Clean up after the back stack empties. Post the task so
+                            // FragmentManager finishes executing the pop transaction before we
+                            // run any new fragment transactions or update the UI.
                             if (getChildFragmentManager().getBackStackEntryCount() == 0) {
-                                if (isTwoColumn()) {
-                                    ensureInitialDetailFragment();
-                                } else if (getChildFragmentManager()
-                                                .findFragmentById(R.id.preferences_detail)
-                                        == null) {
-                                    getSlidingPaneLayout().closePane();
-                                    updateHeaderPaneFocusability();
-                                }
+                                getSlidingPaneLayout().post(this::onBackStackEmpty);
                             }
                         });
 

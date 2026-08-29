@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -22,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +36,7 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,6 +54,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -71,6 +77,11 @@ public class SettingsPageTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+    }
+
+    @After
+    public void tearDown() {
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     @Test
@@ -427,6 +438,117 @@ public class SettingsPageTest {
 
         // Verify the search box is displayed on Tab 0.
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    public void testSearchInSingleColumnThenRotateToLandscapeAndExitSearch() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+
+        // Wait for settings page to load.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Ensure portrait.
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
+        // Wait for settings page in portrait.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Skip test if portrait mode happens to be wide enough for two-column mode.
+        var isSingleColumn =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var hostFragment =
+                                    SettingsHostFragment.get(mActivityTestRule.getActivity());
+                            if (hostFragment == null) return false;
+                            var activeFragment = hostFragment.getActiveFragment();
+                            if (activeFragment instanceof MultiColumnSettings multiColumn) {
+                                return !multiColumn.isTwoColumn();
+                            }
+                            return false;
+                        });
+        Assume.assumeTrue("Test requires single-column mode in portrait.", isSingleColumn);
+
+        // Click search box to enter search state in single-column mode.
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+
+        // Rotate to landscape (two-column mode).
+        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        ensureTwoColumnMode();
+
+        // Tap on back arrow in search query box to exit search.
+        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
+
+        // Verify that in two-column mode, the search box is visible and the detail pane is
+        // not blank (shows the initial detail fragment, e.g. search engine settings in header
+        // and default "Google services" detail fragment).
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.search_engine_settings), isDisplayed()))
+                .check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    public void testSearchQueryInMultiColumnThenExitSearchDoesNotShowSearchResultsBehindDetail() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+
+        // Wait for settings page to load.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Ensure landscape (two-column mode).
+        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        ensureTwoColumnMode();
+
+        // Wait for settings page in landscape (two-column mode with detail pane).
+        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+
+        // Click search box to enter search state in multi-column mode.
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+
+        // Type search query "Theme".
+        onViewWaiting(withId(R.id.search_query)).perform(replaceText("Theme"), closeSoftKeyboard());
+
+        // Wait for search results to appear.
+        onViewWaiting(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .check(matches(isDisplayed()));
+
+        // Tap on back arrow in search query box to exit search.
+        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
+
+        // Verify that the search box is visible and Google Services detail pane is displayed.
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+
+        // Verify that the search result is not visible/shown behind the detail pane.
+        onView(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .check(doesNotExist());
+    }
+
+    private void ensureActivityOrientation(int orientation) {
+        var activity = mActivityTestRule.getActivity();
+        ActivityTestUtils.rotateActivityToOrientation(activity, orientation);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View decorView = activity.getWindow().getDecorView();
+                    return orientation == Configuration.ORIENTATION_LANDSCAPE
+                            ? decorView.getWidth() > decorView.getHeight()
+                            : decorView.getHeight() > decorView.getWidth();
+                },
+                "Window should be laid out in the target orientation.");
+    }
+
+    private void ensureTwoColumnMode() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
+                    return hostFragment != null && hostFragment.isTwoColumnSettingsVisible();
+                },
+                "Settings should be shown in two-column mode.");
     }
 
     /**
