@@ -18152,6 +18152,8 @@ from previous Chrome versions.
   <int value="1075535842" label="TabStripGroupContextMenuAndroid:enabled"/>
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1075862390" label="LauncherItemSuggest:enabled"/>
+  <int value="1075954379"
+      label="AutofillEnableCardOnDeviceVerificationEnforcement:disabled"/>
   <int value="1076335895" label="CrosPrivacyHubV0:enabled"/>
   <int value="1076439757" label="PasskeyUnlockErrorUi:disabled"/>
   <int value="1076477581"
@@ -21534,6 +21536,8 @@ from previous Chrome versions.
   <int value="2108461166" label="LanguagePacksInSettings:disabled"/>
   <int value="2109456245" label="MobilePromoOnDesktopWithReminder:disabled"/>
   <int value="2109483186" label="OmniboxSteadyStateTextColor:disabled"/>
+  <int value="2109769029"
+      label="AutofillEnableCardOnDeviceVerificationEnforcement:enabled"/>
   <int value="2110109003" label="WebAssemblyRelaxedSimd:disabled"/>
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
   <int value="2111225495" label="NewTabPageTriggerForPrerender2:enabled"/>

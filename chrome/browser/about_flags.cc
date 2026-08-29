@@ -14023,6 +14023,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAddChromeUserContextFields)},
 
+    {"autofill-enable-card-on-device-verification-enforcement",
+     flag_descriptions::kAutofillEnableCardOnDeviceVerificationEnforcementName,
+     flag_descriptions::
+         kAutofillEnableCardOnDeviceVerificationEnforcementDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableCardOnDeviceVerificationEnforcement)},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

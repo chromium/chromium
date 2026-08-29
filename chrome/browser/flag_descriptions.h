@@ -1039,6 +1039,14 @@ inline constexpr char
         [] = "When enabled, the second line of a BNPL suggestion is updated to "
              "include the issuer names for better brand recognition.";
 
+inline constexpr char kAutofillEnableCardOnDeviceVerificationEnforcementName[] =
+    "Enable Card-on-Device Verification Enforcement for Payments Autofill";
+inline constexpr char
+    kAutofillEnableCardOnDeviceVerificationEnforcementDescription[] =
+        "When enabled, server card retrieval will ensure a card is verified "
+        "via CVC on a device before proceeding with risk-based or biometric "
+        "authentication.";
+
 inline constexpr char
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[] =
         "Enable CVC storage and filling standalone form enhancement for "

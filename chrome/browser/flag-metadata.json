@@ -1056,6 +1056,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "autofill-enable-card-on-device-verification-enforcement",
+    "owners": [ "junhuihe@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
     "owners": ["jialihuang@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150
