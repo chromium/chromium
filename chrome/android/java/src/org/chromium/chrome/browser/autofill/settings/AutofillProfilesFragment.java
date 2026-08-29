@@ -211,7 +211,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (!disabledSettingsInThirdPartyMode(getProfile())) {
             addAddAddressButton(screen);
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMAIL_VERIFICATION_ANDROID)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL)) {
             addEmailVerificationSection(screen);
         }
         // LINT.ThenChange(:DynamicPreferences)
@@ -532,7 +532,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                                 indexData, profile, getPrefFragmentName());
                     }
                     addAutofillSwitch(indexData);
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMAIL_VERIFICATION_ANDROID)) {
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL)) {
                         addEmailVerificationSwitch(indexData);
                     }
                     // LINT.ThenChange(:RebuildProfileList)
@@ -576,7 +576,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
                     indexData, profile, prefFragmentName);
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMAIL_VERIFICATION_ANDROID)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL)) {
             if (indexData.getEntryForKey(prefFragmentName, PREF_EMAIL_VERIFICATION) == null) {
                 indexData.addEntryForKey(
                         prefFragmentName,
