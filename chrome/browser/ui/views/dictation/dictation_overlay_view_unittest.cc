@@ -126,12 +126,14 @@ TEST_F(DictationOverlayViewTest, StateTransitionsUpdateSubviews) {
   EXPECT_EQ(overlay->state_for_testing(), UiState::kTranscribing);
   EXPECT_FALSE(mic_button->GetVisible());
   EXPECT_TRUE(waveform_view->GetVisible());
+  EXPECT_TRUE(waveform_view->GetEnabled());
 
   // Transition to kFinalizing: waveform visible (with wave animation).
   overlay->SetState(UiState::kFinalizing);
   EXPECT_EQ(overlay->state_for_testing(), UiState::kFinalizing);
   EXPECT_FALSE(mic_button->GetVisible());
   EXPECT_TRUE(waveform_view->GetVisible());
+  EXPECT_FALSE(waveform_view->GetEnabled());
 
   // Transition back to kInactive: mic_button visible.
   overlay->SetState(UiState::kInactive);
