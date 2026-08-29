@@ -19,7 +19,7 @@ found in the LICENSE file.
     <View
         android:id="@+id/desktop_window_spacer"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height_no_shadow"
+        android:layout_height="@dimen/vertical_tabs_desktop_window_spacer_height"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone" />
 
