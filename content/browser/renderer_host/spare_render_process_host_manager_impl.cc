@@ -557,9 +557,12 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   RenderProcessHost* new_spare_rph =
       RenderProcessHostImpl::CreateSpareRenderProcessHost(
           browser_context, nullptr /* site_instance */);
+  // Register the spare right away so that RenderProcessHost::IsSpare() is
+  // already true while the process launches, in particular when the embedder's
+  // AppendExtraCommandLineSwitches() runs.
+  spare_rphs_.push_back(new_spare_rph);
   new_spare_rph->AddObserver(this);
   new_spare_rph->Init();
-  spare_rphs_.push_back(new_spare_rph);
 
   // Use the new timeout if there is no previous renderer or
   // the specified timeout will be triggered after the current timeout
@@ -1062,9 +1065,9 @@ void SpareRenderProcessHostManagerImpl::MaybeCreateExtraSpare() {
   RenderProcessHost* new_spare_rph =
       RenderProcessHostImpl::CreateSpareRenderProcessHost(
           browser_context, nullptr /* site_instance */);
+  spare_rphs_.push_back(new_spare_rph);
   new_spare_rph->AddObserver(this);
   new_spare_rph->Init();
-  spare_rphs_.push_back(new_spare_rph);
 }
 
 void SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired() {
