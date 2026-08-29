@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_desktop_android.h"
 
+#include "base/android/jni_android.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -143,6 +144,90 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorDesktopAndroidBrowserTest,
   actor::ActorTask* task = actor_service->GetTask(task_id);
   ASSERT_TRUE(task);
   EXPECT_EQ(task->GetState(), actor::ActorTask::State::kPausedByUser);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorDesktopAndroidBrowserTest,
+                       ShowDeferredTriggersToastAndSetsBackgroundedState) {
+  // Open Glic for the active tab to ensure the side panel is initialized.
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  SidePanelEntryObserver* observer = GetCoordinatorAsObserver();
+
+  EXPECT_CALL(
+      mock_message_dispatcher_bridge_,
+      EnqueueMessage(
+          testing::AllOf(
+              testing::ResultOf(
+                  [](messages::MessageWrapper* m) { return m->GetTitle(); },
+                  l10n_util::GetStringUTF16(IDS_GLIC_CHAT_HIDDEN_TITLE)),
+              testing::ResultOf(
+                  [](messages::MessageWrapper* m) {
+                    return m->GetDescription();
+                  },
+                  l10n_util::GetStringUTF16(IDS_GLIC_CHAT_HIDDEN_DESCRIPTION))),
+          _, _, _))
+      .WillOnce(testing::Return(true));
+
+  // Trigger a "ShowDeferred" event.
+  observer->OnEntryShowDeferred(coordinator()->GetEntryForTesting());
+
+  EXPECT_EQ(coordinator()->state(),
+            GlicSidePanelCoordinator::State::kBackgrounded);
+
+  // Re-show the Glic entry to ensure it auto-dismisses the toast banner.
+  EXPECT_CALL(mock_message_dispatcher_bridge_, DismissMessage(_, _));
+  observer->OnEntryShown(coordinator()->GetEntryForTesting());
+  EXPECT_EQ(coordinator()->state(), GlicSidePanelCoordinator::State::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicSidePanelCoordinatorDesktopAndroidBrowserTest,
+    TwoShowDeferredEventsEnqueueOneToastIfFirstToastIsNotDismissed) {
+  // Open Glic for the active tab to ensure the side panel is initialized.
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  SidePanelEntryObserver* observer = GetCoordinatorAsObserver();
+
+  // Expect EnqueueMessage to be called exactly once.
+  EXPECT_CALL(mock_message_dispatcher_bridge_, EnqueueMessage(_, _, _, _))
+      .Times(1)
+      .WillOnce(testing::Return(true));
+
+  // Trigger two "ShowDeferred" events.
+  observer->OnEntryShowDeferred(coordinator()->GetEntryForTesting());
+  observer->OnEntryShowDeferred(coordinator()->GetEntryForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicSidePanelCoordinatorDesktopAndroidBrowserTest,
+    TwoShowDeferredEventsEnqueueTwoToastsIfFirstToastIsDismissed) {
+  // Open Glic for the active tab to ensure the side panel is initialized.
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  SidePanelEntryObserver* observer = GetCoordinatorAsObserver();
+
+  // Capture the first toast enqueued.
+  messages::MessageWrapper* first_toast = nullptr;
+  EXPECT_CALL(mock_message_dispatcher_bridge_, EnqueueMessage(_, _, _, _))
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&first_toast),
+                               testing::Return(true)));
+
+  // Trigger the first "ShowDeferred" event.
+  observer->OnEntryShowDeferred(coordinator()->GetEntryForTesting());
+  ASSERT_NE(first_toast, nullptr);
+
+  // Dismiss the first toast.
+  first_toast->HandleDismissCallback(
+      base::android::AttachCurrentThread(),
+      static_cast<int>(messages::DismissReason::TIMER));
+
+  // Expect a second toast to be enqueued when "ShowDeferred" is triggered
+  // again.
+  EXPECT_CALL(mock_message_dispatcher_bridge_, EnqueueMessage(_, _, _, _))
+      .WillOnce(testing::Return(true));
+
+  // Trigger the second ShowDeferred event.
+  observer->OnEntryShowDeferred(coordinator()->GetEntryForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorDesktopAndroidBrowserTest,

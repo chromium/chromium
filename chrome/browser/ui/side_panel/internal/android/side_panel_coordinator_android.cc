@@ -499,6 +499,13 @@ void SidePanelCoordinatorAndroid::Show(
                        << ", suppress_animations: " << suppress_animations
                        << ", state: " << ToString(state_));
 
+  SidePanelEntry* entry = GetEntryForUniqueKey(key);
+  if (!entry) {
+    return;
+  }
+  CHECK(entry->type() == SidePanelType::kToolbar)
+      << "Android Side Panel only supports kToolbar entries.";
+
   // Defer the show request if there is insufficient space to show the side
   // panel.
   //
@@ -514,18 +521,12 @@ void SidePanelCoordinatorAndroid::Show(
   has_insufficient_space_ = !Java_SidePanelCoordinatorAndroidBridge_canShow(
       AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
   if (has_insufficient_space_) {
-    SPLOG("Show - insufficient space, skipping.");
+    SPLOG("Show - insufficient space; defer showing the entry.");
     deferred_entry_tracker_.AddEntry(key);
+    entry->OnEntryShowDeferred();
     return;
   }
   deferred_entry_tracker_.ClearEntry(key);
-
-  SidePanelEntry* entry = GetEntryForUniqueKey(key);
-  if (!entry) {
-    return;
-  }
-  CHECK(entry->type() == SidePanelType::kToolbar)
-      << "Android Side Panel only supports kToolbar entries.";
 
   // Check #IsSidePanelShowing() specifically to stay aligned with other
   // platforms.

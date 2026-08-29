@@ -61,6 +61,7 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   void OnEntryHiddenWithReason(SidePanelEntry* entry,
                                SidePanelEntryHideReason reason) override;
   void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryShowDeferred(SidePanelEntry* entry) override;
 
  private:
   void CheckStateAfterHidden();
@@ -76,6 +77,13 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
 
   // Sets a new state and notifies about a state change.
   void SetState(State new_state);
+
+  // Shows the message when Glic side panel is auto-closed due to window size
+  // constraint, if applicable.
+  //
+  // TODO(crbug.com/515493573): Remove this once Glic transitions to using the
+  // bottom sheet for narrow windows.
+  void MaybeShowResizeToast();
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;
