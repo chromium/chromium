@@ -1664,6 +1664,13 @@ bool LocalDOMWindow::offscreenBuffering() const {
   return true;
 }
 
+bool LocalDOMWindow::alwaysOnTop() const {
+  if (!GetFrame() || !GetFrame()->GetPage()) {
+    return false;
+  }
+  return GetFrame()->GetPage()->AlwaysOnTop();
+}
+
 int LocalDOMWindow::outerHeight() const {
   if (!GetFrame()) {
     return 0;

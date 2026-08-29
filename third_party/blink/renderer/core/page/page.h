@@ -269,10 +269,14 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void SetWindowFeatures(const WebWindowFeatures& features) {
     window_features_ = features;
+    always_on_top_ = features.always_on_top;
   }
   const WebWindowFeatures& GetWindowFeatures() const {
     return window_features_;
   }
+
+  void SetAlwaysOnTop(bool always_on_top) { always_on_top_ = always_on_top; }
+  bool AlwaysOnTop() const { return always_on_top_; }
 
   PageScaleConstraintsSet& GetPageScaleConstraintsSet();
   const PageScaleConstraintsSet& GetPageScaleConstraintsSet() const;
@@ -620,6 +624,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   Deprecation deprecation_;
   WebWindowFeatures window_features_;
+  bool always_on_top_ = false;
 
   bool opened_by_dom_;
   // Set to true when window.close() has been called and the Page will be

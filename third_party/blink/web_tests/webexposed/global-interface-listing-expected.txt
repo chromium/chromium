@@ -13782,6 +13782,7 @@ namespace console
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
+    getter alwaysOnTop
     getter caches
     getter clientInformation
     getter closed

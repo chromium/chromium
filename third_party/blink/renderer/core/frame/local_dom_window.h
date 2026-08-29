@@ -290,6 +290,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Navigator* clientInformation() { return navigator(); }
 
   bool offscreenBuffering() const;
+  bool alwaysOnTop() const;
 
   int outerHeight() const;
   int outerWidth() const;

@@ -7342,6 +7342,10 @@
       name: "WindowDefaultStatus",
     },
     {
+      name: "WindowOpenAlwaysOnTop",
+      status: "test",
+    },
+    {
       // Fixes an issue where Ctrl+Right Arrow skips punctuation before a newline.
       name: "WordSkipSpacesPunctuationFix",
       status: "stable",

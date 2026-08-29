@@ -12507,6 +12507,7 @@ namespace console
     attribute awConsole
     attribute globalThis
     attribute propertyNamesInGlobal
+    getter alwaysOnTop
     getter caches
     getter clientInformation
     getter closed

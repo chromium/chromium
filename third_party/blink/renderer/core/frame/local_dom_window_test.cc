@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
+#include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -359,6 +360,17 @@ TEST_F(LocalDOMWindowTest, CanExecuteScriptsDuringDetach) {
   // See crbug.com/350874762, crbug.com/41482536 and crbug.com/41484859.
   EXPECT_FALSE(
       GetFrame().DomWindow()->CanExecuteScripts(kAboutToExecuteScript));
+}
+
+TEST_F(LocalDOMWindowTest, AlwaysOnTop) {
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  EXPECT_FALSE(window->alwaysOnTop());
+
+  GetFrame().GetPage()->SetAlwaysOnTop(true);
+  EXPECT_TRUE(window->alwaysOnTop());
+
+  GetFrame().GetPage()->SetAlwaysOnTop(false);
+  EXPECT_FALSE(window->alwaysOnTop());
 }
 
 TEST_F(LocalDOMWindowTest, OutgoingReferrerUrlCaching) {

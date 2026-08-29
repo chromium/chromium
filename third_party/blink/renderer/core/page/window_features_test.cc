@@ -100,4 +100,35 @@ TEST_F(WindowFeaturesTest, Opener) {
   }
 }
 
+TEST_F(WindowFeaturesTest, AlwaysOnTop) {
+  ScopedWindowOpenAlwaysOnTopForTest always_on_top_enabled{true};
+
+  static const struct {
+    const char* feature_string;
+    bool always_on_top;
+  } kCases[] = {
+      {"", false},
+      {"something", false},
+      {"notalwaysontop", false},
+      {"alwaysontop", true},
+      {"something, alwaysontop", true},
+      {"alwaysontop, something", true},
+      {"AlWaYsOnToP", true},
+      {"alwaysontop=1", true},
+      {"alwaysontop=true", true},
+      {"alwaysontop=yes", true},
+      {"alwaysontop=0", false},
+      {"alwaysontop=false", false},
+      {"alwaysontop=no", false},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.always_on_top,
+              GetWindowFeaturesFromString(test.feature_string,
+                                          /*dom_window=*/nullptr)
+                  .always_on_top)
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
 }  // namespace blink

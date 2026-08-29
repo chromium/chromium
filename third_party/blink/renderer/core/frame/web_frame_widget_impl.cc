@@ -1988,6 +1988,9 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         visual_properties.min_size_for_auto_resize,
         visual_properties.max_size_for_auto_resize,
         visual_properties.screen_infos.current().device_scale_factor);
+    if (View() && View()->GetPage()) {
+      View()->GetPage()->SetAlwaysOnTop(visual_properties.always_on_top);
+    }
   }
 
   if (!View()->AutoResizeMode()) {

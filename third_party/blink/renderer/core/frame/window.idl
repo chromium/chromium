@@ -53,6 +53,7 @@
     attribute DOMString status;
     [CrossOrigin, CallWith=Isolate, Measure] void close();
     [MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
+    [RuntimeEnabled=WindowOpenAlwaysOnTop] readonly attribute boolean alwaysOnTop;
     void stop();
     [CrossOrigin, CallWith=Isolate, Measure] void focus();
     [CrossOrigin, Measure] void blur();
