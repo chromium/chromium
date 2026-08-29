@@ -46,6 +46,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/request_header_integrity/buildflags.h"
 #include "components/certificate_transparency/ct_known_logs.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/encryption/cache/utils.h"
 #include "components/net_log/net_export_file_writer.h"
@@ -976,6 +977,8 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
       UpdateCorsExemptHeaders(network_context_params);
 #endif  // BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  network_context_params->cors_exempt_header_list.push_back(
+      contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName);
 
   network_context_params->enable_brotli = true;
 

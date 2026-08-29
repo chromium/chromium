@@ -37,6 +37,8 @@ source_set("contextual_tasks") {
     "contextual_tasks_tab_visit_tracker.h",
     "contextual_tasks_ui_interface.h",
     "contextual_tasks_ui_service_delegate.h",
+    "contextual_tasks_url_loader_throttle.cc",
+    "contextual_tasks_url_loader_throttle.h",
     "contextual_tasks_utils.h",
     "smart_tab_sharing_metrics.h",
     "smart_tab_sharing_settings_policy_handler.h",
@@ -46,7 +48,10 @@ source_set("contextual_tasks") {
   deps = [
     "//base",
     "//chrome/browser/ui/browser_window",
+    "//components/google/core/common",
     "//components/tabs:public",
+    "//extensions/buildflags",
+    "//net",
     "//ui/base/unowned_user_data",
   ]
 
@@ -66,7 +71,9 @@ source_set("contextual_tasks") {
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//content/public/browser",
+    "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/common:headers",
     "//third_party/omnibox_proto",
   ]
 
@@ -77,7 +84,10 @@ source_set("contextual_tasks") {
       "contextual_tasks_extension_bridge_factory.h",
       "contextual_tasks_extension_config_provider.h",
     ]
-    public_deps += [ "//extensions/browser" ]
+    public_deps += [
+      "//extensions/browser",
+      "//extensions/common:extension_features",
+    ]
   }
 
   if (!is_android) {
@@ -644,6 +654,10 @@ source_set("unit_tests") {
       "contextual_tasks_utils_unittest.cc",
       "contextual_tasks_web_contents_user_data_unittest.cc",
     ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [ "contextual_tasks_url_loader_throttle_unittest.cc" ]
   }
 
   deps = [

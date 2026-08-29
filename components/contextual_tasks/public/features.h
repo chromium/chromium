@@ -485,6 +485,14 @@ extern bool GetIsWebpageApcComparisonEnabled();
 extern bool IsContextualTasksRearchitectureEnabled();
 extern bool IsContextualTasksSidePanelRearchitectureEnabled();
 
+inline constexpr char kContextualTasksSearchCapabilitiesHeaderName[] =
+    "Chrome-Search-Capabilities-Version";
+inline constexpr char kContextualTasksSearchCapabilitiesDefaultVersion[] = "1";
+
+extern const base::FeatureParam<std::string>
+    kContextualTasksSearchCapabilitiesVersion;
+std::string GetContextualTasksSearchCapabilitiesVersion();
+
 namespace flag_descriptions {
 
 extern const char kContextualTasksPrivateApiNoAnimationName[];

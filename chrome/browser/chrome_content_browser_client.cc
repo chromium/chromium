@@ -82,6 +82,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_throttle.h"
 #include "chrome/browser/contextual_tasks/guest_opener_user_data.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
@@ -6003,6 +6004,12 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     }
   }
 
+  if (auto contextual_tasks_throttle =
+          contextual_tasks::ContextualTasksURLLoaderThrottle::MaybeCreate(
+              profile, wc_getter)) {
+    result.push_back(std::move(contextual_tasks_throttle));
+  }
+
   return result;
 }
 
@@ -6030,6 +6037,12 @@ ChromeContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
           profile);
       google_throttle) {
     result.push_back(std::move(google_throttle));
+  }
+
+  if (auto contextual_tasks_throttle =
+          contextual_tasks::ContextualTasksURLLoaderThrottle::MaybeCreate(
+              profile, /*wc_getter=*/{})) {
+    result.push_back(std::move(contextual_tasks_throttle));
   }
 
   return result;

@@ -188,6 +188,7 @@ source_set("impl") {
     "//chrome/common:version_header",
     "//components/certificate_transparency",
     "//components/content_settings/core/common",
+    "//components/contextual_tasks/public:feature_list",
     "//components/country_codes",
     "//components/domain_reliability",
     "//components/domain_reliability:prefs",

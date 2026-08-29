@@ -872,6 +872,15 @@ bool IsContextualTasksSidePanelRearchitectureEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture);
 }
 
+const base::FeatureParam<std::string> kContextualTasksSearchCapabilitiesVersion{
+    &kContextualTasksRearchitecture,
+    "contextual-tasks-search-capabilities-version",
+    kContextualTasksSearchCapabilitiesDefaultVersion};
+
+std::string GetContextualTasksSearchCapabilitiesVersion() {
+  return kContextualTasksSearchCapabilitiesVersion.Get();
+}
+
 bool IsContextualTasksUIEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
          base::FeatureList::IsEnabled(kContextualTasks) ||
