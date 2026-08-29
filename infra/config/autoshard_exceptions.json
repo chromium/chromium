@@ -47,10 +47,6 @@
     },
     "chromium.chromiumos": {
         "linux-chromeos-rel": {
-            "ash_pixeltests": {
-                "shards": 1,
-                "try_builder": "linux-chromeos-rel"
-            },
             "ash_unittests": {
                 "shards": 4,
                 "try_builder": "linux-chromeos-rel"
