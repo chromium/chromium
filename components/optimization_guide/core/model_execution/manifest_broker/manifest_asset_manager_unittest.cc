@@ -350,10 +350,9 @@ TEST_F(ManifestAssetManagerTest, DownloadProgressObserverIsUseCaseSpecific) {
 TEST_F(ManifestAssetManagerTest, RegistersComponentsForActiveUseCases) {
   DummyAsset compose_asset = DummyAsset::For("compose");
   DummyAsset test_asset = DummyAsset::For("test");
-  usage_tracker_.RaisePriority(compose_asset.use_case,
-                               UsageTracker::Priority::kUserBlocking);
   UpdateManifest(DummyManifest().Add(compose_asset).Add(test_asset));
   Startup();
+  manifest_broker_state_->SetUseCaseRequested(compose_asset.use_case, true);
   EXPECT_TRUE(
       component_state_.WaitForRegistration(compose_asset.ToInstallTarget()));
   EXPECT_TRUE(
@@ -364,7 +363,7 @@ TEST_F(ManifestAssetManagerTest, RegistersComponentsForActiveUseCases) {
 }
 
 // Test that the manager registers components for feature usage keyed on
-// mojom::OnDeviceFeature.
+// mojom::OnDeviceFeature without triggering on-demand downloads.
 TEST_F(ManifestAssetManagerTest, RegistersComponentsForLegacyFeatureUsage) {
   DummyAsset asset = DummyAsset::For("test");
   model_execution::prefs::RecordFeatureUsage(&local_state_.local_state(),
@@ -374,6 +373,23 @@ TEST_F(ManifestAssetManagerTest, RegistersComponentsForLegacyFeatureUsage) {
   Startup();
 
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  EXPECT_FALSE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
+}
+
+TEST_F(ManifestAssetManagerTest,
+       BackgroundPriorityDoesNotRequestOnDemandUpdate) {
+  DummyAsset asset = DummyAsset::For("compose");
+  model_execution::prefs::RecordUseCaseUsage(&local_state_.local_state(),
+                                             asset.use_case);
+
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  EXPECT_FALSE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
+
+  // Upgrading to foreground requests on-demand update.
+  manifest_broker_state_->SetUseCaseRequested(asset.use_case, true);
   EXPECT_TRUE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
 }
 
@@ -955,6 +971,56 @@ TEST_F(ManifestAssetManagerTest,
 // SessionBeforeAndAfterModelUpdate
 // UpdatingSafetyModelEnablesModels
 // SessionRequiresSafetyModel
+
+TEST(AssetPrioritiesTest, RaiseAndIsAtLeast) {
+  AssetPriorities priorities;
+
+  priorities.Raise(AssetPriority::kSpeculative, {"speculative_asset"});
+  priorities.Raise(AssetPriority::kBestEffort, {"best_effort_asset"});
+  priorities.Raise(AssetPriority::kUserBlocking, {"user_blocking_asset"});
+
+  EXPECT_TRUE(priorities.IsAtLeast(AssetPriority::kSpeculative,
+                                   "speculative_asset"));
+  EXPECT_FALSE(
+      priorities.IsAtLeast(AssetPriority::kBestEffort, "speculative_asset"));
+  EXPECT_FALSE(
+      priorities.IsAtLeast(AssetPriority::kUserBlocking, "speculative_asset"));
+
+  EXPECT_TRUE(
+      priorities.IsAtLeast(AssetPriority::kSpeculative, "best_effort_asset"));
+  EXPECT_TRUE(
+      priorities.IsAtLeast(AssetPriority::kBestEffort, "best_effort_asset"));
+  EXPECT_FALSE(
+      priorities.IsAtLeast(AssetPriority::kUserBlocking, "best_effort_asset"));
+
+  EXPECT_TRUE(
+      priorities.IsAtLeast(AssetPriority::kSpeculative, "user_blocking_asset"));
+  EXPECT_TRUE(
+      priorities.IsAtLeast(AssetPriority::kBestEffort, "user_blocking_asset"));
+  EXPECT_TRUE(
+      priorities.IsAtLeast(AssetPriority::kUserBlocking, "user_blocking_asset"));
+
+  EXPECT_FALSE(
+      priorities.IsAtLeast(AssetPriority::kSpeculative, "unknown_asset"));
+
+  // Raising to a lower priority does not decrease existing priority.
+  priorities.Raise(AssetPriority::kSpeculative, {"user_blocking_asset"});
+  EXPECT_TRUE(
+      priorities.IsAtLeast(AssetPriority::kUserBlocking, "user_blocking_asset"));
+
+  // Raising to a higher priority increases priority.
+  priorities.Raise(AssetPriority::kUserBlocking, {"best_effort_asset"});
+  EXPECT_TRUE(
+      priorities.IsAtLeast(AssetPriority::kUserBlocking, "best_effort_asset"));
+
+  priorities.Clear();
+  EXPECT_FALSE(
+      priorities.IsAtLeast(AssetPriority::kSpeculative, "speculative_asset"));
+  EXPECT_FALSE(
+      priorities.IsAtLeast(AssetPriority::kSpeculative, "best_effort_asset"));
+  EXPECT_FALSE(
+      priorities.IsAtLeast(AssetPriority::kSpeculative, "user_blocking_asset"));
+}
 
 }  // namespace
 }  // namespace optimization_guide

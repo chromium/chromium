@@ -40,6 +40,35 @@ class PrefService;
 namespace optimization_guide {
 
 class UsageTracker;
+
+// Priorities for assets in the manifest.
+enum class AssetPriority {
+  kSpeculative = 0,
+  kBestEffort = 1,
+  kUserBlocking = 2,
+};
+
+// Tracks the priority of assets in the manifest.
+class AssetPriorities {
+ public:
+  AssetPriorities();
+  ~AssetPriorities();
+  AssetPriorities(const AssetPriorities&);
+  AssetPriorities& operator=(const AssetPriorities&);
+  AssetPriorities(AssetPriorities&&);
+  AssetPriorities& operator=(AssetPriorities&&);
+
+  void Raise(AssetPriority priority,
+             const absl::flat_hash_set<Manifest::AssetId>& assets);
+  void Clear();
+
+  bool IsAtLeast(AssetPriority priority,
+                 const Manifest::AssetId& asset_id) const;
+
+ private:
+  absl::flat_hash_map<Manifest::AssetId, AssetPriority> priorities_;
+};
+
 // Manages the state of assets defined in the on-device model manifest.
 class ManifestAssetManager : public UsageTracker::Observer {
  public:
@@ -306,13 +335,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
   std::unique_ptr<ManifestSolutionFactory> factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Tracks the manifest assets required by the active use cases.
-  absl::flat_hash_set<Manifest::AssetId> active_assets_by_id_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Tracks the manifest assets that are enabled for background download.
-  absl::flat_hash_set<Manifest::AssetId> background_download_assets_by_id_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  AssetPriorities asset_priorities_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>
       usage_tracker_observation_{this};
