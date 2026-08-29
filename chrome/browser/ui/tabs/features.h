@@ -81,6 +81,8 @@ BASE_DECLARE_FEATURE(kBackToOpener);
 
 BASE_DECLARE_FEATURE(kTabStripUnification);
 
+BASE_DECLARE_FEATURE(kNewHorizontalPinnedTabStyling);
+
 bool IsSplitViewHorizontalIndirectAccessEnabled();
 
 bool IsSplitViewHorizontalDirectAccessEnabledForTab();
@@ -88,6 +90,8 @@ bool IsSplitViewHorizontalDirectAccessEnabledForTab();
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();
 
 bool IsExpandOnHoverClickDelayEnabled();
+
+bool IsNewHorizontalPinnedTabStylingEnabled();
 
 }  // namespace tabs
 

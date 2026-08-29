@@ -602,6 +602,11 @@ inline constexpr char kTabStripUnificationName[] = "Tab Strip Unification";
 inline constexpr char kTabStripUnificationDescription[] =
     "Unifies horizontal and vertical tab strips to share infrastructure.";
 
+inline constexpr char kNewHorizontalPinnedTabStylingName[] =
+    "New Horizontal Pinned Tab Styling";
+inline constexpr char kNewHorizontalPinnedTabStylingDescription[] =
+    "Enables the updated pinned tab style in the new horizontal tab strip.";
+
 inline constexpr char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
 inline constexpr char kEnableSeamlessSigninDescription[] =
     "Enables the Seamless Sign-in flow that signs in the user without showing "

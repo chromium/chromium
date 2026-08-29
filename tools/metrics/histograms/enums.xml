@@ -13936,6 +13936,7 @@ from previous Chrome versions.
   <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
   <int value="-252186510" label="EnableAudioMonitoringOnAndroid:enabled"/>
   <int value="-252128826" label="ContextualSearchDelayedIntelligence:enabled"/>
+  <int value="-251751560" label="NewHorizontalPinnedTabStyling:disabled"/>
   <int value="-251167216" label="ArcUpdateO4CListViaA2C2:disabled"/>
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250810041" label="CrossWindowTabGroupOperations:disabled"/>
@@ -18442,6 +18443,7 @@ from previous Chrome versions.
   <int value="1165682330" label="AutofillSaveAndFillVPA:disabled"/>
   <int value="1165691812" label="CCTDestroyTabWhenModelIsEmpty:disabled"/>
   <int value="1165828757" label="kAutofillEnableOffersInDownstream:disabled"/>
+  <int value="1166000396" label="NewHorizontalPinnedTabStyling:enabled"/>
   <int value="1166169237" label="disable-delay-agnostic-aec"/>
   <int value="1166789664" label="SyncPseudoUSSAppList:disabled"/>
   <int value="1166883356" label="CWSInfoFastCheck:enabled"/>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/features.h"
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -87,6 +88,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 BASE_FEATURE(kTabStripUnification, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNewHorizontalPinnedTabStyling, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Back-to-Opener behavior, allowing users to press the back button in a
 // newly opened tab to close that tab and return focus to the opener tab.
 BASE_FEATURE(kBackToOpener, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -108,6 +111,11 @@ bool IsVerticalTabsExpandOnHoverFeatureEnabled() {
 
 bool IsExpandOnHoverClickDelayEnabled() {
   return !kVerticalTabsExpandOnHoverClickDelay.Get().is_zero();
+}
+
+bool IsNewHorizontalPinnedTabStylingEnabled() {
+  return base::FeatureList::IsEnabled(kTabStripUnification) &&
+         base::FeatureList::IsEnabled(kNewHorizontalPinnedTabStyling);
 }
 
 }  // namespace tabs

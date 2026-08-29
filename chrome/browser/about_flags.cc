@@ -7197,6 +7197,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripUnificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kTabStripUnification)},
 
+    {"new-horizontal-pinned-tab-styling",
+     flag_descriptions::kNewHorizontalPinnedTabStylingName,
+     flag_descriptions::kNewHorizontalPinnedTabStylingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kNewHorizontalPinnedTabStyling)},
+
     {"vertical-tabs-expand-on-hover",
      flag_descriptions::kVerticalTabsExpandOnHoverName,
      flag_descriptions::kVerticalTabsExpandOnHoverDescription, kOsDesktop,
