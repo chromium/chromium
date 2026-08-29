@@ -172,8 +172,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 340px;
-  min-width: 260px;
+  max-width: 350px;
+  min-width: 200px;
   padding: var(--help-bubble-padding);
   position: relative;
 }
