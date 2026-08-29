@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
 import android.util.Size;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.interpolators.Interpolators;
@@ -97,9 +97,11 @@ public class StripDragShadowView extends FrameLayout {
 
     // External Dependencies
     private BrowserControlsStateProvider mBrowserControlStateProvider;
-    private MonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private TabModelSelector mTabModelSelector;
     private ShadowUpdateHost mShadowUpdateHost;
+    // TODO(crbug.com/553721375): Remove dependency on LayerTitleCache.
+    private @Nullable MonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private @Nullable DefaultFaviconHelper mDefaultFaviconHelper;
 
     // Thumbnail Providers
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
@@ -151,7 +153,7 @@ public class StripDragShadowView extends FrameLayout {
             BrowserControlsStateProvider browserControlsStateProvider,
             MultiThumbnailCardProvider multiThumbnailCardProvider,
             TabContentManager tabContentManager,
-            MonotonicObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
+            @Nullable MonotonicObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
             TabModelSelector tabModelSelector,
             ShadowUpdateHost shadowUpdateHost) {
         mBrowserControlStateProvider = browserControlsStateProvider;
@@ -184,6 +186,7 @@ public class StripDragShadowView extends FrameLayout {
      * @param sourceWidthPx Width of the source strip tab container in px.
      */
     public void prepareForTabDrag(Tab tab, int sourceWidthPx) {
+        clear();
         Context context = getContext();
         boolean isIncognito = tab.isIncognitoBranded();
 
@@ -192,18 +195,19 @@ public class StripDragShadowView extends FrameLayout {
                 ColorStateList.valueOf(TabUiThemeUtil.getDraggedTabBackgroundColor(context)));
 
         // Title text
-        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
-        assumeNonNull(layerTitleCache);
+        LayerTitleCache layerTitleCache = getLayerTitleCache();
         String defaultTitle = context.getString(R.string.tab_loading_default_title);
-        mTitleView.setText(layerTitleCache.getUpdatedTitle(tab, defaultTitle));
+        mTitleView.setText(getTitle(tab, defaultTitle, layerTitleCache));
         mTitleView.setTextColor(TabUiThemeUtil.getTabTextColor(context, isIncognito));
 
         // Tab favicon
         Bitmap tabFavicon = TabFavicon.getBitmap(tab);
         boolean fetchFaviconFromHistory = tabFavicon == null;
         if (fetchFaviconFromHistory) {
-            mFaviconView.setImageBitmap(layerTitleCache.getDefaultFavicon(tab));
-            layerTitleCache.fetchFaviconWithCallback(tab, this::onFaviconFetch);
+            mFaviconView.setImageBitmap(getDefaultFavicon(context, tab, layerTitleCache));
+            if (layerTitleCache != null) {
+                layerTitleCache.fetchFaviconWithCallback(tab, this::onFaviconFetch);
+            }
         } else {
             mFaviconView.setImageBitmap(tabFavicon);
         }
@@ -234,6 +238,7 @@ public class StripDragShadowView extends FrameLayout {
      * @param sourceWidthPx Width of the source strip tab container in px.
      */
     public void prepareForMultiTabDrag(Tab tab, List<Tab> multiSelectedTabs, int sourceWidthPx) {
+        clear();
         Context context = getContext();
         boolean isIncognito = tab.isIncognitoBranded();
 
@@ -253,9 +258,7 @@ public class StripDragShadowView extends FrameLayout {
         mTitleView.setTextColor(TabUiThemeUtil.getTabTextColor(context, isIncognito));
 
         // Favicon
-        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
-        assumeNonNull(layerTitleCache);
-        mFaviconView.setImageBitmap(layerTitleCache.getDefaultFavicon(tab));
+        mFaviconView.setImageBitmap(getDefaultFavicon(context, tab, getLayerTitleCache()));
         // Hide the thumbnail and favicon to create a "pill" shape.
         mThumbnailView.setVisibility(View.GONE);
 
@@ -274,9 +277,11 @@ public class StripDragShadowView extends FrameLayout {
      * @param sourceWidthPx Width of the source group indicator in px.
      */
     public void prepareForGroupDrag(Tab tab, int sourceWidthPx) {
+        clear();
         Context context = getContext();
         boolean isIncognito = tab.isIncognitoBranded();
         TabModel tabModel = mTabModelSelector.getModel(isIncognito);
+        if (tabModel == null) return;
 
         // Background color
         Token tabGroupId = tab.getTabGroupId();
@@ -293,14 +298,10 @@ public class StripDragShadowView extends FrameLayout {
                         context, isIncognito, groupColor));
 
         // Group title text
-        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
-        assumeNonNull(layerTitleCache);
-        String titleText =
-                layerTitleCache.getUpdatedGroupTitle(
-                        tabGroupId,
-                        TabGroupTitleUtils.getDisplayableTitle(context, tabModel, tabGroupId),
-                        isIncognito);
-        mTitleView.setText(titleText);
+        String defaultGroupTitle =
+                TabGroupTitleUtils.getDisplayableTitle(context, tabModel, tabGroupId);
+        mTitleView.setText(
+                getGroupTitle(tabGroupId, isIncognito, defaultGroupTitle, getLayerTitleCache()));
         mTitleView.setTextColor(
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
                         context, colorId, isIncognito));
@@ -336,11 +337,11 @@ public class StripDragShadowView extends FrameLayout {
         mWidthPx = isMultiTabDrag ? (int) (cardSize.getWidth() * 0.6f) : cardSize.getWidth();
         mHeightPx = isMultiTabDrag ? mSourceHeightPx : cardSize.getHeight();
 
-        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        layoutParams.width = mWidthPx;
-        layoutParams.height = mHeightPx;
-        setLayoutParams(layoutParams);
-        this.layout(0, 0, mWidthPx, mHeightPx);
+        updateLayoutParams(mWidthPx, mHeightPx);
+        measure(
+                View.MeasureSpec.makeMeasureSpec(mWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(mHeightPx, View.MeasureSpec.EXACTLY));
+        layout(0, 0, mWidthPx, mHeightPx);
 
         if (isMultiTabDrag) return;
         assert metadata != null;
@@ -364,13 +365,21 @@ public class StripDragShadowView extends FrameLayout {
                 tab.isIncognitoBranded(), /* isSelected= */ false, /* colorId= */ null);
     }
 
-    /** Clear state on tab drag end. */
+    /** Clears state for the current drag, if any. */
     public void clear() {
-        if (mFaviconUpdateTabObserver != null) {
-            assumeNonNull(mTab).removeObserver(mFaviconUpdateTabObserver);
+        if (mTab != null) {
+            if (mFaviconUpdateTabObserver != null) {
+                mTab.removeObserver(mFaviconUpdateTabObserver);
+                mFaviconUpdateTabObserver = null;
+            }
             mTab = null;
-            mFaviconUpdateTabObserver = null;
         }
+        if (mRunningAnimator != null && mRunningAnimator.isRunning()) {
+            mRunningAnimator.cancel();
+            mRunningAnimator = null;
+        }
+        mThumbnailView.setImageDrawable(null);
+        mFaviconView.setImageBitmap(null);
     }
 
     /** Run the expand animation. */
@@ -384,14 +393,24 @@ public class StripDragShadowView extends FrameLayout {
         mRunningAnimator.start();
     }
 
+    private void updateLayoutParams(int width, int height) {
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        if (layoutParams == null) {
+            layoutParams = new ViewGroup.LayoutParams(width, height);
+        } else {
+            layoutParams.width = width;
+            layoutParams.height = height;
+        }
+        setLayoutParams(layoutParams);
+    }
+
     private void setProgress(float progress) {
         assert progress >= 0.f && progress <= 1.f : "Invalid animation progress value.";
         mProgress = progress;
 
-        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        layoutParams.width = (int) lerp(mSourceWidthPx, mWidthPx, progress);
-        layoutParams.height = (int) lerp(mSourceHeightPx, mHeightPx, progress);
-        setLayoutParams(layoutParams);
+        int width = (int) lerp(mSourceWidthPx, mWidthPx, progress);
+        int height = (int) lerp(mSourceHeightPx, mHeightPx, progress);
+        updateLayoutParams(width, height);
         post(() -> mShadowUpdateHost.requestUpdate());
     }
 
@@ -433,6 +452,50 @@ public class StripDragShadowView extends FrameLayout {
         mShadowUpdateHost.requestUpdate();
     }
 
+    private @Nullable LayerTitleCache getLayerTitleCache() {
+        return mLayerTitleCacheSupplier != null ? mLayerTitleCacheSupplier.get() : null;
+    }
+
+    private String getTitle(
+            Tab tab, String defaultTitle, @Nullable LayerTitleCache layerTitleCache) {
+        return layerTitleCache != null
+                ? layerTitleCache.getUpdatedTitle(tab, defaultTitle)
+                : (!TextUtils.isEmpty(tab.getTitle()) ? tab.getTitle() : defaultTitle);
+    }
+
+    private String getGroupTitle(
+            Token tabGroupId,
+            boolean isIncognito,
+            String defaultGroupTitle,
+            @Nullable LayerTitleCache layerTitleCache) {
+        if (layerTitleCache != null) {
+            String updatedTitle =
+                    layerTitleCache.getUpdatedGroupTitle(
+                            tabGroupId, defaultGroupTitle, isIncognito);
+            if (updatedTitle != null) return updatedTitle;
+        }
+        return defaultGroupTitle;
+    }
+
+    private @Nullable Bitmap getDefaultFavicon(
+            Context context, Tab tab, @Nullable LayerTitleCache layerTitleCache) {
+        if (layerTitleCache != null) {
+            return layerTitleCache.getDefaultFavicon(tab);
+        }
+        Bitmap bitmap = TabFavicon.getBitmapWithFallback(tab, /* allowFallback= */ true);
+        if (bitmap != null) return bitmap;
+
+        GURL url = tab.getUrl();
+        if (url == null) return null;
+
+        if (mDefaultFaviconHelper == null) {
+            mDefaultFaviconHelper = new DefaultFaviconHelper();
+        }
+        boolean isDarkTheme = tab.isIncognito();
+        return mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                context, url, !isDarkTheme, /* useIncognitoNtpIcon= */ false);
+    }
+
     private TabObserver getFaviconUpdateTabObserver() {
         return new TabObserver() {
             @Override
@@ -440,9 +503,7 @@ public class StripDragShadowView extends FrameLayout {
                 if (icon == null) {
                     icon = TabFavicon.getBitmap(tab);
                     if (icon == null) {
-                        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
-                        assumeNonNull(layerTitleCache);
-                        icon = layerTitleCache.getDefaultFavicon(tab);
+                        icon = getDefaultFavicon(getContext(), tab, getLayerTitleCache());
                     }
                 }
                 mFaviconView.setImageBitmap(icon);

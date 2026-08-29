@@ -593,4 +593,9 @@ public class TabSwitcherDragHandlerUnitTest {
         mDragHandler.onDrag(targetView, dragEndEvent);
         verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 50f, 50f, false);
     }
+
+    @Test
+    public void testHasActiveDragShadow() {
+        assertFalse(mDragHandler.hasActiveDragShadow());
+    }
 }

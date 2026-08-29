@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -236,6 +237,24 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         }
     }
 
+    /** Returns whether this handler currently has an active drag shadow builder. */
+    public boolean hasActiveDragShadow() {
+        return mCurrentDragShadowBuilder != null;
+    }
+
+    /**
+     * Refreshes the drag shadow with the updated contents of the custom drag shadow view.
+     *
+     * @param dragShadowView The custom drag shadow view with updated contents.
+     */
+    public void refreshDragShadow(@Nullable View dragShadowView) {
+        AnimatedDragShadowBuilder shadowBuilder = mCurrentDragShadowBuilder;
+        View dragSourceView = mDragSourceView;
+        if (shadowBuilder == null || dragShadowView == null || dragSourceView == null) return;
+        updateShadowView(dragSourceView, dragShadowView);
+        shadowBuilder.updateDragShadow(dragSourceView);
+    }
+
     private boolean startDragInternal(
             ChromeDropDataAndroid dropData,
             PointF startPoint,
@@ -424,8 +443,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             if (dragShadowView != mOriginalView) {
                 // If using a custom shadow representing a grid card, mimic horizontal tab strip
                 // logic
-                android.content.res.Resources resources =
-                        dragShadowView.getContext().getResources();
+                Resources resources = dragShadowView.getContext().getResources();
                 float headerHeight = resources.getDimension(R.dimen.tab_grid_card_header_height);
                 float cardMargin = resources.getDimension(R.dimen.tab_grid_card_margin);
 

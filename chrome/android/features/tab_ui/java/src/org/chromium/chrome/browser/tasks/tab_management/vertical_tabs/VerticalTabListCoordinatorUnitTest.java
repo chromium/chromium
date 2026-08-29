@@ -73,6 +73,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
@@ -143,6 +144,7 @@ import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -195,6 +197,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
+    @Captor private ArgumentCaptor<View> mShadowViewCaptor;
     @Mock private VerticalTabsActionDelegate mVerticalTabsActionDelegate;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ActivityResultTracker mActivityResultTracker;
@@ -216,6 +219,8 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private ViewStub mTabGroupHoverCardViewStub;
     @Mock private ViewGroup mHoverCardParent;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabHoverCardView mTabHoverCardView;
     @Mock private TabGroupHoverCardView mTabGroupHoverCardView;
     @Mock private ServiceStatus mServiceStatus;
@@ -288,6 +293,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel, mIncognitoTabModel));
+        when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoTabModel);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mTabModel.getProfile()).thenReturn(mProfile);
@@ -297,6 +303,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.iterator()).thenReturn(Collections.emptyIterator());
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mTabContentManagerSupplier.get()).thenReturn(mTabContentManager);
         GlicEnabling.setEnabledForTesting(false);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
@@ -1400,7 +1407,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mBrowserControlsStateProvider);
 
         View containerView = mCoordinator.getView();
         containerView.setVisibility(View.VISIBLE);
@@ -3032,6 +3040,55 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
+    @SmallTest
+    public void testGroupHeaderDragOut_CollapsedGroup_PassesStripDragShadowView() {
+        Token tabGroupId = new Token(1L, 2L);
+        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        Tab tab2 = prepareMockTab(mMockTab2, TAB_ID_2);
+        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(tab1, tab2));
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getTabGroupColor(tabGroupId)).thenReturn(TabGroupColorId.GREY);
+        when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn("Test Group");
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
+        model.set(TabProperties.IS_COLLAPSED, true);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        verify(mMainTabSwitcherDragHandler)
+                .startGroupDragAction(any(), eq(tabGroupId), any(), mShadowViewCaptor.capture());
+        View shadowView = mShadowViewCaptor.getValue();
+        assertNotNull("Shadow view should not be null.", shadowView);
+        assertNotNull(
+                "Thumbnail view should be present in drag shadow.",
+                shadowView.findViewById(R.id.tab_thumbnail));
+    }
+
+    @Test
+    @SmallTest
+    public void testSingleTabDragOut_PassesStripDragShadowView() {
+        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
+        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(false);
+
+        createCoordinator();
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        verify(mMainTabSwitcherDragHandler)
+                .startTabDragAction(any(), eq(tab1), any(), mShadowViewCaptor.capture());
+        View shadowView = mShadowViewCaptor.getValue();
+        assertNotNull("Shadow view should not be null.", shadowView);
+        assertNotNull(
+                "Thumbnail view should be present in drag shadow.",
+                shadowView.findViewById(R.id.tab_thumbnail));
+    }
+
+    @Test
     public void testDragEnd_ReusesNonOriginatingDelegateInstance() {
         Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
@@ -3974,7 +4031,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mBrowserControlsStateProvider);
 
         mCoordinator.getCollapseController().setRailCollapseListener(mMockRailCollapseListener);
     }
@@ -3999,7 +4057,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mBrowserControlsStateProvider);
 
         mCoordinator.getCollapseController().setRailCollapseListener(mMockRailCollapseListener);
     }
