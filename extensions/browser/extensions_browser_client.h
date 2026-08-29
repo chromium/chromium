@@ -496,6 +496,7 @@ class ExtensionsBrowserClient {
   // Checks whether the given `request_url` and `redirect_url` correspond to a
   // Default Search Engine redirect.
   virtual bool IsDefaultSearchEngineRedirect(content::BrowserContext* context,
+                                             const ExtensionId& extension_id,
                                              const GURL& request_url,
                                              const GURL& redirect_url) const;
 

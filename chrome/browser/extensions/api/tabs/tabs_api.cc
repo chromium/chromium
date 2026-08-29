@@ -591,10 +591,10 @@ bool IsDSERedirect(const ExtensionId& extension_id,
                    content::WebContents& tab_web_contents,
                    const GURL& destination_url,
                    bool extension_function_user_gesture) {
-  auto is_dse_redirect = [&browser_context,
-                          &destination_url](const GURL& source_url) {
+  auto is_dse_redirect = [&browser_context, &destination_url,
+                          &extension_id](const GURL& source_url) {
     return ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
-        &browser_context, source_url, destination_url);
+        &browser_context, extension_id, source_url, destination_url);
   };
 
   // If there is a pending entry, proceed to checking user gestures since the
@@ -637,9 +637,18 @@ bool IsDSERemoval(const ExtensionId& extension_id,
                   content::RenderFrameHost* calling_render_frame_host,
                   content::WebContents& tab_web_contents,
                   bool extension_function_user_gesture) {
-  auto is_dse = [&browser_context](const GURL& source_url) {
+  // If the tab was created in the background and NEVER became the active
+  // foreground tab, it could be an automated pop-under/background tab.
+  if (tab_web_contents.GetVisibility() != content::Visibility::VISIBLE &&
+      tab_web_contents.HasOpener()) {
+    base::UmaHistogramEnumeration("Extensions.Tabs.RemoveAction",
+                                  RemoveActionType::kOtherRemovals);
+    return false;
+  }
+
+  auto is_dse = [&browser_context, &extension_id](const GURL& source_url) {
     return ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
-        &browser_context, source_url, GURL());
+        &browser_context, extension_id, source_url, GURL());
   };
 
   // If there is a pending entry, proceed to checking user gestures since the
