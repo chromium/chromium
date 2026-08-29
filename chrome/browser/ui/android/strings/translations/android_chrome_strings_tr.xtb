@@ -625,7 +625,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3614126103057878858">Fiyat analizleri</translation>
 <translation id="3616113530831147358">Ses</translation>
-<translation id="3616798734782988169"><ph name="DOWNLOAD_DOMAIN" /> uygulamasına güvendiğinizden emin olun</translation>
+<translation id="3616798734782988169"><ph name="DOWNLOAD_DOMAIN" /> sitesine güvendiğinizden emin olun.</translation>
 <translation id="3619255692378312441">Erişimi yönetin</translation>
 <translation id="3622349720008044802">Pencereleri yönetin</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # site}}</translation>

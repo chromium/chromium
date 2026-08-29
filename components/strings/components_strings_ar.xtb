@@ -368,7 +368,7 @@
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1555191101192706055">يتضمّن هذا الموقع الإلكتروني الذي حاولت الانتقال إليه مهاجمِين قد يتمكّنون من خداعك لتثبيت برامج ضارة تؤثّر في طريقة التصفُّح من خلال تغيير الصفحة الرئيسية مثلاً أو عرض إعلانات إضافية على المواقع الإلكترونية التي تنتقل إليها.</translation>
 <translation id="1559231233244409191">ورق مقوّى (ثلاث طبقات)</translation>
-<translation id="1559447966090556585">هل تريد تلقّي إشعارات؟</translation>
+<translation id="1559447966090556585">تلقّي إشعارات؟</translation>
 <translation id="1559486004335285648">املأ معلومات الدفع تلقائيًا</translation>
 <translation id="1559528461873125649">لا وجود لمثل هذا الملف أو الدليل</translation>
 <translation id="1559572115229829303">‏&lt;p&gt;تعذر إنشاء اتصال خاص بـ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> نظرًا لأن تاريخ ووقت جهازك (<ph name="DATE_AND_TIME" />) غير صحيحين.&lt;/p&gt;
@@ -2263,7 +2263,7 @@
 <translation id="4387692837058041921">‏تم مؤقتًا إيقاف عملية تحميل الملفات إلى Microsoft OneDrive</translation>
 <translation id="4390472908992056574">حافّة</translation>
 <translation id="4395550503472021297">تتحكّم هذه السياسة في الإعداد التلقائي للسياسات التالية: <ph name="POLICIES" /></translation>
-<translation id="4396554829965096368">رخصة القيادة</translation>
+<translation id="4396554829965096368">رخصة قيادة</translation>
 <translation id="4397978002248035985">يفتح هذا الخيار نافذة منبثقة لإثبات الهوية على الموقع الإلكتروني للمصرف الذي تتعامل معه.</translation>
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4406896451731180161">نتائج البحث</translation>
@@ -3123,7 +3123,7 @@
 <translation id="5716325061445053985">انقر لفتح علامة التبويب على هاتفك</translation>
 <translation id="5717509257172454543">تزلُّج على الجليد</translation>
 <translation id="5718326209176373202">إضافة تعليقات توضيحية نصية</translation>
-<translation id="5718601519531438273">يمكن تضمين معلومات مثل جوازات السفر ورخص القيادة</translation>
+<translation id="5718601519531438273">يتم تضمين معلومات مثل جوازات السفر ورخص القيادة</translation>
 <translation id="5720705177508910913">المستخدم الحالي</translation>
 <translation id="5720895412771013401">أجهزة كمبيوتر مكتبي</translation>
 <translation id="5721147290164931316">يمكنك مسح الرمز ضوئيًا لتسجيل الدخول باستخدام هاتفك</translation>
@@ -3751,7 +3751,7 @@
 <translation id="6677738644213083042">الانتقال إلى علامة التبويب هذه</translation>
 <translation id="6679354743514146922">‏يحاول متصفِّح Chrome إدخال كلمة مرورك على <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">‏تم حفظ الفيديو في Google Drive</translation>
-<translation id="6681790815630918386">‏تم حفظ رمز CVC للتحقّق من البطاقة</translation>
+<translation id="6681790815630918386">‏تم حفظ رمز CVC</translation>
 <translation id="6683022854667115063">سمّاعات رأس</translation>
 <translation id="6686570026048064255">‏لإيقاف ميزة "رصد رمز Pix"، يُرجى الانتقال إلى <ph name="BEGIN_LINK1" />إعدادات Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ظرف (عادي)</translation>
@@ -4527,7 +4527,7 @@
 <translation id="7815352264092918456">ورق (عادي)</translation>
 <translation id="7815407501681723534">تم العثور على <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> لـ "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7816581410322248899">‏مشكلة في Jira</translation>
-<translation id="7819605256207059717">حظرت مؤسستك هذا الملف.</translation>
+<translation id="7819605256207059717">حظرت مؤسستك هذا الإجراء</translation>
 <translation id="7822611063308883975">أجهزة الألعاب المحمولة</translation>
 <translation id="7825558994363763489">أفران ميكروويف</translation>
 <translation id="7827688884439021871">يمكنك الحصول على اقتراحات في الوقت الفعلي تساعدك في العثور على طرق جديدة للتصفّح باستخدام الذكاء الاصطناعي</translation>
@@ -5243,7 +5243,7 @@
 <translation id="8968766641738584599">حفظ البطاقة</translation>
 <translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="8971063699422889582">انتهت صلاحية شهادة الخادم.</translation>
-<translation id="8975012916872825179">تتضمّن معلومات مثل أرقام الهواتف وعناوين البريد الإلكتروني وعناوين الشحن</translation>
+<translation id="8975012916872825179">يتم تضمين معلومات مثل أرقام الهواتف وعناوين البريد الإلكتروني وعناوين الشحن</translation>
 <translation id="8975263830901772334">أسماء الملفات التي طبعتها</translation>
 <translation id="8982884016487650216">‏تمّ تحميل ملف PDF</translation>
 <translation id="8983369100812962543">يمكنك الآن تغيير حجم التطبيق.</translation>

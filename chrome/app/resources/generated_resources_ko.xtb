@@ -8970,7 +8970,7 @@
 <translation id="7938881824185772026">실험실</translation>
 <translation id="793923212791838">이 사이트에서 기기를 사용할 수 없음</translation>
 <translation id="7939328347457537652">기기 인증서 관리</translation>
-<translation id="7939918959917132075">확장 프로그램에서 변경됨</translation>
+<translation id="7939918959917132075">확장 프로그램이 이 검색엔진으로 변경함</translation>
 <translation id="7940087892955752820">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 <ph name="SPECIFIC_NAME" />이 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="7940265372707990269">정렬 기준: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">테더링 준비:</translation>
@@ -9964,7 +9964,7 @@
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
 <translation id="8695825812785969222">위치 열기(&amp;L)...</translation>
 <translation id="869884720829132584">애플리케이션 메뉴</translation>
-<translation id="869891660844655955">유효기간</translation>
+<translation id="869891660844655955">만료일</translation>
 <translation id="8699296325072357994">비밀번호 페이지의 콘텐츠 및 관련 정보가 Google로 전송되어 인적 검토자의 검토를 거칩니다. 비밀번호는 암호화되며, 누구에게도 공개되지 않습니다. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">런처 + 백스페이스</translation>
 <translation id="8702278591052316269">숨겨진 저장된 탭 그룹이 포함된 메뉴</translation>

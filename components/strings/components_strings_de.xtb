@@ -447,7 +447,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1656489000284462475">Abholung</translation>
 <translation id="1658111267661135323">Fernsehen und Video</translation>
 <translation id="1658918301167915956">Bluetooth-Geräte</translation>
-<translation id="1662550410081243962">Zahlungsmethoden speichern und ausfüllen</translation>
+<translation id="1662550410081243962">Zahlungsmethoden für Autofill speichern</translation>
 <translation id="1662980953334786797">In der gleichen Reihenfolge</translation>
 <translation id="1663943134801823270">Die Karten und Adressen stammen aus Chrome. Sie werden in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwaltet.</translation>
 <translation id="1664389769577564606">Flexofotopolymer</translation>
@@ -852,7 +852,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2277753418458118549">Verbindungsdetails anzeigen</translation>
 <translation id="2277949605527755300"><ph name="URL" /> möchte deine Hände tracken</translation>
 <translation id="22792995594807632">Vor dem Download ist eine Überprüfung erforderlich</translation>
-<translation id="2283340219607151381">Adressen speichern und ausfüllen</translation>
+<translation id="2283340219607151381">Adressen für Autofill speichern</translation>
 <translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ wurde gelöscht</translation>
 <translation id="2283599456633275070">Reisen</translation>
 <translation id="2285709459648658719">Reisepässe</translation>
@@ -2310,7 +2310,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4480760608050410381">MP4-Video</translation>
 <translation id="448363931695049633">Pizzerien</translation>
 <translation id="4489023393592172404">Umschlag Kaku 4</translation>
-<translation id="4489977488133295402">Identität für automatisches Ausfüllen von Zahlungsmethoden bestätigen</translation>
+<translation id="4489977488133295402">Vor Autofill-Nutzung Identität bestätigen</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
@@ -2456,7 +2456,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4730977633786878901">Rezensionen</translation>
 <translation id="4731638775147756694">Diese App wurde von deinem Administrator blockiert</translation>
 <translation id="4732860731866514038">Sprachpaket für <ph name="LANGUAGE" /> wird heruntergeladen… <ph name="PERCENT" /> %</translation>
-<translation id="4733082559415072992"><ph name="URL" /> möchte den Standort deines Geräts nutzen</translation>
+<translation id="4733082559415072992"><ph name="URL" /> möchte den Standort deines Geräts verwenden</translation>
 <translation id="473414950835101501">Kamera verwenden</translation>
 <translation id="4736825316280949806">Chromium neu starten</translation>
 <translation id="4736934858538408121">Virtuelle Karte</translation>
@@ -4200,7 +4200,7 @@ Weitere Details:
 <translation id="7377314930809374926">Gastgewerbe</translation>
 <translation id="7378594059915113390">Mediensteuerelemente</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7379321689415048316">Chrome kann auch Felder automatisch ausfüllen, die von der Standard-Autofill-Funktion möglicherweise nicht erkannt werden</translation>
+<translation id="7379321689415048316">Chrome kann damit auch Felder automatisch ausfüllen, die von der Standard-Autofill-Funktion möglicherweise nicht erkannt werden</translation>
 <translation id="7380398842872229465">10 × 15 Zoll</translation>
 <translation id="7381551826960739226">Die Funktion zum automatischen Ausfüllen der Zahlungsmethoden ist deaktiviert, da dieses Formular keine verschlüsselte Verbindung nutzt.</translation>
 <translation id="7388380253839603603">Treibstoffpreise und Kraftstoffe für Fahrzeuge</translation>
@@ -5161,7 +5161,7 @@ Weitere Details:
 <translation id="883848425547221593">Andere Lesezeichen</translation>
 <translation id="8842351563145134519">Die Liste mit den Zahlungsmethoden, deren Daten bei Berührung ausgefüllt werden, ist halb geöffnet.</translation>
 <translation id="884264119367021077">Versandadresse</translation>
-<translation id="8843516219908676469">Chrome erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen</translation>
+<translation id="8843516219908676469">Chrome erkennt so den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen</translation>
 <translation id="8845586173202501576">Erstelle einen 7-tägigen Lernplan für meine anstehende Prüfung mit der Pomodoro-Technik und verteilten Wiederholungen. Ich möchte am Tag vor der Prüfung nicht zu viel lernen, also plane für diesen Tag nur eine kurze Wiederholung und Schlaf ein.</translation>
 <translation id="8849032795302265570">Schnell und einfach festlegen, wie Mitarbeiter im Web surfen</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>

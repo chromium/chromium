@@ -564,7 +564,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1839331950812095887">unas palabras que resuman lo que piensas</translation>
 <translation id="1839551713262164453">No se ha podido hacer la validación de los valores de la política porque se han producido errores</translation>
 <translation id="1840009953725035797">Sistemas de home cinema</translation>
-<translation id="184153295865602321">Para una mayor protección, usa siempre la huella digital, cara u otro método de desbloqueo de pantalla cuando pagues con Autocompletar</translation>
+<translation id="184153295865602321">Para una mayor protección, usa siempre tu huella digital, tu cara u otro método de desbloqueo de pantalla cuando pagues con Autocompletar</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="184517536440397176">Tu padre, madre o tutor/a debe darte permiso para visitar este sitio web. Antes de que se lo pidas, tenemos que asegurarnos de que eres tú.</translation>
 <translation id="1846432862466000825">Plástico (archivo)</translation>
@@ -1954,7 +1954,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3965672182149944205">¿Guardar dirección?</translation>
 <translation id="3966044442021752214">Seguridad del producto</translation>
 <translation id="396761677631735618">Las tarjetas de fidelización que puedes rellenar con un toque están abiertas a media altura.</translation>
-<translation id="3970239200223030389">Fecha de emisión</translation>
+<translation id="3970239200223030389">Fecha de expedición</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">La página <ph name="HOST_NAME" /> está bloqueada</translation>
 <translation id="3975852104434126461">Industria automovilística</translation>
@@ -2183,7 +2183,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278090321534187713">Las tarjetas que no acepta este comercio están inhabilitadas</translation>
-<translation id="4278390842282768270">Permitida</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Abrir archivo confidencial?}other{¿Abrir archivos confidenciales?}}</translation>
 <translation id="4282280603030594840">Compra de vehículos</translation>
@@ -4283,7 +4283,7 @@ Más información:
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="748138892655239008">Restricciones básicas del certificado</translation>
 <translation id="7481603210197454575">Sobre italiano</translation>
-<translation id="7482823403440483089">Función Autocompletar mejorado</translation>
+<translation id="7482823403440483089">Autocompletar mejorado</translation>
 <translation id="7483482939016730822">Suministros para escuelas y equipamiento para aulas</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, pulsa Tabulador y, después, Intro para cerrar el consejo de Chrome.</translation>
 <translation id="7485085230273446323">Comercio e industria</translation>
@@ -5126,7 +5126,7 @@ Más información:
 <translation id="8781278378794969337">Botón Traducir página: actívalo para traducir esta página con el Traductor de Google</translation>
 <translation id="8785658048882205566">Motocicletas</translation>
 <translation id="8790007591277257123">&amp;Rehacer eliminación</translation>
-<translation id="8790668801880409584">Guardar y rellenar información de viaje</translation>
+<translation id="8790668801880409584">Guardar y rellenar información sobre viajes</translation>
 <translation id="8792272652220298572">Plástico (brillante)</translation>
 <translation id="8792621596287649091">Podrías perder el acceso a tu cuenta de <ph name="ORG_NAME" /> o tener problemas de suplantación de identidad. Chromium te recomienda que cambies tu contraseña ahora.</translation>
 <translation id="8792626944327216835">micrófono</translation>

@@ -4283,7 +4283,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4276390967705106170">Abrir en una nueva pestaña del navegador</translation>
 <translation id="4276598757692536305">PPD de impresora</translation>
 <translation id="4277434192562187284">Fuente de configuración de XMLs</translation>
-<translation id="4278390842282768270">Permitida</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para añadir otro perfil, quita primero uno que ya esté creado.</translation>
 <translation id="427987768447457592">Nuevo grupo de pestañas</translation>
 <translation id="4280325816108262082">El dispositivo se desconectará automáticamente cuando se apague o no se esté usando</translation>
@@ -5894,7 +5894,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, instalando</translation>
 <translation id="5527822190489075064">Carga optimizada</translation>
 <translation id="5529554942700688235">Resumen de ahorro; memoria liberada: <ph name="MEMORY_VALUE" /></translation>
-<translation id="5529693968082667490">Mostrar botón de búsqueda de pestañas</translation>
+<translation id="5529693968082667490">Mostrar botón de búsqueda en pestañas</translation>
 <translation id="5530977410273748884">Para guardar tu contraseña en el Gestor de contraseñas de Google, haz clic en la llave</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
@@ -8957,7 +8957,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7938881824185772026">Labs</translation>
 <translation id="793923212791838">Tu dispositivo no se puede usar con este sitio</translation>
 <translation id="7939328347457537652">Gestionar los certificados del dispositivo</translation>
-<translation id="7939918959917132075">La extensión ha cambiado esto</translation>
+<translation id="7939918959917132075">La extensión lo ha cambiado a este</translation>
 <translation id="7940087892955752820">No se ha podido dejar de compartir esta carpeta porque una aplicación está usándola. Se dejará de compartir la próxima vez que se apague <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación de la conexión compartida:</translation>

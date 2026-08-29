@@ -82,7 +82,7 @@
 <translation id="1121990216147052230">ToDo リストを作成して</translation>
 <translation id="1122714970786750095">電子機器、電気機器</translation>
 <translation id="1123753900084781868">自動字幕起こしは現在ご利用いただけません</translation>
-<translation id="1124643885833329193">正確な場所</translation>
+<translation id="1124643885833329193">正確な現在地</translation>
 <translation id="112840717907525620">ポリシー キャッシュは正常です</translation>
 <translation id="1131264053432022307">コピーした画像</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – 全画面表示を終了するには、上部からドラッグして [戻る] ボタンをタップします</translation>
@@ -942,7 +942,7 @@
 <translation id="2400263725572336749">パスポートの追加</translation>
 <translation id="2400271059665846158">Google ウォレットでポイントカードを管理する</translation>
 <translation id="2400600116338235695">シリアルポートへの接続を要求できる</translation>
-<translation id="2403474027143565107">正確</translation>
+<translation id="2403474027143565107">正確な位置</translation>
 <translation id="240450251994300576">サブヘッダーのロゴ</translation>
 <translation id="2404715426538856682">クレジット / デビットカード · IBAN · ポイントカード</translation>
 <translation id="2404884497378469141">ファイルをもう一度コピーしてみてください</translation>
@@ -1058,7 +1058,7 @@
 <translation id="2572277925482605243">難しい会話に備えて練習を手伝って</translation>
 <translation id="2573170131138724450">テレビ</translation>
 <translation id="257674075312929031">グループ化</translation>
-<translation id="2577522251608256362">近隣地域</translation>
+<translation id="2577522251608256362">周辺エリア</translation>
 <translation id="2580031090587209073">共有オプション</translation>
 <translation id="258027838577899739">履歴からすべて削除</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> さんがタブを追加しました</translation>
@@ -1830,7 +1830,7 @@
 <translation id="3765588406864124894">用紙受け 9</translation>
 <translation id="3766505784424699541">このスレッドに関連するタブをこのウィンドウで自動的に共有することで、よりパーソナライズされた回答を得られます。</translation>
 <translation id="3767485424735936570">このコンテンツの <ph name="VM_NAME" /> へのコピーと貼り付けは、管理者のポリシーで推奨されていません</translation>
-<translation id="3769584711865378220"><ph name="URL" /> が位置情報へのアクセスを「おおよそ」から「正確」に変更しようとしています</translation>
+<translation id="3769584711865378220">位置情報へのアクセスを「おおよその位置」から「正確な位置」に変更することを <ph name="URL" /> が求めています</translation>
 <translation id="3772211998634047851">紙（ボンド）</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="3780694243617746492">排紙トレイ</translation>
@@ -1997,7 +1997,7 @@
 <translation id="403724377879219932">ローカル ネットワーク上の他のデバイスへのアクセスを要求できる</translation>
 <translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />、新しい値</translation>
 <translation id="4039506337798853114">カーソルを表示するには、|<ph name="ACCELERATOR" />| を押します</translation>
-<translation id="4042597221652780603">おおよそ</translation>
+<translation id="4042597221652780603">おおよその位置</translation>
 <translation id="4042611013811262481">レシピや献立を基に買い物リストを作って</translation>
 <translation id="4045070493270310437">タブを再度開く</translation>
 <translation id="4045226534284799755">Microsoft アカウントにログインしてからもう一度お試しください</translation>
@@ -2118,7 +2118,7 @@
 <translation id="421066178035138955">バーチャル リアリティ デバイスとデータの使用</translation>
 <translation id="4213500579045346575">ボディビル</translation>
 <translation id="4214357935346142455">ログイン画面のプロファイル</translation>
-<translation id="4218327733815631046">おおよその位置情報を保持</translation>
+<translation id="4218327733815631046">おおよその位置を保持</translation>
 <translation id="4219596572397833317">価格の推移などを確認して、スマートにショッピング。</translation>
 <translation id="4220128509585149162">クラッシュ</translation>
 <translation id="4221630205957821124">&lt;h4&gt;ステップ 1: ポータルにログインする&lt;/h4&gt;
@@ -2402,7 +2402,7 @@
 <translation id="4644567637638438744">Microsoft OneDrive にログインしている場合のみ、ファイルをアップロードできます</translation>
 <translation id="4644670975240021822">逆の順序（下向き）</translation>
 <translation id="4648262692072505866">ハッシュ形式には SHA-256 を使用する必要があります。</translation>
-<translation id="4652266463001779298">ブロック</translation>
+<translation id="4652266463001779298">許可されていません</translation>
 <translation id="4652440160515225514">このサイトはポリシーに違反しているため、組織によってブロックされました。</translation>
 <translation id="4658638640878098064">ステープル（左上）</translation>
 <translation id="4658801711339831733">スキャンを Google ドライブに保存しました</translation>
@@ -2458,7 +2458,7 @@
 <translation id="4730977633786878901">レビュー</translation>
 <translation id="4731638775147756694">このアプリケーションは管理者によってブロックされています</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
-<translation id="4733082559415072992">デバイスの現在地情報について、<ph name="URL" /> が使用許可を求めています</translation>
+<translation id="4733082559415072992">デバイスの位置情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="473414950835101501">カメラの使用</translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
 <translation id="4736934858538408121">仮想カード</translation>
@@ -3068,7 +3068,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> でリダイレクトが繰り返し行われました。</translation>
 <translation id="5619721953841297650">プリセット</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
-<translation id="5627344039351500898">正確な位置情報に切り替え</translation>
+<translation id="5627344039351500898">正確な位置に切り替え</translation>
 <translation id="5628060911499153873">情報を保存すると、各種の Google サービスで簡単に入力できるようになります。情報は <ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> に保存されます。</translation>
 <translation id="5629630648637658800">ポリシー設定を読み込めませんでした</translation>
 <translation id="5630981295558454585">[このページについて Google に質問する] ボタンです。実行すると、このページについて Google に質問できます</translation>
@@ -3333,7 +3333,7 @@
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6043357981274314628">完了しました。</translation>
 <translation id="6045164183059402045">面付けテンプレート</translation>
-<translation id="6046026831939367176"><ph name="URL" /> がおおよその位置情報の使用をリクエストしています</translation>
+<translation id="6046026831939367176">おおよその位置情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_KEYWORD" /> を入力して検索するか、<ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> に質問してください</translation>
 <translation id="6047927260846328439">アクセス先のコンテンツは、ユーザーをだましてソフトウェアをインストールさせようとしたり、個人情報を危険にさらしたりする可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 封筒</translation>
@@ -5064,7 +5064,7 @@
 <translation id="8688672835843460752">使用可能</translation>
 <translation id="868922510921656628">1 部あたりのページ数</translation>
 <translation id="8694684557210599098">車両情報の追加</translation>
-<translation id="8696297579102085705">お使いのデバイスに送信</translation>
+<translation id="8696297579102085705">デバイスに送信</translation>
 <translation id="8698428283892912525">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで最近<ph name="BEGIN_LINK" />有害なソフトウェアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699041776323235191">HID デバイス</translation>
