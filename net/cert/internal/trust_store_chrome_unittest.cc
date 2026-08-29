@@ -292,13 +292,13 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
     auto unconstrained_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
         kUnconstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
         x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-        std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+        std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kConstrainedAnchorCaId[] = {0x08, 0x04, 0x05, 0x06};
     auto constrained_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
         kConstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
         x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-        std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+        std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kUntrustedConstrainedAnchorCaId[] = {0x06, 0x04, 0x05,
                                                            0x06};
@@ -306,13 +306,13 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
         std::make_shared<const bssl::MTCAnchor>(
             kUntrustedConstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-            std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+            std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kUnknownAnchorCaId[] = {0x07, 0x07, 0x07, 0x07};
     auto unknown_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
         kUnknownAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
         x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-        std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+        std::vector<bssl::LogTrustedSubtrees>());
 
     chrome_root_store::SignerSet signer_set;
     signer_set.mutable_timestamp()->set_seconds(1);
@@ -705,7 +705,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       mtc_anchor_with_id_11 = std::make_shared<const bssl::MTCAnchor>(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-          std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+          std::vector<bssl::LogTrustedSubtrees>());
     }
 
     std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_with_no_id;
@@ -716,7 +716,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       mtc_anchor_with_no_id = std::make_shared<const bssl::MTCAnchor>(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-          std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+          std::vector<bssl::LogTrustedSubtrees>());
     }
 
     std::shared_ptr<const bssl::MTCAnchor> untrusted_mtc_anchor_with_id;
@@ -728,7 +728,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       untrusted_mtc_anchor_with_id = std::make_shared<const bssl::MTCAnchor>(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-          std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+          std::vector<bssl::LogTrustedSubtrees>());
     }
 
     std::shared_ptr<const bssl::MTCAnchor> unknown_mtc_anchor;
@@ -737,7 +737,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       unknown_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
           x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-          std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+          std::vector<bssl::LogTrustedSubtrees>());
     }
 
     std::optional<ChromeRootStoreData> root_store_data =
@@ -1809,18 +1809,26 @@ TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProto) {
               60U);
 
     ASSERT_EQ(new_it->second.trusted_subtrees.size(), 2U);
-    ASSERT_TRUE(new_it->second.trusted_subtrees.contains(5));
-    ASSERT_EQ(new_it->second.trusted_subtrees.at(5).size(), 1U);
-    EXPECT_EQ(new_it->second.trusted_subtrees.at(5)[0].range.start, 300U);
-    EXPECT_EQ(new_it->second.trusted_subtrees.at(5)[0].range.end, 400U);
-    EXPECT_EQ(base::ToVector(new_it->second.trusted_subtrees.at(5)[0].hash),
+    EXPECT_EQ(new_it->second.trusted_subtrees[0].log_number, 5U);
+    ASSERT_EQ(new_it->second.trusted_subtrees[0].trusted_subtrees.size(), 1U);
+    EXPECT_EQ(
+        new_it->second.trusted_subtrees[0].trusted_subtrees[0].range.start,
+        300U);
+    EXPECT_EQ(new_it->second.trusted_subtrees[0].trusted_subtrees[0].range.end,
+              400U);
+    EXPECT_EQ(base::ToVector(
+                  new_it->second.trusted_subtrees[0].trusted_subtrees[0].hash),
               std::vector<uint8_t>(32, 0xbb));
 
-    ASSERT_TRUE(new_it->second.trusted_subtrees.contains(8));
-    ASSERT_EQ(new_it->second.trusted_subtrees.at(8).size(), 1U);
-    EXPECT_EQ(new_it->second.trusted_subtrees.at(8)[0].range.start, 700U);
-    EXPECT_EQ(new_it->second.trusted_subtrees.at(8)[0].range.end, 800U);
-    EXPECT_EQ(base::ToVector(new_it->second.trusted_subtrees.at(8)[0].hash),
+    EXPECT_EQ(new_it->second.trusted_subtrees[1].log_number, 8U);
+    ASSERT_EQ(new_it->second.trusted_subtrees[1].trusted_subtrees.size(), 1U);
+    EXPECT_EQ(
+        new_it->second.trusted_subtrees[1].trusted_subtrees[0].range.start,
+        700U);
+    EXPECT_EQ(new_it->second.trusted_subtrees[1].trusted_subtrees[0].range.end,
+              800U);
+    EXPECT_EQ(base::ToVector(
+                  new_it->second.trusted_subtrees[1].trusted_subtrees[0].hash),
               std::vector<uint8_t>(32, 0xcc));
   }
 

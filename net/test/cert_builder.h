@@ -561,13 +561,12 @@ class MtcLogBuilder {
   // https://davidben.github.io/merkle-tree-certs/draft-davidben-tls-merkle-tree-certs.html#trusted-subtrees
   std::vector<bssl::TrustedSubtree> GetLandmarkSubtreeHashes() const;
 
-  // Like `GetLandmarkSubtreeHashes`, but returns the result in a map that is
-  // indexed by the log number. Since MtcLogBuilder is a per-log object, the
-  // result will only have one entry in the map. This is a convenience helper
+  // Like `GetLandmarkSubtreeHashes`, but returns the result in a vector of
+  // LogTrustedSubtrees. Since MtcLogBuilder is a per-log object, the result
+  // will only have one entry in the vector. This is a convenience helper
   // that returns the data format the boringssl MTCAnchor constructor wants for
   // a plants-05 MTC CA.
-  std::map<uint16_t, std::vector<bssl::TrustedSubtree>>
-  GetPerLogLandmarkSubtreeHashes() const;
+  std::vector<bssl::LogTrustedSubtrees> GetPerLogLandmarkSubtreeHashes() const;
 
   // Add entry to the log and return the index of the entry.
   // Once the index is included in a landmark subtree, the index can be used

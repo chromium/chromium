@@ -443,7 +443,7 @@ TrustStoreChrome::TrustStoreChrome(
     for (const auto& issuer : root_store_data.signer_set()->trusted_issuers()) {
       TrustStoreChrome::MtcAnchorExtraData trust_store_anchor_data(issuer);
 
-      std::map<uint16_t, std::vector<bssl::TrustedSubtree>> trusted_subtrees;
+      std::vector<bssl::LogTrustedSubtrees> trusted_subtrees;
       if (mtc_metadata) {
         auto it = mtc_metadata->mtc_anchor_data().find(issuer.base_id);
         if (it != mtc_metadata->mtc_anchor_data().end()) {
@@ -1150,7 +1150,8 @@ std::optional<ChromeRootStoreMtcMetadata::MtcAnchorData> CreateMtcAnchorData(
           .copy_from(base::as_byte_span(subtree.hash()));
       trusted_subtrees.push_back(std::move(trusted_subtree));
     }
-    anchor_data.trusted_subtrees[log_number] = std::move(trusted_subtrees);
+    anchor_data.trusted_subtrees.emplace_back(log_number,
+                                              std::move(trusted_subtrees));
   }
 
   return anchor_data;

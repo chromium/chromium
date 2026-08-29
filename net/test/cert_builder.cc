@@ -1832,11 +1832,9 @@ std::vector<bssl::TrustedSubtree> MtcLogBuilder::GetLandmarkSubtreeHashes()
   return result;
 }
 
-std::map<uint16_t, std::vector<bssl::TrustedSubtree>>
+std::vector<bssl::LogTrustedSubtrees>
 MtcLogBuilder::GetPerLogLandmarkSubtreeHashes() const {
-  std::map<uint16_t, std::vector<bssl::TrustedSubtree>> result;
-  result[log_number_] = GetLandmarkSubtreeHashes();
-  return result;
+  return {{log_number_, GetLandmarkSubtreeHashes()}};
 }
 
 MtcLogBuilder::LogIndex MtcLogBuilder::AddEntry(CertBuilder& mtc_builder) {

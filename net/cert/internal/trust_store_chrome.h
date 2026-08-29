@@ -5,7 +5,6 @@
 #ifndef NET_CERT_INTERNAL_TRUST_STORE_CHROME_H_
 #define NET_CERT_INTERNAL_TRUST_STORE_CHROME_H_
 
-#include <map>
 #include <optional>
 #include <vector>
 
@@ -308,7 +307,7 @@ class NET_EXPORT ChromeRootStoreMtcMetadata {
     MtcAnchorData& operator=(const MtcAnchorData& other);
     MtcAnchorData& operator=(MtcAnchorData&& other);
 
-    std::map<uint16_t, std::vector<bssl::TrustedSubtree>> trusted_subtrees;
+    std::vector<bssl::LogTrustedSubtrees> trusted_subtrees;
 
     struct LogLandmarkRange {
       uint16_t log_number;

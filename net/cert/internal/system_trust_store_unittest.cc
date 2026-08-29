@@ -207,7 +207,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
         std::make_shared<bssl::MTCAnchor>(
             bssl::MakeSpan(kMtcCaId), bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(kFakeMtcKey),
-            std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+            std::vector<bssl::LogTrustedSubtrees>());
     EXPECT_TRUE(system_trust_store->IsKnownMtcAnchor(mtc_anchor.get()));
   }
 
@@ -225,7 +225,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
         std::make_shared<bssl::MTCAnchor>(
             bssl::MakeSpan(kMtcCaId2), bssl::SignatureAlgorithm::kMldsa44,
             x509_util::CreateCryptoBuffer(kFakeMtcKey),
-            std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+            std::vector<bssl::LogTrustedSubtrees>());
     EXPECT_FALSE(system_trust_store->IsKnownMtcAnchor(mtc_anchor2.get()));
   }
 }

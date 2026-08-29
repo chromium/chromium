@@ -878,7 +878,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcVerification) {
   auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
       ca_cosigner.id, ca_cosigner.signature_algorithm,
       x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
-      std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+      std::vector<bssl::LogTrustedSubtrees>());
   ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
   AddTrustStore(&trust_store);
 
@@ -908,7 +908,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcVerification) {
   mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
       ca_cosigner.id, ca_cosigner.signature_algorithm,
       x509_util::CreateCryptoBuffer(different_key.ToSubjectPublicKeyInfo()),
-      std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+      std::vector<bssl::LogTrustedSubtrees>());
   ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
   {
     CertVerifyResult verify_result;
@@ -961,7 +961,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
   auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
       ca_cosigner.id, ca_cosigner.signature_algorithm,
       x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
-      std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+      std::vector<bssl::LogTrustedSubtrees>());
   ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
   AddTrustStore(&trust_store);
 
@@ -1241,9 +1241,8 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
     auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
         ca_cosigner.id, ca_cosigner.signature_algorithm,
         x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
-        test.load_landmark_data
-            ? mtc_log.GetPerLogLandmarkSubtreeHashes()
-            : std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+        test.load_landmark_data ? mtc_log.GetPerLogLandmarkSubtreeHashes()
+                                : std::vector<bssl::LogTrustedSubtrees>());
     ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
     AddTrustStore(&trust_store);
 
