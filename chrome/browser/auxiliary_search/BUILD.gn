@@ -120,6 +120,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDataEntry.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonationServiceBridge.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonationServiceUtils.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonor.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchHooks.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java",

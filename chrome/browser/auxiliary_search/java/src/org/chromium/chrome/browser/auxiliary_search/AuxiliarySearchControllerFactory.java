@@ -70,7 +70,20 @@ public class AuxiliarySearchControllerFactory {
                         .readBoolean(
                                 ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
 
-        return consumerSchemaFound && isEnabled();
+        boolean isCompatible = consumerSchemaFound && isEnabled();
+        // The tab sharing UI should never be shown at the same time as the browsing data UI:
+        // - The current Magic Stack card is designed for both features individually and isn't
+        //   generic enough to support both features on at the same time.
+        // - Having two separate settings toggles for very similar features is confusing for users.
+        // - Donating separately is bad for efficiency.
+        // As of writing (August 2026) these two features are never enabled at the same time, but a
+        // future change to an external app may cause this assert to start failing. We expect this
+        // to either never happen, or only happen after the below todo is resolved.
+        // TODO(crbug.com/512359034): Remove this assert once we resolve how these features should
+        // interact with each other.
+        assert !(isCompatible
+                && AuxiliarySearchDonationServiceUtils.isBrowsingDataDonationEnabled());
+        return isCompatible;
     }
 
     /** Returns whether the multiple types of data sources is enabled on this device. */

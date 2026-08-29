@@ -13,7 +13,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -23,9 +22,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonationServiceUtils;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -232,11 +230,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     }
 
     private static boolean isShareBrowsingDataWithOnDeviceIntelligenceEnabled() {
-        if (!ChromeFeatureList.sAuxiliarySearchHistoryDonation.isEnabled()) {
-            return false;
-        }
-        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
-        return hooks != null && hooks.isBrowsingDataDonationSupported();
+        return AuxiliarySearchDonationServiceUtils.isBrowsingDataDonationEnabled();
     }
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =

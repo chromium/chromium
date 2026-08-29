@@ -81,8 +81,7 @@ class AuxiliarySearchDonationServiceBridge implements Closeable {
 
     @CalledByNative
     static boolean isBrowsingDataDonationSupported() {
-        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
-        return hooks != null && hooks.isBrowsingDataDonationSupported();
+        return AuxiliarySearchDonationServiceUtils.isBrowsingDataDonationSupported();
     }
 
     @CalledByNative
