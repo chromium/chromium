@@ -18,7 +18,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -29,7 +28,6 @@ import java.util.List;
 
 /** Tests for {@link NtpBackgroundDataGroup}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpBackgroundDataGroupUnitTest {
     private Context mContext;
 

@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
@@ -46,7 +45,6 @@ import java.io.File;
 
 /** Unit tests for {@link NtpThemeDailyRefreshManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
 public class NtpThemeDailyRefreshManagerUnitTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();

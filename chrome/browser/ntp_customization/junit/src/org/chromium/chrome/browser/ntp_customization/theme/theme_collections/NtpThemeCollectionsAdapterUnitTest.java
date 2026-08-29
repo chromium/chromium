@@ -41,7 +41,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -59,7 +58,6 @@ import java.util.List;
 
 /** Unit tests for {@link NtpThemeCollectionsAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpThemeCollectionsAdapterUnitTest {
     private static final String THEME_COLLECTION_TITLE = "Theme Collection 1";
     private static final GURL PREVIEW_IMAGE_URL = JUnitTestGURLs.URL_1;

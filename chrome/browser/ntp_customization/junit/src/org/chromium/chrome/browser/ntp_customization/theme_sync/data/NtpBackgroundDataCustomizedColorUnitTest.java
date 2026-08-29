@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
@@ -28,7 +27,6 @@ import org.chromium.chrome.browser.ntp_customization.R;
 
 /** Tests for {@link NtpBackgroundDataCustomizedColor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpBackgroundDataCustomizedColorUnitTest {
     private Context mContext;
 

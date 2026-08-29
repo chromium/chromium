@@ -57,7 +57,7 @@ import java.time.Duration;
 
 /** Unit tests for {@link NtpCustomizationPromoManager} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
+@Config(sdk = Build.VERSION_CODES.R)
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class NtpCustomizationPromoManagerUnitTest {

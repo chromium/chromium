@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.tab.Tab;
 
 /** Unit tests for {@link NtpCustomizationSidePanel}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpCustomizationSidePanelUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

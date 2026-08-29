@@ -22,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -34,7 +33,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link NtpBackgroundDataThemeCollection}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpBackgroundDataThemeCollectionUnitTest {
     @Test
     public void testEquals() {

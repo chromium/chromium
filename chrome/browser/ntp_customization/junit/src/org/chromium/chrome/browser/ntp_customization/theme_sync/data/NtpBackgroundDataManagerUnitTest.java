@@ -23,7 +23,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -39,7 +38,6 @@ import java.io.File;
 
 /** Tests for {@link NtpBackgroundDataManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpBackgroundDataManagerUnitTest {
     private static final String TEST_COLLECTION_ID = "test_collection";
     private static final String OTHER_COLLECTION_ID = "other_collection";

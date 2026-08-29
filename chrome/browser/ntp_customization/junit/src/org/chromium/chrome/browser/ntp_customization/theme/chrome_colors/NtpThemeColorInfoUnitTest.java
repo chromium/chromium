@@ -18,7 +18,6 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -27,7 +26,6 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Tests for {@link NtpThemeColorInfo}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpThemeColorInfoUnitTest {
     private Context mContext;
 

@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -44,7 +43,6 @@ import java.util.Collections;
 
 /** Unit tests for {@link CrossDeviceThemeTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
 public class CrossDeviceThemeTrackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

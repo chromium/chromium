@@ -41,7 +41,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -67,7 +66,6 @@ import java.util.List;
 
 /** Unit tests for {@link NtpThemeCollectionsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpThemeCollectionsCoordinatorUnitTest {
 
     private static final String TEST_COLLECTION_ID = "Test Collection Id";

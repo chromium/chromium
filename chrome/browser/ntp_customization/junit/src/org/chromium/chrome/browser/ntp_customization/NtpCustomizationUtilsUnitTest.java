@@ -119,7 +119,7 @@ import java.io.IOException;
 
 /** Unit tests for {@link NtpCustomizationUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
+@Config(sdk = Build.VERSION_CODES.R)
 public class NtpCustomizationUtilsUnitTest {
     private static final String TEST_FILE_NAME = "test_file.png";
     private static final String LARGE_FILE_NAME = "large_file.png";

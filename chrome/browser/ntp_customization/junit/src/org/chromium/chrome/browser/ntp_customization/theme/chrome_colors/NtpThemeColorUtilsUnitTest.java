@@ -23,7 +23,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
@@ -43,7 +42,6 @@ import java.util.List;
 
 /** Tests for {@link NtpThemeColorUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NtpThemeColorUtilsUnitTest {
     private static final int COLOR_LIST_SIZE = NtpThemeColorId.NUM_ENTRIES - 1;
     private Context mContext;
