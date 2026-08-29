@@ -2676,6 +2676,7 @@ class LocationBarMediator
         }
         updateShowFocusRing();
         updateReparentingState();
+        updateActivationChip();
     }
 
     private void updateReparentingState() {
@@ -3729,7 +3730,8 @@ class LocationBarMediator
                         && mCurrentInput.getRequestType() == AutocompleteRequestType.SEARCH
                         && mCurrentInput.getSiteSearchData() == null
                         && (mCurrentInput.getPreviewMatchUrl() == null
-                                || mCurrentInput.isInZeroPrefixContext());
+                                || mCurrentInput.isInZeroPrefixContext())
+                        && mCurrentInput.getDisplayState() != DisplayState.DRAFTING_NO_FOCUS;
         Profile profile = mProfileSupplier.get();
         if (profile != null
                 && profile.getNativeBrowserContextPointer() != 0

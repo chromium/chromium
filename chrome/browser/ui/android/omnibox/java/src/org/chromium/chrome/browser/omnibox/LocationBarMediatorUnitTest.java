@@ -5108,6 +5108,32 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testUpdateActivationChip_draftingNoFocus() {
+        setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+
+        mMediator.beginInput(input);
+        mMediator.updateActivationChip();
+
+        verify(mLocationBarLayout, never()).setActivationChipVisibility(true);
+    }
+
+    @Test
+    public void testOnUrlFocusChange_focusFromDraftingNoFocus_showsActivationChip() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        setupSession(DisplayState.DRAFTING_NO_FOCUS, /* textDiffers= */ true);
+        clearInvocations(mLocationBarLayout);
+
+        mMediator.onUrlFocusChange(true);
+
+        assertEquals(DisplayState.DRAFTING, mSessionState.getAutocompleteInput().getDisplayState());
+        verify(mLocationBarLayout).setActivationChipVisibility(true);
+    }
+
+    @Test
     public void testActivationChipClicked_transitionsStandbyToEnabled() {
         setUpMediatorAndCoordinator();
         AutocompleteInput input = mSessionState.getAutocompleteInput();
