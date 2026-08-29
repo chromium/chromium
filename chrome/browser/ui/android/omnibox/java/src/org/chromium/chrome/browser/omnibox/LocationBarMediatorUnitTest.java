@@ -162,6 +162,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -2587,6 +2588,7 @@ public class LocationBarMediatorUnitTest {
     public void testOnTouchAfterFocus_notHandled_notInStandby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
 
@@ -2607,6 +2609,7 @@ public class LocationBarMediatorUnitTest {
     public void testOnTouchAfterFocus_withHardwareKeyboard_triggersSuggestions() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
 
@@ -4478,6 +4481,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testShowUrlBarCursorWithoutFocusAnimations_disabledState_earlyReturns() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.DISABLED);
@@ -4489,6 +4493,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testShowUrlBarCursorWithoutFocusAnimations_enabledState_startsSession() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
@@ -4501,6 +4506,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testShowUrlBarCursorWithoutFocusAnimations_activeSession_preservesExistingInput() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mSessionState.getAutocompleteInput().setUserText("active text", TextSelection.SELECT_END);
@@ -4514,6 +4520,7 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testBeginInput_fromUnanimatedFocus_transitionsToEnabledAndShowsScrim() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);

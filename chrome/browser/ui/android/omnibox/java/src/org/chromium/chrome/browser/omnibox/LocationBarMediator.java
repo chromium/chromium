@@ -875,7 +875,7 @@ class LocationBarMediator
     }
 
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
-        if (!OmniboxCapabilities.isDesktopPlatform()) return;
+        if (!DeviceInput.supportsAlphabeticKeyboard()) return;
 
         // Verify if Hardware keyboard still requests Software keyboard (IME) to be used.
         // If that happens, suppress early focus to take Software keyboard out of the way.
@@ -2981,7 +2981,6 @@ class LocationBarMediator
     public void onTabChanged(@Nullable Tab previousTab) {
         boolean hadActiveInput = mCurrentInput != null;
         suspendInput();
-        mUrlCoordinator.clearFocus();
 
         // Restore the saved tab state.
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
@@ -2990,8 +2989,11 @@ class LocationBarMediator
             input.setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
             mUrlFocusedWithoutAnimations = true;
             beginInput(input);
-        } else if (hadActiveInput) {
-            focusCurrentTab();
+        } else {
+            mUrlCoordinator.clearFocus();
+            if (hadActiveInput) {
+                focusCurrentTab();
+            }
         }
 
         // Set zoom indicator tooltip
@@ -3083,27 +3085,19 @@ class LocationBarMediator
         var state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state == null) return;
 
-        // Guard against rapid typing into the NTP fakebox during focus transition.
-        // When typing begins in the fakebox (e.g. software keyboard or touch focus), the fakebox
-        // text watcher initiates focus transfer to the Omnibox. If the user continues typing before
-        // the Android window manager completes focus transfer to UrlBar, additional FAKE_BOX_TAP
-        // beginInput() events may arrive while mUrlHasFocus is already true. Instead of ignoring or
-        // restarting the input session, forward the accumulated user text to UrlBar and
-        // Autocomplete.
-        if (mUrlHasFocus
-                && mCurrentInput != null
-                && !TextUtils.isEmpty(mCurrentInput.getUserText())
-                && input.getFocusReason() == OmniboxFocusReason.FAKE_BOX_TAP) {
+        // Guard against resetting active user text when a redundant beginInput() arrives
+        // (e.g. from NTP load completion, fakebox touch, or keyboard focus transitions).
+        if (mCurrentInput == state.getAutocompleteInput() && userTextDiffersFromInitial()) {
             String newText = input.getUserText();
-            if (!TextUtils.isEmpty(newText)
-                    && !TextUtils.equals(newText, mCurrentInput.getUserText())
-                    && newText.length() > mCurrentInput.getUserText().length()) {
-                mUrlCoordinator.setUrlBarData(
-                        UrlBarData.forNonUrlText(newText),
-                        ScrollType.SCROLL_TO_BEGINNING,
-                        TextSelection.SELECT_END);
-                onUrlTextChanged(newText);
+            if (TextUtils.isEmpty(newText)
+                    || TextUtils.equals(newText, mCurrentInput.getUserText())) {
+                return;
             }
+            mUrlCoordinator.setUrlBarData(
+                    UrlBarData.forNonUrlText(newText),
+                    ScrollType.SCROLL_TO_BEGINNING,
+                    TextSelection.SELECT_END);
+            onUrlTextChanged(newText);
             return;
         }
 

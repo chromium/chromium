@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.view.ActionMode;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -69,7 +68,6 @@ public class UrlBarCoordinator
     private final Runnable mKeyboardTransitionRunnable = this::resolveKeyboardTransition;
     private @Nullable Runnable mKeyboardHideTask;
     private @KeyboardState int mKeyboardState = KeyboardState.HIDDEN;
-    private boolean mIsReparenting;
     private boolean mHasFocus;
     private boolean mTextIsWrapped;
 
@@ -447,7 +445,7 @@ public class UrlBarCoordinator
     }
 
     private void onUrlFocusChangeInternal(UrlBarFocusChangeInfo info) {
-        if (mIsReparenting) return;
+        if (mMediator.isReparenting()) return;
         boolean hasFocus = info.hasFocus;
         InputMethodManager imm =
                 (InputMethodManager)
@@ -507,7 +505,8 @@ public class UrlBarCoordinator
      * dropped while this process is ongoing.
      */
     public void startReparenting() {
-        mIsReparenting = true;
+        mMediator.startReparenting(
+                new TextSelection(mUrlBar.getSelectionStart(), mUrlBar.getSelectionEnd()));
     }
 
     /**
@@ -517,16 +516,17 @@ public class UrlBarCoordinator
      *     process has completed.
      */
     public void finishReparenting(boolean postReparentingFocus) {
-        mIsReparenting = false;
         if (postReparentingFocus) {
             mUrlBar.requestFocus();
         } else {
             mUrlBar.clearFocus();
         }
-        // The above call may not actually trigger a focus change, e.g. if focus was lost during
-        // reparenting and the target post-reparenting focus is false, there is no apparent change
-        // from the View's point of view, but the mediator still needs to know.
-        onUrlFocusChangeInternal(new UrlBarFocusChangeInfo(postReparentingFocus, View.FOCUS_DOWN));
+        mMediator.finishReparenting(postReparentingFocus);
+        if (mHasFocus != postReparentingFocus) {
+            onUrlFocusChangeInternal(
+                    new UrlBarFocusChangeInfo(
+                            postReparentingFocus, UrlBarFocusChangeInfo.NO_FOCUS_DIRECTION));
+        }
     }
 
     public void maybeAcceptInlineSuggestion(KeyEvent event) {

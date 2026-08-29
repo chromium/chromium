@@ -32,6 +32,7 @@ import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 
 /** Public Transit tests for Omnibox. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -58,6 +59,7 @@ public class OmniboxPTTest {
     @Before
     public void setUp() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         mBlankPage = mCtaTestRule.startOnBlankPage();
     }
 
@@ -77,6 +79,7 @@ public class OmniboxPTTest {
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testOpenTypeDelete_fromWebPage_desktop() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxFacility omniboxAndKeyboard = mBlankPage.openOmnibox(sFakeSuggestions);
 
         doOpenTypeDelete(omniboxAndKeyboard);
@@ -101,6 +104,7 @@ public class OmniboxPTTest {
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testOpenTypeDelete_fromNtp_desktop() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         RegularNewTabPageStation ntp = mBlankPage.openNewTabFast();
         OmniboxFacility omnibox = ntp.openOmnibox(sFakeSuggestions);
 

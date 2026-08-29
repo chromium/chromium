@@ -55,6 +55,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     // and we couldn't change it by the branded color scheme.
     private boolean mIsHintTextFixedForNtp;
     private boolean mShowOriginOnly;
+    private boolean mIsReparenting;
     private final @Nullable Callback<String> mTextChangeListener;
     private final @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
     private final Callback<@DisplayState Integer> mDisplayStateObserver =
@@ -131,6 +132,41 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     private void onDisplayStateChanged(@DisplayState int displayState) {
         boolean allowMultiline = displayState == DisplayState.SUGGESTIONS;
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, allowMultiline);
+    }
+
+    /** Sets the current selection for the active input session. */
+    void setSelection(TextSelection selection) {
+        if (mCurrentInput != null) {
+            mCurrentInput.setSelection(selection);
+        }
+        mSelection = selection;
+    }
+
+    /**
+     * Signals that the UrlBar is being relocated to a new parent.
+     *
+     * @param currentSelection The current text selection of the UrlBar prior to reparenting.
+     */
+    void startReparenting(TextSelection currentSelection) {
+        mIsReparenting = true;
+        setSelection(currentSelection);
+    }
+
+    /**
+     * Signals that the UrlBar has finished being relocated to a new parent.
+     *
+     * @param postReparentingFocus Whether the UrlBar should be focused.
+     */
+    void finishReparenting(boolean postReparentingFocus) {
+        mIsReparenting = false;
+        if (postReparentingFocus && !isInInputSession()) {
+            pushTextToModel(/* originChanged= */ false);
+        }
+    }
+
+    /** Returns whether the UrlBar is currently being reparented. */
+    boolean isReparenting() {
+        return mIsReparenting;
     }
 
     /* package */ void pushCurrentInputToModel() {
