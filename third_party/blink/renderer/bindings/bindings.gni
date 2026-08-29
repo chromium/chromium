@@ -166,6 +166,7 @@ blink_core_sources_bindings =
                     "core/v8/v8_local_compile_hints_producer.h",
                     "core/v8/v8_metrics.cc",
                     "core/v8/v8_metrics.h",
+                    "core/v8/v8_microtasks_scope.cc",
                     "core/v8/v8_microtasks_scope.h",
                     "core/v8/v8_object_builder.cc",
                     "core/v8/v8_object_builder.h",
