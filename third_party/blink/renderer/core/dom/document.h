@@ -948,7 +948,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Dispatches "pagehide", "visibilitychange" and "unload" events, if not
   // dispatched already. Fills `unload_timing_info` if present.
-  void DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info);
+  void DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info,
+                            bool will_commit_new_document_in_this_frame = true);
 
   void DispatchFreezeEvent();
 

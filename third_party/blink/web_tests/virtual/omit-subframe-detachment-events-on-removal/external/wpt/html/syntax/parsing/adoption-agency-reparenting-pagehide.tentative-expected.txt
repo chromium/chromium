@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Adoption agency where pagehide runs script in the middle of the algorithm
+  pagehide fired synchronously during the adoption agency algorithm
+Harness: the test ran to completion.
+

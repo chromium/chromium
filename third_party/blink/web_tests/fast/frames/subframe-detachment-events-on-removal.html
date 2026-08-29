@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Subframe detachment events on removal</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<div id="container"></div>
+<script>
+function createIframeWithListeners(parent = document.getElementById('container')) {
+  return new Promise((resolve) => {
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = '<p>subframe</p>';
+    iframe.onload = () => {
+      iframe.onload = null;
+      const win = iframe.contentWindow;
+      const doc = iframe.contentDocument;
+      const events = [];
+      win.addEventListener('pagehide', (e) => {
+        events.push({ type: 'pagehide', target: 'window', persisted: e.persisted });
+      });
+      win.addEventListener('unload', () => {
+        events.push({ type: 'unload', target: 'window' });
+      });
+      doc.addEventListener('visibilitychange', () => {
+        events.push({ type: 'visibilitychange', target: 'document' });
+      });
+      resolve({ iframe, events });
+    };
+    parent.appendChild(iframe);
+  });
+}
+
+promise_test(async (t) => {
+  const { iframe, events } = await createIframeWithListeners();
+  iframe.remove();
+  assert_array_equals(events, [], 'No subframe detachment events should fire on iframe.remove()');
+}, 'Detaching an <iframe> via element.remove()');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const { iframe, events } = await createIframeWithListeners(container);
+  container.removeChild(iframe);
+  assert_array_equals(events, [], 'No subframe detachment events should fire on removeChild');
+}, 'Detaching an <iframe> via parentNode.removeChild()');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const wrapper = document.createElement('div');
+  container.appendChild(wrapper);
+  const { iframe, events } = await createIframeWithListeners(wrapper);
+  wrapper.remove();
+  assert_array_equals(events, [], 'No subframe detachment events should fire on ancestor removal');
+}, 'Detaching an ancestor containing an <iframe>');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const wrapper = document.createElement('div');
+  container.appendChild(wrapper);
+  const { iframe, events } = await createIframeWithListeners(wrapper);
+  wrapper.innerHTML = '';
+  assert_array_equals(events, [], 'No subframe detachment events should fire on container innerHTML clearing');
+}, 'Clearing an ancestor innerHTML containing an <iframe>');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const outerEvents = [];
+  const innerEvents = [];
+
+  const outerIframe = document.createElement('iframe');
+  outerIframe.srcdoc = '<p>outer</p>';
+  await new Promise((resolve) => {
+    outerIframe.onload = () => {
+      outerIframe.onload = null;
+      const outerWin = outerIframe.contentWindow;
+      const outerDoc = outerIframe.contentDocument;
+      outerWin.addEventListener('pagehide', () => outerEvents.push('pagehide'));
+      outerWin.addEventListener('unload', () => outerEvents.push('unload'));
+      outerDoc.addEventListener('visibilitychange', () => outerEvents.push('visibilitychange'));
+
+      const innerIframe = outerDoc.createElement('iframe');
+      innerIframe.srcdoc = '<p>inner</p>';
+      innerIframe.onload = () => {
+        innerIframe.onload = null;
+        const innerWin = innerIframe.contentWindow;
+        const innerDoc = innerIframe.contentDocument;
+        innerWin.addEventListener('pagehide', () => innerEvents.push('pagehide'));
+        innerWin.addEventListener('unload', () => innerEvents.push('unload'));
+        innerDoc.addEventListener('visibilitychange', () => innerEvents.push('visibilitychange'));
+        resolve();
+      };
+      outerDoc.body.appendChild(innerIframe);
+    };
+    container.appendChild(outerIframe);
+  });
+
+  outerIframe.remove();
+  assert_array_equals(outerEvents, [], 'No outer iframe detachment events should fire');
+  assert_array_equals(innerEvents, [], 'No inner iframe detachment events should fire');
+}, 'Detaching nested <iframe> hierarchy');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const object = document.createElement('object');
+  object.type = 'text/html';
+  object.data = 'about:blank';
+  const events = [];
+  await new Promise((resolve) => {
+    object.onload = () => {
+      object.onload = null;
+      if (object.contentWindow) {
+        object.contentWindow.addEventListener('pagehide', () => events.push('pagehide'));
+        object.contentWindow.addEventListener('unload', () => events.push('unload'));
+      }
+      if (object.contentDocument) {
+        object.contentDocument.addEventListener('visibilitychange', () => events.push('visibilitychange'));
+      }
+      resolve();
+    };
+    container.appendChild(object);
+  });
+
+  object.remove();
+  assert_array_equals(events, [], 'No <object> detachment events should fire');
+}, 'Detaching an <object> containing a document');
+
+promise_test(async (t) => {
+  const { iframe, events } = await createIframeWithListeners();
+  await new Promise((resolve) => {
+    iframe.onload = resolve;
+    iframe.srcdoc = '<p>navigated</p>';
+  });
+
+  // Subframe navigation should ALWAYS fire pagehide / unload regardless of the removal flag.
+  assert_true(events.some(e => e.type === 'pagehide' || e.type === 'unload'),
+      'Navigation of a subframe should still dispatch unload / pagehide');
+  iframe.remove();
+}, 'Navigating an <iframe> still fires navigation/unload events');
+</script>
+</body>

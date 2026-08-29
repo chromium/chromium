@@ -2337,6 +2337,33 @@
     ],
     "expires": "never"
   },
+  {
+    "prefix": "omit-subframe-detachment-events-on-removal",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/html/syntax/parsing/adoption-agency-reparenting-pagehide.tentative.html",
+      "fast/frames/detached-shadow-frame.html",
+      "fast/frames/frame-unload-crash2.html",
+      "fast/frames/out-of-document-iframe-has-child-frame.html",
+      "fast/frames/reattach-in-unload.html",
+      "fast/frames/set-iframe-src-in-pagehide-crash.html",
+      "fast/frames/subframe-detachment-events-on-removal.html"
+    ],
+    "exclusive_tests": [
+      "fast/frames/subframe-detachment-events-on-removal.html"
+    ],
+    "args": [
+      "--enable-blink-features=OmitSubframeDetachmentEventsOnRemoval"
+    ],
+    "owners": [
+      "nrosenthal@chromium.org"
+    ],
+    "expires": "Jan 1, 2027"
+  },
   "Tests the legacy AbstractRange shape with OpaqueRange disabled. Remove when",
   "the OpaqueRange flag is removed. crbug.com/421421332",
   {

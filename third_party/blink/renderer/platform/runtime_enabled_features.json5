@@ -4401,6 +4401,12 @@
       status: "test"
     },
     {
+      // iframes send pagehide/unload/visibilitychange when removed.
+      // This not spec-compliant, but might have web-compat consequences.
+      // This flag omits firing those events on element removal.
+      name: "OmitSubframeDetachmentEventsOnRemoval",
+    },
+    {
       name: "OnDeviceWebSpeechAvailable",
       status: "stable",
     },
