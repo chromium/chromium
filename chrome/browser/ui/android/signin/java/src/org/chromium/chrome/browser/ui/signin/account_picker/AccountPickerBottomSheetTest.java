@@ -114,6 +114,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@Restriction(DeviceFormFactor.PHONE)
 public class AccountPickerBottomSheetTest {
 
     private static final String DOMAIN1 = "Domain1";

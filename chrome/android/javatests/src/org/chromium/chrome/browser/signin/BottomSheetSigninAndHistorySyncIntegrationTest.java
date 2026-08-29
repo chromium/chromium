@@ -71,6 +71,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -109,6 +110,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -122,6 +124,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
         message = "crbug.com/428281174")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
+@Restriction(DeviceFormFactor.PHONE)
 public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

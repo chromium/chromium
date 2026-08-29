@@ -901,7 +901,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     ACCOUNT_PICKER_DIALOG,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAllocInstanceIdIncreasedDefaultRange =
             newCachedFlag(ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =

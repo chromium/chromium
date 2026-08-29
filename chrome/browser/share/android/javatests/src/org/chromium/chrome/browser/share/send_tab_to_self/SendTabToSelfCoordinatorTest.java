@@ -231,6 +231,7 @@ public class SendTabToSelfCoordinatorTest {
     })
     // TODO(crbug.com/448227402): Remove this test once the migration to the activity-less sign-in
     // flow is complete.
+    @Restriction(DeviceFormFactor.PHONE)
     public void testShowSigninPromoIfSignedOut() {
         // An account must be added to the device so the promo is offered.
         mSyncTestRule.addAccount(TestAccounts.ACCOUNT1);
