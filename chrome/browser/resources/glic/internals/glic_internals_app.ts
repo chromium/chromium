@@ -8,9 +8,8 @@ import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationEligibility, ActuationTarget, FormFactor, FreOverride, GlicExperimentalTriggeringState, InvocationSource, Platform} from '../glic.mojom-webui.js';
-import {FeatureMode} from '../glic_enums.mojom-webui.js';
-import {browserProxyFactory, FreCompletionWaitMode} from '../glic_internals.mojom-webui.js';
+import {ActuationTarget, FeatureMode, FormFactor, FreOverride, InvocationSource, Platform} from '../glic_enums.mojom-webui.js';
+import {ActuationEligibility, browserProxyFactory, FreCompletionWaitMode, GlicExperimentalTriggeringState} from '../glic_internals.mojom-webui.js';
 import type {BrowserProxy, InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
@@ -460,7 +459,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       surface = {defaultSurface: {}};
     }
 
-    let payload = null;
+    let payload: TriggerInvokeFromInternalsOptions['payload'] = null;
     if (this.invokeInvocationSource_ === InvocationSource.kUniversalCart) {
       const bytes = this.invokePayloadUniversalCartMetadata_ ?
           Array.from(
@@ -487,12 +486,11 @@ export class GlicInternalsAppElement extends CrLitElement {
     const options: TriggerInvokeFromInternalsOptions = {
       invocationSource: this.invokeInvocationSource_,
       prompts: this.invokePrompt_ ? [this.invokePrompt_] : [],
-      additionalContext: null,
       conversation: conversationSelection,
       featureMode: this.invokeFeatureMode_,
       disableZss: false,
-      zssConfig: this.invokeZssOverride_ ?
-          {additionalContent: this.invokeZssAdditionalContent_ || null} :
+      zssAdditionalContent: this.invokeZssOverride_ ?
+          (this.invokeZssAdditionalContent_ || null) :
           null,
       skillId: null,
       errorMessage: null,

@@ -4,7 +4,7 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {InvocationSource} from '../glic.mojom-webui.js';
+import {InvocationSource} from '../glic_enums.mojom-webui.js';
 
 import type {GlicInternalsAppElement} from './glic_internals_app.js';
 

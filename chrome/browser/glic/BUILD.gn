@@ -706,6 +706,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//chrome/common:actor_webui_mojom",
+    "//chrome/common:glic_enums_mojom",
     "//components/content_settings/core/common:content_settings_types",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//mojo/public/mojom/base",

@@ -4,10 +4,106 @@
 
 module glic.mojom;
 
-import "chrome/browser/glic/host/glic.mojom";
 import "chrome/common/glic_enums.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
+
+enum GlicExperimentalTriggeringState {
+  kUnavailable = 0,
+  kNeedsOptIn = 1,
+  kReady = 2,
+};
+
+// Whether actuation is enabled, and if not, why not.
+enum ActuationEligibility {
+  kEligible,
+  kMissingAccountCapability,
+  kMissingChromeBenefits,
+  kDisabledByPolicy,
+  kEnterpriseWithoutManagement,
+  kPlatformUnsupported,
+};
+
+struct GeminiEnterpriseSettingsInfo {
+  string project_id;
+  string app_id;
+  string location;
+};
+
+// Struct containing data about eligibility for GLIC.
+struct ProfileEnablement {
+  // Whether the GLIC feature is enabled.
+  bool feature_enabled;
+
+  // Whether the profile is regular (e.g. not incognito)
+  bool is_regular_profile;
+
+  // Whether Glic is rolled out to the profile. Rollout can be enabled by the
+  // `GlicRollout` flag, or by the `GlicTieredRollout` flag and synced pref.
+  bool is_rolled_out;
+
+  // Whether a primary account exists and has the required Account Capabilities
+  // to use Glic.
+  bool primary_account_is_capable;
+
+  // Whether the primary account exists and is fully signed in.
+  bool primary_account_is_fully_signed_in;
+
+  // Whether the profile is allowed to use Glic by chrome policy.
+  bool allowed_by_chrome_policy;
+
+  // Whether the profile is allowed to use Glic by remote admin.
+  bool allowed_by_remote_admin;
+
+  // Whether the profile is allowed to use Glic by remote for other reasons.
+  bool allowed_by_remote_other;
+
+  // Whether the user has consented with the FRE.
+  bool fre_is_consented;
+
+  // Whether Glic access is allowed by country filtering.
+  bool allowed_by_country_filter;
+
+  // Whether Glic access is allowed by UI locale filtering.
+  bool allowed_by_locale_filter;
+
+  // Whether the user has consented to actuation.
+  bool actuation_is_consented;
+
+  // Whether live (audio) functionality is allowed for this account type.
+  bool live_allowed;
+
+  // Whether 'Create Image with Gemini' functionality is allowed for this
+  // account type.
+  bool share_image_allowed;
+
+  // Settings for Gemini Enterprise.
+  GeminiEnterpriseSettingsInfo? gemini_enterprise_settings;
+
+  // Summary of whether actuation is enabled, and if not, why not.
+  ActuationEligibility actuation_eligibility;
+
+  // Summary of whether Glic API actuation is enabled, and if not, why not.
+  ActuationEligibility glic_api_actuation_eligibility;
+
+  GlicExperimentalTriggeringState glic_experimental_triggering_state;
+};
+
+// Basic configuration information about Glic.
+struct ConfigInfo {
+  // The URL from which the guest web client is loaded from.
+  url.mojom.Url guest_url;
+
+  // User configured preset URLs for different environments of the guest web
+  // client.
+  url.mojom.Url autopush_guest_url;
+  url.mojom.Url staging_guest_url;
+  url.mojom.Url preprod_guest_url;
+  url.mojom.Url prod_guest_url;
+
+  // User configured preset URL for web continuity.
+  url.mojom.Url web_continuity_originating_host_url;
+};
 
 struct TieredRolloutInfo {
   // User's AI subscription tier (null if unavailable).
@@ -77,15 +173,52 @@ struct ScreenshotTestKeyConfiguration {
   string auth_secret;
 };
 
+// Use ongoing conversation for the tab if it exists. Otherwise, fall back
+// to the default behavior for opening the UI (typically a new conversation).
+struct DefaultConversation {};
+
+// Always invoke into a new conversation.
+struct NewConversation {};
+
+// Defines the conversation an invocation targets.
+union InvokeConversationSelection {
+  DefaultConversation default_conversation;
+  NewConversation new_conversation;
+  string conversation_id;
+};
+
+// Targets the default Glic surface (e.g., side panel).
+struct DefaultSurfaceMojo {};
+
+// Targets a new tab for the invocation.
+struct NewTabMojo {
+  bool open_in_foreground;
+};
+
+// Defines the surface an invocation targets.
+union InvokeTargetSurface {
+  DefaultSurfaceMojo default_surface;
+  NewTabMojo new_tab;
+};
+
+// Payload for Universal Cart invocation.
+struct UniversalCartPayloadMojo {
+  array<uint8> serialized_metadata;
+};
+
+// Source-specific payload for the invocation.
+union TriggerInvokePayload {
+  UniversalCartPayloadMojo universal_cart;
+};
+
 // Configuration options for invoking Glic from the internals page.
 struct TriggerInvokeFromInternalsOptions {
   InvocationSource invocation_source;
   array<string> prompts;
-  AdditionalContext? additional_context;
   InvokeConversationSelection conversation;
   FeatureMode? feature_mode;
   bool disable_zss;
-  ZssConfig? zss_config;
+  string? zss_additional_content;
   string? skill_id;
   string? error_message;
   mojo_base.mojom.TimeDelta? timeout;
@@ -100,7 +233,7 @@ struct TriggerInvokeFromInternalsOptions {
   array<int32>? specific_tabs_to_share_indices;
   ActuationTarget actuation_target;
   // Source-specific payload for the invocation.
-  InvocationPayload? payload;
+  TriggerInvokePayload? payload;
   bool take_screenshot;
   ScreenshotTestKeyConfiguration? key_config;
   bool supersede_if_in_progress;

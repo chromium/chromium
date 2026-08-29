@@ -6,8 +6,8 @@ import {assertNotReachedCase} from '//resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {PanelStateKind} from './glic.mojom-webui.js';
 import {GlicAppController} from './glic_app_controller.js';
+import {PanelStateKind} from './glic_enums.mojom-webui.js';
 import type {ProfileReadyState, ZoomAction} from './glic_webui.mojom-webui.js';
 
 export enum AppView {

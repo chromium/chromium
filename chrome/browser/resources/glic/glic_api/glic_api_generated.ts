@@ -126,24 +126,6 @@ export enum SbThreatType {
   UNWANTED_SOFTWARE = 3,
 }
 
-// The platform glic is running on.
-export enum Platform {
-  UNKNOWN = 0,
-  MAC_OS = 1,
-  WINDOWS = 2,
-  LINUX = 3,
-  CHROME_OS = 4,
-  ANDROID = 5,
-}
-
-// The form factor of the device glic is running on.
-export enum FormFactor {
-  UNKNOWN = 0,
-  DESKTOP = 1,
-  PHONE = 2,
-  TABLET = 3,
-}
-
 // Enum to specify the image format of the screenshot.
 export enum ScreenshotImageFormat {
   // JPEG screenshot format. This is the default format.
@@ -313,137 +295,6 @@ export enum RegisterConversationErrorReason {
   UNKNOWN = 0,
   // The instance already has a conversation ID.
   INSTANCE_ALREADY_HAS_CONVERSATION_ID = 1,
-}
-
-// The panel can be in one of these three states.
-export enum PanelStateKind {
-  // The panel is hidden.
-  HIDDEN = 0,
-  // The panel is a floating window, detached from any browser window.
-  DETACHED = 1,
-  // The panel is a side panel, attached to a browser window.
-  ATTACHED = 2,
-}
-
-// Represents an override of the First Run Experience (FRE).
-export enum FreOverride {
-  UNSPECIFIED = 0,
-  // Deprecated: No longer used.
-  // Variation that requires text input from the user to unlock full client.
-  TRUST_FIRST_TEXT = 1,
-  // Variation that requires mouse click from the user to unlock full client.
-  TRUST_FIRST_CLICK = 2,
-  // Variation that starts with full client unlocked and shows inline consent.
-  TRUST_FIRST_INLINE = 3,
-}
-
-// Entry points that can trigger the opening of the panel.
-export enum InvocationSource {
-  // Button in the OS.
-  OS_BUTTON = 0,
-  // Menu from button in the OS.
-  OS_BUTTON_MENU = 1,
-  // OS-level hotkey.
-  OS_HOTKEY = 2,
-  // Button in top-chrome.
-  TOP_CHROME_BUTTON = 3,
-  // First run experience.
-  FRE = 4,
-  // From the profile picker.
-  PROFILE_PICKER = 5,
-  // From tab strip nudge.
-  NUDGE = 6,
-  // From 3-dot menu.
-  THREE_DOTS_MENU = 7,
-  // An unsupported/unknown source.
-  UNSUPPORTED = 8,
-  // From the What's New page.
-  WHATS_NEW = 9,
-  // User clicked the sign-in button and signed in.
-  AFTER_SIGN_IN = 10,
-  // User shared a tab via the tab context menu.
-  SHARED_TAB = 11,
-  // From the actor task icon.
-  ACTOR_TASK_ICON = 12,
-  // User shared an image via the context menu.
-  SHARED_IMAGE = 13,
-  // From the handoff button.
-  HANDOFF_BUTTON = 14,
-  // From invoking skills.
-  SKILLS = 15,
-  // Automatically opened from contextual cueing.
-  AUTO_OPENED_BY_CONTEXTUAL_CUE = 16,
-  // User clicked the summarize button in the PDF viewer.
-  PDF_SUMMARIZE_BUTTON = 17,
-  // From a navigation capture.
-  NAVIGATION_CAPTURE = 18,
-  // Automatically opened for a PDF.
-  AUTO_OPENED_FOR_PDF = 19,
-  // Selection hotkey.
-  CAPTURE_REGION_HOTKEY = 20,
-  // From the in-product-help (IPH) entrypoint.
-  IPH = 21,
-  // User clicked an anchored contextual cue chip.
-  ANCHORED_CONTEXTUAL_CUE = 22,
-  // From the context menu.
-  WEB_CONTENTS_CONTEXT_MENU = 23,
-  // User clicked on text selection nudge.
-  TEXT_SELECTION_NUDGE = 24,
-  // User clicked on text selection widget.
-  TEXT_SELECTION_WIDGET = 25,
-  // Automatic summarization upon opening.
-  // Deprecated.
-  ZERO_STATE_AUTO_SUMMARIZE = 26,
-  // From the universal cart.
-  UNIVERSAL_CART = 27,
-  // Used exclusively for invocations originating from the
-  // GlicExperimentalTriggeringMessageHandler.
-  EXPERIMENTAL_TRIGGERING = 28,
-  // Actuation triggered by the password change feature.
-  PASSWORD_CHANGE = 29,
-  // From an Autofill action.
-  AUTOFILL = 30,
-  // Button in the toolbar.
-  TOOLBAR_BUTTON = 31,
-  // User clicked on an Indigo page action.
-  INDIGO_PAGE_ACTION = 32,
-  // User dropped a file/image onto the GLIC panel.
-  WEB_DRAG_DROP = 33,
-  // From the promotion page.
-  PROMOTION_PAGE = 34,
-  // Side panel remained open on a new tab.
-  DAISY_CHAIN_ON_NEW_TAB = 35,
-  // Side panel remained open on a follow-link.
-  DAISY_CHAIN_ON_FOLLOW_LINK = 36,
-  // User switched conversation.
-  CONVERSATION_SWITCH = 37,
-  // User detached or attached the panel.
-  DETACH_ATTACH_BUTTON = 38,
-  // Restarted from a restored tab.
-  TAB_RESTORE = 39,
-  // Implicitly focused or revealed, e.g., on tab switch or re-focus.
-  RESHOW_INACTIVE = 40,
-  // From the tab context menu.
-  TAB_CONTEXT_MENU = 41,
-  // From Web Continuity.
-  WEB_CONTINUITY = 42,
-}
-
-// Target for actuation.
-export enum ActuationTarget {
-  // Will default to the agent if the target is unknown.
-  UNKNOWN = 0,
-  // Agent infers the best location based on the prompt.
-  AGENT_DECIDES = 1,
-  // Forces actuation on the initiating tab.
-  CURRENT_TAB = 2,
-  // Forces actuation in a new tab.
-  NEW_TAB = 3,
-  // Forces actuation on the target surface, if the surface is a valid tab.
-  // Note: kTargetSurface can be different than kCurrentTab if the target
-  // surface is not the foregrounded tab. This option has no effect if the
-  // surface does not resolve to a valid tab.
-  TARGET_SURFACE = 4,
 }
 
 // Web client's operation modes.
@@ -663,6 +514,155 @@ export enum FeatureMode {
   PASSWORD_CHANGE = 6,
   // Client feature mode for Web Continuity.
   WEB_CONTINUITY = 7,
+}
+
+// The panel can be in one of these three states.
+export enum PanelStateKind {
+  // The panel is hidden.
+  HIDDEN = 0,
+  // The panel is a floating window, detached from any browser window.
+  DETACHED = 1,
+  // The panel is a side panel, attached to a browser window.
+  ATTACHED = 2,
+}
+
+// The platform glic is running on.
+export enum Platform {
+  UNKNOWN = 0,
+  MAC_OS = 1,
+  WINDOWS = 2,
+  LINUX = 3,
+  CHROME_OS = 4,
+  ANDROID = 5,
+}
+
+// The form factor of the device glic is running on.
+export enum FormFactor {
+  UNKNOWN = 0,
+  DESKTOP = 1,
+  PHONE = 2,
+  TABLET = 3,
+}
+
+// Represents an override of the First Run Experience (FRE).
+export enum FreOverride {
+  UNSPECIFIED = 0,
+  // Deprecated: No longer used.
+  // Variation that requires text input from the user to unlock full client.
+  TRUST_FIRST_TEXT = 1,
+  // Variation that requires mouse click from the user to unlock full client.
+  TRUST_FIRST_CLICK = 2,
+  // Variation that starts with full client unlocked and shows inline consent.
+  TRUST_FIRST_INLINE = 3,
+}
+
+// Entry points that can trigger the opening of the panel.
+export enum InvocationSource {
+  // Button in the OS.
+  OS_BUTTON = 0,
+  // Menu from button in the OS.
+  OS_BUTTON_MENU = 1,
+  // OS-level hotkey.
+  OS_HOTKEY = 2,
+  // Button in top-chrome.
+  TOP_CHROME_BUTTON = 3,
+  // First run experience.
+  FRE = 4,
+  // From the profile picker.
+  PROFILE_PICKER = 5,
+  // From tab strip nudge.
+  NUDGE = 6,
+  // From 3-dot menu.
+  THREE_DOTS_MENU = 7,
+  // An unsupported/unknown source.
+  UNSUPPORTED = 8,
+  // From the What's New page.
+  WHATS_NEW = 9,
+  // User clicked the sign-in button and signed in.
+  AFTER_SIGN_IN = 10,
+  // User shared a tab via the tab context menu.
+  SHARED_TAB = 11,
+  // From the actor task icon.
+  ACTOR_TASK_ICON = 12,
+  // User shared an image via the context menu.
+  SHARED_IMAGE = 13,
+  // From the handoff button.
+  HANDOFF_BUTTON = 14,
+  // From invoking skills.
+  SKILLS = 15,
+  // Automatically opened from contextual cueing.
+  AUTO_OPENED_BY_CONTEXTUAL_CUE = 16,
+  // User clicked the summarize button in the PDF viewer.
+  PDF_SUMMARIZE_BUTTON = 17,
+  // From a navigation capture.
+  NAVIGATION_CAPTURE = 18,
+  // Automatically opened for a PDF.
+  AUTO_OPENED_FOR_PDF = 19,
+  // Selection hotkey.
+  CAPTURE_REGION_HOTKEY = 20,
+  // From the in-product-help (IPH) entrypoint.
+  IPH = 21,
+  // User clicked an anchored contextual cue chip.
+  ANCHORED_CONTEXTUAL_CUE = 22,
+  // From the context menu.
+  WEB_CONTENTS_CONTEXT_MENU = 23,
+  // User clicked on text selection nudge.
+  TEXT_SELECTION_NUDGE = 24,
+  // User clicked on text selection widget.
+  TEXT_SELECTION_WIDGET = 25,
+  // Automatic summarization upon opening.
+  // Deprecated.
+  ZERO_STATE_AUTO_SUMMARIZE = 26,
+  // From the universal cart.
+  UNIVERSAL_CART = 27,
+  // Used exclusively for invocations originating from the
+  // GlicExperimentalTriggeringMessageHandler.
+  EXPERIMENTAL_TRIGGERING = 28,
+  // Actuation triggered by the password change feature.
+  PASSWORD_CHANGE = 29,
+  // From an Autofill action.
+  AUTOFILL = 30,
+  // Button in the toolbar.
+  TOOLBAR_BUTTON = 31,
+  // User clicked on an Indigo page action.
+  INDIGO_PAGE_ACTION = 32,
+  // User dropped a file/image onto the GLIC panel.
+  WEB_DRAG_DROP = 33,
+  // From the promotion page.
+  PROMOTION_PAGE = 34,
+  // Side panel remained open on a new tab.
+  DAISY_CHAIN_ON_NEW_TAB = 35,
+  // Side panel remained open on a follow-link.
+  DAISY_CHAIN_ON_FOLLOW_LINK = 36,
+  // User switched conversation.
+  CONVERSATION_SWITCH = 37,
+  // User detached or attached the panel.
+  DETACH_ATTACH_BUTTON = 38,
+  // Restarted from a restored tab.
+  TAB_RESTORE = 39,
+  // Implicitly focused or revealed, e.g., on tab switch or re-focus.
+  RESHOW_INACTIVE = 40,
+  // From the tab context menu.
+  TAB_CONTEXT_MENU = 41,
+  // From Web Continuity.
+  WEB_CONTINUITY = 42,
+}
+
+// Target for actuation.
+export enum ActuationTarget {
+  // Will default to the agent if the target is unknown.
+  UNKNOWN = 0,
+  // Agent infers the best location based on the prompt.
+  AGENT_DECIDES = 1,
+  // Forces actuation on the initiating tab.
+  CURRENT_TAB = 2,
+  // Forces actuation in a new tab.
+  NEW_TAB = 3,
+  // Forces actuation on the target surface, if the surface is a valid tab.
+  // Note: kTargetSurface can be different than kCurrentTab if the target
+  // surface is not the foregrounded tab. This option has no effect if the
+  // surface does not resolve to a valid tab.
+  TARGET_SURFACE = 4,
 }
 
 // Settings for Gemini Enterprise.

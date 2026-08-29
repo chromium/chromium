@@ -23,3 +23,170 @@ enum FeatureMode {
   // Client feature mode for Web Continuity.
   [MinVersion=4] kWebContinuity = 7,
 };
+
+// @generate glic_api
+// The panel can be in one of these three states.
+enum PanelStateKind {
+  // The panel is hidden.
+  kHidden = 0,
+  // The panel is a floating window, detached from any browser window.
+  kDetached = 1,
+  // The panel is a side panel, attached to a browser window.
+  kAttached = 2,
+};
+
+// @generate glic_api
+// The platform glic is running on.
+enum Platform {
+  kUnknown = 0,
+  kMacOS = 1,
+  kWindows = 2,
+  kLinux = 3,
+  kChromeOS = 4,
+  kAndroid = 5,
+};
+
+// @generate glic_api
+// The form factor of the device glic is running on.
+enum FormFactor {
+  kUnknown = 0,
+  kDesktop = 1,
+  kPhone = 2,
+  kTablet = 3,
+};
+
+// @generate glic_api
+// Represents an override of the First Run Experience (FRE).
+[Stable, Extensible]
+enum FreOverride {
+  [Default] kUnspecified = 0,
+  // Deprecated: No longer used.
+  // Variation that requires text input from the user to unlock full client.
+  kTrustFirstText = 1,
+  // Variation that requires mouse click from the user to unlock full client.
+  kTrustFirstClick = 2,
+  // Variation that starts with full client unlocked and shows inline consent.
+  kTrustFirstInline = 3,
+};
+
+// @generate glic_api
+// Entry points that can trigger the opening of the panel.
+// LINT.IfChange(InvocationSource)
+[Stable, Extensible]
+enum InvocationSource {
+  // Button in the OS.
+  kOsButton = 0,
+  // Menu from button in the OS.
+  kOsButtonMenu = 1,
+  // OS-level hotkey.
+  kOsHotkey = 2,
+  // Button in top-chrome.
+  kTopChromeButton = 3,
+  // First run experience.
+  kFre = 4,
+  // From the profile picker.
+  kProfilePicker = 5,
+  // From tab strip nudge.
+  kNudge = 6,
+  // From 3-dot menu.
+  kThreeDotsMenu = 7,
+  // An unsupported/unknown source.
+  /// The default is set to a valid value because this enum is only sent to the
+  /// web client, so Mojo will never handle an unknown value.
+  [Default] kUnsupported = 8,
+  // From the What's New page.
+  [MinVersion=1] kWhatsNew = 9,
+  // User clicked the sign-in button and signed in.
+  [MinVersion=2] kAfterSignIn = 10,
+  // User shared a tab via the tab context menu.
+  [MinVersion=3] kSharedTab = 11,
+  // From the actor task icon.
+  [MinVersion=4] kActorTaskIcon = 12,
+  // User shared an image via the context menu.
+  [MinVersion=5] kSharedImage = 13,
+  // From the handoff button.
+  [MinVersion=6] kHandoffButton = 14,
+  // From invoking skills.
+  [MinVersion=7] kSkills = 15,
+  // Automatically opened from contextual cueing.
+  [MinVersion=8] kAutoOpenedByContextualCue = 16,
+  // User clicked the summarize button in the PDF viewer.
+  [MinVersion=9] kPdfSummarizeButton = 17,
+  // From a navigation capture.
+  [MinVersion=10] kNavigationCapture = 18,
+  // Automatically opened for a PDF.
+  [MinVersion=11] kAutoOpenedForPdf = 19,
+  // Selection hotkey.
+  [MinVersion=12] kCaptureRegionHotkey = 20,
+  // From the in-product-help (IPH) entrypoint.
+  [MinVersion=13] kIph = 21,
+  // User clicked an anchored contextual cue chip.
+  [MinVersion=14] kAnchoredContextualCue = 22,
+  // From the context menu.
+  [MinVersion=15] kWebContentsContextMenu = 23,
+  // User clicked on text selection nudge.
+  [MinVersion=16] kTextSelectionNudge = 24,
+  // User clicked on text selection widget.
+  [MinVersion=16] kTextSelectionWidget = 25,
+  // Automatic summarization upon opening.
+  // Deprecated.
+  [MinVersion=17] kZeroStateAutoSummarize = 26,
+  // From the universal cart.
+  [MinVersion=18] kUniversalCart = 27,
+  // Used exclusively for invocations originating from the
+  // GlicExperimentalTriggeringMessageHandler.
+  [MinVersion=19] kExperimentalTriggering = 28,
+  // Actuation triggered by the password change feature.
+  [MinVersion=20] kPasswordChange = 29,
+  // From an Autofill action.
+  [MinVersion=21] kAutofill = 30,
+  // Button in the toolbar.
+  [MinVersion=22] kToolbarButton = 31,
+  // User clicked on an Indigo page action.
+  [MinVersion=23] kIndigoPageAction = 32,
+  // User dropped a file/image onto the GLIC panel.
+  [MinVersion=24] kWebDragDrop = 33,
+  // From the promotion page.
+  [MinVersion=25] kPromotionPage = 34,
+  // Side panel remained open on a new tab.
+  [MinVersion=26] kDaisyChainOnNewTab = 35,
+  // Side panel remained open on a follow-link.
+  [MinVersion=26] kDaisyChainOnFollowLink = 36,
+  // User switched conversation.
+  [MinVersion=26] kConversationSwitch = 37,
+  // User detached or attached the panel.
+  [MinVersion=26] kDetachAttachButton = 38,
+  // Restarted from a restored tab.
+  [MinVersion=26] kTabRestore = 39,
+  // Implicitly focused or revealed, e.g., on tab switch or re-focus.
+  [MinVersion=26] kReshowInactive = 40,
+  // From the tab context menu.
+  [MinVersion=27] kTabContextMenu = 41,
+  // From Web Continuity.
+  [MinVersion=28] kWebContinuity = 42,
+};
+
+// LINT.ThenChange(
+//  //tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource,
+// //tools/metrics/histograms/metadata/glic/histograms.xml:GlicInvocationSource,
+//  //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation
+// )
+
+// @generate glic_api
+// Target for actuation.
+[Stable, Extensible]
+enum ActuationTarget {
+  // Will default to the agent if the target is unknown.
+  [Default] kUnknown = 0,
+  // Agent infers the best location based on the prompt.
+  kAgentDecides = 1,
+  // Forces actuation on the initiating tab.
+  kCurrentTab = 2,
+  // Forces actuation in a new tab.
+  kNewTab = 3,
+  // Forces actuation on the target surface, if the surface is a valid tab.
+  // Note: kTargetSurface can be different than kCurrentTab if the target
+  // surface is not the foregrounded tab. This option has no effect if the
+  // surface does not resolve to a valid tab.
+  [MinVersion=1] kTargetSurface = 4,
+};

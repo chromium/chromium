@@ -100,7 +100,7 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   result->share_image_allowed = enablement.share_image_allowed;
   if (enablement.gemini_enterprise_settings) {
     result->gemini_enterprise_settings =
-        glic::mojom::GeminiEnterpriseSettings::New(
+        glic::mojom::GeminiEnterpriseSettingsInfo::New(
             enablement.gemini_enterprise_settings->project_id,
             enablement.gemini_enterprise_settings->app_id,
             enablement.gemini_enterprise_settings->location);
@@ -752,16 +752,13 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   }
 
   GlicInvokeOptions options =
-      mojo_options->payload
-          ? GlicInvokeOptions(std::move(mojo_options->payload))
+      mojo_options->payload && mojo_options->payload->is_universal_cart()
+          ? GlicInvokeOptions(mojom::InvocationPayload::NewUniversalCart(
+                mojom::UniversalCartPayload::New(
+                    std::move(mojo_options->payload->get_universal_cart()
+                                  ->serialized_metadata))))
           : GlicInvokeOptions(mojo_options->invocation_source);
   options.prompts = std::move(mojo_options->prompts);
-
-  if (mojo_options->additional_context) {
-    options.additional_context = AdditionalTabContext(
-        std::move(mojo_options->additional_context),
-        content::GlobalRenderFrameHostId(), PolicyCheck::kClipboard);
-  }
 
   if (mojo_options->conversation->is_new_conversation()) {
     options.target.conversation = NewConversation();
@@ -774,9 +771,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
 
   options.feature_mode = mojo_options->feature_mode;
   options.disable_zss = mojo_options->disable_zss;
-  if (mojo_options->zss_config) {
+  if (mojo_options->zss_additional_content) {
     options.zss_config =
-        ZssConfig(mojo_options->zss_config->additional_content);
+        ZssConfig(std::move(mojo_options->zss_additional_content));
   }
   options.skill_id = std::move(mojo_options->skill_id);
   options.error_message = std::move(mojo_options->error_message);

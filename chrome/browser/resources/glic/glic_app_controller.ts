@@ -7,8 +7,8 @@ import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
-import {PanelStateKind} from './glic.mojom-webui.js';
 import {WebClientState} from './glic_api_impl/host/glic_api_host.js';
+import {PanelStateKind} from './glic_enums.mojom-webui.js';
 import type {ZoomAction} from './glic_webui.mojom-webui.js';
 import {GuestPageType, HelpCenterTopic, PrepareForClientResult, ProfileReadyState, WebUiState} from './glic_webui.mojom-webui.js';
 import type {WebviewDelegate} from './webview.js';
