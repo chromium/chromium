@@ -1,0 +1,11 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary DrawElementImageOptions {
+  // If true, prevents the automatic update of the Element's geometry.
+  // If false, automatically updates the Element's geometry by calling
+  // `updateElementGeometry` with a `canvasTransform` that maps the element's
+  // border-box to the drawn position in the canvas.
+  boolean preserveElementGeometry = false;
+};

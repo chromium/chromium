@@ -57,7 +57,7 @@ class Canvas2DResourceProvider;
 class Canvas2DBitmapProvider;
 class CanvasContextCreationAttributesCore;
 class CanvasRenderingContext2DSettings;
-class DrawElementOptions;
+class DrawElementImageOptions;
 class ExceptionState;
 class ImageData;
 class ImageDataSettings;
@@ -197,7 +197,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
       const V8UnionElementOrElementImage* element,
       double dx,
       double dy,
-      const DrawElementOptions* options,
+      const DrawElementImageOptions* options,
       ExceptionState& exception_state);
   V8UnionDOMMatrixOrUndefined::Ret drawElementImage(
       ScriptState* script_state,
@@ -206,7 +206,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
       double dy,
       double dwidth,
       double dheight,
-      const DrawElementOptions* options,
+      const DrawElementImageOptions* options,
       ExceptionState& exception_state);
   V8UnionDOMMatrixOrUndefined::Ret drawElementImage(
       ScriptState* script_state,
@@ -217,7 +217,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
       double sheight,
       double dx,
       double dy,
-      const DrawElementOptions* options,
+      const DrawElementImageOptions* options,
       ExceptionState& exception_state);
   V8UnionDOMMatrixOrUndefined::Ret drawElementImage(
       ScriptState* script_state,
@@ -230,7 +230,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
       double dy,
       double dwidth,
       double dheight,
-      const DrawElementOptions* options,
+      const DrawElementImageOptions* options,
       ExceptionState& exception_state);
 
   V8UnionDOMMatrixOrUndefined::Ret DrawElementInternal(
@@ -244,7 +244,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
       double y,
       std::optional<double> dwidth,
       std::optional<double> dheight,
-      const DrawElementOptions* options,
+      const DrawElementImageOptions* options,
       ExceptionState& exception_state);
 
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>

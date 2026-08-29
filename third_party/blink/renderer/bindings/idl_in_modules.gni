@@ -111,7 +111,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_settings.idl",
-  "//third_party/blink/renderer/modules/canvas/canvas2d/draw_element_options.idl",
+  "//third_party/blink/renderer/modules/canvas/canvas2d/draw_element_image_options.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.idl",

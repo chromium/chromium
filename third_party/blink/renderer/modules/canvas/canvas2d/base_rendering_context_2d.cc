@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_variant_caps.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_draw_element_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_draw_element_image_options.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1350,7 +1350,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
     const V8UnionElementOrElementImage* element,
     double dx,
     double dy,
-    const DrawElementOptions* options,
+    const DrawElementImageOptions* options,
     ExceptionState& exception_state) {
   return DrawElementInternal(script_state, element,
                              /*sx*/ std::nullopt, /*sy*/ std::nullopt,
@@ -1367,7 +1367,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
     double dy,
     double dwidth,
     double dheight,
-    const DrawElementOptions* options,
+    const DrawElementImageOptions* options,
     ExceptionState& exception_state) {
   return DrawElementInternal(script_state, element,
                              /*sx*/ std::nullopt, /*sy*/ std::nullopt,
@@ -1384,7 +1384,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
     double sheight,
     double dx,
     double dy,
-    const DrawElementOptions* options,
+    const DrawElementImageOptions* options,
     ExceptionState& exception_state) {
   return DrawElementInternal(script_state, element, sx, sy, swidth, sheight, dx,
                              dy, /*dwidth*/ std::nullopt,
@@ -1403,7 +1403,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::drawElementImage(
     double dy,
     double dwidth,
     double dheight,
-    const DrawElementOptions* options,
+    const DrawElementImageOptions* options,
     ExceptionState& exception_state) {
   return DrawElementInternal(script_state, element, sx, sy, swidth, sheight, dx,
                              dy, dwidth, dheight, options, exception_state);
@@ -1420,7 +1420,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::DrawElementInternal(
     double y,
     std::optional<double> dwidth,
     std::optional<double> dheight,
-    const DrawElementOptions* options,
+    const DrawElementImageOptions* options,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       GetCanvasRenderingContextHost()->GetTopExecutionContext()));
@@ -1615,7 +1615,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::DrawElementInternal(
       child_paint_record->paint_state, Host()->Size(), draw_transform,
       element_canvas_transform_enabled);
 
-  if ((!options || options->updateGeometry()) &&
+  if ((!options || !options->preserveElementGeometry()) &&
       element_canvas_transform_enabled) {
     if (element->IsElement()) {
       Host()->UpdateDrawnElementGeometry(*element->GetAsElement(),
