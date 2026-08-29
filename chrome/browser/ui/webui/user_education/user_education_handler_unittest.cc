@@ -9,8 +9,10 @@
 
 #include "base/feature.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -24,6 +26,7 @@
 #include "components/user_education/test/mock_new_badge_controller.h"
 #include "components/user_education/webui/user_education.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -98,7 +101,9 @@ class TestUserEducationMixedTrustHandler
     return user_education_interface_;
   }
 
-  MOCK_METHOD(void, ReportBadMessage, (std::string_view), (override));
+  void ReportBadMessage(std::string_view error) override {
+    ASSERT_NE("", error);
+  }
 
  private:
   raw_ptr<user_education::NewBadgeRegistry> new_badge_registry_;
@@ -270,6 +275,9 @@ TEST_F(UserEducationMixedTrustHandlerTest, NoControllers) {
   using CallbackType = base::OnceCallback<void(bool)>;
   UNCALLED_MOCK_CALLBACK(CallbackType, callback);
   RemoveControllers();
+  handler_->MaybeShowFeaturePromo(
+      user_education::mojom::FeaturePromoParams::New(
+          kUserEducationMixedTrustHandlerTestPromoFeature1.name, std::nullopt));
   handler_->NotifyFeaturePromoFeatureUsed(
       kUserEducationMixedTrustHandlerTestPromoFeature1.name,
       user_education::mojom::FeaturePromoFeatureUsedAction::

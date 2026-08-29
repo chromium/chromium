@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 source_set("user_education") {
   sources = [
     "user_education_handler.cc",
@@ -33,6 +35,29 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/user_education/common",
     "//components/user_education/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/interaction:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "user_education_handler_browsertest.cc" ]
+  deps = [
+    ":user_education",
+    "//base/test:test_support",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/webui/user_education_internals",
+    "//chrome/test/base:testing_profile",
+    "//chrome/test/user_education",
+    "//components/feature_engagement",
+    "//components/feature_engagement/test:test_support",
+    "//components/user_education/common",
+    "//components/user_education/test",
+    "//components/user_manager",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/interaction:test_support",

@@ -28,8 +28,6 @@ void UserEducationMixedTrustHandlerBase::MaybeShowFeaturePromo(
 
   auto* const feature = FeaturePromoFeatureFromName(params->feature_name);
   if (!feature) {
-    ReportBadMessage("Unrecognized feature promo feature: " +
-                     params->feature_name);
     return;
   }
 
@@ -47,7 +45,6 @@ void UserEducationMixedTrustHandlerBase::NotifyFeaturePromoFeatureUsed(
   }
   auto* const feature = FeaturePromoFeatureFromName(feature_name);
   if (!feature) {
-    ReportBadMessage("Unrecognized feature promo feature: " + feature_name);
     return;
   }
   controller->NotifyFeatureUsedIfValid(*feature);
@@ -75,7 +72,6 @@ void UserEducationMixedTrustHandlerBase::NotifyNewBadgeFeatureUsed(
   }
   auto* const feature = NewBadgeFeatureFromName(feature_name);
   if (!feature) {
-    ReportBadMessage("Unrecognized New Badge feature: " + feature_name);
     return;
   }
   controller->NotifyFeatureUsed(*feature);
@@ -91,7 +87,6 @@ void UserEducationMixedTrustHandlerBase::MaybeShowNewBadgeFor(
   }
   auto* const feature = NewBadgeFeatureFromName(feature_name);
   if (!feature) {
-    ReportBadMessage("Unrecognized New Badge feature: " + feature_name);
     return;
   }
   std::move(callback).Run(controller->MaybeShowNewBadge(*feature));
@@ -99,23 +94,38 @@ void UserEducationMixedTrustHandlerBase::MaybeShowNewBadgeFor(
 
 const base::Feature*
 UserEducationMixedTrustHandlerBase::FeaturePromoFeatureFromName(
-    const std::string& feature_name) const {
-  for (auto& data : GetFeaturePromoRegistry()->feature_data()) {
+    const std::string& feature_name) {
+  auto* const registry = GetFeaturePromoRegistry();
+  if (!registry || registry->feature_data().empty()) {
+    // Browser doesn't support feature promos, this is okay.
+    return nullptr;
+  }
+
+  for (auto& data : registry->feature_data()) {
     if (data.first->name == feature_name) {
       return data.first;
     }
   }
+  // Browser does support feature promos but the name was actually bad.
+  ReportBadMessage("Unrecognized feature promo feature: " + feature_name);
   return nullptr;
 }
 
 const base::Feature*
 UserEducationMixedTrustHandlerBase::NewBadgeFeatureFromName(
-    const std::string& feature_name) const {
-  for (auto& data : GetNewBadgeRegistry()->feature_data()) {
+    const std::string& feature_name) {
+  auto* const registry = GetNewBadgeRegistry();
+  if (!registry) {
+    // Browser doesn't support new badges, this is okay.
+    return nullptr;
+  }
+  for (auto& data : registry->feature_data()) {
     if (data.first->name == feature_name) {
       return data.first;
     }
   }
+  // Browser does support new badges but the name was actually bad.
+  ReportBadMessage("Unrecognized New Badge feature: " + feature_name);
   return nullptr;
 }
 
@@ -138,27 +148,32 @@ void UserEducationMixedTrustHandler::ReportBadMessage(std::string_view error) {
 
 const user_education::NewBadgeRegistry*
 UserEducationMixedTrustHandler::GetNewBadgeRegistry() const {
-  return UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
-      ->new_badge_registry();
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext());
+  return service ? service->new_badge_registry() : nullptr;
 }
 
 user_education::NewBadgeController*
 UserEducationMixedTrustHandler::GetNewBadgeController() {
-  return UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
-      ->new_badge_controller();
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext());
+  return service ? service->new_badge_controller() : nullptr;
 }
 
 const user_education::FeaturePromoRegistry*
 UserEducationMixedTrustHandler::GetFeaturePromoRegistry() const {
-  return &UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
-              ->feature_promo_registry();
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext());
+  return service ? &service->feature_promo_registry() : nullptr;
 }
 
 user_education::FeaturePromoController*
 UserEducationMixedTrustHandler::GetFeaturePromoController() {
-  return UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
-      ->GetFeaturePromoController(
-          base::PassKey<UserEducationMixedTrustHandler>());
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext());
+  return service ? service->GetFeaturePromoController(
+                       base::PassKey<UserEducationMixedTrustHandler>())
+                 : nullptr;
 }
 
 feature_engagement::Tracker*

@@ -64,9 +64,8 @@ class UserEducationMixedTrustHandlerBase
 
  private:
   const base::Feature* FeaturePromoFeatureFromName(
-      const std::string& feature_name) const;
-  const base::Feature* NewBadgeFeatureFromName(
-      const std::string& feature_name) const;
+      const std::string& feature_name);
+  const base::Feature* NewBadgeFeatureFromName(const std::string& feature_name);
 };
 
 // The actual implementation to be used by WebUI.

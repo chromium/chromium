@@ -20,6 +20,7 @@ class WebUI;
 }  // namespace content
 
 class UserEducationInternalsUI;
+class UserEducationHandlerBrowsertest;
 
 class UserEducationInternalsUIConfig
     : public content::DefaultInternalWebUIConfig<UserEducationInternalsUI> {
@@ -74,6 +75,8 @@ class UserEducationInternalsUI
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  friend UserEducationHandlerBrowsertest;
 
   std::unique_ptr<
       mojom::user_education_internals::UserEducationInternalsPageHandler>
