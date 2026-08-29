@@ -286,7 +286,7 @@ chromium_luci.configure_targets(
             "win10": True,
             "win10-any": True,
             "win_gpu_gemma4_ai_wpt_dimensions": targets.IGNORE_UNUSED,
-            "xcode_26_main": True,
+            "xcode_27_main": True,
             "xctest": True,
 
             # The following mixins need to always be generated in mixins.pyl

@@ -961,7 +961,7 @@ coverage_builder(
             "mac_default_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_26_main",
+            "xcode_27_main",
             "xctest",
         ],
     ),
