@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -15,13 +17,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -150,7 +156,7 @@ public class ActorBackgroundActuationManager {
     }
 
     /**
-     * Cleans up the background session for the given context.
+     * Cleans up the background session and associated resources for a given context.
      *
      * @param glicTriggerMessageId The unique identifier for the context to clean up.
      */
@@ -158,10 +164,33 @@ public class ActorBackgroundActuationManager {
         ThreadUtils.assertOnUiThread();
         BackgroundSession session = findSessionByMessageId(glicTriggerMessageId);
         if (session != null) {
-            mBackgroundSessions.remove(session);
-            Tab lastActiveTab = session.getLastActiveTab();
-            if (lastActiveTab != null) {
-                OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
+            restoreWarmSession(session);
+            if (mBackgroundSessions.remove(session)) {
+                Tab lastActiveTab = session.getLastActiveTab();
+                if (lastActiveTab != null) {
+                    OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles task completion by restoring any warm background sessions for the task and stopping
+     * offscreen rendering.
+     *
+     * @param taskId The ID of the task that completed.
+     */
+    public void onTaskCompleted(int taskId) {
+        ThreadUtils.assertOnUiThread();
+        BackgroundSession session =
+                BackgroundSession.getSessionForTask(mBackgroundSessions, taskId);
+        if (session != null) {
+            restoreWarmSession(session);
+            if (mBackgroundSessions.remove(session)) {
+                Tab lastActiveTab = session.getLastActiveTab();
+                if (lastActiveTab != null) {
+                    OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
+                }
             }
         }
     }
@@ -169,6 +198,7 @@ public class ActorBackgroundActuationManager {
     /** Destroys all active background sessions. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
+        restoreWarmSessions();
         // Copy to avoid ConcurrentModificationException when onDestroyed triggers callback
         List<BackgroundSession> sessions = new ArrayList<>(mBackgroundSessions);
         mBackgroundSessions.clear();
@@ -176,6 +206,49 @@ public class ActorBackgroundActuationManager {
             Tab lastActiveTab = session.getLastActiveTab();
             if (lastActiveTab != null) {
                 OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
+            }
+        }
+    }
+
+    private void restoreWarmSessions() {
+        restoreWarmSessions(mBackgroundSessions);
+    }
+
+    private void restoreWarmSession(BackgroundSession session) {
+        restoreWarmSessions(Collections.singletonList(session));
+    }
+
+    private void restoreWarmSessions(List<BackgroundSession> targetSessions) {
+        if (targetSessions.isEmpty() || mBackgroundSessions.isEmpty()) return;
+
+        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (!(activity instanceof AsyncInitializationActivity asyncActivity)) continue;
+            if (asyncActivity.isFinishing() || asyncActivity.isDestroyed()) continue;
+
+            // Only tabbed activities managed by TabWindowManager have valid window IDs;
+            // non-tabbed activities and CCTs return INVALID_WINDOW_ID and are safely skipped.
+            int windowId = windowManager.getIdForWindow(activity);
+            if (windowId == TabWindowManager.INVALID_WINDOW_ID) continue;
+
+            ActivityWindowAndroid windowAndroid = asyncActivity.getWindowAndroid();
+            if (windowAndroid == null) continue;
+
+            TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
+            if (selector == null || !selector.isTabStateInitialized()) continue;
+
+            TabDelegateFactory tabDelegateFactory =
+                    selector.getTabCreatorManager()
+                            .getTabCreator(/* incognito= */ false)
+                            .createDefaultTabDelegateFactory();
+            if (tabDelegateFactory == null) continue;
+
+            List<BackgroundSession> restoredSessions =
+                    ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
+                            selector, windowId, windowAndroid, targetSessions, tabDelegateFactory);
+            mBackgroundSessions.removeAll(restoredSessions);
+            if (mBackgroundSessions.isEmpty()) {
+                return;
             }
         }
     }

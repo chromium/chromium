@@ -905,7 +905,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
     }
 
     /** Returns the default tab delegate factory to be used if creating new tabs w/o parents. */
-    private @Nullable TabDelegateFactory createDefaultTabDelegateFactory() {
+    @Override
+    public @Nullable TabDelegateFactory createDefaultTabDelegateFactory() {
         return mTabDelegateFactorySupplier != null ? mTabDelegateFactorySupplier.get() : null;
     }
 

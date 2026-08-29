@@ -181,6 +181,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             mActiveTaskIds.add(taskId);
         } else {
             mActiveTaskIds.remove(taskId);
+            getServiceController().onTaskCompleted(taskId);
         }
 
         refreshTaskUI(taskId, newState);

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -172,6 +173,14 @@ public interface TabCreator {
 
     /** Creates a new tab and loads the NTP. */
     void launchNtp(@TabLaunchType int type);
+
+    /**
+     * Returns the default {@link TabDelegateFactory} to be used if creating new tabs without
+     * parents or when reparenting tabs back to the foreground.
+     */
+    default @Nullable TabDelegateFactory createDefaultTabDelegateFactory() {
+        return null;
+    }
 
     /** Semi-tag interface to denote dependency and provide a setter for {@link TabModel}. */
     interface NeedsTabModel {

@@ -251,6 +251,14 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         }
     }
 
+    @Override
+    public void onTaskCompleted(int taskId) {
+        ThreadUtils.assertOnUiThread();
+        if (mBackgroundActuationManager != null) {
+            mBackgroundActuationManager.onTaskCompleted(taskId);
+        }
+    }
+
     public @Nullable ActorBackgroundActuationManager getBackgroundActuationManager() {
         return mBackgroundActuationManager;
     }
