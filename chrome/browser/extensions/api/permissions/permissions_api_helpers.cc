@@ -51,22 +51,18 @@ std::unique_ptr<APIPermission> UnpackPermissionWithArguments(
     return nullptr;
   }
 
-  std::unique_ptr<APIPermission> permission;
-
   // Explicitly check the permissions that accept arguments until
   // https://crbug.com/40294655 is fixed.
   const APIPermissionInfo* usb_device_permission_info =
       PermissionsInfo::GetInstance()->GetByID(
           mojom::APIPermissionID::kUsbDevice);
-  if (permission_name == usb_device_permission_info->name()) {
-    permission =
-        std::make_unique<UsbDevicePermission>(usb_device_permission_info);
-  } else {
+  if (permission_name != usb_device_permission_info->name()) {
     *error = kUnsupportedPermissionId;
     return nullptr;
   }
 
-  CHECK(permission);
+  auto permission =
+      std::make_unique<UsbDevicePermission>(usb_device_permission_info);
   if (!permission->FromValue(&permission_json.value(), nullptr, nullptr)) {
     *error = ErrorUtils::FormatErrorMessage(kInvalidParameter, permission_str);
     return nullptr;
@@ -238,8 +234,7 @@ UnpackPermissionSetResult::UnpackPermissionSetResult() = default;
 UnpackPermissionSetResult::~UnpackPermissionSetResult() = default;
 
 std::unique_ptr<Permissions> PackPermissionSet(const PermissionSet& set) {
-  std::unique_ptr<Permissions> permissions(new Permissions());
-
+  auto permissions = std::make_unique<Permissions>();
   permissions->permissions.emplace();
   for (const APIPermission* api : set.apis()) {
     std::unique_ptr<base::Value> value(api->ToValue());
