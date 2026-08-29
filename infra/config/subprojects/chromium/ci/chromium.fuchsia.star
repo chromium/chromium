@@ -256,6 +256,7 @@ ci.builder(
         },
     ),
     free_space = free_space.high,
+    tree_closing = False,
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
