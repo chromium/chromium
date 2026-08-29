@@ -117,14 +117,19 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Make sure everyone thinks we have an ethernet connection.
-    NetObserver().WaitForConnectionType(
+    NetObserver net_observer;
+    net_observer.WaitForConnectionType(
         net::NetworkChangeNotifier::CONNECTION_ETHERNET);
-    NetworkServiceObserver().WaitForConnectionType(
+    NetworkServiceObserver network_service_observer;
+    network_service_observer.WaitForConnectionType(
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
-    // Wait for all services to be removed.
+    // Wait until both consumers under test observe the no-network state.
     ShillServiceClient::Get()->GetTestInterface()->ClearServices();
-    base::RunLoop().RunUntilIdle();
+    net_observer.WaitForConnectionType(
+        net::NetworkChangeNotifier::CONNECTION_NONE);
+    network_service_observer.WaitForConnectionType(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   }
 
   ShillServiceClient::TestInterface* service_client() {
