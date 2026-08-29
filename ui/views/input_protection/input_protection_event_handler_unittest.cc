@@ -14,6 +14,9 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
@@ -59,6 +62,25 @@ class NonCancelableGestureEvent : public ui::GestureEvent {
     set_cancelable(false);
   }
 };
+
+// Test view that overrides `SkipDefaultKeyEventProcessing` to return true,
+// rather than allowing default `FocusManager` traversal.
+class SkipDefaultKeyEventProcessingTestView : public View {
+  METADATA_HEADER(SkipDefaultKeyEventProcessingTestView, View)
+
+ public:
+  SkipDefaultKeyEventProcessingTestView() {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+  }
+  ~SkipDefaultKeyEventProcessingTestView() override = default;
+
+  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override {
+    return true;
+  }
+};
+
+BEGIN_METADATA(SkipDefaultKeyEventProcessingTestView)
+END_METADATA
 
 }  // namespace
 
@@ -324,6 +346,271 @@ TEST_F(InputProtectionEventHandlerTest, NonCancelableEventSkipsEvaluation) {
   EXPECT_FALSE(non_cancelable_tap.cancelable());
   widget()->OnGestureEvent(&non_cancelable_tap);
   EXPECT_FALSE(non_cancelable_tap.stopped_propagation());
+}
+
+TEST_F(InputProtectionEventHandlerTest, KeyPressBlockedForActionKeys) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  EnableInputProtection(/*should_block=*/true);
+
+  // Pressing Space on the focused button should be evaluated and blocked.
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&space_press);
+  EXPECT_TRUE(space_press.stopped_propagation());
+  EXPECT_EQ(button_click_count(), 0);
+}
+
+TEST_F(InputProtectionEventHandlerTest, KeyPressAllowedTriggersAction) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  EnableInputProtection(/*should_block=*/false);
+
+  // Pressing and releasing Space on the focused button should trigger a click.
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&space_press);
+
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
+  widget()->OnKeyEvent(&space_release);
+  EXPECT_EQ(button_click_count(), 1);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       TabTraversalKeyBypassesInputProtection) {
+  // Add a second button to test focus traversal.
+  auto button2 =
+      std::make_unique<LabelButton>(Button::PressedCallback(), u"Button 2");
+  button2->SetBounds(120, 10, 100, 40);
+  auto* button2_ptr = button()->parent()->AddChildView(std::move(button2));
+
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // The protector should not even be called for Tab traversal.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  // Tab key should bypass input protection and advance focus to button 2.
+  ui::KeyEvent tab_press(ui::EventType::kKeyPressed, ui::VKEY_TAB, ui::EF_NONE);
+  widget()->OnKeyEvent(&tab_press);
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), button2_ptr);
+}
+
+TEST_F(InputProtectionEventHandlerTest, ArrowKeysBypassInputProtection) {
+  button()->RequestFocus();
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // Arrow keys are focus traversal keys and should not trigger input protection
+  // checks.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  ui::KeyEvent left_arrow(ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                          ui::EF_NONE);
+  widget()->OnKeyEvent(&left_arrow);
+
+  ui::KeyEvent right_arrow(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&right_arrow);
+
+  ui::KeyEvent up_arrow(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE);
+  widget()->OnKeyEvent(&up_arrow);
+
+  ui::KeyEvent down_arrow(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                          ui::EF_NONE);
+  widget()->OnKeyEvent(&down_arrow);
+}
+
+TEST_F(InputProtectionEventHandlerTest, KeyReleaseSkipsEvaluation) {
+  button()->RequestFocus();
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // Key releases should not trigger input protection checks.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
+  widget()->OnKeyEvent(&space_release);
+  EXPECT_FALSE(space_release.stopped_propagation());
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       ShiftTabTraversalKeyBypassesInputProtection) {
+  // Add a second button to test reverse focus traversal.
+  auto button2 =
+      std::make_unique<LabelButton>(Button::PressedCallback(), u"Button 2");
+  button2->SetBounds(120, 10, 100, 40);
+  button()->parent()->AddChildView(std::move(button2));
+
+  // Focus the first button, then advance to the second button.
+  button()->RequestFocus();
+  widget()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  ASSERT_NE(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // The protector should not be called for Shift-Tab traversal.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  // Shift-Tab key should bypass input protection and advance focus backwards.
+  ui::KeyEvent shift_tab_press(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                               ui::EF_SHIFT_DOWN);
+  widget()->OnKeyEvent(&shift_tab_press);
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       ArrowKeysBlockedForViewsSkippingDefaultProcessing) {
+  auto consuming_view =
+      std::make_unique<SkipDefaultKeyEventProcessingTestView>();
+  consuming_view->SetBounds(120, 10, 100, 40);
+  auto* consuming_view_ptr =
+      button()->parent()->AddChildView(std::move(consuming_view));
+
+  consuming_view_ptr->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), consuming_view_ptr);
+
+  EnableInputProtection(/*should_block=*/true);
+
+  // Since `SkipDefaultKeyEventProcessingTestView` skips default key processing,
+  // arrow keys are treated as action keys rather than focus traversal, so they
+  // must be blocked.
+  ui::KeyEvent left_arrow(ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                          ui::EF_NONE);
+  widget()->OnKeyEvent(&left_arrow);
+  EXPECT_TRUE(left_arrow.stopped_propagation());
+}
+
+TEST_F(InputProtectionEventHandlerTest, ModifiedArrowKeysBlocked) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  EnableInputProtection(/*should_block=*/true);
+
+  // Arrow keys with modifiers are not focus traversal keys and must be
+  // evaluated and blocked.
+  ui::KeyEvent shift_up(ui::EventType::kKeyPressed, ui::VKEY_UP,
+                        ui::EF_SHIFT_DOWN);
+  widget()->OnKeyEvent(&shift_up);
+  EXPECT_TRUE(shift_up.stopped_propagation());
+
+  ui::KeyEvent ctrl_down(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                         ui::EF_CONTROL_DOWN);
+  widget()->OnKeyEvent(&ctrl_down);
+  EXPECT_TRUE(ctrl_down.stopped_propagation());
+
+  ui::KeyEvent alt_left(ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                        ui::EF_ALT_DOWN);
+  widget()->OnKeyEvent(&alt_left);
+  EXPECT_TRUE(alt_left.stopped_propagation());
+
+  ui::KeyEvent altgr_right(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_ALTGR_DOWN);
+  widget()->OnKeyEvent(&altgr_right);
+  EXPECT_TRUE(altgr_right.stopped_propagation());
+}
+
+TEST_F(InputProtectionEventHandlerTest, ModifiedTabKeysBlocked) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  EnableInputProtection(/*should_block=*/true);
+
+  // Tab keys with Ctrl or Alt are not focus traversal keys and must be
+  // evaluated and blocked.
+  ui::KeyEvent ctrl_tab(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                        ui::EF_CONTROL_DOWN);
+  widget()->OnKeyEvent(&ctrl_tab);
+  EXPECT_TRUE(ctrl_tab.stopped_propagation());
+
+  ui::KeyEvent alt_tab(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                       ui::EF_ALT_DOWN);
+  widget()->OnKeyEvent(&alt_tab);
+  EXPECT_TRUE(alt_tab.stopped_propagation());
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       ArrowKeysBypassProtectionWithoutFocusedView) {
+  widget()->GetFocusManager()->ClearFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), nullptr);
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // Arrow keys are focus traversal keys even when no view is focused and should
+  // not trigger input protection checks.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  ui::KeyEvent right_arrow(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&right_arrow);
+  EXPECT_FALSE(right_arrow.stopped_propagation());
+}
+
+TEST_F(InputProtectionEventHandlerTest, ReturnKeyPressBlocked) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  EnableInputProtection(/*should_block=*/true);
+
+  // Pressing Return on the focused button should be evaluated and blocked.
+  ui::KeyEvent return_press(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                            ui::EF_NONE);
+  widget()->OnKeyEvent(&return_press);
+  EXPECT_TRUE(return_press.stopped_propagation());
+  EXPECT_EQ(button_click_count(), 0);
+}
+
+TEST_F(InputProtectionEventHandlerTest, AccessibilityModeBypassesProtection) {
+  button()->RequestFocus();
+  ASSERT_EQ(widget()->GetFocusManager()->GetFocusedView(), button());
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  // In accessibility mode, the protector should not be queried.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(_, _, _))
+      .Times(0);
+  widget()->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  // When accessibility is enabled, input protection should be bypassed.
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+
+  ui::KeyEvent space_press(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  widget()->OnKeyEvent(&space_press);
+
+  ui::KeyEvent space_release(ui::EventType::kKeyReleased, ui::VKEY_SPACE,
+                             ui::EF_NONE);
+  widget()->OnKeyEvent(&space_release);
+
+  EXPECT_EQ(button_click_count(), 1);
 }
 
 }  // namespace views::test

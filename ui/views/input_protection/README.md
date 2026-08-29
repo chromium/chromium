@@ -90,7 +90,7 @@ The framework automatically handles:
   the local coordinate space of the owner view to screen coordinates.
 
 The `InputProtectionSpecification` is currently only used by the
-[Occlusion-Aware Input Protection Policy](#occlusion-aware-input-protection-policy)
+[Occlusion Aware Input Protection Policy](#occlusion-aware-input-protection-policy)
 during event evaluation. Other policies (such as default cooldown or window
 activation policies) do not query these bounds.
 
@@ -123,7 +123,7 @@ Implemented by `WindowActivationInputProtectionPolicy`:
   window was previously invisible. This protects against cases where a dialog
   suddenly appears and steals focus just as the user is clicking.
 
-### Occlusion-Aware Input Protection Policy
+### Occlusion Aware Input Protection Policy
 
 Implemented by `OcclusionAwareInputProtectionPolicy`:
 
@@ -176,7 +176,7 @@ ______________________________________________________________________
 ## Always-On-Top Occlusion Tracking (OccludedWidgetInputProtector)
 
 `OccludedWidgetInputProtector` is a singleton that tracks always-on-top widgets
-to prevent occlusion-based attacks.
+to prevent occlusion based attacks.
 
 While it operates as a tracker for occlusion by always-on-top windows, it is
 primarily queried by the `OcclusionAwareInputProtectionPolicy` to check if a
@@ -316,14 +316,45 @@ incoming user interactions before they are dispatched down the view hierarchy.
 ##### Event Interception and Filtering
 
 The handler listens for user interaction entry-points across multiple input
-modalities, including mouse presses (`kMousePressed`), touch presses
-(`kTouchPressed`), and gesture tap sequences (`kGestureTap`, `kGestureTapDown`,
-`kGestureDoubleTap`, `kGestureLongPress`, `kGestureLongTap`).
+modalities:
+
+- **Pointer/Touch Events**: Mouse presses (`kMousePressed`), touch presses
+  (`kTouchPressed`), and gesture tap sequences (`kGestureTap`,
+  `kGestureTapDown`, `kGestureDoubleTap`, `kGestureLongPress`,
+  `kGestureLongTap`).
+- **Key Events**: Key presses (`kKeyPressed`, e.g., Space or Return on a focused
+  view).
 
 To prevent redundant processing on re-dispatched or re-routed events, the
 handler stamps every evaluated event with the `kPropertyInputProtected`
 property. If an event is already tagged with this property, subsequent
 evaluations are skipped.
+
+###### Focus Traversal Key Bypass
+
+A **focus traversal key** is a key event used by `FocusManager` to move focus
+between focusable views in the UI hierarchy.
+
+Focus traversal keys include:
+
+- **Tab Traversal**: Unmodified Tab (forward) and Shift+Tab (reverse) keys
+  (without Ctrl or Alt).
+- **Arrow Key Traversal**: Unmodified arrow keys (Up, Down, Left, Right) when
+  directed to views that do not consume them internally. If the focused view
+  overrides `View::SkipDefaultKeyEventProcessing` (such as a `Textfield` that
+  handles arrow keys for text caret movement), arrow keys are treated as action
+  keys rather than traversal keys and are subject to input protection.
+
+Any other key events (such as Space, Return, or keys with modifiers like
+`Ctrl+Arrow`) are treated as action keys and are evaluated by input protection
+policies.
+
+###### Accessibility Mode Bypass
+
+When any accessibility mode is active
+(`!ui::AXPlatform::GetInstance().GetMode().is_mode_off()`), input protection is
+completely bypassed without querying active policies to avoid interfering with
+assistive technologies.
 
 ##### Policy Evaluation via PassKey
 
@@ -392,7 +423,7 @@ widget->EnableInputEventActivationProtection(std::move(custom_protector));
 If a view requires localized input protection (e.g., only protecting a specific
 sensitive button rather than the entire view), you can install an
 `InputProtectionSpecification` on the view. This is queried by the
-[Occlusion-Aware Input Protection Policy](#occlusion-aware-input-protection-policy)
+[Occlusion Aware Input Protection Policy](#occlusion-aware-input-protection-policy)
 during pre-target event evaluation.
 
 To install a specification, call `InputProtectionSpecification::Install` during
@@ -517,7 +548,7 @@ If a view requires localized input protection (e.g., only protecting a specific
 button rather than the entire view), you can install an
 `InputProtectionSpecification` on the view. This is currently only queried by
 the
-[Occlusion-Aware Input Protection Policy](#occlusion-aware-input-protection-policy).
+[Occlusion Aware Input Protection Policy](#occlusion-aware-input-protection-policy).
 
 To do this, call `InputProtectionSpecification::Install` during your view's
 initialization:

@@ -12,6 +12,7 @@
 namespace ui {
 class Event;
 class GestureEvent;
+class KeyEvent;
 class MouseEvent;
 class TouchEvent;
 }  // namespace ui
@@ -39,6 +40,7 @@ class VIEWS_EXPORT InputProtectionEventHandler : public ui::EventHandler {
       delete;
 
   // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
