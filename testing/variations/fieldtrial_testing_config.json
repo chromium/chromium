@@ -13615,6 +13615,25 @@
             ]
         }
     ],
+    "NtpScaledActionChips": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_DirectNavigation_AddTab",
+                    "enable_features": [
+                        "NtpScaledActionChips",
+                        "NtpScaledActionChipsSmall"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpUICleanup": [
         {
             "platforms": [

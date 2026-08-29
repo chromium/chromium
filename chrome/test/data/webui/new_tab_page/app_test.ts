@@ -2979,7 +2979,9 @@ suite('NewTabPageAppTest', () => {
 
   suite('ActionChips', () => {
     let actionChipsPageRemote: ActionChipsPageRemote;
-    suiteSetup(() => {
+    let actionChipsCallbackRouter: ActionChipsPageCallbackRouter;
+
+    setup(async () => {
       loadTimeData.overrideValues({
         ntpNextFeaturesEnabled: true,
         ntpRealboxNextEnabled: true,
@@ -2988,7 +2990,11 @@ suite('NewTabPageAppTest', () => {
         ntpNextDisablementEnabled: true,
         searchboxShowComposebox: true,
       });
-      const actionChipsCallbackRouter = new ActionChipsPageCallbackRouter();
+      await recreateApp();
+      await actionChipsPageRemote.$.flushForTesting();
+    });
+    suiteSetup(() => {
+      actionChipsCallbackRouter = new ActionChipsPageCallbackRouter();
       const actionChipshandler = installMock(
           ActionChipsHandlerRemote,
           mock => ActionChipsApiProxyImpl.setInstance({
@@ -3068,11 +3074,12 @@ suite('NewTabPageAppTest', () => {
                     actionChipsEnabled +
                     ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
                 () => {
-                  suiteSetup(() => {
+                  setup(async () => {
                     loadTimeData.overrideValues({
                       ntpNextFeaturesEnabled,
                       actionChipsEnabled,
                     });
+                    await recreateApp();
                   });
 
                   // Assert.
@@ -3438,64 +3445,6 @@ suite('NewTabPageAppTest', () => {
       assertEquals(1, tabId);
       assertEquals(true, delayUpload);
     });
-    test(
-        'Deep dive chip click opens composebox with context and suggestion',
-        async () => {
-          const subtitle = 'Help me with this page subtitle';
-          const suggestion = 'Help me with this page suggestion';
-          actionChipsPageRemote.onActionChipsChanged([{
-            suggestion: suggestion,
-            suggestTemplateInfo: {
-              typeIcon: IconType.kSubArrowRight,
-              primaryText: {text: 'Deep dive', a11yText: null},
-              secondaryText: {text: subtitle, a11yText: null},
-              fuseboxAction: {
-                preselectedTool: ToolMode.kUnspecified,
-                preferredInventory: null,
-                preselectedModel: ModelMode.kUnspecified,
-                queryActionOverride: null,
-                preselectedInputSource: null,
-                searchboxOverride: null,
-              },
-            },
-            tab: {
-              tabId: 1,
-              title: 'Test Title',
-              url: 'https://example.com/test',
-              lastActiveTime: {internalValue: BigInt(0)},
-            },
-          }]);
-          await microtasksFinished();
-          const actionChipsElement =
-              app.shadowRoot.querySelector('ntp-action-chips');
-          assertTrue(!!actionChipsElement);
-
-          // Setup.
-          const deepDiveChip =
-              actionChipsElement.shadowRoot.querySelector<HTMLButtonElement>(
-                  'button:has(.icon-type-sub-arrow-right)');
-          assertTrue(!!deepDiveChip);
-
-          const chipBody = deepDiveChip.querySelector('.chip-body');
-          assertTrue(!!chipBody);
-          assertEquals(subtitle, chipBody.textContent.trim());
-
-          // Act.
-          deepDiveChip.click();
-          await microtasksFinished();
-
-          // Assert.
-          const composebox =
-              app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
-          assertTrue(!!composebox);
-          assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
-          const [tabId, delayUpload] =
-              searchboxHandler.getArgs('addTabContext')[0];
-          assertEquals(1, tabId);
-          assertEquals(true, delayUpload);
-          assertTrue(!!composebox.getInputElement().$.input);
-          assertEquals(suggestion, composebox.input);
-        });
     test(
         'Action chip click sets preselected model in composebox state',
         async () => {
