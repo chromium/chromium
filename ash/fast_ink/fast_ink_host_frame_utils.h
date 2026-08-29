@@ -17,7 +17,6 @@
 namespace viz {
 class ClientResourceProvider;
 class CompositorFrame;
-class RasterContextProvider;
 }  // namespace viz
 
 namespace gfx {
@@ -26,7 +25,7 @@ class Size;
 
 namespace gpu {
 class ClientSharedImage;
-}
+}  // namespace gpu
 
 namespace aura {
 class Window;
@@ -68,9 +67,6 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     viz::ClientResourceProvider& client_resource_provider,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);
-
-// Returns the RasterContextProvider used within FastInk.
-ASH_EXPORT scoped_refptr<viz::RasterContextProvider> GetContextProvider();
 
 }  // namespace fast_ink_internal
 }  // namespace ash

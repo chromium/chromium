@@ -4,24 +4,23 @@
 
 #include "ash/fast_ink/view_tree_host_root_view_frame_factory.h"
 
+#include <memory>
+
 #include "ash/frame_sink/frame_sink_host.h"
+#include "ash/frame_sink/frame_sink_utils.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/display_item_list.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/common/shared_image_capabilities.h"
-#include "gpu/command_buffer/common/shared_image_usage.h"
-#include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer_textured.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -35,16 +34,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace {
-
-constexpr viz::SharedImageFormat kSharedImageFormat =
-    SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
-                 : viz::SinglePlaneFormat::kBGRA_8888;
-
-}  // namespace
-
-// -----------------------------------------------------------------------------
-// ViewTreeHostRootViewFrameFactory:
 
 ViewTreeHostRootViewFrameFactory::ViewTreeHostRootViewFrameFactory(
     views::Widget* widget)
@@ -114,8 +103,8 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
 
   // To ensure that the damage_rect is not bigger than the output_rect. We can
   // have 1px off errors when converting from dip to pixel values for certain
-  // device scale factor values what can lead the damage_rect to be bigger than
-  // output_rect.
+  // device scale factor values what can lead the damage_rect to be bigger
+  // than output_rect.
   damage_rect.Intersect(output_rect);
 
   auto render_pass = viz::CompositorRenderPass::Create(
@@ -127,9 +116,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
                       buffer_to_target_transform);
 
-  auto context_provider = aura::Env::GetInstance()
-                              ->context_factory()
-                              ->SharedMainThreadRasterContextProvider();
+  auto context_provider = frame_sink_utils::GetContextProvider();
   if (!context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
     return nullptr;
@@ -139,7 +126,9 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
       context_provider->SharedImageInterface();
 
   cc::ResourcePool::InUsePoolResource resource =
-      AcquireResource(buffer_size, use_overlays, resource_pool, sii.get());
+      frame_sink_utils::AcquirePooledResource(buffer_size, use_overlays,
+                                              resource_pool, sii.get(),
+                                              "FastInkRootViewFrame");
   if (!resource) {
     return nullptr;
   }
@@ -147,15 +136,8 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   Paint(total_damage_rect, rotation_transform,
         resource.backing()->shared_image().get());
 
-  resource.backing()->mailbox_sync_token =
-      resource.backing()->shared_image()->BackingWasExternallyUpdated(
-          resource.backing()->returned_sync_token);
-
-  resource_pool.PrepareForExport(
-      resource, viz::TransferableResource::ResourceSource::kUI);
-
-  client_resource_provider.PrepareSendToParent(
-      {resource.resource_id_for_export()}, &frame->resource_list, sii.get());
+  frame_sink_utils::PrepareToExportResource(
+      resource, resource_pool, client_resource_provider, sii.get(), *frame);
 
   AppendQuad(*render_pass, frame->resource_list.back(), output_rect,
              buffer_size, buffer_to_target_transform);
@@ -235,40 +217,5 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
                        /*is_tex_coords_normalized=*/false);
 }
 
-cc::ResourcePool::InUsePoolResource
-ViewTreeHostRootViewFrameFactory::AcquireResource(
-    const gfx::Size& size,
-    bool is_overlay_candidate,
-    cc::ResourcePool& resource_pool,
-    gpu::SharedImageInterface* sii) const {
-  DCHECK(sii);
-  cc::ResourcePool::InUsePoolResource resource = resource_pool.AcquireResource(
-      size, kSharedImageFormat, gfx::ColorSpace());
-  if (!resource) {
-    return resource;
-  }
-
-  if (!resource.backing()) {
-    auto backing = std::make_unique<cc::ResourcePool::Backing>(
-        resource.size(), resource.format(), resource.color_space());
-
-    gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (is_overlay_candidate &&
-        sii->GetCapabilities().supports_scanout_shared_images) {
-      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    }
-
-    if (!backing->CreateSharedImage(sii, usage, "FastInkRootViewFrame",
-                                    gfx::BufferUsage::SCANOUT_CPU_READ_WRITE)) {
-      LOG(ERROR) << "Failed to create MappableSharedImage";
-      resource_pool.ReleaseResource(std::move(resource));
-      return cc::ResourcePool::InUsePoolResource();
-    }
-
-    resource.set_backing(std::move(backing));
-  }
-
-  return resource;
-}
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/frame_sink/frame_sink_host.h"
+#include "ash/frame_sink/frame_sink_utils.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "cc/base/math_util.h"
@@ -14,6 +15,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -36,7 +38,6 @@ namespace {
 void AppendQuad(const viz::TransferableResource& resource,
                 const gfx::Rect& output_rect,
                 const gfx::Rect& quad_rect,
-                const gfx::Size& buffer_size,
                 const gfx::Transform& buffer_to_target_transform,
                 bool auto_update,
                 viz::CompositorRenderPass& render_pass_out) {
@@ -86,10 +87,11 @@ scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     const gfx::Size& size,
     gpu::SharedImageUsageSet shared_image_usage,
     gfx::BufferUsage buffer_usage) {
-  return GetContextProvider()->SharedImageInterface()->CreateSharedImage(
-      {kFastInkSharedImageFormat, size, gfx::ColorSpace(), shared_image_usage,
-       "FastInkHostUIResource"},
-      gpu::kNullSurfaceHandle, buffer_usage);
+  return frame_sink_utils::GetContextProvider()
+      ->SharedImageInterface()
+      ->CreateSharedImage({kFastInkSharedImageFormat, size, gfx::ColorSpace(),
+                           shared_image_usage, "FastInkHostUIResource"},
+                          gpu::kNullSurfaceHandle, buffer_usage);
 }
 
 std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
@@ -160,7 +162,7 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
                       buffer_to_target_transform);
 
-  auto context_provider = GetContextProvider();
+  auto context_provider = frame_sink_utils::GetContextProvider();
   if (!context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
     return nullptr;
@@ -193,7 +195,7 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       {resource_id}, &frame->resource_list, sii.get());
 
   // In auto_update mode, we use hardware overlays to render the content.
-  AppendQuad(frame->resource_list.back(), output_rect, quad_rect, buffer_size,
+  AppendQuad(frame->resource_list.back(), output_rect, quad_rect,
              buffer_to_target_transform, auto_update, *render_pass);
 
   client_resource_provider.RemoveImportedResource(resource_id);
@@ -201,12 +203,6 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   frame->render_pass_list.push_back(std::move(render_pass));
 
   return frame;
-}
-
-scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
-  return aura::Env::GetInstance()
-      ->context_factory()
-      ->SharedMainThreadRasterContextProvider();
 }
 
 }  // namespace ash::fast_ink_internal

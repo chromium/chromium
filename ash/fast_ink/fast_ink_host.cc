@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/fast_ink/fast_ink_host_frame_utils.h"
+#include "ash/frame_sink/frame_sink_utils.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -153,7 +154,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
   // latency but with potential tearing. Note that to avoid flicker, we draw
   // into a temporary surface and copy it into the mappable SI (see the
   // DrawBitmap() method below).
-  context_provider_ = fast_ink_internal::GetContextProvider();
+  context_provider_ = frame_sink_utils::GetContextProvider();
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // This SharedImage will be used by the display compositor, will be updated

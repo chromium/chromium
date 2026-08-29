@@ -19,7 +19,6 @@ class Window;
 
 namespace gpu {
 class ClientSharedImage;
-class SharedImageInterface;
 }  // namespace gpu
 
 namespace viz {
@@ -56,12 +55,6 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
                   const gfx::Transform& buffer_to_target_transform,
                   const RoundedDisplayGutter& gutter,
                   viz::CompositorRenderPass& render_pass_out) const;
-
-  cc::ResourcePool::InUsePoolResource AcquireResource(
-      const gfx::Size& size,
-      bool is_overlay_candidate,
-      cc::ResourcePool& resource_pool,
-      gpu::SharedImageInterface* sii) const;
 
   // Paints the gutter's texture into the SharedImage.
   void Paint(const RoundedDisplayGutter& gutter,

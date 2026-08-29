@@ -1,4 +1,5 @@
 include_rules = [
+  "+gpu/command_buffer/common/shared_image_capabilities.h",
   "+gpu/command_buffer/client/test_shared_image_interface.h",
   "+gpu/ipc/client/client_shared_image_interface.h",
   "+cc/resources/resource_pool.h",

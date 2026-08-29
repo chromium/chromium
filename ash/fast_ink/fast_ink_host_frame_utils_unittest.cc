@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/frame_sink/frame_sink_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/raw_ptr.h"
@@ -103,7 +104,7 @@ class FastInkHostCreateFrameUtilTestBase : public AshTestBase {
   }
 
   gpu::SharedImageInterface* shared_image_interface() {
-    return fast_ink_internal::GetContextProvider()->SharedImageInterface();
+    return frame_sink_utils::GetContextProvider()->SharedImageInterface();
   }
 
   viz::ClientResourceProvider client_resource_provider_;

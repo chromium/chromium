@@ -16,7 +16,6 @@
 
 namespace gpu {
 class ClientSharedImage;
-class SharedImageInterface;
 }  // namespace gpu
 
 namespace viz {
@@ -64,12 +63,6 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
                   const gfx::Rect& output_rect,
                   const gfx::Size& buffer_size,
                   const gfx::Transform& buffer_to_target_transform) const;
-
-  cc::ResourcePool::InUsePoolResource AcquireResource(
-      const gfx::Size& size,
-      bool is_overlay_candidate,
-      cc::ResourcePool& resource_pool,
-      gpu::SharedImageInterface* sii) const;
 
   raw_ptr<views::Widget, DanglingUntriaged> widget_;
 };
