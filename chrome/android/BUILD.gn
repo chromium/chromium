@@ -369,6 +369,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/android/screenshot_protection:java",
       "//chrome/browser/autofill/android:java",
       "//chrome/browser/auxiliary_search:java",
+      "//chrome/browser/auxiliary_search:module_java",
       "//chrome/browser/auxiliary_search/proto:proto_java",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/battery/android:java",

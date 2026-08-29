@@ -129,12 +129,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchTopSiteProviderBridge.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtils.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/FetchAndRankHelper.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilder.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleCoordinator.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediator.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleProperties.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleView.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleViewBinder.java",
   ]
 
   deps = [
@@ -153,7 +147,6 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -176,6 +169,31 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:url_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.auxiliary_search"
+}
+
+android_library("module_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilder.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleView.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleViewBinder.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/segmentation_platform/public:public_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.auxiliary_search"
@@ -228,6 +246,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    ":module_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
