@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxControls;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -85,6 +86,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.AsyncViewStub;
+import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -504,6 +506,59 @@ public class TabSearchOverlayCoordinator
         var urlBar = (UrlBar) locationBarCoordinator.getContainerView().findViewById(R.id.url_bar);
         if (urlBar != null) {
             urlBar.setTextAppearance(R.style.TextAppearance_TextMedium);
+            urlBar.setAccessibilityTraversalAfter(R.id.tab_search_close_button);
+
+            LinearLayout panelContainer = assumeNonNull(mPanelContainer);
+            View closeButton =
+                    assumeNonNull(panelContainer.findViewById(R.id.tab_search_close_button));
+            closeButton.setFocusableInTouchMode(true);
+
+            var suggestionsVisualState = locationBarCoordinator.getOmniboxSuggestionsVisualState();
+            AutocompleteCoordinator autocompleteCoordinator =
+                    suggestionsVisualState instanceof AutocompleteCoordinator coordinator
+                            ? coordinator
+                            : null;
+            View.OnKeyListener omniboxKeyDownListener =
+                    locationBarCoordinator.getOmniboxStub() instanceof View.OnKeyListener listener
+                            ? listener
+                            : null;
+
+            View.OnKeyListener keyListener =
+                    (v, keyCode, event) -> {
+                        boolean isTabBack = KeyNavigationUtil.isTabBackward(event);
+                        boolean isUp = KeyNavigationUtil.isGoUp(event) && event.hasNoModifiers();
+                        Integer selectedIndex =
+                                autocompleteCoordinator != null
+                                        ? autocompleteCoordinator.getSelectedIndex()
+                                        : null;
+
+                        if (isTabBack || isUp) {
+                            if (selectedIndex == null) {
+                                closeButton.requestFocus();
+                                return true;
+                            } else if (selectedIndex <= 0) {
+                                if (autocompleteCoordinator != null) {
+                                    autocompleteCoordinator.resetSelection();
+                                }
+                                return true;
+                            }
+                        }
+
+                        return omniboxKeyDownListener != null
+                                && omniboxKeyDownListener.onKey(v, keyCode, event);
+                    };
+            urlBar.setKeyDownListener(keyListener);
+            urlBar.setOnKeyListener(keyListener);
+
+            closeButton.setOnKeyListener(
+                    (v, keyCode, event) -> {
+                        if (KeyNavigationUtil.isTabForward(event)
+                                || KeyNavigationUtil.isGoDown(event)) {
+                            urlBar.requestFocus();
+                            return true;
+                        }
+                        return false;
+                    });
         }
 
         // If the profile supplier is null (rare), default to the non-incognito state as it is the

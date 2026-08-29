@@ -933,6 +933,7 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.clear();
         mSuggestionsList.add(0, defaultMatch);
         var autocompleteInput = session.getAutocompleteInput();
+        autocompleteInput.setPageClassification(PageClassification.OTHER);
         autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         assertEquals("inline_autocomplete2", session.getAutocompleteInput().getPreviewText());
@@ -2832,9 +2833,8 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     public void triggerSiteSearch_NoOpsInAiMode() {
-        FuseboxSessionState session = createEmptySession();
+        FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE);
         mMediator.beginInput(session);
-        session.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
 
         setUpSiteSearchSpaceTrigger(
                 /* keyword= */ "test",
@@ -2885,6 +2885,7 @@ public class AutocompleteMediatorUnitTest {
                 TraversalMode.SENTINEL_THEN_WRAPPING,
                 mListModel.get(SuggestionListProperties.SELECTION_MODE));
 
+        input.setPageClassification(PageClassification.OTHER);
         input.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onInputChanged();
         assertEquals(
@@ -2897,6 +2898,13 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onInputChanged();
         assertEquals(
                 TraversalMode.WRAPPING, mListModel.get(SuggestionListProperties.SELECTION_MODE));
+
+        // Tab Search Overlay -- use SATURATING_WITH_SENTINEL mode on desktop.
+        input.setPageClassification(PageClassification.ANDROID_TAB_SEARCH_OVERLAY);
+        mMediator.onInputChanged();
+        assertEquals(
+                TraversalMode.SATURATING_WITH_SENTINEL,
+                mListModel.get(SuggestionListProperties.SELECTION_MODE));
     }
 
     @Test

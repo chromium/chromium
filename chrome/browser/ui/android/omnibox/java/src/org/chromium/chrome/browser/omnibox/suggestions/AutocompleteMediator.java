@@ -1146,7 +1146,10 @@ class AutocompleteMediator
         boolean isUnconventional = !mAutocompleteInput.isConventionalRequestType();
         boolean hasDesktopExperience = OmniboxCapabilities.hasDesktopExperience(mContext);
         @TraversalMode int selectionMode;
-        if (!hasDesktopExperience || isUnconventional) {
+        if (mAutocompleteInput.getPageClassification()
+                == PageClassification.ANDROID_TAB_SEARCH_OVERLAY) {
+            selectionMode = TraversalMode.SATURATING_WITH_SENTINEL;
+        } else if (!hasDesktopExperience || isUnconventional) {
             selectionMode = TraversalMode.WRAPPING_WITH_SENTINEL;
         } else if (isInZeroPrefixContext) {
             // In desktop experiences, we use SENTINEL_THEN_WRAPPING to match the behavior of the
