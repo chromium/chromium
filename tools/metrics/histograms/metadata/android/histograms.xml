@@ -904,20 +904,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackgroundTaskScheduler.ExactTaskCreated"
-    enum="BackgroundTaskId" expires_after="2024-10-05">
-  <owner>nator@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records that an exact task has been created. Cached when the task is
-    scheduled.
-
-    Cached to SharedPreferences to be recorded in the next ChromeActivity start
-    instead of recorded immediately on background.
-  </summary>
-</histogram>
-
 <histogram name="Android.BackgroundTaskScheduler.TaskCanceled"
     enum="BackgroundTaskId" expires_after="2025-06-08">
   <owner>nyquist@chromium.org</owner>

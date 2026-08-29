@@ -295,17 +295,6 @@ public class BackgroundTaskSchedulerUmaTest {
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
-    public void testReportExactTaskCreated() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        BackgroundTaskSchedulerUma.getInstance().reportExactTaskCreated(TaskIds.TEST);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(
-                        eq("Android.BackgroundTaskScheduler.ExactTaskCreated"),
-                        ArgumentMatchers.eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
     public void testReportTaskScheduledWithExpiration() {
         doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
         BackgroundTaskSchedulerUma.getInstance()
