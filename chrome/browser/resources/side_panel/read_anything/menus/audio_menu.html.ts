@@ -15,8 +15,19 @@ export function getHtml(this: AudioMenuElement) {
     .menuGroups="${this.groups_}"
     .nonModal="${this.nonModal}"
     .closeOnClick="${false}"
-    @highlight-change="${this.onHighlightChange_}">
+    @highlight-change="${this.onHighlightChange_}"
+    @open-accent-menu="${this.onOpenAccentMenu_}">
 </grouped-action-menu>
+
+${this.showAccentMenuDialog_ ? html`
+  <accent-menu id="accentMenu"
+      .enabledLangs="${this.enabledLangs}"
+      .localeToDisplayName="${this.localeToDisplayName}"
+      .selectedLang="${this.selectedLang}"
+      .availableVoices="${this.availableVoices}"
+      @close="${this.onAccentMenuClose_}">
+  </accent-menu>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

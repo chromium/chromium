@@ -253,6 +253,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageDisplay) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AccentMenu) {
+  RunSidePanelTest("side_panel/read_anything/accent_menu_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageMenu) {
   RunSidePanelTest("side_panel/read_anything/language_menu_test.js",
                    "mocha.run()");

@@ -215,6 +215,9 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"linksLabel", IDS_READING_MODE_LINKS_LABEL},
       {"aiPlaybackTurnOn", IDS_READING_MODE_AI_PLAYBACK_TURN_ON},
       {"aiPlaybackTurnOff", IDS_READING_MODE_AI_PLAYBACK_TURN_OFF},
+      {"voiceLabel", IDS_READING_MODE_VOICE_LABEL},
+      {"accentMenuLabel", IDS_READING_MODE_ACCENT_MENU_LABEL},
+      {"accentMenuClose", IDS_READING_MODE_ACCENT_MENU_CLOSE},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);

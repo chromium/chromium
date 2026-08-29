@@ -9823,6 +9823,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_TOOLS_LABEL" desc="Accessibility label for the tools combobox of the reading mode feature.">
         Tools
       </message>
+      <message name="IDS_READING_MODE_VOICE_LABEL" desc="Accessibility label for the voice combobox of the reading mode feature.">
+        Voice
+      </message>
       <message name="IDS_READING_MODE_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the reading mode feature.">
         Color theme
       </message>
@@ -10052,6 +10055,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LANGUAGE_MENU_CLOSE" desc="Label for a button to close a dialog with options for managing language preferences for Read Aloud.">
         Close language menu
       </message>
+      <message name="IDS_READING_MODE_ACCENT_MENU_CLOSE" desc="Label for a button to close a dialog with options for managing accent preferences for Read Aloud.">
+        Close accent menu
+      </message>
       <if expr="is_macosx">
         <message name="IDS_READING_MODE_CLOSE" desc="Tooltip and screen reader label for a button to close reading mode.">
           Close reading mode (<ph name="SHORTCUT">$1<ex>⌥⌘R</ex></ph>)
@@ -10115,6 +10121,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_READING_MODE_VOICE_DOWNLOADED_MESSAGE" desc="Message for a notification to alert the user that a high quality TTS voice data file has been downloaded.">
         Voice files are shared among users to save disk space
+      </message>
+      <message name="IDS_READING_MODE_ACCENT_MENU_LABEL" desc="Dialog title label for a dialog with options for managing accent preferences for Read Aloud.">
+        Change voice accent
       </message>
       <message name="IDS_READING_MODE_SIDE_PANEL_PROMO"
                desc="Text for the in-product-help bubble shown for the reading mode bubble.">

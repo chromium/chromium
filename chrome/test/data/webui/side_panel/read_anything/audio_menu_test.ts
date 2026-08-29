@@ -48,7 +48,7 @@ suite('AudioMenuElement', () => {
     await microtasksFinished();
 
     const selectedItems =
-        audioMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
+        audioMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(wordHighlight, selectedItems[0]!.data);
   });
@@ -76,7 +76,7 @@ suite('AudioMenuElement', () => {
           testHighlight,
           await audioBrowserProxy.whenCalled('onHighlightGranularityChanged'));
       const selectedItems =
-          audioMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
+          audioMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
       assertEquals(1, selectedItems.length);
       assertEquals(testHighlight, selectedItems[0]!.data);
     }
@@ -105,11 +105,8 @@ suite('AudioMenuElement', () => {
   test('has phrase highlighting option if flag enabled', () => {
     audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
     createAudioMenu();
-
-    const menu = audioMenu.$.menu.$.lazyMenu.get();
-    const options =
-        Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
-    const titles = options.map(button => button.textContent?.trim());
+    const highlightGroup = audioMenu.$.menu.menuGroups[1]!;
+    const titles = highlightGroup.items.map(item => item.title);
     assertEquals(5, titles.length);
     assertTrue(titles.includes('Phrase'));
   });
@@ -117,11 +114,8 @@ suite('AudioMenuElement', () => {
   test('does not have phrase highlighting option if flag disabled', () => {
     audioBrowserProxy.isPhraseHighlightingEnabledFlag = false;
     createAudioMenu();
-
-    const menu = audioMenu.$.menu.$.lazyMenu.get();
-    const options =
-        Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
-    const titles = options.map(button => button.textContent?.trim());
+    const highlightGroup = audioMenu.$.menu.menuGroups[1]!;
+    const titles = highlightGroup.items.map(item => item.title);
     assertEquals(4, titles.length);
     assertFalse(titles.includes('Phrase'));
   });
@@ -130,7 +124,7 @@ suite('AudioMenuElement', () => {
     createAudioMenu();
     const granularity = audioBrowserProxy.getSentenceHighlighting();
     const startingSelected =
-        audioMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertNotEquals(granularity, startingSelected?.data);
 
     audioMenu.settingsPrefs = {
@@ -140,14 +134,14 @@ suite('AudioMenuElement', () => {
     await microtasksFinished();
 
     const newSelected =
-        audioMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertEquals(granularity, newSelected?.data);
   });
 
   test('does nothing if saved highlight is the same', async () => {
     createAudioMenu();
     const startingSelected =
-        audioMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
 
     audioMenu.settingsPrefs = {
       ...TEST_RANDOM_VALUE_SETTINGS,
@@ -156,7 +150,7 @@ suite('AudioMenuElement', () => {
     await microtasksFinished();
 
     const newSelected =
-        audioMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        audioMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertEquals(startingSelected?.data, newSelected?.data);
   });
 
@@ -167,5 +161,21 @@ suite('AudioMenuElement', () => {
     assertTrue(audioMenu.$.menu.$.lazyMenu.get().open);
     audioMenu.close();
     assertFalse(audioMenu.$.menu.$.lazyMenu.get().open);
+  });
+
+  test('opens and closes accent menu', async () => {
+    createAudioMenu();
+    assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
+
+    audioMenu.$.menu.dispatchEvent(new CustomEvent('open-accent-menu'));
+    await microtasksFinished();
+
+    const accentMenu = audioMenu.shadowRoot.querySelector('accent-menu');
+    assertTrue(!!accentMenu);
+
+    accentMenu.dispatchEvent(new CustomEvent('close'));
+    await microtasksFinished();
+
+    assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
   });
 });

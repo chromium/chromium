@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './grouped_action_menu.js';
+import '../read_aloud/accent_menu.js';
 
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -11,6 +12,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import type {AccentMenuElement} from '../read_aloud/accent_menu.js';
 import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
@@ -18,11 +20,13 @@ import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './audio_menu.html.js';
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
+import {SettingsItemType} from './menu_util.js';
 import type {MenuGroup, MenuStateItem, ToolbarMenu} from './menu_util.js';
 
 export interface AudioMenuElement {
   $: {
     menu: GroupedActionMenuElement,
+    accentMenu?: AccentMenuElement,
   };
 }
 
@@ -43,11 +47,21 @@ export class AudioMenuElement extends AudioMenuElementBase implements
       settingsPrefs: {type: Object},
       nonModal: {type: Boolean},
       groups_: {type: Array},
+      enabledLangs: {type: Array},
+      availableVoices: {type: Array},
+      localeToDisplayName: {type: Object},
+      selectedLang: {type: String},
+      showAccentMenuDialog_: {type: Boolean},
     };
   }
 
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
+  accessor enabledLangs: string[] = [];
+  accessor availableVoices: SpeechSynthesisVoice[] = [];
+  accessor localeToDisplayName: {[lang: string]: string} = {};
+  accessor selectedLang: string = '';
+  protected accessor showAccentMenuDialog_: boolean = false;
 
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
@@ -75,11 +89,24 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     },
   ];
 
-  protected accessor groups_: Array<MenuGroup<number>> = [
+  protected accessor groups_: Array<MenuGroup<number|string>> = [
+    {
+      header: {
+        title: loadTimeData.getString('voiceLabel'),
+        separator: false,
+      },
+      items: [{
+        title: loadTimeData.getString('accentMenuLabel'),
+        icon: 'read-anything:translate',
+        itemType: SettingsItemType.ACTION,
+        data: 'open-accent-menu',
+      }],
+      eventName: 'open-accent-menu',
+    },
     {
       header: {
         title: loadTimeData.getString('voiceHighlightLabel'),
-        separator: false,
+        separator: true,
       },
       items: this.highlightOptions_,
       eventName: ToolbarEvent.HIGHLIGHT_CHANGE,
@@ -115,6 +142,16 @@ export class AudioMenuElement extends AudioMenuElementBase implements
       ...this.settingsPrefs,
       highlightGranularity: data,
     };
+  }
+
+  protected onOpenAccentMenu_() {
+    this.showAccentMenuDialog_ = true;
+  }
+
+  protected onAccentMenuClose_(event: CustomEvent<void>) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showAccentMenuDialog_ = false;
   }
 
   private updateOptionsForHighlight_() {

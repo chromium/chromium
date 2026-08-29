@@ -151,7 +151,7 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   },
   [SettingsOption.TRANSLATION_REQUESTED]: {
     id: SettingsOption.TRANSLATION_REQUESTED,
-    icon: 'read-anything:translate',
+    icon: 'read-anything:g-translate',
     title: 'translateLabel',
     itemType: SettingsItemType.ACTION,
   },

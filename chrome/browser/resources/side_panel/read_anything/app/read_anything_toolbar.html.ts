@@ -228,6 +228,10 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       class="settings-submenu"
       non-modal
       .settingsPrefs="${this.settingsPrefs}"
+      .enabledLangs="${this.enabledLangs}"
+      .availableVoices="${this.availableVoices}"
+      .localeToDisplayName="${this.localeToDisplayName}"
+      .selectedLang="${this.selectedVoice?.lang || ''}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </audio-menu>
   <text-menu
