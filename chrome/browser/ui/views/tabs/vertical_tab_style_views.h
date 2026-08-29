@@ -31,6 +31,7 @@ class VerticalTabStyleViews : public TabStyleViews {
 
   gfx::Insets GetContentsInsets() const override;
   int GetStrokeThickness() const override;
+  SkPath GetOverlinePath(float scale) const override;
 
   bool IsApparentlyActive() const override;
   TabStyle::TabColors CalculateTargetColors() const override;

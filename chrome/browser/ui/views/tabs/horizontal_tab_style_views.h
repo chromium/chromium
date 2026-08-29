@@ -29,6 +29,7 @@ class HorizontalTabStyleViews : public TabStyleViews {
 
   // TabStyleViews:
   int GetStrokeThickness() const override;
+  SkPath GetOverlinePath(float scale) const override;
   const TabStyleViewDelegate* delegate() const override;
 
  protected:

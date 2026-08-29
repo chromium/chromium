@@ -222,6 +222,10 @@ int VerticalTabStyleViews::GetStrokeThickness() const {
   return delegate_->GetStrokeThickness();
 }
 
+SkPath VerticalTabStyleViews::GetOverlinePath(float scale) const {
+  return SkPath();
+}
+
 bool VerticalTabStyleViews::IsApparentlyActive() const {
   const TabStyle::TabSelectionState selection_state = GetSelectionState();
   if (selection_state == TabStyle::TabSelectionState::kActive) {

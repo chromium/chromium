@@ -641,6 +641,11 @@ int HorizontalTabStyleViews::GetStrokeThickness() const {
   return 0;
 }
 
+SkPath HorizontalTabStyleViews::GetOverlinePath(float scale) const {
+  return GetPath(TabStyle::PathType::kBorder, scale,
+                 {.should_paint_extension = false});
+}
+
 bool HorizontalTabStyleViews::ShouldPaintTabBackgroundColor(
     TabStyle::TabSelectionState selection_state,
     bool has_custom_background) const {
@@ -788,6 +793,12 @@ void HorizontalTabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
 void HorizontalTabStyleViews::PaintBackgroundStroke(
     gfx::Canvas* canvas,
     SkColor stroke_color) const {
+  if (base::FeatureList::IsEnabled(tabs::kTabStripUnification) &&
+      delegate_->GetGroup().has_value() && !delegate_->IsInFocusedGroup() &&
+      !delegate_->IsDragging()) {
+    return;
+  }
+
   const int stroke_thickness = GetStrokeThickness();
   if (!stroke_thickness) {
     return;

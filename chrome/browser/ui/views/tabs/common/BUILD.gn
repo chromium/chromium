@@ -55,6 +55,8 @@ source_set("impl") {
     "tab_drag_scroll_handler.cc",
     "tab_group_header_view.cc",
     "tab_group_header_view.h",
+    "tab_group_line_view.cc",
+    "tab_group_line_view.h",
     "tab_group_view.cc",
     "tab_group_view.h",
     "tab_group_view_layout.cc",

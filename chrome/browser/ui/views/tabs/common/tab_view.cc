@@ -158,6 +158,7 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
   bool IsHovering() const override { return tab_view_->IsMouseHovered(); }
 
   bool IsClosing() const override { return tab_view_->IsClosing(); }
+  bool IsDragging() const override { return tab_view_->IsDragging(); }
 
   std::optional<tab_groups::TabGroupId> GetGroup() const override {
     const tabs::TabInterface* tab_interface = tab_view_->GetTabInterface();
@@ -1228,9 +1229,20 @@ TabStyle::TabSelectionState TabView::GetSelectionState() const {
 }
 
 bool TabView::IsDragging() const {
-  return collection_node_ && collection_node_->GetController() &&
-         collection_node_->GetController()->GetDragHandler().IsViewDragging(
-             *this);
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
+  const auto& drag_handler =
+      collection_node_->GetController()->GetDragHandler();
+  if (drag_handler.IsViewDragging(*this)) {
+    return true;
+  }
+  for (const views::View* v = parent(); v; v = v->parent()) {
+    if (drag_handler.IsViewDragging(*v)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // static

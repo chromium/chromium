@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_layout_utils.h"
@@ -90,9 +91,11 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
   if (size_bounds.width().is_bounded()) {
     header_bounds.set_width(size_bounds.width().value() - header_bounds.x());
   }
+
   layouts.child_layouts.emplace_back(
       tab_group_view->group_header_.get(),
       tab_group_view->group_header_->GetVisible(), header_bounds);
+
   height +=
       header_bounds.height() + kGroupHeaderVerticalMargin + kTabVerticalPadding;
   width = std::max(width, header_bounds.width());
@@ -150,8 +153,10 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
   }
   const bool show_group_line =
       !tab_group_view->IsGroupFocused() && !tab_group_view->is_collapsed();
-  layouts.child_layouts.emplace_back(tab_group_view->group_line_.get(),
-                                     show_group_line, group_line_bounds);
+  if (tab_group_view->group_line_) {
+    layouts.child_layouts.emplace_back(tab_group_view->group_line_.get(),
+                                       show_group_line, group_line_bounds);
+  }
 
   // Add extra padding below the group if not collapsed.
   const bool is_group_collapsed = tab_group_view->IsCollapsed();
@@ -192,21 +197,18 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
   // Place the group header.
   int header_width = 0;
   if (tab_group_view->group_header_) {
-    header_width =
-        tab_group_view->group_header_
-            ->GetPreferredSize(views::SizeBounds({}, container_height))
-            .width();
-    gfx::Rect header_bounds(0, 0, header_width, container_height);
+    const int header_height =
+        GetLayoutConstant(LayoutConstant::kTabHeight) -
+        GetLayoutConstant(LayoutConstant::kTabStripPadding) -
+        GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
+    const int header_y = GetLayoutConstant(LayoutConstant::kTabStripPadding);
+    header_width = tab_group_view->group_header_
+                       ->GetPreferredSize(views::SizeBounds({}, header_height))
+                       .width();
+    gfx::Rect header_bounds(0, header_y, header_width, header_height);
     layouts.child_layouts.emplace_back(
         tab_group_view->group_header_.get(),
         tab_group_view->group_header_->GetVisible(), header_bounds);
-  }
-
-  // TODO(crbug.com/523328052): Update group line bounds and visibility for
-  // horizontal orientation.
-  if (tab_group_view->group_line_) {
-    layouts.child_layouts.emplace_back(tab_group_view->group_line_.get(), false,
-                                       gfx::Rect());
   }
 
   TabStripCollectionLayoutInfo collection = CollectVisibleChildLayoutInfo(
@@ -261,6 +263,14 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
 
   const int total_group_width =
       num_children > 0 ? (x + tab_overlap) : header_width;
+
+  if (tab_group_view->group_line_) {
+    const bool show_group_line =
+        !tab_group_view->IsGroupFocused() && !tab_group_view->IsCollapsed();
+    gfx::Rect group_line_bounds(0, 0, total_group_width, container_height);
+    layouts.child_layouts.emplace_back(tab_group_view->group_line_.get(),
+                                       show_group_line, group_line_bounds);
+  }
 
   // If collapsed, the group only takes up the width of the header.
   layouts.host_size = gfx::Size(
