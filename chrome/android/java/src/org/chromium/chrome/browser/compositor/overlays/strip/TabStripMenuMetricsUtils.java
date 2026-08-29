@@ -120,7 +120,6 @@ public class TabStripMenuMetricsUtils {
         StripMenuAction.PIN_GLIC,
         StripMenuAction.UNPIN_GLIC,
         StripMenuAction.TASK_MANAGER,
-        StripMenuAction.SEND_FEEDBACK,
     })
     public @interface StripMenuAction {
         String REOPEN_CLOSED_ENTRY = "ReopenClosedEntry";
@@ -128,7 +127,6 @@ public class TabStripMenuMetricsUtils {
         String PIN_GLIC = "PinGlic";
         String UNPIN_GLIC = "UnpinGlic";
         String TASK_MANAGER = "TaskManager";
-        String SEND_FEEDBACK = "SendFeedback";
     }
 
     private TabStripMenuMetricsUtils() {}
@@ -213,7 +211,9 @@ public class TabStripMenuMetricsUtils {
                 case TabMenuAction.MOVE_TAB_TO_INCOGNITO_GROUP:
                     RecordUserAction.record(
                             isMultipleTabs
-                                    ? "Android.VerticalTabs.TabMenu.MoveTabToIncognitoGroup.MultiTab"
+                                    ? "Android.VerticalTabs.TabMenu."
+                                            + "MoveTabToIncognitoGroup"
+                                            + ".MultiTab"
                                     : "Android.VerticalTabs.TabMenu.MoveTabToIncognitoGroup");
                     break;
                 case TabMenuAction.MOVE_TAB_TO_OTHER_WINDOW:
@@ -562,9 +562,6 @@ public class TabStripMenuMetricsUtils {
                 case StripMenuAction.TASK_MANAGER:
                     RecordUserAction.record("Android.VerticalTabs.StripMenu.TaskManager");
                     break;
-                case StripMenuAction.SEND_FEEDBACK:
-                    RecordUserAction.record("Android.VerticalTabs.StripMenu.SendFeedback");
-                    break;
                 default:
                     assert false : "Unknown strip menu action: " + action;
             }
@@ -584,9 +581,6 @@ public class TabStripMenuMetricsUtils {
                     break;
                 case StripMenuAction.TASK_MANAGER:
                     RecordUserAction.record("Android.TabStripMenu.TaskManager");
-                    break;
-                case StripMenuAction.SEND_FEEDBACK:
-                    RecordUserAction.record("Android.TabStripMenu.SendFeedback");
                     break;
                 default:
                     assert false : "Unknown strip menu action: " + action;

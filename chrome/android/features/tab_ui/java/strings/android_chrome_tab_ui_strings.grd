@@ -1199,9 +1199,6 @@
       <message name="IDS_CLOSE_TABS_BELOW_MENU_ITEM" desc="Context menu item text to close all tabs below the selected tab.">
         Close tabs below
       </message>
-      <message name="IDS_SEND_FEEDBACK_ABOUT_TAB_STRIP" desc="Context menu item text to send feedback about the tab strip.">
-        Send feedback about the tab strip
-      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">

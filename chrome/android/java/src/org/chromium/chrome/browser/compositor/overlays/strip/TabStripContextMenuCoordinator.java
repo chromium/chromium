@@ -18,14 +18,11 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.StripMenuAction;
-import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -65,7 +62,6 @@ import java.util.function.BooleanSupplier;
  */
 @NullMarked
 public class TabStripContextMenuCoordinator {
-    @VisibleForTesting static final String FEEDBACK_CATEGORY_SUFFIX = ".tabstrip";
 
     private final Context mContext;
     private final TabModel mTabModel;
@@ -297,17 +293,8 @@ public class TabStripContextMenuCoordinator {
                             .withEnabled(enabled)
                             .build();
             itemList.add(item);
-
-            // Add "Send feedback" option
-            if (FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.send_feedback_about_tab_strip)
-                                .withMenuId(R.id.send_feedback_about_tab_strip_menu_id)
-                                .withIsIncognito(isIncognito)
-                                .build());
-            }
         }
+
         // Add "Task Manager" option with divider.
         if (TaskManager.isEnabled()) {
             itemList.add(BasicListMenu.buildMenuDivider(isIncognito));
@@ -378,40 +365,9 @@ public class TabStripContextMenuCoordinator {
                         StripMenuAction.TASK_MANAGER, mTabStripLayout);
                 TaskManager taskManager = TaskManagerFactory.createTaskManager();
                 taskManager.launch(ContextUtils.getApplicationContext());
-            } else if (model.get(MENU_ITEM_ID) == R.id.send_feedback_about_tab_strip_menu_id) {
-                TabStripMenuMetricsUtils.recordStripMenuUserAction(
-                        StripMenuAction.SEND_FEEDBACK, mTabStripLayout);
-                Activity activity = mWindowAndroid.getActivity().get();
-                if (activity != null && profile != null) {
-                    String categoryTag = getFeedbackCategoryTag();
-                    HelpAndFeedbackLauncherFactory.getForProfile(profile)
-                            .showFeedback(activity, /* url= */ null, categoryTag);
-                }
             }
             assumeNonNull(mMenuWindow).dismiss();
         };
-    }
-
-    /**
-     * Returns the appropriate feedback category tag to send with the feedback request. A Listnr
-     * allowlisted category tag is required when sending feedback otherwise Listnr will drop the
-     * request silently.
-     */
-    @VisibleForTesting
-    @Nullable String getFeedbackCategoryTag() {
-        String prefix;
-        if (VersionInfo.isCanaryBuild()) {
-            prefix = "com.chrome.canary";
-        } else if (VersionInfo.isDevBuild()) {
-            prefix = "com.chrome.dev";
-        } else if (VersionInfo.isBetaBuild()) {
-            prefix = "com.chrome.beta";
-        } else if (VersionInfo.isStableBuild()) {
-            prefix = "com.android.chrome";
-        } else {
-            return null;
-        }
-        return prefix + FEEDBACK_CATEGORY_SUFFIX;
     }
 
     /**
