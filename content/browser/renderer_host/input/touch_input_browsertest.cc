@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -21,7 +22,9 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/latency/latency_info.h"
@@ -210,6 +213,82 @@ IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, MultiPointTouchPress) {
   SendTouchEvent(&touch);
   EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
             filter->WaitForAck());
+}
+
+class TouchInputLightDismissBrowserTest : public TouchInputBrowserTest {
+ public:
+  TouchInputLightDismissBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kSkipTouchEventFilter,
+          {{blink::features::kSkipTouchEventFilterTypeParamName,
+            blink::features::kSkipTouchEventFilterTypeParamValueDiscrete},
+           {blink::features::kSkipTouchEventFilterFilteringProcessParamName,
+            blink::features::
+                kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer}}}},
+        {});
+  }
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    TouchInputBrowserTest::SetUpCommandLine(cmd);
+    cmd->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                           "LightDismissFromClick");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that when LightDismissFromClick is enabled, forwarding a GestureTap
+// for an active touch sequence before TouchEnd / pointerup reaches Blink
+// does not crash the renderer on missing pointer_up_target.
+// Regression test for crbug.com/545643615.
+IN_PROC_BROWSER_TEST_F(TouchInputLightDismissBrowserTest,
+                       GestureTapWithoutTouchEndDoesNotCrash) {
+  LoadURL();
+  blink::SyntheticWebTouchEvent touch;
+
+  // 1. Press on |first|.
+  // TouchStart is forwarded to the main thread due to SkipTouchEventFilter.
+  // Blink records pointer_down_target in PointerEventFactory and ACKs with
+  // NO_CONSUMER_EXISTS (or kSetNonBlocking on Android).
+  touch.PressPoint(25, 25);
+  uint32_t touch_start_id = touch.unique_touch_event_id;
+  auto filter = AddFilter(WebInputEvent::Type::kTouchStart);
+  SendTouchEvent(&touch);
+  blink::mojom::InputEventResultState ack = filter->WaitForAck();
+  EXPECT_TRUE(ack == blink::mojom::InputEventResultState::kNoConsumerExists ||
+              ack == blink::mojom::InputEventResultState::kSetNonBlocking);
+
+  // 2. Forward the matching GestureTapDown and GestureTap carrying
+  // primary_unique_touch_event_id without sending TouchEnd (e.g. multi-touch or
+  // tap gesture before finger up).
+  blink::WebGestureEvent tap_down(
+      WebInputEvent::Type::kGestureTapDown, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), blink::WebGestureDevice::kTouchscreen);
+  tap_down.SetPositionInWidget(gfx::PointF(25, 25));
+  tap_down.SetPositionInScreen(gfx::PointF(25, 25));
+  tap_down.data.tap_down.tap_down_count = 1;
+  tap_down.data.tap_down.width = 30;
+  tap_down.data.tap_down.height = 30;
+  tap_down.primary_pointer_type =
+      blink::WebPointerProperties::PointerType::kTouch;
+  tap_down.primary_unique_touch_event_id = touch_start_id;
+  GetWidgetHost()->ForwardGestureEvent(tap_down);
+
+  blink::WebGestureEvent tap(
+      WebInputEvent::Type::kGestureTap, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), blink::WebGestureDevice::kTouchscreen);
+  tap.SetPositionInWidget(gfx::PointF(25, 25));
+  tap.SetPositionInScreen(gfx::PointF(25, 25));
+  tap.data.tap.tap_count = 1;
+  tap.data.tap.width = 30;
+  tap.data.tap.height = 30;
+  tap.primary_pointer_type = blink::WebPointerProperties::PointerType::kTouch;
+  tap.primary_unique_touch_event_id = touch_start_id;
+  GetWidgetHost()->ForwardGestureEvent(tap);
+
+  // 3. Verify the renderer remains responsive and is not crashed.
+  EXPECT_EQ(true, EvalJs(shell(), "true"));
 }
 
 }  // namespace content

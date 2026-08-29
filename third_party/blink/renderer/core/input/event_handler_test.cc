@@ -3933,4 +3933,245 @@ TEST_F(EventHandlerSimTest, KeyboardScrollHomeEndWithCtrlAltOnAndroid) {
 }
 #endif
 
+// Tests that when LightDismissFromClick is enabled,
+// GestureManager::HandleGestureTap gracefully fakes pointer_up_target if
+// pointerup was not fired, allowing light dismiss to complete without crashing.
+// Regression test for crbug.com/545643615.
+TEST_F(EventHandlerTest, HandleGestureTapWithMissingPointerUp) {
+  ScopedLightDismissFromClickForTest enable_light_dismiss(true);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #target, #popover {
+        width: 100px;
+        height: 100px;
+      }
+      #popover {
+        top: 0;
+        left: 0;
+        margin: 0;
+      }
+      #target {
+        top: 200px;
+        left: 0;
+        position: absolute;
+      }
+    </style>
+    <div id=popover popover=auto>popover content</div>
+    <button id=target>target</button>
+  )HTML");
+
+  auto* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(popover->popoverOpen());
+
+  gfx::PointF tap_point(50, 250);
+  uint32_t touch_id = 100;
+
+  WebPointerEvent pointer_down = CreateMinimalTouchPointerEvent(
+      WebInputEvent::Type::kPointerDown, tap_point);
+  pointer_down.unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      pointer_down, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+
+  TapEventBuilder tap(tap_point, 1);
+  tap.primary_unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap);
+
+  // Popover should have been light dismissed and no crash should occur.
+  EXPECT_FALSE(popover->popoverOpen());
+}
+
+// Tests that when LightDismissFromClick is enabled,
+// GestureManager::HandleGestureTap gracefully fakes pointer_down_target if
+// pointerdown was not fired, allowing light dismiss to complete without
+// crashing. Regression test for crbug.com/545643615.
+TEST_F(EventHandlerTest, HandleGestureTapWithMissingPointerDown) {
+  ScopedLightDismissFromClickForTest enable_light_dismiss(true);
+  SetHtmlInnerHTML(R"HTML(
+    <div id='popover' popover='auto' style='top: 0; left: 0; margin: 0; width: 100px; height: 100px;'>popover content</div>
+    <button id='target' style='position: absolute; top: 200px; left: 0; width: 100px; height: 100px;'>target</button>
+  )HTML");
+
+  auto* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(popover->popoverOpen());
+
+  gfx::PointF tap_point(50, 250);
+  uint32_t touch_id = 100;
+
+  WebPointerEvent pointer_up = CreateMinimalTouchPointerEvent(
+      WebInputEvent::Type::kPointerUp, tap_point);
+  pointer_up.unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      pointer_up, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+
+  TapEventBuilder tap(tap_point, 1);
+  tap.primary_unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap);
+
+  // Popover should have been light dismissed and no crash should occur.
+  EXPECT_FALSE(popover->popoverOpen());
+}
+
+// Tests that when both pointerdown and pointerup are fired, their recorded
+// targets are preserved and used for light dismiss.
+TEST_F(EventHandlerTest, HandleGestureTapWithBothPointerEvents) {
+  ScopedLightDismissFromClickForTest enable_light_dismiss(true);
+  SetHtmlInnerHTML(R"HTML(
+    <div id='popover' popover='auto' style='top: 0; left: 0; margin: 0; width: 200px; height: 200px;'>
+      <button id='inside' style='width: 100px; height: 100px;'>inside</button>
+    </div>
+  )HTML");
+
+  auto* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(popover->popoverOpen());
+
+  gfx::PointF tap_point(50, 50);
+  uint32_t touch_id = 100;
+
+  WebPointerEvent pointer_down = CreateMinimalTouchPointerEvent(
+      WebInputEvent::Type::kPointerDown, tap_point);
+  pointer_down.unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      pointer_down, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+
+  WebPointerEvent pointer_up = CreateMinimalTouchPointerEvent(
+      WebInputEvent::Type::kPointerUp, tap_point);
+  pointer_up.unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      pointer_up, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+
+  TapEventBuilder tap(tap_point, 1);
+  tap.primary_unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap);
+
+  // Tapping inside should not dismiss the popover.
+  EXPECT_TRUE(popover->popoverOpen());
+}
+
+// Tests that when pointerdown is recorded outside a popover but pointerup is
+// missing, the real pointer_down_target is preserved (not faked to the tap
+// location). Because pointerdown was outside and the faked pointerup is inside,
+// pointer_down_popover != pointer_up_popover, so light dismiss correctly does
+// not dismiss the popover (consistent with drag-into-popover behavior).
+TEST_F(EventHandlerTest,
+       HandleGestureTapPreservesRealPointerDownTargetWhenPointerUpMissing) {
+  ScopedLightDismissFromClickForTest enable_light_dismiss(true);
+  SetHtmlInnerHTML(R"HTML(
+    <div id='popover' popover='auto' style='top: 0; left: 0; margin: 0; width: 200px; height: 200px;'>
+      <button id='inside' style='width: 100px; height: 100px;'>inside</button>
+    </div>
+    <button id='outside' style='position: absolute; top: 300px; left: 0; width: 100px; height: 100px;'>outside</button>
+  )HTML");
+
+  auto* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(popover->popoverOpen());
+
+  gfx::PointF outside_point(50, 350);
+  gfx::PointF inside_point(50, 50);
+  uint32_t touch_id = 100;
+
+  // pointerdown fires on |outside|.
+  WebPointerEvent pointer_down = CreateMinimalTouchPointerEvent(
+      WebInputEvent::Type::kPointerDown, outside_point);
+  pointer_down.unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      pointer_down, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+
+  // GestureTap is delivered on |inside| without a pointerup.
+  TapEventBuilder tap(inside_point, 1);
+  tap.primary_unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap);
+
+  // Popover remains open because pointer_down_target was preserved on
+  // |outside|, so pointer_down_popover != pointer_up_popover.
+  EXPECT_TRUE(popover->popoverOpen());
+}
+
+// Tests that when pointerdown is recorded inside a popover but pointerup is
+// missing, the real pointer_down_target is preserved (not faked). When
+// GestureTap is on |outside|, pointerdown was inside and faked pointerup is
+// outside, so pointer_down_popover != pointer_up_popover, and light dismiss
+// does not dismiss the popover (consistent with drag-out-of-popover behavior).
+TEST_F(EventHandlerTest,
+       HandleGestureTapPreservesRealPointerDownTargetInsideWhenTappedOutside) {
+  ScopedLightDismissFromClickForTest enable_light_dismiss(true);
+  SetHtmlInnerHTML(R"HTML(
+    <div id='popover' popover='auto' style='top: 0; left: 0; margin: 0; width: 200px; height: 200px;'>
+      <button id='inside' style='width: 100px; height: 100px;'>inside</button>
+    </div>
+    <button id='outside' style='position: absolute; top: 300px; left: 0; width: 100px; height: 100px;'>outside</button>
+  )HTML");
+
+  auto* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(popover->popoverOpen());
+
+  gfx::PointF outside_point(50, 350);
+  gfx::PointF inside_point(50, 50);
+  uint32_t touch_id = 100;
+
+  // pointerdown fires on |inside|.
+  WebPointerEvent pointer_down = CreateMinimalTouchPointerEvent(
+      WebInputEvent::Type::kPointerDown, inside_point);
+  pointer_down.unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      pointer_down, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+
+  // GestureTap is delivered on |outside| without a pointerup.
+  TapEventBuilder tap(outside_point, 1);
+  tap.primary_unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap);
+
+  // Popover remains open because pointer_down_target was preserved on |inside|,
+  // so pointer_down_popover != pointer_up_popover.
+  EXPECT_TRUE(popover->popoverOpen());
+}
+
+// Tests that when pointerdown is recorded inside a popover and pointerup is
+// missing, the real pointer_down_target is preserved (not faked) and
+// pointer_up_target is faked to the tap target, keeping the popover open when
+// tapping inside.
+TEST_F(
+    EventHandlerTest,
+    HandleGestureTapPreservesRealPointerDownTargetInsidePopoverWhenPointerUpMissing) {
+  ScopedLightDismissFromClickForTest enable_light_dismiss(true);
+  SetHtmlInnerHTML(R"HTML(
+    <div id='popover' popover='auto' style='top: 0; left: 0; margin: 0; width: 200px; height: 200px;'>
+      <button id='inside' style='width: 100px; height: 100px;'>inside</button>
+    </div>
+  )HTML");
+
+  auto* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(popover->popoverOpen());
+
+  gfx::PointF inside_point(50, 50);
+  uint32_t touch_id = 100;
+
+  // pointerdown fires on |inside|.
+  WebPointerEvent pointer_down = CreateMinimalTouchPointerEvent(
+      WebInputEvent::Type::kPointerDown, inside_point);
+  pointer_down.unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      pointer_down, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+
+  // GestureTap is delivered on |inside| without a pointerup.
+  TapEventBuilder tap(inside_point, 1);
+  tap.primary_unique_touch_event_id = touch_id;
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap);
+
+  // Popover should remain open because both the real pointer_down_target and
+  // faked pointer_up_target are inside the popover.
+  EXPECT_TRUE(popover->popoverOpen());
+}
+
 }  // namespace blink

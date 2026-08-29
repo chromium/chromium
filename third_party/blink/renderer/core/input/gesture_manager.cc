@@ -379,11 +379,12 @@ WebInputEventResult GestureManager::HandleGestureTap(
           pointer_event_manager_->GetPointerDownTarget(pointer_id);
       PointerEventFactory::PointerTarget* pointer_up_target =
           pointer_event_manager_->GetPointerUpTarget(pointer_id);
-      if (!pointer_down_target) {
-        CHECK(!pointer_up_target);
+      if (!pointer_down_target || !pointer_up_target) {
         // The browser didn't send any pointer events for this touch, so we need
         // to fake the information for light dismiss. This can happen when the
-        // page has no pointerdown/pointerup event handlers.
+        // page has no pointerdown/pointerup event handlers. It's possible for
+        // one of these targets to be null while the other is non-null:
+        // http://crbug.com/545643615
         // TODO(crbug.com/465787221): We should prevent this from happening by
         // making pointerdown/pointerup get fired when there is a popover or
         // dialog in the page which may be light dismissed.
@@ -392,16 +393,18 @@ WebInputEventResult GestureManager::HandleGestureTap(
         MouseEvent::SetCoordinatesFromWebPointerProperties(
             fake_mouse_up.FlattenTransform(),
             frame_->GetDocument()->domWindow(), init_for_coords);
-        pointer_down_target =
-            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
-                click_target_element, init_for_coords->clientX(),
-                init_for_coords->clientY());
-        pointer_up_target =
-            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
-                click_target_element, init_for_coords->clientX(),
-                init_for_coords->clientY());
-      } else {
-        CHECK(pointer_up_target);
+        if (!pointer_down_target) {
+          pointer_down_target =
+              MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                  click_target_element, init_for_coords->clientX(),
+                  init_for_coords->clientY());
+        }
+        if (!pointer_up_target) {
+          pointer_up_target =
+              MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                  click_target_element, init_for_coords->clientX(),
+                  init_for_coords->clientY());
+        }
       }
 
       click_event_result =
