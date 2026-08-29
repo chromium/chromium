@@ -75,6 +75,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -371,12 +372,16 @@ public class CustomTabActivityEphemeralTest {
         var tab = activity.getActivityTab();
         ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
 
-        // TODO(sinansahin): Find a better way to test omnibox interactivity because titleBar is
-        // going to have a click listener to show page info.
-        if (ChromeFeatureList.sCctNestedSecurityIcon.isEnabled()) return;
-
         var titleBar = activity.findViewById(R.id.title_url_container);
-        Assert.assertFalse(titleBar.hasOnClickListeners());
+        assertNull(
+                "Page info hasn't been shown, so PageInfoController should be null.",
+                PageInfoController.getLastPageInfoController());
+        // For a non-interactive omnibox, clicking the title bar should show Page Info instead of
+        // activating the omnibox.
+        ThreadUtils.runOnUiThreadBlocking(() -> titleBar.performClick());
+        assertNotNull(
+                "Page info should have been shown.",
+                PageInfoController.getLastPageInfoController());
     }
 
     @Test

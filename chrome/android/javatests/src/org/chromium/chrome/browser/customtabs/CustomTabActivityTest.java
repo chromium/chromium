@@ -3102,10 +3102,6 @@ public class CustomTabActivityTest {
     @Test
     @MediumTest
     public void omniboxInCct_testNonInteractiveOmniboxWhenIntentNotEligible() {
-        // TODO: Find a better way to test omnibox interactivity because titleBar is going to have
-        // a click listener to show page info.
-        if (ChromeFeatureList.sCctNestedSecurityIcon.isEnabled()) return;
-
         // By default, omnibox in CCT is not permitted and no stubbing is necessary.
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -3114,12 +3110,19 @@ public class CustomTabActivityTest {
 
         var titleBar =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.title_url_container);
-        Assert.assertFalse(titleBar.hasOnClickListeners());
+        assertNull(
+                "Page info hasn't been shown, so PageInfoController should be null.",
+                PageInfoController.getLastPageInfoController());
+        // For a non-interactive omnibox, clicking the title bar should show Page Info instead of
+        // activating the omnibox.
+        ThreadUtils.runOnUiThreadBlocking(() -> titleBar.performClick());
+        assertNotNull(
+                "Page info should have been shown.",
+                PageInfoController.getLastPageInfoController());
     }
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.CCT_NESTED_SECURITY_ICON)
     @MinAndroidSdkLevel(VERSION_CODES.R)
     public void titleAndUrlActionTest() throws ExecutionException {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());

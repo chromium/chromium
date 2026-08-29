@@ -1751,11 +1751,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "cct-nested-security-icon",
-    "owners": ["sinansahin@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "cct-open-in-browser-button-if-allowed-by-embedder",
     "owners": ["kamalchoudhury@google.com", "edmundw@google.com"],
     "expiry_milestone": 140
