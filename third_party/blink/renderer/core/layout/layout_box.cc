@@ -619,7 +619,7 @@ void LayoutBox::WillBeRemovedFromTree() {
   ClearCustomLayoutChild();
 
   // Notify the display-locks that anchors within a sub-tree may disappear.
-  if (Style() && StyleRef().HasOutOfFlowPosition()) {
+  if (StyleRef().HasOutOfFlowPosition()) {
     NotifyContainingDisplayLocksForAnchorPositioning(
         DisplayLocksAffectedByAnchors(), nullptr);
   }
