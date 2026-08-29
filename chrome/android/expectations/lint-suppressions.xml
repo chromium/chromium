@@ -161,6 +161,11 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R\..*safety_fre_.*` appears to be unused"/>
     <ignore regexp="The resource `R\..*fre_promo_.*_illustration` appears to be unused"/>
 
+    <!-- TODO(crbug.com/554115227): Remove temporarily suppress Actor notification prompt strings. -->
+    <ignore regexp="The resource `R.string.actor_notification_prompt_toast_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.actor_notification_prompt_toast_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.actor_notification_prompt_toast_manage_button` appears to be unused"/>
+
     <!-- TODO(crbug.com/540948781): Remove these exceptions after strings are used in code. -->
     <ignore regexp="The resource `R.string.signin_account_picker_bottom_sheet_subtitle_on_all_devices_saved_info` appears to be unused"/>
     <ignore regexp="The resource `R.string.signin_account_picker_bottom_sheet_subtitle_on_all_devices_bookmarks` appears to be unused"/>
