@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -223,8 +224,9 @@ bool LayoutSVGForeignObject::NodeAtPointFromSVG(
     if (local_location->Intersects(bounds)) {
       UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
-      if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
-          kStopHitTesting) {
+      if (result.AddNodeToListBasedTestResult(
+              GetElement(), *local_location,
+              PhysicalRect::EnclosingRect(bounds)) == kStopHitTesting) {
         return true;
       }
     }

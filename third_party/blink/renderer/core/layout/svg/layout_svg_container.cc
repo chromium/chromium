@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -257,9 +258,11 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
         local_location->Intersects(bounds)) {
       UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
-      if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
-          kStopHitTesting)
+      if (result.AddNodeToListBasedTestResult(
+              GetElement(), *local_location,
+              PhysicalRect::EnclosingRect(bounds)) == kStopHitTesting) {
         return true;
+      }
     }
   }
   // 16.4: "If there are no graphics elements whose relevant graphics content is

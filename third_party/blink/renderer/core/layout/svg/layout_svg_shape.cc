@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -558,9 +559,18 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
   if (HitTestShape(result.GetHitTestRequest(), *local_location, hit_rules)) {
     UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                     local_location->TransformedPoint()));
-    if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
-        kStopHitTesting)
+    gfx::RectF bounds;
+    if (result.GetHitTestRequest().IsHitTestVisualOverflow()) [[unlikely]] {
+      bounds =
+          SVGLayoutSupport::ApplyFiltersToRect(*this, DecoratedBoundingBox());
+    } else if (hit_rules.can_hit_bounding_box) {
+      bounds = ObjectBoundingBox();
+    }
+    if (result.AddNodeToListBasedTestResult(
+            GetElement(), *local_location,
+            PhysicalRect::EnclosingRect(bounds)) == kStopHitTesting) {
       return true;
+    }
   }
 
   return false;
