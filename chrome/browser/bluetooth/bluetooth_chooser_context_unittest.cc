@@ -385,6 +385,46 @@ TEST_F(BluetoothChooserContextTest, GrantPermissionInIncognito) {
   }
 }
 
+TEST_F(BluetoothChooserContextTest, GrantPermissionInIncognito_DesyncRace) {
+  const std::vector<BluetoothUUID> services{kGlucoseUUID, kBloodPressureUUID};
+  WebBluetoothRequestDeviceOptionsPtr options =
+      CreateOptionsForServices(services);
+
+  BluetoothChooserContext* regular_context = GetChooserContext(profile());
+  BluetoothChooserContext* incognito_context = GetChooserContext(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+
+  // We expect 3 notifications:
+  // 1. Grant in incognito.
+  // 2. Grant in regular.
+  // 3. Flush regular (which propagates to OTR and triggers notification there).
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::BLUETOOTH_GUARD),
+                  ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
+      .Times(3);
+
+  // Grant permission in incognito. This schedules save.
+  blink::WebBluetoothDeviceId incognito_device_id =
+      incognito_context->GrantServiceAccessPermission(
+          foo_origin_, fake_device1_.get(), options.get());
+
+  EXPECT_TRUE(
+      incognito_context->HasDevicePermission(foo_origin_, incognito_device_id));
+
+  // Grant permission in regular profile. This schedules save.
+  regular_context->GrantServiceAccessPermission(
+      foo_origin_, fake_device2_.get(), options.get());
+
+  // Flush regular saves. This writes to regular map, which propagates to OTR
+  // map. This triggers OnContentSettingChanged on incognito_context.
+  regular_context->FlushScheduledSaveSettingsCalls();
+
+  // Check if incognito still has it.
+  EXPECT_TRUE(
+      incognito_context->HasDevicePermission(foo_origin_, incognito_device_id));
+}
+
 // Check that granting device permission with new services updates the
 // permission.
 TEST_F(BluetoothChooserContextTest, CheckGrantWithServiceUpdates) {
@@ -631,4 +671,38 @@ TEST_F(BluetoothChooserContextTest, BluetoothLEScanWithGrantedDevices) {
   EXPECT_NE(scanned_id, granted_id);
   EXPECT_FALSE(context->HasDevicePermission(foo_origin_, scanned_id));
   EXPECT_FALSE(context->HasDevicePermission(foo_origin_, granted_id));
+}
+
+TEST_F(BluetoothChooserContextTest, ClearBrowsingDataScannedDevices) {
+  BluetoothChooserContext* context = GetChooserContext(profile());
+
+  // Add a scanned device.
+  blink::WebBluetoothDeviceId scanned_id =
+      context->AddScannedDevice(foo_origin_, fake_device1_->GetAddress());
+  EXPECT_TRUE(scanned_id.IsValid());
+
+  EXPECT_EQ(scanned_id, context->GetWebBluetoothDeviceId(
+                            foo_origin_, fake_device1_->GetAddress()));
+
+  // Simulate Clear Browsing Data.
+  // Clearing BLUETOOTH_CHOOSER_DATA triggers one OnObjectPermissionChanged
+  // call from NotifyPermissionRevoked().
+  EXPECT_CALL(mock_permission_observer_,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::BLUETOOTH_GUARD),
+                  ContentSettingsType::BLUETOOTH_CHOOSER_DATA));
+  EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(foo_origin_));
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::BLUETOOTH_CHOOSER_DATA, base::Time(),
+      base::Time::Max(), HostContentSettingsMap::PatternSourcePredicate());
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::BLUETOOTH_GUARD, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  // Check if the scanned device is still remembered.
+  EXPECT_FALSE(
+      context->GetWebBluetoothDeviceId(foo_origin_, fake_device1_->GetAddress())
+          .IsValid());
 }

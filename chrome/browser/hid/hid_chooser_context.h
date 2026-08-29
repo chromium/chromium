@@ -149,6 +149,11 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   void OnHidManagerConnectionError();
   bool CanApplyPolicy();
 
+  // ObjectPermissionContextBase:
+  std::vector<url::Origin> RevokeEphemeralPermissions(
+      const ContentSettingsPattern& primary_pattern,
+      bool unconditional) override;
+
   // HID-specific interface for revoking device permissions.
   void RevokePersistentDevicePermission(
       const url::Origin& origin,

@@ -120,6 +120,11 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
                                       const base::DictValue& object,
                                       bool revoked_by_website);
 
+  // ObjectPermissionContextBase:
+  std::vector<url::Origin> RevokeEphemeralPermissions(
+      const ContentSettingsPattern& primary_pattern,
+      bool unconditional) override;
+
   void OnDeviceManagerConnectionError();
   void EnsureConnectionWithDeviceManager();
   void SetUpDeviceManagerConnection();

@@ -585,3 +585,57 @@ TEST_F(SmartCardPermissionContextTest, EphemeralGrantExpiryOnLongTimeout) {
           kSmartCardPermissionExpiredMaxLifetimeReached,
       1);
 }
+
+TEST_F(SmartCardPermissionContextTest, ClearBrowsingDataStaleCache) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+  const std::string kReaderName = "Reader A";
+
+  SmartCardPermissionContext context(&profile_);
+
+  EXPECT_FALSE(HasReaderPermission(context, kOrigin, kReaderName));
+
+  GrantPersistentReaderPermission(context, kOrigin, kReaderName);
+  context.FlushScheduledSaveSettingsCalls();
+  EXPECT_TRUE(HasReaderPermission(context, kOrigin, kReaderName));
+
+  // Simulate Clear Browsing Data.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::SMART_CARD_DATA, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::SMART_CARD_GUARD, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  // Check that permission was revoked.
+  EXPECT_FALSE(HasReaderPermission(context, kOrigin, kReaderName));
+}
+
+TEST_F(SmartCardPermissionContextTest, ClearBrowsingDataEphemeralDevice) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+  const std::string kReaderName = "Reader A";
+
+  SmartCardPermissionContext context(&profile_);
+
+  EXPECT_FALSE(HasReaderPermission(context, kOrigin, kReaderName));
+
+  GrantEphemeralReaderPermission(context, kOrigin, kReaderName);
+  EXPECT_TRUE(HasReaderPermission(context, kOrigin, kReaderName));
+
+  // Simulate Clear Browsing Data.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::SMART_CARD_DATA, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::SMART_CARD_GUARD, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  // Check that permission was revoked.
+  EXPECT_FALSE(HasReaderPermission(context, kOrigin, kReaderName));
+  histogram_tester_.ExpectUniqueSample(
+      "SmartCard.OneTimePermissionExpiryReason",
+      SmartCardOneTimePermissionExpiryReason::
+          kSmartCardPermissionExpiredSettingsChanged,
+      1);
+}

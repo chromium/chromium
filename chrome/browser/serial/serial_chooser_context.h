@@ -114,6 +114,11 @@ class SerialChooserContext
                                       const base::DictValue& object,
                                       bool revoked_by_website);
 
+  // ObjectPermissionContextBase:
+  std::vector<url::Origin> RevokeEphemeralPermissions(
+      const ContentSettingsPattern& primary_pattern,
+      bool unconditional) override;
+
   // This raw pointer is safe because instances of this class are created by
   // SerialChooserContextFactory as KeyedServices that will be destroyed when
   // the Profile object is destroyed.

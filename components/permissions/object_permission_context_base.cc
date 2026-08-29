@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
@@ -30,6 +31,8 @@ ObjectPermissionContextBase::ObjectPermissionContextBase(
       data_content_settings_type_(data_content_settings_type),
       host_content_settings_map_(host_content_settings_map) {
   DCHECK(host_content_settings_map_);
+  host_content_settings_map_->AddObserver(this);
+  is_observing_ = true;
 }
 
 ObjectPermissionContextBase::ObjectPermissionContextBase(
@@ -39,10 +42,22 @@ ObjectPermissionContextBase::ObjectPermissionContextBase(
       data_content_settings_type_(data_content_settings_type),
       host_content_settings_map_(host_content_settings_map) {
   DCHECK(host_content_settings_map_);
+  host_content_settings_map_->AddObserver(this);
+  is_observing_ = true;
 }
 
 ObjectPermissionContextBase::~ObjectPermissionContextBase() {
+  if (host_content_settings_map_ && is_observing_) {
+    host_content_settings_map_->RemoveObserver(this);
+  }
   FlushScheduledSaveSettingsCalls();
+}
+
+void ObjectPermissionContextBase::Shutdown() {
+  if (host_content_settings_map_ && is_observing_) {
+    host_content_settings_map_->RemoveObserver(this);
+    is_observing_ = false;
+  }
 }
 
 ObjectPermissionContextBase::Object::Object(
@@ -281,6 +296,7 @@ base::DictValue ObjectPermissionContextBase::GetWebsiteSetting(
 
 void ObjectPermissionContextBase::SaveWebsiteSetting(
     const url::Origin& origin) {
+  base::AutoReset<bool> auto_reset(&ignore_map_callbacks_, true);
   auto scheduled_save_it =
       origins_with_scheduled_save_settings_calls_.find(origin);
   if (scheduled_save_it == origins_with_scheduled_save_settings_calls_.end()) {
@@ -392,6 +408,86 @@ ObjectPermissionContextBase::ObjectMap& ObjectPermissionContextBase::objects() {
     objects_initialized_ = true;
   }
   return objects_;
+}
+
+void ObjectPermissionContextBase::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (ignore_map_callbacks_ ||
+      !content_type_set.Contains(data_content_settings_type_)) {
+    return;
+  }
+  FlushScheduledSaveSettingsCalls();
+  std::set<url::Origin> revoked_origins;
+
+  // 1. Revoke ephemeral permissions first.
+  //
+  // During initialization or global resets, `content_type_set` contains all
+  // permission types. Revoke ephemeral permissions only if the origin matches
+  // `primary_pattern` and the guard setting is BLOCK. If the guard setting is
+  // ASK, ephemeral permissions are not revoked.
+  //
+  // OnContentSettingChanged is also called if the user manually revokes a
+  // permission or uses Clear Browsing Data to clear site settings. Ephemeral
+  // permissions that match `primary_pattern` are unconditionally revoked
+  // regardless of the guard setting.
+  bool unconditional = !content_type_set.ContainsAllTypes();
+  std::vector<url::Origin> revoked_ephemeral =
+      RevokeEphemeralPermissions(primary_pattern, unconditional);
+  revoked_origins.insert(revoked_ephemeral.begin(), revoked_ephemeral.end());
+
+  // 2. Invalidate persistent cache and collect revoked origins.
+  if (objects_initialized_) {
+    std::map<url::Origin, std::set<std::string>> old_objects;
+    for (const auto& entry : objects_) {
+      if (primary_pattern.Matches(entry.first.GetURL())) {
+        std::set<std::string> keys;
+        for (const auto& object_entry : entry.second) {
+          keys.insert(object_entry.first);
+        }
+        old_objects[entry.first] = std::move(keys);
+      }
+    }
+
+    objects_.clear();
+    objects_initialized_ = false;
+
+    // Reload cache to see what is still valid.
+    objects();
+
+    for (const auto& [origin, old_keys] : old_objects) {
+      auto it = objects_.find(origin);
+      if (it == objects_.end()) {
+        revoked_origins.insert(origin);
+      } else {
+        for (const auto& key : old_keys) {
+          if (!it->second.contains(key)) {
+            revoked_origins.insert(origin);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // If there are revoked origins, `NotifyPermissionRevoked` will call
+  // `OnObjectPermissionChanged` for each origin. To avoid double-notifying
+  // observers, only call `NotifyPermissionChanged` if no origins were revoked.
+  if (revoked_origins.empty()) {
+    NotifyPermissionChanged();
+  } else {
+    for (const auto& origin : revoked_origins) {
+      NotifyPermissionRevoked(origin);
+    }
+  }
+}
+
+std::vector<url::Origin>
+ObjectPermissionContextBase::RevokeEphemeralPermissions(
+    const ContentSettingsPattern& primary_pattern,
+    bool unconditional) {
+  return {};
 }
 
 }  // namespace permissions

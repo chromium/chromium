@@ -213,8 +213,8 @@ void UsbChooserContext::InitDeviceList(
 }
 
 void UsbChooserContext::Shutdown() {
-  FlushScheduledSaveSettingsCalls();
   permissions::ObjectPermissionContextBase::Shutdown();
+  FlushScheduledSaveSettingsCalls();
 }
 
 void UsbChooserContext::EnsureConnectionWithDeviceManager() {
@@ -447,6 +447,22 @@ void UsbChooserContext::RevokeObjectPermissionInternal(
   RecordWebUsbPermissionRevocation(
       revoked_by_website ? WEBUSB_PERMISSION_REVOKED_EPHEMERAL_BY_WEBSITE
                          : WEBUSB_PERMISSION_REVOKED_EPHEMERAL_BY_USER);
+}
+
+std::vector<url::Origin> UsbChooserContext::RevokeEphemeralPermissions(
+    const ContentSettingsPattern& primary_pattern,
+    bool unconditional) {
+  std::vector<url::Origin> revoked_origins;
+  std::erase_if(ephemeral_devices_, [&](const auto& entry) {
+    const auto& [origin, devices] = entry;
+    if (primary_pattern.Matches(origin.GetURL()) &&
+        (unconditional || !CanRequestObjectPermission(origin))) {
+      revoked_origins.push_back(origin);
+      return true;
+    }
+    return false;
+  });
+  return revoked_origins;
 }
 
 std::string UsbChooserContext::GetKeyForObject(const base::DictValue& object) {

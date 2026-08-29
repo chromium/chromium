@@ -484,15 +484,16 @@ TEST_F(UsbChooserContextTest, PolicyAskForUrls) {
   auto* store = GetChooserContext(profile());
   store->GrantDevicePermission(kFooOrigin, *device);
   store->GrantDevicePermission(kBarOrigin, *device);
+  store->FlushScheduledSaveSettingsCalls();
 
   // Set the default to "ask" so that the policy being tested overrides it.
   auto* prefs = profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedDefaultWebUsbGuardSetting,
-                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   prefs->SetManagedPref(prefs::kManagedWebUsbAskForUrls,
                         base::test::ParseJsonList(R"(
     [ "https://foo.origin" ]
   )"));
+  prefs->SetManagedPref(prefs::kManagedDefaultWebUsbGuardSetting,
+                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
   EXPECT_TRUE(store->CanRequestObjectPermission(kFooOrigin));
   EXPECT_TRUE(store->HasDevicePermission(kFooOrigin, *device));
@@ -519,6 +520,7 @@ TEST_F(UsbChooserContextTest, PolicyBlockedForUrls) {
   auto* store = GetChooserContext(profile());
   store->GrantDevicePermission(kFooOrigin, *device);
   store->GrantDevicePermission(kBarOrigin, *device);
+  store->FlushScheduledSaveSettingsCalls();
 
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedWebUsbBlockedForUrls,
@@ -1348,4 +1350,74 @@ TEST_F(UsbChooserContextTest, DeviceWithNoInterfaceVisible) {
         loop.Quit();
       }));
   loop.Run();
+}
+
+TEST_F(UsbChooserContextTest, ClearBrowsingDataStaleCache) {
+  GURL url("https://www.google.com");
+  const auto origin = url::Origin::Create(url);
+  UsbDeviceInfoPtr device_info =
+      device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "123ABC");
+  UsbChooserContext* store = GetChooserContext(profile());
+
+  EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
+
+  // Grant permission.
+  store->GrantDevicePermission(origin, *device_info);
+  store->FlushScheduledSaveSettingsCalls();
+  EXPECT_TRUE(store->HasDevicePermission(origin, *device_info));
+
+  // Simulate Clear Browsing Data.
+  // Clearing USB_CHOOSER_DATA will trigger one OnObjectPermissionChanged call
+  // from NotifyPermissionRevoked().
+  EXPECT_CALL(*mock_permission_observers_[profile()],
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(*mock_permission_observers_[profile()],
+              OnPermissionRevoked(origin));
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::USB_CHOOSER_DATA, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  // Check if the permission is still returned.
+  // Should be FALSE because we fixed ObjectPermissionContextBase.
+  EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
+}
+
+TEST_F(UsbChooserContextTest, ClearBrowsingDataEphemeralDevice) {
+  GURL url("https://www.google.com");
+  const auto origin = url::Origin::Create(url);
+  // Create an ephemeral device (no serial number).
+  UsbDeviceInfoPtr device_info =
+      device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "");
+  UsbChooserContext* store = GetChooserContext(profile());
+
+  EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
+
+  // Grant permission.
+  store->GrantDevicePermission(origin, *device_info);
+  EXPECT_TRUE(store->HasDevicePermission(origin, *device_info));
+
+  // Simulate Clear Browsing Data.
+  // Clearing USB_CHOOSER_DATA will trigger one OnObjectPermissionChanged call
+  // from NotifyPermissionRevoked().
+  EXPECT_CALL(*mock_permission_observers_[profile()],
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(*mock_permission_observers_[profile()],
+              OnPermissionRevoked(origin));
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::USB_CHOOSER_DATA, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+  map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::USB_GUARD, base::Time(), base::Time::Max(),
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  // Check if the permission is still returned.
+  EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
 }

@@ -28,6 +28,7 @@ found in the LICENSE file.
   <int value="3" label="SystemSuspended"/>
   <int value="4" label="ReaderRemoved"/>
   <int value="5" label="CardRemoved"/>
+  <int value="6" label="SettingsChanged"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/smart_card/smart_card_histograms.h:SmartCardOneTimePermissionExpiryReason) -->

@@ -91,6 +91,11 @@ class SmartCardPermissionContext
   class PowerSuspendObserver;
   class ReaderObserver;
 
+  // ObjectPermissionContextBase:
+  std::vector<url::Origin> RevokeEphemeralPermissions(
+      const ContentSettingsPattern& primary_pattern,
+      bool unconditional) override;
+
   bool HasReaderPermission(const url::Origin& origin,
                            const std::string& reader_name);
 

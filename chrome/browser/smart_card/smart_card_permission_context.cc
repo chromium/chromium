@@ -390,6 +390,34 @@ void SmartCardPermissionContext::RevokeEphemeralPermissions() {
   }
 }
 
+std::vector<url::Origin> SmartCardPermissionContext::RevokeEphemeralPermissions(
+    const ContentSettingsPattern& primary_pattern,
+    bool unconditional) {
+  std::vector<url::Origin> revoked_origins;
+  size_t revoked_permissions_count = 0;
+  base::EraseIf(ephemeral_grants_with_expiry_, [&](const auto& entry) {
+    const auto& [origin, reader_map] = entry;
+    if (primary_pattern.Matches(origin.GetURL()) &&
+        (unconditional || !CanRequestObjectPermission(origin))) {
+      revoked_origins.push_back(origin);
+      revoked_permissions_count += reader_map.size();
+      return true;
+    }
+    return false;
+  });
+
+  for (size_t i = 0; i < revoked_permissions_count; ++i) {
+    RecordSmartCardOneTimePermissionExpiryReason(
+        SmartCardOneTimePermissionExpiryReason::
+            kSmartCardPermissionExpiredSettingsChanged);
+  }
+
+  if (ephemeral_grants_with_expiry_.empty()) {
+    StopObserving();
+  }
+  return revoked_origins;
+}
+
 void SmartCardPermissionContext::RevokeAllPermissions() {
   for (auto& origin : GetOriginsWithGrants()) {
     RevokeObjectPermissions(origin);

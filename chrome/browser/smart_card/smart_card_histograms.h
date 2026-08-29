@@ -31,7 +31,9 @@ enum SmartCardOneTimePermissionExpiryReason {
   kSmartCardPermissionExpiredReaderRemoved,
   // Smart card was removed from the reader the grant referred to.
   kSmartCardPermissionExpiredCardRemoved,
-  kMaxValue = kSmartCardPermissionExpiredCardRemoved
+  // The permission was revoked because content settings changed.
+  kSmartCardPermissionExpiredSettingsChanged,
+  kMaxValue = kSmartCardPermissionExpiredSettingsChanged
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/smart_card/enums.xml:SmartCardOneTimePermissionExpiryReason)
 

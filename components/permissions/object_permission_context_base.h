@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -35,7 +36,8 @@ namespace permissions {
 // is associated with a more complicated grant than simple allow/deny. This is
 // typically granted through a chooser-style UI.
 // Subclasses must define the structure of the objects that are stored.
-class ObjectPermissionContextBase : public KeyedService {
+class ObjectPermissionContextBase : public KeyedService,
+                                    public content_settings::Observer {
  public:
   struct Object {
     Object(const url::Origin& origin,
@@ -171,8 +173,18 @@ class ObjectPermissionContextBase : public KeyedService {
 
   // Triggers the immediate flushing of all scheduled save setting operations.
   // To be called when the host_content_settings_map_ is about to become
-  // unusable (e.g. browser context shutting down).
+  // unusable (e.g. browser context shutting down) or before invalidating
+  // the in-memory cache to prevent losing unsaved changes.
   void FlushScheduledSaveSettingsCalls();
+
+  // KeyedService:
+  void Shutdown() override;
+
+  // content_settings::Observer implementation:
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
  protected:
   // TODO(odejesush): Use this method in all derived classes instead of using a
@@ -180,6 +192,9 @@ class ObjectPermissionContextBase : public KeyedService {
   bool IsOffTheRecord();
   void NotifyPermissionChanged();
   void NotifyPermissionRevoked(const url::Origin& origin);
+  virtual std::vector<url::Origin> RevokeEphemeralPermissions(
+      const ContentSettingsPattern& primary_pattern,
+      bool unconditional);
 
   const std::optional<ContentSettingsType> guard_content_settings_type_;
   const ContentSettingsType data_content_settings_type_;
@@ -215,6 +230,13 @@ class ObjectPermissionContextBase : public KeyedService {
 
   // Origins that have a scheduled `SaveWebsiteSetting` call.
   base::flat_set<url::Origin> origins_with_scheduled_save_settings_calls_;
+
+  // True if observing changes to `host_content_settings_map_`.
+  bool is_observing_ = false;
+
+  // Set to true while inside `SaveWebsiteSetting` to ignore observer callbacks
+  // triggered by our own changes.
+  bool ignore_map_callbacks_ = false;
 
   base::WeakPtrFactory<ObjectPermissionContextBase> weak_factory_{this};
 };

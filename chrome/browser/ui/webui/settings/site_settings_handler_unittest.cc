@@ -1365,6 +1365,11 @@ TEST_F(SiteSettingsHandlerTest, GetEnforcedDefault) {
   ContentSettingSourceSetter source_setter(profile(),
                                            ContentSettingsType::NOTIFICATIONS);
   source_setter.SetPolicyDefault(CONTENT_SETTING_ALLOW);
+  // SetPolicyDefault triggers a global policy change notification (DEFAULT),
+  // which causes all chooser contexts to reload and notify SiteSettingsHandler,
+  // resulting in extra chooserPermissionChanged WebUI calls. Clear them so
+  // they don't interfere with the call count verification below.
+  web_ui()->ClearTrackedCalls();
 
   base::ListValue get_args;
   get_args.Append(kCallbackId);
@@ -2549,9 +2554,14 @@ TEST_F(SiteSettingsHandlerTest, MAYBE_DefaultSettingSource) {
 
   // Enterprise-policy set defaults should not show up as default.
   source_setter.SetPolicyDefault(CONTENT_SETTING_ALLOW);
+  // SetPolicyDefault triggers a global policy change notification (DEFAULT),
+  // which causes all chooser contexts to reload and notify SiteSettingsHandler,
+  // resulting in extra chooserPermissionChanged WebUI calls. Clear them so
+  // they don't interfere with the call count verification below.
+  web_ui()->ClearTrackedCalls();
   handler()->HandleGetOriginPermissions(get_origin_permissions_args);
   ValidateOrigin(google, google, expected_display_name, CONTENT_SETTING_ALLOW,
-                 site_settings::SiteSettingSource::kPolicy, 10U);
+                 site_settings::SiteSettingSource::kPolicy, 1U);
 }
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetOriginPermissions) {
@@ -5389,39 +5399,40 @@ class SiteSettingsHandlerBluetoothTest
 
     auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
     options->accept_all_devices = true;
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      auto* bluetooth_chooser_context =
-          BluetoothChooserContextFactory::GetForProfile(profile());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::BLUETOOTH_GUARD},
-                                 ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kChromiumOrigin, persistent_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kGoogleOrigin, persistent_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kWebUIOrigin, persistent_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kAndroidOrigin, ephemeral_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kAndroidOrigin, user_granted_device_.get(), options.get());
-      loop.Run();
-    }
+
+    // Expect to receive 5 notifications for 5 permission grants. If there is an
+    // incognito profile, persistent permission grants are propagated to the
+    // incognito profile and trigger additional notifications. The ephemeral
+    // grant is not propagated.
+    EXPECT_CALL(observer_, OnObjectPermissionChanged(
+                               {ContentSettingsType::BLUETOOTH_GUARD},
+                               ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
+        .Times(incognito_profile() ? 9 : 5);
+
+    auto* bluetooth_chooser_context =
+        BluetoothChooserContextFactory::GetForProfile(profile());
+    bluetooth_chooser_context->GrantServiceAccessPermission(
+        kChromiumOrigin, persistent_device_.get(), options.get());
+    bluetooth_chooser_context->GrantServiceAccessPermission(
+        kGoogleOrigin, persistent_device_.get(), options.get());
+    bluetooth_chooser_context->GrantServiceAccessPermission(
+        kWebUIOrigin, persistent_device_.get(), options.get());
+    bluetooth_chooser_context->GrantServiceAccessPermission(
+        kAndroidOrigin, ephemeral_device_.get(), options.get());
+    bluetooth_chooser_context->GrantServiceAccessPermission(
+        kAndroidOrigin, user_granted_device_.get(), options.get());
+
+    bluetooth_chooser_context->FlushScheduledSaveSettingsCalls();
 
     if (off_the_record_device_) {
-      base::RunLoop loop;
       EXPECT_CALL(observer_, OnObjectPermissionChanged(
                                  {ContentSettingsType::BLUETOOTH_GUARD},
-                                 ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      BluetoothChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantServiceAccessPermission(
-              kChromiumOrigin, off_the_record_device_.get(), options.get());
-      loop.Run();
+                                 ContentSettingsType::BLUETOOTH_CHOOSER_DATA));
+      auto* incognito_context =
+          BluetoothChooserContextFactory::GetForProfile(incognito_profile());
+      incognito_context->GrantServiceAccessPermission(
+          kChromiumOrigin, off_the_record_device_.get(), options.get());
+      incognito_context->FlushScheduledSaveSettingsCalls();
     }
   }
 
@@ -5580,42 +5591,39 @@ class SiteSettingsHandlerHidTest
     const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
     const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
 
-    // Add the user granted permissions for testing.
-    // These two persistent device permissions should be lumped together
-    // with the policy permissions, since they apply to the same device and
-    // URL.
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::HID_GUARD},
-                                 ContentSettingsType::HID_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      auto* hid_chooser_context =
-          HidChooserContextFactory::GetForProfile(profile());
-      hid_chooser_context->GrantDevicePermission(kChromiumOrigin,
-                                                 *persistent_device_);
-      hid_chooser_context->GrantDevicePermission(kGoogleOrigin,
-                                                 *persistent_device_);
-      hid_chooser_context->GrantDevicePermission(kWebUIOrigin,
-                                                 *persistent_device_);
-      hid_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *ephemeral_device_);
-      hid_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *user_granted_device_);
-      loop.Run();
-    }
+    // Expect to receive 5 notifications for 5 permission grants. If there is an
+    // incognito profile, persistent permission grants are propagated to the
+    // incognito profile and trigger additional notifications. The ephemeral
+    // grant is not propagated.
+    EXPECT_CALL(observer_, OnObjectPermissionChanged(
+                               {ContentSettingsType::HID_GUARD},
+                               ContentSettingsType::HID_CHOOSER_DATA))
+        .Times(incognito_profile() ? 9 : 5);
+
+    auto* hid_chooser_context =
+        HidChooserContextFactory::GetForProfile(profile());
+    hid_chooser_context->GrantDevicePermission(kChromiumOrigin,
+                                               *persistent_device_);
+    hid_chooser_context->GrantDevicePermission(kGoogleOrigin,
+                                               *persistent_device_);
+    hid_chooser_context->GrantDevicePermission(kWebUIOrigin,
+                                               *persistent_device_);
+    hid_chooser_context->GrantDevicePermission(kAndroidOrigin,
+                                               *ephemeral_device_);
+    hid_chooser_context->GrantDevicePermission(kAndroidOrigin,
+                                               *user_granted_device_);
+
+    hid_chooser_context->FlushScheduledSaveSettingsCalls();
 
     if (off_the_record_device_) {
-      base::RunLoop loop;
       EXPECT_CALL(observer_, OnObjectPermissionChanged(
                                  {ContentSettingsType::HID_GUARD},
-                                 ContentSettingsType::HID_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      HidChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantDevicePermission(kChromiumOrigin, *off_the_record_device_);
-      loop.Run();
+                                 ContentSettingsType::HID_CHOOSER_DATA));
+      auto* incognito_context =
+          HidChooserContextFactory::GetForProfile(incognito_profile());
+      incognito_context->GrantDevicePermission(kChromiumOrigin,
+                                               *off_the_record_device_);
+      incognito_context->FlushScheduledSaveSettingsCalls();
     }
   }
 
@@ -5826,42 +5834,39 @@ class SiteSettingsHandlerSerialTest
     const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
     const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
 
-    // Add the user granted permissions for testing.
-    // These two persistent device permissions should be lumped together
-    // with the policy permissions, since they apply to the same device and
-    // URL.
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::SERIAL_GUARD},
-                                 ContentSettingsType::SERIAL_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      auto* serial_chooser_context =
-          SerialChooserContextFactory::GetForProfile(profile());
-      serial_chooser_context->GrantPortPermission(kChromiumOrigin,
-                                                  *persistent_port_);
-      serial_chooser_context->GrantPortPermission(kGoogleOrigin,
-                                                  *persistent_port_);
-      serial_chooser_context->GrantPortPermission(kWebUIOrigin,
-                                                  *persistent_port_);
-      serial_chooser_context->GrantPortPermission(kAndroidOrigin,
-                                                  *ephemeral_port_);
-      serial_chooser_context->GrantPortPermission(kAndroidOrigin,
-                                                  *user_granted_port_);
-      loop.Run();
-    }
+    // Expect to receive 5 notifications for 5 permission grants. If there is an
+    // incognito profile, persistent permission grants are propagated to the
+    // incognito profile and trigger additional notifications. The ephemeral
+    // grant is not propagated.
+    EXPECT_CALL(observer_, OnObjectPermissionChanged(
+                               {ContentSettingsType::SERIAL_GUARD},
+                               ContentSettingsType::SERIAL_CHOOSER_DATA))
+        .Times(incognito_profile() ? 9 : 5);
+
+    auto* serial_chooser_context =
+        SerialChooserContextFactory::GetForProfile(profile());
+    serial_chooser_context->GrantPortPermission(kChromiumOrigin,
+                                                *persistent_port_);
+    serial_chooser_context->GrantPortPermission(kGoogleOrigin,
+                                                *persistent_port_);
+    serial_chooser_context->GrantPortPermission(kWebUIOrigin,
+                                                *persistent_port_);
+    serial_chooser_context->GrantPortPermission(kAndroidOrigin,
+                                                *ephemeral_port_);
+    serial_chooser_context->GrantPortPermission(kAndroidOrigin,
+                                                *user_granted_port_);
+
+    serial_chooser_context->FlushScheduledSaveSettingsCalls();
 
     if (off_the_record_port_) {
-      base::RunLoop loop;
       EXPECT_CALL(observer_, OnObjectPermissionChanged(
                                  {ContentSettingsType::SERIAL_GUARD},
-                                 ContentSettingsType::SERIAL_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      SerialChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantPortPermission(kChromiumOrigin, *off_the_record_port_);
-      loop.Run();
+                                 ContentSettingsType::SERIAL_CHOOSER_DATA));
+      auto* incognito_context =
+          SerialChooserContextFactory::GetForProfile(incognito_profile());
+      incognito_context->GrantPortPermission(kChromiumOrigin,
+                                             *off_the_record_port_);
+      incognito_context->FlushScheduledSaveSettingsCalls();
     }
   }
 
@@ -6029,42 +6034,39 @@ class SiteSettingsHandlerUsbTest
     const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
     const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
 
-    // Add the user granted permissions for testing.
-    // These two persistent device permissions should be lumped together
-    // with the policy permissions, since they apply to the same device and
-    // URL.
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::USB_GUARD},
-                                 ContentSettingsType::USB_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      auto* usb_chooser_context =
-          UsbChooserContextFactory::GetForProfile(profile());
-      usb_chooser_context->GrantDevicePermission(kChromiumOrigin,
-                                                 *persistent_device_);
-      usb_chooser_context->GrantDevicePermission(kGoogleOrigin,
-                                                 *persistent_device_);
-      usb_chooser_context->GrantDevicePermission(kWebUIOrigin,
-                                                 *persistent_device_);
-      usb_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *ephemeral_device_);
-      usb_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *user_granted_device_);
-      loop.Run();
-    }
+    // Expect to receive 5 notifications for 5 permission grants. If there is an
+    // incognito profile, persistent permission grants are propagated to the
+    // incognito profile and trigger additional notifications. The ephemeral
+    // grant is not propagated.
+    EXPECT_CALL(observer_, OnObjectPermissionChanged(
+                               {ContentSettingsType::USB_GUARD},
+                               ContentSettingsType::USB_CHOOSER_DATA))
+        .Times(incognito_profile() ? 9 : 5);
+
+    auto* usb_chooser_context =
+        UsbChooserContextFactory::GetForProfile(profile());
+    usb_chooser_context->GrantDevicePermission(kChromiumOrigin,
+                                               *persistent_device_);
+    usb_chooser_context->GrantDevicePermission(kGoogleOrigin,
+                                               *persistent_device_);
+    usb_chooser_context->GrantDevicePermission(kWebUIOrigin,
+                                               *persistent_device_);
+    usb_chooser_context->GrantDevicePermission(kAndroidOrigin,
+                                               *ephemeral_device_);
+    usb_chooser_context->GrantDevicePermission(kAndroidOrigin,
+                                               *user_granted_device_);
+
+    usb_chooser_context->FlushScheduledSaveSettingsCalls();
 
     if (off_the_record_device_) {
-      base::RunLoop loop;
       EXPECT_CALL(observer_, OnObjectPermissionChanged(
                                  {ContentSettingsType::USB_GUARD},
-                                 ContentSettingsType::USB_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      UsbChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantDevicePermission(kChromiumOrigin, *off_the_record_device_);
-      loop.Run();
+                                 ContentSettingsType::USB_CHOOSER_DATA));
+      auto* incognito_context =
+          UsbChooserContextFactory::GetForProfile(incognito_profile());
+      incognito_context->GrantDevicePermission(kChromiumOrigin,
+                                               *off_the_record_device_);
+      incognito_context->FlushScheduledSaveSettingsCalls();
     }
   }
 

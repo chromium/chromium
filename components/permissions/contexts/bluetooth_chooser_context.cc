@@ -308,8 +308,24 @@ std::u16string BluetoothChooserContext::GetObjectDisplayName(
 }
 
 void BluetoothChooserContext::Shutdown() {
-  FlushScheduledSaveSettingsCalls();
   ObjectPermissionContextBase::Shutdown();
+  FlushScheduledSaveSettingsCalls();
+}
+
+std::vector<url::Origin> BluetoothChooserContext::RevokeEphemeralPermissions(
+    const ContentSettingsPattern& primary_pattern,
+    bool unconditional) {
+  std::vector<url::Origin> revoked_origins;
+  std::erase_if(scanned_devices_, [&](const auto& entry) {
+    const auto& [origin, address_to_id_map] = entry;
+    if (primary_pattern.Matches(origin.GetURL()) &&
+        (unconditional || !CanRequestObjectPermission(origin))) {
+      revoked_origins.push_back(origin);
+      return true;
+    }
+    return false;
+  });
+  return revoked_origins;
 }
 
 bool BluetoothChooserContext::IsValidDict(const base::DictValue& dict) {

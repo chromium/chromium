@@ -357,4 +357,38 @@ TEST_F(ObjectPermissionContextBaseTest, GrantAndUpdateObjectPermission_Keyed) {
   EXPECT_EQ(new_object, objects[0]->value);
 }
 
+TEST_F(ObjectPermissionContextBaseTest,
+       RevokeOneOfMultipleObjectPermissionsViaContentSettings) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object2_.Clone());
+  context_.FlushScheduledSaveSettingsCalls();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(2u, context_.GetGrantedObjects(origin1_).size());
+
+  auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
+
+  base::ListValue objects_list;
+  objects_list.Append(object2_.Clone());
+  base::DictValue website_setting_value;
+  website_setting_value.Set("chosen-objects", std::move(objects_list));
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_));
+
+  map->SetWebsiteSettingDefaultScope(
+      origin1_.GetURL(), GURL(), ContentSettingsType::USB_CHOOSER_DATA,
+      base::Value(std::move(website_setting_value)));
+
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  auto objects = context_.GetGrantedObjects(origin1_);
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_EQ(object2_, objects[0]->value);
+}
+
 }  // namespace permissions

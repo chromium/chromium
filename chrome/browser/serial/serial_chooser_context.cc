@@ -413,6 +413,22 @@ void SerialChooserContext::RevokeObjectPermissionInternal(
   NotifyPermissionRevoked(origin);
 }
 
+std::vector<url::Origin> SerialChooserContext::RevokeEphemeralPermissions(
+    const ContentSettingsPattern& primary_pattern,
+    bool unconditional) {
+  std::vector<url::Origin> revoked_origins;
+  std::erase_if(ephemeral_ports_, [&](const auto& entry) {
+    const auto& [origin, ports] = entry;
+    if (primary_pattern.Matches(origin.GetURL()) &&
+        (unconditional || !CanRequestObjectPermission(origin))) {
+      revoked_origins.push_back(origin);
+      return true;
+    }
+    return false;
+  });
+  return revoked_origins;
+}
+
 void SerialChooserContext::GrantPortPermission(
     const url::Origin& origin,
     const device::mojom::SerialPortInfo& port) {
@@ -641,8 +657,8 @@ void SerialChooserContext::OnPortConnectedStateChanged(
 }
 
 void SerialChooserContext::Shutdown() {
-  FlushScheduledSaveSettingsCalls();
   permissions::ObjectPermissionContextBase::Shutdown();
+  FlushScheduledSaveSettingsCalls();
 }
 
 void SerialChooserContext::EnsurePortManagerConnection() {
