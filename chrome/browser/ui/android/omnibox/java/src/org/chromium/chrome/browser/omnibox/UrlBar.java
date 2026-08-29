@@ -785,7 +785,7 @@ public class UrlBar extends AutocompleteEditText {
      *
      * @param listener The listener to be notified.
      */
-    public void setTextChangeListener(Callback<String> listener) {
+    public void setTextChangeListener(@Nullable Callback<String> listener) {
         mTextChangeListener = listener;
     }
 
@@ -795,7 +795,7 @@ public class UrlBar extends AutocompleteEditText {
      *
      * @param listener The listener to be notified.
      */
-    public void setRichTextChangeListener(Callback<UrlBarTextChangeInfo> listener) {
+    public void setRichTextChangeListener(@Nullable Callback<UrlBarTextChangeInfo> listener) {
         mRichTextChangeListener = listener;
     }
 
