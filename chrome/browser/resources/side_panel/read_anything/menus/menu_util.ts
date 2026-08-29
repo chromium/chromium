@@ -12,6 +12,22 @@ export enum SettingsItemType {
   EXPAND = 5,
 }
 
+// Notification status for language pack downloads and errors.
+export interface Notification {
+  isError: boolean;
+  text?: string;
+}
+
+// Unified data contract for language and accent dropdown items.
+export interface LanguageDropdownItem {
+  readableLanguage: string;
+  languageCode: string;
+  notification: Notification;
+  selected?: boolean;  // Single-select (Accent Menu)
+  checked?: boolean;   // Multi-select toggle (Language Menu)
+  disabled?: boolean;  // Interaction guard
+}
+
 // Represents top-level items of the settings menu. Also used for toggle items
 // in a dropdown menu.
 export interface SettingsItem {

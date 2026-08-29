@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getNotification, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getNotification, getNotificationFor, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
@@ -299,5 +299,33 @@ suite('voice and language conversions', () => {
         getNotification(
             voicePackLang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION,
             availableVoices, true));
+  });
+
+  test('getNotificationFor maps NotificationType to Notification', () => {
+    assertFalse(getNotificationFor('en-us', {}).isError);
+
+    assertEquals(
+        'readingModeLanguageMenuDownloading',
+        getNotificationFor('en-us', {
+          'en-us': NotificationType.DOWNLOADING,
+        }).text);
+
+    assertEquals(
+        'readingModeLanguageMenuNoInternet',
+        getNotificationFor('en-us', {
+          'en-us': NotificationType.NO_INTERNET,
+        }).text);
+    assertTrue(getNotificationFor('en-us', {
+                 'en-us': NotificationType.NO_INTERNET,
+               }).isError);
+
+    assertEquals('allocationError', getNotificationFor('en-us', {
+                                      'en-us': NotificationType.NO_SPACE,
+                                    }).text);
+
+    assertEquals(
+        'allocationErrorHighQuality', getNotificationFor('en-us', {
+                                        'en-us': NotificationType.NO_SPACE_HQ,
+                                      }).text);
   });
 });
