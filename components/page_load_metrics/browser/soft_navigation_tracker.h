@@ -34,7 +34,7 @@ class SoftNavigationTracker {
   // (hard navigation is 1).
   static constexpr uint64_t
       kFirstSoftNavigationPerformanceTimelineNavigationId = 2;
-  // Maximum number of uncommitted soft navigations to track to prevent
+  // Maximum number of soft navigations to track to prevent
   // unbounded memory growth in case of corrupted renderer data.
   static constexpr size_t kMaxSoftNavigations = 100;
 
@@ -63,6 +63,15 @@ class SoftNavigationTracker {
   // to (hard) navigation timeOrigin (navigation start).
   void OnShown(base::TimeDelta shown_time);
 
+  // Updates the tracker with newly arrived subframe metrics.
+  // Subframes do not participate directly in soft navigation heuristics and
+  // thus do not have performance timeline navigation IDs; instead, subframe
+  // events and layout shifts are attributed to the appropriate soft navigation
+  // slice based on their timestamps.
+  void UpdateSubFrameMetrics(
+      content::GlobalRenderFrameHostToken frame_token,
+      base::span<const mojom::EventTimingPtr> event_timings,
+      base::span<const mojom::LayoutShiftPtr> layout_shifts);
   // Finalizes all active/in-progress soft navigations (e.g. on page destruction
   // or backgrounding) and pushes remaining completed navigations to `client_`.
   void CompleteActiveNavigationAndFlush();
@@ -84,6 +93,12 @@ class SoftNavigationTracker {
   const SoftNavigationData* GetSoftNavigationData(
       uint64_t performance_timeline_navigation_id) const;
 
+  // Finds the committed soft navigation slice that covers `timestamp` (i.e.
+  // whose slicing time is the latest <= `timestamp`), or nullptr if `timestamp`
+  // occurred before the first soft navigation or belongs to an already
+  // dispatched navigation.
+  SoftNavigationData* FindCommittedNavigationForTimestamp(
+      base::TimeTicks timestamp);
   // Adds main frame event timings to their corresponding soft navigation based
   // on event->performance_timeline_navigation_id.
   void AddMainFrameEventTimings(
@@ -100,7 +115,7 @@ class SoftNavigationTracker {
   void AddMainFrameLargestContentfulPaints(
       base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps);
 
-  // Registers a committed soft navigation and marks it active.
+  // Registers a committed soft navigation and updates tracking state.
   void AddMainFrameSoftNavigationCommit(
       const mojom::SoftNavigationMetrics& soft_navigation);
 
@@ -109,25 +124,28 @@ class SoftNavigationTracker {
   void AddMainFrameFirstContentfulPaint(uint64_t navigation_id,
                                         base::TimeDelta first_contentful_paint);
 
-  // Prunes uncommitted navigation buckets with IDs strictly less than
-  // `navigation_id`. In a well-behaved renderer, commits arrive in strictly
-  // increasing order and no uncommitted buckets should remain with a lower ID;
-  // however, this protects against orphaned entries from canceled commits,
-  // aborted navigations, or bfcache restores.
-  void PruneUncommittedNavigationsUpTo(uint64_t navigation_id);
+  // Adds subframe event timings to their corresponding soft navigation slice
+  // based on event->processing_start.
+  void AddSubFrameEventTimings(
+      content::GlobalRenderFrameHostToken frame_token,
+      base::span<const mojom::EventTimingPtr> event_timings);
+
+  // Adds subframe layout shifts to their corresponding soft navigation slice
+  // based on shift->layout_shift_time.
+  void AddSubFrameLayoutShifts(
+      base::span<const mojom::LayoutShiftPtr> layout_shifts);
 
   // Returns true if `data` is non-null, has received a commit, and has an FCP
   // measurement.
   bool HasCommitAndFirstContentfulPaint(const SoftNavigationData* data) const;
 
-  SoftNavigationData* GetOrCreateNavigationData(uint64_t navigation_id);
   bool ValidateMetrics(base::span<const mojom::SoftNavigationMetricsPtr>
                            soft_navigation_metrics) const;
-  void ProcessCompletedNavigationsAwaitingReportingCriteria();
+  void TryAdvanceAndDispatchSoftNavigationEvents();
 
   uint64_t soft_navigation_count_ = 0;
   uint64_t last_committed_navigation_id_ = 0;
-  uint64_t active_navigation_id_ = 0;
+  uint64_t last_reported_fcp_navigation_id_ = 0;
   raw_ptr<Client> client_ = nullptr;
 
   std::optional<base::TimeDelta> last_hidden_time_;
@@ -138,9 +156,10 @@ class SoftNavigationTracker {
   // order).
   //
   // A navigation's state in this map is implicit:
-  // - Pending (Uncommitted): `!metrics || !metrics->commit`
-  // - Awaiting FCP / Turn: `id > active_navigation_id_` with `metrics->commit`
-  // - Active: `id == active_navigation_id_`
+  // - Awaiting FCP / Turn: `id > last_reported_fcp_navigation_id_` with
+  //   `metrics->commit`
+  // - Open (FCP Reported, Awaiting Next FCP):
+  //   `id <= last_reported_fcp_navigation_id_`
   // - Dispatched: Erased from `navigations_` upon being reported to
   //   `OnSoftNavigationCompleted`.
   //

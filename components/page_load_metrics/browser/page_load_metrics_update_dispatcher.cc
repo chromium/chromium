@@ -490,7 +490,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
 
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
-    // This path is just for the AMP metrics.
     UpdateSubFrameEventTiming(render_frame_host, event_timings);
   }
   UpdatePageEventTiming(render_frame_host, event_timings);
@@ -500,19 +499,17 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     OnSubFrameRenderDataChanged(render_frame_host, *render_data);
   }
 
+  // Route metrics to SoftNavigationTracker. Main frame and subframe metrics
+  // arrive in separate, mutually exclusive per-frame IPC batches.
   if (is_main_frame) {
-    // TODO(crbug.com/494593459): Page-wide event timings and layout shifts are
-    // updated above before processing soft navigation commits so that the
-    // initiating interaction/shift is included in "BeforeSoftNavigation"
-    // snapshots taken during OnSoftNavigationCommitted. If an IPC batch also
-    // contains interactions or layout shifts from the new soft navigation,
-    // those subsequent events would also be included in the snapshot. In a
-    // followup, segment incoming event timings and layout shifts by
-    // navigation_id.
     soft_navigation_tracker_.UpdateMainFrameMetrics(
         render_frame_host->GetGlobalFrameToken(), soft_navigation_metrics,
         event_timings, render_data->new_layout_shifts,
         soft_largest_contentful_paint);
+  } else {
+    soft_navigation_tracker_.UpdateSubFrameMetrics(
+        render_frame_host->GetGlobalFrameToken(), event_timings,
+        render_data->new_layout_shifts);
   }
 
   client_->UpdateFeaturesUsage(render_frame_host, new_features);

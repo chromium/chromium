@@ -23,6 +23,8 @@ namespace {
 
 const content::GlobalRenderFrameHostToken kMainFrameToken{
     1, blink::LocalFrameToken()};
+const content::GlobalRenderFrameHostToken kSubFrameToken{
+    2, blink::LocalFrameToken()};
 
 struct CompletedSoftNavigationRecord {
   uint64_t navigation_id = 0;
@@ -636,7 +638,7 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
   // Still awaiting Soft Nav 2's FCP proxy before dispatching.
   EXPECT_TRUE(observer.completed_nav_ids.empty());
 
-  // Step 5: Events for active Soft Nav 2 (nav_id = 3) are recorded.
+  // Step 5: Events for Soft Nav 2 (nav_id = 3) are recorded.
   std::vector<mojom::EventTimingPtr> events_2;
   events_2.push_back(mojom::EventTiming::New());
   events_2.back()->processing_start = base_time + base::Milliseconds(250);
@@ -730,53 +732,53 @@ TEST(SoftNavigationTrackerTest, CompletedNavigationsAwaitingReportingCriteria) {
 }
 
 TEST(SoftNavigationTrackerTest, MaxSoftNavigationsCap) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
   TestObserver observer;
   SoftNavigationTracker tracker(&observer);
 
-  // Send uncommitted event timings for more than kMaxSoftNavigations (100)
-  // distinct navigation IDs without committing or completing any soft
-  // navigations.
+  // Send commits for more than kMaxSoftNavigations (100) distinct navigation
+  // IDs without completing them.
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navs;
   for (size_t i = 0; i < SoftNavigationTracker::kMaxSoftNavigations + 10; ++i) {
-    std::vector<mojom::EventTimingPtr> events;
-    events.push_back(mojom::EventTiming::New());
-    events.back()->performance_timeline_navigation_id =
+    soft_navs.push_back(CreateSoftNavigationCommit(
         SoftNavigationTracker::
-            kFirstSoftNavigationPerformanceTimelineNavigationId +
-        i;
-    events.back()->duration = base::Milliseconds(50);
-    events.back()->interaction_id = i + 1;
-    EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
-        kMainFrameToken, /*soft_navigation_metrics=*/{}, events));
+                kFirstSoftNavigationPerformanceTimelineNavigationId +
+            i,
+        base::Milliseconds(100 + i * 10),
+        base_time + base::Milliseconds(100 + i * 10)));
   }
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
 
   // The first 100 entries (ids 2 to 101) should exist.
   EXPECT_NE(tracker.GetSoftNavigationDataForTest(2), nullptr);
   EXPECT_NE(tracker.GetSoftNavigationDataForTest(101), nullptr);
 
-  // Beyond capacity (e.g. id 102+), GetSoftNavigationDataForTest should return
-  // nullptr.
+  // Beyond capacity (e.g. id 102+), GetSoftNavigationDataForTest should
+  // return nullptr.
   EXPECT_EQ(tracker.GetSoftNavigationDataForTest(102), nullptr);
 }
 
-TEST(SoftNavigationTrackerTest, UncommittedNavigationsPrunedOnHigherCommit) {
+TEST(SoftNavigationTrackerTest, EventsForUncommittedNavIgnored) {
   base::TimeTicks base_time = base::TimeTicks::Now();
   TestObserver observer;
   SoftNavigationTracker tracker(&observer);
 
   // Add event timings for navigation IDs 2, 3, 4 without committing them yet.
+  std::vector<mojom::EventTimingPtr> events;
   for (uint64_t id = 2; id <= 4; ++id) {
-    std::vector<mojom::EventTimingPtr> events;
     events.push_back(mojom::EventTiming::New());
     events.back()->performance_timeline_navigation_id = id;
     events.back()->duration = base::Milliseconds(50);
     events.back()->interaction_id = id;
-    EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
-        kMainFrameToken, /*soft_navigation_metrics=*/{}, events));
   }
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
+      kMainFrameToken, /*soft_navigation_metrics=*/{}, events));
 
-  EXPECT_NE(tracker.GetSoftNavigationDataForTest(2), nullptr);
-  EXPECT_NE(tracker.GetSoftNavigationDataForTest(3), nullptr);
-  EXPECT_NE(tracker.GetSoftNavigationDataForTest(4), nullptr);
+  // No uncommitted placeholder buckets should be created.
+  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
+  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(3), nullptr);
+  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(4), nullptr);
 
   // Now, soft navigation 4 commits directly (2 and 3 were skipped/aborted).
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navs;
@@ -785,10 +787,9 @@ TEST(SoftNavigationTrackerTest, UncommittedNavigationsPrunedOnHigherCommit) {
   EXPECT_TRUE(
       tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
 
-  // The uncommitted buckets for 2 and 3 should be pruned.
+  // Navigation 2 and 3 remain uncreated, while navigation 4 is created.
   EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
   EXPECT_EQ(tracker.GetSoftNavigationDataForTest(3), nullptr);
-  // Navigation 4 is active.
   EXPECT_NE(tracker.GetSoftNavigationDataForTest(4), nullptr);
   EXPECT_EQ(tracker.soft_navigation_count(), 1u);
 }
@@ -924,6 +925,547 @@ TEST(SoftNavigationTrackerTest, RaceCommitArrivesAfterForeground) {
   // backgrounded at 500ms before nav 2 finished.
   EXPECT_EQ(observer.completed_navs[0].first_background_time,
             base::Milliseconds(500));
+}
+
+TEST(SoftNavigationTrackerTest, EventsBundledWithCommitProcessedInOrder) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // In a single UpdateMainFrameMetrics call, send a Commit for nav 2 along with
+  // event timings, layout shifts, and soft LCP for nav 2.
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navs;
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100)));
+
+  std::vector<mojom::EventTimingPtr> events;
+  events.push_back(mojom::EventTiming::New());
+  events.back()->performance_timeline_navigation_id = 2;
+  events.back()->duration = base::Milliseconds(35);
+  events.back()->interaction_id = 1;
+
+  std::vector<mojom::LayoutShiftPtr> shifts;
+  shifts.push_back(mojom::LayoutShift::New());
+  shifts.back()->performance_timeline_navigation_id = 2;
+  shifts.back()->layout_shift_time = base_time + base::Milliseconds(120);
+  shifts.back()->layout_shift_score = 0.15;
+
+  std::vector<mojom::LargestContentfulPaintTimingPtr> lcps;
+  lcps.push_back(mojom::LargestContentfulPaintTiming::New());
+  lcps.back()->performance_timeline_navigation_id = 2;
+  lcps.back()->largest_text_paint = base::Milliseconds(130);
+  lcps.back()->largest_text_paint_size = 300;
+  lcps.back()->type = 0;
+  lcps.back()->resource_load_timings = mojom::LcpResourceLoadTimings::New();
+
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, soft_navs, events,
+                                             shifts, lcps));
+
+  // Verify commit was processed first, creating the bucket and capturing all
+  // bundled performance entries.
+  EXPECT_EQ(tracker.soft_navigation_count(), 1u);
+
+  const auto* nav2 = tracker.GetSoftNavigationDataForTest(2);
+  ASSERT_TRUE(nav2);
+  EXPECT_EQ(nav2->inp_calculator.num_user_interactions(), 1u);
+  EXPECT_EQ(nav2->inp_calculator.worst_latency()->max_event.duration,
+            base::Milliseconds(35));
+  EXPECT_FLOAT_EQ(nav2->cls_calculator.normalized_cls_data()
+                      .session_windows_gap1000ms_max5000ms_max_cls,
+                  0.15f);
+  EXPECT_EQ(nav2->lcp_handler.MergeMainFrameAndSubframes().Size(), 300u);
+}
+
+TEST(SoftNavigationTrackerTest, EventsBundledWithFcpAttributedBeforeFlush) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Step 1: Nav 1 (id 2) commits with FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav1;
+  nav1.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(120)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav1)));
+
+  // Step 2: Nav 2 (id 3) commits without FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav2;
+  nav2.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(200)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav2)));
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Step 3: An IPC arrives containing:
+  // - A late-arriving event for Nav 1 (id 2)
+  // - A standalone FCP update for Nav 2 (id 3)
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp_nav2;
+  fcp_nav2.push_back(CreateSoftNavigationFcpUpdate(3, base::Milliseconds(220)));
+
+  std::vector<mojom::EventTimingPtr> late_nav1_events;
+  late_nav1_events.push_back(mojom::EventTiming::New());
+  late_nav1_events.back()->performance_timeline_navigation_id = 2;
+  late_nav1_events.back()->duration = base::Milliseconds(45);
+  late_nav1_events.back()->interaction_id = 9;
+
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
+      kMainFrameToken, std::move(fcp_nav2), late_nav1_events));
+
+  // Nav 1 should have received the late event BEFORE being flushed on Nav 2's
+  // FCP.
+  ASSERT_EQ(observer.completed_navs.size(), 1u);
+  EXPECT_EQ(observer.completed_navs[0].navigation_id, 2u);
+  EXPECT_EQ(observer.completed_navs[0].inp_calculator.num_user_interactions(),
+            1u);
+  EXPECT_EQ(observer.completed_navs[0]
+                .inp_calculator.worst_latency()
+                ->max_event.duration,
+            base::Milliseconds(45));
+}
+
+TEST(SoftNavigationTrackerTest, SubFrameMetricsAttributedByTimestampSlicing) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Subframe events arriving before any soft navigation (e.g. hard nav window)
+  // are not attributed to any soft navigation.
+  std::vector<mojom::EventTimingPtr> pre_soft_nav_events;
+  pre_soft_nav_events.push_back(mojom::EventTiming::New());
+  pre_soft_nav_events.back()->start_time = base_time + base::Milliseconds(50);
+  pre_soft_nav_events.back()->processing_start =
+      base_time + base::Milliseconds(55);
+  pre_soft_nav_events.back()->duration = base::Milliseconds(10);
+  pre_soft_nav_events.back()->interaction_id = 1;
+
+  std::vector<mojom::LayoutShiftPtr> pre_soft_nav_shifts;
+  pre_soft_nav_shifts.push_back(mojom::LayoutShift::New());
+  pre_soft_nav_shifts.back()->layout_shift_time =
+      base_time + base::Milliseconds(60);
+  pre_soft_nav_shifts.back()->layout_shift_score = 0.05;
+
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, pre_soft_nav_events,
+                                pre_soft_nav_shifts);
+  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
+
+  // Step 1: Soft Nav 1 commits with slicing time = base_time + 100ms.
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navs_1;
+  soft_navs_1.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs_1)));
+
+  // Subframe interaction and layout shift during Soft Nav 1 (time = 150ms).
+  std::vector<mojom::EventTimingPtr> nav1_subframe_events;
+  nav1_subframe_events.push_back(mojom::EventTiming::New());
+  nav1_subframe_events.back()->start_time = base_time + base::Milliseconds(150);
+  nav1_subframe_events.back()->processing_start =
+      base_time + base::Milliseconds(155);
+  nav1_subframe_events.back()->duration = base::Milliseconds(25);
+  nav1_subframe_events.back()->interaction_id = 2;
+
+  std::vector<mojom::LayoutShiftPtr> nav1_subframe_shifts;
+  nav1_subframe_shifts.push_back(mojom::LayoutShift::New());
+  nav1_subframe_shifts.back()->layout_shift_time =
+      base_time + base::Milliseconds(160);
+  nav1_subframe_shifts.back()->layout_shift_score = 0.1;
+
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, nav1_subframe_events,
+                                nav1_subframe_shifts);
+
+  const auto* nav2 = tracker.GetSoftNavigationDataForTest(2);
+  ASSERT_TRUE(nav2);
+  EXPECT_EQ(nav2->inp_calculator.num_user_interactions(), 1u);
+  EXPECT_EQ(nav2->inp_calculator.worst_latency()->max_event.duration,
+            base::Milliseconds(25));
+  EXPECT_FLOAT_EQ(nav2->cls_calculator.normalized_cls_data()
+                      .session_windows_gap1000ms_max5000ms_max_cls,
+                  0.1f);
+
+  // Step 2: Soft Nav 2 commits with slicing time = base_time + 200ms.
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navs_2;
+  soft_navs_2.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(200)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs_2)));
+
+  // Late-arriving subframe event from Soft Nav 1 (timestamp = 180ms < 200ms)
+  // should attribute to Soft Nav 1 while in the queue.
+  std::vector<mojom::EventTimingPtr> late_nav1_events;
+  late_nav1_events.push_back(mojom::EventTiming::New());
+  late_nav1_events.back()->start_time = base_time + base::Milliseconds(180);
+  late_nav1_events.back()->processing_start =
+      base_time + base::Milliseconds(185);
+  late_nav1_events.back()->duration = base::Milliseconds(40);
+  late_nav1_events.back()->interaction_id = 3;
+
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, late_nav1_events, {});
+
+  const auto* nav2_in_queue = tracker.GetSoftNavigationDataForTest(2);
+  ASSERT_TRUE(nav2_in_queue);
+  EXPECT_EQ(nav2_in_queue->inp_calculator.num_user_interactions(), 2u);
+  EXPECT_EQ(nav2_in_queue->inp_calculator.worst_latency()->max_event.duration,
+            base::Milliseconds(40));
+
+  // Subframe event during Soft Nav 2 (timestamp = 250ms >= 200ms)
+  // should attribute to Soft Nav 2.
+  std::vector<mojom::EventTimingPtr> nav2_subframe_events;
+  nav2_subframe_events.push_back(mojom::EventTiming::New());
+  nav2_subframe_events.back()->start_time = base_time + base::Milliseconds(250);
+  nav2_subframe_events.back()->processing_start =
+      base_time + base::Milliseconds(255);
+  nav2_subframe_events.back()->duration = base::Milliseconds(50);
+  nav2_subframe_events.back()->interaction_id = 4;
+
+  std::vector<mojom::LayoutShiftPtr> nav2_subframe_shifts;
+  nav2_subframe_shifts.push_back(mojom::LayoutShift::New());
+  nav2_subframe_shifts.back()->layout_shift_time =
+      base_time + base::Milliseconds(260);
+  nav2_subframe_shifts.back()->layout_shift_score = 0.2;
+
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, nav2_subframe_events,
+                                nav2_subframe_shifts);
+
+  const auto* nav3 = tracker.GetSoftNavigationDataForTest(3);
+  ASSERT_TRUE(nav3);
+  EXPECT_EQ(nav3->inp_calculator.num_user_interactions(), 1u);
+  EXPECT_EQ(nav3->inp_calculator.worst_latency()->max_event.duration,
+            base::Milliseconds(50));
+  EXPECT_FLOAT_EQ(nav3->cls_calculator.normalized_cls_data()
+                      .session_windows_gap1000ms_max5000ms_max_cls,
+                  0.2f);
+
+  // FCP arrives for Soft Nav 1 and Soft Nav 2 -> Soft Nav 1 completes!
+  std::vector<mojom::SoftNavigationMetricsPtr> fcps;
+  fcps.push_back(CreateSoftNavigationFcpUpdate(2, base::Milliseconds(120)));
+  fcps.push_back(CreateSoftNavigationFcpUpdate(3, base::Milliseconds(220)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcps)));
+
+  ASSERT_EQ(observer.completed_navs.size(), 1u);
+  EXPECT_EQ(observer.completed_navs[0].navigation_id, 2u);
+  EXPECT_EQ(observer.completed_navs[0].inp_calculator.num_user_interactions(),
+            2u);
+  EXPECT_EQ(observer.completed_navs[0]
+                .inp_calculator.worst_latency()
+                ->max_event.duration,
+            base::Milliseconds(40));
+  EXPECT_FLOAT_EQ(observer.completed_navs[0]
+                      .cls_calculator.normalized_cls_data()
+                      .session_windows_gap1000ms_max5000ms_max_cls,
+                  0.1f);
+
+  // Subframe events arriving after Soft Nav 1 was completed and erased are
+  // ignored.
+  std::vector<mojom::EventTimingPtr> post_completion_events;
+  post_completion_events.push_back(mojom::EventTiming::New());
+  post_completion_events.back()->start_time =
+      base_time + base::Milliseconds(130);
+  post_completion_events.back()->processing_start =
+      base_time + base::Milliseconds(135);
+  post_completion_events.back()->duration = base::Milliseconds(99);
+  post_completion_events.back()->interaction_id = 5;
+
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, post_completion_events, {});
+  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
+
+  // Flush completes remaining Soft Nav 2.
+  tracker.CompleteActiveNavigationAndFlush();
+  ASSERT_EQ(observer.completed_navs.size(), 2u);
+  EXPECT_EQ(observer.completed_navs[1].navigation_id, 3u);
+  EXPECT_EQ(observer.completed_navs[1].inp_calculator.num_user_interactions(),
+            1u);
+  EXPECT_EQ(observer.completed_navs[1]
+                .inp_calculator.worst_latency()
+                ->max_event.duration,
+            base::Milliseconds(50));
+  EXPECT_FLOAT_EQ(observer.completed_navs[1]
+                      .cls_calculator.normalized_cls_data()
+                      .session_windows_gap1000ms_max5000ms_max_cls,
+                  0.2f);
+}
+
+TEST(SoftNavigationTrackerTest, AllInOneMultiGenerationIpcBatch) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Step 1: Nav 1 (id 2) commits with FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav1;
+  nav1.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(120)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav1)));
+
+  // Step 2: Nav 2 (id 3) commits without FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav2;
+  nav2.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(200)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav2)));
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Step 3: A single IPC arrives containing:
+  // - Commit for Nav 3 (id 4)
+  // - Standalone FCP for Nav 2 (id 3)
+  // - Late event for Nav 1 (id 2)
+  // - Event for Nav 2 (id 3)
+  // - Event for new Nav 3 (id 4)
+  std::vector<mojom::SoftNavigationMetricsPtr> batch_soft_navs;
+  batch_soft_navs.push_back(CreateSoftNavigationCommit(
+      4, base::Milliseconds(300), base_time + base::Milliseconds(300)));
+  batch_soft_navs.push_back(
+      CreateSoftNavigationFcpUpdate(3, base::Milliseconds(220)));
+
+  std::vector<mojom::EventTimingPtr> batch_events;
+  batch_events.push_back(mojom::EventTiming::New());
+  batch_events.back()->performance_timeline_navigation_id = 2;
+  batch_events.back()->duration = base::Milliseconds(30);
+  batch_events.back()->interaction_id = 1;
+
+  batch_events.push_back(mojom::EventTiming::New());
+  batch_events.back()->performance_timeline_navigation_id = 3;
+  batch_events.back()->duration = base::Milliseconds(40);
+  batch_events.back()->interaction_id = 2;
+
+  batch_events.push_back(mojom::EventTiming::New());
+  batch_events.back()->performance_timeline_navigation_id = 4;
+  batch_events.back()->duration = base::Milliseconds(50);
+  batch_events.back()->interaction_id = 3;
+
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
+      kMainFrameToken, std::move(batch_soft_navs), batch_events));
+
+  // In this single call:
+  // - Nav 3 committed (id = 4).
+  // - Nav 1 received its late event (30ms).
+  // - Nav 2 received its event (40ms).
+  // - Nav 3 received its event (50ms).
+  // - Nav 2 received its FCP (220ms).
+  // - Nav 1 completed because Nav 1 and Nav 2 both have FCP.
+  // - Nav 2 is waiting for Nav 3's FCP, so Nav 2 is not completed yet.
+  ASSERT_EQ(observer.completed_navs.size(), 1u);
+  EXPECT_EQ(observer.completed_navs[0].navigation_id, 2u);
+  EXPECT_EQ(observer.completed_navs[0].inp_calculator.num_user_interactions(),
+            1u);
+  EXPECT_EQ(observer.completed_navs[0]
+                .inp_calculator.worst_latency()
+                ->max_event.duration,
+            base::Milliseconds(30));
+
+  const auto* nav2_data = tracker.GetSoftNavigationDataForTest(3);
+  ASSERT_TRUE(nav2_data);
+  EXPECT_EQ(nav2_data->inp_calculator.num_user_interactions(), 1u);
+  EXPECT_EQ(nav2_data->inp_calculator.worst_latency()->max_event.duration,
+            base::Milliseconds(40));
+
+  const auto* nav3_data = tracker.GetSoftNavigationDataForTest(4);
+  ASSERT_TRUE(nav3_data);
+  EXPECT_EQ(nav3_data->inp_calculator.num_user_interactions(), 1u);
+  EXPECT_EQ(nav3_data->inp_calculator.worst_latency()->max_event.duration,
+            base::Milliseconds(50));
+}
+
+TEST(SoftNavigationTrackerTest, OutOfOrderFcpDeliveryWithSubFrameEvents) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Commits for Nav 1 (slicing 100ms), Nav 2 (slicing 200ms), Nav 3 (slicing
+  // 300ms)
+  std::vector<mojom::SoftNavigationMetricsPtr> nav1;
+  nav1.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav1)));
+
+  std::vector<mojom::SoftNavigationMetricsPtr> nav2;
+  nav2.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(200)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav2)));
+
+  std::vector<mojom::SoftNavigationMetricsPtr> nav3;
+  nav3.push_back(CreateSoftNavigationCommit(
+      4, base::Milliseconds(300), base_time + base::Milliseconds(300)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav3)));
+
+  // Subframe events during Nav 1 (150ms), Nav 2 (250ms), Nav 3 (350ms)
+  std::vector<mojom::EventTimingPtr> sub_events;
+  sub_events.push_back(mojom::EventTiming::New());
+  sub_events.back()->processing_start = base_time + base::Milliseconds(150);
+  sub_events.back()->duration = base::Milliseconds(15);
+  sub_events.back()->interaction_id = 1;
+
+  sub_events.push_back(mojom::EventTiming::New());
+  sub_events.back()->processing_start = base_time + base::Milliseconds(250);
+  sub_events.back()->duration = base::Milliseconds(25);
+  sub_events.back()->interaction_id = 3;
+
+  sub_events.push_back(mojom::EventTiming::New());
+  sub_events.back()->processing_start = base_time + base::Milliseconds(350);
+  sub_events.back()->duration = base::Milliseconds(35);
+  sub_events.back()->interaction_id = 5;
+
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, sub_events,
+                                /*layout_shifts=*/{});
+
+  // FCP1 (120ms) and FCP3 (320ms) arrive, but FCP2 is delayed!
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp1_and_3;
+  fcp1_and_3.push_back(
+      CreateSoftNavigationFcpUpdate(2, base::Milliseconds(120)));
+  fcp1_and_3.push_back(
+      CreateSoftNavigationFcpUpdate(4, base::Milliseconds(320)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcp1_and_3)));
+
+  // Nav 1 is still waiting for Nav 2's FCP, and Nav 2 is waiting for its own
+  // FCP. Nothing should be dispatched yet.
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Late subframe events arrive for Nav 1 (180ms) and Nav 2 (280ms). Both are
+  // accepted because neither navigation has been finalized/flushed yet.
+  std::vector<mojom::EventTimingPtr> late_sub_events;
+  late_sub_events.push_back(mojom::EventTiming::New());
+  late_sub_events.back()->processing_start =
+      base_time + base::Milliseconds(180);
+  late_sub_events.back()->duration = base::Milliseconds(40);
+  late_sub_events.back()->interaction_id = 2;
+
+  late_sub_events.push_back(mojom::EventTiming::New());
+  late_sub_events.back()->processing_start =
+      base_time + base::Milliseconds(280);
+  late_sub_events.back()->duration = base::Milliseconds(50);
+  late_sub_events.back()->interaction_id = 4;
+
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, late_sub_events,
+                                /*layout_shifts=*/{});
+
+  // Finally, FCP2 arrives (220ms)!
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp2;
+  fcp2.push_back(CreateSoftNavigationFcpUpdate(3, base::Milliseconds(220)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcp2)));
+
+  // Now both Nav 1 and Nav 2 complete in FIFO order:
+  // - Nav 1 has FCP1 and next has FCP2 -> completes!
+  // - Nav 2 has FCP2 and next has FCP3 -> completes!
+  ASSERT_EQ(observer.completed_navs.size(), 2u);
+  EXPECT_EQ(observer.completed_navs[0].navigation_id, 2u);
+  EXPECT_EQ(observer.completed_navs[0].inp_calculator.num_user_interactions(),
+            2u);
+  EXPECT_EQ(observer.completed_navs[0]
+                .inp_calculator.worst_latency()
+                ->max_event.duration,
+            base::Milliseconds(40));
+
+  EXPECT_EQ(observer.completed_navs[1].navigation_id, 3u);
+  EXPECT_EQ(observer.completed_navs[1].inp_calculator.num_user_interactions(),
+            2u);
+  EXPECT_EQ(observer.completed_navs[1]
+                .inp_calculator.worst_latency()
+                ->max_event.duration,
+            base::Milliseconds(50));
+
+  // Flush completes Nav 3.
+  tracker.CompleteActiveNavigationAndFlush();
+  ASSERT_EQ(observer.completed_navs.size(), 3u);
+  EXPECT_EQ(observer.completed_navs[2].navigation_id, 4u);
+  EXPECT_EQ(observer.completed_navs[2].inp_calculator.num_user_interactions(),
+            1u);
+  EXPECT_EQ(observer.completed_navs[2]
+                .inp_calculator.worst_latency()
+                ->max_event.duration,
+            base::Milliseconds(35));
+}
+
+TEST(SoftNavigationTrackerTest, MultipleSubFramesInpAttribution) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  const content::GlobalRenderFrameHostToken kSubFrameA{
+      3, blink::LocalFrameToken()};
+  const content::GlobalRenderFrameHostToken kSubFrameB{
+      4, blink::LocalFrameToken()};
+
+  // Nav 1 (id 2) commits with slicing time = 100ms.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav1;
+  nav1.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(110)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav1)));
+
+  // Main frame interaction during Nav 1.
+  std::vector<mojom::EventTimingPtr> main_events;
+  main_events.push_back(mojom::EventTiming::New());
+  main_events.back()->performance_timeline_navigation_id = 2;
+  main_events.back()->processing_start = base_time + base::Milliseconds(120);
+  main_events.back()->duration = base::Milliseconds(30);
+  main_events.back()->interaction_id = 1;
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
+      kMainFrameToken, /*soft_navigation_metrics=*/{}, main_events));
+
+  // Subframe A interaction during Nav 1 (higher duration).
+  std::vector<mojom::EventTimingPtr> sub_a_events;
+  sub_a_events.push_back(mojom::EventTiming::New());
+  sub_a_events.back()->processing_start = base_time + base::Milliseconds(140);
+  sub_a_events.back()->duration = base::Milliseconds(65);
+  sub_a_events.back()->interaction_id = 2;
+  tracker.UpdateSubFrameMetrics(kSubFrameA, sub_a_events,
+                                /*layout_shifts=*/{});
+
+  // Subframe B interaction during Nav 1 (moderate duration).
+  std::vector<mojom::EventTimingPtr> sub_b_events;
+  sub_b_events.push_back(mojom::EventTiming::New());
+  sub_b_events.back()->processing_start = base_time + base::Milliseconds(160);
+  sub_b_events.back()->duration = base::Milliseconds(45);
+  sub_b_events.back()->interaction_id = 3;
+  tracker.UpdateSubFrameMetrics(kSubFrameB, sub_b_events,
+                                /*layout_shifts=*/{});
+
+  const auto* nav2 = tracker.GetSoftNavigationDataForTest(2);
+  ASSERT_TRUE(nav2);
+  EXPECT_EQ(nav2->inp_calculator.num_user_interactions(), 3u);
+  EXPECT_EQ(nav2->inp_calculator.worst_latency()->max_event.duration,
+            base::Milliseconds(65));
+}
+
+TEST(SoftNavigationTrackerTest, MainAndSubFrameClsSessionWindows) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Nav 1 (id 2) commits with slicing time = 100ms.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav1;
+  nav1.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(110)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav1)));
+
+  // Main frame layout shift during Nav 1.
+  std::vector<mojom::LayoutShiftPtr> main_shifts;
+  main_shifts.push_back(mojom::LayoutShift::New());
+  main_shifts.back()->performance_timeline_navigation_id = 2;
+  main_shifts.back()->layout_shift_time = base_time + base::Milliseconds(120);
+  main_shifts.back()->layout_shift_score = 0.12;
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
+      kMainFrameToken, /*soft_navigation_metrics=*/{}, {}, main_shifts));
+
+  // Subframe layout shift during Nav 1 in same session window.
+  std::vector<mojom::LayoutShiftPtr> sub_shifts;
+  sub_shifts.push_back(mojom::LayoutShift::New());
+  sub_shifts.back()->layout_shift_time = base_time + base::Milliseconds(150);
+  sub_shifts.back()->layout_shift_score = 0.08;
+  tracker.UpdateSubFrameMetrics(kSubFrameToken, {}, sub_shifts);
+
+  const auto* nav2 = tracker.GetSoftNavigationDataForTest(2);
+  ASSERT_TRUE(nav2);
+  EXPECT_FLOAT_EQ(nav2->cls_calculator.normalized_cls_data()
+                      .session_windows_gap1000ms_max5000ms_max_cls,
+                  0.20f);
 }
 
 }  // namespace page_load_metrics
