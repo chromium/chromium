@@ -2741,4 +2741,48 @@ public class TabVerticalViewBinderUnitTest {
                 "Tab group header view must consume context clicks.",
                 headerView.performContextClick());
     }
+
+    @Test
+    @SmallTest
+    public void testGetPinnedItemDimensions_TabletVsNonTablet() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height_tablet),
+                TabVerticalViewBinder.getPinnedItemHeight(mActivity));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width_tablet),
+                TabVerticalViewBinder.getPinnedItemMinWidth(mActivity));
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height),
+                TabVerticalViewBinder.getPinnedItemHeight(mActivity));
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width),
+                TabVerticalViewBinder.getPinnedItemMinWidth(mActivity));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetTabItemHeight_TabletVsNonTablet() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_height_tablet),
+                TabVerticalViewBinder.getTabItemHeight(mActivity));
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.vertical_tab_item_height),
+                TabVerticalViewBinder.getTabItemHeight(mActivity));
+    }
 }

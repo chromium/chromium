@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -3016,5 +3017,92 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         assertEquals(1.0f, reboundChild.itemView.getAlpha(), 0.0f);
         assertEquals(100, reboundChild.itemView.getLayoutParams().width);
         assertEquals(60, reboundChild.itemView.getLayoutParams().height);
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testCollapseDraggedItem_TabGroup_OffscreenChildrenAttachedDuringDrag_AreCollapsed() {
+        Token groupId = new Token(10L, 20L);
+        SimpleRecyclerViewAdapter.ViewHolder headerHolder =
+                createGroupHeaderViewHolder(1, groupId, 100, 50);
+        mockRecyclerViewChildren(headerHolder);
+
+        // 1. Collapse the dragged tab group
+        mCallback.collapseDraggedItem(headerHolder);
+        assertTrue(mCallback.isDraggedItemCollapsed());
+
+        assertEquals(View.GONE, headerHolder.itemView.getVisibility());
+        assertEquals(0, headerHolder.itemView.getLayoutParams().height);
+
+        // 2. An off-screen child tab attaches to RecyclerView during layout/drag
+        SimpleRecyclerViewAdapter.ViewHolder childHolder1 =
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        when(mRecyclerView.getChildViewHolder(childHolder1.itemView)).thenReturn(childHolder1);
+
+        RecyclerView.OnChildAttachStateChangeListener attachListener =
+                mCallback.getOnChildAttachStateChangeListenerForTesting();
+        assertNotNull(attachListener);
+        attachListener.onChildViewAttachedToWindow(childHolder1.itemView);
+
+        // Child must be immediately collapsed to 0px, alpha 0, and GONE
+        assertEquals(View.GONE, childHolder1.itemView.getVisibility());
+        assertEquals(0f, childHolder1.itemView.getAlpha(), 0.0f);
+        assertEquals(0, childHolder1.itemView.getLayoutParams().width);
+        assertEquals(0, childHolder1.itemView.getLayoutParams().height);
+
+        // 3. Restore dragged tab group on re-entry
+        mockRecyclerViewChildren(headerHolder, childHolder1);
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
+        assertFalse(mCallback.isDraggedItemCollapsed());
+
+        assertEquals(View.VISIBLE, childHolder1.itemView.getVisibility());
+        assertEquals(1.0f, childHolder1.itemView.getAlpha(), 0.0f);
+        assertEquals(100, childHolder1.itemView.getLayoutParams().width);
+        assertEquals(60, childHolder1.itemView.getLayoutParams().height);
+    }
+
+    @Test
+    @SmallTest
+    public void testCollapseDraggedItem_TabGroup_UnrelatedTabAttachedDuringDrag_IsNotCollapsed() {
+        Token groupId = new Token(10L, 20L);
+        SimpleRecyclerViewAdapter.ViewHolder headerHolder =
+                createGroupHeaderViewHolder(1, groupId, 100, 50);
+        mockRecyclerViewChildren(headerHolder);
+
+        mCallback.collapseDraggedItem(headerHolder);
+        assertTrue(mCallback.isDraggedItemCollapsed());
+
+        // Unrelated tab attaches
+        SimpleRecyclerViewAdapter.ViewHolder unrelatedHolder =
+                createGroupChildViewHolder(99, new Token(30L, 40L), 100, 60);
+        when(mRecyclerView.getChildViewHolder(unrelatedHolder.itemView))
+                .thenReturn(unrelatedHolder);
+
+        RecyclerView.OnChildAttachStateChangeListener attachListener =
+                mCallback.getOnChildAttachStateChangeListenerForTesting();
+        attachListener.onChildViewAttachedToWindow(unrelatedHolder.itemView);
+
+        // Unrelated tab must NOT be collapsed
+        assertEquals(View.VISIBLE, unrelatedHolder.itemView.getVisibility());
+        assertEquals(1.0f, unrelatedHolder.itemView.getAlpha(), 0.0f);
+        assertEquals(100, unrelatedHolder.itemView.getLayoutParams().width);
+        assertEquals(60, unrelatedHolder.itemView.getLayoutParams().height);
+    }
+
+    @Test
+    @SmallTest
+    public void testCollapseViewHolder_EndsRunningItemAnimations() {
+        RecyclerView.ItemAnimator itemAnimator = mock(RecyclerView.ItemAnimator.class);
+        when(mRecyclerView.getItemAnimator()).thenReturn(itemAnimator);
+
+        Token groupId = new Token(10L, 20L);
+        SimpleRecyclerViewAdapter.ViewHolder headerHolder =
+                createGroupHeaderViewHolder(1, groupId, 100, 50);
+        mockRecyclerViewChildren(headerHolder);
+
+        mCallback.collapseDraggedItem(headerHolder);
+
+        verify(itemAnimator).endAnimation(headerHolder);
     }
 }

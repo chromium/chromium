@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.SystemClock;
@@ -163,6 +164,21 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         mUndoBarThrottle = undoBarThrottle;
         int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop() / 4;
         mMouseDragThresholdSquared = touchSlop * touchSlop;
+    }
+
+    @Override
+    public void setRecyclerView(RecyclerView recyclerView) {
+        RecyclerView oldRecyclerView = mRecyclerViewSupplier.get();
+        if (oldRecyclerView == recyclerView) {
+            return;
+        }
+        if (oldRecyclerView != null) {
+            oldRecyclerView.removeOnChildAttachStateChangeListener(mChildAttachListener);
+        }
+        super.setRecyclerView(recyclerView);
+        if (recyclerView != null) {
+            recyclerView.addOnChildAttachStateChangeListener(mChildAttachListener);
+        }
     }
 
     /**
@@ -903,7 +919,10 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         public final int marginEnd;
 
         CollapsedItemState(
-                ViewGroup.MarginLayoutParams params, @Nullable CollapsedItemState fallback) {
+                ViewGroup.MarginLayoutParams params,
+                @Nullable CollapsedItemState fallback,
+                @Nullable Context context,
+                boolean isPinned) {
             int w = params.width;
             int h = params.height;
             int tm = params.topMargin;
@@ -911,13 +930,30 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             int ms = params.getMarginStart();
             int me = params.getMarginEnd();
 
-            if (w == 0 && h == 0 && fallback != null) {
-                w = fallback.width;
-                h = fallback.height;
-                tm = fallback.topMargin;
-                bm = fallback.bottomMargin;
-                ms = fallback.marginStart;
-                me = fallback.marginEnd;
+            if (w == 0 && h == 0) {
+                if (fallback != null) {
+                    w = fallback.width;
+                    h = fallback.height;
+                    tm = fallback.topMargin;
+                    bm = fallback.bottomMargin;
+                    ms = fallback.marginStart;
+                    me = fallback.marginEnd;
+                } else if (context != null) {
+                    Resources res = context.getResources();
+                    h =
+                            isPinned
+                                    ? TabVerticalViewBinder.getPinnedItemHeight(context)
+                                    : TabVerticalViewBinder.getTabItemHeight(context);
+                    w =
+                            isPinned
+                                    ? TabVerticalViewBinder.getPinnedItemMinWidth(context)
+                                    : ViewGroup.LayoutParams.MATCH_PARENT;
+                    bm =
+                            res.getDimensionPixelSize(
+                                    isPinned
+                                            ? R.dimen.vertical_tab_pinned_item_margin_bottom
+                                            : R.dimen.vertical_tab_item_margin_bottom);
+                }
             }
 
             this.width = w;
@@ -984,6 +1020,68 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 }
             };
 
+    private final RecyclerView.OnChildAttachStateChangeListener mChildAttachListener =
+            new RecyclerView.OnChildAttachStateChangeListener() {
+                @Override
+                public void onChildViewAttachedToWindow(View view) {
+                    onChildAttached(view);
+                }
+
+                @Override
+                public void onChildViewDetachedFromWindow(View view) {}
+            };
+
+    private boolean matchesDraggedItem(RecyclerView.@Nullable ViewHolder holder) {
+        if (holder == null || !hasTabPropertiesModel(holder)) {
+            return false;
+        }
+        if (mIsDraggedGroupHeader && mDraggedGroupId != null) {
+            return Objects.equals(getTabGroupId(holder), mDraggedGroupId);
+        } else if (mDraggedTabId != Tab.INVALID_TAB_ID) {
+            return getTabId(holder) == mDraggedTabId;
+        }
+        return false;
+    }
+
+    private @Nullable CollapsedViewHolderInfo removeCollapsedViewHolderInfo(
+            @Nullable View view, RecyclerView.@Nullable ViewHolder holder) {
+        if (view == null && holder == null) return null;
+        for (int i = 0; i < mCollapsedItems.size(); i++) {
+            CollapsedViewHolderInfo info = mCollapsedItems.get(i);
+            if ((view != null && info.view == view)
+                    || (holder != null && info.viewHolder == holder)) {
+                return mCollapsedItems.remove(i);
+            }
+        }
+        return null;
+    }
+
+    private void collapseViewHolderWithFallback(
+            RecyclerView.ViewHolder holder, @Nullable CollapsedViewHolderInfo previousInfo) {
+        CollapsedItemState fallbackState = previousInfo != null ? previousInfo.state : null;
+        float initialAlpha = previousInfo != null ? previousInfo.initialAlpha : 1.0f;
+        collapseViewHolder(holder, fallbackState, initialAlpha);
+    }
+
+    private void onChildAttached(View view) {
+        if (!isDraggedItemCollapsed()) {
+            return;
+        }
+        RecyclerView recyclerView = mRecyclerViewSupplier.get();
+        if (recyclerView == null) {
+            return;
+        }
+        RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(view);
+        if (matchesDraggedItem(holder)) {
+            CollapsedViewHolderInfo existingInfo = removeCollapsedViewHolderInfo(view, holder);
+            collapseViewHolderWithFallback(holder, existingInfo);
+        }
+    }
+
+    RecyclerView.OnChildAttachStateChangeListener getOnChildAttachStateChangeListenerForTesting() {
+        return mChildAttachListener;
+    }
+
     private Object getItemKey(RecyclerView.ViewHolder holder) {
         if (holder.getItemViewType() == TabProperties.UiType.TAB_GROUP) {
             Token groupId = getTabGroupId(holder);
@@ -1034,15 +1132,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
 
     private RecyclerView.@Nullable ViewHolder getLiveViewHolder() {
         if (mCollapsedViewHolder != null) {
-            boolean isStillValid = mCollapsedViewHolder.getItemViewType() == mDraggedItemViewType;
-            if (isStillValid && hasTabPropertiesModel(mCollapsedViewHolder)) {
-                if (mIsDraggedGroupHeader) {
-                    isStillValid =
-                            Objects.equals(getTabGroupId(mCollapsedViewHolder), mDraggedGroupId);
-                } else {
-                    isStillValid = getTabId(mCollapsedViewHolder) == mDraggedTabId;
-                }
-            }
+            boolean isStillValid =
+                    mCollapsedViewHolder.getItemViewType() == mDraggedItemViewType
+                            && matchesDraggedItem(mCollapsedViewHolder);
             if (!isStillValid) {
                 mCollapsedViewHolder = null;
             }
@@ -1059,15 +1151,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         for (int i = 0; i < recyclerView.getChildCount(); i++) {
             View childView = recyclerView.getChildAt(i);
             RecyclerView.ViewHolder childViewHolder = recyclerView.getChildViewHolder(childView);
-            if (!hasTabPropertiesModel(childViewHolder)) continue;
-            if (childViewHolder.getItemViewType() != mDraggedItemViewType) continue;
-
-            if (mIsDraggedGroupHeader) {
-                if (Objects.equals(getTabGroupId(childViewHolder), mDraggedGroupId)) {
-                    mCollapsedViewHolder = childViewHolder;
-                    return childViewHolder;
-                }
-            } else if (getTabId(childViewHolder) == mDraggedTabId) {
+            if (childViewHolder.getItemViewType() == mDraggedItemViewType
+                    && matchesDraggedItem(childViewHolder)) {
                 mCollapsedViewHolder = childViewHolder;
                 return childViewHolder;
             }
@@ -1079,6 +1164,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             RecyclerView.ViewHolder holder,
             @Nullable CollapsedItemState fallbackState,
             float initialAlpha) {
+        RecyclerView recyclerView = mRecyclerViewSupplier.get();
+        if (recyclerView != null && recyclerView.getItemAnimator() != null) {
+            recyclerView.getItemAnimator().endAnimation(holder);
+        }
+
         View itemView = holder.itemView;
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
@@ -1087,7 +1177,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             if (fallbackState == null) {
                 fallbackState = mSavedItemStates.get(key);
             }
-            CollapsedItemState state = new CollapsedItemState(params, fallbackState);
+            boolean isPinned = isPinnedRegularTab(holder);
+            CollapsedItemState state =
+                    new CollapsedItemState(params, fallbackState, itemView.getContext(), isPinned);
             if (state.width > 0 || state.height > 0) {
                 mSavedItemStates.put(key, state);
             }
@@ -1285,26 +1377,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     public void onExternalDragItemRebound(
             RecyclerView.ViewHolder oldHolder, RecyclerView.ViewHolder newHolder) {
         if (isDraggedItemCollapsed()) {
-            CollapsedViewHolderInfo oldInfo = null;
-            if (oldHolder != null) {
-                for (int i = 0; i < mCollapsedItems.size(); i++) {
-                    CollapsedViewHolderInfo info = mCollapsedItems.get(i);
-                    if (info.view == oldHolder.itemView || info.viewHolder == oldHolder) {
-                        oldInfo = info;
-                        mCollapsedItems.remove(i);
-                        break;
-                    }
-                }
-            }
+            CollapsedViewHolderInfo oldInfo =
+                    removeCollapsedViewHolderInfo(
+                            oldHolder != null ? oldHolder.itemView : null, oldHolder);
 
-            boolean newHolderMatches = false;
-            if (newHolder != null && hasTabPropertiesModel(newHolder)) {
-                if (mIsDraggedGroupHeader && mDraggedGroupId != null) {
-                    newHolderMatches = Objects.equals(getTabGroupId(newHolder), mDraggedGroupId);
-                } else {
-                    newHolderMatches = getTabId(newHolder) == mDraggedTabId;
-                }
-            }
+            boolean newHolderMatches = matchesDraggedItem(newHolder);
 
             if (oldHolder != null
                     && oldInfo != null
@@ -1316,9 +1393,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 if (newHolder.getItemViewType() == mDraggedItemViewType) {
                     mCollapsedViewHolder = newHolder;
                 }
-                CollapsedItemState fallbackState = oldInfo != null ? oldInfo.state : null;
-                float initialAlpha = oldInfo != null ? oldInfo.initialAlpha : 1.0f;
-                collapseViewHolder(newHolder, fallbackState, initialAlpha);
+                collapseViewHolderWithFallback(newHolder, oldInfo);
             }
         }
     }

@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -38,12 +37,7 @@ public class VerticalTabPinnedDropIndicatorDecoration
         super(context);
         Resources res = context.getResources();
         mItemGap = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
-        boolean isTablet = VerticalTabUtils.isTablet(context);
-        mItemHeight =
-                res.getDimensionPixelSize(
-                        isTablet
-                                ? R.dimen.vertical_tab_pinned_item_height_tablet
-                                : R.dimen.vertical_tab_pinned_item_height);
+        mItemHeight = TabVerticalViewBinder.getPinnedItemHeight(context);
     }
 
     @Override
