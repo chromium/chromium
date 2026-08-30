@@ -257,6 +257,36 @@ void RegisterInfoBars() {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (IsInfoBarMigrated(InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE)
+            // The pin-to-taskbar variant of the text and the result callback
+            // come in per show via InfoBarShowParams.
+            .SetMessageText(
+                l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_TEXT))
+            .SetIcon(vector_icons::kProductRefreshIcon)
+            .SetDarkModeIcon(features::IsRoundedIconsEnabled()
+                                 ? omnibox::kChromeProductIcon
+                                 : omnibox::kProductChromeRefreshOldIcon)
+            .SetScope(InfoBarScope::kGlobal)
+            .SetExpireOnNavigation(false)
+            .SetShouldHideInFullscreen(true)
+            .SetShouldAnimate(false)
+            .SetBrowserFilter(
+                base::BindRepeating([](BrowserWindowInterface* browser) {
+                  const Profile* profile = browser->GetProfile();
+                  return browser->GetType() ==
+                             BrowserWindowInterface::TYPE_NORMAL &&
+                         !profile->IsIncognitoProfile() &&
+                         !profile->IsGuestSession();
+                }))
+            .AddOkButton(l10n_util::GetStringUTF16(
+                             IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL),
+                         base::DoNothing())
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
   if (IsInfoBarMigrated(InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE)) {
     auto spec =
         InfoBarSpec::Builder(InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE)

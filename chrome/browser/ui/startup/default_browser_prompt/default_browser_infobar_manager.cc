@@ -12,27 +12,79 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using CloseReason = DefaultBrowserPromptManager::CloseReason;
 
+namespace {
+bool IsMigrated() {
+  return infobars::IsInfoBarMigrated(
+      infobars::InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE);
+}
+
+// CloseAllPrompts() destroys this surface manager, and the result callback
+// runs while an infobar delegate is still on the stack, so the close must
+// not happen synchronously.
+void CloseAllPromptsSoon(CloseReason reason) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](CloseReason reason) {
+            DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(reason);
+          },
+          reason));
+}
+}  // namespace
+
 DefaultBrowserInfoBarManager::DefaultBrowserInfoBarManager() = default;
-DefaultBrowserInfoBarManager::~DefaultBrowserInfoBarManager() = default;
+
+DefaultBrowserInfoBarManager::~DefaultBrowserInfoBarManager() {
+  // The result callback handed to the framework binds `this` unretained, so
+  // no instance may outlive us.
+  HideInfoBar();
+}
 
 void DefaultBrowserInfoBarManager::Show(bool can_pin_to_taskbar) {
   DefaultBrowserSurfaceManager::Show(can_pin_to_taskbar);
+
+  if (IsMigrated()) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (browser_infobar_manager) {
+      infobars::InfoBarShowParams params;
+      if (can_pin_to_taskbar) {
+        params.message_text =
+            l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_PIN_INFOBAR_TEXT);
+      }
+      params.result_callback =
+          base::BindRepeating(&DefaultBrowserInfoBarManager::OnInfoBarResult,
+                              base::Unretained(this));
+      browser_infobar_manager->ShowGlobally(
+          infobars::InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE,
+          std::move(params));
+      return;
+    }
+  }
 
   browser_tab_strip_tracker_ =
       std::make_unique<BrowserTabStripTracker>(this, this);
@@ -49,6 +101,12 @@ void DefaultBrowserInfoBarManager::ShowForBrowser(
 
 void DefaultBrowserInfoBarManager::CloseForBrowser(
     BrowserWindowInterface* browser) {
+  if (IsMigrated()) {
+    // The framework reports kIgnored when the last instance goes away with
+    // its window; OnInfoBarResult records it.
+    return;
+  }
+
   if (user_initiated_info_bar_close_pending_.has_value()) {
     return;
   }
@@ -72,15 +130,15 @@ void DefaultBrowserInfoBarManager::CloseForBrowser(
   // Reset the observers.
   browser_tab_strip_tracker_.reset();
 
-  HandleIgnore();
-
-  base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Ignore"));
-  UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
-                            IGNORE_INFO_BAR_PER_SESSION,
-                            NUM_INFO_BAR_USER_INTERACTION_TYPES);
+  ProcessIgnore();
 }
 
 void DefaultBrowserInfoBarManager::CloseAllPromptInstances() {
+  if (IsMigrated()) {
+    HideInfoBar();
+    return;
+  }
+
   user_initiated_info_bar_close_pending_.reset();
 
   browser_tab_strip_tracker_.reset();
@@ -159,6 +217,65 @@ void DefaultBrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
 }
 
 void DefaultBrowserInfoBarManager::OnAccept() {
+  ProcessAccept();
+  user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
+}
+
+void DefaultBrowserInfoBarManager::OnDismiss() {
+  ProcessDismiss();
+  user_initiated_info_bar_close_pending_ = CloseReason::kDismiss;
+}
+
+void DefaultBrowserInfoBarManager::OnInfoBarResult(
+    content::WebContents* web_contents,
+    infobars::InfoBarResult result) {
+  Profile* profile =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : nullptr;
+  switch (result) {
+    case infobars::InfoBarResult::kAccepted:
+      // The prefs update runs before the count is read, matching the legacy
+      // delegate's ordering.
+      if (profile) {
+        chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(profile);
+      }
+      ProcessAccept();
+      CloseAllPromptsSoon(CloseReason::kAccept);
+      break;
+    case infobars::InfoBarResult::kDismissed:
+      if (profile) {
+        chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(profile);
+      }
+      ProcessDismiss();
+      CloseAllPromptsSoon(CloseReason::kDismiss);
+      break;
+    case infobars::InfoBarResult::kIgnored:
+      ProcessIgnore();
+      // The session counted as ignored; disarm the global infobar so a
+      // browser opened later does not resurrect the prompt.
+      HideInfoBar();
+      break;
+    case infobars::InfoBarResult::kCancelled:
+    case infobars::InfoBarResult::kLinkClicked:
+      // The infobar has no cancel button or link.
+      break;
+  }
+}
+
+void DefaultBrowserInfoBarManager::HideInfoBar() {
+  if (!IsMigrated()) {
+    return;
+  }
+
+  auto* browser_infobar_manager =
+      infobars::BrowserInfoBarManager::From(g_browser_process);
+  CHECK(browser_infobar_manager);
+  browser_infobar_manager->Hide(
+      infobars::InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE);
+}
+
+void DefaultBrowserInfoBarManager::ProcessAccept() {
   base::UmaHistogramCounts100("DefaultBrowser.InfoBar.TimesShownBeforeAccept",
                               g_browser_process->local_state()->GetInteger(
                                   prefs::kDefaultBrowserInfobarDeclinedCount) +
@@ -167,21 +284,23 @@ void DefaultBrowserInfoBarManager::OnAccept() {
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
                             ACCEPT_INFO_BAR,
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
-
-  user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
-
   HandleAccept();
 }
 
-void DefaultBrowserInfoBarManager::OnDismiss() {
+void DefaultBrowserInfoBarManager::ProcessDismiss() {
   HandleDismiss();
-
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
                             DISMISS_INFO_BAR,
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
+}
 
-  user_initiated_info_bar_close_pending_ = CloseReason::kDismiss;
+void DefaultBrowserInfoBarManager::ProcessIgnore() {
+  HandleIgnore();
+  base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Ignore"));
+  UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
+                            IGNORE_INFO_BAR_PER_SESSION,
+                            NUM_INFO_BAR_USER_INTERACTION_TYPES);
 }
 
 default_browser::DefaultBrowserEntrypointType

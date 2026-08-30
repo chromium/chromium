@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -86,6 +87,14 @@ class DefaultBrowserInfoBarManager : public BrowserTabStripTrackerDelegate,
 
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
+
+  void OnInfoBarResult(content::WebContents* web_contents,
+                       infobars::InfoBarResult result);
+  void HideInfoBar();
+
+  void ProcessAccept();
+  void ProcessDismiss();
+  void ProcessIgnore();
 
   // BrowserTabStripTrackerDelegate
   bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;

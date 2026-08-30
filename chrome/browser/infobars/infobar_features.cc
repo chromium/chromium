@@ -24,6 +24,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedDefaultBrowser,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedDevToolsSharedProcess,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -106,6 +111,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedAutomation;
     case InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE:
       return &kMigratedCollectedCookies;
+    case InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE:
+      return &kMigratedDefaultBrowser;
     case InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE:
       return &kMigratedDevToolsSharedProcess;
     case InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE:

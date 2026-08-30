@@ -10,6 +10,7 @@ source_set("default_browser_prompt") {
     ":impl",
     ":interactive_ui_tests",
     ":unit_tests",
+    ":browser_tests",
     "//chrome/browser/ui/webui/default_browser:default_browser_modal",
   ]
 
@@ -32,6 +33,7 @@ source_set("default_browser_prompt") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/infobars",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/browser_window",
@@ -115,6 +117,28 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "default_browser_infobar_manager_browsertest.cc" ]
+  deps = [
+    ":default_browser_prompt",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/infobars",
+    "//chrome/browser/ui:browser_tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
   ]
 }
 
