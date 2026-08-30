@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
@@ -83,9 +85,14 @@ class SessionController : public SessionUiDelegate,
 
   SessionUi* ui_for_testing() { return ui_.get(); }
 
+  bool is_auto_session_end_timer_running_for_testing() const {
+    return auto_session_end_timer_.IsRunning();
+  }
+
  private:
   void MoveToState(SessionState new_state);
   void EndSessionAsynchronously();
+  void EndSessionSynchronously();
   void PurgeToDeleteStreamProviders();
   content::BrowserContext* GetBrowserContext() const;
 
@@ -112,6 +119,10 @@ class SessionController : public SessionUiDelegate,
       session_state_changed_callback_list_;
 
   std::optional<TargetDetails> last_used_target_details_;
+
+  // Timer for delayed session shutdown when `kSessionEndsOnStreamEnd` is
+  // enabled.
+  base::OneShotTimer auto_session_end_timer_;
 
   base::WeakPtrFactory<SessionController> weak_ptr_factory_{this};
 };

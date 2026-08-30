@@ -38,7 +38,9 @@ TargetDetails DefaultInPageTarget(content::WebContents* web_contents) {
 base::test::ScopedFeatureList CreateEnablingFeatureList() {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{kDictation, {{"use_component_extension", "false"}}},
+      {{kDictation,
+        {{"use_component_extension", "false"},
+         {"auto_session_end_delay", "0ms"}}},
        {blink::features::kPopulateDOMNodeIdInFocusedNodeDetails, {}}},
       {});
   return feature_list;
@@ -51,7 +53,8 @@ base::test::ScopedFeatureList CreateEnablingFeatureList(
       {{kDictation,
         {{"use_component_extension", "false"},
          {"session_ends_on_stream_end",
-          session_ends_on_stream_end ? "true" : "false"}}},
+          session_ends_on_stream_end ? "true" : "false"},
+         {"auto_session_end_delay", "0ms"}}},
        {blink::features::kPopulateDOMNodeIdInFocusedNodeDetails, {}}},
       {});
   return feature_list;

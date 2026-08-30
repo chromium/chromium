@@ -173,7 +173,7 @@ void DictationToastView::UpdateForState(UiState state) {
         toggle_button_->SetText(l10n_util::GetStringUTF16(
             kSessionEndsOnStreamEnd.Get() ? IDS_DONE
                                           : IDS_DICTATION_BUTTON_START));
-        toggle_button_->SetEnabled(true);
+        toggle_button_->SetEnabled(!kSessionEndsOnStreamEnd.Get());
         break;
       case UiState::kInitializing:
       case UiState::kTranscribing:
