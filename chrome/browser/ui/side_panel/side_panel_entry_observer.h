@@ -31,6 +31,15 @@ class SidePanelEntryObserver : public base::CheckedObserver {
   virtual void OnEntryHidden(SidePanelEntry* entry) {}
 
 #if BUILDFLAG(IS_ANDROID)
+  // Called when an attempt to show a SidePanelEntry is deferred due to
+  // constraints (such as insufficient window space).
+  //
+  // When this function is called, the side panel won't be shown. However, if
+  // the constraints no longer exist (such as when the window is resized to have
+  // sufficient space), the deferred entry will be shown automatically and
+  // OnEntryShown() will be called.
+  virtual void OnEntryShowDeferred(SidePanelEntry* entry) {}
+
   // TODO(crbug.com/496962614): Combine with above method, update all
   // implementations, and bring to Desktop.
   // Note: We don't overload this method with OnEntryHidden(SidePanelEntry*)

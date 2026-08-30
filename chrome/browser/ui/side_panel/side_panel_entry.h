@@ -32,7 +32,6 @@ enum class SidePanelEntryHideReason;
 // a SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final : public ui::PropertyHandler {
  public:
-
   // The default and minimum acceptable side panel content width.
   static constexpr int kSidePanelDefaultContentWidth = 360;
   using CreateContentCallback =
@@ -81,6 +80,8 @@ class SidePanelEntry final : public ui::PropertyHandler {
   void OnEntryHideCancelled();
   void OnEntryHidden();
 #if BUILDFLAG(IS_ANDROID)
+  void OnEntryShowDeferred();
+
   // TODO(crbug.com/496962614): compile OnEntryHiddenWithReason() into all
   // platforms.
   void OnEntryHiddenWithReason(SidePanelEntryHideReason reason);
