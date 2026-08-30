@@ -3,7 +3,7 @@ Short Name: Vulkan Validation Layers
 Version: N/A
 URL: https://github.com/KhronosGroup/Vulkan-ValidationLayers
 SOURCE CODE: git clone https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
-Revision: f95e5bbc64cfb6d69b34340729f85b8f83329947
+Revision: da870218f27970d891111164cbbc092bf2bac5da
 Update Mechanism: Autoroll
 Security Critical: no
 Shipped: no
