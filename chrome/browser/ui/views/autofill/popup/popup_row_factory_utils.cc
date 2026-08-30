@@ -188,18 +188,23 @@ std::unique_ptr<views::BoxLayoutView> GetAlternativePaymentMethodBadge(
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
                  FillingProduct main_filling_product,
-                 int maximum_width_single_line) {
+                 std::optional<int> maximum_width_single_line = std::nullopt) {
+  const int max_width = maximum_width_single_line.value_or(
+      main_filling_product == FillingProduct::kAtMemory
+          ? kAtMemorySuggestionWidth
+          : kAutofillSuggestionMaxWidth);
   switch (main_filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kAutocomplete:
     case FillingProduct::kAutofillAi:
+    case FillingProduct::kAtMemory:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:
-      label.SetMaximumWidthSingleLine(maximum_width_single_line);
+      label.SetMaximumWidthSingleLine(max_width);
       break;
     case FillingProduct::kCreditCard:
       if (text.should_truncate.value()) {
-        label.SetMaximumWidthSingleLine(maximum_width_single_line);
+        label.SetMaximumWidthSingleLine(max_width);
       }
       break;
     case FillingProduct::kCompose:
@@ -210,7 +215,6 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kDataList:
     case FillingProduct::kNone:
     case FillingProduct::kOneTimePassword:
-    case FillingProduct::kAtMemory:
       break;
   }
 }
@@ -291,9 +295,14 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
             .SetBetweenChildSpacing(between_child_spacing)
             .Build();
+    int used_width = 0;
     for (const Suggestion::Text& label_text : label_row) {
       // If a column is empty, do not include any further columns.
       if (label_text.value.empty()) {
+        break;
+      }
+      if (suggestion.type == SuggestionType::kAtMemorySearchResult &&
+          used_width >= kAtMemorySuggestionWidth) {
         break;
       }
       auto* label =
@@ -308,10 +317,16 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
       if (IsDeactivatedBnplSuggestion(suggestion)) {
         label->SetEnabledColor(kColorAutofillPopupDeactivatedBnplForeground);
       }
-      // To make sure the popup width will not exceed its maximum value,
-      // divide the maximum label width by the number of labels.
-      FormatLabel(*label, label_text, main_filling_product,
-                  kAutofillSuggestionMaxWidth / label_row.size());
+      if (suggestion.type == SuggestionType::kAtMemorySearchResult) {
+        const int remaining_width = kAtMemorySuggestionWidth - used_width;
+        FormatLabel(*label, label_text, main_filling_product, remaining_width);
+        used_width += label->GetPreferredSize().width() + between_child_spacing;
+      } else {
+        // To make sure the popup width will not exceed its maximum value,
+        // divide the maximum label width by the number of labels.
+        FormatLabel(*label, label_text, main_filling_product,
+                    kAutofillSuggestionMaxWidth / label_row.size());
+      }
     }
     result.push_back(std::move(label_row_container_view));
   }
@@ -552,8 +567,7 @@ std::unique_ptr<PopupRowContentView> CreateBnplPopupRowContentView(
     FillingProduct main_filling_product) {
   std::unique_ptr<views::Label> main_text_label =
       CreateMainTextLabel(suggestion, /*show_new_badge=*/std::nullopt);
-  FormatLabel(*main_text_label, suggestion.main_text, main_filling_product,
-              kAutofillSuggestionMaxWidth);
+  FormatLabel(*main_text_label, suggestion.main_text, main_filling_product);
 
   // If the BNPL issuer is linked, add `BnplLinkedIssuerPill` to minor texts so
   // that it appears on the first line of the suggestion with the BNPL issuer
@@ -612,7 +626,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   std::unique_ptr<views::Label> main_text_label =
       CreateMainTextLabel(suggestion, /*show_new_badge=*/std::nullopt);
   FormatLabel(*main_text_label, suggestion.main_text,
-              FillingProduct::kAutocomplete, kAutofillSuggestionMaxWidth);
+              FillingProduct::kAutocomplete);
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
       /*description_label=*/nullptr,
@@ -661,8 +675,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
 std::unique_ptr<PopupRowContentView>
 CreateAtMemorySearchResultPopupRowContentView(
     const Suggestion& suggestion,
-    std::optional<user_education::DisplayNewBadge> show_new_badge,
-    FillingProduct main_filling_product) {
+    std::optional<user_education::DisplayNewBadge> show_new_badge) {
   std::unique_ptr<PopupRowContentView> view =
       std::make_unique<PopupRowContentView>();
   std::unique_ptr<views::Label> main_text_label =
@@ -686,7 +699,7 @@ CreateAtMemorySearchResultPopupRowContentView(
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, suggestion, main_filling_product),
+      CreateSubtextViews(*view, suggestion, FillingProduct::kAtMemory),
       popup_cell_utils::GetIconImageView(suggestion), *view);
 
   if (!main_label_fits_in_one_line) {
@@ -716,8 +729,7 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
                                        filter_match->main_text_match);
   }
 
-  FormatLabel(*main_text_label, suggestion.main_text, main_filling_product,
-              kAutofillSuggestionMaxWidth);
+  FormatLabel(*main_text_label, suggestion.main_text, main_filling_product);
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
       /*description_label=*/nullptr,
@@ -741,8 +753,7 @@ CreateAlternativePaymentMethodPopupRowContentView(
                                        filter_match->main_text_match);
   }
 
-  FormatLabel(*main_text_label, suggestion.main_text, main_filling_product,
-              kAutofillSuggestionMaxWidth);
+  FormatLabel(*main_text_label, suggestion.main_text, main_filling_product);
   std::vector<std::unique_ptr<views::View>> minor_labels =
       CreateMinorTextLabels(suggestion);
 
@@ -870,8 +881,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAtMemorySearchResult: {
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreateAtMemorySearchResultPopupRowContentView(
-              suggestion, show_new_badge, main_filling_product));
+          CreateAtMemorySearchResultPopupRowContentView(suggestion,
+                                                        show_new_badge));
     }
     // AtMemory suggestions do not apply filter match bolding to the main text.
     case SuggestionType::kAtMemoryGenericError:
@@ -884,7 +895,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreatePopupRowContentView(suggestion, show_new_badge,
-                                    main_filling_product,
+                                    FillingProduct::kAtMemory,
                                     /*filter_match=*/std::nullopt));
     }
 
