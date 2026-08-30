@@ -2157,7 +2157,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8007106936382123905">{count,plural, =1{1 erledigte Aufgabe}other{# erledigte Aufgaben}}</translation>
 <translation id="8010488806779226127">Entdecke Funktionen, die dich beim Surfen unterstützen</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
-<translation id="8014007212279733632">Identität bestätigen, um vertrauliche Daten automatisch einzufügen</translation>
+<translation id="8014007212279733632">Vor Autofill-Nutzung Identität bestätigen</translation>
 <translation id="8015826420689927262">Anhang löschen</translation>
 <translation id="8017015647846870183">Aus dem Google Passwortmanager, einschließlich Passwörter und Passkeys</translation>
 <translation id="802154636333426148">Downloadfehler</translation>

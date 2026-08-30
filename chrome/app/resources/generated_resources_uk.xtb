@@ -3997,7 +3997,7 @@
 <translation id="4021909830315618592">Копіювати відомості про складання</translation>
 <translation id="4021941025609472374">Закрити вкладки ліворуч</translation>
 <translation id="4022426551683927403">&amp;Додати до словника</translation>
-<translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
+<translation id="4024768890073681126">Цим вебпереглядачем керує один із твоїх батьків</translation>
 <translation id="4025039777635956441">Вимкнути звук на вибраному сайті</translation>
 <translation id="402707738228916911">Отримано вказівку "<ph name="AUTHORIZE_INSTRUCTION_NAME" />"</translation>
 <translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
@@ -6706,7 +6706,7 @@
 <translation id="6177779807714496775">Відкрити посилання на лівому екрані</translation>
 <translation id="6178664161104547336">Вибір сертифіката</translation>
 <translation id="6178682841350631965">Дані для входу оновлено</translation>
-<translation id="6179830757749383456">Веб-переглядачем керує домен <ph name="BROWSER_DOMAIN" />; профілем керує домен <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="6179830757749383456">Вебпереглядачем керує домен <ph name="BROWSER_DOMAIN" />, а профілем керує домен <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Вилучити розширення?}one{Вилучити # розширення?}few{Вилучити # розширення?}many{Вилучити # розширень?}other{Вилучити # розширення?}}</translation>
 <translation id="6180550893222597997">Який ключ доступу ви хочете використовувати для додатка <ph name="APP_NAME" />?</translation>
 <translation id="6181218116951226898">Іноді фірмова символіка додатків змінюється. Перевірте всі зміни перед оновленням і переконайтеся, що вони вам підходять.</translation>
@@ -6909,7 +6909,7 @@
 <translation id="6343981313228733146">Вікно переміщено вгору й праворуч</translation>
 <translation id="6344170822609224263">Отримувати доступ до списку мережевих з’єднань</translation>
 <translation id="6344576354370880196">Збережені принтери</translation>
-<translation id="6344608411615208519"><ph name="BEGIN_LINK" />Веб-переглядачем керує<ph name="END_LINK" /> один із твоїх батьків</translation>
+<translation id="6344608411615208519">Цим <ph name="BEGIN_LINK" />вебпереглядачем керує<ph name="END_LINK" /> один із твоїх батьків</translation>
 <translation id="6345566021391290381">Вам надано доступ до паролів для сайту <ph name="WEBSITE_NAME" />. Ви можете використовувати їх у формі для входу.</translation>
 <translation id="6345878117466430440">Позначити як прочитане</translation>
 <translation id="6346952829206698721">Вставити з буфера обміну</translation>
@@ -8148,7 +8148,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Потрібен дозвіл. Натисніть F6, щоб відповісти</translation>
 <translation id="7290005709287747471">Вимкнути</translation>
 <translation id="7290139233643258082">Застосувати тему</translation>
-<translation id="7292067737327289208">Вашим <ph name="BEGIN_LINK" />веб-переглядачем керує<ph name="END_LINK" /> організація, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292067737327289208">Цим <ph name="BEGIN_LINK" />вебпереглядачем керує<ph name="END_LINK" /> організація, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Попроси батьків надати доступ у налаштуваннях</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7293774463163321848">Ви можете видаляти історію пошуку, історію Gemini і паролі у відповідному розділі налаштувань</translation>
@@ -9257,7 +9257,7 @@
 <translation id="813858113027420189">Відкрити посилання на верхньому екрані</translation>
 <translation id="8139440916039659819">Прискорення руху курсора</translation>
 <translation id="8140070492745508800">"<ph name="FIRST_DEVICE" />", "<ph name="SECOND_DEVICE" />"</translation>
-<translation id="8140108728130537923">Вашим <ph name="BEGIN_LINK" />веб-переглядачем керує<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8140108728130537923">Цим <ph name="BEGIN_LINK" />вебпереглядачем керує<ph name="END_LINK" /> домен <ph name="BROWSER_DOMAIN" />, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8141418916163800697">Ви можете ввімкнути більше параметрів у налаштуваннях функції "Керування телефоном"</translation>
 <translation id="8141584439523427891">Відкривання в альтернативному веб-переглядачі</translation>
 <translation id="8141725884565838206">Керування паролями</translation>
@@ -10355,7 +10355,7 @@
 <translation id="8985661571449404298">Завантажено незахищений файл</translation>
 <translation id="8986362086234534611">Забути</translation>
 <translation id="8986494364107987395">Автоматично надсилати статистику використання та звіти про аварійне завершення роботи в Google</translation>
-<translation id="8987321822984361516">Веб-переглядачем керує організація; профілем керує домен <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="8987321822984361516">Вебпереглядачем керує організація; профілем керує домен <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987736167266086032">Повертайтеся на останні відкриті сторінки</translation>
 <translation id="8987927404178983737">Місяць</translation>
 <translation id="8989359959810288806">Оновити статус точки доступу</translation>

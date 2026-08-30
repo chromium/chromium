@@ -70,7 +70,7 @@
 <translation id="1110994991967754504">مجوز <ph name="PERMISSION_NAME" /> را انتخاب کنید</translation>
 <translation id="1113000785583998331">‏‫IBAN ذخیره شود؟</translation>
 <translation id="1113869188872983271">&amp;واگرد تغییر ترتیب</translation>
-<translation id="1117709830616495622">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini.</translation>
+<translation id="1117709830616495622">‏مبتنی بر «هوش شخصی‌سازی‌شده» با Gemini.</translation>
 <translation id="111897705806685148">استفاده از گذرکلید از دستگاهی دیگر</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مدیریت اطلاعات Chrome که در «حساب Google» ذخیره می‌کنید، کلید «جهش» و سپس Enter را فشار دهید</translation>
 <translation id="1121990216147052230">فهرست کارها برایم بسازید</translation>
@@ -2322,7 +2322,7 @@
 <translation id="4941627891654116707">اندازه قلم</translation>
 <translation id="4943620199112228840">استفاده از میکروفون‌های شما</translation>
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
-<translation id="494701040141924538">متوجه شدم، اعلان بسته شد</translation>
+<translation id="494701040141924538">متوجه شدم، اعلان بسته شود</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4953689047182316270">پاسخ دادن به رویدادهای مربوط به دسترس‌پذیری</translation>
 <translation id="4954505713046251871">‏برای ارائه پیشنهادها و بهبود این ویژگی، نشانی وب و محتوای صفحه با Google هم‌رسانی می‌شود</translation>
@@ -4300,7 +4300,7 @@
 <translation id="8350416046273606058">میان‌بر نمی‌تواند حاوی فاصله باشد: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">یادداشت ایجاد کنید</translation>
 <translation id="8352849934814541340">سرپرست این دستگاه برنامه‌هایی را برای افزودن عملکردهای بیشتر نصب کرده است. این برنامه‌ها به برخی‌از داده‌های شما دسترسی دارند.</translation>
-<translation id="8353273112634584260">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شوند.</translation>
+<translation id="8353273112634584260">‏مبتنی بر «هوش شخصی‌سازی‌شده» با Gemini. درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شوند.</translation>
 <translation id="8355270400102541638">بافت خرابی محلی:</translation>
 <translation id="8362914115861174987">ترجمه به</translation>
 <translation id="8363502534493474904">خاموش کردن حالت هواپیما</translation>
