@@ -70,7 +70,8 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2,
     ContentFeatureList.ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
     ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
-    ContentFeatureList.ANDROID_MEDIA_INSERTION
+    ContentFeatureList.ANDROID_MEDIA_INSERTION,
+    ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT
 })
 public class ImeAdapterImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -289,6 +290,167 @@ public class ImeAdapterImplTest {
                         eq(false),
                         eq(event4.getUnicodeChar()));
         verify(mImeAdapterImplJni, never()).commitText(anyLong(), any(), any(), any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures({
+        ContentFeatureList.ANDROID_CAPTURE_KEY_EVENTS,
+        ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT
+    })
+    public void testDeleteSurroundingText_replayKeyDownBackspaceEvent() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // When no KEYCODE_DEL is captured, deleteSurroundingText sends placeholder key
+        // events and calls deleteSurroundingText.
+        adapter.deleteSurroundingText(1, 0);
+        verify(mImeAdapterImplJni)
+                .sendKeyEvent(
+                        anyLong(),
+                        isNull(),
+                        eq(EventType.RAW_KEY_DOWN),
+                        eq(0),
+                        anyLong(),
+                        eq(ImeAdapterImpl.COMPOSITION_KEY_CODE),
+                        eq(0),
+                        eq(false),
+                        eq(0));
+        verify(mImeAdapterImplJni).deleteSurroundingText(anyLong(), eq(1), eq(0));
+        reset(mImeAdapterImplJni);
+
+        // When KEYCODE_DEL is captured, deleteSurroundingText replays the
+        // KEY_DOWN event instead.
+        long time = SystemClock.uptimeMillis();
+        KeyEvent delEvent =
+                new KeyEvent(time, time, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0, 0);
+        adapter.onKeyPreIme(delEvent.getKeyCode(), delEvent);
+        adapter.deleteSurroundingText(1, 0);
+        verify(mImeAdapterImplJni)
+                .sendKeyEvent(
+                        anyLong(),
+                        isNotNull(),
+                        eq(EventType.KEY_DOWN),
+                        eq(0),
+                        eq(time),
+                        eq(delEvent.getKeyCode()),
+                        eq(delEvent.getScanCode()),
+                        eq(false),
+                        eq(0));
+        verify(mImeAdapterImplJni, never()).deleteSurroundingText(anyLong(), anyInt(), anyInt());
+        reset(mImeAdapterImplJni);
+
+        // When beforeLength != 1 or afterLength != 0, it should not replay the DEL event.
+        adapter.onKeyPreIme(delEvent.getKeyCode(), delEvent);
+        adapter.deleteSurroundingText(2, 0);
+        verify(mImeAdapterImplJni).deleteSurroundingText(anyLong(), eq(2), eq(0));
+        verify(mImeAdapterImplJni, never())
+                .sendKeyEvent(
+                        anyLong(),
+                        isNotNull(),
+                        eq(EventType.KEY_DOWN),
+                        anyInt(),
+                        anyLong(),
+                        eq(delEvent.getKeyCode()),
+                        anyInt(),
+                        anyBoolean(),
+                        anyInt());
+        reset(mImeAdapterImplJni);
+
+        adapter.onKeyPreIme(delEvent.getKeyCode(), delEvent);
+        adapter.deleteSurroundingText(0, 1);
+        verify(mImeAdapterImplJni).deleteSurroundingText(anyLong(), eq(0), eq(1));
+        verify(mImeAdapterImplJni, never())
+                .sendKeyEvent(
+                        anyLong(),
+                        isNotNull(),
+                        eq(EventType.KEY_DOWN),
+                        anyInt(),
+                        anyLong(),
+                        eq(delEvent.getKeyCode()),
+                        anyInt(),
+                        anyBoolean(),
+                        anyInt());
+    }
+
+    @Test
+    @EnableFeatures({
+        ContentFeatureList.ANDROID_CAPTURE_KEY_EVENTS,
+        ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT
+    })
+    public void testDeleteSurroundingTextInCodePoints_replayKeyDownBackspaceEvent() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        // When no KEYCODE_DEL is captured, deleteSurroundingTextInCodePoints sends placeholder key
+        // events and calls deleteSurroundingTextInCodePoints.
+        adapter.deleteSurroundingTextInCodePoints(1, 0);
+        verify(mImeAdapterImplJni)
+                .sendKeyEvent(
+                        anyLong(),
+                        isNull(),
+                        eq(EventType.RAW_KEY_DOWN),
+                        eq(0),
+                        anyLong(),
+                        eq(ImeAdapterImpl.COMPOSITION_KEY_CODE),
+                        eq(0),
+                        eq(false),
+                        eq(0));
+        verify(mImeAdapterImplJni).deleteSurroundingTextInCodePoints(anyLong(), eq(1), eq(0));
+        reset(mImeAdapterImplJni);
+
+        // When KEYCODE_DEL is captured, deleteSurroundingTextInCodePoints replays the
+        // KEY_DOWN event instead.
+        long time = SystemClock.uptimeMillis();
+        KeyEvent delEvent =
+                new KeyEvent(time, time, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0, 0);
+        adapter.onKeyPreIme(delEvent.getKeyCode(), delEvent);
+        adapter.deleteSurroundingTextInCodePoints(1, 0);
+        verify(mImeAdapterImplJni)
+                .sendKeyEvent(
+                        anyLong(),
+                        isNotNull(),
+                        eq(EventType.KEY_DOWN),
+                        eq(0),
+                        eq(time),
+                        eq(delEvent.getKeyCode()),
+                        eq(delEvent.getScanCode()),
+                        eq(false),
+                        eq(0));
+        verify(mImeAdapterImplJni, never())
+                .deleteSurroundingTextInCodePoints(anyLong(), anyInt(), anyInt());
+        reset(mImeAdapterImplJni);
+
+        // When beforeLength != 1 or afterLength != 0, it should not replay the DEL event.
+        adapter.onKeyPreIme(delEvent.getKeyCode(), delEvent);
+        adapter.deleteSurroundingTextInCodePoints(2, 0);
+        verify(mImeAdapterImplJni).deleteSurroundingTextInCodePoints(anyLong(), eq(2), eq(0));
+        verify(mImeAdapterImplJni, never())
+                .sendKeyEvent(
+                        anyLong(),
+                        isNotNull(),
+                        eq(EventType.KEY_DOWN),
+                        anyInt(),
+                        anyLong(),
+                        eq(delEvent.getKeyCode()),
+                        anyInt(),
+                        anyBoolean(),
+                        anyInt());
+        reset(mImeAdapterImplJni);
+
+        adapter.onKeyPreIme(delEvent.getKeyCode(), delEvent);
+        adapter.deleteSurroundingTextInCodePoints(0, 1);
+        verify(mImeAdapterImplJni).deleteSurroundingTextInCodePoints(anyLong(), eq(0), eq(1));
+        verify(mImeAdapterImplJni, never())
+                .sendKeyEvent(
+                        anyLong(),
+                        isNotNull(),
+                        eq(EventType.KEY_DOWN),
+                        anyInt(),
+                        anyLong(),
+                        eq(delEvent.getKeyCode()),
+                        anyInt(),
+                        anyBoolean(),
+                        anyInt());
     }
 
     @Test

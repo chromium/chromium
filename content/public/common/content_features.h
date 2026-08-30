@@ -50,6 +50,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidPkAutocorrectUnderline);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidPkAutocorrectUnderlineV2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAndroidRemoveSetLocalFocusWorkaroundOnBaklava);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidReplayDelKeyEvent);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAndroidBlockMisspellingSuggestionSpanInCompositionMode);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(

@@ -85,6 +85,10 @@ BASE_FEATURE(kAndroidPkAutocorrectUnderlineV2,
 BASE_FEATURE(kAndroidRemoveSetLocalFocusWorkaroundOnBaklava,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Replay captured KEYCODE_DEL key down events when the IME deletes surrounding
+// text.
+BASE_FEATURE(kAndroidReplayDelKeyEvent, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Blocks the misspelling suggestion span in composition mode.
 BASE_FEATURE(kAndroidBlockMisspellingSuggestionSpanInCompositionMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
