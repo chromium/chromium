@@ -83,7 +83,9 @@ class TestCreateWriterClient
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void OnResult(mojo::PendingRemote<::blink::mojom::AIWriter> writer) override {
+  void OnResult(mojo::PendingRemote<::blink::mojom::AIWriter> writer,
+                uint64_t context_window) override {
+    context_window_ = context_window;
     result_.SetValue(std::move(writer));
   }
 
@@ -94,9 +96,11 @@ class TestCreateWriterClient
   }
 
   TestFuture<CreateWriterResult>& result() { return result_; }
+  uint64_t context_window() const { return context_window_; }
 
  private:
   TestFuture<CreateWriterResult> result_;
+  uint64_t context_window_ = 0;
   mojo::Receiver<blink::mojom::AIManagerCreateWriterClient> receiver_{this};
 };
 
@@ -407,6 +411,17 @@ TEST_F(AIWriterTest, CreateWriterContextLimitExceededError) {
   EXPECT_EQ(result.error().quota_error_info->requested,
             blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
   EXPECT_EQ(result.error().quota_error_info->quota,
+            blink::mojom::kWritingAssistanceMaxInputTokenSize);
+}
+
+TEST_F(AIWriterTest, ContextWindowUsesContextLimit) {
+  TestCreateWriterClient client;
+  GetAIManagerRemote()->CreateWriter(client.BindNewPipeAndPassRemote(),
+                                     GetDefaultOptions(),
+                                     /*monitor=*/mojo::NullRemote());
+  CreateWriterResult result = client.result().Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(client.context_window(),
             blink::mojom::kWritingAssistanceMaxInputTokenSize);
 }
 

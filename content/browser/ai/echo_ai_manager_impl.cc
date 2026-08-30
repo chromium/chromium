@@ -416,7 +416,12 @@ void EchoAIManagerImpl::ReturnAIClientCreationResult(
   mojo::PendingRemote<AIPendingRemote> pending_remote;
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIClient>(),
                               pending_remote.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(pending_remote));
+  if constexpr (std::is_same_v<AIPendingRemote,
+                               blink::mojom::AISemanticEmbedder>) {
+    client_remote->OnResult(std::move(pending_remote));
+  } else {
+    client_remote->OnResult(std::move(pending_remote), kMaxContextSizeInTokens);
+  }
 }
 
 void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(

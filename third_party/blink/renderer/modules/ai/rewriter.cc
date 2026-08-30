@@ -152,7 +152,8 @@ void RewriterBase::RecordCreateOptionMetrics(
 Rewriter::Rewriter(ScriptState* script_state,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                    mojo::PendingRemote<mojom::blink::AIRewriter> pending_remote,
-                   RewriterCreateOptions* options)
+                   RewriterCreateOptions* options,
+                   uint64_t context_window)
     : AIWritingAssistanceBase<Rewriter,
                               mojom::blink::AIRewriter,
                               mojom::blink::AIManagerCreateRewriterClient,
@@ -163,6 +164,7 @@ Rewriter::Rewriter(ScriptState* script_state,
           task_runner,
           std::move(pending_remote),
           std::move(options),
+          context_window,
           /*echo_whitespace_input=*/true) {}
 
 void Rewriter::Trace(Visitor* visitor) const {

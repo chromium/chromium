@@ -84,8 +84,9 @@ class TestCreateRewriterClient
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void OnResult(
-      mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) override {
+  void OnResult(mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter,
+                uint64_t context_window) override {
+    context_window_ = context_window;
     result_.SetValue(std::move(rewriter));
   }
 
@@ -96,9 +97,11 @@ class TestCreateRewriterClient
   }
 
   TestFuture<CreateRewriterResult>& result() { return result_; }
+  uint64_t context_window() const { return context_window_; }
 
  private:
   TestFuture<CreateRewriterResult> result_;
+  uint64_t context_window_ = 0;
   mojo::Receiver<blink::mojom::AIManagerCreateRewriterClient> receiver_{this};
 };
 
@@ -346,6 +349,17 @@ TEST_F(AIRewriterTest, CreateRewriterContextLimitExceededError) {
   EXPECT_EQ(result.error().quota_error_info->requested,
             blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
   EXPECT_EQ(result.error().quota_error_info->quota,
+            blink::mojom::kWritingAssistanceMaxInputTokenSize);
+}
+
+TEST_F(AIRewriterTest, ContextWindowUsesContextLimit) {
+  TestCreateRewriterClient client;
+  GetAIManagerRemote()->CreateRewriter(client.BindNewPipeAndPassRemote(),
+                                       GetDefaultOptions(),
+                                       /*monitor=*/mojo::NullRemote());
+  CreateRewriterResult result = client.result().Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(client.context_window(),
             blink::mojom::kWritingAssistanceMaxInputTokenSize);
 }
 

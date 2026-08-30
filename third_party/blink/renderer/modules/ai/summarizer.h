@@ -30,7 +30,8 @@ class Summarizer final : public ScriptWrappable,
   Summarizer(ScriptState* script_state,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
              mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote,
-             SummarizerCreateOptions* options);
+             SummarizerCreateOptions* options,
+             uint64_t context_window);
   void Trace(Visitor* visitor) const override;
 
   // AIWritingAssistanceBase:
@@ -39,7 +40,6 @@ class Summarizer final : public ScriptWrappable,
       const String& context,
       mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
           responder) override;
-  double inputQuota() const;
 
   // summarizer.idl:
   ScriptPromise<IDLString> summarize(ScriptState* script_state,

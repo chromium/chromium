@@ -83,8 +83,9 @@ class TestCreateSummarizerClient
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void OnResult(
-      mojo::PendingRemote<::blink::mojom::AISummarizer> summarizer) override {
+  void OnResult(mojo::PendingRemote<::blink::mojom::AISummarizer> summarizer,
+                uint64_t context_window) override {
+    context_window_ = context_window;
     result_.SetValue(std::move(summarizer));
   }
 
@@ -95,9 +96,11 @@ class TestCreateSummarizerClient
   }
 
   TestFuture<CreateSummarizerResult>& result() { return result_; }
+  uint64_t context_window() const { return context_window_; }
 
  private:
   TestFuture<CreateSummarizerResult> result_;
+  uint64_t context_window_ = 0;
   mojo::Receiver<blink::mojom::AIManagerCreateSummarizerClient> receiver_{this};
 };
 
@@ -469,6 +472,17 @@ TEST_F(AISummarizerTest, InputLimitExceededError) {
   ASSERT_EQ(responder.quota_error_info().requested,
             blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
   ASSERT_EQ(responder.quota_error_info().quota,
+            blink::mojom::kWritingAssistanceMaxInputTokenSize);
+}
+
+TEST_F(AISummarizerTest, ContextWindowUsesContextLimit) {
+  TestCreateSummarizerClient client;
+  GetAIManagerRemote()->CreateSummarizer(client.BindNewPipeAndPassRemote(),
+                                         GetDefaultOptions(),
+                                         /*monitor=*/mojo::NullRemote());
+  CreateSummarizerResult result = client.result().Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(client.context_window(),
             blink::mojom::kWritingAssistanceMaxInputTokenSize);
 }
 
@@ -891,6 +905,8 @@ TEST_F(AISummarizerWithFeatureConfigTest,
 
   auto result = summarizer_client.result().Take();
   EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(summarizer_client.context_window(),
+            blink::mojom::kTinyModelMaxInputTokenSize);
 }
 
 TEST_F(AISummarizerWithFeatureConfigTest,

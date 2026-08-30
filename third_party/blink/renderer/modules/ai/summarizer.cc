@@ -154,7 +154,8 @@ Summarizer::Summarizer(
     ScriptState* script_state,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote,
-    SummarizerCreateOptions* options)
+    SummarizerCreateOptions* options,
+    uint64_t context_window)
     : AIWritingAssistanceBase<Summarizer,
                               mojom::blink::AISummarizer,
                               mojom::blink::AIManagerCreateSummarizerClient,
@@ -165,6 +166,7 @@ Summarizer::Summarizer(
           task_runner,
           std::move(pending_remote),
           std::move(options),
+          context_window,
           /*echo_whitespace_input=*/false) {}
 
 void Summarizer::Trace(Visitor* visitor) const {
@@ -210,15 +212,6 @@ ScriptPromise<IDLDouble> Summarizer::measureInputUsage(
 void Summarizer::destroy(ScriptState* script_state,
                          ExceptionState& exception_state) {
   AIWritingAssistanceBase::destroy(script_state, exception_state);
-}
-
-// TODO(crbug.com/513357094): Get the resolved model config's context window.
-double Summarizer::inputQuota() const {
-  if (options_->preference().AsEnum() ==
-      V8PerformancePreference::Enum::kSpeed) {
-    return static_cast<double>(mojom::blink::kTinyModelMaxInputTokenSize);
-  }
-  return static_cast<double>(mojom::blink::kWritingAssistanceMaxInputTokenSize);
 }
 
 }  // namespace blink

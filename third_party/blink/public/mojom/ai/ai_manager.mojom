@@ -88,7 +88,7 @@ enum ModelAvailabilityCheckResult {
 interface AIManagerCreateWriterClient {
   // Called with a created writer's mojo interface as a result for the
   // CreateWriter() method of the AIManager.
-  OnResult(pending_remote<blink.mojom.AIWriter> writer);
+  OnResult(pending_remote<blink.mojom.AIWriter> writer, uint64 context_window);
 
   // Called when the manager cannot create an AIWriter.
   // `quota_error_info` may provide additional info for kInitialInputTooLarge.
@@ -99,7 +99,8 @@ interface AIManagerCreateWriterClient {
 interface AIManagerCreateRewriterClient {
   // Called with a created rewriter's mojo interface as a result for the
   // CreateRewriter() method of the AIManager.
-  OnResult(pending_remote<blink.mojom.AIRewriter> rewriter);
+  OnResult(pending_remote<blink.mojom.AIRewriter> rewriter,
+           uint64 context_window);
 
   // Called when the manager cannot create an AIRewriter.
   // `quota_error_info` may provide additional info for kInitialInputTooLarge.
@@ -110,7 +111,8 @@ interface AIManagerCreateRewriterClient {
 interface AIManagerCreateSummarizerClient {
   // Called with a created summarizer's mojo interface as a result for the
   // CreateSummarizer() method of the AIManager.
-  OnResult(pending_remote<blink.mojom.AISummarizer> summarizer);
+  OnResult(pending_remote<blink.mojom.AISummarizer> summarizer,
+           uint64 context_window);
 
   // Called when the manager cannot create an AISummarizer.
   // `quota_error_info` may provide additional info for kInitialInputTooLarge.
@@ -121,7 +123,8 @@ interface AIManagerCreateSummarizerClient {
 interface AIManagerCreateProofreaderClient {
   // Called with a created proofreader's mojo interface as a result for the
   // CreateProofreader() method of the AIManager.
-  OnResult(pending_remote<blink.mojom.AIProofreader> proofreader);
+  OnResult(pending_remote<blink.mojom.AIProofreader> proofreader,
+           uint64 context_window);
 
   // Called when the manager cannot create an AIProofreader.
   // `quota_error_info` may provide additional info for kInitialInputTooLarge.

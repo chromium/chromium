@@ -45,7 +45,6 @@ enum class WritingAssistanceMetricsOptionType {
   kTeaser = 2,
   kHeadline = 3,
   kMaxValue = kHeadline,
-
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:WritingAssistanceMetricsOptionType)
 
@@ -101,6 +100,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           mojo::PendingRemote<AIMojoClient> pending_remote,
                           CreateOptions* options,
+                          uint64_t context_window,
                           bool echo_whitespace_input)
       : ExecutionContextClient(ExecutionContext::From(script_state)),
         remote_(GetExecutionContext()),
@@ -108,6 +108,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         destruction_abort_controller_(AbortController::Create(script_state)),
         create_abort_signal_(options->getSignalOr(nullptr)),
         task_runner_(std::move(task_runner)),
+        context_window_(context_window),
         metric_session_type_(GetSessionType()),
         echo_whitespace_input_(echo_whitespace_input) {
     remote_.Bind(std::move(pending_remote), task_runner_);
@@ -408,10 +409,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     return options_->getOutputLanguageOr(String());
   }
 
-  double inputQuota() const {
-    return static_cast<double>(
-        mojom::blink::kWritingAssistanceMaxInputTokenSize);
-  }
+  double inputQuota() const { return static_cast<double>(context_window_); }
 
  protected:
   // Executes a writing assistance task on the remote `AIMojoClient`,
@@ -518,6 +516,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
   Member<AbortSignal::AlgorithmHandle> create_abort_handle_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const uint64_t context_window_;
 
   AIMetrics::AISessionType metric_session_type_;
 
