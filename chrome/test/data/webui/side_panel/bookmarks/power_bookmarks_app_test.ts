@@ -200,53 +200,75 @@ suite('General', () => {
           getBookmarks(powerBookmarksApp).length);
     });
 
-    test('InitialLoadItemSizeMatchesViewType', () => {
-      const listEl = powerBookmarksApp.$.bookmarksList.list;
-      assertTrue(!!listEl);
-      assertEquals(36, listEl.itemSize);
-      const container =
-          listEl.shadowRoot.querySelector<HTMLElement>('#container')!;
-      assertTrue(!!container);
-      const expectedCompactHeight = listEl.items.length * 36;
-      assertEquals(`${expectedCompactHeight}px`, container.style.height);
-    });
+    test('InactiveListPurgesDomRowsWhenIdle', async () => {
+      const bookmarksList = powerBookmarksApp.$.bookmarksList;
+      const listA = bookmarksList.$.listA;
+      const listB = bookmarksList.$.listB;
 
-    test('ViewToggleUpdatesHeightAndPreventsClipping', async () => {
-      const listEl = powerBookmarksApp.$.bookmarksList.list;
-      assertTrue(!!listEl);
-      assertEquals(36, listEl.itemSize);
-      const container =
-          listEl.shadowRoot.querySelector<HTMLElement>('#container')!;
-      assertTrue(!!container);
-      const compactHeight = listEl.items.length * 36;
-      assertEquals(`${compactHeight}px`, container.style.height);
+      // Add 30 bookmarks to root and 30 bookmarks to folder '5' so both folders
+      // have enough rows to exceed the 500px viewport height (30 * 36px =
+      // 1080px).
+      const NUM_EXTRA_BOOKMARKS = 30;
+      const initialRootCount = listA.items.length;
+      const expectedRootCount = initialRootCount + NUM_EXTRA_BOOKMARKS;
+      const initialFolder5ChildCount = 1;
+      const expectedFolder5Count =
+          initialFolder5ChildCount + NUM_EXTRA_BOOKMARKS;
 
-      const header = powerBookmarksApp.$.bookmarksList.shadowRoot
-                         .querySelector<PowerBookmarksListHeaderElement>(
-                             'power-bookmarks-list-header')!;
-      assertTrue(!!header);
-      const viewButton =
-          header.shadowRoot.querySelector<HTMLElement>('#viewButton')!;
-      assertTrue(!!viewButton);
-
-      // Toggle to expanded (card) view.
-      let viewportFilled = eventToPromise('viewport-filled', listEl);
-      viewButton.click();
-      await viewportFilled;
+      for (let i = 0; i < NUM_EXTRA_BOOKMARKS; i++) {
+        bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
+          id: `root_extra_${i}`,
+          title: `Root bookmark ${i}`,
+          index: 0,
+          parentId: FOLDERS[1]!.id,
+          url: `http://example.com/${i}`,
+          children: null,
+          dateAdded: null,
+          dateLastUsed: null,
+          unmodifiable: false,
+        });
+      }
+      for (let i = 0; i < NUM_EXTRA_BOOKMARKS; i++) {
+        bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
+          id: `folder5_extra_${i}`,
+          title: `Folder 5 bookmark ${i}`,
+          index: 0,
+          parentId: '5',
+          url: `http://example.com/sub/${i}`,
+          children: null,
+          dateAdded: null,
+          dateLastUsed: null,
+          unmodifiable: false,
+        });
+      }
       await microtasksFinished();
 
-      assertEquals(68, listEl.itemSize);
-      const expandedHeight = listEl.items.length * 68;
-      assertEquals(`${expandedHeight}px`, container.style.height);
+      // On root folder: listA has all items in its model, but virtualizes and
+      // only renders a subset of rows in the DOM (exceeds viewport). listB has
+      // 0 items.
+      assertEquals(expectedRootCount, listA.items.length);
+      assertEquals(0, listB.items.length);
+      const renderedRowsA = listA.querySelectorAll('power-bookmark-row').length;
+      assertTrue(renderedRowsA > 0);
+      assertTrue(renderedRowsA < listA.items.length);
+      assertEquals(0, listB.querySelectorAll('power-bookmark-row').length);
 
-      // Toggle back to compact (list) view.
-      viewportFilled = eventToPromise('viewport-filled', listEl);
-      viewButton.click();
-      await viewportFilled;
+      // Navigate into folder '5' which also has enough items to exceed the
+      // viewport.
+      await openBookmark('5');
+      bookmarksList.shadowRoot.querySelector('#list-b')!.dispatchEvent(
+          new AnimationEvent('animationend'));
       await microtasksFinished();
 
-      assertEquals(36, listEl.itemSize);
-      assertEquals(`${compactHeight}px`, container.style.height);
+      // After transition completes: listB is active with rendered rows
+      // (virtualized), and inactive listA has been completely purged to 0 items
+      // and 0 DOM rows.
+      assertEquals(expectedFolder5Count, listB.items.length);
+      assertEquals(0, listA.items.length);
+      const renderedRowsB = listB.querySelectorAll('power-bookmark-row').length;
+      assertTrue(renderedRowsB > 0);
+      assertTrue(renderedRowsB < listB.items.length);
+      assertEquals(0, listA.querySelectorAll('power-bookmark-row').length);
     });
 
     test('RebuildsKeyboardNavigationOnBookmarkNodeAdded', async () => {

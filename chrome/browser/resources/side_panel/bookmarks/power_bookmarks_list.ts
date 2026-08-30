@@ -207,9 +207,12 @@ export class PowerBookmarksListElement extends CrLitElement implements
         type: Object,
       },
 
-      hasFolders_: {
+      hasFoldersA_: {
         type: Boolean,
-        reflect: true,
+      },
+
+      hasFoldersB_: {
+        type: Boolean,
       },
 
       firstSecondaryIndexA_: {
@@ -282,7 +285,8 @@ export class PowerBookmarksListElement extends CrLitElement implements
   protected accessor canDrag_: boolean = true;
   protected accessor hasActiveDrag_: boolean = false;
   protected accessor sectionVisibility_: ListSectionVisibility = {};
-  protected accessor hasFolders_: boolean = false;
+  protected accessor hasFoldersA_: boolean = false;
+  protected accessor hasFoldersB_: boolean = false;
   protected accessor scrollTarget_: HTMLElement = document.documentElement;
   protected accessor shoppingCollectionFolderId_: string = '';
   protected accessor updatedElementIds_: string[] = [];
@@ -341,24 +345,24 @@ export class PowerBookmarksListElement extends CrLitElement implements
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedPrivateProperties.has('searchQuery')) {
+    if (changedProperties.has('searchQuery')) {
       this.onSearchChanged_();
     }
 
     let displayListChanged = false;
-    if (changedPrivateProperties.has('activeFolderPath') ||
-        changedPrivateProperties.has('labels') ||
+    if (changedProperties.has('activeFolderPath') ||
+        changedProperties.has('labels') ||
         changedPrivateProperties.has('sortOrder') ||
-        changedPrivateProperties.has('searchQuery') ||
-        changedPrivateProperties.has('hasSomeActiveFilter') ||
+        changedProperties.has('searchQuery') ||
+        changedProperties.has('hasSomeActiveFilter') ||
         changedPrivateProperties.has('compact_')) {
       this.updateDisplayList_();
       displayListChanged = true;
     }
 
-    if (changedPrivateProperties.has('editing') ||
-        changedPrivateProperties.has('renamingId') ||
-        changedPrivateProperties.has('hasSomeActiveFilter')) {
+    if (changedProperties.has('editing') ||
+        changedProperties.has('renamingId') ||
+        changedProperties.has('hasSomeActiveFilter')) {
       this.canDrag_ = this.computeCanDrag_();
     }
 
@@ -384,13 +388,6 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
     if (changedPrivateProperties.has('canDrag_')) {
       this.onCanDragChange_();
-    }
-
-    // Lit does not automatically notify parent components on property changes
-    // (unlike Polymer's `notify: true`), so we must fire this custom event
-    // manually when the property changes.
-    if (changedPrivateProperties.has('hasShownBookmarks')) {
-      this.fire('has-shown-bookmarks-changed', {value: this.hasShownBookmarks});
     }
   }
 
@@ -423,7 +420,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
     const listEl = this.list;
     const element = await listEl.ensureItemRendered(index);
-    element.scrollIntoView({block: 'nearest'});
+    if (element) {
+      element.scrollIntoView({block: 'nearest'});
+    }
   }
 
   onBookmarkAdded(bookmark: BookmarksTreeNode, parent: BookmarksTreeNode) {
@@ -735,22 +734,24 @@ export class PowerBookmarksListElement extends CrLitElement implements
       }
 
       // Write data to the target buffer.
+      const hasFolders =
+          !!displayList && displayList.some(item => !item.bookmark.url);
       if (targetListId === 'a') {
         this.displayListA_ = displayList;
         this.firstSecondaryIndexA_ =
             secondaryList.length > 0 ? firstSecondaryIndex : -1;
         this.activeFolderA_ = activeFolder;
+        this.hasFoldersA_ = hasFolders;
       } else {
         this.displayListB_ = displayList;
         this.firstSecondaryIndexB_ =
             secondaryList.length > 0 ? firstSecondaryIndex : -1;
         this.activeFolderB_ = activeFolder;
+        this.hasFoldersB_ = hasFolders;
       }
 
       this.transitioningList_ = targetListId;
       this.hasShownBookmarks = !!displayList && displayList.length > 0;
-      this.hasFolders_ =
-          !!displayList && displayList.some(item => !item.bookmark.url);
       this.updateListScrollOffset_();
 
       // Wait for Lit to render the contents into the target list buffer.
@@ -809,21 +810,23 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
     } else {
       this.lastActiveFolderPathLength_ = currentPathLength;
+      const hasFolders =
+          !!displayList && displayList.some(item => !item.bookmark.url);
       if (this.activeList_ === 'a') {
         this.displayListA_ = displayList;
         this.firstSecondaryIndexA_ =
             secondaryList.length > 0 ? firstSecondaryIndex : -1;
         this.activeFolderA_ = activeFolder;
+        this.hasFoldersA_ = hasFolders;
       } else {
         this.displayListB_ = displayList;
         this.firstSecondaryIndexB_ =
             secondaryList.length > 0 ? firstSecondaryIndex : -1;
         this.activeFolderB_ = activeFolder;
+        this.hasFoldersB_ = hasFolders;
       }
 
       this.hasShownBookmarks = !!displayList && displayList.length > 0;
-      this.hasFolders_ =
-          !!displayList && displayList.some(item => !item.bookmark.url);
       this.updateListScrollOffset_();
 
       // After the lists are updated and all children updates are complete,
@@ -903,6 +906,20 @@ export class PowerBookmarksListElement extends CrLitElement implements
     return !hasShownBookmarks && !hasSomeActiveFilter && hasActiveFolder;
   }
 
+  private resetListBuffer_(listId: string) {
+    if (listId === 'a') {
+      this.displayListA_ = [];
+      this.firstSecondaryIndexA_ = -1;
+      this.activeFolderA_ = undefined;
+      this.hasFoldersA_ = false;
+    } else {
+      this.displayListB_ = [];
+      this.firstSecondaryIndexB_ = -1;
+      this.activeFolderB_ = undefined;
+      this.hasFoldersB_ = false;
+    }
+  }
+
   private finalizeTransition_(
       targetListId: string, noMetrics: boolean = false,
       isInterrupted: boolean = false) {
@@ -935,6 +952,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
     this.transitioningList_ = '';
     this.activeList_ = targetListId;
+
+    // Reset the inactive buffer so dormant rows are purged from the DOM.
+    this.resetListBuffer_(currentListId);
 
     this.updateListScrollOffset_();
     this.notifyBookmarksListResize_();

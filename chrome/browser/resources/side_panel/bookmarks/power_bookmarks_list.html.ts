@@ -8,7 +8,8 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {DisplayItem, PowerBookmarksListElement} from './power_bookmarks_list.js';
 
 export interface TemplatizedDomNodes {
-  list: CrLazyListElement<DisplayItem>;
+  listA: CrLazyListElement<DisplayItem>;
+  listB: CrLazyListElement<DisplayItem>;
 }
 
 export function getHtml(this: PowerBookmarksListElement) {
@@ -50,12 +51,12 @@ export function getHtml(this: PowerBookmarksListElement) {
               .scrollTarget="${this.scrollTarget_}"
               .itemSize="${this.getItemSize_()}"
               role="tree"
-              .template="${(item: unknown, index: number) => html`
+              .template="${(item: DisplayItem, index: number) => html`
                 <power-bookmark-row
-                    id="bookmark-${(item as DisplayItem).bookmark.id}"
+                    id="bookmark-${item.bookmark.id}"
                     ?hidden="${!this.isListActiveOrTransitioning_('a')}"
-                    .bookmark="${(item as DisplayItem).bookmark}"
-                    .depth="${(item as DisplayItem).depth}"
+                    .bookmark="${item.bookmark}"
+                    .depth="${item.depth}"
                     .compact="${this.compact_}"
                     .searchQuery="${this.searchQuery}"
                     .updatedElementIds="${this.updatedElementIds_}"
@@ -83,10 +84,10 @@ export function getHtml(this: PowerBookmarksListElement) {
                     .canDrag="${this.canDrag_}"
                     .hasActiveDrag="${this.hasActiveDrag_}"
                     .activeFolderPath="${this.activeFolderPath}"
-                    .hasFolders="${this.hasFolders_}"
+                    .hasFolders="${this.hasFoldersA_}"
                     .rowHeading="${this.getRowHeading_(index, 'a')}"
                     .toggleExpand="${this.expandedFolderIds_.has(
-                        (item as DisplayItem).bookmark.id)}">
+                        item.bookmark.id)}">
                 </power-bookmark-row>`}">
           </cr-lazy-list>
         </div>
@@ -103,12 +104,12 @@ export function getHtml(this: PowerBookmarksListElement) {
               .scrollTarget="${this.scrollTarget_}"
               .itemSize="${this.getItemSize_()}"
               role="tree"
-              .template="${(item: unknown, index: number) => html`
+              .template="${(item: DisplayItem, index: number) => html`
                 <power-bookmark-row
-                    id="bookmark-${(item as DisplayItem).bookmark.id}"
+                    id="bookmark-${item.bookmark.id}"
                     ?hidden="${!this.isListActiveOrTransitioning_('b')}"
-                    .bookmark="${(item as DisplayItem).bookmark}"
-                    .depth="${(item as DisplayItem).depth}"
+                    .bookmark="${item.bookmark}"
+                    .depth="${item.depth}"
                     .compact="${this.compact_}"
                     .searchQuery="${this.searchQuery}"
                     .updatedElementIds="${this.updatedElementIds_}"
@@ -136,10 +137,10 @@ export function getHtml(this: PowerBookmarksListElement) {
                     .canDrag="${this.canDrag_}"
                     .hasActiveDrag="${this.hasActiveDrag_}"
                     .activeFolderPath="${this.activeFolderPath}"
-                    .hasFolders="${this.hasFolders_}"
+                    .hasFolders="${this.hasFoldersB_}"
                     .rowHeading="${this.getRowHeading_(index, 'b')}"
                     .toggleExpand="${this.expandedFolderIds_.has(
-                        (item as DisplayItem).bookmark.id)}">
+                        item.bookmark.id)}">
                 </power-bookmark-row>`}">
           </cr-lazy-list>
         </div>
