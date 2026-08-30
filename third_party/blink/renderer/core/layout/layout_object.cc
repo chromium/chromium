@@ -2712,7 +2712,8 @@ const LayoutObject* LayoutObject::GetPropertyContainer(
 }
 
 HitTestResult LayoutObject::HitTestForOcclusion(
-    const PhysicalRect& hit_rect) const {
+    const PhysicalRect& hit_rect,
+    std::optional<HitTestRequest::HitNodeCb> hit_node_cb) const {
   NOT_DESTROYED();
   LocalFrame* frame = GetDocument().GetFrame();
   DCHECK(!frame->View()->NeedsLayout());
@@ -2721,9 +2722,13 @@ HitTestResult LayoutObject::HitTestForOcclusion(
       HitTestRequest::kIgnoreClipping |
       HitTestRequest::kIgnoreZeroOpacityObjects |
       HitTestRequest::kHitTestVisualOverflow;
+  if (hit_node_cb) {
+    hit_type |= HitTestRequest::kListBased | HitTestRequest::kPenetratingList |
+                HitTestRequest::kAvoidCache;
+  }
   HitTestLocation location(hit_rect);
-  return frame->GetEventHandler().HitTestResultAtLocation(location, hit_type,
-                                                          this, true);
+  return frame->GetEventHandler().HitTestResultAtLocation(
+      location, hit_type, this, true, std::move(hit_node_cb));
 }
 
 std::ostream& operator<<(std::ostream& out, const LayoutObject& object) {

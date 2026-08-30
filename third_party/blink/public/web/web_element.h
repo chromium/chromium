@@ -261,13 +261,17 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Observes the visibility of this element.
   //
   // Invokes `callback` once this element has been visible for at least
-  // `minimum_visible_duration`. If the observer is disconnected via the
-  // returned closure runner before the threshold is met, `callback` is dropped.
+  // `minimum_visible_duration`. `visibility_threshold` specifies the minimum
+  // unoccluded visible ratio (defaults to 1.0 for fully visible, with lower
+  // values tolerating partial occlusion). If the observer is disconnected via
+  // the returned closure runner before the threshold is met, `callback` is
+  // dropped.
   //
   // The returned closure runner removes the observer.
   base::ScopedClosureRunner MonitorVisibility(
       base::TimeDelta minimum_visible_duration,
-      base::OnceClosure callback);
+      base::OnceClosure callback,
+      float visibility_threshold = 1.0f);
 
 #if INSIDE_BLINK
   WebElement(Element*);

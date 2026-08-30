@@ -33,6 +33,7 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "cc/base/region.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -71,7 +72,10 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -85,8 +89,12 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkRegion.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -747,11 +755,122 @@ LayoutBox* WebElement::GetScrollingBox() const {
 
 namespace {
 
+// Helper class used during penetrating list-based hit testing to determine
+// whether an element meets a minimum visibility threshold.
+class PartialOcclusionHitTestHelper
+    : public GarbageCollected<PartialOcclusionHitTestHelper> {
+ public:
+  PartialOcclusionHitTestHelper(Element* target, float visibility_threshold)
+      : target_(target), visibility_threshold_(visibility_threshold) {
+    DCHECK_GT(visibility_threshold_, 0.0f);
+    DCHECK_LE(visibility_threshold_, 1.0f);
+  }
+
+  ListBasedHitTestBehavior ClassifyNode(const PhysicalRect& hit_rect,
+                                        const Node& node,
+                                        const PhysicalRect* physical_rect,
+                                        const gfx::QuadF* quad,
+                                        const cc::Region* region) {
+    // Hit testing proceeds front-to-back. When `target_` is hit, all potential
+    // occluders in front of it have already been evaluated. Stop hit testing to
+    // avoid penetrating behind `target_`.
+    if (&node == target_) {
+      occluded_region_.setEmpty();
+      return kStopHitTesting;
+    }
+    // Ignore nodes that are not opaque or have no layout object. We are only
+    // interested in evaluating nodes that visually occlude the target, as seen
+    // by the user.
+    if (!node.GetLayoutObject() ||
+        !node.GetLayoutObject()->HasNonZeroEffectiveOpacity()) {
+      return kContinueHitTesting;
+    }
+
+    // Determine the occluding node's geometry using the most specific bounds
+    // provided by hit testing, including ink overflow and filters. Only account
+    // for the intersection of `node_rect` with `hit_rect`.
+    PhysicalRect node_rect;
+    if (physical_rect && !physical_rect->IsEmpty()) {
+      node_rect = *physical_rect;
+    } else if (quad) {
+      node_rect = PhysicalRect::EnclosingRect(quad->BoundingBox());
+    } else if (region) {
+      node_rect = PhysicalRect(region->bounds());
+    } else if (const LayoutObject* layout_object = node.GetLayoutObject()) {
+      // Fallback in case hit testing did not provide specific bounds (e.g. if a
+      // caller used the 2-argument overload of `AddNodeToListBasedTestResult`).
+      // This is likely unnecessary since hit test callers forward geometry, but
+      // kept as a defensive fallback.
+      if (const auto* box_model =
+              DynamicTo<LayoutBoxModelObject>(layout_object)) {
+        node_rect = layout_object->LocalToAbsoluteRect(
+            box_model->VisualOverflowRectIncludingFilters());
+      } else {
+        node_rect = node.BoundingBox();
+      }
+    }
+    node_rect.Intersect(hit_rect);
+    if (!node_rect.IsEmpty()) {
+      // Accumulate the occluding rect into `occluded_region_`.
+      occluded_region_.op(
+          gfx::RectToSkIRect(gfx::ToEnclosingRect(gfx::RectF(node_rect))),
+          SkRegion::kUnion_Op);
+      float target_area = gfx::RectF(hit_rect).size().GetArea();
+      float occluded_area = ComputeOccludedArea(target_area);
+
+      // If the remaining visible area is less than `visibility_threshold_`,
+      // stop hit testing early. Since `target_` has not been reached yet, it
+      // will not be present in `result.ListBasedTestResult()`, which tells
+      // `ComputeVisibilityInfo` that the element is occluded.
+      if (!HasEnoughVisibleAreaRemaining(occluded_area, target_area)) {
+        occluded_region_.setEmpty();
+        return kStopHitTesting;
+      }
+    }
+    return kContinueHitTesting;
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(target_); }
+
+ private:
+  static float ComputeArea(const SkIRect& rect) {
+    return static_cast<float>(rect.width()) * static_cast<float>(rect.height());
+  }
+
+  float ComputeOccludedArea(float target_area) const {
+    if (target_area <= 0.0f || occluded_region_.isEmpty()) {
+      return 0.0f;
+    }
+    float occluded_area = 0.0f;
+    for (SkRegion::Iterator it(occluded_region_); !it.done(); it.next()) {
+      occluded_area += ComputeArea(it.rect());
+      if (occluded_area >= target_area) {
+        return target_area;
+      }
+    }
+    return occluded_area;
+  }
+
+  bool HasEnoughVisibleAreaRemaining(float occluded_area,
+                                     float target_area) const {
+    if (target_area <= 0.0f) {
+      return false;
+    }
+    float visible_ratio = (target_area - occluded_area) / target_area;
+    return visible_ratio >= visibility_threshold_;
+  }
+
+  Member<Element> target_;
+  const float visibility_threshold_;
+  SkRegion occluded_region_;
+};
+
 class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {
  public:
   VisibilityObserver(Element* element,
                      base::TimeDelta minimum_visible_duration,
-                     base::OnceClosure callback)
+                     base::OnceClosure callback,
+                     float visibility_threshold)
       : element_(element),
         minimum_visible_duration_(minimum_visible_duration),
         callback_(std::move(callback)),
@@ -759,6 +878,12 @@ class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {
             element->GetDocument().GetTaskRunner(TaskType::kInternalDefault),
             this,
             &VisibilityObserver::VisibilityTimerFired) {
+    PartialOcclusionHitTestHelper* helper =
+        MakeGarbageCollected<PartialOcclusionHitTestHelper>(
+            element_, visibility_threshold);
+    // TODO(crbug.com/552604337): `VisibilityObserver` is currently only used by
+    // omnibox autofill. If we plan for this to be used by other features,
+    // `params` should be provided via `VisibilityObserver`'s constructor.
     IntersectionObserver::Params params = {
         .root = nullptr,
         // Require at least 90% of the element to intersect the viewport.
@@ -768,6 +893,11 @@ class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {
         // Enable visibility tracking; otherwise `isVisible()` in entries will
         // always be false.
         .track_visibility = true,
+        // Require at least `visibility_threshold` visibility (allowing partial
+        // occlusion).
+        .hit_node_cb =
+            BindRepeating(&PartialOcclusionHitTestHelper::ClassifyNode,
+                          WrapPersistent(helper)),
     };
     observer_ = IntersectionObserver::Create(
         element_->GetDocument(),
@@ -839,13 +969,14 @@ class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {
 
 base::ScopedClosureRunner WebElement::MonitorVisibility(
     base::TimeDelta minimum_visible_duration,
-    base::OnceClosure callback) {
+    base::OnceClosure callback,
+    float visibility_threshold) {
   CHECK(callback);
   CHECK(!IsNull());
 
   auto* observer = MakeGarbageCollected<VisibilityObserver>(
       const_cast<Element*>(ConstUnwrap<Element>()), minimum_visible_duration,
-      std::move(callback));
+      std::move(callback), visibility_threshold);
   observer->Start();
 
   return base::ScopedClosureRunner(

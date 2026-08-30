@@ -1211,4 +1211,105 @@ TEST_F(WebFormElementIntersectionObserverTest, ScrollIntoView) {
   FastForwardUntilNoTasksRemain();
 }
 
+// Tests that WebFormElementIntersectionObserver triggers the callback
+// when the element is partially occluded within the allowed threshold (<=20%).
+TEST_F(WebFormElementIntersectionObserverTest,
+       PartiallyOccludedWithinVisibilityThreshold) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
+    <style>
+      #container {
+        position: relative;
+      }
+      #target {
+        box-sizing: border-box;
+        width: 100px;
+        height: 100px;
+        border: 0;
+        padding: 0;
+      }
+      #occluder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 10px;
+        background: red;
+      }
+    </style>
+    <div id="container">
+      <input id="target">
+      <!-- Occlude by 10% -->
+      <div id="occluder"></div>
+    </div>
+  )");
+  UpdateAllLifecyclePhasesForTest();
+
+  WebFormControlElement element(
+      DynamicTo<HTMLFormControlElement>(GetElementById("target")));
+  ASSERT_TRUE(element);
+
+  base::MockOnceClosure mock_callback;
+  EXPECT_CALL(mock_callback, Run());
+
+  base::ScopedClosureRunner runner =
+      element.MonitorVisibility(kMinimumVisibleDuration, mock_callback.Get(),
+                                /*visibility_threshold=*/0.80f);
+
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardBy(kMinimumVisibleDuration);
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardUntilNoTasksRemain();
+}
+
+// Tests that WebFormElementIntersectionObserver does not trigger the callback
+// when the element is partially occluded exceeding the allowed threshold
+// (>20%).
+TEST_F(WebFormElementIntersectionObserverTest,
+       PartiallyOccludedExceedingVisibilityThreshold) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
+    <style>
+      #container {
+        position: relative;
+      }
+      #target {
+        box-sizing: border-box;
+        width: 100px;
+        height: 100px;
+        border: 0;
+        padding: 0;
+      }
+      #occluder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 30px;
+        background: red;
+      }
+    </style>
+    <div id="container">
+      <input id="target">
+      <!-- Occlude by 30% -->
+      <div id="occluder"></div>
+    </div>
+  )");
+  UpdateAllLifecyclePhasesForTest();
+
+  WebFormControlElement element(
+      DynamicTo<HTMLFormControlElement>(GetElementById("target")));
+  ASSERT_TRUE(element);
+
+  bool callback_called = false;
+  base::ScopedClosureRunner runner = element.MonitorVisibility(
+      kMinimumVisibleDuration,
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called),
+      /*visibility_threshold=*/0.80f);
+
+  UpdateAllLifecyclePhasesForTest();
+  FastForwardBy(kMinimumVisibleDuration);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(callback_called);
+  FastForwardUntilNoTasksRemain();
+}
+
 }  // namespace blink

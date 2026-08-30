@@ -94,7 +94,8 @@ int64_t IntersectionObservation::ComputeIntersection(
       observer_->thresholds(),
       honor_margins ? observer_->TargetMargin() : empty_margin,
       honor_margins ? observer_->ScrollMargin() : empty_margin, geometry_flags,
-      context.GetRootGeometry(*observer_, compute_flags), &cached_rects_);
+      context.GetRootGeometry(*observer_, compute_flags), &cached_rects_,
+      observer_->hit_node_cb());
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   if (cached_rects_backup) {

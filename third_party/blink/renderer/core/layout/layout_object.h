@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_phase.h"
+#include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_invalidation_reason.h"
 #include "third_party/blink/renderer/core/layout/layout_object_child_list.h"
@@ -2613,8 +2614,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                            PropertyTreeStateOrAlias* = nullptr,
                                            VisualRectFlags = {}) const;
 
-  // Do a rect-based hit test with this object as the stop node.
-  HitTestResult HitTestForOcclusion(const PhysicalRect&) const;
+  // Do a rect-based hit test with this object as the stop node. If
+  // |hit_node_cb| is provided, performs a list-based penetrating hit test where
+  // the callback is executed at each hit node.
+  HitTestResult HitTestForOcclusion(const PhysicalRect&,
+                                    std::optional<HitTestRequest::HitNodeCb>
+                                        hit_node_cb = std::nullopt) const;
 
   bool IsFloatingOrOutOfFlowPositioned() const {
     NOT_DESTROYED();

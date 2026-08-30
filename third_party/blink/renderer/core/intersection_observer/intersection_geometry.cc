@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_geometry.h"
 
+#include <optional>
+
+#include "base/containers/adapters.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -16,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -139,9 +143,11 @@ struct VisibilityInfo {
 // The `occluder_node_id` holds the ID of the node that's overlapping the target
 // (if there is one) as the result of hit testing.
 // https://w3c.github.io/IntersectionObserver/v2/#calculate-visibility-algo
-VisibilityInfo ComputeVisibilityInfo(const LayoutObject* target,
-                                     const PhysicalRect& rect,
-                                     unsigned flags) {
+VisibilityInfo ComputeVisibilityInfo(
+    const LayoutObject* target,
+    const PhysicalRect& rect,
+    unsigned flags,
+    std::optional<IntersectionGeometry::HitNodeCb> hit_node_cb) {
   if (!target->GetDocument().GetFrame() ||
       target->GetDocument().GetFrame()->LocalFrameRoot().GetOcclusionState() !=
           mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
@@ -154,6 +160,23 @@ VisibilityInfo ComputeVisibilityInfo(const LayoutObject* target,
   }
   if (target->HasDistortingVisualEffects())
     return {false, kInvalidDOMNodeId};
+  // TODO(layout-dev): This should hit-test the intersection rect, not the
+  // target rect; it's not helpful to know that the portion of the target that
+  // is clipped is also occluded.
+  if (hit_node_cb.has_value()) {
+    HitTestResult result(target->HitTestForOcclusion(
+        rect, base::BindRepeating(hit_node_cb.value(), rect)));
+    const HitTestResult::NodeSet& nodes = result.ListBasedTestResult();
+    for (const auto& hit_node : base::Reversed(nodes)) {
+      // If the `target` itself or any of its child nodes is in the hit test
+      // results, then the `target` is visible/unoccluded enough to be hit.
+      if (hit_node == target->GetNode() ||
+          hit_node->IsDescendantOf(target->GetNode())) {
+        return {true, kInvalidDOMNodeId};
+      }
+    }
+    return {false, kInvalidDOMNodeId};
+  }
   // TODO(layout-dev): This should hit-test the intersection rect, not the
   // target rect; it's not helpful to know that the portion of the target that
   // is clipped is also occluded.
@@ -282,8 +305,10 @@ IntersectionGeometry::IntersectionGeometry(
     const Vector<Length>& scroll_margin,
     unsigned flags,
     std::optional<RootGeometry>& root_geometry,
-    CachedRects* cached_rects)
-    : flags_(flags & kConstructorFlagsMask) {
+    CachedRects* cached_rects,
+    std::optional<HitNodeCb> hit_node_cb)
+    : flags_(flags & kConstructorFlagsMask),
+      hit_node_cb_(std::move(hit_node_cb)) {
   // Only one of root_margin or target_margin can be specified.
   DCHECK(root_margin.empty() || target_margin.empty());
 
@@ -680,7 +705,8 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   }
   if (IsIntersecting() && ShouldComputeVisibility()) {
     auto visiblity_info = ComputeVisibilityInfo(
-        target, PhysicalRect::FastAndLossyFromRectF(target_rect_), flags_);
+        target, PhysicalRect::FastAndLossyFromRectF(target_rect_), flags_,
+        std::move(hit_node_cb_));
     occluder_node_id_ = visiblity_info.occluder_node_id;
     if (visiblity_info.is_visible) {
       flags_ |= kIsVisible;
