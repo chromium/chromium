@@ -50,6 +50,16 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="VoiceTyping.StreamExitReason" enum="DictationStreamExitStatus"
+    expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Records the reason why a Voice Typing stream concluded, including both
+    user-initiated and system-triggered exit conditions.
+  </summary>
+</histogram>
+
 <histogram name="VoiceTyping.StreamStartTrigger"
     enum="DictationStreamStartTrigger" expires_after="2027-06-01">
   <owner>amyasinghal@google.com</owner>

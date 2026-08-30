@@ -94,7 +94,7 @@ TEST_F(DictationSessionControllerTest, StreamAffectsState) {
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 
-  controller_->EndDictationStream();
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 }
@@ -126,8 +126,8 @@ TEST_F(DictationSessionControllerTest, EndStream) {
   controller_->StartDictationStream(EmptyTarget(),
                                     DictationStreamStartTrigger::kSessionStart);
 
-  EXPECT_CALL(*stream_provider_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
 }
 
 // Test that calling EndDictationStream while the controller is in the
@@ -143,8 +143,8 @@ TEST_F(DictationSessionControllerTest, EndStreamDuringInitialization) {
                                     DictationStreamStartTrigger::kSessionStart);
   ASSERT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
-  EXPECT_CALL(*stream_provider_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 }
@@ -159,7 +159,7 @@ TEST_F(DictationSessionControllerTest, StateChangedCallback) {
 
   controller_->StartDictationStream(EmptyTarget(),
                                     DictationStreamStartTrigger::kSessionStart);
-  controller_->EndDictationStream();
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
 
   EXPECT_THAT(states, testing::ElementsAre(SessionState::kStreamInitializing,
                                            SessionState::kFinalizing));
@@ -265,8 +265,8 @@ TEST_F(DictationSessionControllerTest, FinalizeStreamToComplete) {
   EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
 
   // End the stream. It should transition to kFinalizing.
-  EXPECT_CALL(*stream_provider_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // Transition the finalizing stream to complete.
@@ -299,8 +299,8 @@ TEST_F(DictationSessionControllerTest, FinalizeStreamToFailed) {
   EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
 
   // End the stream. It should transition to kFinalizing.
-  EXPECT_CALL(*stream_provider_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // Transition the finalizing stream to failed.
@@ -331,8 +331,8 @@ TEST_F(DictationSessionControllerTest, StartNewStreamWhileFinalizing) {
       *stream_provider_1_ptr, StreamProvider::StreamState::kInitializing);
 
   // End the first stream. It should transition to kFinalizing.
-  EXPECT_CALL(*stream_provider_1_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 
@@ -378,8 +378,8 @@ TEST_F(DictationSessionControllerTest, MultipleFinalizingStreams) {
       .WillOnce(Return(std::move(mock_stream_provider_1)));
   controller_->StartDictationStream(EmptyTarget(),
                                     DictationStreamStartTrigger::kSessionStart);
-  EXPECT_CALL(*stream_provider_1_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // Start and end the second stream.
@@ -391,8 +391,8 @@ TEST_F(DictationSessionControllerTest, MultipleFinalizingStreams) {
       .WillOnce(Return(std::move(mock_stream_provider_2)));
   controller_->StartDictationStream(EmptyTarget(),
                                     DictationStreamStartTrigger::kSessionStart);
-  EXPECT_CALL(*stream_provider_2_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_2_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // Transition the first stream to complete. The controller should remain
@@ -427,8 +427,8 @@ TEST_F(DictationSessionControllerTest, FinalizingStreamStateChangesIgnored) {
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   // End the stream. It should transition to kFinalizing.
-  EXPECT_CALL(*stream_provider_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // Transition the finalizing stream to kTranscribing. This should be ignored.
@@ -511,7 +511,7 @@ TEST_F(DictationSessionControllerTest, EndStreamOnFocusNonEditableNode) {
   controller_->StartDictationStream(EmptyTarget(),
                                     DictationStreamStartTrigger::kSessionStart);
 
-  EXPECT_CALL(*stream_provider_ptr, Stop());
+  EXPECT_CALL(*stream_provider_ptr, Stop(_));
   content::FocusedNodeDetails details;
   details.focus_type = blink::mojom::FocusType::kMouse;
   details.editable_level = content::EditableLevel::kNotEditable;
@@ -533,7 +533,7 @@ TEST_F(DictationSessionControllerTest, StartNewStreamOnFocusOtherEditableNode) {
   controller_->StartDictationStream(EmptyTarget(),
                                     DictationStreamStartTrigger::kSessionStart);
 
-  EXPECT_CALL(*stream_provider_1_ptr, Stop());
+  EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
 
   EXPECT_CALL(*stream_provider_1_ptr, GetTarget())
       .WillRepeatedly(Return(&target_1));
@@ -575,8 +575,8 @@ TEST_F(DictationSessionControllerTest,
   controller_->StartDictationStream(TargetDetails{target_id_1},
                                     DictationStreamStartTrigger::kSessionStart);
 
-  EXPECT_CALL(*stream_provider_1_ptr, Stop());
-  controller_->EndDictationStream();
+  EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
+  controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // While a stream is finalizing for an element, change focus to the same
@@ -609,7 +609,7 @@ TEST_F(DictationSessionControllerTest,
   controller_->StartDictationStream(TargetDetails{target_id_1},
                                     DictationStreamStartTrigger::kSessionStart);
 
-  EXPECT_CALL(*stream_provider_1_ptr, Stop());
+  EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
   controller_->FinalizeAndShutdown();
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 

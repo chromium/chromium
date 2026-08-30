@@ -35,6 +35,20 @@ this directory.
 
 <!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationSessionEntryPoint) -->
 
+<!-- LINT.IfChange(DictationStreamExitStatus) -->
+
+<enum name="DictationStreamExitStatus">
+  <int value="0" label="User Done (Explicit completion)"/>
+  <int value="1" label="User Cancelled (Explicit cancellation)"/>
+  <int value="2"
+      label="Auto Done (Stream timeout / Tab switch / Focus loss / User
+             typing)"/>
+  <int value="3" label="Auto Cancelled (Abrupt stream destruction)"/>
+  <int value="4" label="Speech Error (Server sent failure)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationStreamExitStatus) -->
+
 <!-- LINT.IfChange(DictationStreamStartTrigger) -->
 
 <enum name="DictationStreamStartTrigger">

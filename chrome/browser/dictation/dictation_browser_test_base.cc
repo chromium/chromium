@@ -5,6 +5,7 @@
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
 
 #include "base/command_line.h"
+#include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
@@ -98,6 +99,15 @@ void DictationBrowserTestBase::SimulateInvokeViaContextMenu(
   // Ensure we only invoke the item when the context menu should be available.
   ASSERT_TRUE(menu.IsItemEnabled(IDC_CONTENT_CONTEXT_DICTATION));
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_DICTATION, 0);
+}
+
+void DictationBrowserTestBase::WaitForSessionState(SessionState target_state) {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    if (!session_controller()) {
+      return target_state == SessionState::kInactive;
+    }
+    return session_controller()->GetState() == target_state;
+  }));
 }
 
 }  // namespace dictation

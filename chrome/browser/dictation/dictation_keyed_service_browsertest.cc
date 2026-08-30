@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
 
   // Stop the provider from the browser side and confirm the state change from
   // the extension API.
-  provider->Stop();
+  provider->Stop(DictationStreamEndTrigger::kTest);
   ExtensionSendStreamStateUpdate(profile(), provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
   EXPECT_TRUE(base::test::RunUntil(
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
 
   // Stop the provider and confirm the state change from the extension. This
   // should trigger a deletion task.
-  provider->Stop();
+  provider->Stop(DictationStreamEndTrigger::kTest);
   ExtensionSendStreamStateUpdate(profile(), provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
   EXPECT_TRUE(base::test::RunUntil([&]() { return provider_weak == nullptr; }));
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   EXPECT_EQ(provider->GetLatestTranscriptionForTesting(), "Hello World");
   EXPECT_TRUE(provider->IsTranscriptionFinalForTesting());
 
-  provider->Stop();
+  provider->Stop(DictationStreamEndTrigger::kTest);
   ExtensionSendStreamStateUpdate(profile(), provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
 
