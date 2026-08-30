@@ -133,7 +133,8 @@ class DictationKeyedServiceDisabledBrowserTest
     : public DictationKeyedServiceBrowserTest {
  public:
   DictationKeyedServiceDisabledBrowserTest()
-      : DictationKeyedServiceBrowserTest(/*session_ends_on_stream_end=*/false) {
+      : DictationKeyedServiceBrowserTest(
+            kSessionEndsOnStreamEnd.default_value) {
     scoped_feature_list_.InitAndDisableFeature(kDictation);
   }
   ~DictationKeyedServiceDisabledBrowserTest() override = default;
@@ -339,8 +340,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   provider->Stop(DictationStreamEndTrigger::kTest);
   ExtensionSendStreamStateUpdate(profile(), provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return controller->GetState() == SessionState::kInactive; }));
+  WaitForSessionState(SessionState::kInactive);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
@@ -679,8 +679,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                             false);
 
   // Verify that the user typing in the textarea causes the stream to finalize.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return controller->GetState() == SessionState::kFinalizing; }));
+  WaitForSessionState(SessionState::kFinalizing);
   EXPECT_EQ(controller->attached_stream_provider(), nullptr);
 
   ExtensionWaitForStreamEnd(profile(), stream_id);
@@ -688,8 +687,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   ExtensionSendStreamStateUpdate(profile(), stream_id,
                                  ExtensionStreamState::kComplete);
 
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return controller->GetState() == SessionState::kInactive; }));
+  WaitForSessionState(SessionState::kInactive);
 
   // Verify the resulting text in the textarea is the initial character,
   // followed by the additional typed character, followed by the transcription.
@@ -784,8 +782,11 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
   ExtensionSendStreamStateUpdate(GetProfile(),
                                  provider->stream_id_for_testing(),
                                  ExtensionStreamState::kComplete);
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return controller->GetState() == SessionState::kInactive; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !dictation_service().session_controller() ||
+           dictation_service().session_controller()->GetState() ==
+               SessionState::kInactive;
+  }));
 
   dictation_service().EndSession();
 }

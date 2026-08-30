@@ -78,6 +78,11 @@ class DictationSessionControllerTest : public ChromeRenderViewHostTestHarness {
     run_loop.Run();
   }
 
+  void FastForwardPastAutoSessionEnd() {
+    task_environment()->FastForwardBy(kAutoSessionEndDelay.Get() +
+                                      base::Milliseconds(1));
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSessionControllerDelegate> mock_delegate_;
@@ -525,6 +530,11 @@ TEST_F(DictationSessionControllerTest, EndStreamOnFocusNonEditableNode) {
 }
 
 TEST_F(DictationSessionControllerTest, StartNewStreamOnFocusOtherEditableNode) {
+  if (kSessionEndsOnStreamEnd.Get()) {
+    GTEST_SKIP()
+        << "Multiple streams per session are not possible in this config.";
+  }
+
   Target target_1(EmptyTarget());
   auto mock_stream_provider_1 =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
@@ -723,6 +733,7 @@ TEST_F(DictationSessionControllerTest,
 
   controller_->DidUpdateStreamProviderState(
       *stream_provider, StreamProvider::StreamState::kTranscribing);
+  FastForwardPastAutoSessionEnd();
   WaitForPostedTasks();
 
   EXPECT_EQ(controller_, nullptr);
@@ -911,7 +922,7 @@ TEST_F(DictationSessionControllerTest,
   ASSERT_NE(controller_, nullptr);
   EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
   EXPECT_TRUE(controller_->is_auto_session_end_timer_running_for_testing());
-  task_environment()->FastForwardBy(base::Milliseconds(751));
+  FastForwardPastAutoSessionEnd();
   EXPECT_EQ(controller_, nullptr);
 }
 
@@ -968,7 +979,7 @@ TEST_F(DictationSessionControllerTest,
 
   // Delayed shutdown should be cancelled.
   EXPECT_FALSE(controller_->is_auto_session_end_timer_running_for_testing());
-  task_environment()->FastForwardBy(base::Milliseconds(751));
+  FastForwardPastAutoSessionEnd();
   EXPECT_NE(controller_, nullptr);
   EXPECT_EQ(controller_->attached_stream_provider(), stream_provider2);
 }
