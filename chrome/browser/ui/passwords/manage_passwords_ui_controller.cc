@@ -466,7 +466,8 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   if (!browser) {
     return;
   }
-  if (browser->GetTabStripModel()->GetActiveWebContents() != web_contents()) {
+  tabs::TabInterface* const active_tab = browser->GetActiveTabInterface();
+  if (!active_tab || active_tab->GetContents() != web_contents()) {
     return;
   }
 

@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   // Opening and closing a window shouldn't affect the state of the ephemeral
   // icon. Creating and removing the icon with multiple windows open should
   // also work.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   EXPECT_TRUE(ToolbarIconExists());
   action_controller()->OnRoutesUpdated(std::vector<MediaRoute>());
   EXPECT_FALSE(ToolbarIconExists());

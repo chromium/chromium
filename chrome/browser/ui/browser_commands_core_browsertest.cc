@@ -19,8 +19,10 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -75,13 +77,14 @@ class BrowserCommandsCoreTest : public InProcessBrowserTest {
     observer->Wait();
   }
 
-  void AddTab(Browser* browser, const GURL& url) {
+  void AddTab(BrowserWindowInterface* browser, const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     if (!initial_tab_closed_) {
-      browser->tab_strip_model()->CloseWebContentsAt(0, CLOSE_NONE);
+      browser->GetTabStripModel()->CloseWebContentsAt(
+          0, TabCloseTypes::CLOSE_NONE);
       initial_tab_closed_ = true;
     }
   }
@@ -106,25 +109,25 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, TabNavigationAccelerators) {
   AddTab(browser(), about_blank);
 
   // Select the second tab.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
 
   // Navigate to the first tab using an accelerator.
   updater->ExecuteCommand(IDC_SELECT_TAB_0);
-  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   // Navigate to the second tab using the next accelerators.
   updater->ExecuteCommand(IDC_SELECT_NEXT_TAB);
-  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   // Navigate back to the first tab using the previous accelerators.
   updater->ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
-  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   // Navigate to the last tab using the select last accelerator.
   updater->ExecuteCommand(IDC_SELECT_LAST_TAB);
-  ASSERT_EQ(2, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->active_index());
 }
 
 // Tests IDC_CYCLE_TO_NEXT_TAB and IDC_CYCLE_TO_PREV_TAB with MRU enabled.
@@ -136,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, CycleToMruTab) {
   // OS level.
   base::ScopedClosureRunner scoped_focus =
       resource_coordinator::GetTabLifecycleUnitSource()
-          ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
+          ->SetFocusedTabStripModelForTesting(browser()->GetTabStripModel());
 
   GURL about_blank(url::kAboutBlankURL);
 
@@ -147,17 +150,17 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, CycleToMruTab) {
 
   // We start with tab 2 active (index 2).
   // Activate tab 1 to put it in MRU.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   // Activate tab 0 to make it more recent than 1.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   // Activate tab 2 to make it active again.
-  browser()->tab_strip_model()->ActivateTabAt(2);
+  browser()->GetTabStripModel()->ActivateTabAt(2);
 
   CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
 
   // If MRU is active, the most recently used tab before 2 is 0.
   updater->ExecuteCommand(IDC_CYCLE_TO_NEXT_TAB);
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 }
 
 // Tests that IDC_SELECT_NEXT_TAB and IDC_SELECT_PREVIOUS_TAB perform
@@ -173,17 +176,17 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,
   AddTab(browser(), about_blank);
 
   // Start at tab 0.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
 
   // Directional IDC_SELECT_NEXT_TAB should move to tab 1.
   updater->ExecuteCommand(IDC_SELECT_NEXT_TAB);
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   // Directional IDC_SELECT_PREVIOUS_TAB should move back to tab 0.
   updater->ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 }
 
 // Tests IDC_DUPLICATE_TAB.
@@ -198,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, DuplicateTab) {
   NavigateAndCommitActiveTab(url2);
   NavigateAndCommitActiveTab(url3);
   content::NavigationController& orig_controller =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetController();
+      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetController();
   orig_controller.LoadURL(url4, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                           std::string());
   EXPECT_EQ(3, orig_controller.GetEntryCount());
@@ -209,18 +212,18 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, DuplicateTab) {
 
   // Duplicate the tab.
   chrome::ExecuteCommand(browser(), IDC_DUPLICATE_TAB);
-  content::WaitForLoadStop(browser()->tab_strip_model()->GetWebContentsAt(1));
+  content::WaitForLoadStop(browser()->GetTabStripModel()->GetWebContentsAt(1));
 
   // The duplicated tab should not end up in a new window.
   size_t window_count = GlobalBrowserCollection::GetInstance()->GetSize();
   ASSERT_EQ(initial_window_count, window_count);
 
   // And we should have a newly duplicated tab.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   // Verify the stack of urls.
   content::NavigationController& controller =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetController();
+      browser()->GetTabStripModel()->GetWebContentsAt(1)->GetController();
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(2, controller.GetCurrentEntryIndex());
   EXPECT_EQ(url1, controller.GetEntryAtIndex(0)->GetURL());
@@ -238,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, ViewSource) {
   // Navigate to a URL and simulate a subframe committing.
   AddTab(browser(), url1);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::string script =
       "var iframe = document.createElement('iframe');"
       "iframe.src = '" +
@@ -250,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, ViewSource) {
 
   // Now start a pending navigation that hasn't committed.
   content::NavigationController& orig_controller =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetController();
+      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetController();
   orig_controller.LoadURL(url2, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                           std::string());
   EXPECT_EQ(1, orig_controller.GetEntryCount());
@@ -261,19 +264,19 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, ViewSource) {
 
   // View Source.
   chrome::ExecuteCommand(browser(), IDC_VIEW_SOURCE);
-  content::WaitForLoadStop(browser()->tab_strip_model()->GetWebContentsAt(1));
+  content::WaitForLoadStop(browser()->GetTabStripModel()->GetWebContentsAt(1));
 
   // The view source tab should not end up in a new window.
   size_t window_count = GlobalBrowserCollection::GetInstance()->GetSize();
   ASSERT_EQ(initial_window_count, window_count);
 
   // And we should have a newly duplicated tab.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   // Verify we are viewing the source of the last committed entry.
   GURL view_source_url("view-source:" + url1.spec());
   content::NavigationController& controller =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetController();
+      browser()->GetTabStripModel()->GetWebContentsAt(1)->GetController();
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(0, controller.GetCurrentEntryIndex());
   EXPECT_EQ(url1, controller.GetEntryAtIndex(0)->GetURL());
@@ -311,11 +314,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
 
   // Go back in a new background tab.
   chrome::GoBack(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
-  WebContents* zeroth = browser()->tab_strip_model()->GetWebContentsAt(0);
-  WebContents* first = browser()->tab_strip_model()->GetWebContentsAt(1);
+  WebContents* zeroth = browser()->GetTabStripModel()->GetWebContentsAt(0);
+  WebContents* first = browser()->GetTabStripModel()->GetWebContentsAt(1);
 
   // The original tab should be unchanged.
   EXPECT_EQ(url2, zeroth->GetLastCommittedURL());
@@ -329,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
   EXPECT_TRUE(first->GetController().CanGoForward());
 
   // Select the second tab and make it go forward in a new background tab.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   // TODO(crbug.com/40705856): It should not be necessary to commit the load
@@ -337,18 +340,18 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
   // bug is fixed, one of the three commits here related to this bug should be
   // removed (to test both codepaths).
   content::WaitForLoadStop(first);
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
   chrome::GoForward(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
 
   // The previous tab should be unchanged and still in the foreground.
   EXPECT_EQ(url1, first->GetLastCommittedURL());
   EXPECT_FALSE(first->GetController().CanGoBack());
   EXPECT_TRUE(first->GetController().CanGoForward());
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   // There should be a new tab navigated forward.
-  ASSERT_EQ(3, browser()->tab_strip_model()->count());
-  WebContents* second = browser()->tab_strip_model()->GetWebContentsAt(2);
+  ASSERT_EQ(3, browser()->GetTabStripModel()->count());
+  WebContents* second = browser()->GetTabStripModel()->GetWebContentsAt(2);
   // Since we didn't wait for load to complete, we can't use
   // GetLastCommittedURL.
   EXPECT_EQ(url2, second->GetVisibleURL());
@@ -357,26 +360,26 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
 
   // Now do back in a new foreground tab. Don't bother re-checking every sngle
   // thing above, just validate that it's opening properly.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       2, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   // TODO(crbug.com/40705856): see the comment above about why we need this.
   content::WaitForLoadStop(second);
   chrome::GoBack(browser(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  ASSERT_EQ(3, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(3, browser()->GetTabStripModel()->active_index());
   ASSERT_EQ(
       url1,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 
   // Same thing again for forward.
   // TODO(crbug.com/40705856): see the comment above about why we need this.
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   chrome::GoForward(browser(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  ASSERT_EQ(4, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(4, browser()->GetTabStripModel()->active_index());
   ASSERT_EQ(
       url2,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 // Tests back/forward in new tab (Control + Back/Forward button in the UI)
@@ -384,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTab) {
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTabWithGroup) {
   GURL url1 = embedded_test_server()->GetURL("/title1.html");
   GURL url2 = embedded_test_server()->GetURL("/title2.html");
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
 
   // Make a tab with the two pages navigated in it.
   AddTab(browser(), url1);
@@ -395,33 +398,33 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, BackForwardInNewTabWithGroup) {
 
   // Add the tab to a Tab Group.
   const tab_groups::TabGroupId group_id =
-      browser()->tab_strip_model()->AddToNewGroup({0});
+      browser()->GetTabStripModel()->AddToNewGroup({0});
 
   // Go back in a new background tab.
   chrome::GoBack(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   // The new tab should have inherited the tab group from the old tab.
-  EXPECT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(1));
+  EXPECT_EQ(group_id, browser()->GetTabStripModel()->GetTabGroupForTab(1));
 
   // Select the second tab and make it go forward in a new background tab.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   // TODO(crbug.com/40705856): see the comment above about why we need this.
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   chrome::GoForward(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
 
   // The new tab should have inherited the tab group from the old tab.
-  EXPECT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(2));
+  EXPECT_EQ(group_id, browser()->GetTabStripModel()->GetTabGroupForTab(2));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, GroupAllUngroupedTabs) {
   GURL url("http://www.google.com");
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
@@ -458,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, GroupAllUngroupedTabs) {
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,
                        GroupAllUngroupedTabsWithPinnedTabs) {
   GURL url("http://www.google.com");
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
@@ -497,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnMaxZoomIn) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   GURL url("http://www.google.com");
   AddTab(browser(), url);
@@ -523,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnMaxZoomIn) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnMaxZoomOut) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   GURL url("http://www.google.com");
   AddTab(browser(), url);
@@ -542,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnMaxZoomOut) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnZoomReset) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   GURL url("http://www.google.com");
   AddTab(browser(), url);
@@ -563,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnZoomReset) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnZoomLevelChanged) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   GURL url("http://www.google.com");
   AddTab(browser(), url);
@@ -581,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnZoomLevelChanged) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnZoomChangedForActiveTab) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   GURL url("http://www.google.com");
   GURL url1("http://code.google.com");
@@ -614,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnZoomChangedForActiveTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, OnDefaultZoomLevelChanged) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   GURL url("http://code.google.com");
   AddTab(browser(), url);
   WebContents* tab = tab_strip_model->GetWebContentsAt(0);
@@ -679,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, DISABLED_ToggleCaretBrowsing) {
   // Check renderer preferences for each tab.
   for (int i = 0; i < tab_count; ++i) {
     WebContents* web_contents =
-        browser()->tab_strip_model()->GetWebContentsAt(i);
+        browser()->GetTabStripModel()->GetWebContentsAt(i);
     blink::RendererPreferences* renderer_preferences =
         web_contents->GetMutableRendererPrefs();
     EXPECT_TRUE(renderer_preferences->caret_browsing_enabled);
@@ -697,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, DISABLED_ToggleCaretBrowsing) {
   // Check renderer preferences for each tab.
   for (int i = 0; i < tab_count; ++i) {
     WebContents* web_contents =
-        browser()->tab_strip_model()->GetWebContentsAt(i);
+        browser()->GetTabStripModel()->GetWebContentsAt(i);
     blink::RendererPreferences* renderer_preferences =
         web_contents->GetMutableRendererPrefs();
     EXPECT_FALSE(renderer_preferences->caret_browsing_enabled);

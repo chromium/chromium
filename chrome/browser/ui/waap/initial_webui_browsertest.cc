@@ -96,7 +96,8 @@ class WebUIControllerInitalizer : protected content::WebContentsObserver {
 // webview class so that it's portable enough for use in test.
 class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
  public:
-  explicit ToolbarDependencyProvider(Browser* browser) : browser_(browser) {}
+  explicit ToolbarDependencyProvider(BrowserWindowInterface* browser)
+      : browser_(browser) {}
 
   ~ToolbarDependencyProvider() override = default;
 
@@ -142,7 +143,8 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
 
 class WebUIToolbarInitializer : public WebUIControllerInitalizer {
  public:
-  explicit WebUIToolbarInitializer(Browser* browser) : injector_(browser) {}
+  explicit WebUIToolbarInitializer(BrowserWindowInterface* browser)
+      : injector_(browser) {}
 
   ~WebUIToolbarInitializer() override = default;
 
@@ -572,8 +574,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   // Create a new browser window without actively showing/painting it yet.
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
-  Browser* new_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
@@ -849,8 +850,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISurfaceSyncBrowserTest,
   // Create a new window.
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
-  Browser* new_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
@@ -892,8 +892,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kMinimized;
-  Browser* new_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
@@ -1025,15 +1024,15 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISameStartupPopupBrowserTest,
   // Create popup browser.
   BrowserWindowCreateParams popup_params(BrowserWindowInterface::TYPE_POPUP,
                                          profile, /*from_user_gesture=*/true);
-  Browser* popup_browser = CreateBrowserWindow(std::move(popup_params))
-                               ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserWindow(std::move(popup_params));
   ASSERT_TRUE(popup_browser);
 
   // Create normal browser.
   BrowserWindowCreateParams normal_params(BrowserWindowInterface::TYPE_NORMAL,
                                           profile, /*from_user_gesture=*/true);
-  Browser* normal_browser = CreateBrowserWindow(std::move(normal_params))
-                                ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* normal_browser =
+      CreateBrowserWindow(std::move(normal_params));
   ASSERT_TRUE(normal_browser);
 
   auto* popup_manager = InitialWebUIWindowMetricsManager::From(popup_browser);

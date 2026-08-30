@@ -237,10 +237,11 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
           local_credentials,
       const url::Origin& origin);
 
-  content::WebContents* SetupTabWithTestController(Browser* browser);
+  content::WebContents* SetupTabWithTestController(
+      BrowserWindowInterface* browser);
 
   TestManagePasswordsUIController* controller(
-      Browser* target_browser = nullptr) const {
+      BrowserWindowInterface* target_browser = nullptr) const {
     if (!target_browser) {
       target_browser = browser();
     }
@@ -310,7 +311,7 @@ void PasswordDialogViewTest::SetupChooseCredentials(
 }
 
 content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   // Open a new tab with modified ManagePasswordsUIController.
   content::WebContents* tab =
       browser->GetTabStripModel()->GetActiveWebContents();
@@ -560,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, PopupAccountChooserInIncognito) {
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   content::WebContents* tab = SetupTabWithTestController(incognito);
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(tab);

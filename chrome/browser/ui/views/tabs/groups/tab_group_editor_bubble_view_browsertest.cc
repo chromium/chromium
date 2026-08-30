@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
@@ -570,12 +571,12 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TabGroupEditorBubbleViewDialogBrowserTestWithFocusingEnabled,
     FocusGroupIsAvailableInGuestProfile) {
-  Browser* const guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
   const std::optional<tab_groups::TabGroupId> group_id =
-      guest_browser->tab_strip_model()->AddToNewGroup({0});
+      guest_browser->GetTabStripModel()->AddToNewGroup({0});
   ASSERT_TRUE(group_id.has_value());
 
-  guest_browser->tab_strip_model()->OpenTabGroupEditor(group_id.value());
+  guest_browser->GetTabStripModel()->OpenTabGroupEditor(group_id.value());
 
   views::Widget* const editor_bubble = WaitForAndGetEditorBubbleWidget();
   ASSERT_NE(nullptr, editor_bubble);

@@ -19,7 +19,8 @@
 using ZoomViewBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ZoomViewBrowserTest, SharedPageVisibility) {
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   page_actions::PageActionTestAccessor zoom_icon(browser(),
                                                  kActionShowZoomBubble);
   page_actions::PageActionTestAccessor second_zoom_icon(second_browser,

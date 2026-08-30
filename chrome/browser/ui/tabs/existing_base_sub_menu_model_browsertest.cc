@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -92,7 +93,7 @@ class ExistingBaseSubMenuModelTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     test_delegate_ = std::make_unique<TestDelegate>();
     test_model_ = std::make_unique<TestModel>(test_delegate_.get(),
-                                              browser()->tab_strip_model());
+                                              browser()->GetTabStripModel());
   }
 
   TestDelegate* test_delegate() const { return test_delegate_.get(); }

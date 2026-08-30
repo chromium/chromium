@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -52,7 +53,7 @@ namespace {
 
 // Returns the avatar button, which is the anchor view for the interception
 // bubble.
-AvatarToolbarButtonInterface* GetAvatarButton(Browser* browser) {
+AvatarToolbarButtonInterface* GetAvatarButton(BrowserWindowInterface* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   AvatarToolbarButtonInterface* avatar_button =
       browser_view->toolbar_button_provider()

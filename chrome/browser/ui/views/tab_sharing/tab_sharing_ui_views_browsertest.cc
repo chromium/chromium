@@ -66,27 +66,31 @@ using TabSharingInfoBarButton =
 
 constexpr int kNullTabIndex = -1;
 
-content::WebContents* GetWebContents(Browser* browser, int tab) {
+content::WebContents* GetWebContents(BrowserWindowInterface* browser, int tab) {
   return browser->GetTabStripModel()->GetWebContentsAt(tab);
 }
 
-content::GlobalRenderFrameHostId GetGlobalId(Browser* browser, int tab) {
+content::GlobalRenderFrameHostId GetGlobalId(BrowserWindowInterface* browser,
+                                             int tab) {
   auto* const main_frame = GetWebContents(browser, tab)->GetPrimaryMainFrame();
   return main_frame ? main_frame->GetGlobalId()
                     : content::GlobalRenderFrameHostId();
 }
 
-infobars::ContentInfoBarManager* GetInfoBarManager(Browser* browser, int tab) {
+infobars::ContentInfoBarManager* GetInfoBarManager(
+    BrowserWindowInterface* browser,
+    int tab) {
   return infobars::ContentInfoBarManager::FromWebContents(
       GetWebContents(browser, tab));
 }
 
-TabSharingInfoBar* GetInfoBar(Browser* browser, int tab) {
+TabSharingInfoBar* GetInfoBar(BrowserWindowInterface* browser, int tab) {
   return static_cast<TabSharingInfoBar*>(
       GetInfoBarManager(browser, tab)->infobars()[0]);
 }
 
-TabSharingInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
+TabSharingInfoBarDelegate* GetDelegate(BrowserWindowInterface* browser,
+                                       int tab) {
   return static_cast<TabSharingInfoBarDelegate*>(
       GetInfoBar(browser, tab)->delegate());
 }
@@ -102,7 +106,7 @@ std::u16string GetInfoText(const TabSharingStatusMessageView& info_view) {
   return text;
 }
 
-std::u16string GetInfobarMessageText(Browser* browser, int tab) {
+std::u16string GetInfobarMessageText(BrowserWindowInterface* browser, int tab) {
   const views::View& view =
       *GetInfoBar(browser, tab)->GetStatusMessageViewForTesting();
   if (view.GetClassName() == "Label") {
@@ -113,7 +117,9 @@ std::u16string GetInfobarMessageText(Browser* browser, int tab) {
   NOTREACHED();
 }
 
-std::vector<views::MdTextButton*> GetMessageLinks(Browser* browser, int tab) {
+std::vector<views::MdTextButton*> GetMessageLinks(
+    BrowserWindowInterface* browser,
+    int tab) {
   const views::View& status_message_view =
       *GetInfoBar(browser, tab)->GetStatusMessageViewForTesting();
   CHECK_EQ(status_message_view.GetClassName(), "TabSharingStatusMessageView");
@@ -127,49 +133,57 @@ std::vector<views::MdTextButton*> GetMessageLinks(Browser* browser, int tab) {
   return buttons;
 }
 
-bool HasShareThisTabInsteadButton(Browser* browser, int tab) {
+bool HasShareThisTabInsteadButton(BrowserWindowInterface* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
          TabSharingInfoBarButton::kShareThisTabInstead;
 }
 
-std::u16string GetShareThisTabInsteadButtonLabel(Browser* browser, int tab) {
+std::u16string GetShareThisTabInsteadButtonLabel(
+    BrowserWindowInterface* browser,
+    int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
       ->GetButtonLabel(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
-ui::ImageModel GetShareThisTabInsteadButtonImage(Browser* browser, int tab) {
+ui::ImageModel GetShareThisTabInsteadButtonImage(
+    BrowserWindowInterface* browser,
+    int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
       ->GetButtonImage(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
-bool ShareThisTabInsteadButtonIsEnabled(Browser* browser, int tab) {
+bool ShareThisTabInsteadButtonIsEnabled(BrowserWindowInterface* browser,
+                                        int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
       ->IsButtonEnabled(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
-bool HasCscIndicatorButton(Browser* browser, int tab) {
+bool HasCscIndicatorButton(BrowserWindowInterface* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
          TabSharingInfoBarButton::kCapturedSurfaceControlIndicator;
 }
 
-std::u16string GetCscIndicatorButtonLabel(Browser* browser, int tab) {
+std::u16string GetCscIndicatorButtonLabel(BrowserWindowInterface* browser,
+                                          int tab) {
   DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
       ->GetButtonLabel(
           TabSharingInfoBarButton::kCapturedSurfaceControlIndicator);
 }
 
-ui::ImageModel GetCscIndicatorButtonImage(Browser* browser, int tab) {
+ui::ImageModel GetCscIndicatorButtonImage(BrowserWindowInterface* browser,
+                                          int tab) {
   DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
       ->GetButtonImage(
           TabSharingInfoBarButton::kCapturedSurfaceControlIndicator);
 }
 
-content::DesktopMediaID GetDesktopMediaID(Browser* browser, int tab) {
+content::DesktopMediaID GetDesktopMediaID(BrowserWindowInterface* browser,
+                                          int tab) {
   content::RenderFrameHost* main_frame =
       GetWebContents(browser, tab)->GetPrimaryMainFrame();
   return content::DesktopMediaID(
@@ -180,7 +194,7 @@ content::DesktopMediaID GetDesktopMediaID(Browser* browser, int tab) {
           main_frame->GetRoutingID()));
 }
 
-ContentsCaptureBorderView* GetContentsBorder(Browser* browser,
+ContentsCaptureBorderView* GetContentsBorder(BrowserWindowInterface* browser,
                                              int tab_index = kNullTabIndex) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (tab_index == kNullTabIndex) {
@@ -198,14 +212,14 @@ scoped_refptr<MediaStreamCaptureIndicator> GetCaptureIndicator() {
       ->GetMediaStreamCaptureIndicator();
 }
 
-void ActivateTab(Browser* browser, int tab) {
+void ActivateTab(BrowserWindowInterface* browser, int tab) {
   browser->GetTabStripModel()->ActivateTabAt(
       tab, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
 }
 
-bool IsActive(Browser* browser, int tab) {
+bool IsActive(BrowserWindowInterface* browser, int tab) {
   return browser->GetTabStripModel()->GetActiveWebContents() ==
          GetWebContents(browser, tab);
 }
@@ -236,14 +250,15 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  Browser* CreateBrowser(Profile* profile) {
-    Browser* const browser = InProcessBrowserTest::CreateBrowser(profile);
+  BrowserWindowInterface* CreateBrowser(Profile* profile) {
+    BrowserWindowInterface* const browser =
+        InProcessBrowserTest::CreateBrowser(profile);
     TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     EXPECT_EQ(tab_strip_model->count(), 1);  // Treat as an assertion.
     return browser;
   }
 
-  void CreateUiAndStartSharing(Browser* browser,
+  void CreateUiAndStartSharing(BrowserWindowInterface* browser,
                                int capturing_tab,
                                int captured_tab) {
     // Explicitly activate the shared tab in testing.
@@ -267,7 +282,7 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
   }
 
   struct UiExpectations {
-    raw_ptr<Browser> browser;
+    raw_ptr<BrowserWindowInterface> browser;
     int capturing_tab;
     int captured_tab;
     size_t infobar_count = 1;
@@ -283,7 +298,7 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
   // |kNullTabIndex| for |captured_tab| to indicate the shared tab is
   // not in |browser|.
   void VerifyUi(const UiExpectations& expectations) {
-    Browser* const browser = expectations.browser;
+    BrowserWindowInterface* const browser = expectations.browser;
     const int capturing_tab = expectations.capturing_tab;
     const int captured_tab = expectations.captured_tab;
     const size_t infobar_count = expectations.infobar_count;
@@ -372,13 +387,13 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
     }
   }
 
-  void AddTab(Browser* browser, const GURL& url) {
+  void AddTab(BrowserWindowInterface* browser, const GURL& url) {
     const int next_index = browser->GetTabStripModel()->count();
     ASSERT_TRUE(AddTabAtIndexToBrowser(browser, next_index, url,
                                        ui::PAGE_TRANSITION_LINK, true));
   }
 
-  void AddTabs(Browser* browser, int tab_count) {
+  void AddTabs(BrowserWindowInterface* browser, int tab_count) {
     for (int i = 0; i < tab_count; ++i) {
       AddTab(browser, chrome::ChromeUINewTabURLAsGURL());
     }
@@ -497,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, CloseTab) {
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
                        BorderWidgetShouldCloseWhenBrowserCloses) {
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(new_browser, 2);
   ASSERT_EQ(new_browser->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(new_browser, /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -524,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   // Start sharing a tab in an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   DCHECK_EQ(incognito_browser->GetTabStripModel()->count(), 1);
 
   AddTabs(incognito_browser, 3);
@@ -868,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
 
 class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
  public:
-  void CreateUIsAndStartSharing(Browser* browser,
+  void CreateUIsAndStartSharing(BrowserWindowInterface* browser,
                                 int capturing_tab,
                                 int captured_tab_first,
                                 int captured_tab_last = -1) {
@@ -895,7 +910,7 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
     return static_cast<TabSharingUIViews*>(tab_sharing_ui_views_[i].get());
   }
 
-  void AddTabs(Browser* browser, int tab_count) {
+  void AddTabs(BrowserWindowInterface* browser, int tab_count) {
     for (int i = 0; i < tab_count; ++i) {
       AddBlankTabAndShow(browser);
     }
@@ -980,12 +995,13 @@ IN_PROC_BROWSER_TEST_F(
     MultipleTabSharingUIViewsBrowserTest,
     NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedBeforeCapture) {
   // Create a guest-mode browser.
-  Browser* const guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
   ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const main_browser =
+      CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
@@ -1008,7 +1024,8 @@ IN_PROC_BROWSER_TEST_F(
     MultipleTabSharingUIViewsBrowserTest,
     NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedAfterCapture) {
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const main_browser =
+      CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
@@ -1017,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(
                            /*captured_tab_first=*/1);
 
   // Create a guest-mode browser.
-  Browser* const guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
   ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
@@ -1036,12 +1053,13 @@ IN_PROC_BROWSER_TEST_F(
     MultipleTabSharingUIViewsBrowserTest,
     GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedBeforeCapture) {
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const main_browser =
+      CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
   // Create a guest-mode browser.
-  Browser* const guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
   ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
@@ -1064,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(
     MultipleTabSharingUIViewsBrowserTest,
     GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedAfterCapture) {
   // Create a guest-mode browser.
-  Browser* const guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
   ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
@@ -1073,7 +1091,8 @@ IN_PROC_BROWSER_TEST_F(
                            /*captured_tab_first=*/1);
 
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const main_browser =
+      CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
@@ -1091,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
                        TabsAddedInGuestModeHaveInfobarIfGuestModeCapture) {
   // Create a guest-mode browser.
-  Browser* const guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
   ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
@@ -1133,7 +1152,7 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
                                      std::vector<content::DesktopMediaID>{});
   }
 
-  void AddTabs(Browser* browser, int tab_count) {
+  void AddTabs(BrowserWindowInterface* browser, int tab_count) {
     for (int i = 0; i < tab_count; ++i) {
       AddBlankTabAndShow(browser);
     }

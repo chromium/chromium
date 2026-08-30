@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/buildflags.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "components/payments/core/features.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -117,7 +117,7 @@ GURL GetClearBrowsingDataURL() {
   return GetSettingsURL().Resolve(chrome::kClearBrowserDataSubPage);
 }
 
-void ShowSettings(Browser* browser) {
+void ShowSettings(BrowserWindowInterface* browser) {
   // chrome::ShowSettings just calls ShowSettingsSubPageInTabbedBrowser on
   // non chromeos, but we want to test tab navigation here so call
   // ShowSettingsSubPageInTabbedBrowser directly.
@@ -251,7 +251,7 @@ void BrowserNavigatorTest::RunUseNonIncognitoWindowTest(
 
 void BrowserNavigatorTest::RunDoNothingIfIncognitoIsForcedTest(
     const GURL& url) {
-  Browser* browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* browser = CreateIncognitoBrowser();
 
   // Set kIncognitoModeAvailability to FORCED.
   PrefService* prefs1 = browser->GetProfile()->GetPrefs();

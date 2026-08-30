@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                            MultiContentsDropTargetView::DragType::kLink);
 
   // Create a second browser with a tab to be dragged.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   content::WebContents* contents_to_drop =
       browser2->GetTabStripModel()->GetActiveWebContents();
 
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                            MultiContentsDropTargetView::DragType::kLink);
 
   // Create a second browser with a tab to be dragged.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   content::WebContents* contents_to_drop =
       browser2->GetTabStripModel()->GetActiveWebContents();
 

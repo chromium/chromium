@@ -11,6 +11,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller_impl.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -60,10 +61,9 @@ class PaymentsWindowUserConsentDialogBrowserTest
           &CreateAndShowPaymentsWindowUserConsentDialog,
           controller_->GetWeakPtr(),
           // The callback is run instantly, so `base::Unretained()` is safe here
-          // as `browser()->GetTabStripModel()->GetActiveWebContents()` will
+          // as `browser()->GetActiveTabInterface()->GetContents()` will
           // always be present when the callback is run.
-          base::Unretained(
-              browser()->GetTabStripModel()->GetActiveWebContents())));
+          base::Unretained(browser()->GetActiveTabInterface()->GetContents())));
     });
   }
 };
@@ -240,14 +240,13 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
 // TODO(crbug.com/441251456): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
                        DISABLED_InvokeUi_CanCloseTabWhileDialogShowing) {
-  RunTestSequence(
-      TriggerDialogAndWaitForShow(
-          PaymentsWindowUserConsentDialogView::kTopViewId),
-      // TriggerDialogAndWaitForShow() changes the context, so the same context
-      // must be used.
-      InSameContext(Do([this]() {
-        browser()->GetTabStripModel()->GetActiveWebContents()->Close();
-      })));
+  RunTestSequence(TriggerDialogAndWaitForShow(
+                      PaymentsWindowUserConsentDialogView::kTopViewId),
+                  // TriggerDialogAndWaitForShow() changes the context, so the
+                  // same context must be used.
+                  InSameContext(Do([this]() {
+                    browser()->GetActiveTabInterface()->GetContents()->Close();
+                  })));
 }
 
 // Ensures the UI can be shown, and verifies that closing the tab while the
@@ -263,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(
       // must be used.
       InSameContext(
           Do([this]() {
-            browser()->GetTabStripModel()->GetActiveWebContents()->Close();
+            browser()->GetActiveTabInterface()->GetContents()->Close();
           }),
           Check([this]() {
             return histogram_tester_.GetBucketCount(

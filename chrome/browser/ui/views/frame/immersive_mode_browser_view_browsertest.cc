@@ -5,6 +5,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/functional/function_ref.h"
 #include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/ash/test_util.h"
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                        TestCaptionButtonsReceiveEventsInAppImmersiveMode) {
   // Open a new app window.
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->GetProfile());
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(app_browser);
@@ -443,7 +444,7 @@ class ImmersiveModeBrowserViewVerticalTabsTest
 
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewVerticalTabsTest,
                        BubbleAnchoredToTabStripDoesNotReveal) {
-  auto verify_no_reveal = [&](Browser* test_browser,
+  auto verify_no_reveal = [&](BrowserWindowInterface* test_browser,
                               std::string_view trace_name) {
     SCOPED_TRACE(trace_name);
     BrowserView* browser_view =
@@ -492,7 +493,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewVerticalTabsTest,
   verify_no_reveal(browser(), "1st browser");
 
   // Create a new browser with VT on, and test it
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   verify_no_reveal(new_browser, "2nd browser");
 }
 

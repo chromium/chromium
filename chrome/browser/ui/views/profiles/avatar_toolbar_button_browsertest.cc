@@ -339,7 +339,7 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
   ~AvatarToolbarButtonInterfaceBaseBrowserTest() = default;
 
   AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface(
-      Browser* browser) {
+      BrowserWindowInterface* browser) {
     if (!browser || !BrowserView::GetBrowserViewForBrowser(browser)) {
       return nullptr;
     }
@@ -348,7 +348,7 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
         ->GetAvatarToolbarButtonInterface();
   }
 
-  virtual Browser* GetBrowser() const = 0;
+  virtual BrowserWindowInterface* GetBrowser() const = 0;
 
   // Allows overriding the delay of different events that have a timing
   // duration. Sets the delay to infinite in order to be able to test the
@@ -895,7 +895,7 @@ class AvatarToolbarButtonBrowserTestBase
       public AvatarToolbarButtonInterfaceBaseBrowserTest {
  protected:
   // AvatarToolbarButtonInterfaceBaseBrowserTest:
-  Browser* GetBrowser() const override { return browser(); }
+  BrowserWindowInterface* GetBrowser() const override { return browser(); }
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -909,9 +909,8 @@ class AvatarToolbarButtonBrowserTestBase
   void TearDownOnMainThread() override {
     GlobalBrowserCollection::GetInstance()->ForEach(
         [this](BrowserWindowInterface* browser_interface) {
-          Browser* browser = static_cast<Browser*>(browser_interface);
           if (AvatarToolbarButtonInterface* button =
-                  GetAvatarToolbarButtonInterface(browser)) {
+                  GetAvatarToolbarButtonInterface(browser_interface)) {
             button->ClearActiveStateForTesting();
           }
           return true;
@@ -942,13 +941,13 @@ class AvatarToolbarButtonBrowserTest
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
   Profile* profile = browser()->GetProfile();
-  Browser* browser1 = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* browser1 = CreateIncognitoBrowser(profile);
   AvatarToolbarButtonTestAccessor avatar_accessor1(browser1);
   EXPECT_TRUE(avatar_accessor1.GetEnabled());
   EXPECT_TRUE(avatar_accessor1.GetVisible());
   EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
 
-  Browser* browser2 = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* browser2 = CreateIncognitoBrowser(profile);
   EXPECT_EQ(std::optional<int>(2),
             GetWindowCountInAvatarButtonText(browser1,
                                              /*wait_for_number=*/true));
@@ -962,13 +961,13 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, GuestWindowCount) {
-  Browser* browser1 = CreateGuestBrowser();
+  BrowserWindowInterface* browser1 = CreateGuestBrowser();
   AvatarToolbarButtonTestAccessor avatar_accessor1(browser1);
   EXPECT_TRUE(avatar_accessor1.GetEnabled());
   EXPECT_TRUE(avatar_accessor1.GetVisible());
   EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
 
-  Browser* browser2 = CreateGuestBrowser();
+  BrowserWindowInterface* browser2 = CreateGuestBrowser();
   EXPECT_EQ(std::optional<int>(2),
             GetWindowCountInAvatarButtonText(browser1,
                                              /*wait_for_number=*/true));
@@ -1006,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAshBrowserTest, GuestSession) {
   EXPECT_EQ(AvatarToolbarButtonTestAccessor(browser()).GetText(),
             l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST, 1));
 
-  Browser* browser_2 = CreateBrowser(guest_profile);
+  BrowserWindowInterface* browser_2 = CreateBrowser(guest_profile);
   EXPECT_TRUE(AvatarToolbarButtonTestAccessor(browser_2).GetVisible());
   EXPECT_FALSE(AvatarToolbarButtonTestAccessor(browser_2).GetEnabled());
 
@@ -1032,7 +1031,8 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, DefaultBrowser) {
 }
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, IncognitoBrowser) {
-  Browser* browser1 = CreateIncognitoBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser1 =
+      CreateIncognitoBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor avatar_accessor1(browser1);
   // Incognito browsers always show an enabled avatar button.
   EXPECT_TRUE(avatar_accessor1.GetVisible());
@@ -1202,7 +1202,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
 
   // Creating a new browser while the refresh tokens are already loaded and the
   // name showing should not break/crash.
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor new_avatar_accessor(new_browser);
   // Name is expected to be shown while it is still shown on the first browser.
   ASSERT_EQ(avatar_accessor.GetText(),
@@ -1546,7 +1546,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
 
   EXPECT_EQ(avatar_accessor.GetText(), std::u16string());
 
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   EXPECT_EQ(AvatarToolbarButtonTestAccessor(new_browser).GetText(),
             std::u16string());
 }
@@ -1713,7 +1713,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
   SetZeroAvatarDelayForSigninPendingText();
 
   // Open a new browser, this should not crash.
-  Browser* new_browser = CreateBrowser(profile);
+  BrowserWindowInterface* new_browser = CreateBrowser(profile);
   EXPECT_TRUE(AvatarToolbarButtonTestAccessor(new_browser)
                   .WaitForText(l10n_util::GetStringUTF16(
                       IDS_AVATAR_BUTTON_SIGNIN_PAUSED)));
@@ -1729,7 +1729,7 @@ class AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos({})) {}
 
   // AvatarToolbarButtonInterfaceBaseBrowserTest:
-  Browser* GetBrowser() const override { return browser(); }
+  BrowserWindowInterface* GetBrowser() const override { return browser(); }
 
   // InteractiveFeaturePromoTest:
   void SetUpOnMainThread() override {
@@ -2508,7 +2508,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
           CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting();
   base::HistogramTester histogram_tester;
   Profile* profile = browser()->GetProfile();
-  Browser* browser_1 = browser();
+  BrowserWindowInterface* browser_1 = browser();
   AvatarToolbarButtonInterface* avatar_1 =
       GetAvatarToolbarButtonInterface(browser_1);
   AvatarToolbarButtonTestAccessor avatar_accessor1(browser_1);
@@ -2520,7 +2520,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   // The greeting should be followed by the promo.
   EXPECT_EQ(avatar_accessor1.GetText(), GetExpectedPromoText());
   // Open the second browser before the promo collapses.
-  Browser* browser_2 = CreateBrowser(profile);
+  BrowserWindowInterface* browser_2 = CreateBrowser(profile);
   AvatarToolbarButtonTestAccessor avatar_accessor2(browser_2);
   // The promo should be shown in the second browser as well.
   EXPECT_EQ(avatar_accessor2.GetText(), GetExpectedPromoText());
@@ -2562,7 +2562,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   EXPECT_EQ(avatar_accessor1.GetText(), GetExpectedPromoText());
 
   // Open the second browser while the promo is showing in the first browser.
-  Browser* browser_2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser_2 = CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonInterface* avatar_2 =
       GetAvatarToolbarButtonInterface(browser_2);
   AvatarToolbarButtonTestAccessor avatar_accessor2(browser_2);
@@ -2685,7 +2685,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AvatarToolbarButtonSignedOutPromoBrowserTest,
   EXPECT_EQ(avatar_accessor.GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO));
 
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   EXPECT_FALSE(avatar->GetStateAndFireSignedOutTriggerDelayTimerForTesting());
   EXPECT_EQ(AvatarToolbarButtonTestAccessor(new_browser).GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO));
@@ -2720,7 +2720,7 @@ class
   }
 
   // AvatarToolbarButtonInterfaceBaseBrowserTest
-  Browser* GetBrowser() const override { return browser(); }
+  BrowserWindowInterface* GetBrowser() const override { return browser(); }
 
   // InProcessBrowserTest
   void SetUpBrowserContextKeyedServices(
@@ -2825,7 +2825,7 @@ class AvatarToolbarButtonProfileColorBrowserTest
   }
 
   ProfileThemeColors ComputeProfileThemeColorsForBrowser(
-      Browser* target_browser = nullptr) {
+      BrowserWindowInterface* target_browser = nullptr) {
     target_browser = target_browser ? target_browser : browser();
     return GetCurrentProfileThemeColors(
         *BrowserWindow::FromBrowser(target_browser)->GetColorProvider(),
@@ -3130,7 +3130,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
                                                     true);
 
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor second_browser_avatar_accessor(
       second_browser);
   EXPECT_EQ(second_browser_avatar_accessor.GetText(), u"Custom Label");
@@ -3146,7 +3147,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
                                                     true);
 
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor second_browser_avatar_accessor(
       second_browser);
   EXPECT_EQ(second_browser_avatar_accessor.GetText(), work_label);
@@ -3321,7 +3323,8 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
   ASSERT_EQ(avatar_accessor.GetText(), std::u16string());
 
   // Browser opened before the error.
-  Browser* opened_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* opened_browser =
+      CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor opened_browser_avatar_accessor(
       opened_browser);
   ASSERT_EQ(opened_browser_avatar_accessor.GetText(), std::u16string());
@@ -3333,7 +3336,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
       l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED)));
 
   // New browser opened after the error -- error should be shown directly.
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor new_browser_avatar_accessor(new_browser);
   EXPECT_TRUE(new_browser_avatar_accessor.WaitForText(
       l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED)));
@@ -3360,7 +3363,8 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
   ASSERT_EQ(avatar_accessor.GetText(), std::u16string());
 
   // Browser opened before the error.
-  Browser* opened_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* opened_browser =
+      CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonInterface* opened_browser_avatar_button =
       GetAvatarToolbarButtonInterface(opened_browser);
   AvatarToolbarButtonTestAccessor opened_browser_avatar_accessor(
@@ -3378,7 +3382,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
 
   // New browser opened after the error and before timer ends -- error is not
   // shown directly.
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonInterface* new_browser_avatar_button =
       GetAvatarToolbarButtonInterface(new_browser);
   AvatarToolbarButtonTestAccessor new_browser_avatar_accessor(new_browser);
@@ -3649,7 +3653,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // A new browser within the same session should not show any text as well.
   // Specifically not showing the greeting.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   EXPECT_TRUE(
       AvatarToolbarButtonTestAccessor(second_browser).GetText().empty());
 }
@@ -3695,7 +3700,8 @@ IN_PROC_BROWSER_TEST_F(
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
 
   // A new browser should also show the message.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   AvatarToolbarButtonTestAccessor second_avatar_accessor(second_browser);
   EXPECT_EQ(second_avatar_accessor.GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
@@ -3727,7 +3733,7 @@ IN_PROC_BROWSER_TEST_F(
       signin::ConsentLevel::kSignin);
 
   // Create a new browser window for the new profile.
-  Browser* browser = CreateBrowser(&profile);
+  BrowserWindowInterface* browser = CreateBrowser(&profile);
   AvatarToolbarButtonInterface* avatar_toolbar_button =
       GetAvatarToolbarButtonInterface(browser);
   AvatarToolbarButtonTestAccessor avatar_accessor(browser);

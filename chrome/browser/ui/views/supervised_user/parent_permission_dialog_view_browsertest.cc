@@ -105,7 +105,7 @@ class ParentPermissionDialogViewHarness
   // T is either std::u16string for regular dialogs, or const
   // extensions::Extension*  for extension dialogs.
   template <typename T>
-  void ShowUi(T dialog_input, Browser* browser) {
+  void ShowUi(T dialog_input, BrowserWindowInterface* browser) {
     gfx::ImageSkia icon = gfx::ImageSkia::CreateFrom1xBitmap(
         *gfx::Image(extensions::util::GetDefaultExtensionIcon()).ToSkBitmap());
     content::WebContents* contents =
@@ -133,7 +133,7 @@ class ParentPermissionDialogViewHarness
   template <typename T>
   std::unique_ptr<ParentPermissionDialog> CreatePermissionDialog(
       T dialog_input,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       content::WebContents* contents,
       gfx::ImageSkia icon,
       ParentPermissionDialog::DoneCallback done_callback);
@@ -141,7 +141,7 @@ class ParentPermissionDialogViewHarness
   template <>
   std::unique_ptr<ParentPermissionDialog> CreatePermissionDialog(
       std::u16string dialog_input,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       content::WebContents* contents,
       gfx::ImageSkia icon,
       ParentPermissionDialog::DoneCallback done_callback) {
@@ -153,7 +153,7 @@ class ParentPermissionDialogViewHarness
   template <>
   std::unique_ptr<ParentPermissionDialog> CreatePermissionDialog(
       const extensions::Extension* dialog_input,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       content::WebContents* contents,
       gfx::ImageSkia icon,
       ParentPermissionDialog::DoneCallback done_callback) {

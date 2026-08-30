@@ -556,7 +556,7 @@ class ProfileMenuViewPixelTest
     }
 
     // Open browser to make changes effective.
-    Browser* tmp_browser = CreateBrowser(&profile);
+    BrowserWindowInterface* tmp_browser = CreateBrowser(&profile);
     CloseBrowserAsynchronously(tmp_browser);
   }
 
@@ -566,7 +566,7 @@ class ProfileMenuViewPixelTest
     // Configures the browser according to the profile type.
     auto browser_created_observer =
         std::make_optional<ui_test_utils::BrowserCreatedObserver>();
-    Browser* new_browser = nullptr;
+    BrowserWindowInterface* new_browser = nullptr;
 
     switch (GetProfileType()) {
       case ProfileTypePixelTestParam::kRegular:

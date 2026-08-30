@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 
 class FileSystemAccessUsageBubbleViewTest : public DialogBrowserTest {
@@ -111,7 +112,7 @@ class FileSystemAccessUsageBubbleViewTest : public DialogBrowserTest {
     }
 
     FileSystemAccessUsageBubbleView::ShowBubble(
-        browser()->GetTabStripModel()->GetActiveWebContents(), origin,
+        browser()->GetActiveTabInterface()->GetContents(), origin,
         std::move(usage));
   }
 

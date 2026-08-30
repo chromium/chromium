@@ -848,7 +848,7 @@ class ProfilePickerCreationFlowBrowserTest
         profile_manager, new_profile_path);
 
     ProfileDestructionWaiter profile_destruction_waiter(new_profile);
-    Browser* new_browser = CreateBrowser(new_profile);
+    BrowserWindowInterface* new_browser = CreateBrowser(new_profile);
     CloseBrowserSynchronously(new_browser);
     profile_destruction_waiter.Wait();
 
@@ -4115,7 +4115,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerWithGlicParamBrowserTest,
   WaitForLoadStop(GURL("chrome://profile-picker/"));
 
   profile_picker_handler()->HandleOnLearnMoreClicked(base::ListValue());
-  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* new_browser = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_TRUE(new_browser);
   EXPECT_EQ(new_browser->GetProfile()->GetPath(), initial_profile_path);
 
@@ -4563,7 +4563,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   ASSERT_TRUE(ClickLearnMoreLink());
 
-  Browser* const popup_browser = browser_creation_observer.Wait();
+  BrowserWindowInterface* const popup_browser =
+      browser_creation_observer.Wait();
   ASSERT_TRUE(popup_browser);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4598,7 +4599,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   ASSERT_TRUE(ClickLearnMoreLink());
 
-  Browser* const popup_browser = browser_creation_observer.Wait();
+  BrowserWindowInterface* const popup_browser =
+      browser_creation_observer.Wait();
   ASSERT_TRUE(popup_browser);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4635,7 +4637,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   // Open a browser for the managed profile and navigate to chrome://policy so
   // there is a session to restore.
-  Browser* profile_browser = CreateBrowser(managed_profile);
+  BrowserWindowInterface* profile_browser = CreateBrowser(managed_profile);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(profile_browser, GURL("chrome://policy")));
 
@@ -4660,7 +4662,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   ASSERT_TRUE(ClickLearnMoreLink());
 
-  Browser* const popup_browser = browser_creation_observer.Wait();
+  BrowserWindowInterface* const popup_browser =
+      browser_creation_observer.Wait();
   ASSERT_TRUE(popup_browser);
 
   // Verify that the managed profile is not restoring a session.

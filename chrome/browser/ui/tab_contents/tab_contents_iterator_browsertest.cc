@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"

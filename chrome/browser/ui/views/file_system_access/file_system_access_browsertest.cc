@@ -106,7 +106,7 @@ class FileSystemAccessBrowserTest : public InProcessBrowserTest {
     return result;
   }
 
-  bool IsUsageIndicatorVisible(Browser* browser) {
+  bool IsUsageIndicatorVisible(BrowserWindowInterface* browser) {
     return page_actions::PageActionTestAccessor(browser,
                                                 kActionShowFileSystemAccess)
         .GetVisible();
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
                 ->GetLastCommittedOrigin());
 
   // 3. Also showing https://b.com/title1.html
-  Browser* third_window = CreateBrowser(profile);
+  BrowserWindowInterface* third_window = CreateBrowser(profile);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       third_window, https_server.GetURL("b.com", "/title1.html")));
 

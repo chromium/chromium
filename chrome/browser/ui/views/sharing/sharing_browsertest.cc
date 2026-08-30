@@ -19,6 +19,7 @@
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"

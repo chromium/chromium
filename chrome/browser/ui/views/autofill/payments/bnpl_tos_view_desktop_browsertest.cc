@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
@@ -62,7 +63,7 @@ class BnplTosViewDesktopBrowserTest : public DialogBrowserTest {
   }
 
   content::WebContents* web_contents() const {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
+    return browser()->GetActiveTabInterface()->GetContents();
   }
 
   std::unique_ptr<TestAutofillClient> test_autofill_client_;

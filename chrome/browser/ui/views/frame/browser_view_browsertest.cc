@@ -358,7 +358,7 @@ class BrowserViewTest : public InProcessBrowserTest {
     DevToolsWindowTesting::Get(devtools_)->SetInspectedPageBounds(bounds);
   }
 
-  void AddTab(Browser* browser, const GURL& url) {
+  void AddTab(BrowserWindowInterface* browser, const GURL& url) {
     chrome::AddTabAt(browser, url, /*index=*/-1, /*foreground=*/true);
   }
 

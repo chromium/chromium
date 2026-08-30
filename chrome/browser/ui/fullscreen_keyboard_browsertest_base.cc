@@ -420,7 +420,7 @@ void FullscreenKeyboardBrowserTestBase::VerifyShortcutsAreNotPrevented() {
   ui_test_utils::BrowserCreatedObserver creation_observer;
   // A new window should be created and focused.
   ASSERT_NO_FATAL_FAILURE(SendShortcut(ui::VKEY_N));
-  Browser* new_browser = creation_observer.Wait();
+  BrowserWindowInterface* new_browser = creation_observer.Wait();
   ui_test_utils::WaitForBrowserSetLastActive(new_browser);
   ASSERT_EQ(initial_browser_count + 1, GetBrowserCount());
 

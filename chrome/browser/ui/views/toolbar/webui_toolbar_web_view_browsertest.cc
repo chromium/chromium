@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -1127,7 +1128,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
       DispatchPointerDownAndUp(kForwardSelector, "mouse",
                                "detail: 1, button: 0, shiftKey: true")));
 
-  Browser* new_browser = new_browser_observer.Wait();
+  BrowserWindowInterface* new_browser = new_browser_observer.Wait();
   ASSERT_TRUE(new_browser);
 
   // Wait for the navigation in the new browser's active tab.
@@ -1574,7 +1575,7 @@ class WebUIToolbarWebViewRaceTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewRaceTest,
                        BindInterfaceAfterCloseRace) {
   // 1. Setup: Create a new browser window.
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::WaitForBrowserSetLastActive(new_browser);
 
   WebUIToolbarWebView* toolbar_view = ::GetWebUIToolbarWebView(new_browser);
@@ -1710,7 +1711,7 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
   };
 
   struct LifecycleTestSetup {
-    explicit LifecycleTestSetup(Browser* browser) {
+    explicit LifecycleTestSetup(BrowserWindowInterface* browser) {
       profile = browser->GetProfile();
       EXPECT_CALL(mock_browser, GetProfile())
           .WillRepeatedly(testing::Return(profile));
@@ -3041,7 +3042,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Open a new one to capture the initial metric if it was already recorded.
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::WaitForBrowserSetLastActive(new_browser);
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(new_browser);
   ASSERT_TRUE(webui_toolbar_view);
@@ -4898,7 +4899,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
       DispatchPointerDownAndUp(kHomeSelector, "mouse",
                                "detail: 1, button: 0, shiftKey: true")));
 
-  Browser* new_browser = new_browser_observer.Wait();
+  BrowserWindowInterface* new_browser = new_browser_observer.Wait();
   ASSERT_TRUE(new_browser);
 
   content::WebContents* new_tab =
@@ -5260,7 +5261,8 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest,
   // Create a second browser window. This will trigger the creation of a new
   // toolbar process for that window.
   base::HistogramTester histograms;
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   content::FetchHistogramsFromChildProcesses();
@@ -5767,7 +5769,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarSynchronousStartupBrowserTest,
   // Move Tab 0 (with history) to a new browser window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(browser(), {0});
-  Browser* new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(new_browser);
 
   // Set up WebUI on the new window and get views.

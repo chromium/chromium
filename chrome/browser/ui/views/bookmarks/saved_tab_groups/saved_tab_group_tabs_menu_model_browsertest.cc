@@ -12,6 +12,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"  // For IDS_OPEN_GROUP_IN_BROWSER_MENU
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/public/features.h"

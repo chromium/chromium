@@ -48,7 +48,7 @@ class ZoomBubbleBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override { zoom_bubble_coordinator_ = nullptr; }
 
-  void ShowInActiveTab(Browser* browser) {
+  void ShowInActiveTab(BrowserWindowInterface* browser) {
     content::WebContents* web_contents =
         browser->GetTabStripModel()->GetActiveWebContents();
     zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::USER_GESTURE);
@@ -430,7 +430,7 @@ class ZoomBubbleDialogTest : public DialogBrowserTest {
     DialogBrowserTest::TearDownOnMainThread();
   }
 
-  void ShowInActiveTab(Browser* browser) {
+  void ShowInActiveTab(BrowserWindowInterface* browser) {
     content::WebContents* web_contents =
         browser->GetTabStripModel()->GetActiveWebContents();
     zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::USER_GESTURE);

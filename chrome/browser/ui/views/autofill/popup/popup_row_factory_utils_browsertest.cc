@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
@@ -272,7 +273,7 @@ class PopupRowViewTestBase : public UiBrowserTest {
     widget_ = CreateWidget();
 
     content::WebContents* web_contents =
-        browser()->GetTabStripModel()->GetActiveWebContents();
+        browser()->GetActiveTabInterface()->GetContents();
     ON_CALL(controller(), GetWebContents()).WillByDefault(Return(web_contents));
   }
 

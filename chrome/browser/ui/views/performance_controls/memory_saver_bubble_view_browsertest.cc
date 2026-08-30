@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
@@ -133,7 +134,7 @@ class MemorySaverBubbleViewTest
   }
 
   page_actions::PageActionViewInterface* GetPageActionView(
-      Browser* b = nullptr) {
+      BrowserWindowInterface* b = nullptr) {
     if (!b) {
       b = browser();
     }
@@ -142,7 +143,7 @@ class MemorySaverBubbleViewTest
     return provider->GetPageActionViewInterface(kActionShowMemorySaverChip);
   }
 
-  views::View* GetBubbleView(Browser* b = nullptr) {
+  views::View* GetBubbleView(BrowserWindowInterface* b = nullptr) {
     if (!b) {
       b = browser();
     }
@@ -153,7 +154,8 @@ class MemorySaverBubbleViewTest
   }
 
   template <class T>
-  T* GetMatchingView(ui::ElementIdentifier identifier, Browser* b = nullptr) {
+  T* GetMatchingView(ui::ElementIdentifier identifier,
+                     BrowserWindowInterface* b = nullptr) {
     views::View* bubble_view = GetBubbleView(b);
     if (!bubble_view || !bubble_view->GetWidget()) {
       return nullptr;
@@ -165,7 +167,7 @@ class MemorySaverBubbleViewTest
         identifier, context);
   }
 
-  void ClickPageActionChip(Browser* b = nullptr) {
+  void ClickPageActionChip(BrowserWindowInterface* b = nullptr) {
     if (!b) {
       b = browser();
     }
@@ -231,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShowDialogWithoutExcludeSiteButtonInGuestMode) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(guest_browser,
                                            GetURL("foo.com", "/title1.html")));
 

@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -30,7 +31,7 @@ class ContentSettingBubbleContentsBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
+    return browser()->GetActiveTabInterface()->GetContents();
   }
 };
 

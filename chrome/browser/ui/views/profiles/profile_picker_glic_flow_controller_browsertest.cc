@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
   Profile* new_profile =
       &profiles::testing::CreateProfileSync(profile_manager, new_profile_path);
   ProfileDestructionWaiter profile_destruction_waiter(new_profile);
-  Browser* new_browser = CreateBrowser(new_profile);
+  BrowserWindowInterface* new_browser = CreateBrowser(new_profile);
   CloseBrowserSynchronously(new_browser);
   profile_destruction_waiter.Wait();
 

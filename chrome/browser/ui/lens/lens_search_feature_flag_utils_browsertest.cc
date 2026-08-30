@@ -29,6 +29,7 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // A test AimEligibilityService that returns a fixed eligibility value.

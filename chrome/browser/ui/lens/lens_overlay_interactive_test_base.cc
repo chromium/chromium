@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/views/focus/focus_manager.h"
 
 TestingAimEligibilityService::TestingAimEligibilityService(

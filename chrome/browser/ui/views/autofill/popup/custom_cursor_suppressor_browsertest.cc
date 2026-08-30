@@ -56,19 +56,21 @@ class CustomCursorSuppressorBrowserTest : public InProcessBrowserTest {
     return embedded_test_server()->GetURL("c.com", "/title3.html");
   }
 
-  [[nodiscard]] bool AddTab(Browser* browser, const GURL& url) {
+  [[nodiscard]] bool AddTab(BrowserWindowInterface* browser, const GURL& url) {
     return ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  [[nodiscard]] bool AddBackgroundTab(Browser* browser, const GURL& url) {
+  [[nodiscard]] bool AddBackgroundTab(BrowserWindowInterface* browser,
+                                      const GURL& url) {
     return ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  GlobalRenderFrameHostId GetRfhIdOfActiveWebContents(Browser& browser) {
+  GlobalRenderFrameHostId GetRfhIdOfActiveWebContents(
+      BrowserWindowInterface& browser) {
     return browser.GetTabStripModel()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame()
@@ -215,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest, MultipleBrowsers) {
   ASSERT_TRUE(AddTab(browser(), GetUrl2()));
 
   // Set up a second browser window with a loaded tab.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   ASSERT_TRUE(AddTab(browser2, GetUrl3()));
 
@@ -241,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest, BrowserAddition) {
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser())));
 
   // Open a second browser window while the suppression is already on.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   ASSERT_TRUE(AddTab(browser2, GetUrl2()));
   EXPECT_TRUE(suppressor.IsSuppressing(

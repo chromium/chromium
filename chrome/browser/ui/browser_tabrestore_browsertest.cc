@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -51,7 +50,7 @@ void CheckVisbility(TabStripModel* tab_strip_model, int visible_index) {
   }
 }
 
-void CreateTestTabs(Browser* browser) {
+void CreateTestTabs(BrowserWindowInterface* browser) {
   GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("tab-restore-visibility.html"))));
@@ -66,7 +65,7 @@ void CreateTestTabs(Browser* browser) {
 IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   // Create tabs.
   CreateTestTabs(browser());
-  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  EXPECT_EQ(3, browser()->GetTabStripModel()->count());
 
   // Create a new browser.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -75,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Close the first browser.
-  const int active_tab_index = browser()->tab_strip_model()->active_index();
+  const int active_tab_index = browser()->GetTabStripModel()->active_index();
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -177,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
 IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
   // Create tabs.
   CreateTestTabs(browser());
-  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  EXPECT_EQ(3, browser()->GetTabStripModel()->count());
 
   // Create a new browser.
   auto browser_created_observer =
@@ -190,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Close the first browser.
-  const int active_tab_index = browser()->tab_strip_model()->active_index();
+  const int active_tab_index = browser()->GetTabStripModel()->active_index();
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 

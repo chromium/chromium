@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -49,7 +50,7 @@
 
 namespace {
 
-void RequestPermission(Browser* browser) {
+void RequestPermission(BrowserWindowInterface* browser) {
   test::PermissionRequestManagerTestApi test_api(browser);
   permissions::PermissionRequestObserver observer(
       browser->GetTabStripModel()->GetActiveWebContents());
@@ -63,7 +64,7 @@ void RequestPermission(Browser* browser) {
   observer.Wait();
 }
 
-LocationBar* GetLocationBar(Browser* browser) {
+LocationBar* GetLocationBar(BrowserWindowInterface* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)->GetLocationBar();
 }
 

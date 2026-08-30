@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "components/affiliations/core/browser/affiliation_service_impl.h"
 #include "components/affiliations/core/browser/hash_affiliation_fetcher.h"

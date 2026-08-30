@@ -20,6 +20,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -151,8 +152,7 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     handler_ = std::make_unique<TestSecureDnsHandler>();
-    web_ui_.set_web_contents(
-        browser()->GetTabStripModel()->GetActiveWebContents());
+    web_ui_.set_web_contents(browser()->GetActiveTabInterface()->GetContents());
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();

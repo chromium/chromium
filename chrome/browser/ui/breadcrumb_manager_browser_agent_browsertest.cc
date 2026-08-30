@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -30,7 +30,7 @@ const base::circular_deque<std::string>& GetEvents() {
 // Test fixture for testing BreadcrumbManagerBrowserAgent class.
 class BreadcrumbManagerBrowserAgentTest : public InProcessBrowserTest {
  protected:
-  void AddNewTab(Browser* browser) {
+  void AddNewTab(BrowserWindowInterface* browser) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(BreadcrumbManagerBrowserAgentTest,
                        MultipleBrowsersGenerateDistinctInsertEvents) {
   // Create a second browser instance. Each browser starts with a tab that is
   // inserted into its tab strip, so we should get exactly two "Insert" events.
-  Browser* browser2 = CreateBrowser(GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(GetProfile());
   EXPECT_TRUE(browser2);
 
   const auto& events = GetEvents();
@@ -95,15 +95,15 @@ IN_PROC_BROWSER_TEST_F(BreadcrumbManagerBrowserAgentTest,
 // events.
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerBrowserAgentTest,
                        BatchTabClosingGeneratesEvents) {
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = browser()->GetTabStripModel()->count();
 
   AddNewTab(browser());
   AddNewTab(browser());
 
-  EXPECT_GT(browser()->tab_strip_model()->count(), initial_tab_count);
+  EXPECT_GT(browser()->GetTabStripModel()->count(), initial_tab_count);
 
   // Perform batch tab closing.
-  browser()->tab_strip_model()->CloseAllTabs();
+  browser()->GetTabStripModel()->CloseAllTabs();
 
   const auto& events = GetEvents();
   bool found_close_event = std::ranges::any_of(events, [](const auto& event) {

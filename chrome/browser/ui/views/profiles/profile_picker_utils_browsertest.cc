@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest, OpenLearnMorePopup) {
   OpenLearnMorePopup(browser()->GetProfile(), std::move(contents),
                      /*target_url=*/GURL(url::kAboutBlankURL), window_features);
 
-  Browser* popup_browser = observer.Wait();
+  BrowserWindowInterface* popup_browser = observer.Wait();
   ASSERT_NE(popup_browser, nullptr);
 
   EXPECT_NE(popup_browser, browser());

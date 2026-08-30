@@ -214,15 +214,18 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
         g_browser_process->profile_manager(), path);
 #endif
 
-    browser2_ = CreateBrowserForTest(profile1(), Browser::TYPE_NORMAL);
+    browser2_ =
+        CreateBrowserForTest(profile1(), BrowserWindowInterface::TYPE_NORMAL);
     browser3_ =
         CreateBrowserForTest(browser()->GetProfile()->GetPrimaryOTRProfile(
                                  /*create_if_needed=*/true),
-                             Browser::TYPE_NORMAL);
+                             BrowserWindowInterface::TYPE_NORMAL);
 #if !BUILDFLAG(IS_CHROMEOS)
-    browser4_ = CreateBrowserForTest(profile2_, Browser::TYPE_NORMAL);
+    browser4_ =
+        CreateBrowserForTest(profile2_, BrowserWindowInterface::TYPE_NORMAL);
 #endif
-    browser5_ = CreateBrowserForTest(profile1(), Browser::TYPE_POPUP);
+    browser5_ =
+        CreateBrowserForTest(profile1(), BrowserWindowInterface::TYPE_POPUP);
 
     browser1()->GetWindow()->Activate();
 

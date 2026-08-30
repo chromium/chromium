@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/buildflags.h"
 #include "components/apps/link_capturing/intent_picker_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"

@@ -28,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 

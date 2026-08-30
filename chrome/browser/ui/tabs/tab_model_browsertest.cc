@@ -7,7 +7,9 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
@@ -17,7 +19,7 @@ class TabModelBrowserTest : public InProcessBrowserTest {
  public:
   TabModelBrowserTest() = default;
 
-  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
+  TabStripModel* tab_strip_model() { return browser()->GetTabStripModel(); }
 
   void AddTabs(int num_tabs) {
     for (int i = 0; i < num_tabs; i++) {

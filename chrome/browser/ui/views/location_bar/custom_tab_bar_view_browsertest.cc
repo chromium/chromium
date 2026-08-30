@@ -88,7 +88,8 @@ class TestTitleObserver : public TabStripModelObserver {
 
 // Opens a new popup window from |web_contents| on |target_url| and returns
 // the Browser it opened in.
-Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
+BrowserWindowInterface* OpenPopup(content::WebContents* web_contents,
+                                  const GURL& target_url) {
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   content::TestNavigationObserver nav_observer(target_url);
   nav_observer.StartWatchingNewWebContents();
@@ -267,8 +268,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
-  Browser* popup = OpenPopup(browser_view_->GetActiveWebContents(),
-                             GURL("http://example.com"));
+  BrowserWindowInterface* popup = OpenPopup(
+      browser_view_->GetActiveWebContents(), GURL("http://example.com"));
   EXPECT_TRUE(popup);
 
   BrowserView* popup_view = BrowserView::GetBrowserViewForBrowser(popup);
@@ -294,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
 
-  Browser* popup_browser =
+  BrowserWindowInterface* popup_browser =
       OpenPopup(app_view->GetActiveWebContents(), out_of_scope_url);
   EXPECT_EQ(popup_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_APP_POPUP);

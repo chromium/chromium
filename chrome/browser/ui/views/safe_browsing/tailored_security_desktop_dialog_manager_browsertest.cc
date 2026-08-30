@@ -103,7 +103,8 @@ class TailoredSecurityDesktopDialogManagerTest
     }
   }
 
-  views::Widget* ShowTailoredSecurityEnabledDialog(Browser* browser) {
+  views::Widget* ShowTailoredSecurityEnabledDialog(
+      BrowserWindowInterface* browser) {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         safe_browsing::kTailoredSecurityNoticeDialog);
@@ -114,7 +115,8 @@ class TailoredSecurityDesktopDialogManagerTest
     return widget;
   }
 
-  views::Widget* ShowTailoredSecurityDisabledDialog(Browser* browser) {
+  views::Widget* ShowTailoredSecurityDisabledDialog(
+      BrowserWindowInterface* browser) {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         safe_browsing::kTailoredSecurityNoticeDialog);

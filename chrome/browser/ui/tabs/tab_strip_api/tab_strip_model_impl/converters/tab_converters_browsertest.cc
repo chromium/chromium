@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/tab_converters.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -36,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceConvertersBrowserTest, ConvertTab) {
   ASSERT_TRUE(AddTabAtIndex(0, GURL("chrome://newtab"),
                             ui::PageTransition::PAGE_TRANSITION_LINK));
 
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
   TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab);

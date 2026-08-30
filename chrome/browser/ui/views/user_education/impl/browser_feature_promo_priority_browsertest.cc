@@ -17,6 +17,7 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_browsertest_base.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -66,7 +67,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(StartupCallbackObserver,
 
 class RequiredNotice {
  public:
-  explicit RequiredNotice(Browser* browser)
+  explicit RequiredNotice(BrowserWindowInterface* browser)
       : controller_(UserEducationServiceFactory::GetForBrowserContext(
                         browser->GetProfile())
                         ->product_messaging_controller()) {}

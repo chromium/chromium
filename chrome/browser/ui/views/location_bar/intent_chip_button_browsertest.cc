@@ -129,7 +129,7 @@ class IntentChipButtonBrowserTest
   // Clicks the intent chip, and optionally waits for a browser app window to
   // appear if `wait_for_browser` is true. If waiting is specified, the new
   // browser window is returned; if waiting is not specified, null is returned.
-  Browser* ClickIntentChip(bool wait_for_browser) {
+  BrowserWindowInterface* ClickIntentChip(bool wait_for_browser) {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
     GetIntentChip(browser()).Click();
@@ -192,7 +192,8 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
   // directly launches the app on all platforms, if the app is set to be the
   // preferred app for capturing links.
   base::UserActionTester user_action_tester;
-  Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
+  BrowserWindowInterface* app_browser =
+      ClickIntentChip(/*wait_for_browser=*/true);
   ASSERT_EQ(1, user_action_tester.GetActionCount("IntentPickerIconClicked"));
   ASSERT_TRUE(app_browser);
   ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
@@ -254,7 +255,8 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   }));
 
-  Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
+  BrowserWindowInterface* app_browser =
+      ClickIntentChip(/*wait_for_browser=*/true);
 
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
                                                          test_web_app_id()));

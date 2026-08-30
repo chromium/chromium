@@ -1295,7 +1295,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       base::test::RunUntil([&]() { return view->is_expanded_on_hover(); }));
 
   // Create a second window to make the first inactive.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   ASSERT_TRUE(
@@ -1313,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   state_controller()->SetUncollapsedWidth(100);
 
   // Setup Window 2
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(browser2);
   auto* controller2 = tabs::VerticalTabStripStateController::From(browser2);
   ASSERT_TRUE(controller2);
@@ -1336,7 +1337,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   ui_test_utils::BrowserCreatedObserver observer1;
   chrome::ExecuteCommand(browser(), IDC_NEW_WINDOW);
-  Browser* browser3 = observer1.Wait();
+  BrowserWindowInterface* browser3 = observer1.Wait();
   ASSERT_TRUE(browser3);
 
   auto* controller3 = tabs::VerticalTabStripStateController::From(browser3);
@@ -1352,7 +1353,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   ui_test_utils::BrowserCreatedObserver observer2;
   chrome::ExecuteCommand(browser2, IDC_NEW_WINDOW);
-  Browser* browser4 = observer2.Wait();
+  BrowserWindowInterface* browser4 = observer2.Wait();
   ASSERT_TRUE(browser4);
 
   auto* controller4 = tabs::VerticalTabStripStateController::From(browser4);
@@ -1380,7 +1381,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   ui_test_utils::BrowserCreatedObserver observer;
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
-  Browser* new_browser = observer.Wait();
+  BrowserWindowInterface* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
 
   auto* new_controller =
@@ -1412,7 +1413,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   ui_test_utils::BrowserCreatedObserver observer;
   chrome::MoveGroupToNewWindow(browser(), group_id);
-  Browser* new_browser = observer.Wait();
+  BrowserWindowInterface* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
 
   auto* new_controller =
@@ -1753,7 +1754,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
 
   ui_test_utils::BrowserCreatedObserver observer;
   chrome::MoveGroupToNewWindow(browser(), group_id);
-  Browser* new_browser = observer.Wait();
+  BrowserWindowInterface* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
 
   // Source browser should no longer have the group or focus.
@@ -1783,7 +1784,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
 
   ui_test_utils::BrowserCreatedObserver observer;
   chrome::MoveTabsToNewWindow(browser(), {1, 2});
-  Browser* new_browser = observer.Wait();
+  BrowserWindowInterface* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
 
   // Source browser should no longer have the group or focus.
@@ -1817,7 +1818,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
 
   ui_test_utils::BrowserCreatedObserver observer;
   chrome::MoveTabsToNewWindow(browser(), {0, 1, 2});
-  Browser* new_browser = observer.Wait();
+  BrowserWindowInterface* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
 
   // Source browser should retain the remaining tab and have no focused group.
@@ -1847,7 +1848,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
   tab_strip_model()->SetFocusedGroup(group_id);
   ASSERT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 
-  Browser* target_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* target_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(target_browser);
   ASSERT_EQ(1, target_browser->GetTabStripModel()->count());
 

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_activation_tracker.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"

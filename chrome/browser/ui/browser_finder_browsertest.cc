@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -16,7 +15,7 @@ using BrowserFinderBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(BrowserFinderBrowserTest, ScheduledForDeletion) {
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(new_browser);
 
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -27,7 +26,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderBrowserTest, ScheduledForDeletion) {
   // Close all tabs. The tabstrip starts with one blank tab (created by
   // CreateBrowser), and CloseAllTabs() is required to schedule browser deletion
   // during OnWindowClosing().
-  new_browser->tab_strip_model()->CloseAllTabs();
+  new_browser->GetTabStripModel()->CloseAllTabs();
 
   UnloadController::From(new_browser)->OnWindowClosing();
 

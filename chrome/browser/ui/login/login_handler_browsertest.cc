@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"

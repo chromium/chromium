@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_switches.h"
@@ -71,8 +72,7 @@ class AutofillAiLocalSaveNotificationViewBrowsertest
   void ShowUi(const std::string& name) override {
     auto bubble = std::make_unique<AutofillAiLocalSaveNotificationView>(
         views::BubbleAnchor(),
-        browser()->GetTabStripModel()->GetActiveWebContents(),
-        &mock_controller());
+        browser()->GetActiveTabInterface()->GetContents(), &mock_controller());
     bubble->set_has_parent(false);
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();

@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, HasPaneRole) {
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
                        IncognitoLeadingButtonsCheckDoesntCrash) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   HorizontalTabStripRegionView* incognito_tab_strip_region_view =
       views::AsViewClass<HorizontalTabStripRegionView>(
           BrowserView::GetBrowserViewForBrowser(incognito_browser)

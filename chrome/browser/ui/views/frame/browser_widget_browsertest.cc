@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
                        IncognitoAlwaysDarkMode) {
   // Create an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile());
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile());
 
   // The incognito browser should reflect the dark color mode irrespective of
   // the current BrowserColorScheme.
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
                        IncognitoAlwaysIgnoresUserColor) {
   // Create an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile());
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile());
   views::Widget* incognito_browser_frame = GetBrowserWidget(incognito_browser);
 
   // Set the user color in both the OS and the profile pref.
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
 IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
                        IncognitoIsAlwaysGrayscale) {
   // Create an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile());
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile());
 
   // Set the is_grayscale pref to false. The incognito browser should force the
   // is_grayscale setting to true.

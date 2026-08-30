@@ -91,12 +91,13 @@ class BrowserManagerServiceTest : public InProcessBrowserTest {
 
   // TODO(crbug.com/356183782): Consider rewriting this test as an interactive
   // ui test and using ui_test_utils::BringBrowserWindowToFront() instead.
-  void ActivatePrimaryBrowser(Browser* const secondary_browser) {
+  void ActivatePrimaryBrowser(BrowserWindowInterface* const secondary_browser) {
     BrowserActiveStateManager::From(browser())->DidBecomeActive();
     BrowserActiveStateManager::From(secondary_browser)->DidBecomeInactive();
   }
 
-  void ActivateSecondaryBrowser(Browser* const secondary_browser) {
+  void ActivateSecondaryBrowser(
+      BrowserWindowInterface* const secondary_browser) {
     BrowserActiveStateManager::From(secondary_browser)->DidBecomeActive();
     BrowserActiveStateManager::From(browser())->DidBecomeInactive();
   }
@@ -113,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
 
   // Create secondary browser and expect events.
   EXPECT_CALL(observer, OnBrowserCreated(_)).Times(1);
-  Browser* secondary_browser = CreateBrowser(GetProfile());
+  BrowserWindowInterface* secondary_browser = CreateBrowser(GetProfile());
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Start with secondary browser active.
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
 
   // Create secondary browser and expect events.
   EXPECT_CALL(secondary_observer, OnBrowserCreated(_)).Times(1);
-  Browser* secondary_browser = CreateBrowser(&secondary_profile);
+  BrowserWindowInterface* secondary_browser = CreateBrowser(&secondary_profile);
   testing::Mock::VerifyAndClearExpectations(&secondary_observer);
 
   // Start with secondary browser active.
@@ -244,10 +245,8 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
       /*create_if_needed=*/true);
   ASSERT_NE(otr_profile, nullptr);
 
-  Browser* otr_browser =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams(otr_profile, /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* otr_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(otr_profile, /*from_user_gesture=*/true));
   EXPECT_EQ(global_collection->GetSize(), initial_size + 1);
 
   // Observe the GlobalBrowserCollection to verify close events are emitted.

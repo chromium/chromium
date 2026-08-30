@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/external_protocol_dialog_test_harness.h"
 
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "components/tabs/public/tab_interface.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace test {
@@ -82,7 +83,7 @@ ExternalProtocolDialogBrowserTest::~ExternalProtocolDialogBrowserTest() {
 void ExternalProtocolDialogBrowserTest::ShowUi(
     const std::string& initiating_origin) {
   content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      browser()->GetActiveTabInterface()->GetContents();
   dialog_ = new ExternalProtocolDialog(
       web_contents, GURL("telnet://12345"), u"/usr/bin/telnet",
       url::Origin::Create(GURL(initiating_origin)),

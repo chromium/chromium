@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -52,7 +53,7 @@ class SaveRecordingBubbleViewTest : public DialogBrowserTest {
         "https://example.com");
 
     widget_ = SaveRecordingBubbleView::Show(
-        anchor, browser()->GetTabStripModel()->GetActiveWebContents(),
+        anchor, browser()->GetActiveTabInterface()->GetContents(),
         std::move(controller));
   }
 

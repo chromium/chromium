@@ -130,7 +130,7 @@ void PerformMouseClickOnView(views::View* view) {
 }
 
 // Clicks the location icon to open the page info bubble.
-void OpenPageInfoBubble(Browser* browser) {
+void OpenPageInfoBubble(BrowserWindowInterface* browser) {
   LocationIconTestAccessor(browser).ShowBubble();
   views::BubbleDialogDelegateView* page_info =
       PageInfoBubbleView::GetPageInfoBubbleForTesting();
@@ -164,7 +164,8 @@ void ClickAndWaitForSettingsPageToOpen(views::View* site_settings_button) {
 
 // Returns the URL of the new tab that's opened on clicking the "Site settings"
 // button from Page Info.
-const GURL OpenSiteSettingsForUrl(Browser* browser, const GURL& url) {
+const GURL OpenSiteSettingsForUrl(BrowserWindowInterface* browser,
+                                  const GURL& url) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   OpenPageInfoBubble(browser);
   // Get site settings button.
@@ -177,7 +178,7 @@ const GURL OpenSiteSettingsForUrl(Browser* browser, const GURL& url) {
       ->GetLastCommittedURL();
 }
 
-void AddHintForTesting(Browser* browser,
+void AddHintForTesting(BrowserWindowInterface* browser,
                        const GURL& url,
                        page_info::proto::SiteInfo site_info) {
   optimization_guide::OptimizationMetadata optimization_metadata;

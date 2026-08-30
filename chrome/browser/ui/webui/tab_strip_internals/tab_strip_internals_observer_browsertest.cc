@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -387,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
     EXPECT_CALL(mock_callback, Run()).Times(AtLeast(1));
 
     // Close an existing tab.
-    browser()->tab_strip_model()->CloseWebContentsAt(
+    browser()->GetTabStripModel()->CloseWebContentsAt(
         1, TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }

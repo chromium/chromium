@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
@@ -635,18 +636,18 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
                                      AutoOpenOutcome::kUnopenedImmediately, 2);
 
   // Open a new browser with the same profile.
-  Browser* new_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   WaitUntilBrowserBecomeActiveOrLastActive(new_browser);
 
   // The pending entries should open automatically in the new browser.
-  EXPECT_EQ(3, new_browser->tab_strip_model()->count());
+  EXPECT_EQ(3, new_browser->GetTabStripModel()->count());
   // The new tabs are opened in the background (indices 1 and 2), and the active
   // index remains 0.
   EXPECT_EQ(GURL("https://www.example-a.com"),
-            new_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+            new_browser->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
   EXPECT_EQ(GURL("https://www.example-b.com"),
-            new_browser->tab_strip_model()->GetWebContentsAt(2)->GetURL());
-  EXPECT_EQ(0, new_browser->tab_strip_model()->active_index());
+            new_browser->GetTabStripModel()->GetWebContentsAt(2)->GetURL());
+  EXPECT_EQ(0, new_browser->GetTabStripModel()->active_index());
 
   histogram_tester.ExpectBucketCount(
       "Sharing.SendTabToSelf.AutoOpenOutcome2",

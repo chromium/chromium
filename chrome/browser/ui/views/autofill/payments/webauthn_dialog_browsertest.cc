@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/webauthn_dialog_view.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
@@ -56,8 +57,7 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
   }
 
   WebauthnDialogControllerImpl* controller() {
-    if (!browser() || !browser()->GetTabStripModel() ||
-        !browser()->GetTabStripModel()->GetActiveWebContents()) {
+    if (!browser() || !web_contents()) {
       return nullptr;
     }
 
@@ -66,7 +66,9 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
+    return browser()->GetActiveTabInterface()
+               ? browser()->GetActiveTabInterface()->GetContents()
+               : nullptr;
   }
 };
 

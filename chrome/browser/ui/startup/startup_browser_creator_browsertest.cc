@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
   command_line.AppendSwitchASCII(switches::kApp, url.spec());
   command_line.AppendSwitch(switches::kIncognito);
 
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
@@ -2361,7 +2361,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
       web_app::LaunchWebAppBrowserAndWait(test_profile, app_id);
 
   ASSERT_NE(app_browser, nullptr);
-  ASSERT_EQ(app_browser->GetType(), Browser::Type::TYPE_APP);
+  ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 
   chrome::AttemptRestart();
@@ -2594,7 +2594,7 @@ class StartupBrowserCreatorTestWithGuestParam
 
   // Creates a browser for a new profile (which may be Guest, based on
   // `IsGuest()`).
-  Browser* CreateBrowser() {
+  BrowserWindowInterface* CreateBrowser() {
     if (IsGuest()) {
       profiles::SwitchToGuestProfile();
     } else {
@@ -2602,7 +2602,8 @@ class StartupBrowserCreatorTestWithGuestParam
                                         ->GenerateNextProfileDirectoryPath();
       profiles::SwitchToProfile(profile_path, /*always_create=*/true);
     }
-    Browser* test_browser = ui_test_utils::WaitForBrowserToOpen();
+    BrowserWindowInterface* test_browser =
+        ui_test_utils::WaitForBrowserToOpen();
     profiles::SetLastUsedProfile(test_browser->GetProfile()->GetBaseName());
     return test_browser;
   }
@@ -2624,10 +2625,10 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
   CloseBrowserSynchronously(browser());
 
   // Create a browser for a new profile.
-  Browser* test_browser = CreateBrowser();
+  BrowserWindowInterface* test_browser = CreateBrowser();
   ASSERT_TRUE(test_browser);
   ASSERT_EQ(test_browser->GetProfile()->IsGuestSession(), IsGuest());
-  TabStripModel* tab_strip = test_browser->tab_strip_model();
+  TabStripModel* tab_strip = test_browser->GetTabStripModel();
   int initial_tab_count = tab_strip->count();
 
   // Open a URL while a browser is already open.
@@ -2651,7 +2652,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Create a browser for a new profile.
-  Browser* test_browser = CreateBrowser();
+  BrowserWindowInterface* test_browser = CreateBrowser();
   Profile* last_profile = test_browser->GetProfile();
   ASSERT_TRUE(test_browser);
   ASSERT_EQ(last_profile->IsGuestSession(), IsGuest());
@@ -2681,10 +2682,10 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
     EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   } else {
     // The last used profile is reopened and the URL is loaded.
-    Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+    BrowserWindowInterface* browser = ui_test_utils::WaitForBrowserToOpen();
     Profile* profile = browser->GetProfile();
     EXPECT_FALSE(profile->IsGuestSession());
-    TabStripModel* tab_strip = browser->tab_strip_model();
+    TabStripModel* tab_strip = browser->GetTabStripModel();
     EXPECT_EQ(
         tab_strip->GetWebContentsAt(tab_strip->count() - 1)->GetVisibleURL(),
         GetTestURL());
