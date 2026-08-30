@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ADAPTERS_BOOKMARK_BAR_ACTION_ADAPTER_H_
 #define CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ADAPTERS_BOOKMARK_BAR_ACTION_ADAPTER_H_
 
+enum class WindowOpenDisposition;
+
 class BookmarkBarActionAdapter {
  public:
   virtual ~BookmarkBarActionAdapter() = default;
+
+  virtual void OpenAppsPage(WindowOpenDisposition disposition) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ADAPTERS_BOOKMARK_BAR_ACTION_ADAPTER_H_

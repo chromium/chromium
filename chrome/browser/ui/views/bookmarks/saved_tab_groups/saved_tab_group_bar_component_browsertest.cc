@@ -85,7 +85,6 @@ class SavedTabGroupBarComponentBrowserTest : public InProcessBrowserTest {
     Wait();
 
     saved_tab_group_bar_ = std::make_unique<SavedTabGroupBar>(browser(), false);
-    saved_tab_group_bar_->SetPageNavigator(nullptr);
   }
 
   void TearDownOnMainThread() override {

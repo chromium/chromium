@@ -468,13 +468,6 @@ void BookmarkBarView::RemoveObserver(BookmarkBarViewObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void BookmarkBarView::SetPageNavigator(content::PageNavigator* navigator) {
-  page_navigator_ = navigator;
-  if (saved_tab_group_bar_) {
-    saved_tab_group_bar_->SetPageNavigator(navigator);
-  }
-}
-
 void BookmarkBarView::SetInfoBarVisible(bool infobar_visible) {
   if (infobar_visible == infobar_visible_) {
     return;
@@ -1426,13 +1419,9 @@ bool BookmarkBarView::CanStartDragForView(views::View* sender,
 }
 
 void BookmarkBarView::AppsPageShortcutPressed(const ui::Event& event) {
-  content::OpenURLParams params(GURL(chrome::kChromeUIAppsURL),
-                                content::Referrer(),
-                                ui::DispositionFromEventFlags(event.flags()),
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  page_navigator_->OpenURL(params, /*navigation_handle_callback=*/{});
-  RecordBookmarkAppsPageOpen(BookmarkLaunchLocation::kAttachedBar);
-  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
+  if (controller_) {
+    controller_->OpenAppsPage(ui::DispositionFromEventFlags(event.flags()));
+  }
 }
 
 void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,

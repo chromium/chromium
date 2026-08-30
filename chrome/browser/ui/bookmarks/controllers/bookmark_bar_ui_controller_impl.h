@@ -22,6 +22,7 @@ class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
 
   // BookmarkBarUIController overrides:
   void Bind(BookmarkBarUIClient* client) override;
+  void OpenAppsPage(WindowOpenDisposition disposition) override;
 
  private:
   void OnAppsPageShortcutVisibilityPrefChanged();

@@ -15,6 +15,9 @@ class DesktopBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
   explicit DesktopBookmarkBarActionAdapter(BrowserWindowInterface* browser);
   ~DesktopBookmarkBarActionAdapter() override;
 
+  // BookmarkBarActionAdapter overrides:
+  void OpenAppsPage(WindowOpenDisposition disposition) override;
+
  private:
   raw_ptr<BrowserWindowInterface> browser_;
 };

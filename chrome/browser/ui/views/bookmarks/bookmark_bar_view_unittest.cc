@@ -58,19 +58,6 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
-class DummyPageNavigator : public content::PageNavigator {
- public:
-  DummyPageNavigator() = default;
-  ~DummyPageNavigator() override = default;
-
-  content::WebContents* OpenURL(
-      const content::OpenURLParams& params,
-      base::OnceCallback<void(content::NavigationHandle&)>
-          navigation_handle_callback) override {
-    return nullptr;
-  }
-};
-
 class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
  public:
   BookmarkBarViewBaseTest() {
@@ -687,30 +674,6 @@ TEST_F(BookmarkBarViewTest, ManagedShowAppsShortcutInBookmarksBar) {
 }
 #endif
 
-// Verifies the SavedTabGroupBar's page navigator is set when the
-// bookmarkbarview's page navigator is set.
-// TODO(crbug.com/375364962): Flaky on Windows & Linux.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_PageNavigatorSet DISABLED_PageNavigatorSet
-#else
-#define MAYBE_PageNavigatorSet PageNavigatorSet
-#endif
-TEST_F(BookmarkBarViewTest, MAYBE_PageNavigatorSet) {
-  // Expect SavedTabGroupBar to have a page navigator when BookmarkBarView
-  // does.
-  EXPECT_FALSE(test_helper_->saved_tab_group_bar()->page_navigator());
-  DummyPageNavigator dummy_navigator;
-  bookmark_bar_view()->SetPageNavigator(&dummy_navigator);
-  EXPECT_TRUE(test_helper_->saved_tab_group_bar()->page_navigator());
-
-  // Reset both page navigators.
-  bookmark_bar_view()->SetPageNavigator(nullptr);
-
-  // Expect we can set the SaveTabGroupBar's page navigator without affecting
-  // BookmarkBarView.
-  test_helper_->saved_tab_group_bar()->SetPageNavigator(&dummy_navigator);
-  EXPECT_TRUE(test_helper_->saved_tab_group_bar()->page_navigator());
-}
 
 TEST_F(BookmarkBarViewTest, GetAvailableWidthForSavedTabGroupsBar) {
   // Saved tab group bar and bookmark buttons can both fit.

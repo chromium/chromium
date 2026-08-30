@@ -5323,8 +5323,6 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
     GetBrowserViewLayout()->set_bookmark_bar(bookmark_bar_view_);
   }
 
-  bookmark_bar_view_->SetPageNavigator(GetActiveWebContents());
-
   // BrowserViewLayout is responsible for handling the final visibility and
   // animation of the BookmarkBar.
   bool needs_layout = false;

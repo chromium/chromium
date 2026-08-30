@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_client.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_injector.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "ui/base/window_open_disposition.h"
 
 BookmarkBarUIControllerImpl::BookmarkBarUIControllerImpl(
     std::unique_ptr<BookmarkBarUIControllerInjector> injector)
@@ -66,4 +67,9 @@ void BookmarkBarUIControllerImpl::OnShowManagedBookmarksPrefChanged() {
         injector_->GetPrefsAdapter()->GetBoolean(
             bookmarks::prefs::kShowManagedBookmarksInBookmarkBar));
   }
+}
+
+void BookmarkBarUIControllerImpl::OpenAppsPage(
+    WindowOpenDisposition disposition) {
+  injector_->GetActionAdapter()->OpenAppsPage(disposition);
 }

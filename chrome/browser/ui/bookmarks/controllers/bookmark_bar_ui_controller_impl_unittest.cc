@@ -17,6 +17,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -49,6 +50,7 @@ class MockBookmarkBarPrefsAdapter : public BookmarkBarPrefsAdapter {
 
 class MockBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
  public:
+  MOCK_METHOD(void, OpenAppsPage, (WindowOpenDisposition), (override));
 };
 
 class MockBookmarkBarUIControllerInjector
@@ -143,6 +145,12 @@ TEST_F(BookmarkBarUIControllerImplTest, PrefChangesPropagate) {
       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
   testing::Mock::VerifyAndClearExpectations(&mock_client_);
   testing::Mock::VerifyAndClearExpectations(&mock_prefs_adapter_);
+}
+
+TEST_F(BookmarkBarUIControllerImplTest, OpenAppsPageDelegates) {
+  EXPECT_CALL(mock_action_adapter_,
+              OpenAppsPage(WindowOpenDisposition::NEW_WINDOW));
+  controller_->OpenAppsPage(WindowOpenDisposition::NEW_WINDOW);
 }
 
 }  // namespace

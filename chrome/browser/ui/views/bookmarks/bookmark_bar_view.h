@@ -54,10 +54,6 @@ class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 
-namespace content {
-class PageNavigator;
-}
-
 namespace gfx {
 class FontList;
 }
@@ -110,10 +106,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   void AddObserver(BookmarkBarViewObserver* observer);
   void RemoveObserver(BookmarkBarViewObserver* observer);
-
-  // Sets the PageNavigator that is used when the user selects an entry on
-  // the bookmark bar.
-  void SetPageNavigator(content::PageNavigator* navigator);
 
   // Sets whether the containing browser is showing an infobar.  This affects
   // layout during animation.
@@ -454,10 +446,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   bool managed_bookmarks_pref_visible_ = false;
 
-  // Used for opening urls.
-  raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
-      page_navigator_ = nullptr;
-
   // `BookmarkMergedSurfaceService` that manages the entries and folders that
   // are shown in this view. This is owned by the Profile.
   raw_ptr<BookmarkMergedSurfaceService> bookmark_service_ = nullptr;
@@ -535,8 +523,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Factory used to delay showing of the drop menu.
   base::WeakPtrFactory<BookmarkBarView> show_folder_method_factory_{this};
 
-  // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
-  // safety if BookmarkBarView is deleted after getting the callback.
+  // Returns WeakPtrs used when showing the context menu (e.g., after clipboard
+  // checks). Used to ensure safety if BookmarkBarView is deleted before the
+  // callback runs.
   base::WeakPtrFactory<BookmarkBarView> weak_ptr_factory_{this};
 
   // Returns WeakPtrs used in GetDropCallback(). Used to ensure

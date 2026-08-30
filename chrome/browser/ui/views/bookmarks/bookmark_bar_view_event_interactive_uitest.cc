@@ -410,7 +410,6 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     // Real bookmark bars get a BookmarkBarViewBackground. Set an opaque
     // background here just to avoid triggering subpixel rendering issues.
     bb_view->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
-    bb_view->SetPageNavigator(&navigator_);
     bb_view_ = bb_view.get();
     return bb_view;
   }
@@ -492,7 +491,6 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
 
   raw_ptr<BookmarkModel, AcrossTasksDanglingUntriaged> model_ = nullptr;
   raw_ptr<BookmarkBarView, AcrossTasksDanglingUntriaged> bb_view_ = nullptr;
-  TestingPageNavigator navigator_;
   TestingBookmarkNavigationWrapper wrapper_;
 
  private:
