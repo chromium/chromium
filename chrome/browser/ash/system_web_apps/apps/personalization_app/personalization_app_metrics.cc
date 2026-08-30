@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
+
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/metrics/histogram_functions.h"
 
@@ -11,20 +12,6 @@ namespace ash::personalization_app {
 void LogPersonalizationTheme(ColorMode color_mode) {
   base::UmaHistogramEnumeration(kPersonalizationThemeColorModeHistogramName,
                                 color_mode);
-}
-
-void LogAmbientModeTheme(mojom::AmbientTheme animation_theme) {
-  base::UmaHistogramEnumeration(kAmbientModeAnimationThemeHistogramName,
-                                animation_theme);
-}
-
-void LogAmbientModeVideo(ash::AmbientVideo video) {
-  base::UmaHistogramEnumeration(kAmbientModeVideoHistogramName, video);
-}
-
-void LogAmbientModeScreenSaverDuration(DurationOption duration_option) {
-  base::UmaHistogramEnumeration(kAmbientModeScreenSaverDurationHistogramName,
-                                duration_option);
 }
 
 void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color) {

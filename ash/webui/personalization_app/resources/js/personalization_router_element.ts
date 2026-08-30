@@ -21,7 +21,7 @@ import type {GooglePhotosAlbum, WallpaperCollection} from '../personalization_ap
 import {TopicSource} from '../personalization_app.mojom-webui.js';
 
 import {isAmbientModeAllowed} from './load_time_booleans.js';
-import {logAmbientAlbumsPathUMA, logPersonalizationPathUMA} from './personalization_metrics_logger.js';
+import {logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
 import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 
@@ -252,10 +252,6 @@ export class PersonalizationRouterElement extends PolymerElement {
           // function to be called again once `queryParams` updates.
           console.warn('Topic source missing from query params');
           break;
-        }
-        const topicSource = parseInt(queryParams.topicSource!, 10);
-        if (!isNaN(topicSource) && topicSource in TopicSource) {
-          logAmbientAlbumsPathUMA(topicSource as TopicSource);
         }
         if (queryParams.topicSource === TopicSource.kGooglePhotos.toString()) {
           document.title =

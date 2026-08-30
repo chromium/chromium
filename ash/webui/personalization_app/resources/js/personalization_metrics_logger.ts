@@ -4,9 +4,6 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ColorScheme} from '../color_scheme.mojom-webui.js';
-import {StaticColor, TopicSource} from '../personalization_app.mojom-webui.js';
-
 import {GeolocationAccessLevel} from './geolocation_dialog.js';
 import {Paths} from './personalization_router_element.js';
 
@@ -31,12 +28,8 @@ const enum MetricsPath {
 
 const enum HistogramName {
   PATH = 'Ash.Personalization.Path',
-  AMBIENT_ALBUMS_PATH = 'Ash.Personalization.AmbientMode.AlbumsPath',
-  AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
-  AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED =
-      'Ash.Personalization.Ambient.LinkToGooglePhotosClicked',
   KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
       'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
   LOCATION_PERMISSION_CHANGE_FROM_DIALOG =
@@ -77,16 +70,6 @@ export function logPersonalizationPathUMA(path: Paths) {
       HistogramName.PATH, metricsPath, MetricsPath.MAX_VALUE + 1);
 }
 
-export function logAmbientAlbumsPathUMA(topicSource: TopicSource) {
-  chrome.metricsPrivate.recordEnumerationValue(
-      HistogramName.AMBIENT_ALBUMS_PATH, topicSource,
-      TopicSource.MAX_VALUE + 1);
-}
-
-export function logAmbientModeOptInUMA() {
-  chrome.metricsPrivate.recordBoolean(HistogramName.AMBIENT_OPTIN, true);
-}
-
 export function logGooglePhotosPreviewsLoadTime() {
   // Get elapsed time in ms since the page initialized.
   const timeMs = Math.round(performance.now());
@@ -99,11 +82,6 @@ export function logGooglePhotosPreviewsLoadTime() {
 export function logKeyboardBacklightOpenZoneCustomizationUMA() {
   chrome.metricsPrivate.recordBoolean(
       HistogramName.KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION, true);
-}
-
-export function logAmbientModeLinkToGooglePhotosClick() {
-  chrome.metricsPrivate.recordBoolean(
-      HistogramName.AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED, true);
 }
 
 export function logSystemLocationPermissionChange(

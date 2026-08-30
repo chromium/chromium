@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -71,29 +70,6 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     -1,         // Never discard the entry.
     true,       // Use initial delay.
 };
-
-DurationOption GetDurationMetrics(int minutes) {
-  switch (minutes) {
-    case (0): {
-      return DurationOption::kForever;
-    }
-    case (5): {
-      return DurationOption::kFiveMin;
-    }
-    case (10): {
-      return DurationOption::kTenMin;
-    }
-    case (30): {
-      return DurationOption::kThirtyMin;
-    }
-    case (60): {
-      return DurationOption::kOneHour;
-    }
-    default: {
-      return DurationOption::kError;
-    }
-  }
-}
 
 }  // namespace
 
@@ -218,7 +194,6 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
     mojom::AmbientTheme to_theme) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
-  LogAmbientModeTheme(to_theme);
   AmbientUiSettings orig_settings = GetCurrentUiSettings();
   mojom::AmbientTheme from_theme = orig_settings.theme();
   if (from_theme == to_theme) {
@@ -228,9 +203,6 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
   // Attempt to retrieve the previously selected video. If not, fallback to the
   // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
   AmbientVideo video = orig_settings.video().value_or(GetDefaultAmbientVideo());
-  if (to_theme == mojom::AmbientTheme::kVideo) {
-    LogAmbientModeVideo(video);
-  }
   AmbientUiSettings(to_theme, video).WriteToPrefService(*pref_service);
 
   // `kVideo` theme is special and automatically means a switch to the `kVideo`
@@ -286,7 +258,6 @@ void PersonalizationAppAmbientProviderImpl::SetScreenSaverDuration(
     int minutes) {
   Shell::Get()->ambient_controller()->SetScreenSaverDuration(minutes);
   OnScreenSaverDurationChanged();
-  LogAmbientModeScreenSaverDuration(GetDurationMetrics(minutes));
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTemperatureUnit(
@@ -363,7 +334,6 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       DCHECK(pref_service);
       AmbientUiSettings(GetCurrentUiSettings().theme(), *video)
           .WriteToPrefService(*pref_service);
-      LogAmbientModeVideo(*video);
       break;
   }
 
@@ -393,16 +363,6 @@ void PersonalizationAppAmbientProviderImpl::FetchSettingsAndAlbums() {
 
 void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
   const bool enabled = IsAmbientModeEnabled();
-  if (enabled) {
-    // The usage metrics for the user's `AmbientUiSettings` should be
-    // incremented whenever ambient mode is enabled. They should not be
-    // incremented though every time the hub is simply opened.
-    AmbientUiSettings current_ui_settings = GetCurrentUiSettings();
-    LogAmbientModeTheme(current_ui_settings.theme());
-    if (current_ui_settings.theme() == mojom::AmbientTheme::kVideo) {
-      LogAmbientModeVideo(*current_ui_settings.video());
-    }
-  }
   BroadcastAmbientModeEnabledStatus(enabled);
   if (!enabled) {
     // UpdateSettings assumes that ambient is enabled. Since ambient is now

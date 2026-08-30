@@ -54,22 +54,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Keyboard"/>
 </enum>
 
-<enum name="AmbientModeAnimationTheme">
-  <int value="0" label="Slide Show"/>
-  <int value="1" label="Feel The Breeze"/>
-  <int value="2" label="Float On By"/>
-  <int value="3" label="Video"/>
-</enum>
-
-<enum name="AmbientModeDurationOption">
-  <int value="0" label="Forever"/>
-  <int value="1" label="For 5 minutes"/>
-  <int value="2" label="For 10 minutes"/>
-  <int value="3" label="For 30 minutes"/>
-  <int value="4" label="For 1 hour"/>
-  <int value="5" label="Error: unknown duration value"/>
-</enum>
-
 <enum name="AmbientModePhotoSource">
   <int value="0" label="Default">
     This is when user clicked on the top level Screen Saver toggle but did not
@@ -90,11 +74,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="0" label="Google Photos"/>
   <int value="1" label="Art Gallery"/>
   <int value="2" label="Video"/>
-</enum>
-
-<enum name="AmbientModeVideo">
-  <int value="0" label="Clouds"/>
-  <int value="1" label="New Mexico"/>
 </enum>
 
 <enum name="AmbientVideoSessionStatus">

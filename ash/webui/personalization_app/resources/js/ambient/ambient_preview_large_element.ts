@@ -20,7 +20,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {TopicSource} from '../../personalization_app.mojom-webui.js';
-import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
 import {Paths, PersonalizationRouterElement, ScrollableTarget} from '../personalization_router_element.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
@@ -71,7 +70,6 @@ export class AmbientPreviewLargeElement extends AmbientPreviewBase {
   private async onClickAmbientModeButton_(event: Event) {
     assert(this.ambientModeEnabled_ === false);
     event.stopPropagation();
-    logAmbientModeOptInUMA();
     await setAmbientModeEnabled(
         /*ambientModeEnabled=*/ true, getAmbientProvider(), this.getStore());
     PersonalizationRouterElement.instance().goToRoute(Paths.AMBIENT);
