@@ -914,10 +914,10 @@
       <message name="IDS_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE_SETTING_TEXT" desc="Text of the Learn more link.">
         <ph name="BEGIN_LINK1">&lt;link&gt;</ph>Learn more<ph name="END_LINK1">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_CHROME_SUGGESTIONS_IN_OTHER_APPS_TITLE" desc="Title for the switch in tabs settings to toggle sharing browsing data to get suggestions in other apps." translateable="false">
+      <message name="IDS_CHROME_SUGGESTIONS_IN_OTHER_APPS_TITLE" desc="Title for the switch in tabs settings to toggle sharing browsing data to get suggestions in other apps.">
         Get Chrome suggestions in other apps
       </message>
-      <message name="IDS_CHROME_SUGGESTIONS_IN_OTHER_APPS_SUMMARY" desc="Summary for the switch in tabs settings to toggle sharing browsing data to get suggestions in other apps." translateable="false">
+      <message name="IDS_CHROME_SUGGESTIONS_IN_OTHER_APPS_SUMMARY" desc="Summary for the switch in tabs settings to toggle sharing browsing data to get suggestions in other apps.">
         Share browsing data, such as your recent browsing history, to get suggestions on selected apps. This data is processed securely on your device.
       </message>
 
