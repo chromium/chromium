@@ -2458,6 +2458,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2887344147309501015">Internetni kezishda javoblar, asosiy tafsilotlar va boshqalarni olish uchun Chrome ichida Gemini bilan suhbatlashing</translation>
 <translation id="2889043468805635730">Hech qanday muammo topilmadi</translation>
 <translation id="2889064240420137087">Havolani ochish...</translation>
+<translation id="2889937141553641427">{0,plural, =1{Izolyatsiyalangan rejim}other{Izolyatsiyalangan rejim oynalarini (#) ochish}}</translation>
 <translation id="2891464434568738544">Roʻyxatda hech qaysi sayt mavjud emas. Roʻyxatga kiritishdan avval saytni oching.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> ilovasiga qurilma orqali kirilsinmi?</translation>
 <translation id="2893168226686371498">Standart brauzer</translation>
@@ -2925,6 +2926,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3242764115495920926">Parollarni avtomatik almashtirishni taklif qilish</translation>
 <translation id="3243017971870859287">ChromeOS Flex qurilmasi va komponenti seriya raqamlarini oʻqish</translation>
 <translation id="324366796737464147">Shovqinsizlantirish</translation>
+<translation id="3243680258677029936">{0,plural, =1{Izolyatsiyalangan}other{Izolyatsiyalangan (#)}}</translation>
 <translation id="3244271242291266297">OO</translation>
 <translation id="3244294424315804309">Ovoz o‘chirib qo‘yilsin</translation>
 <translation id="3247649647204519958">Bu yerda kengaytmalarning ochilgan saytdagi ruxsatlarini koʻrish va boshqarish mumkin</translation>
@@ -8578,6 +8580,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7651754152638505879">Vazifa pauza qilindi</translation>
 <translation id="7651784568388208829">Phone Hub vazifasini davom ettirish</translation>
 <translation id="7652954539215530680">PIN kod yarating</translation>
+<translation id="7653354650639364202">{0,plural, =1{Izolyatsiyalangan oynani yopish}other{Izolyatsiyalangan oynalarni (#) yopish}}</translation>
 <translation id="7654941827281939388">Bu hisob allaqachon kompyuterda qo‘llanilmoqda.</translation>
 <translation id="7655411746932645568">Saytlar seriyali portlarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="7657090467145778067">Kichik tejash</translation>
@@ -9185,6 +9188,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8106114112474206597">Sichqoncha tugmasini bosishda “i” ishlating</translation>
 <translation id="810728361871746125">Ekran oʻlchami:</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> ta ishtirokchi</translation>
+<translation id="8108853197309181986">Izolyatsiyalangan oynadasiz</translation>
 <translation id="8109109153262930486">Standart avatar</translation>
 <translation id="8109991406044913868">AI bilan yaratilgan mavzu</translation>
 <translation id="8110393529211831722">Obuna faqat shu qurilmaga oʻrnatilgan va hisobingiz ostidagi boshqa qurilmalar bilan sinxronlanmaydi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -9591,6 +9595,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" />dan keyin tizimdan chiqasiz</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> uchun boshqa variantlar</translation>
+<translation id="8430438016498244645">Izolyatsiyalangan seans</translation>
 <translation id="8431977087510901105">Kursor sozlamalari tiklandi</translation>
 <translation id="8434109185104929038">Oʻqish burchagi</translation>
 <translation id="8434837876193928924">Varaqlar guruhi tafsilotlari</translation>

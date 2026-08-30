@@ -1708,7 +1708,7 @@
 <translation id="2322193970951063277">سرصفحه‌ها و پانویس‌ها</translation>
 <translation id="2322622365472107569">زمان پایان <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏شبکه‌های Wi-Fi ذخیره‌شده</translation>
-<translation id="2323685460575935191">پنهان کردن «دکمه‌های پیمایش»</translation>
+<translation id="2323685460575935191">پنهان کردن دکمه‌های پیمایش</translation>
 <translation id="2325444234681128157">گذرواژه به خاطر سپرده شود</translation>
 <translation id="2326188115274135041">برای اینکه باز شدن خودکار قفل روشن شود، پین را تأیید کنید</translation>
 <translation id="2326583548923775947">‏این «حساب Google» نیست. مواردی که در Chrome ذخیره می‌کنید در دستگاه‌های دیگر دردسترس نخواهد بود.</translation>
@@ -3299,7 +3299,7 @@
 <translation id="3527085408025491307">پوشه</translation>
 <translation id="3527473647192919613">پنجره مجزای جدید</translation>
 <translation id="3528498924003805721">اهداف میان‌بر</translation>
-<translation id="35296112145429559">سنجاق کردن «دکمه‌های پیمایش»</translation>
+<translation id="35296112145429559">سنجاق کردن دکمه‌های پیمایش</translation>
 <translation id="3529851166527095708">&amp;نشانی‌ها و موارد دیگر</translation>
 <translation id="3530919970074558307">غیرمتمرکز کردن گروه</translation>
 <translation id="3531070080754387701">‏‫Microsoft 365 نمی‌تواند <ph name="FILE_NAMES" /> را از این پوشه باز کند</translation>
@@ -3520,7 +3520,7 @@
 <translation id="369522892592566391">{NUM_FILES,plural, =0{بررسی‌های امنیتی انجام شدند. داده‌های شما بارگذاری خواهند شد.}=1{بررسی‌های امنیتی انجام شدند. فایل شما بارگذاری خواهد شد.}one{بررسی‌های امنیتی انجام شدند. فایل‌های شما بارگذاری خواهند شد.}other{بررسی‌های امنیتی انجام شدند. فایل‌های شما بارگذاری خواهند شد.}}</translation>
 <translation id="369736917241079046">راه‌انداز + چپ‌بَر</translation>
 <translation id="3697716475445175867">آخرین مورد بازشده</translation>
-<translation id="3697962048674120810">{COUNT,plural, =0{بدون گذرواژه}=1{‫۱ گذرواژه بررسی شد}one{‫{COUNT} گذرواژه بررسی شد}other{‫{COUNT} گذرواژه بررسی شد}}</translation>
+<translation id="3697962048674120810">{COUNT,plural, =0{گذرواژه‌ای نیست}=1{‫۱ گذرواژه بررسی شد}one{‫{COUNT} گذرواژه بررسی شد}other{‫{COUNT} گذرواژه بررسی شد}}</translation>
 <translation id="3698471669415859717">مرور تکمیل شد</translation>
 <translation id="3699624789011381381">آدرس ايميل</translation>
 <translation id="3699920817649120894">همگام‌سازی و شخصی‌سازی خاموش شود؟</translation>
@@ -4311,7 +4311,7 @@
 <translation id="4290898381118933198">تند کشیدن برای پیمایش میان صفحه‌ها</translation>
 <translation id="4292613336957320546">شتاب</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
-<translation id="4293154608148215505">تلفن شما</translation>
+<translation id="4293154608148215505">تلفنتان</translation>
 <translation id="4293219510510666933">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید. همچنین می‌توانید سؤال بپرسید و براساس سابقه مرورتان پاسخ دریافت کنید. این تنظیم روشن است.</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> از سابقه بارگیری حذف شد، اما هنوز در دستگاهتان است</translation>
 <translation id="429530814437327574">نمایش به‌صورت پشته‌ای شد</translation>
@@ -5386,7 +5386,7 @@
 <translation id="5125714798187802869">فعال کردن</translation>
 <translation id="5125751979347152379">نشانی وب نامعتبر است.</translation>
 <translation id="5125967981703109366">درباره این کارت</translation>
-<translation id="5126335625961252141">رایانه لوحی شما</translation>
+<translation id="5126335625961252141">رایانه لوحی‌تان</translation>
 <translation id="512642543295077915">جستجو + پس‌بَر</translation>
 <translation id="5126611267288187364">مشاهده تغییرات</translation>
 <translation id="5127620150973591153">شناسه اتصال ایمن: <ph name="TOKEN" /></translation>
@@ -5451,7 +5451,7 @@
 <translation id="5176671554021050278">‏از لنز Google برای یادگیری بیشتر درباره تصاویر یا متن‌های خاص در یک صفحه استفاده کنید.</translation>
 <translation id="5177479852722101802">ادامه مسدود کردن دسترسی به دوربین و میکروفن</translation>
 <translation id="5178667623289523808">یافتن قبلی</translation>
-<translation id="5179428098696668914">خاموش کردن «بازپخش هوشواره»</translation>
+<translation id="5179428098696668914">خاموش کردن «بازپخش هوشواره‌ای»</translation>
 <translation id="5180276433875360121">نمایش <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">در حال بارگیری</translation>
 <translation id="5181172023548002891">‏در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /></translation>
@@ -6676,7 +6676,7 @@
 <translation id="6164832038898943453">زبان‌های موردنظر را برای ترجمه خودکار اضافه کنید</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6169040057125497443">لطفاً میکروفون را بررسی کنید.</translation>
-<translation id="616942303645148485">نشان دادن خودکار «دکمه‌های پیمایش» زبانه درصورت نیاز</translation>
+<translation id="616942303645148485">نشان دادن خودکار دکمه‌های پیمایش زبانه درصورت نیاز</translation>
 <translation id="6169967265765719844">‏اجازه‌های مربوط به بازی‌ها و برنامه‌های نصب‌شده ازطریق Steam را می‌توان در <ph name="LINK_BEGIN" />تنظیمات برنامه Steam<ph name="LINK_END" /> مدیریت کرد.</translation>
 <translation id="6170313103929479668">مرتب کردن «نمای تقسیم‌شده»</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
@@ -7541,7 +7541,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{زبانه برداشته و گروه حذف شود؟}=1{زبانه برداشته و گروه حذف شود؟}one{زبانه برداشته و گروه حذف شود؟}other{زبانه‌ها برداشته و گروه‌ها حذف شود؟}}</translation>
 <translation id="6833479554815567477">زبانه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">متعادل (توصیه می‌شود)</translation>
-<translation id="6838672728804308905">سنجاق کردن «دکمه‌های پیمایش»</translation>
+<translation id="6838672728804308905">سنجاق کردن دکمه‌های پیمایش</translation>
 <translation id="6838992358006915573">‏ذره‌بین تمرکز ChromeVox را دنبال کند</translation>
 <translation id="6840155290835956714">پیش از ارسال سؤال شود</translation>
 <translation id="6840184929775541289">یک ارائه دهنده مجوز نیست</translation>
@@ -7983,7 +7983,7 @@
 <translation id="7182051712900867547">استفاده از حسابی دیگر</translation>
 <translation id="7182063559013288142">نقطه اتصال فوری</translation>
 <translation id="7182791023900310535">انتقال گذرواژه</translation>
-<translation id="7184054569440068670">روشن کردن «بازپخش هوشواره»</translation>
+<translation id="7184054569440068670">روشن کردن «بازپخش هوشواره‌ای»</translation>
 <translation id="718427252411067142">برای اینکه دیگران از گذرواژه‌تان استفاده نکنند، برنامه را باز کنید و گذرواژه‌تان را تغییر دهید</translation>
 <translation id="718512729823942418">میکروفونی دردسترس نیست</translation>
 <translation id="7186088072322679094">نگه داشتن در نوار ابزار</translation>
@@ -8195,7 +8195,7 @@
 <translation id="7349010927677336670">روان بودن ویدیو</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}one{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}other{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}}</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
-<translation id="735288298862560236">{COUNT,plural, =0{بدون گذرواژه}=1{درحال بررسی {COUNT} گذرواژه…}one{درحال بررسی {COUNT} گذرواژه…}other{درحال بررسی {COUNT} گذرواژه…}}</translation>
+<translation id="735288298862560236">{COUNT,plural, =0{گذرواژه‌ای نیست}=1{درحال بررسی {COUNT} گذرواژه…}one{درحال بررسی {COUNT} گذرواژه…}other{درحال بررسی {COUNT} گذرواژه…}}</translation>
 <translation id="7353261921908507769">وقتی مخاطبینتان نزدیک شما باشند می‌توانند با شما هم‌رسانی کنند. تا درخواست را نپذیرید، انتقال شروع نخواهد شد.</translation>
 <translation id="7353432112255316844">درستی‌سنجی کردن هویت</translation>
 <translation id="7356506068433555887">درخت نخل</translation>
@@ -9481,7 +9481,7 @@
 <translation id="8331822764922665615">گروه را نام‌گذاری کنید، رنگی را انتخاب کنید، سپس کلید «گریز» را فشار دهید</translation>
 <translation id="833256022891467078">‏پوشه‌های هم‌رسانی‌شده Crostini</translation>
 <translation id="833262891116910667">برجسته کردن</translation>
-<translation id="8334621501749011645">نشان دادن خودکار «دکمه‌های پیمایش» زبانه درصورت نیاز</translation>
+<translation id="8334621501749011645">نشان دادن خودکار دکمه‌های پیمایش زبانه درصورت نیاز</translation>
 <translation id="8336407002559723354">به‌روزرسانی‌ها در <ph name="MONTH_AND_YEAR" /> تمام می‌شود</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{این دستگاه به‌مدت یک ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}one{این دستگاه به‌مدت {HOURS} ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}other{این دستگاه به‌مدت {HOURS} ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}}</translation>
 <translation id="8337399713761067085">در حال حاضر شما آفلاين هستید</translation>
