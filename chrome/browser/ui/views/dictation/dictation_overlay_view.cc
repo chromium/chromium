@@ -114,9 +114,9 @@ class DictationOverlayContentsView : public views::View {
     } else {
       switch (state) {
         case UiState::kInactive:
-        case UiState::kInitializing:
           mic_visible = true;
           break;
+        case UiState::kInitializing:
         case UiState::kTranscribing:
         case UiState::kFinalizing:
           waveform_visible = true;
@@ -128,7 +128,8 @@ class DictationOverlayContentsView : public views::View {
 
     waveform_view_->SetVisible(waveform_visible);
     waveform_view_->SetState(state);
-    waveform_view_->SetEnabled(state == UiState::kTranscribing);
+    waveform_view_->SetEnabled(state == UiState::kInitializing ||
+                               state == UiState::kTranscribing);
 
     PreferredSizeChanged();
   }

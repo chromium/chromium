@@ -120,11 +120,12 @@ TEST_P(DictationOverlayViewTest, StateTransitionsUpdateSubviews) {
   EXPECT_TRUE(mic_button->GetVisible());
   EXPECT_FALSE(waveform_view->GetVisible());
 
-  // Transition to kInitializing: mic_button visible.
+  // Transition to kInitializing: waveform visible, mic hidden.
   overlay->SetState(UiState::kInitializing);
   EXPECT_EQ(overlay->state_for_testing(), UiState::kInitializing);
-  EXPECT_TRUE(mic_button->GetVisible());
-  EXPECT_FALSE(waveform_view->GetVisible());
+  EXPECT_FALSE(mic_button->GetVisible());
+  EXPECT_TRUE(waveform_view->GetVisible());
+  EXPECT_TRUE(waveform_view->GetEnabled());
 
   // Transition to kTranscribing: waveform visible, mic hidden.
   overlay->SetState(UiState::kTranscribing);
@@ -238,7 +239,7 @@ TEST_P(DictationOverlayViewTest, ClicksToggleActiveStream) {
         .NotifyClick(click_event);
     EXPECT_EQ(toggle_count, 1);
   } else {
-    views::test::ButtonTestApi(views::AsViewClass<views::Button>(mic_button))
+    views::test::ButtonTestApi(views::AsViewClass<views::Button>(waveform_view))
         .NotifyClick(click_event);
     EXPECT_EQ(toggle_count, 1);
 

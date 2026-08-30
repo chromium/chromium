@@ -105,8 +105,7 @@ size_t WaveformView::GetCenterBarIndex() const {
 }
 
 bool WaveformView::IsCollapsedInParent() const {
-  return !kSessionEndsOnStreamEnd.Get() &&
-         (state_ == UiState::kInactive || state_ == UiState::kInitializing);
+  return !kSessionEndsOnStreamEnd.Get() && state_ == UiState::kInactive;
 }
 
 void WaveformView::SetState(UiState state) {
