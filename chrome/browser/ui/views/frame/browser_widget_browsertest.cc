@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
@@ -156,9 +158,12 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, ChildWidgetsReceiveThemeUpdates) {
   // Propagate a browser theme change notification to the root BrowserWidget
   // widget and ensure the child widget is forwarded the theme change
   // notification.
-  EXPECT_CALL(widget_child_observer, OnWidgetThemeChanged(testing::_)).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(widget_child_observer, OnWidgetThemeChanged(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   static_cast<BrowserWidget*>(browser_view->GetWidget())
       ->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
+  run_loop.Run();
 }
 
 // Regression test for crbug.com/40070763. Ensures that browser theme change

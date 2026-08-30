@@ -19044,6 +19044,24 @@
             ]
         }
     ],
+    "ThemeChangeOptimization": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThemeChangeOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThreadPoolForegroundBlockingTimeouts": [
         {
             "platforms": [

@@ -91,9 +91,7 @@ namespace {
 class ParentThemeObserver : public ui::ColorProviderSourceObserver {
  public:
   ParentThemeObserver(Widget* widget, ui::ColorProviderSource* parent)
-      : widget_(widget) {
-    parent_theme_observation_.Observe(parent);
-  }
+      : ColorProviderSourceObserver(parent), widget_(widget) {}
   ~ParentThemeObserver() override = default;
 
   void OnColorProviderChanged() override {
@@ -103,9 +101,6 @@ class ParentThemeObserver : public ui::ColorProviderSourceObserver {
 
  private:
   raw_ptr<Widget> widget_;
-  base::ScopedObservation<ui::ColorProviderSource,
-                          ui::ColorProviderSourceObserver>
-      parent_theme_observation_{this};
 };
 
 // If `view` has a layer the layer is added to `layers`. Else this recurses
