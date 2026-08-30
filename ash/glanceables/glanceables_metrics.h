@@ -97,16 +97,6 @@ void RecordTotalShowTimeForClassroom(base::TimeDelta total_show_time);
 
 void RecordTotalShowTimeForTasks(base::TimeDelta total_show_time);
 
-void RecordClassromInitialLoadTime(bool first_occurrence,
-                                   base::TimeDelta load_time);
-
-void RecordClassroomChangeLoadTime(bool success, base::TimeDelta load_time);
-
-void RecordTasksInitialLoadTime(bool first_occurrence,
-                                base::TimeDelta load_time);
-
-void RecordTasksChangeLoadTime(base::TimeDelta load_time);
-
 void RecordTasksListChangeCount(int change_count);
 
 // Record the length of time that the `list_type` was shown.

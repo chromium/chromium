@@ -95,10 +95,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // Time stamp of when the view was created.
   const base::Time shown_time_;
 
-  // Records the time when the bubble was about to request an assignment list.
-  // Used for metrics.
-  base::TimeTicks assignments_requested_time_;
-
   // The start time that a selected assignment list is shown.
   std::optional<base::TimeTicks> list_shown_start_time_;
 

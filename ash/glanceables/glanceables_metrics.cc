@@ -136,7 +136,6 @@ void RecordTaskModificationResult(TaskModificationResult result) {
 }
 
 void RecordTasksLaunchSource(TasksLaunchSource source) {
-
   switch (source) {
     case TasksLaunchSource::kHeaderButton:
       RecordTasksUserAction(TasksUserAction::kHeaderButtonClicked);
@@ -189,53 +188,6 @@ void RecordTotalShowTimeForTasks(base::TimeDelta total_show_time) {
   base::UmaHistogramMediumTimes(
       base::StrCat({kTimeManagementTaskPrefix, ".TotalShowTime"}),
       total_show_time);
-}
-
-void RecordClassromInitialLoadTime(bool first_occurrence,
-                                   base::TimeDelta load_time) {
-  std::string histogram_name =
-      base::StrCat({kTimeManagementClassroomPrefix, ".OpenToInitialLoadTime"});
-
-  if (first_occurrence) {
-    histogram_name += ".FirstOccurence";
-  } else {
-    histogram_name += ".SubsequentOccurence";
-  }
-
-  base::UmaHistogramMediumTimes(histogram_name, load_time);
-}
-
-void RecordClassroomChangeLoadTime(bool success, base::TimeDelta load_time) {
-  std::string histogram_name =
-      base::StrCat({kTimeManagementClassroomPrefix, ".ChangeListToLoadTime"});
-
-  if (success) {
-    histogram_name += ".Success";
-  } else {
-    histogram_name += ".Fail";
-  }
-
-  base::UmaHistogramMediumTimes(histogram_name, load_time);
-}
-
-void RecordTasksInitialLoadTime(bool first_occurrence,
-                                base::TimeDelta load_time) {
-  std::string histogram_name =
-      base::StrCat({kTimeManagementTaskPrefix, ".OpenToInitialLoadTime"});
-
-  if (first_occurrence) {
-    histogram_name += ".FirstOccurence";
-  } else {
-    histogram_name += ".SubsequentOccurence";
-  }
-
-  base::UmaHistogramMediumTimes(histogram_name, load_time);
-}
-
-void RecordTasksChangeLoadTime(base::TimeDelta load_time) {
-  base::UmaHistogramMediumTimes(
-      base::StrCat({kTimeManagementTaskPrefix, ".ChangeListToLoadTime"}),
-      load_time);
 }
 
 void RecordTasksListChangeCount(int change_count) {

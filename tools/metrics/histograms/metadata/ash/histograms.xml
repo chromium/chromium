@@ -4373,46 +4373,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.Glanceables.TimeManagement.{GlanceableBubble}.ChangeListToLoadTime.{Status}"
-    units="ms" expires_after="2025-12-31">
-  <owner>anasalazar@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The amount of time in ms that the glanceables bubble takes to load up the
-    data from the API after the user triggered an update. Split by bubble type
-    and query status.
-  </summary>
-  <token key="GlanceableBubble">
-    <variant name="Classroom"/>
-    <variant name="Tasks"/>
-  </token>
-  <token key="Status">
-    <variant name="Fail"/>
-    <variant name="Success"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Ash.Glanceables.TimeManagement.{GlanceableBubble}.OpenToInitialLoadTime.{Occurrence}"
-    units="ms" expires_after="2025-12-31">
-  <owner>anasalazar@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The amount of time in ms that the glanceables bubble takes to load up the
-    initial data from the API after opened. Split by bubble type and whether the
-    time represent the first time the bubble was opened in the session or not.
-  </summary>
-  <token key="GlanceableBubble">
-    <variant name="Classroom"/>
-    <variant name="Tasks"/>
-  </token>
-  <token key="Occurrence">
-    <variant name="FirstOcurrence"/>
-    <variant name="SubsequentOccurence"/>
-  </token>
-</histogram>
-
-<histogram
     name="Ash.Glanceables.TimeManagement.{GlanceableBubble}.{ExpandState}.AnimationSmoothness"
     units="%" expires_after="2026-08-02">
   <owner>wcwang@google.com</owner>

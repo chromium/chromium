@@ -321,7 +321,6 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
   // Cancel any old pending assignment requests.
   CancelUpdates();
 
-  assignments_requested_time_ = base::TimeTicks::Now();
   progress_bar()->UpdateProgressBarVisibility(/*visible=*/true);
   combobox_view()->GetViewAccessibility().SetDescription(u"");
 
@@ -401,17 +400,6 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
 
   // Reset the position of the scroll view after the new data is fetched.
   content_scroll_view()->ScrollToOffset(gfx::PointF(0, 0));
-
-  auto* controller = Shell::Get()->glanceables_controller();
-
-  if (initial_update) {
-    RecordClassromInitialLoadTime(
-        /*first_occurrence=*/controller->bubble_shown_count() == 1,
-        base::TimeTicks::Now() - controller->last_bubble_show_time());
-  } else {
-    RecordClassroomChangeLoadTime(
-        success, base::TimeTicks::Now() - assignments_requested_time_);
-  }
 
   list_shown_start_time_ = base::TimeTicks::Now();
   first_assignment_list_shown_ = true;

@@ -199,10 +199,6 @@ class ASH_EXPORT GlanceablesTasksView
   // The type of resize animation that is currently running.
   std::optional<ResizeAnimation::Type> running_resize_animation_ = std::nullopt;
 
-  // Records the time when the bubble was about to request a task list. Used for
-  // metrics.
-  base::TimeTicks tasks_requested_time_;
-
   // Cached to reset the value of the index of `task_list_combo_box_view_` when
   // the target task list failed to be loaded.
   std::optional<size_t> cached_selected_list_index_ = std::nullopt;
