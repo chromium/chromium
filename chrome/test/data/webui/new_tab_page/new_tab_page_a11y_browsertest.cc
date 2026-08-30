@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -16,6 +17,11 @@ class NewTabPageA11yBrowserTest : public WebUIMochaBrowserTest {
  protected:
   NewTabPageA11yBrowserTest() {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
+#if BUILDFLAG(IS_ANDROID)
+    // WebUI NTP customization buttons are feature-flagged on Android.
+    // Explicitly enable the feature to render customizeButtons for mocha tests.
+    feature_list_.InitAndEnableFeature(ntp_features::kNtpCustomizeWebUiAndroid);
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -23,6 +29,11 @@ class NewTabPageA11yBrowserTest : public WebUIMochaBrowserTest {
     // Always run with accessibility, in order to catch assertions and crashes.
     command_line->AppendSwitch(switches::kForceRendererAccessibility);
   }
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list_;
+#endif
 };
 
 using NewTabPageAppA11yTest = NewTabPageA11yBrowserTest;
