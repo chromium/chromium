@@ -17,6 +17,10 @@ function resetState() {
   watch_id = 0;
   position_initialized = false;
   position_updated = false;
+  // Clear unconsumed results from previous watch operations so subsequent async
+  // requests do not immediately consume stale status entries.
+  callbackStatuses.queue = [];
+  geopositionUpdates.queue = [];
 }
 function geoSuccessCallback(position) {
   last_position = position;

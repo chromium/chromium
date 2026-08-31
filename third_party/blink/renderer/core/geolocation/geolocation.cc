@@ -169,7 +169,9 @@ Geolocation::Geolocation(Navigator& navigator)
       watchers_(MakeGarbageCollected<GeolocationWatchers>()),
       one_shots_being_invoked_(MakeGarbageCollected<GeoNotifierSet>()),
       geolocation_(navigator.DomWindow()),
-      geolocation_service_(navigator.DomWindow()) {}
+      geolocation_service_(navigator.DomWindow()),
+      permission_service_(navigator.DomWindow()),
+      permission_observer_receiver_(this, navigator.DomWindow()) {}
 
 Geolocation::~Geolocation() = default;
 
@@ -181,6 +183,8 @@ void Geolocation::Trace(Visitor* visitor) const {
   visitor->Trace(last_position_);
   visitor->Trace(geolocation_);
   visitor->Trace(geolocation_service_);
+  visitor->Trace(permission_service_);
+  visitor->Trace(permission_observer_receiver_);
   ScriptWrappable::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
@@ -199,6 +203,8 @@ void Geolocation::ContextDestroyed() {
   StopUpdating();
 
   last_position_ = nullptr;
+  permission_service_.reset();
+  permission_observer_receiver_.reset();
 }
 
 void Geolocation::RecordOriginTypeAccess() const {
@@ -428,8 +434,16 @@ bool Geolocation::DoesOwnNotifier(GeoNotifier* notifier) const {
 }
 
 bool Geolocation::HaveSuitableCachedPosition(const PositionOptions* options) {
-  if (!last_position_)
+  if (!last_position_) {
     return false;
+  }
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled()) {
+    const bool is_requested_approximate =
+        options->accuracyMode().AsEnum() == V8AccuracyMode::Enum::kApproximate;
+    if (is_requested_approximate == last_position_is_precise_) {
+      return false;
+    }
+  }
   EpochTimeStamp current_time_millis =
       ConvertTimeToEpochTimeStamp(base::Time::Now());
   bool is_last_position_suitable =
@@ -645,6 +659,40 @@ void Geolocation::StopUpdating() {
   StopTimers();
 }
 
+void Geolocation::EnsurePermissionObserver(
+    mojom::blink::PermissionStatus last_known_status) {
+  if (permission_observer_receiver_.is_bound() || !GetExecutionContext() ||
+      !GetFrame()) {
+    return;
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      GetExecutionContext()->GetTaskRunner(TaskType::kPermission);
+  if (!permission_service_.is_bound()) {
+    GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+        permission_service_.BindNewPipeAndPassReceiver(task_runner));
+  }
+
+  auto descriptor = mojom::blink::PermissionDescriptor::New();
+  descriptor->name = mojom::blink::PermissionName::GEOLOCATION;
+
+  // OnGeolocationPermissionStatusUpdated does not provide accuracy details, so
+  // passing nullptr may trigger an initial OnPermissionStatusChange. Clearing
+  // last_position_ is benign as GeolocationImpl also caches the position.
+  // TODO(crbug.com/554118510): Return PermissionStatusWithDetails to
+  // OnGeolocationPermissionStatusUpdated to avoid this initial trigger.
+  auto status_with_details = mojom::blink::PermissionStatusWithDetails::New(
+      last_known_status, nullptr);
+
+  permission_service_->AddPermissionObserver(
+      std::move(descriptor), std::move(status_with_details),
+      permission_observer_receiver_.BindNewPipeAndPassRemote(
+          std::move(task_runner)));
+  permission_observer_receiver_.set_disconnect_handler(
+      blink::BindOnce(&Geolocation::OnPermissionObserverConnectionError,
+                      WrapWeakPersistent(this)));
+}
+
 bool Geolocation::EnsureGeolocationConnection() {
   if (geolocation_.is_bound()) {
     return true;
@@ -653,8 +701,11 @@ bool Geolocation::EnsureGeolocationConnection() {
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-  GetFrame()->GetBrowserInterfaceBroker().GetInterface(
-      geolocation_service_.BindNewPipeAndPassReceiver(task_runner));
+  if (!geolocation_service_.is_bound()) {
+    GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+        geolocation_service_.BindNewPipeAndPassReceiver(task_runner));
+  }
+
   geolocation_service_->CreateGeolocation(
       geolocation_.BindNewPipeAndPassReceiver(std::move(task_runner)),
       LocalFrame::HasTransientUserActivation(GetFrame()), GetAccuracyLevel(),
@@ -700,6 +751,7 @@ void Geolocation::OnPositionUpdated(
     if (!ValidateGeoposition(*result->get_position())) {
       return;
     }
+    last_position_is_precise_ = result->get_position()->is_precise;
     last_position_ = CreateGeoposition(*result->get_position());
     PositionChanged();
   } else {
@@ -753,6 +805,11 @@ void Geolocation::OnGeolocationConnectionError() {
   HandlePermissionError();
 }
 
+void Geolocation::OnPermissionObserverConnectionError() {
+  permission_observer_receiver_.reset();
+  permission_service_.reset();
+}
+
 void Geolocation::OnGeolocationPermissionStatusUpdated(
     mojom::blink::PermissionStatus status) {
   permission_request_in_progress_ = false;
@@ -764,16 +821,33 @@ void Geolocation::OnGeolocationPermissionStatusUpdated(
     // A watchPosition() request can be canceled while the permission prompt
     // is showing. Check that we still have listeners before starting updates.
     if (HasListeners()) {
+      EnsurePermissionObserver(status);
       UpdateGeolocationState();
     } else {
       StopUpdating();
     }
   } else {
+    last_position_ = nullptr;
     HandlePermissionError();
   }
 }
 
+void Geolocation::OnPermissionStatusChange(
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  // GeolocationImpl::OnPermissionUpdated already handles denied permission
+  // updates and reports GeopositionErrorCode::kPermissionDenied to active
+  // queries. We only reset last_position_ here to avoid duplicate handling and
+  // prevent returning a cached precise location when the website only has
+  // approximate permission (or no permission).
+  last_position_ = nullptr;
+}
+
 void Geolocation::HandlePermissionError() {
+  last_position_ = nullptr;
   auto* error = MakeGarbageCollected<GeolocationPositionError>(
       GeolocationPositionError::kPermissionDenied,
       kPermissionDeniedErrorMessage);

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
+
+promise_test(async () => {
+  const mock = new GeolocationMock();
+  mock.setGeolocationPosition(31.478, -0.166, 100);
+  await mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
+
+  // First, populate the cached position while permission is granted.
+  const position = await new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+  assert_equals(position.coords.latitude, 31.478);
+  assert_equals(position.coords.longitude, -0.166);
+
+  // Now revoke permission and wait for Mojo IPC to notify renderer.
+  await mock.setGeolocationPermission(GeolocationPermissionStatus.DENIED);
+
+  // Attempt to access the cached position using a large maximumAge.
+  const currentPositionError = await new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+        cachedPosition => reject(new Error('Success callback invoked unexpectedly with cached position after permission revocation')),
+        resolve,
+        { maximumAge: 600000, timeout: 5000 }
+    );
+  });
+  assert_equals(currentPositionError.code, currentPositionError.PERMISSION_DENIED);
+  assert_equals(currentPositionError.message, "User denied Geolocation");
+
+  // Also test that watchPosition with maximumAge fails with PERMISSION_DENIED.
+  const watchError = await new Promise((resolve, reject) => {
+    navigator.geolocation.watchPosition(
+        watchPosition => reject(new Error('Watch success callback invoked unexpectedly after permission revocation')),
+        resolve,
+        { maximumAge: 600000, timeout: 5000 }
+    );
+  });
+  assert_equals(watchError.code, watchError.PERMISSION_DENIED);
+  assert_equals(watchError.message, "User denied Geolocation");
+}, 'Tests that cached geolocation positions are not disclosed after permission is revoked.');
+</script>
+</body>
+</html>

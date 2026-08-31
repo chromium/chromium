@@ -31,6 +31,8 @@
 #include "base/types/expected.h"
 #include "services/device/public/mojom/geolocation.mojom-blink.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_position_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_position_error_callback.h"
@@ -45,6 +47,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -58,12 +61,12 @@ enum class PermissionStatus;
 class LocalFrame;
 class Navigator;
 
-class CORE_EXPORT Geolocation final
-    : public ScriptWrappable,
-      public ActiveScriptWrappable<Geolocation>,
-      public Supplement<Navigator>,
-      public ExecutionContextLifecycleObserver,
-      public PageVisibilityObserver {
+class CORE_EXPORT Geolocation final : public ScriptWrappable,
+                                      public ActiveScriptWrappable<Geolocation>,
+                                      public Supplement<Navigator>,
+                                      public ExecutionContextLifecycleObserver,
+                                      public PageVisibilityObserver,
+                                      public mojom::blink::PermissionObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -199,6 +202,13 @@ class CORE_EXPORT Geolocation final
   // and also  clears the watchers if the error is fatal.
   void HandleError(GeolocationPositionError*);
 
+  // mojom::blink::PermissionObserver:
+  void OnPermissionStatusChange(
+      mojom::blink::PermissionStatusWithDetailsPtr status) override;
+
+  void EnsurePermissionObserver(
+      mojom::blink::PermissionStatus last_known_status);
+
   // Ensures location updates are active and accuracy is
   // always configured based on the current set of requests. This central
   // function should be called whenever active notifiers change or permission is
@@ -238,6 +248,7 @@ class CORE_EXPORT Geolocation final
   void OnPositionUpdated(device::mojom::blink::GeopositionResultPtr);
 
   void OnGeolocationConnectionError();
+  void OnPermissionObserverConnectionError();
 
   // Callback for the asynchronous permission request. Upon invoked, it proceeds
   // with location updates or handles the error.
@@ -265,9 +276,13 @@ class CORE_EXPORT Geolocation final
   Member<GeoNotifierSet> one_shots_being_invoked_;
   HeapVector<Member<GeoNotifier>> watchers_being_invoked_;
   Member<Geoposition> last_position_;
+  bool last_position_is_precise_ = true;
 
   HeapMojoRemote<device::mojom::blink::Geolocation> geolocation_;
   HeapMojoRemote<mojom::blink::GeolocationService> geolocation_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+  HeapMojoReceiver<mojom::blink::PermissionObserver, Geolocation>
+      permission_observer_receiver_;
   // `enable_high_accuracy_` tracks whether any active request has opted into
   // high accuracy. This is used as a hint for the location provider to balance
   // power consumption vs. accuracy.
