@@ -160,35 +160,10 @@ public class TabGroupListBottomSheetMediator {
             insertNewGroupRow(tabs);
         }
 
-        if (mTabGroupSyncService != null) {
-            populateRegularTabGroups(tabs, groupToNotBeIncluded);
-        } else {
-            populateIncognitoTabGroups(tabs, groupToNotBeIncluded);
-        }
+        populateTabGroups(tabs, groupToNotBeIncluded);
     }
 
-    private void populateIncognitoTabGroups(List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
-        for (Token groupId : mTabModel.getAllTabGroupIds()) {
-            if (Objects.equals(groupToNotBeIncluded, groupId)) {
-                continue;
-            }
-
-            LocalTabGroupListBottomSheetRowMediator rowMediator =
-                    new LocalTabGroupListBottomSheetRowMediator(
-                            mContext,
-                            groupId,
-                            mTabModel,
-                            mFaviconResolver,
-                            () -> hide(StateChangeReason.INTERACTION_COMPLETE),
-                            mTabMovedCallback,
-                            tabs);
-            mModelList.add(
-                    new MVCListAdapter.ListItem(RowType.EXISTING_GROUP, rowMediator.getModel()));
-        }
-    }
-
-    private void populateRegularTabGroups(List<Tab> tabs, @Nullable Token groupToFilter) {
-        if (mTabGroupSyncService == null) return;
+    private void populateTabGroups(List<Tab> tabs, @Nullable Token groupToFilter) {
         GroupWindowChecker windowChecker =
                 new GroupWindowChecker(mContext, mTabGroupSyncService, mTabModel);
         List<GroupWindowInfo> sortedTabGroups = windowChecker.getDefaultSortedGroupList();

@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -379,8 +378,10 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         assertEquals(RowType.EXISTING_GROUP, mModelList.get(1).type);
         assertEquals(RowType.EXISTING_GROUP, mModelList.get(2).type);
 
-        assertNull(mModelList.get(1).model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
-        assertNull(mModelList.get(2).model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
+        assertEquals(
+                0L, mModelList.get(1).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
+        assertEquals(
+                0L, mModelList.get(2).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
     }
 
     @Test
