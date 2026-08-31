@@ -1150,7 +1150,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "cpu": "arm64",
-            "os": "Ubuntu-24.04",
+            "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
           "expiration": 7200,
