@@ -5,7 +5,10 @@
 #ifndef CRYPTO_OBSOLETE_SHA1_H_
 #define CRYPTO_OBSOLETE_SHA1_H_
 
+#include <stdint.h>
+
 #include <array>
+#include <string>
 #include <string_view>
 #include <vector>
 
