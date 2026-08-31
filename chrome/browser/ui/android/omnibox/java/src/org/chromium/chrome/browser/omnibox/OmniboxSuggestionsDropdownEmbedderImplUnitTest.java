@@ -97,6 +97,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SettableNonNullObservableSupplier<Integer> mFuseboxLayoutModeSupplier =
             ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
+    private boolean mIsFullWidthExpansionAllowed = true;
 
     @Before
     public void setUp() {
@@ -140,7 +141,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         () -> mBottomWindowPadding,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mTopInsetProvider);
+                        mTopInsetProvider,
+                        () -> mIsFullWidthExpansionAllowed);
     }
 
     @Test
@@ -270,7 +272,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         () -> 0,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mTopInsetProvider);
+                        mTopInsetProvider,
+                        () -> true);
         impl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = impl.getCurrentAlignment();
         assertEquals(
@@ -362,7 +365,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         () -> mBottomWindowPadding,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mTopInsetProvider);
+                        mTopInsetProvider,
+                        () -> true);
 
         impl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = impl.getCurrentAlignment();
@@ -587,7 +591,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                         () -> mBottomWindowPadding,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mTopInsetProvider);
+                        mTopInsetProvider,
+                        () -> true);
 
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(60).when(mHorizontalAlignmentView).getTop();
@@ -720,6 +725,25 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
                 new OmniboxAlignment(
                         10, ANCHOR_TOP, ANCHOR_WIDTH, getExpectedHeight(ANCHOR_TOP), 0, 0, 0, 0),
                 mImpl.getCurrentAlignment());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void
+            testRecalculateOmniboxAlignment_narrowWindow_popover_fullWidthExpansionDisallowed() {
+        mIsFullWidthExpansionAllowed = false;
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        doReturn(10).when(mAnchorView).getLeft();
+        Configuration newConfig = getConfiguration();
+        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
+        mImpl.onConfigurationChanged(newConfig);
+        assertFalse(mImpl.isWideWindow());
+
+        mImpl.recalculateOmniboxAlignment();
+
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(ALIGNMENT_LEFT, alignment.left);
+        assertEquals(ALIGNMENT_WIDTH, alignment.width);
     }
 
     @Test

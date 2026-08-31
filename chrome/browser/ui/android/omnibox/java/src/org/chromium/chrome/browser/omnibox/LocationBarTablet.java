@@ -45,6 +45,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.widget.Toast;
 
+import java.util.function.BooleanSupplier;
+
 /** Location bar for tablet form factors. */
 @NullMarked
 class LocationBarTablet extends LocationBarLayout implements OnLongClickListener {
@@ -101,6 +103,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     // toolbar.
     private View mHolder;
     private @Nullable View mContainerView;
+    private @Nullable BooleanSupplier mIsFullWidthExpansionAllowedSupplier;
     private @FuseboxLayoutMode int mLayoutMode;
     private boolean mIsReparentedToPopover;
     // Target popover geometry, published directly to OmniboxSuggestionsDropdownEmbedderImpl
@@ -211,6 +214,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     public void setHolderAndContainer(ViewGroup holder, @Nullable View containerView) {
         mHolder = holder;
         mContainerView = containerView;
+    }
+
+    @Initializer
+    public void setIsFullWidthExpansionAllowedSupplier(
+            @Nullable BooleanSupplier isFullWidthExpansionAllowedSupplier) {
+        mIsFullWidthExpansionAllowedSupplier = isFullWidthExpansionAllowedSupplier;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -830,7 +839,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         int unexpandedRight = unexpandedLeft + unexpandedWidth;
 
         // Step 2: Determine target width
-        boolean isPhoneWidthScreen = screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        boolean isFullWidthExpansionAllowed =
+                mIsFullWidthExpansionAllowedSupplier == null
+                        || mIsFullWidthExpansionAllowedSupplier.getAsBoolean();
+        boolean isPhoneWidthScreen =
+                isFullWidthExpansionAllowed
+                        && screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         int minTabletWidthPx = resources.getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
 
         int minTargetWidthPx =

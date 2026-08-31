@@ -1547,6 +1547,18 @@ public final class ToolbarTabletUnitTest {
         verify(mToolbarTablet, Mockito.times(2)).onWidthConsumerVisibilityChanged();
     }
 
+    @Test
+    public void testGetContainerView_reflectsRightMargin() {
+        MarginLayoutParams params = new MarginLayoutParams(500, 100);
+        params.rightMargin = 120;
+        mToolbarTabletLayout.setLayoutParams(params);
+
+        View containerView = mToolbarTablet.getContainerView();
+        assertNotNull(containerView);
+        assertEquals(mToolbarTabletLayout, containerView);
+        assertEquals(120, ((MarginLayoutParams) containerView.getLayoutParams()).rightMargin);
+    }
+
     @SuppressWarnings("DirectInvocationOnMock")
     private void assertToolbarComponentsReceivedWidth(
             @ToolbarComponentId Set<Integer> visibleComponents) {

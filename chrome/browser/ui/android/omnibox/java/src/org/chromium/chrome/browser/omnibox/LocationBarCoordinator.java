@@ -345,6 +345,8 @@ public class LocationBarCoordinator
             mLocationBarHolder = (ViewGroup) tabletLayout.getParent();
             tabletLayout.setHolderAndContainer(
                     mLocationBarHolder, mLocationBarEmbedder.getContainerView());
+            tabletLayout.setIsFullWidthExpansionAllowedSupplier(
+                    uiOverrides::isFullWidthExpansionAllowed);
         }
 
         View alignmentView = mLocationBarLayout.getAlignmentView();
@@ -366,7 +368,8 @@ public class LocationBarCoordinator
                         bottomWindowPaddingSupplier,
                         fuseboxStateSupplier,
                         fuseboxLayoutModeSupplier,
-                        topInsetProvider);
+                        topInsetProvider,
+                        uiOverrides::isFullWidthExpansionAllowed);
 
         mPageZoomIndicatorCoordinator =
                 pageZoomManager != null

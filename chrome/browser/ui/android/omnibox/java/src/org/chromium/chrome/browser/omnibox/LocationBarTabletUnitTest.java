@@ -275,6 +275,60 @@ public class LocationBarTabletUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     @Config(qualifiers = "w800dp-xhdpi")
+    public void testFuseboxStateChange_respectsContainerRightMargin() {
+        int windowWidthDp = 500;
+        int captionRightMarginDp = 100;
+        int containerWidthDp = windowWidthDp - captionRightMarginDp;
+        int prefocusWidthDp = 150;
+        int leftPositionDp = 0;
+
+        setupContainerAndMeasure(
+                toPx(containerWidthDp), toPx(prefocusWidthDp), toPx(leftPositionDp));
+        mLocationBarTablet.setIsFullWidthExpansionAllowedSupplier(() -> false);
+
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
+
+        // Expands to container width, leaving the right margin intact.
+        assertEquals(0, layoutParams.leftMargin);
+        assertEquals(
+                toPx(-(containerWidthDp - prefocusWidthDp - leftPositionDp)),
+                layoutParams.rightMargin);
+
+        int expandedRightEdgeDp =
+                leftPositionDp + prefocusWidthDp + (-layoutParams.rightMargin / (int) DIP_SCALE);
+        assertEquals(containerWidthDp, expandedRightEdgeDp);
+        assertTrue(expandedRightEdgeDp <= windowWidthDp - captionRightMarginDp);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @Config(qualifiers = "w500dp-xhdpi")
+    public void testFuseboxStateChange_phoneWidthScreen_whenFullWidthExpansionAllowed() {
+        int containerWidthDp = 400;
+        int prefocusWidthDp = 150;
+        int leftPositionDp = 50;
+
+        setupContainerAndMeasure(
+                toPx(containerWidthDp), toPx(prefocusWidthDp), toPx(leftPositionDp));
+        mLocationBarTablet.setIsFullWidthExpansionAllowedSupplier(() -> true);
+
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
+
+        // Expands to fill available width when on phone-width screen and full-width expansion is
+        // allowed.
+        assertEquals(-toPx(leftPositionDp), layoutParams.leftMargin);
+        assertEquals(
+                toPx(-(containerWidthDp - prefocusWidthDp - leftPositionDp)),
+                layoutParams.rightMargin);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @Config(qualifiers = "w800dp-xhdpi")
     public void testFuseboxStateChange_clampsToContainerWidthAndShiftsLeft() {
         int containerWidthDp = 400;
         int prefocusWidthDp = 225;

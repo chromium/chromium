@@ -1472,16 +1472,21 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         updateSystemGestureExclusions();
     }
 
-    @Override
-    public void setSystemGestureExclusionRects(List<Rect> rects) {
+    /** Returns whether the toolbar is in the same row as the window caption buttons. */
+    public boolean isToolbarInAppHeader() {
         AppHeaderState appHeaderState = getAppHeaderState();
         boolean isVerticalTabsActive =
                 mIsVerticalTabsActiveSupplier != null && mIsVerticalTabsActiveSupplier.get();
-        if (appHeaderState != null
+        return appHeaderState != null
                 && appHeaderState.isInDesktopWindow()
                 && isVerticalTabsActive
-                && mTabStripHeight == 0
-                && getWidth() > 0) {
+                && mTabStripHeight == 0;
+    }
+
+    @Override
+    public void setSystemGestureExclusionRects(List<Rect> rects) {
+        AppHeaderState appHeaderState = getAppHeaderState();
+        if (isToolbarInAppHeader() && appHeaderState != null && getWidth() > 0) {
             // The left edge of the exclusion rectangle must start at 0 so that toolbar buttons
             // located on the left of the toolbar (such as back, forward, reload, and home buttons)
             // are included in the system gesture exclusion rectangle and receive mouse clicks

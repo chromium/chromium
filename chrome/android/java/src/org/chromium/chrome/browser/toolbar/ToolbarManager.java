@@ -922,6 +922,8 @@ public class ToolbarManager
                         /* matchTrustedCdnUrl= */ mIsCustomTab);
         mControlContainer = controlContainer;
         mControlContainer.setToolbarRightMarginCallback(this::onToolbarRightMarginChanged);
+        mLocationBarEmbedderUiOverrides.setIsFullWidthExpansionAllowedSupplier(
+                () -> !mControlContainer.isToolbarInAppHeader());
         mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
 
         mBookmarkModelSupplier = bookmarkModelSupplier;

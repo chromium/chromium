@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -82,5 +84,16 @@ public class LocationBarEmbedderUiOverridesUnitTest {
         mUiOverrides.setSideUiStateProvider(mSideUiStateProvider2);
         verify(mObserver1).onResult(any());
         verify(mObserver2).onResult(mSideUiStateProvider2);
+    }
+
+    @Test
+    public void testIsFullWidthExpansionAllowed() {
+        assertTrue(mUiOverrides.isFullWidthExpansionAllowed());
+
+        mUiOverrides.setIsFullWidthExpansionAllowedSupplier(() -> false);
+        assertFalse(mUiOverrides.isFullWidthExpansionAllowed());
+
+        mUiOverrides.setIsFullWidthExpansionAllowedSupplier(() -> true);
+        assertTrue(mUiOverrides.isFullWidthExpansionAllowed());
     }
 }

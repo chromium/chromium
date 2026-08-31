@@ -11,6 +11,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * Data class defining UI overrides for the {@link LocationBar}.
  *
@@ -27,6 +29,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 public class LocationBarEmbedderUiOverrides {
     private final SettableNullableObservableSupplier<SideUiStateProvider>
             mSideUiStateProviderSupplier = ObservableSuppliers.createNullable();
+
+    private @Nullable BooleanSupplier mIsFullWidthExpansionAllowedSupplier;
     private boolean mForcedPhoneStyleOmnibox;
     private boolean mLensEntrypointAllowed;
     private boolean mVoiceEntrypointAllowed;
@@ -144,5 +148,26 @@ public class LocationBarEmbedderUiOverrides {
     /** Returns the {@link NullableObservableSupplier} for the {@link SideUiStateProvider}. */
     public NullableObservableSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
         return mSideUiStateProviderSupplier;
+    }
+
+    /**
+     * Whether full-width expansion is allowed when the screen or window is narrow. Defaults to
+     * true.
+     */
+    public boolean isFullWidthExpansionAllowed() {
+        return mIsFullWidthExpansionAllowedSupplier == null
+                || mIsFullWidthExpansionAllowedSupplier.getAsBoolean();
+    }
+
+    /**
+     * Specify the supplier for whether full-width expansion is allowed when narrow.
+     *
+     * @param supplier The supplier returning true if full-width expansion is permitted.
+     * @return {@code this} for call chaining.
+     */
+    public LocationBarEmbedderUiOverrides setIsFullWidthExpansionAllowedSupplier(
+            BooleanSupplier supplier) {
+        mIsFullWidthExpansionAllowedSupplier = supplier;
+        return this;
     }
 }

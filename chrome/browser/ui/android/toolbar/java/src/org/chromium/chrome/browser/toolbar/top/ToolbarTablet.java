@@ -521,6 +521,11 @@ public class ToolbarTablet extends ToolbarLayout {
         return mLocationBar;
     }
 
+    @Override
+    public View getContainerView() {
+        return mToolbarTabletLayout;
+    }
+
     public LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mLocationBar;
     }

@@ -36,6 +36,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -75,6 +76,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final @Nullable View mBaseChromeLayout;
     private final Supplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Supplier<@FuseboxLayoutMode Integer> mFuseboxLayoutModeSupplier;
+    private final BooleanSupplier mIsFullWidthExpansionAllowedSupplier;
 
     /**
      * @param resourceProvider Resource cache for fast resource lookup.
@@ -106,6 +108,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * @param fuseboxStateSupplier Supplier of the current FuseboxState.
      * @param fuseboxLayoutModeSupplier Supplier of the current FuseboxLayoutMode.
      * @param topInsetProvider Provider for edge-to-edge top inset changes.
+     * @param isFullWidthExpansionAllowedSupplier Supplier returning true if full-width expansion is
+     *     permitted for narrow windows.
      */
     OmniboxSuggestionsDropdownEmbedderImpl(
             OmniboxResourceProvider resourceProvider,
@@ -121,7 +125,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             Supplier<Integer> bottomWindowPaddingSupplier,
             Supplier<@FuseboxState Integer> fuseboxStateSupplier,
             Supplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
-            TopInsetProvider topInsetProvider) {
+            TopInsetProvider topInsetProvider,
+            BooleanSupplier isFullWidthExpansionAllowedSupplier) {
         mResourceProvider = resourceProvider;
         mWindowAndroid = windowAndroid;
         mAnchorView = anchorView;
@@ -141,6 +146,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mFuseboxLayoutModeSupplier = fuseboxLayoutModeSupplier;
         mTopInsetProvider = topInsetProvider;
+        mIsFullWidthExpansionAllowedSupplier = isFullWidthExpansionAllowedSupplier;
         recalculateOmniboxAlignment();
 
         // Set up observer to handle edge-to-edge changes.
@@ -351,7 +357,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             }
             // Ensures full-width dropdown on narrow windows with popover suggestions.
             if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                    && !isWideWindow()) {
+                    && !isWideWindow()
+                    && mIsFullWidthExpansionAllowedSupplier.getAsBoolean()) {
                 left = mAnchorView.getLeft();
                 width = mAnchorView.getWidth();
             }

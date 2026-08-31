@@ -707,6 +707,7 @@ public class ToolbarControlContainerTest {
         // but is skipped since the initial margin is already 0.
         mControlContainer.onHeightChanged(80, 20, false);
         verify(mRightMarginCallback, never()).onResult(0);
+        assertFalse(mControlContainer.isToolbarInAppHeader());
 
         // Set app header with 10px padding on left, 20px on right, and 100px height.
         var appHeaderState =
@@ -717,10 +718,12 @@ public class ToolbarControlContainerTest {
         // right padding 20).
         mControlContainer.onHeightChanged(0, 20, false);
         verify(mRightMarginCallback).onResult(20);
+        assertTrue(mControlContainer.isToolbarInAppHeader());
 
         // Disable vertical tabs while tab strip height is 0. Callback should be called with 0.
         isVerticalTabsActiveSupplier.set(false);
         verify(mRightMarginCallback).onResult(0);
+        assertFalse(mControlContainer.isToolbarInAppHeader());
 
         // Exit desktop window. Margin is still 0, so callback should not be called again.
         var appHeaderState2 =
@@ -728,6 +731,7 @@ public class ToolbarControlContainerTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState2);
         mControlContainer.onAppHeaderStateChanged(appHeaderState2);
         verify(mRightMarginCallback).onResult(0);
+        assertFalse(mControlContainer.isToolbarInAppHeader());
     }
 
     @Test
