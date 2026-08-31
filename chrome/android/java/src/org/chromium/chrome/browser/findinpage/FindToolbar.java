@@ -9,8 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -64,6 +62,7 @@ import org.chromium.components.find_in_page.FindInPageBridge;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.components.find_in_page.FindResultBar;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -174,34 +173,29 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         @Override
         public boolean onTextContextMenuItem(int id) {
             if (id == android.R.id.paste) {
-                ClipboardManager clipboard =
-                        (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = clipboard.getPrimaryClip();
-                if (clipData != null) {
-                    // Convert the clip data to a simple string
-                    StringBuilder builder = new StringBuilder();
-                    for (int i = 0; i < clipData.getItemCount(); i++) {
-                        builder.append(clipData.getItemAt(i).coerceToText(getContext()));
-                    }
-
-                    // Identify how much of the original text should be replaced
-                    var text = getText();
-                    assumeNonNull(text);
-                    int min = 0;
-                    int max = text.length();
-
-                    if (isFocused()) {
-                        final int selStart = getSelectionStart();
-                        final int selEnd = getSelectionEnd();
-
-                        min = Math.max(0, Math.min(selStart, selEnd));
-                        max = Math.max(0, Math.max(selStart, selEnd));
-                    }
-
-                    Selection.setSelection(text, max);
-                    text.replace(min, max, builder.toString());
+                String textToPaste = Clipboard.getInstance().getCoercedText();
+                if (textToPaste == null) {
+                    // Consume the paste action to avoid falling back to TextView's default paste.
                     return true;
                 }
+
+                // Identify how much of the original text should be replaced
+                var text = getText();
+                assumeNonNull(text);
+                int min = 0;
+                int max = text.length();
+
+                if (isFocused()) {
+                    final int selStart = getSelectionStart();
+                    final int selEnd = getSelectionEnd();
+
+                    min = Math.max(0, Math.min(selStart, selEnd));
+                    max = Math.max(0, Math.max(selStart, selEnd));
+                }
+
+                Selection.setSelection(text, max);
+                text.replace(min, max, textToPaste);
+                return true;
             }
             return super.onTextContextMenuItem(id);
         }
