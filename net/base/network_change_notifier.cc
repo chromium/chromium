@@ -570,6 +570,7 @@ bool NetworkChangeNotifier::IsConnectionCellular(ConnectionType type) {
   return is_cellular;
 }
 
+#if !BUILDFLAG(IS_IOS)
 // static
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifier::ConnectionTypeFromInterfaces() {
@@ -578,7 +579,9 @@ NetworkChangeNotifier::ConnectionTypeFromInterfaces() {
     return CONNECTION_UNKNOWN;
   return ConnectionTypeFromInterfaceList(interfaces);
 }
+#endif
 
+#if !BUILDFLAG(IS_IOS)
 // static
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifier::ConnectionTypeFromInterfaceList(
@@ -613,6 +616,7 @@ NetworkChangeNotifier::ConnectionTypeFromInterfaceList(
   }
   return result;
 }
+#endif
 
 // static
 std::unique_ptr<NetworkChangeNotifier>

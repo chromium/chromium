@@ -71,6 +71,12 @@ TEST(NetworkChangeNotifierTest, NetMaxBandwidthRange) {
   }
 }
 
+#if !BUILDFLAG(IS_IOS)
+// Tests that ConnectionTypeFromInterfaceList() works as expected.
+//
+// As the method is not available on iOS (as the connection type cannot be
+// retrieved for a NetworkInterface using the public API) disable the test
+// on that OS.
 TEST(NetworkChangeNotifierTest, ConnectionTypeFromInterfaceList) {
   NetworkInterfaceList list;
 
@@ -99,7 +105,15 @@ TEST(NetworkChangeNotifierTest, ConnectionTypeFromInterfaceList) {
     }
   }
 }
+#endif
 
+#if !BUILDFLAG(IS_IOS)
+// Tests that ConnectionTypeFromInterfaceList() works as expected and that
+// the Teredo pseudo interface is ignored on Windows.
+//
+// As the method is not available on iOS (as the connection type cannot be
+// retrieved for a NetworkInterface using the public API) disable the test
+// on that OS.
 TEST(NetworkChangeNotifierTest, IgnoreTeredoOnWindows) {
   NetworkInterfaceList list;
   NetworkInterface interface_teredo;
@@ -115,7 +129,15 @@ TEST(NetworkChangeNotifierTest, IgnoreTeredoOnWindows) {
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #endif
 }
+#endif
 
+#if !BUILDFLAG(IS_IOS)
+// Tests that ConnectionTypeFromInterfaceList() works as expected and that
+// Air Drop interfaces are ignored on macOS.
+//
+// As the method is not available on iOS (as the connection type cannot be
+// retrieved for a NetworkInterface using the public API) disable the test
+// on that OS.
 TEST(NetworkChangeNotifierTest, IgnoreAirdropOnMac) {
   NetworkInterfaceList list;
   NetworkInterface interface_airdrop;
@@ -135,7 +157,15 @@ TEST(NetworkChangeNotifierTest, IgnoreAirdropOnMac) {
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #endif
 }
+#endif
 
+#if !BUILDFLAG(IS_IOS)
+// Tests that ConnectionTypeFromInterfaceList() works as expected and that
+// tunnel interfaces are ignored on macOS.
+//
+// As the method is not available on iOS (as the connection type cannot be
+// retrieved for a NetworkInterface using the public API) disable the test
+// on that OS.
 TEST(NetworkChangeNotifierTest, IgnoreTunnelsOnMac) {
   NetworkInterfaceList list;
   NetworkInterface interface_tunnel;
@@ -155,7 +185,15 @@ TEST(NetworkChangeNotifierTest, IgnoreTunnelsOnMac) {
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #endif
 }
+#endif
 
+#if !BUILDFLAG(IS_IOS)
+// Tests that ConnectionTypeFromInterfaceList() works as expected and that
+// disconnected ethernet interfaces are ignored on macOS.
+//
+// As the method is not available on iOS (as the connection type cannot be
+// retrieved for a NetworkInterface using the public API) disable the test
+// on that OS.
 TEST(NetworkChangeNotifierTest, IgnoreDisconnectedEthernetOnMac) {
   NetworkInterfaceList list;
   NetworkInterface interface_ethernet;
@@ -175,7 +213,15 @@ TEST(NetworkChangeNotifierTest, IgnoreDisconnectedEthernetOnMac) {
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #endif
 }
+#endif
 
+#if !BUILDFLAG(IS_IOS)
+// Tests that ConnectionTypeFromInterfaceList() works as expected and that
+// VMWare virtual interfaces are ignored.
+//
+// As the method is not available on iOS (as the connection type cannot be
+// retrieved for a NetworkInterface using the public API) disable the test
+// on that OS.
 TEST(NetworkChangeNotifierTest, IgnoreVMInterfaces) {
   NetworkInterfaceList list;
   NetworkInterface interface_vmnet_linux;
@@ -193,6 +239,7 @@ TEST(NetworkChangeNotifierTest, IgnoreVMInterfaces) {
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 }
+#endif
 
 TEST(NetworkChangeNotifierTest, GetConnectionSubtype) {
   // Call GetConnectionSubtype() and ensure that there is no crash.

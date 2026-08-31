@@ -157,6 +157,59 @@ base::DictValue NetLogOsConfigChangedParams(
 
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_IOS)
+// Get the connection type from `path`. If `path` references more than one
+// interfaces, return CONNECTION_UNKNOWN unless all the interfaces are of
+// the same type (to mirror the logic in ConnectionTypeFromInterfaceList).
+//
+// While it is possible to list the available interfaces on iOS, using the
+// getifaddrs() POSIX API, there is no API to get the connection type from
+// them. The nw_path_t instance however allow iterating over the available
+// nw_interface_t and retrieve from them the connection type. This appears
+// the be the only available API exposing this information (i.e. it is not
+// possible to list all nw_interface_t without having an nw_path_t first).
+NetworkChangeNotifier::ConnectionType ConnectionTypeFromPath(nw_path_t path) {
+  __block bool is_first = true;
+  __block nw_interface_type_t type = nw_interface_type_other;
+  nw_path_enumerate_interfaces(path, ^bool(nw_interface_t interface) {
+    nw_interface_type_t inner_type = nw_interface_get_type(interface);
+    if (is_first) {
+      is_first = false;
+      type = inner_type;
+    } else if (type != inner_type) {
+      // There is more than one interface, and they do not have not have
+      // the same type. Stop the iteration and set up the type so that
+      // the function will return CONNECTION_UNKNOWN to replicate the logic
+      // from ConnectionTypeFromInterfaceList.
+      type = nw_interface_type_other;
+      return false;
+    }
+
+    return true;
+  });
+
+  switch (type) {
+    case nw_interface_type_wifi:
+      return NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI;
+
+    case nw_interface_type_wired:
+      return NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET;
+
+    case nw_interface_type_cellular:
+      return NetworkChangeNotifier::ConnectionType::CONNECTION_5G;
+
+    case nw_interface_type_loopback:
+      return NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
+
+    case nw_interface_type_other:
+      return NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
+  }
+
+  DLOG(WARNING) << "unknown connection type: " << type;
+  return NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
+}
+#endif
+
 }  // namespace
 
 #if defined(COMPILE_OLD_NOTIFIER_IMPL)
@@ -259,7 +312,15 @@ NetworkChangeNotifierApple::CalculateConnectionType(
   if (!reachable)
     return CONNECTION_NONE;
 
-#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+#if !BUILDFLAG(IS_IOS)
+  return ConnectionTypeFromInterfaces();
+#elif BUILDFLAG(IS_IOS_TVOS)
+  // On TVOS, it is not possible to determine the type of connection as neither
+  // ConnectionTypeFromInterfaces() nor CTTelephonyNetworkInfo are available.
+  return CONNECTION_UNKNOWN;
+#else
+  // On iOS, ConnectionTypeFromInterfaces() is not available, so try to detect
+  // the connection type using CTTelephonyNetworkInfo.
   if (!(flags & kSCNetworkReachabilityFlagsIsWWAN)) {
     return CONNECTION_WIFI;
   }
@@ -320,9 +381,7 @@ NetworkChangeNotifierApple::CalculateConnectionType(
       // Default to CONNECTION_3G to not change existing behavior.
       return CONNECTION_3G;
   }
-
-#else
-  return ConnectionTypeFromInterfaces();
+  return CONNECTION_UNKNOWN;
 #endif
 }
 #endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
@@ -606,9 +665,15 @@ bool NetworkChangeNotifierApple::EnsureNetworkPathMonitorStarted() {
         NetworkChangeNotifier::CONNECTION_NONE;
     switch (nw_path_get_status(path)) {
       case nw_path_status_satisfied:
+#if !BUILDFLAG(IS_IOS)
         // A fully satisfied path means we can derive the connection type from
         // the active interfaces.
         new_type = ConnectionTypeFromInterfaces();
+#else
+        // On iOS, it is not possible to get the connection type directly but
+        // the path give access to them.
+        new_type = ConnectionTypeFromPath(path);
+#endif
         break;
       case nw_path_status_satisfiable:
         // The path could become satisfied if the system performs extra work

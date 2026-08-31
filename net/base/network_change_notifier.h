@@ -526,12 +526,20 @@ class NET_EXPORT NetworkChangeNotifier {
   // current connection is cellular.
   static bool IsConnectionCellular(ConnectionType type);
 
+#if !BUILDFLAG(IS_IOS)
   // Gets the current connection type based on |interfaces|. Returns
   // CONNECTION_NONE if there are no interfaces, CONNECTION_UNKNOWN if two
   // interfaces have different connection types or the connection type of all
   // interfaces if they have the same interface type.
+  //
+  // On iOS, it is possible to list all the available interfaces using the
+  // same API (net::GetNetworkList()) but the connection type is missing,
+  // meaning that method would always return CONNECTION_UNKNOWN. For this
+  // reason the method is marked as unavailable on iOS to prevents using it
+  // in cross-platform code.
   static ConnectionType ConnectionTypeFromInterfaceList(
       const NetworkInterfaceList& interfaces);
+#endif
 
   // Like CreateIfNeeded(), but for use in tests. The mock object doesn't
   // monitor any events, it merely rebroadcasts notifications when requested.
@@ -725,9 +733,17 @@ class NET_EXPORT NetworkChangeNotifier {
   static void NotifyObserversOfConnectionCostChange();
   static void NotifyObserversOfDefaultNetworkActive();
 
+#if !BUILDFLAG(IS_IOS)
   // Infer connection type from |GetNetworkList|. If all network interfaces
   // have the same type, return it, otherwise return CONNECTION_UNKNOWN.
+  //
+  // On iOS, it is possible to list all the available interfaces using the
+  // same API (net::GetNetworkList()) but the connection type is missing,
+  // meaning that method would always return CONNECTION_UNKNOWN. For this
+  // reason the method is marked as unavailable on iOS to prevents using it
+  // in cross-platform code.
   static ConnectionType ConnectionTypeFromInterfaces();
+#endif
 
   // Unregisters and clears |system_dns_config_notifier_|. Useful if a subclass
   // owns the notifier and is destroying it before |this|'s destructor is called
