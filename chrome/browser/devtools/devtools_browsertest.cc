@@ -157,12 +157,11 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "extensions/common/extension_builder.h"
-#include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -175,6 +174,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1346,9 +1346,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_EQ(extensions_instance->GetProcess(),
             data_frame_rfh->GetSiteInstance()->GetProcess());
 
-  EXPECT_EQ(web_url.GetHost(), web_frame_rfh->GetSiteInstance()
-                                   ->GetSecurityPrincipal()
-                                   .GetHost());
+  EXPECT_EQ(web_url.GetHost(),
+            web_frame_rfh->GetSiteInstance()->GetSecurityPrincipal().GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
 
@@ -1366,9 +1365,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   web_frame_rfh = ChildFrameAt(panel_frame_rfh, 2);
 
   EXPECT_EQ(about_blank_url, web_frame_rfh->GetLastCommittedURL());
-  EXPECT_EQ(web_url.GetHost(), web_frame_rfh->GetSiteInstance()
-                                   ->GetSecurityPrincipal()
-                                   .GetHost());
+  EXPECT_EQ(web_url.GetHost(),
+            web_frame_rfh->GetSiteInstance()->GetSecurityPrincipal().GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
 
@@ -1465,9 +1463,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
             devtools_extension_devtools_page_rfh->GetSiteInstance());
   EXPECT_EQ(extensions_instance,
             devtools_sidebar_pane_extension_rfh->GetSiteInstance());
-  EXPECT_EQ(web_url.GetHost(), http_iframe_rfh->GetSiteInstance()
-                                   ->GetSecurityPrincipal()
-                                   .GetHost());
+  EXPECT_EQ(
+      web_url.GetHost(),
+      http_iframe_rfh->GetSiteInstance()->GetSecurityPrincipal().GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
@@ -1541,9 +1539,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
       content::kChromeDevToolsScheme));
   EXPECT_NE(devtools_instance, extensions_instance);
-  EXPECT_EQ(web_url.GetHost(), http_iframe_rfh->GetSiteInstance()
-                                   ->GetSecurityPrincipal()
-                                   .GetHost());
+  EXPECT_EQ(
+      web_url.GetHost(),
+      http_iframe_rfh->GetSiteInstance()->GetSecurityPrincipal().GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
@@ -3195,7 +3193,8 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* iframe_host =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe_host);
-  EXPECT_FALSE(IsInspectionAllowed(browser()->GetProfile(), iframe_host->GetLastCommittedURL()));
+  EXPECT_FALSE(IsInspectionAllowed(browser()->GetProfile(),
+                                   iframe_host->GetLastCommittedURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4081,6 +4080,54 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(iframe_host);
   EXPECT_FALSE(IsInspectionAllowed(chrome_test_utils::GetProfile(this),
                                    iframe_host->GetLastCommittedURL()));
+}
+
+class DevToolsPolicyTargetLevelEvaluationDisabledTest
+    : public DevToolsPolicyTest {
+ public:
+  DevToolsPolicyTargetLevelEvaluationDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDevToolsTargetLevelEvaluation);
+  }
+
+  ~DevToolsPolicyTargetLevelEvaluationDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTargetLevelEvaluationDisabledTest,
+                       PageWithBlocklistedIframeBlocksDevTools) {
+  GURL blocked_url(embedded_test_server()->GetURL("/title1.html"));
+
+  base::ListValue blocklist;
+  blocklist.Append(blocked_url.spec());
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDeveloperToolsAvailabilityBlocklist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(blocklist)),
+               nullptr);
+  provider_.UpdateChromePolicy(policies);
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/devtools/empty.html")));
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
+
+  content::TestNavigationObserver nav_observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(),
+                              "let iframe = document.createElement('iframe');"
+                              "iframe.src = '" +
+                                  blocked_url.spec() +
+                                  "';"
+                                  "document.body.appendChild(iframe);"));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, AllowlistedUrlStaysOpenOnReload) {

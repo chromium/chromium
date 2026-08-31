@@ -261,4 +261,7 @@ BASE_FEATURE(kDevToolsAriaLiveRecording, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether mobile safe area emulation is enabled in DevTools.
 BASE_FEATURE(kDevToolsMobileSafeAreaEmulation,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether DevTools availability checking is performed at the target level.
+BASE_FEATURE(kDevToolsTargetLevelEvaluation, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features

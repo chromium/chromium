@@ -148,6 +148,8 @@ BASE_DECLARE_FEATURE(kDevToolsSourceMapScopesInSourcesPanel);
 BASE_DECLARE_FEATURE(kDevToolsAriaLiveRecording);
 
 BASE_DECLARE_FEATURE(kDevToolsMobileSafeAreaEmulation);
+
+BASE_DECLARE_FEATURE(kDevToolsTargetLevelEvaluation);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

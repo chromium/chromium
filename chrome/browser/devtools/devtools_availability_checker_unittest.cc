@@ -4,7 +4,9 @@
 
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -571,4 +573,38 @@ TEST_F(DevToolsAvailabilityCheckerTest, TargetLevelSubframeBlocked) {
   // blocked.
   EXPECT_FALSE(
       IsInspectionAllowed(profile_.get(), GURL("https://blocked.com/iframe")));
+}
+
+class DevToolsAvailabilityCheckerTargetLevelDisabledTest
+    : public DevToolsAvailabilityCheckerTest {
+ public:
+  DevToolsAvailabilityCheckerTargetLevelDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDevToolsTargetLevelEvaluation);
+  }
+
+  ~DevToolsAvailabilityCheckerTargetLevelDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DevToolsAvailabilityCheckerTargetLevelDisabledTest,
+       SubframeBlockedByBlocklistPolicy) {
+  base::ListValue blocklist;
+  blocklist.Append("blocked.com");
+  profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
+                                std::move(blocklist));
+
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://allowed.com/page"));
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+          ->AppendChild("subframe");
+  content::RenderFrameHostTester::For(subframe)
+      ->InitializeRenderFrameIfNeeded();
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://blocked.com/iframe"), subframe);
+
+  EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
 }
