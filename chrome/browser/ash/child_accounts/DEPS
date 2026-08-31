@@ -19,6 +19,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/supervised_user",
   "+chrome/grit",
+
+  # Dependencies outside of //chrome:
+  "+ui/message_center/message_center.h",
 ]
 
 # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -41,5 +44,8 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/create_browser_window.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
+  ],
+  "website_approval_notifier_unittest\\.cc": [
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   ],
 }
