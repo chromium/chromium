@@ -257,6 +257,10 @@ class PasswordChangeBrowserTest : public base::test::WithFeatureOverride,
   }
 
   void SetPrivacyNoticeAcceptedPref() {
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        password_manager::prefs::
+            kPasswordChangeWithPrivateInferenceNoticeAgreement,
+        true);
     ON_CALL(*mock_optimization_guide_keyed_service(),
             ShouldFeatureBeCurrentlyEnabledForUser(
                 optimization_guide::UserVisibleFeatureKey::

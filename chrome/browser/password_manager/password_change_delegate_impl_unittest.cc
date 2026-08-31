@@ -621,6 +621,7 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+  SetOptimizationFeatureEnabled(true);
 
   CreateDelegate();
 
@@ -634,6 +635,12 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
       ->mutable_is_logged_in_data()
       ->set_is_logged_in(true);
 
+  // Even though Optimization Guide feature is enabled (e.g. legacy APC was
+  // accepted), the user must still agree to the new Private Inference notice.
+  EXPECT_FALSE(prefs()->GetBoolean(
+      password_manager::prefs::
+          kPasswordChangeWithPrivateInferenceNoticeAgreement));
+
   delegate()->login_checker()->RespondWithLoginStatus(
       LoginCheckResult::Status::kLoggedIn, std::move(logging_data));
   EXPECT_EQ(delegate()->GetCurrentState(),
@@ -645,6 +652,15 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
 
   delegate()->OnPrivacyNoticeAccepted();
 
+  EXPECT_TRUE(prefs()->GetBoolean(
+      password_manager::prefs::
+          kPasswordChangeWithPrivateInferenceNoticeAgreement));
+  EXPECT_EQ(
+      prefs()->GetInteger(optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::
+              kPasswordChangeSubmission)),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
   optimization_guide::proto::PasswordChangeQuality quality =
       delegate()
           ->logs_uploader()
@@ -654,6 +670,21 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
   EXPECT_TRUE(quality.has_logged_in_check());
   EXPECT_TRUE(
       quality.logged_in_check().response().is_logged_in_data().is_logged_in());
+
+  // Subsequent flow with notice already accepted transitions directly to
+  // offering without re-showing the privacy notice.
+  ResetDelegate();
+  CreateDelegate();
+  ASSERT_TRUE(delegate()->login_checker());
+  auto subsequent_logging_data = std::make_unique<
+      optimization_guide::proto::PasswordChangeSubmissionLoggingData>();
+  subsequent_logging_data->mutable_response()
+      ->mutable_is_logged_in_data()
+      ->set_is_logged_in(true);
+  delegate()->login_checker()->RespondWithLoginStatus(
+      LoginCheckResult::Status::kLoggedIn, std::move(subsequent_logging_data));
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeDelegate::State::kOfferingPasswordChange);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {

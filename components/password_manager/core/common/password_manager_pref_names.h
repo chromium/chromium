@@ -252,6 +252,11 @@ inline constexpr char kPasswordManagerPromoCardsList[] =
     "password_manager.password_promo_cards_list";
 #endif
 
+// Boolean pref indicating whether the user has accepted the privacy notice
+// agreement for starting the password change flow with private inference.
+inline constexpr char kPasswordChangeWithPrivateInferenceNoticeAgreement[] =
+    "password_manager.password_change_with_private_inference_notice_agreement";
+
 // Boolean pref indicating whether password sharing is enabled. Enables both
 // sending and receiving passwords.
 inline constexpr char kPasswordSharingEnabled[] =

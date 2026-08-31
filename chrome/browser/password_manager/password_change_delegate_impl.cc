@@ -517,6 +517,14 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
         BrowserSavePasswordProgressLogger::
             STRING_AUTOMATED_PASSWORD_CHANGE_PRIVACY_NOTICE_ACCEPTED);
   }
+  if (base::FeatureList::IsEnabled(
+          password_change::features::
+              kPasswordChangeWithPrivateInferenceLoginCheck)) {
+    profile_->GetPrefs()->SetBoolean(
+        password_manager::prefs::
+            kPasswordChangeWithPrivateInferenceNoticeAgreement,
+        true);
+  }
   // Enable via the Optimization Guide's pref.
   profile_->GetPrefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
@@ -582,10 +590,22 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
 bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
   const OptimizationGuideKeyedService* const opt_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
-  return opt_guide_keyed_service != nullptr &&
-         opt_guide_keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
-             optimization_guide::UserVisibleFeatureKey::
-                 kPasswordChangeSubmission);
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
+          optimization_guide::UserVisibleFeatureKey::
+              kPasswordChangeSubmission)) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          password_change::features::
+              kPasswordChangeWithPrivateInferenceLoginCheck)) {
+    return profile_->GetPrefs()->GetBoolean(
+        password_manager::prefs::
+            kPasswordChangeWithPrivateInferenceNoticeAgreement);
+  }
+
+  return true;
 }
 
 std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
