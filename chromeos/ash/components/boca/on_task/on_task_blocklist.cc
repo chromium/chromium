@@ -105,21 +105,20 @@ policy::URLBlocklist::URLBlocklistState OnTaskBlocklist::GetURLBlocklistState(
     return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
-  // Evaluate domain restrictions synchronously to account for background tab
-  // navigations. We cannot rely on the blocklist override since those are only
-  // refreshed on tab activation and are based on the nav restrictions enforced
-  // on the foreground tab.
+  // Evaluate domain and block restrictions synchronously to account for
+  // background tab navigations. We cannot rely on the blocklist override since
+  // those are only refreshed on tab activation and are based on the nav
+  // restrictions enforced on the foreground tab.
   const GURL tab_original_url = GetOriginalURLForTab(tab);
-  if (tab_original_url.is_valid() &&
-      restriction_level == LockedNavigationOptions::DOMAIN_NAVIGATION) {
-    return IsURLInDomain(url, tab_original_url)
+  if (restriction_level == LockedNavigationOptions::DOMAIN_NAVIGATION) {
+    return (tab_original_url.is_valid() && IsURLInDomain(url, tab_original_url))
                ? policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
                : policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
   }
 
-  if (tab_original_url.is_valid() &&
-      restriction_level == LockedNavigationOptions::BLOCK_NAVIGATION) {
-    return tab_original_url == url
+  if (restriction_level == LockedNavigationOptions::BLOCK_NAVIGATION ||
+      restriction_level == LockedNavigationOptions::NAVIGATION_TYPE_UNKNOWN) {
+    return (tab_original_url.is_valid() && tab_original_url == url)
                ? policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
                : policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
   }

@@ -715,6 +715,55 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
+                       BackgroundTabNavigationEnforcesUnknownNavRestriction) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  BrowserWindowInterface* const boca_app_browser =
+      FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca::OnTaskLockedController::From(boca_app_browser)
+                  ->is_locked_for_on_task());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->GetSessionID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+
+  // Spawn foreground tab (Tab 1) with OPEN_NAVIGATION.
+  const GURL tab_url_1 = embedded_test_server()->GetURL(kTabUrl1Host, "/");
+  CreateBackgroundTabAndWait(window_id, tab_url_1,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+
+  // Spawn background tab (Tab 2) with NAVIGATION_TYPE_UNKNOWN.
+  const GURL tab_url_2 = embedded_test_server()->GetURL(kTabUrl2Host, "/");
+  CreateBackgroundTabAndWait(
+      window_id, tab_url_2,
+      ::boca::LockedNavigationOptions::NAVIGATION_TYPE_UNKNOWN);
+  auto* const tab_strip_model = boca_app_browser->GetTabStripModel();
+  ASSERT_EQ(tab_strip_model->count(), 3);
+
+  // Activate Tab 1 (so Tab 2 is in the background).
+  tab_strip_model->ActivateTabAt(1);
+  WaitForUrlBlocklistUpdate();
+
+  // Attempt to navigate Tab 2 (background) to a different URL.
+  content::WebContents* const background_contents =
+      tab_strip_model->GetWebContentsAt(2);
+  const GURL different_domain_url =
+      embedded_test_server()->GetURL(kTabUrl1Host, "/some-page");
+  EXPECT_FALSE(
+      content::NavigateToURL(background_contents, different_domain_url));
+
+  // Verify the navigation was blocked on the background tab.
+  EXPECT_EQ(background_contents->GetLastCommittedURL(), tab_url_2);
+  VerifyUrlBlockedToastShown(/*toast_was_shown=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                        BlockNewChildTabWhenParentOneLevelDeepQuotaIsConsumed) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
