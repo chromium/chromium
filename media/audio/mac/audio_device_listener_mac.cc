@@ -389,7 +389,7 @@ std::vector<AudioObjectID> AudioDeviceListenerMac::GetAllAudioDeviceIDs() {
 }
 
 bool AudioDeviceListenerMac::IsOutputDevice(AudioObjectID id) {
-  return CoreAudioUtilMac().IsOutputDevice(id);
+  return CoreAudioUtilMac().IsOutputDevice(id).value_or(false);
 }
 
 std::optional<uint32_t> AudioDeviceListenerMac::GetDeviceSource(

@@ -170,24 +170,29 @@ static bool GetAudioDeviceInfo(bool is_input,
   bool had_error = false;
 
   for (AudioObjectID device_id : device_ids) {
-    const bool is_valid_for_direction =
+    const std::optional<bool> is_valid_for_direction =
         (is_input ? core_audio_mac.IsInputDevice(device_id)
                   : core_audio_mac.IsOutputDevice(device_id));
 
-    if (!is_valid_for_direction) {
+    if (!is_valid_for_direction.has_value()) {
+      had_error = true;
+      continue;
+    }
+
+    if (!*is_valid_for_direction) {
       continue;
     }
 
     std::optional<std::string> unique_id =
         core_audio_mac.GetDeviceUniqueID(device_id);
-    if (!unique_id) {
+    if (!unique_id.has_value()) {
       had_error = true;
       continue;
     }
 
     std::optional<std::string> label =
         core_audio_mac.GetDeviceLabel(device_id, is_input);
-    if (!label) {
+    if (!label.has_value()) {
       had_error = true;
       continue;
     }
@@ -820,7 +825,7 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   // GetRelatedDeviceIDs().
   base::flat_set<AudioObjectID> related_output_device_ids;
   for (AudioObjectID device_id : related_device_ids) {
-    if (core_audio_mac_->GetNumStreams(device_id, /*is_input=*/false) > 0) {
+    if (core_audio_mac_->IsOutputDevice(device_id).value_or(false)) {
       related_output_device_ids.insert(device_id);
     }
   }
@@ -1545,7 +1550,9 @@ AudioDeviceID AudioManagerMac::FindFirstOutputSubdevice(
       std::string uid = base::SysCFStringRefToUTF8(value);
       output_subdevice_id = AudioManagerMac::GetAudioDeviceIdByUId(false, uid);
       if (output_subdevice_id != kAudioObjectUnknown &&
-          CoreAudioUtilMac().GetNumStreams(output_subdevice_id, false) > 0) {
+          CoreAudioUtilMac()
+              .IsOutputDevice(output_subdevice_id)
+              .value_or(false)) {
         return output_subdevice_id;
       }
     }

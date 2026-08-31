@@ -47,10 +47,6 @@ class CoreAudioUtilMac {
   std::optional<std::string> GetDeviceLabel(AudioObjectID device_id,
                                             bool is_input) const;
 
-  // Returns the number of input or output streams associated with the given
-  // |device_id|. Returns zero if there are no streams or if there is an error.
-  uint32_t GetNumStreams(AudioObjectID device_id, bool is_input) const;
-
   // Returns the source associated with the given |device_id|, or no value if
   // |device_id| has no source or if there is an error.
   std::optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
@@ -70,11 +66,12 @@ class CoreAudioUtilMac {
   // output devices get an input stream as well. This function tries to filter
   // those out, based on the value of the stream's
   // kAudioStreamPropertyTerminalType value.
-  bool IsInputDevice(AudioObjectID device_id) const;
+  // Returns std::nullopt if there is an error.
+  std::optional<bool> IsInputDevice(AudioObjectID device_id) const;
 
   // Returns whether or not the |device_id| corresponds to a device with output
-  // streams.
-  bool IsOutputDevice(AudioObjectID device_id) const;
+  // streams. Returns std::nullopt if there is an error.
+  std::optional<bool> IsOutputDevice(AudioObjectID device_id) const;
 
   // Returns the latency for the given audio unit and device. Total latency is
   // the sum of the latency of the AudioUnit, device, and stream. If any one

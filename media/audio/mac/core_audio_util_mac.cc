@@ -110,10 +110,11 @@ std::optional<uint32_t> GetDeviceUint32Property(
   return property_value;
 }
 
-uint32_t GetDevicePropertySize(AudioObjectID device_id,
-                               AudioObjectPropertySelector property_selector,
-                               AudioObjectPropertyScope property_scope,
-                               const LogCallback& log_callback) {
+std::optional<uint32_t> GetDevicePropertySize(
+    AudioObjectID device_id,
+    AudioObjectPropertySelector property_selector,
+    AudioObjectPropertyScope property_scope,
+    const LogCallback& log_callback) {
   AudioObjectPropertyAddress property_address = {
       property_selector, property_scope, kAudioObjectPropertyElementMain};
   UInt32 size = 0;
@@ -126,7 +127,7 @@ uint32_t GetDevicePropertySize(AudioObjectID device_id,
     OSSTATUS_DLOG(WARNING, result)
         << "Failed to read size of property " << property_selector
         << " for device " << device_id;
-    return 0;
+    return std::nullopt;
   }
   return size;
 }
@@ -338,12 +339,6 @@ std::optional<std::string> CoreAudioUtilMac::GetDeviceLabel(
   return device_label;
 }
 
-uint32_t CoreAudioUtilMac::GetNumStreams(AudioObjectID device_id,
-                                         bool is_input) const {
-  return GetDevicePropertySize(device_id, kAudioDevicePropertyStreams,
-                               InputOutputScope(is_input), log_callback_);
-}
-
 std::optional<uint32_t> CoreAudioUtilMac::GetDeviceSource(
     AudioObjectID device_id,
     bool is_input) const {
@@ -418,21 +413,27 @@ bool CoreAudioUtilMac::IsPrivateAggregateDevice(AudioObjectID device_id) const {
 
 // TODO(crbug.com/392938088): When a VoiceProcessing AudioUnit is active, this
 // function might errously report that output devices are also input devices.
-bool CoreAudioUtilMac::IsInputDevice(AudioObjectID device_id) const {
-  std::vector<AudioObjectID> streams =
-      GetAudioObjectIDs(device_id, kAudioDevicePropertyStreams, log_callback_)
-          .value_or({});
+std::optional<bool> CoreAudioUtilMac::IsInputDevice(
+    AudioObjectID device_id) const {
+  std::optional<std::vector<AudioObjectID>> streams =
+      GetAudioObjectIDs(device_id, kAudioDevicePropertyStreams, log_callback_);
+  if (!streams.has_value()) {
+    return std::nullopt;
+  }
 
   int num_undefined_input_streams = 0;
   int num_defined_input_streams = 0;
   int num_output_streams = 0;
+  bool has_stream_error = false;
 
-  for (auto stream_id : streams) {
+  for (auto stream_id : *streams) {
     auto direction =
         GetDeviceUint32Property(stream_id, kAudioStreamPropertyDirection,
                                 kAudioObjectPropertyScopeGlobal, log_callback_);
-    if (!direction.has_value())
+    if (!direction.has_value()) {
+      has_stream_error = true;
       continue;
+    }
     const UInt32 kDirectionOutput = 0;
     const UInt32 kDirectionInput = 1;
     if (direction == kDirectionOutput) {
@@ -454,7 +455,9 @@ bool CoreAudioUtilMac::IsInputDevice(AudioObjectID device_id) const {
       auto terminal = GetDeviceUint32Property(
           stream_id, kAudioStreamPropertyTerminalType,
           kAudioObjectPropertyScopeGlobal, log_callback_);
-      if (terminal.has_value() && terminal == INPUT_UNDEFINED) {
+      if (!terminal.has_value()) {
+        has_stream_error = true;
+      } else if (terminal == INPUT_UNDEFINED) {
         ++num_undefined_input_streams;
       } else {
         ++num_defined_input_streams;
@@ -462,15 +465,27 @@ bool CoreAudioUtilMac::IsInputDevice(AudioObjectID device_id) const {
     }
   }
 
-  // We've only seen INPUT_UNDEFINED introduced by the VoiceProcessing
-  // AudioUnit, but to err on the side of caution, we allow a device with only
-  // undefined input streams and no output streams as well.
-  return num_defined_input_streams > 0 ||
-         (num_undefined_input_streams > 0 && num_output_streams == 0);
+  // A verified defined input stream is sufficient proof that this is an input
+  // device, regardless of errors on other streams.
+  if (num_defined_input_streams > 0) {
+    return true;
+  }
+  // If any stream property query failed, we cannot reliably determine whether
+  // an input stream was missed or whether an output stream was missed.
+  if (has_stream_error) {
+    return std::nullopt;
+  }
+  // VoiceProcessing fallback for legacy macOS (only allow undefined input
+  // streams if there are definitely no output streams).
+  return num_undefined_input_streams > 0 && num_output_streams == 0;
 }
 
-bool CoreAudioUtilMac::IsOutputDevice(AudioObjectID device_id) const {
-  return GetNumStreams(device_id, false) > 0;
+std::optional<bool> CoreAudioUtilMac::IsOutputDevice(
+    AudioObjectID device_id) const {
+  std::optional<uint32_t> property_size =
+      GetDevicePropertySize(device_id, kAudioDevicePropertyStreams,
+                            kAudioObjectPropertyScopeOutput, log_callback_);
+  return property_size ? std::optional<bool>(*property_size > 0) : std::nullopt;
 }
 
 // static
