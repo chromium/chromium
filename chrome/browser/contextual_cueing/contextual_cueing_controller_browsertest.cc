@@ -29,6 +29,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -2340,6 +2341,29 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
                                       1);
   VerifyProactiveCueDecision(ukm_recorder,
                              ContextualCueingDecision::kHistorySyncOff);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       Navigation_EvaluatesCuesWithEarlySignals) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  cue_target()->eligible = false;
+  auto test_source_target = std::make_unique<TestCueTarget>();
+  test_source_target->eligible = true;
+  test_source_target->generate_result =
+      MakeCompleteResponse().contextual_cues(0);
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kTestSource, std::move(test_source_target));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+  VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,

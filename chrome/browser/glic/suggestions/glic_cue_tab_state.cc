@@ -37,10 +37,6 @@ GlicCueTabState::GlicCueTabState(tabs::TabInterface& tab)
     }
   }
   last_committed_url_ = web_contents->GetLastCommittedURL();
-  if (web_contents->GetController().GetLastCommittedEntry()) {
-    last_committed_timestamp_ =
-        web_contents->GetController().GetLastCommittedEntry()->GetTimestamp();
-  }
 }
 
 // static
@@ -65,15 +61,6 @@ void GlicCueTabState::DidFinishNavigation(
   }
 
   last_committed_url_ = navigation_handle->GetURL();
-  if (navigation_handle->GetNavigationEntry()) {
-    last_committed_timestamp_ =
-        navigation_handle->GetNavigationEntry()->GetTimestamp();
-  } else if (web_contents()->GetController().GetLastCommittedEntry()) {
-    last_committed_timestamp_ =
-        web_contents()->GetController().GetLastCommittedEntry()->GetTimestamp();
-  } else {
-    last_committed_timestamp_ = base::Time();
-  }
   cached_result_ = std::nullopt;
 
   CancelPendingCheck();
@@ -82,8 +69,7 @@ void GlicCueTabState::DidFinishNavigation(
 void GlicCueTabState::OnPageContentAnnotated(
     const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
-  if (visit.url != last_committed_url_ ||
-      visit.nav_entry_timestamp != last_committed_timestamp_) {
+  if (visit.url != last_committed_url_) {
     return;
   }
 

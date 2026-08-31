@@ -88,7 +88,6 @@ class GlicCueTabState
 
   // Tracked parameters to match incoming annotations to the current navigation.
   GURL last_committed_url_;
-  base::Time last_committed_timestamp_;
 
   // The latest classification result for the current navigation.
   std::optional<page_content_annotations::PageContentAnnotationsResult>
