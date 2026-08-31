@@ -85,6 +85,12 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
   // ui::MenuModel overrides:
   int GetDisplayOrderAt(size_t index) const override {
     if (GetTypeAt(index) == ui::MenuModel::TYPE_SEPARATOR) {
+      // Look ahead for the next non-separator item to use its section order:
+      for (size_t next = index + 1; next < GetItemCount(); ++next) {
+        if (GetTypeAt(next) != ui::MenuModel::TYPE_SEPARATOR) {
+          return GetDisplayOrderAt(next);
+        }
+      }
       return BaseSelectionDropdownMenuModel::GetDisplayOrderAt(index);
     }
     int command_id = GetCommandIdAt(index);
