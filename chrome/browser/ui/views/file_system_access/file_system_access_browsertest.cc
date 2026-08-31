@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,9 +26,12 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -39,6 +44,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -978,6 +984,84 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   // TODO(crbug.com/40101962): Once Extended Permission UI is
   // implemented, mock user's response to the UI and assert that the usage
   // indicator is visible when the original page is visited again.
+}
+
+// Tests that the usage indicator is hidden after navigating to another origin
+// even when another tab keeps the original origin open.
+IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
+                       UsageIndicatorHiddenAfterNavigationWithBackgroundTab) {
+  const base::FilePath test_file = CreateTestFile("");
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<SelectPredeterminedFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+
+  const GURL test_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
+
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            content::EvalJs(web_contents,
+                            "(async () => {"
+                            "  let e = await self.showSaveFilePicker();"
+                            "  self.entry = e;"
+                            "  return e.name; })()"));
+
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
+
+  // Open a second tab on the same origin in the background so that the origin
+  // remains active after the first tab navigates away.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Navigate the first tab to another origin.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // The usage indicator should not be shown for the new origin.
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
+}
+
+// Tests that updating the page action visibility for one tab does not close
+// the usage bubble showing for a different tab.
+IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
+                       UsageBubbleNotClosedByOtherTabUpdate) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  // Open a second tab on a different origin in the background.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("a.com", "/title1.html"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Show the usage bubble for the active tab.
+  FileSystemAccessUsageBubbleView::Usage usage;
+  usage.writable_files.emplace_back(FILE_PATH_LITERAL("/foo/bar/file.txt"));
+  FileSystemAccessUsageBubbleView::ShowBubble(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      url::Origin::Create(GURL("https://example.com")), std::move(usage));
+  ASSERT_NE(FileSystemAccessUsageBubbleView::GetBubble(), nullptr);
+
+  // Updating the page action visibility for the background tab, which has no
+  // grants, should not close the bubble showing for the active tab.
+  tabs::TabInterface* background_tab =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
+  ASSERT_TRUE(background_tab);
+  FileSystemAccessPageActionController* controller =
+      background_tab->GetTabFeatures()
+          ->file_system_access_page_action_controller();
+  ASSERT_TRUE(controller);
+  controller->UpdateVisibility();
+
+  EXPECT_NE(FileSystemAccessUsageBubbleView::GetBubble(), nullptr);
+
+  FileSystemAccessUsageBubbleView::CloseCurrentBubble();
 }
 
 class BackForwardCacheFileSystemAccessBrowserTest

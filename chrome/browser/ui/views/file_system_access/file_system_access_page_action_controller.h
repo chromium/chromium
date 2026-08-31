@@ -5,17 +5,22 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PAGE_ACTION_CONTROLLER_H_
 
-#include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+
+namespace content {
+class Page;
+}
 
 namespace tabs {
 class TabInterface;
 }
 
-class FileSystemAccessPageActionController {
+class FileSystemAccessPageActionController
+    : public tabs::ContentsObservingTabFeature {
  public:
   explicit FileSystemAccessPageActionController(
       tabs::TabInterface& tab_interface);
-  ~FileSystemAccessPageActionController() = default;
+  ~FileSystemAccessPageActionController() override;
 
   FileSystemAccessPageActionController(
       const FileSystemAccessPageActionController&) = delete;
@@ -26,10 +31,11 @@ class FileSystemAccessPageActionController {
   void UpdateVisibility();
 
  private:
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+
   // Hides the File System Access page action icon.
   void HideIcon();
-
-  const raw_ref<tabs::TabInterface> tab_interface_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PAGE_ACTION_CONTROLLER_H_
