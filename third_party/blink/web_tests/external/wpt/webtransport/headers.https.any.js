@@ -108,11 +108,18 @@ promise_test(async t => {
 }, 'headers option forwards a custom header to the server, lowercased');
 
 promise_test(async t => {
-  // Cookie is on the Fetch forbidden request-header list; per Fetch spec it
-  // is silently dropped rather than throwing, so the connection succeeds but
-  // the header must not reach the server.
-  const wt = new WebTransport(webtransport_url('echo-request-headers.py'),
-                              {headers: {'Cookie': 'probe=forbidden'}});
+  // Cookie, Host and Referer are on the Fetch forbidden request-header list
+  // by name; Sec-Fetch-Mode is forbidden by the `Sec-` prefix rule. Forbidden
+  // names are silently dropped rather than throwing, so the connection
+  // succeeds but none of these headers reach the server.
+  const wt = new WebTransport(webtransport_url('echo-request-headers.py'), {
+    headers: {
+      'Cookie': 'probe=forbidden',
+      'Host': 'evil.example.com',
+      'Sec-Fetch-Mode': 'navigate',
+      'Referer': 'https://evil.example.com/'
+    }
+  });
   t.add_cleanup(() => wt.close());
   await wt.ready;
 
@@ -120,7 +127,22 @@ promise_test(async t => {
 
   assert_equals(request_headers['cookie'], undefined,
                 'user-supplied Cookie must be silently dropped, not forwarded');
+  assert_equals(request_headers['host'], undefined,
+                'user-supplied Host must be silently dropped, not forwarded');
+  assert_equals(
+      request_headers['sec-fetch-mode'], undefined,
+      'user-supplied Sec-Fetch-Mode must be silently dropped, not forwarded');
+  assert_equals(
+      request_headers['referer'], undefined,
+      'user-supplied Referer must be silently dropped, not forwarded');
 }, 'Forbidden request-header names are silently dropped from the headers option');
+
+promise_test(async t => {
+  const wt = new WebTransport(webtransport_url('echo-request-headers.py'),
+                              {headers: {}});
+  t.add_cleanup(() => wt.close());
+  await wt.ready;
+}, 'An empty headers object is accepted');
 
 test(() => {
   assert_throws_js(TypeError,
@@ -152,14 +174,6 @@ test(() => {
                               }));
 }, 'wt-available-protocols header throws TypeError (mixed case)');
 
-function constructAndClose(options) {
-  const wt = new WebTransport('https://localhost:0/', options);
-  // Swallow the unhandled rejections from the unreachable URL.
-  wt.ready.catch(() => {});
-  wt.closed.catch(() => {});
-  wt.close();
-}
-
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo-request-headers.py'),
                               {headers: [['x-foo', 'bar'], ['x-baz', 'qux']]});
@@ -185,9 +199,30 @@ promise_test(async t => {
   assert_equals(request_headers['x-two'], '2');
 }, 'HeadersInit Headers object form sends every header');
 
-test(() => {
-  constructAndClose({headers: [['x-dup', 'one'], ['x-dup', 'two']]});
-}, 'Duplicate header names in sequence form are accepted');
+promise_test(async t => {
+  const wt =
+      new WebTransport(webtransport_url('echo-request-headers.py?format=list'),
+                       {headers: [['x-dup', 'one'], ['x-dup', 'two']]});
+  t.add_cleanup(() => wt.close());
+  await wt.ready;
+
+  const request_headers = await read_first_incoming_stream_as_json(wt);
+
+  assert_array_equals(request_headers['x-dup'], ['one', 'two']);
+}, 'Duplicate header names in sequence form are all sent, in order');
+
+promise_test(async t => {
+  const wt =
+      new WebTransport(webtransport_url('echo-request-headers.py?format=list'),
+                       {headers: [['foo', 'bar'], ['Foo', 'baz']]});
+  t.add_cleanup(() => wt.close());
+  await wt.ready;
+
+  const request_headers = await read_first_incoming_stream_as_json(wt);
+
+  assert_array_equals(request_headers['foo'], ['bar', 'baz']);
+  assert_equals(request_headers['Foo'], undefined);
+}, 'Header names differing only in case are lowercased and both sent');
 
 test(() => {
   assert_throws_js(
