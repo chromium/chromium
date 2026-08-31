@@ -229,6 +229,11 @@ void WebNNContextImpl::RecordContextBackendUma(ContextBackendUma backend_uma) {
 void WebNNContextImpl::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (is_lost_) {
+    return;
+  }
+  is_lost_ = true;
+
   // Explicitly reset all tensor and graph receivers before destruction since
   // destroying bound receivers can cause Mojo to DCHECK due to pending
   // callbacks or if destruction occurs on a different runner than the bound

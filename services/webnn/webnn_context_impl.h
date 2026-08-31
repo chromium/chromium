@@ -404,6 +404,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Whether `xnn_initialize()` succeeded. Other XNNPACK APIs (including
   // `xnn_deinitialize()`) must not be called when initialization failed.
   bool is_xnnpack_initialized_ = false;
+
+  // Makes OnDisconnect() idempotent so racing disconnect paths post the removal
+  // task only once.
+  bool is_lost_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 
 }  // namespace webnn
