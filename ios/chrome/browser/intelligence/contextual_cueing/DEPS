@@ -1,6 +1,9 @@
 include_rules = [
   "+components/contextual_cueing",
   "+components/google/core/common",
+  "+components/keyed_service/core",
+  "+components/keyed_service/ios",
   "+components/page_content_annotations/core",
   "+ios/chrome/browser/intelligence/on_device_category_classifier",
+  "+ios/chrome/browser/shared/model/profile",
 ]

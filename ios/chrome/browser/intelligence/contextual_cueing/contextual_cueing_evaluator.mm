@@ -29,13 +29,13 @@ ContextualCueingEvaluator::EvaluationConfig::operator=(
 #pragma mark - ContextualCueingEvaluator
 
 ContextualCueingEvaluator::ContextualCueingEvaluator(
-    ContextualCueingCapTracker* cap_tracker)
-    : ContextualCueingEvaluator(cap_tracker, EvaluationConfig()) {}
+    ContextualCueingCapTrackerService* cap_tracker_service)
+    : ContextualCueingEvaluator(cap_tracker_service, EvaluationConfig()) {}
 
 ContextualCueingEvaluator::ContextualCueingEvaluator(
-    ContextualCueingCapTracker* cap_tracker,
+    ContextualCueingCapTrackerService* cap_tracker_service,
     EvaluationConfig config)
-    : cap_tracker_(cap_tracker), config_(std::move(config)) {}
+    : cap_tracker_service_(cap_tracker_service), config_(std::move(config)) {}
 
 ContextualCueingEvaluator::~ContextualCueingEvaluator() = default;
 
@@ -60,8 +60,9 @@ ContextualCueingDecision ContextualCueingEvaluator::EvaluatePageEligibility(
   }
 
   // Frequency caps and backoff cooldowns (matching Desktop CanShowCue).
-  if (cap_tracker_) {
-    ContextualCueingDecision cap_decision = cap_tracker_->CanShowNudge(url);
+  if (cap_tracker_service_) {
+    ContextualCueingDecision cap_decision =
+        cap_tracker_service_->CanShowNudge(url);
     if (cap_decision != ContextualCueingDecision::kSuccess) {
       return cap_decision;
     }

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 
 #import <algorithm>
 #import <cmath>
+#import <utility>
 
 namespace contextual_cueing {
 
@@ -19,25 +20,30 @@ constexpr size_t kMaxBackoffExponent = 20;
 
 #pragma mark - Config
 
-ContextualCueingCapTracker::Config::Config() = default;
-ContextualCueingCapTracker::Config::~Config() = default;
-ContextualCueingCapTracker::Config::Config(const Config&) = default;
-ContextualCueingCapTracker::Config&
-ContextualCueingCapTracker::Config::operator=(const Config&) = default;
+ContextualCueingCapTrackerService::Config::Config() = default;
+ContextualCueingCapTrackerService::Config::~Config() = default;
+ContextualCueingCapTrackerService::Config::Config(const Config&) = default;
+ContextualCueingCapTrackerService::Config&
+ContextualCueingCapTrackerService::Config::operator=(const Config&) = default;
+ContextualCueingCapTrackerService::Config::Config(Config&&) = default;
+ContextualCueingCapTrackerService::Config&
+ContextualCueingCapTrackerService::Config::operator=(Config&&) = default;
 
-#pragma mark - ContextualCueingCapTracker
+#pragma mark - ContextualCueingCapTrackerService
 
-ContextualCueingCapTracker::ContextualCueingCapTracker()
-    : ContextualCueingCapTracker(Config()) {}
+ContextualCueingCapTrackerService::ContextualCueingCapTrackerService()
+    : ContextualCueingCapTrackerService(Config()) {}
 
-ContextualCueingCapTracker::ContextualCueingCapTracker(Config config)
-    : config_(config),
-      global_tracker_(config.global_cap_count, config.global_duration),
-      origin_trackers_(config.visited_origins_limit) {}
+ContextualCueingCapTrackerService::ContextualCueingCapTrackerService(
+    Config config)
+    : config_(std::move(config)),
+      global_tracker_(config_.global_cap_count, config_.global_duration),
+      origin_trackers_(config_.visited_origins_limit) {}
 
-ContextualCueingCapTracker::~ContextualCueingCapTracker() = default;
+ContextualCueingCapTrackerService::~ContextualCueingCapTrackerService() =
+    default;
 
-ContextualCueingDecision ContextualCueingCapTracker::CanShowNudge(
+ContextualCueingDecision ContextualCueingCapTrackerService::CanShowNudge(
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -85,7 +91,7 @@ ContextualCueingDecision ContextualCueingCapTracker::CanShowNudge(
   return ContextualCueingDecision::kSuccess;
 }
 
-void ContextualCueingCapTracker::RecordCueShown(const GURL& url) {
+void ContextualCueingCapTrackerService::RecordCueShown(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return;
@@ -100,25 +106,20 @@ void ContextualCueingCapTracker::RecordCueShown(const GURL& url) {
                                ? config_.min_page_count_between_nudges + 1
                                : 0;
 
-  if (config_.min_time_between_nudges.is_zero()) {
-    shown_backoff_end_time_.reset();
-  } else {
-    // When a cue is shown, optimistically treat it as un-interacted (ignored)
-    // by applying the shown cooldown and incrementing the count. If the user
-    // subsequently interacts (clicks or dismisses), the corresponding record
-    // method will reset this counter and override the backoff timer.
-    size_t capped_shown_count =
-        std::min(consecutive_shown_without_interaction_, kMaxBackoffExponent);
-    double multiplier =
-        std::pow(config_.ignore_backoff_multiplier_base, capped_shown_count);
-    base::TimeDelta backoff_duration =
-        config_.min_time_between_nudges * multiplier;
-    shown_backoff_end_time_ = base::TimeTicks::Now() + backoff_duration;
-    consecutive_shown_without_interaction_++;
-  }
+  // Calculates exponential backoff for shown / ignored cues without
+  // interaction.
+  double multiplier = std::pow(
+      config_.ignore_backoff_multiplier_base,
+      std::min(consecutive_shown_without_interaction_, kMaxBackoffExponent));
+  base::TimeDelta backoff = config_.min_time_between_nudges * multiplier;
+  shown_backoff_end_time_ = base::TimeTicks::Now() + backoff;
 
+  consecutive_shown_without_interaction_++;
+
+  // Records global timestamp.
   global_tracker_.CueingNudgeShown();
 
+  // Records per-origin timestamp.
   if (config_.visited_origins_limit > 0) {
     url::Origin origin = url::Origin::Create(url);
     auto it = origin_trackers_.Get(origin);
@@ -131,42 +132,37 @@ void ContextualCueingCapTracker::RecordCueShown(const GURL& url) {
   }
 }
 
-void ContextualCueingCapTracker::RecordCueDismissed(
-    [[maybe_unused]] const GURL& url) {
+void ContextualCueingCapTrackerService::RecordCueDismissed(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // `url` is accepted for interface consistency and potential future
-  // per-origin backoff tracking, but dismissal backoff is currently global.
-  // Cap the exponent to prevent float-cast overflow with large dismissal
-  // counts.
-  size_t capped_dismissals =
-      std::min(consecutive_dismissals_, kMaxBackoffExponent);
-  double multiplier =
-      std::pow(config_.dismiss_backoff_multiplier_base, capped_dismissals);
-  base::TimeDelta backoff_duration =
-      config_.base_dismiss_backoff_time * multiplier;
-  dismiss_backoff_end_time_ = base::TimeTicks::Now() + backoff_duration;
-  consecutive_dismissals_++;
+
+  // Dismissing a cue means the cue was not ignored; reset ignore backoff.
+  shown_backoff_end_time_ = std::nullopt;
   consecutive_shown_without_interaction_ = 0;
-  shown_backoff_end_time_.reset();
+
+  // Calculates exponential backoff for explicit dismissals.
+  double multiplier =
+      std::pow(config_.dismiss_backoff_multiplier_base,
+               std::min(consecutive_dismissals_, kMaxBackoffExponent));
+  base::TimeDelta backoff = config_.base_dismiss_backoff_time * multiplier;
+  dismiss_backoff_end_time_ = base::TimeTicks::Now() + backoff;
+
+  consecutive_dismissals_++;
 }
 
-void ContextualCueingCapTracker::RecordCueClicked(
-    [[maybe_unused]] const GURL& url) {
+void ContextualCueingCapTrackerService::RecordCueClicked(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // `url` is accepted for interface consistency and potential future
-  // per-origin backoff tracking, but click backoff is currently global.
-  if (config_.click_backoff_time.is_zero()) {
-    click_backoff_end_time_.reset();
-  } else {
-    click_backoff_end_time_ =
-        base::TimeTicks::Now() + config_.click_backoff_time;
-  }
+
+  // Resets exponential backoff counters and any active shown/dismiss cooldowns
+  // upon positive user engagement.
+  shown_backoff_end_time_ = std::nullopt;
+  dismiss_backoff_end_time_ = std::nullopt;
   consecutive_dismissals_ = 0;
   consecutive_shown_without_interaction_ = 0;
-  shown_backoff_end_time_.reset();
+
+  click_backoff_end_time_ = base::TimeTicks::Now() + config_.click_backoff_time;
 }
 
-void ContextualCueingCapTracker::RecordPageNavigation() {
+void ContextualCueingCapTrackerService::RecordPageNavigation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (remaining_quiet_loads_ > 0) {
     remaining_quiet_loads_--;
@@ -174,7 +170,7 @@ void ContextualCueingCapTracker::RecordPageNavigation() {
 }
 
 std::optional<base::TimeTicks>
-ContextualCueingCapTracker::GetMostRecentNudgeTime() const {
+ContextualCueingCapTrackerService::GetMostRecentNudgeTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return global_tracker_.GetMostRecentNudgeTime();
 }

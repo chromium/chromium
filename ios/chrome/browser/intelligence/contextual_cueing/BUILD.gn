@@ -4,21 +4,29 @@
 
 source_set("contextual_cueing") {
   sources = [
-    "contextual_cueing_cap_tracker.h",
-    "contextual_cueing_cap_tracker.mm",
+    "contextual_cueing_cap_tracker_service.h",
+    "contextual_cueing_cap_tracker_service.mm",
+    "contextual_cueing_cap_tracker_service_factory.h",
+    "contextual_cueing_cap_tracker_service_factory.mm",
     "contextual_cueing_evaluator.h",
     "contextual_cueing_evaluator.mm",
     "contextual_cueing_tab_helper.h",
     "contextual_cueing_tab_helper.mm",
   ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+  ]
   public_deps = [
     "//base",
     "//components/contextual_cueing",
     "//components/google/core/common",
+    "//components/keyed_service/core",
     "//components/page_content_annotations/core",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/on_device_category_classifier",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
     "//url",
   ]
@@ -27,7 +35,7 @@ source_set("contextual_cueing") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "contextual_cueing_cap_tracker_unittest.mm",
+    "contextual_cueing_cap_tracker_service_unittest.mm",
     "contextual_cueing_evaluator_unittest.mm",
     "contextual_cueing_tab_helper_unittest.mm",
   ]

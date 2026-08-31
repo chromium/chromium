@@ -13,7 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
-#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 #import "url/gurl.h"
 
 namespace contextual_cueing {
@@ -52,9 +52,11 @@ class ContextualCueingEvaluator {
     }
   };
 
-  explicit ContextualCueingEvaluator(ContextualCueingCapTracker* cap_tracker);
-  ContextualCueingEvaluator(ContextualCueingCapTracker* cap_tracker,
-                            EvaluationConfig config);
+  explicit ContextualCueingEvaluator(
+      ContextualCueingCapTrackerService* cap_tracker_service);
+  ContextualCueingEvaluator(
+      ContextualCueingCapTrackerService* cap_tracker_service,
+      EvaluationConfig config);
   ~ContextualCueingEvaluator();
 
   // Static helper to check if a URL is eligible (HTTP/HTTPS, not Google Search,
@@ -79,7 +81,7 @@ class ContextualCueingEvaluator {
       const std::string& mime_type = "text/html") const;
 
  private:
-  raw_ptr<ContextualCueingCapTracker> cap_tracker_ = nullptr;
+  raw_ptr<ContextualCueingCapTrackerService> cap_tracker_service_ = nullptr;
   const EvaluationConfig config_;
 };
 

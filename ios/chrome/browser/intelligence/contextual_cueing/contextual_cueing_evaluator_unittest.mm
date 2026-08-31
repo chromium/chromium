@@ -14,7 +14,7 @@ namespace contextual_cueing {
 using ContextualCueingEvaluatorTest = PlatformTest;
 
 TEST_F(ContextualCueingEvaluatorTest, EligiblePagePassesAllChecks) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   // Note: 0.4f education is a deliberate below-threshold input to confirm only
@@ -38,7 +38,7 @@ TEST_F(ContextualCueingEvaluatorTest, EligiblePagePassesAllChecks) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, ScoreBelowThresholdRejected) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   // Score 0.30 is below default 0.50 threshold.
@@ -57,7 +57,7 @@ TEST_F(ContextualCueingEvaluatorTest, ScoreBelowThresholdRejected) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, EmptyCategoriesRejected) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   auto result = evaluator.Evaluate(GURL("https://example.com/product/123"), {});
@@ -69,7 +69,7 @@ TEST_F(ContextualCueingEvaluatorTest, EmptyCategoriesRejected) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, UnsupportedMimeTypeRejected) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   std::vector<page_content_annotations::Category> categories = {
@@ -85,7 +85,7 @@ TEST_F(ContextualCueingEvaluatorTest, UnsupportedMimeTypeRejected) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, GoogleSearchUrlRejected) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   std::vector<page_content_annotations::Category> categories = {
@@ -101,7 +101,7 @@ TEST_F(ContextualCueingEvaluatorTest, GoogleSearchUrlRejected) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, HomepageUrlRejected) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   std::vector<page_content_annotations::Category> categories = {
@@ -117,7 +117,7 @@ TEST_F(ContextualCueingEvaluatorTest, HomepageUrlRejected) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, PdfMimeTypeRejected) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   std::vector<page_content_annotations::Category> categories = {
@@ -135,11 +135,11 @@ TEST_F(ContextualCueingEvaluatorTest, PdfMimeTypeRejected) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, RateLimitedPageRejected) {
-  ContextualCueingCapTracker::Config config;
+  ContextualCueingCapTrackerService::Config config;
   config.global_cap_count = 1;
   config.min_page_count_between_nudges = 0;
   config.min_time_between_nudges = base::TimeDelta();
-  ContextualCueingCapTracker cap_tracker(config);
+  ContextualCueingCapTrackerService cap_tracker(config);
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   cap_tracker.RecordCueShown(GURL("https://a.com/page"));
@@ -157,7 +157,7 @@ TEST_F(ContextualCueingEvaluatorTest, RateLimitedPageRejected) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, EvaluatePageEligibilityDirectly) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   EXPECT_EQ(
@@ -171,7 +171,7 @@ TEST_F(ContextualCueingEvaluatorTest, EvaluatePageEligibilityDirectly) {
 }
 
 TEST_F(ContextualCueingEvaluatorTest, EvaluateCategoryScoresDirectly) {
-  ContextualCueingCapTracker cap_tracker;
+  ContextualCueingCapTrackerService cap_tracker;
   ContextualCueingEvaluator evaluator(&cap_tracker);
 
   std::vector<page_content_annotations::Category> eligible = {

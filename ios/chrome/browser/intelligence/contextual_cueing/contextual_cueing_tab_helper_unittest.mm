@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
@@ -79,6 +80,9 @@ class ContextualCueingTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         OnDevicePageClassificationServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestPageClassificationService));
+    builder.AddTestingFactory(
+        ContextualCueingCapTrackerServiceFactory::GetInstance(),
+        ContextualCueingCapTrackerServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
     web_state_ = std::make_unique<web::FakeWebState>();

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_tab_helper.h"
 
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
@@ -50,6 +52,14 @@ void ContextualCueingTabHelper::DidFinishNavigation(
     return;
   }
   current_url_ = navigation_context->GetUrl();
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  CHECK(profile);
+  if (ContextualCueingCapTrackerService* cap_service =
+          ContextualCueingCapTrackerServiceFactory::GetForProfile(profile)) {
+    cap_service->RecordPageNavigation();
+  }
 
   CancelClassification();
   categories_.reset();

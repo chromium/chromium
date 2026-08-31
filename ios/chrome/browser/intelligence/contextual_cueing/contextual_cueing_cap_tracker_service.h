@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CAP_TRACKER_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CAP_TRACKER_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CAP_TRACKER_SERVICE_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CAP_TRACKER_SERVICE_H_
 
 #include <cstddef>
 #include <optional>
@@ -13,21 +13,24 @@
 #import "base/time/time.h"
 #import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/contextual_cueing/nudge_cap_tracker.h"
+#import "components/keyed_service/core/keyed_service.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
 namespace contextual_cueing {
 
-// Tracks and enforces impression frequency caps, per-origin caps, navigation
-// spacing, and dismissal backoff for contextual cueing on iOS, aligned 1:1 with
-// Desktop and Chrome on Android.
-class ContextualCueingCapTracker {
+// KeyedService that tracks and enforces impression frequency caps, per-origin
+// caps, navigation spacing, and dismissal backoff for contextual cueing across
+// an entire Profile on iOS, aligned 1:1 with Desktop and Chrome on Android.
+class ContextualCueingCapTrackerService : public KeyedService {
  public:
   struct Config {
     Config();
     ~Config();
     Config(const Config&);
     Config& operator=(const Config&);
+    Config(Config&&);
+    Config& operator=(Config&&);
 
     // TODO(crbug.com/544695640) For multi-arm experiments these caps below
     // should be controlled by finch params.
@@ -68,13 +71,14 @@ class ContextualCueingCapTracker {
     bool disable_frequency_capping_and_backoff = false;
   };
 
-  ContextualCueingCapTracker();
-  explicit ContextualCueingCapTracker(Config config);
-  ~ContextualCueingCapTracker();
+  ContextualCueingCapTrackerService();
+  explicit ContextualCueingCapTrackerService(Config config);
+  ~ContextualCueingCapTrackerService() override;
 
-  ContextualCueingCapTracker(const ContextualCueingCapTracker&) = delete;
-  ContextualCueingCapTracker& operator=(const ContextualCueingCapTracker&) =
+  ContextualCueingCapTrackerService(const ContextualCueingCapTrackerService&) =
       delete;
+  ContextualCueingCapTrackerService& operator=(
+      const ContextualCueingCapTrackerService&) = delete;
 
   // Returns whether a contextual cue can be shown for `url`.
   ContextualCueingDecision CanShowNudge(const GURL& url) const;
@@ -93,6 +97,8 @@ class ContextualCueingCapTracker {
 
   // Returns the timestamp of the most recent cue shown, if any.
   std::optional<base::TimeTicks> GetMostRecentNudgeTime() const;
+
+  const Config& config() const { return config_; }
 
  private:
   const Config config_;
@@ -121,4 +127,4 @@ class ContextualCueingCapTracker {
 
 }  // namespace contextual_cueing
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CAP_TRACKER_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_CAP_TRACKER_SERVICE_H_
