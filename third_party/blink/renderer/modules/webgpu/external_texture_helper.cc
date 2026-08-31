@@ -379,10 +379,6 @@ ExternalTexture CreateExternalTexture(
       video_renderer->CanUseCopyVideoFrameToSharedImage(*media_video_frame) &&
       visible_rect.size() == natural_size;
 
-  // Get a recyclable resource for producing WebGPU-compatible shared images.
-  // The recyclable resource's color space is the same as source color space
-  // with the YUV to RGB transform stripped out since that's handled by the
-  // PaintCanvasVideoRenderer.
   gfx::ColorSpace resource_color_space = src_color_space.GetAsRGB();
 
   // We need to workaround issue crbug.com/1407112. It requires no color space
@@ -400,6 +396,10 @@ ExternalTexture CreateExternalTexture(
     format = viz::SinglePlaneFormat::kRGBA_F16;
   }
 
+  // Get a recyclable resource for producing WebGPU-compatible shared images.
+  // The recyclable resource's color space is the same as source color space
+  // with the YUV to RGB transform stripped out since that's handled by the
+  // PaintCanvasVideoRenderer.
   std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease =
       device->GetDawnControlClient()->LeaseWebGpuSharedImageWrapper(
           format, natural_size, resource_color_space, kPremul_SkAlphaType);
