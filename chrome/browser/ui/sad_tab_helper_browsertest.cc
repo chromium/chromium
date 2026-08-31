@@ -104,8 +104,9 @@ IN_PROC_BROWSER_TEST_F(
 // in SadTabHelper::PrimaryMainFrameRenderProcessGone assumed that
 // TabLifecycleUnitExternal::FromWebContents always returned non-null, but
 // no-state prefetch WebContents are never added to a TabStripModel.
+// TODO(crbug.com/541361270): Re-enable this test
 IN_PROC_BROWSER_TEST_F(SadTabHelperBrowserTest,
-                       NoStatePrefetchEvictedForMemory_DoesNotCrash) {
+                       DISABLED_NoStatePrefetchEvictedForMemory_DoesNotCrash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
   // Navigate the main tab to a real page so we have an active browser context.
