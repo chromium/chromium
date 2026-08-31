@@ -277,6 +277,10 @@ void ContextualCueingController::OnPageContentAnnotated(
 void ContextualCueingController::RunGlicSingleSourcePath(
     const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
+  if (!tab_->IsActivated()) {
+    return;
+  }
+
   content::WebContents* active_web_contents = tab_->GetContents();
   if (!active_web_contents ||
       visit.url != active_web_contents->GetLastCommittedURL()) {
@@ -424,9 +428,6 @@ void ContextualCueingController::EvaluateCues() {
   if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
     return;
   }
-  if (!tab_->IsActivated()) {
-    return;
-  }
   content::WebContents* web_contents = tab_->GetContents();
   if (!web_contents) {
     return;
@@ -460,11 +461,12 @@ void ContextualCueingController::EvaluateCues() {
     return;
   }
 
-  // Determine intrusiveness tier (loud unless in quiet-loads backoff or caps
-  // exceeded).
+  // Determine intrusiveness tier (loud unless in quiet-loads backoff, caps
+  // exceeded, or tab is not active).
   CueIntrusiveness intrusiveness =
       (allowed_tier ==
-       ContextualCueingService::AllowedIntrusivenessResult::kLoud)
+           ContextualCueingService::AllowedIntrusivenessResult::kLoud &&
+       tab_->IsActivated())
           ? CueIntrusiveness::kLoud
           : CueIntrusiveness::kQuiet;
 
@@ -520,15 +522,20 @@ void ContextualCueingController::OnAllEligibilityChecksComplete(
         GetTabSourceId(), ContextualCueingDecision::kWebContentsDestroyed);
     return;
   }
-  if (tab_->GetContents() != web_contents.get() || !tab_->IsActivated() ||
+  if (tab_->GetContents() != web_contents.get() ||
       web_contents->GetLastCommittedURL() != url) {
-    CUEING_LOG(
-        "OnAllEligibilityChecksComplete: tab navigated away or is no longer "
-        "active.");
+    CUEING_LOG("OnAllEligibilityChecksComplete: tab navigated away.");
     RecordContextualCueingDecision(
         GetTabSourceId(),
         ContextualCueingDecision::kNoLongerActiveTabAfterEligibilityCheck);
     return;
+  }
+
+  // If the tab is not activated, filter out targets that do not support quiet
+  // cues and downgrade intrusiveness to quiet.
+  bool tab_activated = tab_->IsActivated();
+  if (!tab_activated) {
+    intrusiveness = CueIntrusiveness::kQuiet;
   }
 
   // Select the winner via UCB scoring.
@@ -540,6 +547,12 @@ void ContextualCueingController::OnAllEligibilityChecksComplete(
   for (auto& r : results) {
     if (!r.eligible) {
       continue;
+    }
+    if (!tab_activated) {
+      CueTarget* target = GetTarget(r.type);
+      if (!target || !target->SupportsIntrusiveness(CueIntrusiveness::kQuiet)) {
+        continue;
+      }
     }
     any_eligible = true;
     double score = contextual_cueing_service_->GetUcbScore(r.type);
@@ -555,7 +568,10 @@ void ContextualCueingController::OnAllEligibilityChecksComplete(
   if (!any_eligible) {
     CUEING_LOG("OnAllEligibilityChecksComplete: no targets eligible.");
     RecordContextualCueingDecision(
-        GetTabSourceId(), ContextualCueingDecision::kTargetFeatureNotEligible);
+        GetTabSourceId(),
+        tab_activated ? ContextualCueingDecision::kTargetFeatureNotEligible
+                      : ContextualCueingDecision::
+                            kNoLongerActiveTabAfterEligibilityCheck);
     return;
   }
 

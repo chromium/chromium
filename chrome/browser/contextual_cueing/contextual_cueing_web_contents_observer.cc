@@ -75,11 +75,11 @@ void ContextualCueingWebContentsObserver::DidFinishNavigation(
     controller->HideCue();
     if (tab->IsActivated()) {
       controller->OnUrlChanged(navigation_handle->GetURL());
-      if (navigation_handle->IsServedFromBackForwardCache()) {
-        controller->EvaluateCues();
-      } else if (!navigation_handle->IsSameDocument()) {
-        should_evaluate_cues_on_load_ = true;
-      }
+    }
+    if (navigation_handle->IsServedFromBackForwardCache()) {
+      controller->EvaluateCues();
+    } else if (!navigation_handle->IsSameDocument()) {
+      should_evaluate_cues_on_load_ = true;
     }
   }
 
@@ -113,9 +113,7 @@ void ContextualCueingWebContentsObserver::
 
   if (auto* controller =
           ContextualCueingController::GetForWebContents(GetWebContents())) {
-    if (tab->IsActivated()) {
-      controller->EvaluateCues();
-    }
+    controller->EvaluateCues();
   }
 }
 
