@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -155,17 +156,15 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
       assertWithMatcher:grey_notNil()];
 
   // Tap on Content Notifications menu button.
-  id contentNotificationsCell = grey_allOf(
-      chrome_test_util::ContainsPartialText(l10n_util::GetNSString(
-          IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE)),
-      grey_sufficientlyVisible(), nil);
+  id contentNotificationsCell =
+      grey_allOf(grey_accessibilityID(kSettingsNotificationsContentCellId),
+                 grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:contentNotificationsCell]
       performAction:grey_tap()];
 
   // Verify that the sub-menu is presented.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kContentNotificationsTableViewId)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(kContentNotificationsTableViewId)];
 
   // Tap back.
   [[EarlGrey
@@ -173,18 +172,16 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
       performAction:grey_tap()];
 
   // Verify that the sub-menu is fully gone before trying to re-enter.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kContentNotificationsTableViewId)]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kContentNotificationsTableViewId)];
 
   // Tap on Content Notifications menu button again.
   [[EarlGrey selectElementWithMatcher:contentNotificationsCell]
       performAction:grey_tap()];
 
   // Verify that the sub-menu is presented again.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kContentNotificationsTableViewId)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(kContentNotificationsTableViewId)];
 }
 
 @end
