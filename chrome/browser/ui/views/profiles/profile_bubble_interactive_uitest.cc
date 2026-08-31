@@ -123,7 +123,7 @@ class ProfileMenuInteractiveUiTest : public ProfileBubbleInteractiveUiTest {
   }
 
   ProfileMenuViewBase* profile_menu_view() {
-    auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+    auto* coordinator = ProfileMenuCoordinator::From(browser());
     return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
                        : nullptr;
   }

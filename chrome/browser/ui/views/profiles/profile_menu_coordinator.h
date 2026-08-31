@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/view_tracker.h"
 
@@ -25,7 +26,12 @@ enum class AccessPoint;
 // Owned by the associated browser.
 class ProfileMenuCoordinator {
  public:
+  DECLARE_USER_DATA(ProfileMenuCoordinator);
+
   ProfileMenuCoordinator(BrowserWindowInterface* browser, Profile* profile);
+
+  // Returns the coordinator for `browser`, or null if it does not have one.
+  static ProfileMenuCoordinator* From(BrowserWindowInterface* browser);
   ProfileMenuCoordinator(const ProfileMenuCoordinator&) = delete;
   ProfileMenuCoordinator& operator=(const ProfileMenuCoordinator&) = delete;
   ~ProfileMenuCoordinator();
@@ -42,6 +48,8 @@ class ProfileMenuCoordinator {
   ProfileMenuViewBase* GetProfileMenuViewBaseForTesting();
 
  private:
+  ui::ScopedUnownedUserData<ProfileMenuCoordinator> scoped_unowned_user_data_;
+
   BrowserWindowInterface* GetBrowser();
   Profile* GetProfile();
 

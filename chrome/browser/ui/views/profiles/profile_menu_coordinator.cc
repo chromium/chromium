@@ -150,6 +150,16 @@ views::BubbleAnchor ProfileMenuCoordinator::GetAvatarToolbarButton() {
                                  ->avatar_toolbar_button());
 }
 
+DEFINE_USER_DATA(ProfileMenuCoordinator);
+
+// static
+ProfileMenuCoordinator* ProfileMenuCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 ProfileMenuCoordinator::ProfileMenuCoordinator(BrowserWindowInterface* browser,
                                                Profile* profile)
-    : browser_(CHECK_DEREF(browser)), profile_(CHECK_DEREF(profile)) {}
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
+      browser_(CHECK_DEREF(browser)),
+      profile_(CHECK_DEREF(profile)) {}

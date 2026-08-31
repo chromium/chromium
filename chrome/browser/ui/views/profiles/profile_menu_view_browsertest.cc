@@ -294,8 +294,7 @@ class ProfileMenuViewTestBase {
   }
 
   ProfileMenuViewBase* profile_menu_view() {
-    auto* coordinator =
-        target_browser_->GetFeatures().profile_menu_coordinator();
+    auto* coordinator = ProfileMenuCoordinator::From(target_browser_);
     return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
                        : nullptr;
   }
@@ -444,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   EXPECT_TRUE(coordinator->IsShowing());
 
   WidgetDestroyedObserver destroyed_observer(
@@ -466,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
   // Simulates triggering opening the Profile Menu - blocks on first local data
   // request.
   avatar_accessor.Click();
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   // Menu is not shown yet since the data is not returned.
   ASSERT_FALSE(coordinator->IsShowing());
   // Simulates re-triggering opening the Profile Menu before the first request
@@ -510,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, RootViewAccessibleName) {
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
   waiter.WaitForThemeChanged();
 
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   EXPECT_TRUE(coordinator->IsShowing());
 
   ui::AXNodeData root_view_data;
@@ -536,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
   waiter.WaitForThemeChanged();
 
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   EXPECT_TRUE(coordinator->IsShowing());
   profile_menu_view()->GetWidget()->Close();
   base::RunLoop().RunUntilIdle();
@@ -555,8 +554,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
                              ui::PageTransition::PAGE_TRANSITION_LINK));
   EXPECT_EQ(1, tab_strip->active_index());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+  EXPECT_FALSE(ProfileMenuCoordinator::From(browser())->IsShowing());
 }
 
 // Profile chooser view should close when active tab is changed.
@@ -572,8 +570,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   tab_strip->ActivateTabAt(0);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+  EXPECT_FALSE(ProfileMenuCoordinator::From(browser())->IsShowing());
 }
 
 // Profile chooser view should close when active tab is closed.
@@ -589,8 +586,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   tab_strip->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+  EXPECT_FALSE(ProfileMenuCoordinator::From(browser())->IsShowing());
 }
 
 // Profile chooser view should close when the last tab is closed.
@@ -999,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncServiceUnavailableTest,
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // Verify that the menu is showing successfully.
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   EXPECT_TRUE(coordinator->IsShowing());
 }
 
@@ -2820,7 +2816,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   // Dismiss the profile menu.
   profile_menu_view()->GetWidget()->Close();
   base::RunLoop().RunUntilIdle();
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   EXPECT_FALSE(coordinator->IsShowing());
 }
 
@@ -2871,7 +2867,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest, SurveyProductDataBucketed) {
   // Dismiss the profile menu.
   profile_menu_view()->GetWidget()->Close();
   base::RunLoop().RunUntilIdle();
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   EXPECT_FALSE(coordinator->IsShowing());
 }
 
@@ -2919,7 +2915,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
     // Make sure that the profile menu is closed.
     profile_menu_view()->GetWidget()->Close();
     base::RunLoop().RunUntilIdle();
-    auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+    auto* coordinator = ProfileMenuCoordinator::From(browser());
     EXPECT_FALSE(coordinator->IsShowing());
   }
 }
@@ -3077,7 +3073,7 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
             &mock_signin_ui_delegate_)) {}
 
   void OpenProfileMenuFromCoordinator(bool from_avatar_promo = false) {
-    auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+    auto* coordinator = ProfileMenuCoordinator::From(browser());
     ASSERT_TRUE(coordinator);
     coordinator->Show(/*is_source_accelerator=*/false, from_avatar_promo);
     ASSERT_TRUE(base::test::RunUntil(
@@ -3087,7 +3083,7 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
   }
 
   void ClickSyncButton() {
-    auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+    auto* coordinator = ProfileMenuCoordinator::From(browser());
     ASSERT_TRUE(coordinator);
     ProfileMenuViewBase* profile_menu_view =
         coordinator->GetProfileMenuViewBaseForTesting();

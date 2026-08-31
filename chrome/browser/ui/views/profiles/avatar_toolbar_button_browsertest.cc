@@ -1307,13 +1307,12 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonWithSyncBrowserTest,
   EnableSyncWithImageAndClearGreeting(avatar_button, u"test@gmail.com");
   SimulateBookmarksLimitExceededError();
 
-  EXPECT_FALSE(
-      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+  EXPECT_FALSE(ProfileMenuCoordinator::From(browser())->IsShowing());
   avatar_button->ButtonPressed(/*is_source_accelerator=*/false);
   // TODO(crbug.com/478780706) Verifying the presence and functionality of error
   // cards within the profile menu is not easily testable. Consider implementing
   // a test harness for this purpose.
-  EXPECT_TRUE(browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+  EXPECT_TRUE(ProfileMenuCoordinator::From(browser())->IsShowing());
 }
 #endif
 
@@ -2358,7 +2357,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   histogram_tester.ExpectTotalCount(
       "Signin.AvatarPillPromo.DurationBeforeClick",
       /*expected_count=*/1);
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  auto* coordinator = ProfileMenuCoordinator::From(browser());
   ASSERT_NE(coordinator, nullptr);
   EXPECT_TRUE(coordinator->IsShowing());
   EXPECT_TRUE(avatar_accessor.GetText().empty());

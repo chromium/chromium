@@ -258,8 +258,9 @@ void WebUIBrowserPageHandler::OpenAppMenu() {
 }
 
 void WebUIBrowserPageHandler::OpenProfileMenu() {
-  GetBrowser()->GetFeatures().profile_menu_coordinator()->Show(
-      /*is_source_accelerator=*/false);
+  ProfileMenuCoordinator::From(GetBrowser())
+      ->Show(
+          /*is_source_accelerator=*/false);
 }
 
 void WebUIBrowserPageHandler::LaunchDevToolsForBrowser() {

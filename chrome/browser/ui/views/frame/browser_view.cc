@@ -5797,8 +5797,7 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
   }
 
   // Default behavior -- show the profile menu.
-  browser()->GetFeatures().profile_menu_coordinator()->Show(
-      is_source_accelerator);
+  ProfileMenuCoordinator::From(browser())->Show(is_source_accelerator);
 }
 
 void BrowserView::MaybeShowProfileSwitchIPH() {

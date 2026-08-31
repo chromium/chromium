@@ -891,7 +891,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 
   profile_menu_coordinator_ =
-      std::make_unique<ProfileMenuCoordinator>(browser, profile);
+      GetUserDataFactory().CreateInstance<ProfileMenuCoordinator>(
+          *browser, browser, profile);
 
   if (browser_view) {
     scrim_view_controller_ =

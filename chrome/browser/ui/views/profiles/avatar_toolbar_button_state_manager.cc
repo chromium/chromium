@@ -698,8 +698,7 @@ class OnSigninStateProvider : public StateProvider {
 
  private:
   void OnButtonClick(bool is_source_accelerator) {
-    browser_->GetFeatures().profile_menu_coordinator()->Show(
-        is_source_accelerator);
+    ProfileMenuCoordinator::From(&browser_.get())->Show(is_source_accelerator);
     coordinator_->Collapse();
   }
 
@@ -1420,8 +1419,9 @@ class PromoStateProvider : public StateProvider {
 
  private:
   void OnButtonClick(bool is_source_accelerator) {
-    browser_->GetFeatures().profile_menu_coordinator()->Show(
-        is_source_accelerator, /*from_avatar_promo=*/true);
+    ProfileMenuCoordinator::From(&browser_.get())
+        ->Show(is_source_accelerator,
+               /*from_avatar_promo=*/true);
     coordinator_->PromoUsed();
   }
 
@@ -2367,9 +2367,8 @@ void AvatarToolbarButtonStateManager::HandleButtonPressed(
   }
 
   // By default, show the profile menu.
-  if (browser_ && browser_->GetFeatures().profile_menu_coordinator()) {
-    browser_->GetFeatures().profile_menu_coordinator()->Show(
-        is_source_accelerator);
+  if (browser_ && ProfileMenuCoordinator::From(browser_)) {
+    ProfileMenuCoordinator::From(browser_)->Show(is_source_accelerator);
   }
 }
 
