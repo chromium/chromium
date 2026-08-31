@@ -172,7 +172,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
         WindowOcclusionMetrics.onCalculateOcclusion();
         mLastCalculateOcclusionTimeMs = TimeUtils.uptimeMillis();
 
-        try (TimingMetric t = WindowOcclusionMetrics.getCalculateDurationTimer()) {
+        try (TimingMetric _ = WindowOcclusionMetrics.getCalculateDurationTimer()) {
             final SparseArray<List<ActivityWindowAndroid>> zOrder =
                     mWindowZOrderTracker.getWindowZOrder();
 

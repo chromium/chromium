@@ -694,8 +694,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
     private int mWindowId;
 
-    private @InstanceAllocationType int mInstanceAllocationType;
-
     // The URL of the last active Tab read from the Tab metadata file during cold startup.
     private String mLastActiveTabUrl;
 
@@ -1886,7 +1884,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
                 mRootUiCoordinator.getDesktopWindowStateManager(),
-                mInstanceAllocationType,
                 !mFromResumption);
 
         if (mSendTabToSelfGestureDetector == null
@@ -4155,7 +4152,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     @Override
     protected boolean isStartedUpCorrectly(Intent intent) {
         mWindowId = 0;
-        mInstanceAllocationType = InstanceAllocationType.DEFAULT;
         PersistableBundle persistentState = getPersistentInstanceState();
         Bundle savedInstanceState = getSavedInstanceState();
         int windowId = getExtraWindowIdFromIntent(intent);
@@ -4193,7 +4189,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             preferNew,
                             mHasIncognitoExtra);
             mWindowId = instanceIdInfo.instanceId;
-            mInstanceAllocationType = instanceIdInfo.allocationType;
             mSupportedProfileType = instanceIdInfo.profileType;
             logIntentInfo(intent);
             // If a new instance ID was allocated for the newly created activity, potentially

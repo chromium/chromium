@@ -97,13 +97,11 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
 
     @Override
     public @Nullable Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
-        Tab newTab =
-                mTabModelSelector.openNewTab(
-                        loadUrlParams,
-                        TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
-                        mTab,
-                        /* incognito= */ false);
-        return newTab;
+        return mTabModelSelector.openNewTab(
+                loadUrlParams,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                mTab,
+                /* incognito= */ false);
     }
 
     private @Nullable Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {

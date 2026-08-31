@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -335,9 +334,9 @@ public class MultiWindowUtils implements ActivityStateListener {
             @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
                 instanceType |=
-                        (tabModelSelector.isIncognitoBrandedModelSelected()
+                        tabModelSelector.isIncognitoBrandedModelSelected()
                                 ? PersistedInstanceType.OFF_THE_RECORD
-                                : PersistedInstanceType.REGULAR);
+                                : PersistedInstanceType.REGULAR;
             }
             return getInstanceCount(instanceType) > 1;
         }
@@ -1546,12 +1545,10 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Record the number of running ChromeTabbedActivity's as well as the total number of Chrome
      * instances when a new ChromeTabbedActivity is created in a desktop window.
      *
-     * @param instanceAllocationType The {@link InstanceAllocationType} for the new activity.
      * @param isColdStart Whether app startup is a cold start.
      */
     public static void maybeRecordDesktopWindowCountHistograms(
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @InstanceAllocationType int instanceAllocationType,
             boolean isColdStart) {
         if (!isMultiInstanceApi31Enabled()) return;
 
@@ -1678,11 +1675,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                                     primaryActionRunnable.run();
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
-                        .with(
-                                MessageBannerProperties.ON_DISMISSED,
-                                (dismissReason) -> {
-                                    dismissCallback.run();
-                                })
+                        .with(MessageBannerProperties.ON_DISMISSED, _ -> dismissCallback.run())
                         .build();
 
         messageDispatcher.enqueueWindowScopedMessage(message, false);
@@ -1693,23 +1686,22 @@ public class MultiWindowUtils implements ActivityStateListener {
      *
      * @param activity The activity to move.
      * @param bounds The bounds to move the activity to.
-     * @return Whether the activity was moved.
      */
-    public static boolean moveActivityToBounds(Activity activity, Rect bounds) {
+    public static void moveActivityToBounds(Activity activity, Rect bounds) {
         final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         if (delegate == null) {
-            return false;
+            return;
         }
 
         final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
         if (appTask == null) {
-            return false;
+            return;
         }
 
         final Pair<DisplayAndroid, Rect> localCoordinates =
                 DisplayUtil.convertGlobalDipToLocalPxCoordinates(bounds);
         if (localCoordinates == null) {
-            return false;
+            return;
         }
 
         final DisplayAndroid display = localCoordinates.first;
@@ -1719,7 +1711,6 @@ public class MultiWindowUtils implements ActivityStateListener {
                 appTask,
                 display.getDisplayId(),
                 DisplayUtil.clampWindowToDisplay(localBounds, display));
-        return true;
     }
 
     /**

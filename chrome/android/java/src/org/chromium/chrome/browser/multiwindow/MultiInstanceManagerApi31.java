@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1148,10 +1147,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // which can cause ANRs. Use a sequenced task runner to ensure serial execution and
         // prevent concurrent read-modify-write races on daily max counters.
         sMetricsTaskRunner.postDelayedTask(
-                () -> {
-                    recordInstanceCountMetrics();
-                },
-                0);
+                MultiInstanceManagerApi31::recordInstanceCountMetrics, 0);
     }
 
     /** Collect instance count metrics on a background thread to avoid ANR from Binder IPC. */

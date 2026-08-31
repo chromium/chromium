@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistentStateIdVerification;
@@ -1377,13 +1376,11 @@ public class MultiWindowUtilsUnitTest {
         // Assume that the histograms are attempted to be recorded on a cold start of the app.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
                 mDesktopWindowStateManager,
-                InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ true);
 
         // Assume that the histograms are attempted to be recorded on a subsequent warm start.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
                 mDesktopWindowStateManager,
-                InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ false);
 
         // Each histogram should be emitted only once.
@@ -1405,29 +1402,16 @@ public class MultiWindowUtilsUnitTest {
         int runningActivityCount = 1;
         addRunningTabbedActivity(INSTANCE_ID_0);
 
-        int[] instanceAllocationTypes =
-                new int[] {
-                    InstanceAllocationType.DEFAULT,
-                    InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK,
-                    InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK,
-                    InstanceAllocationType.EXISTING_INSTANCE_NEW_TASK,
-                    InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
-                    InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK
-                };
-
-        // Assume that the histograms are attempted to be recorded on a cold start of an instance,
-        // for different instance allocation types.
-        for (int type : instanceAllocationTypes) {
-            var watcher =
-                    HistogramWatcher.newBuilder()
-                            .expectIntRecord(
-                                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW, runningActivityCount)
-                            .expectIntRecord(HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW, 2)
-                            .build();
-            MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                    mDesktopWindowStateManager, type, /* isColdStart= */ true);
-            watcher.assertExpected();
-        }
+        // Assume that the histograms are attempted to be recorded on a cold start of an instance.
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW, runningActivityCount)
+                        .expectIntRecord(HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW, 2)
+                        .build();
+        MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
+                mDesktopWindowStateManager, /* isColdStart= */ true);
+        watcher.assertExpected();
     }
 
     @Test
@@ -1443,7 +1427,6 @@ public class MultiWindowUtilsUnitTest {
         // in a desktop window.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
                 mDesktopWindowStateManager,
-                InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ true);
 
         // Histograms should not be emitted.
