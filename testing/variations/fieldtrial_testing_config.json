@@ -10874,14 +10874,28 @@
             ]
         }
     ],
-    "HttpsFirstBalancedModeAutoEnable": [
+    "HttpsFirstBalancedModeAutoEnableAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpsFirstBalancedModeAutoEnable"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HttpsFirstBalancedModeAutoEnableDesktop": [
         {
             "platforms": [
                 "chromeos",
                 "linux",
                 "mac",
-                "windows",
-                "android"
+                "windows"
             ],
             "experiments": [
                 {
