@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -407,15 +406,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // Returns one flex line's range in this geometry's flattened `CrossGap` list.
   GapIndexRange FlexLineCrossGapRange(wtf_size_t owning_main_gap_index) const;
 
-  // Resets transient per-paint state. A cached `GapGeometry` can be reused
-  // across relayouts and repaints, so paint must not inherit state left behind
-  // by a previous paint. The flex cross-gap cursor is now a local paint-time
-  // variable (`main_gap_running_index` in GapDecorationsPainter), so only the
-  // multicol spanner-adjacent set needs clearing here.
-  void InitPaintState() const {
-    multicol_spanner_adjacent_intersections_.clear();
-  }
-
   void SetMainDirection(GridTrackSizingDirection direction) {
     main_direction_ = direction;
   }
@@ -603,6 +593,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                LayoutUnit cross_decoration_width) const;
 
  private:
+  // Returns whether a multicol cross-gap intersection is adjacent to a
+  // synthetic main gap that represents a spanner boundary.
+  bool IsMulticolSpannerBoundaryIntersection(wtf_size_t intersection_index,
+                                             bool is_main_gap) const;
+
   // Fills `intersections` for a main gap at `gap_index`. The list includes:
   // - container content start
   // - Intersections with cross gaps (container-specific)
@@ -747,21 +742,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // TODO(javiercon): Consider making this type a display agnostic type that
   // uses inline/block rather than rows/columns.
   GridTrackSizingDirection main_direction_ = kForRows;
-
-  // For multicol containers, this set tracks which intersection indices are
-  // considered to be spanner-adjacent "edges". These intersections are
-  // adjacent to spanner main gaps and need to be treated as edge
-  // intersections so that insets are applied correctly.
-  //
-  // This is mutable because it is populated at paint time (GapGeometry is const
-  // during paint) and `InitPaintState()` clears it before each paint so a
-  // cached GapGeometry never inherits stale entries across relayouts/repaints.
-  //
-  // TODO(javiercon): Lift this transient state up to the paint call and
-  // thread it through as an input/output param (as was done for the flex
-  // cross-gap cursor `main_gap_running_index`), so it no longer needs to be a
-  // mutable member reset via `InitPaintState()`.
-  mutable HashSet<wtf_size_t> multicol_spanner_adjacent_intersections_;
 };
 
 }  // namespace blink

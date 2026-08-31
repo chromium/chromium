@@ -797,17 +797,6 @@ void GapGeometry::GenerateCrossIntersectionListForMulticol(
   for (const auto& main_gap : GetMainGaps()) {
     intersections.emplace_back(main_gap.GetGapOffset(),
                                cursor.GetNextGapSegmentState());
-
-    // We mark intersections that are adjacent to spanner main gaps as an
-    // "edge". This is so that the inset applies correctly to these
-    // intersections. This is because at least right now, percentage insets in
-    // grid with spanners apply that percentage to the crossing gap width.
-    // Intersections with spanners in multicol dont have a crossing gap, and as
-    // such need to be treated as "edge" intersections which also share that
-    // same property.
-    if (main_gap.IsSpannerMainGap()) {
-      multicol_spanner_adjacent_intersections_.insert(intersections.size() - 1);
-    }
   }
 
   intersections.emplace_back(content_block_end_,
@@ -891,9 +880,10 @@ bool GapGeometry::IsIntersectionAtContainerEdge(
     const Vector<GapIntersection>& intersections) const {
   CHECK_GT(intersection_count, 0u);
   const wtf_size_t last_intersection_index = intersection_count - 1;
-  // For flex and multicol main-axis gaps, and for grid in general, the first
+  // For main-axis gaps, and for grid and multicol cross-axis gaps, the first
   // and last intersections are considered edges.
-  if (is_main_gap || GetContainerType() == ContainerType::kGrid) {
+  if (is_main_gap || GetContainerType() == ContainerType::kGrid ||
+      GetContainerType() == ContainerType::kMultiColumn) {
     return intersection_index == 0 ||
            intersection_index == last_intersection_index;
   }
@@ -931,17 +921,18 @@ bool GapGeometry::IsIntersectionAtContainerEdge(
     }
   }
 
-  if (GetContainerType() == ContainerType::kMultiColumn) {
-    CHECK(!is_main_gap);
-    // For multicol cross gaps, we may have additional edge intersections.
-    // These occur when the cross gap intersects with a spanner main gap.
-    return intersection_index == 0 ||
-           intersection_index == last_intersection_index ||
-           multicol_spanner_adjacent_intersections_.Contains(
-               intersection_index);
+  return false;
+}
+
+bool GapGeometry::IsMulticolSpannerBoundaryIntersection(
+    wtf_size_t intersection_index,
+    bool is_main_gap) const {
+  if (GetContainerType() != ContainerType::kMultiColumn || is_main_gap ||
+      intersection_index == 0 || intersection_index > main_gaps_.size()) {
+    return false;
   }
 
-  return false;
+  return main_gaps_[intersection_index - 1].IsSpannerMainGap();
 }
 
 bool GapGeometry::IsCapIntersection(
@@ -955,6 +946,8 @@ bool GapGeometry::IsCapIntersection(
   return IsIntersectionAtContainerEdge(gap_index, intersection_index,
                                        intersections.size(), is_main_gap,
                                        intersections) ||
+         IsMulticolSpannerBoundaryIntersection(intersection_index,
+                                               is_main_gap) ||
          !CSSGapDecorationUtils::HasCrossGapSegment(
              cross_direction, gap_index, intersection_index, rule_visibility,
              cross_rule_visibility, *this, intersections);
@@ -1047,7 +1040,8 @@ LayoutUnit GapGeometry::GetCrossWidthForIntersection(
     const Vector<GapIntersection>& intersections) const {
   if (IsIntersectionAtContainerEdge(gap_index, intersection_index,
                                     intersections.size(), is_main_gap,
-                                    intersections)) {
+                                    intersections) ||
+      IsMulticolSpannerBoundaryIntersection(intersection_index, is_main_gap)) {
     return LayoutUnit();
   }
 

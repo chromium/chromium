@@ -320,11 +320,6 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   // flex grows capacity only when a later gap needs more.
   Vector<GapIntersection> intersections;
 
-  // Reset transient per-paint state. The `GapGeometry` may be reused across
-  // relayouts and repaints, so we must not inherit stale state (e.g. the
-  // multicol spanner-adjacent set) from a previous paint.
-  gap_geometry.InitPaintState();
-
   // For flex and grid-lanes cross gaps, track the owner (flex line or grid
   // lane) of the current cross gap as a forward-only cursor. The owner is
   // needed to generate the gap's intersections, and for flex it also resolves
