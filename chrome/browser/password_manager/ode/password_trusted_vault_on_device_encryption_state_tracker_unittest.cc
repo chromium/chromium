@@ -4,8 +4,14 @@
 
 #include "chrome/browser/password_manager/ode/password_trusted_vault_on_device_encryption_state_tracker.h"
 
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
+
+#include "base/containers/enum_set.h"
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/password_manager/ode/mock_on_device_encryption_state_tracker_observer.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -17,206 +23,207 @@ namespace password_manager {
 
 namespace {
 
-using MockObserver = MockOnDeviceEncryptionStateTrackerObserver;
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::Values;
+using ::testing::ValuesIn;
 
-class PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest
-    : public testing::Test {
- protected:
-  base::test::TaskEnvironment task_environment_;
-  syncer::TestSyncService sync_service_;
+constexpr auto AllPassphraseTypeSet =
+    base::EnumSet<syncer::PassphraseType, syncer::PassphraseType{0}>::All();
+constexpr auto NonTrustedVaultPassphraseTypeSet =
+    base::Difference(AllPassphraseTypeSet,
+                     decltype(AllPassphraseTypeSet){
+                         syncer::PassphraseType::kTrustedVaultPassphrase});
+
+// Used in parameterized tests which verify that the correct state is being
+// derived for different combinations of the parameters.
+struct StateComputationTestCase {
+  bool is_sync_engine_initialized;
+  bool is_password_sync_enabled;
+  syncer::PassphraseType passphrase_type;
+  bool is_trusted_vault_key_required;
+  bool is_passwords_data_type_active;
+  OnDeviceEncryptionState expected_state;
 };
 
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       NullSyncService) {
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(nullptr);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
-}
-
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       EngineNotInitialized) {
-  sync_service_.SetMaxTransportState(
-      syncer::SyncService::TransportState::INITIALIZING);
-
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
-}
-
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest, SignedOut) {
-  sync_service_.SetSignedOut();
-
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
-}
-
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       PassphraseTypeNotTrustedVault) {
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kKeystorePassphrase);
-  {
-    PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-    EXPECT_EQ(tracker.GetEncryptionState(),
-              OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+class PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest
+    : public testing::TestWithParam<
+          std::tuple<bool /*is_sync_engine_initialized*/,
+                     bool /*is_password_sync_enabled*/,
+                     syncer::PassphraseType /*passphrase_type*/,
+                     bool /*is_trusted_vault_key_required*/,
+                     bool /*is_passwords_data_type_active*/,
+                     OnDeviceEncryptionState /*expected_state*/>> {
+ public:
+  StateComputationTestCase GetTestCase() const {
+    return StateComputationTestCase{
+        .is_sync_engine_initialized = std::get<0>(GetParam()),
+        .is_password_sync_enabled = std::get<1>(GetParam()),
+        .passphrase_type = std::get<2>(GetParam()),
+        .is_trusted_vault_key_required = std::get<3>(GetParam()),
+        .is_passwords_data_type_active = std::get<4>(GetParam()),
+        .expected_state = std::get<5>(GetParam()),
+    };
   }
 
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kCustomPassphrase);
-  {
-    PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-    EXPECT_EQ(tracker.GetEncryptionState(),
-              OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
-  }
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
 
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kFrozenImplicitPassphrase);
-  {
-    PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-    EXPECT_EQ(tracker.GetEncryptionState(),
-              OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+std::string_view PassphraseTypeToString(syncer::PassphraseType type) {
+  switch (type) {
+    case syncer::PassphraseType::kImplicitPassphrase:
+      return "ImplicitPassphrase";
+    case syncer::PassphraseType::kKeystorePassphrase:
+      return "KeystorePassphrase";
+    case syncer::PassphraseType::kFrozenImplicitPassphrase:
+      return "FrozenImplicitPassphrase";
+    case syncer::PassphraseType::kCustomPassphrase:
+      return "CustomPassphrase";
+    case syncer::PassphraseType::kTrustedVaultPassphrase:
+      return "TrustedVaultPassphrase";
   }
 }
 
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       PasswordsNotSelected) {
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kTrustedVaultPassphrase);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kBookmarks});
-
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+// Used for creating human-readable names for parameterized test cases.
+std::string ParamInfoToString(
+    const testing::TestParamInfo<
+        PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest::ParamType>&
+        info) {
+  return base::StrCat({
+      std::get<0>(info.param) ? "SyncEngineInitialized_"
+                              : "SyncEngineNotInitialized_",
+      std::get<1>(info.param) ? "PasswordSyncEnabled_"
+                              : "PasswordSyncDisabled_",
+      PassphraseTypeToString(std::get<2>(info.param)),
+      "_",
+      std::get<3>(info.param) ? "KeyRequired_" : "KeyNotRequired_",
+      std::get<4>(info.param) ? "PasswordsActive" : "PasswordsNotActive",
+  });
 }
 
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       DeviceNotReadyWhenKeyRequired) {
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kTrustedVaultPassphrase);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service_.GetUserSettings()->SetTrustedVaultKeyRequired(true);
+TEST_P(PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+       ComputesCorrectState) {
+  const StateComputationTestCase test_case = GetTestCase();
 
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kDeviceNotReady);
+  syncer::TestSyncService sync_service;
+  if (!test_case.is_sync_engine_initialized) {
+    sync_service.SetMaxTransportState(
+        syncer::SyncService::TransportState::INITIALIZING);
+  }
+  if (test_case.is_password_sync_enabled) {
+    sync_service.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{syncer::UserSelectableType::kPasswords});
+  } else {
+    sync_service.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{});
+  }
+  sync_service.GetUserSettings()->SetPassphraseType(test_case.passphrase_type);
+  sync_service.GetUserSettings()->SetTrustedVaultKeyRequired(
+      test_case.is_trusted_vault_key_required);
+  if (!test_case.is_passwords_data_type_active) {
+    sync_service.SetFailedDataTypes({syncer::PASSWORDS});
+  }
+
+  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service);
+  EXPECT_EQ(tracker.GetEncryptionState(), test_case.expected_state);
 }
 
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest, DeviceReady) {
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kTrustedVaultPassphrase);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service_.GetUserSettings()->SetTrustedVaultKeyRequired(false);
+// When sync engine is not initialized the on-device encryption state can't be
+// computed.
+INSTANTIATE_TEST_SUITE_P(
+    SyncEngineNotInitialized,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*is_sync_engine_initialized=*/Values(false),
+        /*is_password_sync_enabled=*/Bool(),
+        /*passphrase_type=*/ValuesIn(AllPassphraseTypeSet),
+        /*is_trusted_vault_key_required=*/Bool(),
+        /*is_passwords_data_type_active=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
+    &ParamInfoToString);
 
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kDeviceReady);
-}
+// When password syncing is disabled the on-device encryption state is "not
+// enabled".
+INSTANTIATE_TEST_SUITE_P(
+    PasswordSyncNotEnabled,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*is_sync_engine_initialized=*/Values(true),
+        /*is_password_sync_enabled=*/Values(false),
+        /*passphrase_type=*/ValuesIn(AllPassphraseTypeSet),
+        /*is_trusted_vault_key_required=*/Bool(),
+        /*is_passwords_data_type_active=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled)),
+    &ParamInfoToString);
 
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       PasswordsNotActive) {
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kTrustedVaultPassphrase);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service_.GetUserSettings()->SetTrustedVaultKeyRequired(false);
-  sync_service_.SetFailedDataTypes({syncer::PASSWORDS});
+// When passphrase type is not trusted vault the on-device encryption state is
+// "not enabled".
+INSTANTIATE_TEST_SUITE_P(
+    PassphraseTypeNotTrustedVault,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*is_sync_engine_initialized=*/Values(true),
+        /*is_password_sync_enabled=*/Values(true),
+        /*passphrase_type=*/ValuesIn(NonTrustedVaultPassphraseTypeSet),
+        /*is_trusted_vault_key_required=*/Bool(),
+        /*is_passwords_data_type_active=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled)),
+    &ParamInfoToString);
 
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
-}
+// When trusted vault key is not required but passwords data type is not active
+// yet (asynchronous check for local keys is in flight), the on-device
+// encryption state can't be computed.
+INSTANTIATE_TEST_SUITE_P(
+    KeyCheckInFlight,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*is_sync_engine_initialized=*/Values(true),
+        /*is_password_sync_enabled=*/Values(true),
+        /*passphrase_type=*/
+        Values(syncer::PassphraseType::kTrustedVaultPassphrase),
+        /*is_trusted_vault_key_required=*/Values(false),
+        /*is_passwords_data_type_active=*/Values(false),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
+    &ParamInfoToString);
 
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       StateTransitionsAndObserverNotifications) {
-  sync_service_.SetMaxTransportState(
-      syncer::SyncService::TransportState::INITIALIZING);
+// When trusted vault key is required the on-device encryption is not ready on
+// the device.
+INSTANTIATE_TEST_SUITE_P(
+    DeviceNotReady,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*is_sync_engine_initialized=*/Values(true),
+        /*is_password_sync_enabled=*/Values(true),
+        /*passphrase_type=*/
+        Values(syncer::PassphraseType::kTrustedVaultPassphrase),
+        /*is_trusted_vault_key_required=*/Values(true),
+        /*is_passwords_data_type_active=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kDeviceNotReady)),
+    &ParamInfoToString);
 
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
-
-  MockObserver observer;
-  tracker.AddObserver(&observer);
-
-  // Transition to DeviceNotReady.
-  EXPECT_CALL(observer,
-              OnDeviceEncryptionStateChanged(
-                  &tracker,
-                  OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable,
-                  OnDeviceEncryptionState::kDeviceNotReady));
-  sync_service_.SetMaxTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kTrustedVaultPassphrase);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service_.GetUserSettings()->SetTrustedVaultKeyRequired(true);
-  sync_service_.FireStateChanged();
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kDeviceNotReady);
-
-  // Transition to DeviceReady.
-  EXPECT_CALL(observer, OnDeviceEncryptionStateChanged(
-                            &tracker, OnDeviceEncryptionState::kDeviceNotReady,
-                            OnDeviceEncryptionState::kDeviceReady));
-  sync_service_.GetUserSettings()->SetTrustedVaultKeyRequired(false);
-  sync_service_.FireStateChanged();
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kDeviceReady);
-
-  // Transition to NotEnabled (passphrase changed to custom).
-  EXPECT_CALL(observer,
-              OnDeviceEncryptionStateChanged(
-                  &tracker, OnDeviceEncryptionState::kDeviceReady,
-                  OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled));
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kCustomPassphrase);
-  sync_service_.FireStateChanged();
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
-
-  // No change should not notify.
-  EXPECT_CALL(observer, OnDeviceEncryptionStateChanged).Times(0);
-  sync_service_.FireStateChanged();
-
-  tracker.RemoveObserver(&observer);
-}
-
-TEST_F(PasswordTrustedVaultOnDeviceEncryptionStateTrackerTest,
-       SyncServiceShutdown) {
-  sync_service_.GetUserSettings()->SetPassphraseType(
-      syncer::PassphraseType::kTrustedVaultPassphrase);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service_.GetUserSettings()->SetTrustedVaultKeyRequired(false);
-
-  PasswordTrustedVaultOnDeviceEncryptionStateTracker tracker(&sync_service_);
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kDeviceReady);
-
-  MockObserver observer;
-  tracker.AddObserver(&observer);
-
-  EXPECT_CALL(
-      observer,
-      OnDeviceEncryptionStateChanged(
-          &tracker, OnDeviceEncryptionState::kDeviceReady,
-          OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable));
-  sync_service_.Shutdown();
-  EXPECT_EQ(tracker.GetEncryptionState(),
-            OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
-
-  tracker.RemoveObserver(&observer);
-}
+// When trusted vault key is not required and passwords data type is active the
+// on-device encryption is ready on the device.
+INSTANTIATE_TEST_SUITE_P(
+    DeviceReady,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*is_sync_engine_initialized=*/Values(true),
+        /*is_password_sync_enabled=*/Values(true),
+        /*passphrase_type=*/
+        Values(syncer::PassphraseType::kTrustedVaultPassphrase),
+        /*is_trusted_vault_key_required=*/Values(false),
+        /*is_passwords_data_type_active=*/Values(true),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kDeviceReady)),
+    &ParamInfoToString);
 
 }  // namespace
 
