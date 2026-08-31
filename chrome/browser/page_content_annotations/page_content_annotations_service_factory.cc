@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
@@ -48,8 +49,9 @@ namespace {
 
 bool IsEphemeralProfile(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::ProfileHelper::IsEphemeralUserProfile(profile))
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     return true;
+  }
 #endif
 
   // Catch additional logic that may not be caught by the existing Ash check.
@@ -120,8 +122,9 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  if (!ShouldEnablePageContentAnnotations(profile))
+  if (!ShouldEnablePageContentAnnotations(profile)) {
     return nullptr;
+  }
 
   auto* proto_db_provider = profile->GetOriginalProfile()
                                 ->GetDefaultStoragePartition()
@@ -179,6 +182,11 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool PageContentAnnotationsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  if (base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationOptimizationGuide.Get()) {
+    return false;
+  }
   return true;
 }
 

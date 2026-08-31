@@ -38,6 +38,7 @@ source_set("page_content_annotations") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search_engines",
+    "//chrome/common:chrome_features",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
@@ -74,6 +75,7 @@ source_set("extraction_service") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/common:chrome_features",
     "//components/page_content_annotations/content",
   ]
   if (is_android) {
@@ -134,6 +136,7 @@ source_set("page_embeddings") {
   deps = [
     ":extraction_service",
     "//chrome/browser/passage_embeddings",
+    "//chrome/common:chrome_features",
     "//components/keyed_service/core",
     "//components/passage_embeddings/core",
   ]

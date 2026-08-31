@@ -112,9 +112,8 @@ using ::optimization_guide::OnDeviceModelPerformanceClass;
 std::optional<bool> g_is_official_build_for_testing;
 
 // Returns the profile to use for when setting up the keyed service when the
-// profile is Off-The-Record. For guest profiles, returns a loaded profile if
-// one exists, otherwise just the original profile of the OTR profile. Note:
-// guest profiles are off-the-record and "original" profiles.
+// profile is Off-The-Record. For guest profiles, returns a loaded regular
+// profile if one exists, otherwise nullptr.
 Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
   DCHECK(profile);
   DCHECK(profile->IsOffTheRecord());
@@ -126,9 +125,12 @@ Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
     // another profile as that can lead to start up regressions.
     std::vector<Profile*> profiles =
         g_browser_process->profile_manager()->GetLoadedProfiles();
-    if (!profiles.empty()) {
-      return profiles[0];
+    for (Profile* loaded_profile : profiles) {
+      if (loaded_profile->IsRegularProfile()) {
+        return loaded_profile;
+      }
     }
+    return nullptr;
   }
   return profile->GetOriginalProfile();
 }
@@ -274,11 +276,14 @@ void OptimizationGuideKeyedService::Initialize() {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
   if (profile->IsOffTheRecord()) {
+    Profile* profile_for_ogks = GetProfileForOTROptimizationGuide(profile);
     OptimizationGuideKeyedService* original_ogks =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(
-            GetProfileForOTROptimizationGuide(profile));
-    DCHECK(original_ogks);
-    hint_store = original_ogks->GetHintsManager()->hint_store();
+        profile_for_ogks ? OptimizationGuideKeyedServiceFactory::GetForProfile(
+                               profile_for_ogks)
+                         : nullptr;
+    if (original_ogks) {
+      hint_store = original_ogks->GetHintsManager()->hint_store();
+    }
   } else {
     // Use the database associated with the original profile.
     auto* proto_db_provider = profile->GetOriginalProfile()

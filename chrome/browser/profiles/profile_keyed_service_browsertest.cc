@@ -1041,5 +1041,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   ASSERT_FALSE(guest_parent_profile->IsRegularProfile());
   ASSERT_FALSE(guest_parent_profile->IsOffTheRecord());
   ASSERT_TRUE(guest_parent_profile->IsGuestSession());
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationOptimizationGuide.Get()) {
+    guest_active_services.erase("PageContentAnnotationsService");
+    guest_active_services.erase("ZeroSuggestCacheServiceFactory");
+  }
   TestKeyedProfileServicesActives(guest_parent_profile, guest_active_services);
 }

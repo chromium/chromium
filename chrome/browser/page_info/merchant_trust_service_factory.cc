@@ -13,6 +13,7 @@
 #include "chrome/browser/page_info/merchant_trust_service_delegate.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/merchant_trust_service.h"
 
@@ -57,6 +58,11 @@ MerchantTrustServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 bool MerchantTrustServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationOptimizationGuide.Get()) {
+    return false;
+  }
   // This service needs to be created at startup in order to register its
   // OptimizationType with OptimizationGuideDecider.
   return true;

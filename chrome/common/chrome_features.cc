@@ -1122,7 +1122,6 @@ const base::FeatureParam<int> kGlicGuestUrlPresetType{
 BASE_FEATURE(kGlicContextualCueBubble, base::FEATURE_DISABLED_BY_DEFAULT);
 
 
-
 // Enables the `google-chrome://` URI scheme.
 BASE_FEATURE(kGoogleChromeScheme, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -1453,6 +1452,13 @@ BASE_FEATURE_PARAM(bool,
                    kLazyKeyedServiceInstantiationAutofillAndPassword,
                    &features::kLazyKeyedServiceInstantiation,
                    "autofill_and_password",
+                   true);
+
+// When enabled, Optimization Guide and related keyed services are instantiated
+// lazily.
+BASE_FEATURE_PARAM(bool,
+                   kLazyKeyedServiceInstantiationOptimizationGuide,
+                   &kLazyKeyedServiceInstantiation,
                    true);
 
 // Enables the use of system notification centers instead of using the Message
