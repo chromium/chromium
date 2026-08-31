@@ -10,9 +10,11 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "ui/actions/actions.h"
 
 ActionAppMenuTestBase::ActionAppMenuTestBase() = default;
@@ -23,8 +25,21 @@ void ActionAppMenuTestBase::SetUp() {
   profile_ = std::make_unique<TestingProfile>();
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), TabRestoreServiceFactory::GetDefaultFactory());
+  tab_groups::TabGroupSyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+      }));
+  test_tab_strip_model_delegate_.SetBrowserWindowInterface(
+      &mock_window_interface_);
+  tab_strip_model_ = std::make_unique<TabStripModel>(
+      &test_tab_strip_model_delegate_, profile_.get());
   ON_CALL(mock_window_interface_, GetProfile())
       .WillByDefault(testing::Return(profile_.get()));
+  ON_CALL(mock_window_interface_, GetTabStripModel())
+      .WillByDefault(testing::Return(tab_strip_model_.get()));
+  ON_CALL(testing::Const(mock_window_interface_), GetTabStripModel())
+      .WillByDefault(testing::Return(tab_strip_model_.get()));
   ON_CALL(mock_window_interface_, GetFeatures())
       .WillByDefault(testing::ReturnRef(features_));
   ON_CALL(testing::Const(mock_window_interface_), GetFeatures())
@@ -67,6 +82,12 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionExtensionsSubmenuVisitChromeWebStore,
              u"Visit Chrome Web Store");
   add_action(kActionClearBrowsingData, u"Clear Browsing Data");
+  add_action(kActionSavedTabGroupsSubmenu, u"Tab Groups");
+  add_action(kActionCreateNewTabGroup, u"New Tab Group");
+  add_action(kActionTabGroupOpenInBrowser, u"Open group in browser");
+  add_action(kActionTabGroupOpenInNewWindow, u"Open group in new window");
+  add_action(kActionTabGroupPin, u"Pin group");
+  add_action(kActionTabGroupDelete, u"Delete group");
   add_action(kActionPrint, u"Print");
   add_action(kActionOpenGlic, u"Open Glic");
   add_action(kActionShowLensOverlayFromAppMenu, u"Lens Overlay");
@@ -125,6 +146,8 @@ void ActionAppMenuTestBase::SetUp() {
 void ActionAppMenuTestBase::TearDown() {
   root_action_ = nullptr;
   browser_actions_.reset();
+  tab_strip_model_.reset();
+  test_tab_strip_model_delegate_.SetBrowserWindowInterface(nullptr);
   profile_.reset();
   actions::ActionManager::Get().ResetActions();
   ChromeViewsTestBase::TearDown();

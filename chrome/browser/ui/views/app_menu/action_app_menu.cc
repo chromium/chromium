@@ -102,11 +102,12 @@ bool ActionAppMenu::IsShowing() const {
 
 void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
   auto action_iterator = command_to_action_map_.find(id);
-  // Check if key exists in the map before invoking the action.
-  // If the key does not exist, .find() returns command_to_action_map_.end()
-  if (action_iterator != command_to_action_map_.end()) {
-    action_iterator->second->InvokeAction();
-  }
+  CHECK(action_iterator != command_to_action_map_.end());
+
+  actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
+  CHECK(action_ptr);
+
+  action_ptr->InvokeAction();
 }
 
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {

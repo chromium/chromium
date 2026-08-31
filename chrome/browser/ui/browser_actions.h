@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserActionPrefsListener;
@@ -18,6 +19,7 @@ class Profile;
 
 namespace actions {
 class ActionItem;
+class ActionInvocationContext;
 }  // namespace actions
 
 // Actions that a user can take that are scoped to a browser window.
@@ -60,6 +62,12 @@ class BrowserActions {
   // Creates all the listeners for the action items that update different states
   // and property of the action item.
   void AddListeners();
+
+  // Helper function for organizing the TabGroup Actions
+  void PerformTabGroupAction(tab_groups::TabGroupMenuAction::Type type,
+                             BrowserWindowInterface* bwi,
+                             actions::ActionItem* item,
+                             actions::ActionInvocationContext context);
 
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_;

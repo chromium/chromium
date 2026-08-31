@@ -169,6 +169,7 @@ if (!is_android) {
     public = [ "browser_actions.h" ]
     public_deps = [
       "//base",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
       "//ui/base/unowned_user_data",
     ]
   }

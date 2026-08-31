@@ -50,6 +50,7 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(ActionAppMenuManager::DisplayType,
                              kAppMenuDisplayTypeInternal,
@@ -61,6 +62,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::ColorId,
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::Uuid,
+                                   kAppMenuSavedTabGroupGuidInternal)
 
 const ui::ClassProperty<ActionAppMenuManager::DisplayType>* const
     ActionAppMenuManager::kDisplayTypeKey = kAppMenuDisplayTypeInternal;
@@ -194,6 +197,10 @@ class AppMenuBuilder {
 
 }  // namespace
 
+const ui::ClassProperty<base::Uuid*>* const
+    ActionAppMenuManager::kSavedTabGroupGuidKey =
+        kAppMenuSavedTabGroupGuidInternal;
+
 // Creates the Indirect Action Item which is the basis for the app menu in
 // order to preserve hierarchy in action items
 std::unique_ptr<actions::IndirectActionItem>
@@ -202,7 +209,8 @@ ActionAppMenuManager::CreateIndirectActionItem(
     DisplayType display_type,
     std::optional<ui::ColorId> container_color,
     std::optional<std::u16string> text_override,
-    std::optional<ui::ImageModel> icon_override) {
+    std::optional<ui::ImageModel> icon_override,
+    std::optional<base::Uuid> saved_tab_group_guid) {
   actions::ActionItem* action =
       actions::ActionManager::Get().FindAction(action_id);
   if (!action) {
@@ -225,6 +233,11 @@ ActionAppMenuManager::CreateIndirectActionItem(
   if (icon_override.has_value()) {
     item->SetProperty(kIconOverrideKey,
                       std::make_unique<ui::ImageModel>(icon_override.value()));
+  }
+
+  if (saved_tab_group_guid.has_value()) {
+    item->SetProperty(kSavedTabGroupGuidKey, std::make_unique<base::Uuid>(
+                                                 saved_tab_group_guid.value()));
   }
 
   return item;
