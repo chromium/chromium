@@ -731,6 +731,14 @@ void ToastService::RegisterToasts(
                                     IDS_DICTATION_ERROR_TOAST)
             .Build());
     toast_registry_->RegisterToast(
+        ToastId::kDictationNoMicrophoneError,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kErrorIcon
+                : vector_icons::kMicOffChromeRefreshOldIcon,
+            IDS_DICTATION_NO_MIC_ERROR_TOAST)
+            .Build());
+    toast_registry_->RegisterToast(
         ToastId::kDictationStopped,
         ToastSpecification::Builder(
             features::IsRoundedIconsEnabled()

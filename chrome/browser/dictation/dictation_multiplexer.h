@@ -37,7 +37,9 @@ class DictationMultiplexer {
 
   // Forwards stream state change to the StreamProvider associated with
   // `stream_id`. Returns true if a matching provider was found.
-  bool SetStreamState(StreamId stream_id, StreamProvider::StreamState state);
+  bool SetStreamState(StreamId stream_id,
+                      StreamProvider::StreamState state,
+                      StreamErrorReason reason);
 
   // Associates a StreamProvider with a stream ID.
   // The multiplexer does not own the provider.

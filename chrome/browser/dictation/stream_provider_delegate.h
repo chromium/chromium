@@ -18,7 +18,8 @@ class StreamProviderDelegate {
   // Called when the stream provider state has been updated.
   virtual void DidUpdateStreamProviderState(
       StreamProvider& stream_provider,
-      StreamProvider::StreamState old_state) = 0;
+      StreamProvider::StreamState old_state,
+      StreamErrorReason reason = StreamErrorReason::kNone) = 0;
 };
 
 }  // namespace dictation

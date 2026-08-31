@@ -112,28 +112,28 @@ class DictationSessionUiImplBrowserTest
     };
   }
 
-  auto CheckShowingDictationErrorToast(bool showing) {
-    return Check([this, showing]() {
+  auto CheckShowingToast(ToastId toast_id, bool showing) {
+    return Check([this, toast_id, showing]() {
       ToastController* const toast_controller =
           browser()->GetFeatures().toast_controller();
       CHECK(toast_controller);
-      const bool is_showing_dictation_error_toast =
+      const bool is_showing_toast =
           toast_controller->IsShowingToast() &&
-          toast_controller->GetCurrentToastId() == ToastId::kDictationError;
-      return is_showing_dictation_error_toast == showing;
+          toast_controller->GetCurrentToastId() == toast_id;
+      return is_showing_toast == showing;
     });
   }
 
+  auto CheckShowingDictationErrorToast(bool showing) {
+    return CheckShowingToast(ToastId::kDictationError, showing);
+  }
+
+  auto CheckShowingDictationNoMicrophoneErrorToast(bool showing) {
+    return CheckShowingToast(ToastId::kDictationNoMicrophoneError, showing);
+  }
+
   auto CheckShowingDictationStoppedToast(bool showing) {
-    return Check([this, showing]() {
-      ToastController* const toast_controller =
-          browser()->GetFeatures().toast_controller();
-      CHECK(toast_controller);
-      const bool is_showing_dictation_stopped_toast =
-          toast_controller->IsShowingToast() &&
-          toast_controller->GetCurrentToastId() == ToastId::kDictationStopped;
-      return is_showing_dictation_stopped_toast == showing;
-    });
+    return CheckShowingToast(ToastId::kDictationStopped, showing);
   }
 
   auto StartDictationStream(DictationStreamStartTrigger trigger) {
@@ -845,6 +845,33 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     InAnyContext(PressButton(
         DictationOverlayView::kWaveformElementIdForTesting)),
     CheckResult(GetSessionState(), SessionState::kFinalizing)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+                       NoMicrophoneErrorShowsDedicatedToast) {
+  constexpr int kNoMicrophoneErrorCode =
+      static_cast<int>(StreamErrorReason::kNoMicrophone);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    InAnyContext(WaitForShow(DictationBubbleUi::kViewElementIdForTesting)),
+    CheckShowingDictationNoMicrophoneErrorToast(false),
+
+    // Extension reports failure with numeric error code for NO_MICROPHONE.
+    ExtensionAPISetStreamState(
+        ExtensionStreamState::kFailed, kNoMicrophoneErrorCode),
+
+    InAnyContext(WaitForHide(DictationBubbleUi::kViewElementIdForTesting)),
+    CheckShowingDictationNoMicrophoneErrorToast(true),
+    Check([this] { return session_ui() == nullptr; })
   );
   // clang-format on
 }

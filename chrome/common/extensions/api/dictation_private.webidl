@@ -92,6 +92,12 @@ dictionary UpdateTranscriptionDetails {
 dictionary SetStreamStateDetails {
   required long streamId;
   required StreamState state;
+  // The numeric error code if state is "failed". It is expected that the
+  // component extension and the browser have equivalent error code
+  // definitions, and this extension API does not validate them. If the
+  // component extension sends an unrecognized error code, it is treated as a
+  // generic error.
+  long errorCode;
 };
 
 dictionary LogMessageDetails {

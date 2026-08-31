@@ -19256,6 +19256,31 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DICTATION_ERROR_TOAST" desc="Text shown in a toast notification when a dictation session fails due to an error.">
         Something went wrong. Try again later
       </message>
+      <if expr="is_win">
+        <message name="IDS_DICTATION_NO_MIC_ERROR_TOAST" translateable="false" desc="Text shown in a toast notification when a voice typing/dictation session fails because no microphone was found.">
+          Can't detect microphone. Make sure it's plugged in or check your Windows settings
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_DICTATION_NO_MIC_ERROR_TOAST" translateable="false" desc="Text shown in a toast notification when a voice typing/dictation session fails because no microphone was found.">
+          Can't detect microphone. Make sure it's plugged in or check your Mac settings
+        </message>
+      </if>
+      <if expr="is_chromeos">
+        <message name="IDS_DICTATION_NO_MIC_ERROR_TOAST" translateable="false" desc="Text shown in a toast notification when a voice typing/dictation session fails because no microphone was found.">
+          Can't detect microphone. Make sure it's plugged in or check your ChromeOS settings
+        </message>
+      </if>
+      <if expr="is_linux">
+        <message name="IDS_DICTATION_NO_MIC_ERROR_TOAST" translateable="false" desc="Text shown in a toast notification when a voice typing/dictation session fails because no microphone was found.">
+          Can't detect microphone. Make sure it's plugged in or check your Linux settings
+        </message>
+      </if>
+      <if expr="not is_win and not is_macosx and not is_chromeos and not is_linux">
+        <message name="IDS_DICTATION_NO_MIC_ERROR_TOAST" translateable="false" desc="Text shown in a toast notification when a voice typing/dictation session fails because no microphone was found.">
+          Can't detect microphone. Make sure it's plugged in or check your system settings
+        </message>
+      </if>
       <message name="IDS_DICTATION_STOPPED_TOAST" translateable="false" desc="Text shown in a toast notification when a dictation session is stopped.">
         Listening stopped
       </message>

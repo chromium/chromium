@@ -32,6 +32,16 @@ enum class DictationStreamEndTrigger {
   kTest,         // Test-only trigger where specific trigger is irrelevant.
 };
 
+enum class StreamErrorReason {
+  // No error code was provided (or when the stream is not in a failed state).
+  kNone = 0,
+  // An unrecognized or generic error code was provided.
+  kUnknown = 1,
+  // Failed because no microphone is available or accessible.
+  kNoMicrophone = 2,
+  kMaxValue = kNoMicrophone,
+};
+
 // An interface to a Dictation StreamProvider which provides user-dicatated text
 // input.
 class StreamProvider {
@@ -52,7 +62,8 @@ class StreamProvider {
                                       bool is_final) = 0;
 
   // Called when stream state changes.
-  virtual void OnStreamStateChanged(StreamState state) = 0;
+  virtual void OnStreamStateChanged(StreamState state,
+                                    StreamErrorReason reason) = 0;
 
   // Returns the current state of the stream provider.
   virtual StreamState GetState() const = 0;

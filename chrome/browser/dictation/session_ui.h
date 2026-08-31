@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DICTATION_SESSION_UI_H_
 #define CHROME_BROWSER_DICTATION_SESSION_UI_H_
 
+#include "chrome/browser/dictation/stream_provider.h"
 #include "content/public/browser/global_dom_node_id.h"
 
 namespace dictation {
@@ -17,7 +18,7 @@ class SessionUi {
   virtual ~SessionUi() = default;
 
   // Called when a stream encounters an error.
-  virtual void OnError(StreamType stream_type) = 0;
+  virtual void OnError(StreamType stream_type, StreamErrorReason reason) = 0;
 
   // Called when the dictation session has stopped.
   virtual void OnStopped() = 0;

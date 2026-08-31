@@ -40,6 +40,17 @@ dictation::StreamProvider::StreamState ConvertStreamState(
   }
 }
 
+dictation::StreamErrorReason ConvertErrorReason(std::optional<int> error_code) {
+  if (!error_code.has_value()) {
+    return dictation::StreamErrorReason::kNone;
+  }
+  if (*error_code <= static_cast<int>(dictation::StreamErrorReason::kNone) ||
+      *error_code > static_cast<int>(dictation::StreamErrorReason::kMaxValue)) {
+    return dictation::StreamErrorReason::kUnknown;
+  }
+  return static_cast<dictation::StreamErrorReason>(*error_code);
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -82,8 +93,11 @@ DictationPrivateSetStreamStateFunction::Run() {
   dictation::DictationMultiplexer::StreamId stream_id(
       params->details.stream_id);
 
-  if (!multiplexer.SetStreamState(stream_id,
-                                  ConvertStreamState(params->details.state))) {
+  dictation::StreamErrorReason error_reason =
+      ConvertErrorReason(params->details.error_code);
+
+  if (!multiplexer.SetStreamState(
+          stream_id, ConvertStreamState(params->details.state), error_reason)) {
     return RespondNow(Error(std::string(kInvalidStreamIdError)));
   }
 

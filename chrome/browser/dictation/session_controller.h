@@ -59,7 +59,8 @@ class SessionController : public SessionUiDelegate,
   // StreamProviderDelegate:
   void DidUpdateStreamProviderState(
       StreamProvider& stream_provider,
-      StreamProvider::StreamState old_state) override;
+      StreamProvider::StreamState old_state,
+      StreamErrorReason reason = StreamErrorReason::kNone) override;
 
   // content::WebContentsObserver:
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;

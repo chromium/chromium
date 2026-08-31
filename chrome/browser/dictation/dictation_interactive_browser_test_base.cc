@@ -141,6 +141,18 @@ DictationInteractiveBrowserTestBase::ExtensionAPISetStreamState(
 
 DictationInteractiveBrowserTestBase::MultiStep
 DictationInteractiveBrowserTestBase::ExtensionAPISetStreamState(
+    ExtensionStreamState state,
+    std::optional<int> error_code) {
+  return Steps(Do([this, state, error_code] {
+    ASSERT_NE(last_started_provider_, nullptr);
+    ExtensionSendStreamStateUpdate(
+        profile(), last_started_provider_->stream_id_for_testing(), state,
+        error_code);
+  }));
+}
+
+DictationInteractiveBrowserTestBase::MultiStep
+DictationInteractiveBrowserTestBase::ExtensionAPISetStreamState(
     const StreamId& stream_id,
     ExtensionStreamState state) {
   return Steps(Do([this, &stream_id, state] {

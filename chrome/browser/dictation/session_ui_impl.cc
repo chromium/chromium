@@ -48,6 +48,16 @@ UiState ToUiState(SessionState state) {
   }
 }
 
+ToastId GetToastId(StreamErrorReason reason) {
+  switch (reason) {
+    case StreamErrorReason::kNoMicrophone:
+      return ToastId::kDictationNoMicrophoneError;
+    case StreamErrorReason::kNone:
+    case StreamErrorReason::kUnknown:
+      return ToastId::kDictationError;
+  }
+}
+
 }  // namespace
 
 SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
@@ -103,13 +113,13 @@ SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
 
 SessionUiImpl::~SessionUiImpl() = default;
 
-void SessionUiImpl::OnError(StreamType stream_type) {
+void SessionUiImpl::OnError(StreamType stream_type, StreamErrorReason reason) {
   BrowserWindowInterface* const window = tab_->GetBrowserWindowInterface();
   if (window) {
     ToastController* const toast_controller =
         window->GetFeatures().toast_controller();
     if (toast_controller) {
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kDictationError));
+      toast_controller->MaybeShowToast(ToastParams(GetToastId(reason)));
     }
   }
 
