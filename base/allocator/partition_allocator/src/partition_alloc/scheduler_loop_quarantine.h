@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
-
 // Scheduler-loop Quarantine is a quarantine pool behind PartitionAlloc with
 // Advanced Checks and `ADVANCED_MEMORY_SAFETY_CHECKS()`.
 // Both requests to prevent `free()`d allocation getting released to free-list,
@@ -61,6 +59,7 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_stats.h"
+#include "partition_alloc/slot_start.h"
 
 namespace partition_alloc {
 
@@ -106,6 +105,11 @@ struct SchedulerLoopQuarantineConfig {
 
 struct BucketSizeDetails;
 
+enum class QuarantineTarget {
+  kMiracleObjects = 0,
+  kSanitizedObjects,
+};
+
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineRoot {
  public:
   explicit SchedulerLoopQuarantineRoot(PartitionRoot& allocator_root)
@@ -133,13 +137,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineRoot {
   std::atomic_size_t cumulative_size_in_bytes_ = 0;
   std::atomic_size_t quarantine_miss_count_ = 0;
 
-  template <bool, bool>
+  template <bool, QuarantineTarget>
   friend class SchedulerLoopQuarantineBranch;
 };
 
 // When set to `thread_bound = true`, the branch is for single-thread use
 // (faster).
-template <bool thread_bound, bool for_sanitized_objects = false>
+template <bool thread_bound, QuarantineTarget quarantine_target>
 class SchedulerLoopQuarantineBranch {
  public:
   static constexpr bool kThreadBound = thread_bound;
@@ -371,18 +375,21 @@ class SchedulerLoopQuarantineBranch {
 };
 
 using SanitizedObjectSchedulerLoopQuarantineBranch =
-    SchedulerLoopQuarantineBranch<false, true>;
+    SchedulerLoopQuarantineBranch<false, QuarantineTarget::kSanitizedObjects>;
 using GlobalSchedulerLoopQuarantineBranch =
-    SchedulerLoopQuarantineBranch<false, false>;
+    SchedulerLoopQuarantineBranch<false, QuarantineTarget::kMiracleObjects>;
 using ThreadBoundSchedulerLoopQuarantineBranch =
-    SchedulerLoopQuarantineBranch<true, false>;
+    SchedulerLoopQuarantineBranch<true, QuarantineTarget::kMiracleObjects>;
 
-extern template class PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(
-    PARTITION_ALLOC)) SchedulerLoopQuarantineBranch<false, false>;
-extern template class PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(
-    PARTITION_ALLOC)) SchedulerLoopQuarantineBranch<false, true>;
-extern template class PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(
-    PARTITION_ALLOC)) SchedulerLoopQuarantineBranch<true, false>;
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(PARTITION_ALLOC))
+    SchedulerLoopQuarantineBranch<false, QuarantineTarget::kMiracleObjects>;
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(PARTITION_ALLOC))
+    SchedulerLoopQuarantineBranch<false, QuarantineTarget::kSanitizedObjects>;
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(PARTITION_ALLOC))
+    SchedulerLoopQuarantineBranch<true, QuarantineTarget::kMiracleObjects>;
 
 }  // namespace internal
 

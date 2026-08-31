@@ -26,7 +26,9 @@ namespace partition_alloc {
 namespace {
 
 template <bool thread_bound>
-internal::SchedulerLoopQuarantineBranch<thread_bound>*
+internal::SchedulerLoopQuarantineBranch<
+    thread_bound,
+    internal::QuarantineTarget::kMiracleObjects>*
 GetBranchFromAllocatorRoot(PartitionRoot* root);
 
 template <>

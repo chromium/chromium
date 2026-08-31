@@ -67,7 +67,8 @@
 
 namespace partition_alloc::internal {
 
-template <bool>
+enum class QuarantineTarget;
+template <QuarantineTarget>
 class BatchFreeQueue;
 class PartitionRootEnumerator;
 struct SlotSpanMetadata;
@@ -953,12 +954,12 @@ class alignas(internal::kPartitionCachelineSize)
   std::atomic<uint64_t> total_aligned_alloc_wasted_bytes_{0};
 
   friend class internal::ThreadCache;
-  template <bool>
+  template <internal::QuarantineTarget>
   friend class internal::BatchFreeQueue;
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   friend class internal::InSlotMetadata;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  template <bool, bool>
+  template <bool, internal::QuarantineTarget>
   friend class internal::SchedulerLoopQuarantineBranch;
 };
 
