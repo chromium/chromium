@@ -42,6 +42,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
@@ -77,9 +78,8 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             new ChromeRenderTestRule.Builder()
                     .setCorpus(ChromeRenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(RenderTestRule.Component.ENTERPRISE)
-                    .setRevision(1)
                     .build();
 
     @Mock private SigninManager mSigninManager;
@@ -107,7 +107,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
         mUseRtlLayout = useRtlLayout;
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(
-                (useRtlLayout ? "rtl-" : "") + (defaultProfilePicture ? "PicturePlaceholder" : ""));
+                (useRtlLayout ? "rtl" : "") + (defaultProfilePicture ? "PicturePlaceholder" : ""));
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mAccountInfo =
                 defaultProfilePicture
@@ -173,22 +173,30 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     @Feature({"RenderTest"})
     @Restriction({DeviceFormFactor.PHONE})
     public void testBottomSheetOnPhone() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BlankUiTestActivity activity = mActivityTestRule.getActivity();
-                    mContainer = activity.findViewById(android.R.id.content);
-                    mContainer.setLayoutDirection(
-                            mUseRtlLayout ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
-                    mContainer.removeAllViews();
-                    mCoordinator =
-                            new EnterpriseSignalsDisclaimerCoordinator(
-                                    activity,
-                                    createBottomSheetController(activity, mContainer),
-                                    activity.getModalDialogManager(),
-                                    mSigninManager,
-                                    (url) -> {});
-                    mCoordinator.show();
-                });
+        BlankUiTestActivity activity = mActivityTestRule.getActivity();
+        BottomSheetController bottomSheetController =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            mContainer = activity.findViewById(android.R.id.content);
+                            mContainer.setLayoutDirection(
+                                    mUseRtlLayout
+                                            ? View.LAYOUT_DIRECTION_RTL
+                                            : View.LAYOUT_DIRECTION_LTR);
+                            mContainer.removeAllViews();
+                            BottomSheetController controller =
+                                    createBottomSheetController(activity, mContainer);
+                            mCoordinator =
+                                    new EnterpriseSignalsDisclaimerCoordinator(
+                                            activity,
+                                            controller,
+                                            activity.getModalDialogManager(),
+                                            mSigninManager,
+                                            (url) -> {});
+                            mCoordinator.show();
+                            return controller;
+                        });
+        BottomSheetTestSupport.waitForOpen(bottomSheetController);
+        ChromeRenderTestRule.sanitize(mContainer);
         mRenderTestRule.render(mContainer, "bottom_sheet");
     }
 
@@ -223,6 +231,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                                     .getCurrentPresenterForTest();
                             return presenter.getDialogForTesting().getWindow().getDecorView();
                         });
+        ChromeRenderTestRule.sanitize(dialogDecorView);
         mRenderTestRule.render(dialogDecorView, "modal_dialog");
     }
 }
