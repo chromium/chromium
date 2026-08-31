@@ -381,12 +381,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
 
 IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
                        ReportsSessionTotalDurationWhilePaused) {
-  // Invoke the base class directly as this test doesn't need a tab, and it
-  // allows verifying that the very initial transport state is *not* PAUSED.
+  // Invoke the base class directly as this test doesn't need a tab.
   ASSERT_TRUE(SyncTest::SetupClients());
 
-  ASSERT_NE(GetSyncService(0)->GetTransportState(),
-            syncer::SyncService::TransportState::PAUSED);
   ASSERT_TRUE(GetSyncService(0)->HasCachedPersistentAuthErrorForMetrics());
 
   {

@@ -1450,8 +1450,13 @@ BASE_FEATURE(kLazyKeyedServiceInstantiation, base::FEATURE_DISABLED_BY_DEFAULT);
 // lazily.
 BASE_FEATURE_PARAM(bool,
                    kLazyKeyedServiceInstantiationAutofillAndPassword,
-                   &features::kLazyKeyedServiceInstantiation,
-                   "autofill_and_password",
+                   &kLazyKeyedServiceInstantiation,
+                   true);
+
+// When enabled, extension keyed services are instantiated lazily.
+BASE_FEATURE_PARAM(bool,
+                   kLazyKeyedServiceInstantiationExtensions,
+                   &kLazyKeyedServiceInstantiation,
                    true);
 
 // When enabled, Optimization Guide and related keyed services are instantiated

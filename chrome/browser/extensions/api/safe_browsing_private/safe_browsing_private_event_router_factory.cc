@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -63,6 +64,10 @@ SafeBrowsingPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
 
 bool SafeBrowsingPrivateEventRouterFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationExtensions.Get()) {
+    return false;
+  }
   return true;
 }
 

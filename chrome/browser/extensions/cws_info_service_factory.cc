@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/cws_info_service.h"
@@ -54,6 +55,10 @@ CWSInfoServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 bool CWSInfoServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationExtensions.Get()) {
+    return false;
+  }
   return true;
 }
 
