@@ -1319,6 +1319,41 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void testTextWrappingCallback_deduplicatesRapidTextChanges() {
+        Callback<Boolean> callback = MockitoHelper.mockCallback();
+        mUrlBar.setUrlTextWrappingChangeListener(callback);
+        doReturn(mLayout).when(mUrlBar).getLayout();
+
+        mUrlBar.setAllowMultilineInput(true);
+        mUrlBar.onFocusChanged(true, 0, null);
+        measureAndLayoutUrlBar();
+
+        doReturn(2).when(mLayout).getLineCount();
+        mUrlBar.onTextChanged("a", 0, 0, 1);
+        mUrlBar.onTextChanged("ab", 0, 0, 2);
+        mUrlBar.onTextChanged("abc", 0, 0, 3);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(callback).onResult(true);
+    }
+
+    @Test
+    public void testTextWrappingCallback_clearedOnDestroy() {
+        Callback<Boolean> callback = MockitoHelper.mockCallback();
+        mUrlBar.setUrlTextWrappingChangeListener(callback);
+
+        mUrlBar.setAllowMultilineInput(true);
+        mUrlBar.onFocusChanged(true, 0, null);
+        measureAndLayoutUrlBar();
+
+        mUrlBar.onTextChanged("longer text", 0, 0, 11);
+        mUrlBar.destroy();
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(callback, never()).onResult(anyBoolean());
+    }
+
+    @Test
     @EnableFeatures(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES)
     public void testUrlBarWithoutLigaturesEnabled() {
         assertEquals("liga=0, clig=0, calt=0, dlig=0", mUrlBar.getFontFeatureSettings());
