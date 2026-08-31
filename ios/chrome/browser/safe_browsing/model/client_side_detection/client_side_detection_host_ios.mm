@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -126,6 +128,7 @@ ClientSideDetectionHostIOS::ClientSideDetectionHostIOS(
       identity_manager_(identity_manager) {
   CHECK(web_state_);
   web_state_->AddObserver(this);
+  EnsureObservingQueryManager();
   classifier_ = std::make_unique<safe_browsing::PhishingClassifier>();
   image_embedder_ = std::make_unique<safe_browsing::PhishingImageEmbedder>();
 }
@@ -441,6 +444,7 @@ void ClientSideDetectionHostIOS::DidFinishNavigation(
     send_sample_ping_ = false;
     stabilization_timer_.Stop();
     EnsureObservingMetricsHelper();
+    EnsureObservingQueryManager();
   }
 }
 
@@ -455,11 +459,31 @@ void ClientSideDetectionHostIOS::PageLoaded(
 }
 
 void ClientSideDetectionHostIOS::WebStateDestroyed(web::WebState* web_state) {
+  query_manager_observation_.Reset();
   metrics_helper_observation_.Reset();
   CancelPendingRequests();
   stabilization_timer_.Stop();
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+#pragma mark - SafeBrowsingQueryManager::Observer
+
+void ClientSideDetectionHostIOS::SafeBrowsingAsyncQueryFinished(
+    const SafeBrowsingQueryManager::QueryData& query_data) {
+  // Ensure the completed query matches the current main-frame URL or is part of
+  // its redirect chain before evaluating force-request verdicts.
+  if (query_data.query->url != GetCurrentUrl() &&
+      !std::ranges::contains(GetRedirectChain(), query_data.query->url)) {
+    return;
+  }
+  OnAsyncSafeBrowsingCheckCompleted();
+}
+
+void ClientSideDetectionHostIOS::SafeBrowsingQueryManagerDestroyed(
+    SafeBrowsingQueryManager* manager) {
+  DCHECK(query_manager_observation_.IsObservingSource(manager));
+  query_manager_observation_.Reset();
 }
 
 #pragma mark - Testing
@@ -468,7 +492,20 @@ void ClientSideDetectionHostIOS::
     OnVisualClassificationDoneForTesting(  // IN-TEST
         const GURL& url,
         const std::vector<double>& visual_scores) {
+  stabilization_timer_.Stop();
   set_current_url(url);
+
+  ClientSideDetectionType request_type = last_request_type();
+  if (request_type ==
+      ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED) {
+    if (should_send_as_force_request() || HasForceRequestFromRtUrlLookup()) {
+      request_type = ClientSideDetectionType::FORCE_REQUEST;
+    } else {
+      request_type = ClientSideDetectionType::TRIGGER_MODELS;
+    }
+    set_last_request_type(request_type);
+  }
+
   ClientPhishingRequest verdict;
   verdict.set_url(url.spec());
   verdict.set_client_score(0.0);
@@ -487,7 +524,7 @@ void ClientSideDetectionHostIOS::
     category->set_value(visual_scores[i]);
   }
 
-  OnClassificationDone(url, gfx::Image(), last_request_type(),
+  OnClassificationDone(url, gfx::Image(), request_type,
                        /*classification_start_time=*/tick_clock()->NowTicks(),
                        verdict, PhishingClassifier::Result::kSuccess);
 }
@@ -513,14 +550,24 @@ void ClientSideDetectionHostIOS::EnsureObservingMetricsHelper() {
 
     double fcp = metrics_helper->GetAggregateAbsoluteFirstContentfulPaint();
     if (fcp != std::numeric_limits<double>::max()) {
-      // FCP has already been received prior to starting observation or for the
-      // current navigation.
+      // FCP has already been received prior to starting observation or for
+      // the current navigation.
       is_fcp_received_ = true;
     }
   } else {
-    // If the performance metrics helper is not available (e.g. in unit tests),
-    // skip the FCP gate and mark it as received immediately.
+    // If the performance metrics helper is not available (e.g. in unit
+    // tests), skip the FCP gate and mark it as received immediately.
     is_fcp_received_ = true;
+  }
+}
+
+void ClientSideDetectionHostIOS::EnsureObservingQueryManager() {
+  if (!query_manager_observation_.IsObserving() && web_state_) {
+    SafeBrowsingQueryManager* query_manager =
+        SafeBrowsingQueryManager::FromWebState(web_state_);
+    if (query_manager) {
+      query_manager_observation_.Observe(query_manager);
+    }
   }
 }
 
@@ -820,6 +867,21 @@ void ClientSideDetectionHostIOS::ContinueClassificationAfterAllowlistChecks(
                                      PreClassificationCheckResult::CLASSIFY);
 
   set_is_csd_running(true);
+
+  if (last_request_type() != ClientSideDetectionType::TRIGGER_MODELS &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::
+              kSkipImageClassificationScoringForNonPageLoadTriggers)) {
+    ClientPhishingRequest verdict;
+    verdict.set_url(url.spec());
+    verdict.set_client_score(0.0);
+    PhishingDetectionDone(
+        last_request_type(), send_sample_ping_,
+        did_match_high_confidence_allowlist_,
+        /*is_invalid_ip=*/false, tick_clock()->NowTicks(),
+        safe_browsing::PhishingDetectorResult::CLASSIFICATION_SKIPPED, verdict);
+    return;
+  }
 
   if (!service_->GetScorer()) {
     HandleVisualClassificationEarlyReturn(

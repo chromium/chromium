@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Warning shown"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/safe_browsing/content/browser/client_side_detection_host.h:ClientSideDetectionEvent)-->
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/client_side_detection_enums.h:ClientSideDetectionEvent)-->
 
 <!-- LINT.IfChange(ClientSideDetectionType) -->
 

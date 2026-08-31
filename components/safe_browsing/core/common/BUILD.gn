@@ -92,6 +92,7 @@ source_set("visual_utils") {
 
 source_set("common") {
   sources = [
+    "client_side_detection_enums.h",
     "safe_browsing_settings_metrics.cc",
     "safe_browsing_settings_metrics.h",
     "safebrowsing_constants.cc",

@@ -26,6 +26,19 @@ NS_ASSUME_NONNULL_BEGIN
 // the given `url`.
 + (BOOL)hasCachedVerdictForURL:(NSString*)url;
 
+// Caches an artificial real-time URL verdict with the given `url` and force
+// request status.
++ (void)cacheRealTimeVerdictForURL:(NSString*)url
+                      forceRequest:(BOOL)forceRequest;
+
+// Triggers the completion of visual classification with `scores`.
++ (void)triggerClassificationDoneWithURL:(NSString*)url
+                            visualScores:(NSArray<NSNumber*>*)scores;
+
+// Returns the cached real-time URL `ClientSideDetectionType` for the given
+// `url`.
++ (NSInteger)cachedRealTimeURLClientSideDetectionTypeForURL:(NSString*)url;
+
 @end
 
 NS_ASSUME_NONNULL_END

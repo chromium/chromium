@@ -19,6 +19,7 @@
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #import "components/safe_browsing/core/common/visual_utils.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "net/http/http_status_code.h"
 #import "ui/gfx/image/image.h"
@@ -63,6 +64,7 @@ enum class VisualClassificationEarlyReturnReason {
 class ClientSideDetectionHostIOS
     : public ClientSideDetectionHostBase,
       public web::WebStateObserver,
+      public SafeBrowsingQueryManager::Observer,
       public WebPerformanceMetricsTabHelper::Observer {
  public:
   // Constructs a host instance managing client-side detection for `web_state`.
@@ -126,13 +128,18 @@ class ClientSideDetectionHostIOS
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // `SafeBrowsingQueryManager::Observer` implementation:
+  void SafeBrowsingAsyncQueryFinished(
+      const SafeBrowsingQueryManager::QueryData& query_data) override;
+  void SafeBrowsingQueryManagerDestroyed(
+      SafeBrowsingQueryManager* manager) override;
+
   // Simulates visual classification completion for testing by bypassing UI
   // snapshotting and asynchronous ML inference (`PhishingClassifier`).
   // Synthesizes the provided `visual_scores` into a `ClientPhishingRequest`
-  // verdict and feeds it directly into `OnClassificationDone()`. Does not
-  // mutate `last_request_type()`, so tests should set the expected trigger type
-  // (via `MaybeStartPreClassification()` or `set_last_request_type()`) prior to
-  // calling this method.
+  // verdict and feeds it directly into `OnClassificationDone()`. Cancels any
+  // pending stabilization timer and resolves `last_request_type()` if
+  // unspecified.
   void OnVisualClassificationDoneForTesting(
       const GURL& url,
       const std::vector<double>& visual_scores);
@@ -146,6 +153,10 @@ class ClientSideDetectionHostIOS
 
   // Ensures observation of `WebPerformanceMetricsTabHelper` for FCP signals.
   void EnsureObservingMetricsHelper();
+
+  // Ensures observation of `SafeBrowsingQueryManager` for real-time check
+  // signals.
+  void EnsureObservingQueryManager();
 
   // Checks if page load and FCP conditions are met to start stabilization
   // timer.
@@ -250,6 +261,10 @@ class ClientSideDetectionHostIOS
   base::ScopedObservation<WebPerformanceMetricsTabHelper,
                           WebPerformanceMetricsTabHelper::Observer>
       metrics_helper_observation_{this};
+
+  base::ScopedObservation<SafeBrowsingQueryManager,
+                          SafeBrowsingQueryManager::Observer>
+      query_manager_observation_{this};
 
   base::WeakPtrFactory<ClientSideDetectionHostIOS> weak_ptr_factory_{this};
 };

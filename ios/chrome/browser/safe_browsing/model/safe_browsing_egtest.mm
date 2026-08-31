@@ -20,7 +20,9 @@
 #import "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_types.h"
+#import "components/safe_browsing/core/common/client_side_detection_enums.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
@@ -257,7 +259,8 @@ void EnableEnterpriseUrlFilteringPrefs() {
         _realTimePhishingURL.spec());
   }
 
-  if ([self isRunningTest:@selector(testClientSideDetectionRuns)]) {
+  if ([self isRunningTest:@selector(testClientSideDetectionRuns)] ||
+      [self isRunningTest:@selector(testClientSideDetectionForceRequest)]) {
     config.additional_args.push_back(
         std::string("--enable-features=") +
         safe_browsing::kClientSideDetectionEnabledIos.name);
@@ -1286,6 +1289,84 @@ void EnableEnterpriseUrlFilteringPrefs() {
             return [SafeBrowsingAppInterface hasCachedVerdictForURL:targetURL];
           }),
       @"Timed out waiting for CSD classification verdict to be cached.");
+}
+
+// Tests that a FORCE_REQUEST real-time verdict triggers client-side detection
+// reporting even if the local model does not detect phishing.
+- (void)testClientSideDetectionForceRequest {
+  // Enable Enhanced Safe Browsing, which is required for force request caching.
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
+
+  // Inject the FORCE_REQUEST verdict into the cache for `_safeURL1`.
+  [SafeBrowsingAppInterface
+      cacheRealTimeVerdictForURL:base::SysUTF8ToNSString(_safeURL1.spec())
+                    forceRequest:YES];
+
+  // Verify that it was correctly cached.
+  NSInteger type = [SafeBrowsingAppInterface
+      cachedRealTimeURLClientSideDetectionTypeForURL:base::SysUTF8ToNSString(
+                                                         _safeURL1.spec())];
+  GREYAssertEqual(type,
+                  static_cast<NSInteger>(
+                      safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+                  @"Type in cache was not FORCE_REQUEST. Actual: %ld", type);
+
+  // Load the safe URL.
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Trigger visual classification completion with non-phishing scores. This
+  // simulates the classifier completing with a non-phishing result.
+  NSArray<NSNumber*>* nonPhishingScores = @[ @0.1, @0.2 ];
+  [SafeBrowsingAppInterface
+      triggerClassificationDoneWithURL:base::SysUTF8ToNSString(_safeURL1.spec())
+                          visualScores:nonPhishingScores];
+
+  // Verify image classification completed event is logged.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForActionTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                 expectCount:1
+                   forBucket:static_cast<NSInteger>(
+                                 safe_browsing::ClientSideDetectionEvent::
+                                     kImageClassificationComplete)
+                forHistogram:@"SBClientPhishing.ClientSideDetectionEvent"];
+            return error == nil;
+          }),
+      @"Timed out waiting for kImageClassificationComplete.");
+
+  // Verify local model result complete event is logged.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForActionTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                 expectCount:1
+                   forBucket:static_cast<NSInteger>(
+                                 safe_browsing::ClientSideDetectionEvent::
+                                     kLocalModelResultComplete)
+                forHistogram:@"SBClientPhishing.ClientSideDetectionEvent"];
+            return error == nil;
+          }),
+      @"Timed out waiting for kLocalModelResultComplete.");
+
+  // Verify that the phishing report network request was sent.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForActionTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                 expectCount:1
+                   forBucket:static_cast<NSInteger>(
+                                 safe_browsing::ClientSideDetectionEvent::
+                                     kNetworkRequestSent)
+                forHistogram:@"SBClientPhishing.ClientSideDetectionEvent"];
+            return error == nil;
+          }),
+      @"Timed out waiting for ClientSideDetectionEvent histogram with "
+      @"kNetworkRequestSent.");
 }
 
 @end

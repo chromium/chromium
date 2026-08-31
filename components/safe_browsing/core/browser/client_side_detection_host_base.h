@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/browser/credit_card_form_event.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/common/client_side_detection_enums.h"
 #include "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/threat_enums.h"
@@ -40,26 +41,6 @@ class HistoryService;
 namespace safe_browsing {
 
 using HostInnerTextCallback = base::OnceCallback<void(std::string)>;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ClientSideDetectionEvent {
-  kTriggerStartsPreClassification = 0,
-  kPreClassificationCheckComplete = 1,
-  kImageClassificationBegin = 2,
-  kImageClassificationComplete = 3,
-  kVerdictProtoParseComplete = 4,
-  kLocalModelResultComplete = 5,
-  kImageEmbeddingBegin = 6,
-  kImageEmbeddingComplete = 7,
-  kIntelligentScanBegin = 8,
-  kIntelligentScanComplete = 9,
-  kMiscellaneousFieldsAdded = 10,
-  kNetworkRequestSent = 11,
-  kNetworkResponseReceived = 12,
-  kWarningShown = 13,
-  kMaxValue = kWarningShown,
-};
 
 std::string_view GetRequestTypeName(
     ClientSideDetectionType client_side_detection_type);

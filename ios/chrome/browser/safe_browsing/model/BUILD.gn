@@ -199,12 +199,17 @@ source_set("eg_app_support+eg2") {
     "safe_browsing_app_interface.mm",
   ]
   deps = [
+    ":model",
+    ":verdict_cache_manager_factory",
     "//base",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/common/phishing_classifier",
     "//components/safe_browsing/ios/browser:client_side_detection_images_cache",
     "//ios/chrome/browser/safe_browsing/model/client_side_detection",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
+    "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",
     "//url",
   ]
@@ -228,6 +233,7 @@ source_set("eg2_tests") {
     "//components/policy/core/common:common_constants",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",

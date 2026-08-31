@@ -55,6 +55,10 @@ namespace safe_browsing {
 namespace {
 
 constexpr char kExampleUrl[] = "https://example.com";
+constexpr std::string_view kExampleUrlPattern = "example.com/";
+constexpr char kDifferentUrl[] = "https://different.example.com";
+constexpr std::string_view kDifferentUrlPattern = "different.example.com/";
+constexpr int kCacheDurationSec = 60;
 constexpr char kPhishingUrl[] = "https://phishing.example.com";
 constexpr char kReferrerUrl[] = "https://referrer.example.com/";
 constexpr char kLoopbackIpStr[] = "127.0.0.1";
@@ -286,6 +290,12 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
     return host->trigger_model_request_sent_as_force_request();
   }
 
+  void set_trigger_model_request_sent_as_force_request(
+      ClientSideDetectionHostIOS* host,
+      bool value) {
+    host->set_trigger_model_request_sent_as_force_request(value);
+  }
+
   void set_send_sample_ping(ClientSideDetectionHostIOS* host, bool value) {
     host->send_sample_ping_ = value;
   }
@@ -402,6 +412,85 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
     host->MaybeStartPreClassification(request_type);
 
     ExpectPreClassificationEvents(request_type);
+  }
+
+  // Injects a FORCE_REQUEST real-time URL verdict in VerdictCacheManager.
+  void SetForceRequestRTResponseInCacheManager(std::string_view pattern) {
+    safe_browsing::VerdictCacheManager* cache_manager =
+        VerdictCacheManagerFactory::GetForProfile(profile_.get());
+    ASSERT_TRUE(cache_manager);
+    safe_browsing::RTLookupResponse response;
+    safe_browsing::RTLookupResponse::ThreatInfo* threat_info =
+        response.add_threat_info();
+    threat_info->set_verdict_type(
+        safe_browsing::RTLookupResponse::ThreatInfo::SUSPICIOUS);
+    threat_info->set_cache_expression_using_match_type(pattern);
+    threat_info->set_cache_duration_sec(kCacheDurationSec);
+    threat_info->set_threat_type(
+        safe_browsing::RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED);
+    threat_info->set_cache_expression_match_type(
+        safe_browsing::RTLookupResponse::ThreatInfo::EXACT_MATCH);
+    response.set_client_side_detection_type(
+        safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+    cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  }
+
+  // Simulates the completion of an asynchronous Safe Browsing check and asserts
+  // force request status and histograms.
+  void TestAsyncSafeBrowsingCheck(
+      const GURL& query_url,
+      std::optional<
+          ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult>
+          expected_result,
+      bool expect_force_request,
+      bool is_already_forced) {
+    safe_browsing::SetSafeBrowsingState(
+        profile_->GetPrefs(),
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+    std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+    SnapshotTabHelper::CreateForWebState(&web_state_);
+    web_state_.SetContentsMimeType("text/html");
+
+    GURL main_url(kExampleUrl);
+    web::FakeNavigationContext context;
+    context.SetUrl(main_url);
+    context.SetHasCommitted(true);
+    context.SetIsSameDocument(false);
+    web_state_.SetCurrentURL(main_url);
+    web_state_.OnNavigationFinished(&context);
+
+    if (is_already_forced) {
+      set_trigger_model_request_sent_as_force_request(host.get(), true);
+    }
+
+    SafeBrowsingQueryManager::Query query(query_url, "GET");
+    SafeBrowsingQueryManager::Result result;
+    SafeBrowsingQueryManager::QueryData query_data(
+        nullptr, query, QueryType::kAsync, result,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+            kUrlRealTimeCheck);
+
+    host->SafeBrowsingAsyncQueryFinished(query_data);
+
+    if (expected_result.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.ClientSideDetection."
+          "AsyncCheckTriggerForceRequestResult",
+          *expected_result, 1);
+    } else {
+      histogram_tester_.ExpectTotalCount("SBClientPhishing.ClientSideDetection."
+                                         "AsyncCheckTriggerForceRequestResult",
+                                         0);
+    }
+    EXPECT_EQ(should_send_as_force_request(host.get()), expect_force_request);
+    if (expect_force_request) {
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.PreClassificationCheckResult.ForceRequest",
+          safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
+      EXPECT_EQ(last_request_type(host.get()),
+                safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+    }
   }
 
   web::WebTaskEnvironment task_environment_{
@@ -766,6 +855,45 @@ TEST_F(ClientSideDetectionHostIOSTest, SamplePingPropagation) {
           });
 
   host->OnVisualClassificationDoneForTesting(url, scores);
+}
+
+// Tests that a FORCE_REQUEST real-time lookup verdict triggers a phishing
+// report even when local visual classification scores evaluate to non-phishing.
+TEST_F(ClientSideDetectionHostIOSTest,
+       OnVisualClassificationDoneTriggersReportForcedByRealTimeVerdict) {
+  auto host = CreateHost();
+  set_last_request_type(host.get(),
+                        safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  auto scorer = std::make_unique<safe_browsing::Scorer>();
+  mock_service_.SetScorerForTesting(std::move(scorer));
+
+  GURL url(kExampleUrl);
+  web_state_.SetCurrentURL(url);
+
+  SetForceRequestRTResponseInCacheManager(kExampleUrlPattern);
+
+  std::vector<double> scores = {0.1, 0.2};
+
+  // Model classification evaluates to non-phishing.
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+      });
+
+  // Because classification was forced by real-time lookup, a report must still
+  // be sent.
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .Times(1);
+
+  host->OnVisualClassificationDoneForTesting(url, scores);
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.LocalModelDetectsPhishing.TriggerModel", false, 1);
 }
 
 TEST_F(ClientSideDetectionHostIOSTest, CacheHitPreventsClassification) {
@@ -2072,6 +2200,57 @@ TEST_F(ClientSideDetectionHostIOSTest, ClassificationCancelledOnNavigation) {
   EXPECT_TRUE(classification_image(host.get()).IsEmpty());
 }
 
+// Tests that FORCE_REQUEST triggers skip image classification scoring and
+// immediately dispatch a report when
+// `kSkipImageClassificationScoringForNonPageLoadTriggers` is enabled.
+TEST_F(ClientSideDetectionHostIOSTest,
+       ForceRequestSkipsImageClassificationScoring) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {safe_browsing::kSkipImageClassificationScoringForNonPageLoadTriggers},
+      {});
+
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+  database_manager_->SetMatchCsdAllowlist(false);
+  database_manager_->SetMatchHcAllowlist(false);
+
+  auto host = CreateHost();
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](std::unique_ptr<safe_browsing::ClientPhishingRequest> request,
+             safe_browsing::ClientSideDetectionServiceBase::
+                 ClientReportPhishingRequestCallback callback,
+             const std::string& access_token) {
+            ASSERT_TRUE(request);
+            EXPECT_EQ(request->client_side_detection_type(),
+                      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+            EXPECT_DOUBLE_EQ(request->client_score(), 0.0);
+          });
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+
+  EXPECT_FALSE(is_csd_running(host.get()));
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.PhishingDetectorResult.ForceRequest",
+      safe_browsing::PhishingDetectorResult::CLASSIFICATION_SKIPPED, 1);
+}
+
 // Tests that CLIPBOARD_COPY_API pre-classification stops when the sample rate
 // is 0.0.
 TEST_F(ClientSideDetectionHostIOSTest,
@@ -2444,6 +2623,65 @@ TEST_F(ClientSideDetectionHostIOSTest,
                        embedding, safe_browsing::VisualFeatures());
 
   EXPECT_TRUE(classification_image(host.get()).IsEmpty());
+}
+
+// Tests that an asynchronous real-time check with a cached FORCE_REQUEST
+// verdict triggers a client-side detection force request.
+TEST_F(ClientSideDetectionHostIOSTest,
+       AsyncSBCheckWithForceRequestVerdictTriggers) {
+  SetForceRequestRTResponseInCacheManager(kExampleUrlPattern);
+  TestAsyncSafeBrowsingCheck(
+      GURL(kExampleUrl),
+      /*expected_result=*/
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
+          kTriggered,
+      /*expect_force_request=*/true,
+      /*is_already_forced=*/false);
+}
+
+// Tests that an asynchronous real-time check does not trigger a force request
+// when the cached verdict does not specify a force request.
+TEST_F(ClientSideDetectionHostIOSTest,
+       AsyncSBCheckWithoutForceRequestVerdictDoesNotTrigger) {
+  TestAsyncSafeBrowsingCheck(
+      GURL(kExampleUrl),
+      /*expected_result=*/
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
+          kSkippedNotForced,
+      /*expect_force_request=*/false,
+      /*is_already_forced=*/false);
+}
+
+// Tests that an asynchronous real-time check skips triggering a force request
+// if the page-load trigger models request was already sent as a force request.
+// TODO(crbug.com/502615476) Once redirect chains are supported, add a test
+// case similar to this one that verifies only one request is sent when there
+// are two redirects that both asynchronously try to trigger a request.
+TEST_F(ClientSideDetectionHostIOSTest,
+       AsyncSBCheckDoesNotTriggerWhenAlreadyForced) {
+  SetForceRequestRTResponseInCacheManager(kExampleUrlPattern);
+  TestAsyncSafeBrowsingCheck(
+      GURL(kExampleUrl),
+      /*expected_result=*/
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
+          kSkippedTriggerModelsPingSentAsForceRequest,
+      /*expect_force_request=*/false,
+      /*is_already_forced=*/true);
+}
+
+// Tests that an asynchronous real-time check for a URL that does not match the
+// current main-frame URL is ignored and does not trigger
+// a force request.
+// TODO(crbug.com/502615476): Once redirect chain tracking is implemented, add a
+// test verifying that multi-hop redirects triggering async checks deduplicate
+// cleanly.
+TEST_F(ClientSideDetectionHostIOSTest,
+       AsyncSBCheckForDifferentUrlDoesNotTrigger) {
+  SetForceRequestRTResponseInCacheManager(kDifferentUrlPattern);
+  TestAsyncSafeBrowsingCheck(GURL(kDifferentUrl),
+                             /*expected_result=*/std::nullopt,
+                             /*expect_force_request=*/false,
+                             /*is_already_forced=*/false);
 }
 
 // Tests that MaybeStartImageEmbedding triggers image embedding and emits
