@@ -14,8 +14,6 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h"
-#include "components/lens/lens_side_panel_iframe_load_status.h"
-#include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace lens {
@@ -640,34 +638,6 @@ void RecordSidePanelMenuOptionSelected(
 void RecordHandleTextDirectiveResult(
     lens::LensOverlayTextDirectiveResult result) {
   base::UmaHistogramEnumeration("Lens.Overlay.TextDirectiveResult", result);
-}
-
-void RecordIframeLoadStatus(bool is_error_page, net::Error net_error_code) {
-  lens::IframeLoadStatus status = lens::IframeLoadStatus::kSuccess;
-  if (is_error_page) {
-    switch (net_error_code) {
-      case net::ERR_CONNECTION_REFUSED:
-        status = lens::IframeLoadStatus::kFailedConnectionRefused;
-        break;
-      case net::ERR_CONNECTION_RESET:
-        status = lens::IframeLoadStatus::kFailedConnectionReset;
-        break;
-      case net::ERR_CONNECTION_TIMED_OUT:
-        status = lens::IframeLoadStatus::kFailedConnectionTimedOut;
-        break;
-      case net::ERR_TIMED_OUT:
-        status = lens::IframeLoadStatus::kFailedTimedOut;
-        break;
-      case net::ERR_NAME_NOT_RESOLVED:
-        status = lens::IframeLoadStatus::kFailedNameNotResolved;
-        break;
-      default:
-        status = lens::IframeLoadStatus::kFailedOther;
-        break;
-    }
-  }
-  base::UmaHistogramEnumeration("Lens.Overlay.SidePanel.IframeLoadStatus",
-                                status);
 }
 
 void RecordTimeToCloseOpenedSidePanel(base::TimeDelta duration) {
