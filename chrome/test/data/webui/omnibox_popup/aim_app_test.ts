@@ -447,4 +447,17 @@ suite('AimAppTest', function() {
         assertTrue(composebox.usePecApi);
         assertTrue(composebox.smartComposeEnabled);
       });
+
+  test('ResetsSubmittingOnClose', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+
+    app.$.composebox.submitting = true;
+
+    page.clearPopup();
+    await microtasksFinished();
+
+    assertFalse(app.$.composebox.submitting);
+  });
 });
+

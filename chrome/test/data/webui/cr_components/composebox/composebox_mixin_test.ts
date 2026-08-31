@@ -2005,5 +2005,29 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(newElement.smartTabSharingActive);
         document.body.removeChild(host);
       });
+
+  test(
+      'resetSession resets submitting, input, tool, and models', async () => {
+        element.submitting = true;
+        element.input = 'previous query';
+        const inputState = new MockInputState();
+        inputState.activeTool = ToolMode.kDeepSearch;
+        inputState.activeModel = ModelMode.kGeminiPro;
+        element.inputState = inputState;
+
+        element.resetSession();
+        await microtasksFinished();
+
+        assertFalse(element.submitting);
+        assertEquals('', element.input);
+        assertTrue(searchboxHandler.getCallCount('setActiveToolMode') >= 1);
+        assertDeepEquals(
+            [ToolMode.kUnspecified, /*isSetByServer=*/ false],
+            searchboxHandler.getArgs('setActiveToolMode').at(-1));
+        assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertDeepEquals(
+            ModelMode.kUnspecified,
+            searchboxHandler.getArgs('setActiveModelMode')[0]);
+      });
   // </if>
 });

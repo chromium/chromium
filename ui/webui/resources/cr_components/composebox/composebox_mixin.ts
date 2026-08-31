@@ -2061,6 +2061,20 @@ export const ComposeboxEmbedderMixin =
           this.lastQueriedInput = '';
         }
 
+        /**
+         * Resets composebox state for a new session or popup lifecycle
+         * handover.
+         */
+        resetSession() {
+          this.submitting = false;
+          this.clearAllInputs(
+              /* querySubmitted= */ false,
+              /* shouldBlockAutoSuggestedTabs= */ false);
+          this.clearAutocompleteMatches();
+          this.resetModes();
+          this.resetToolsAndModels();
+        }
+
         computeSubmitEnabled(): boolean {
           // `submitEnabled` controls the visibility of the submit button.
           // Since files can be added but technically not be submittable (like
@@ -2930,6 +2944,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   hasFiles(): boolean;
   hasTabs(): boolean;
   resetSmartComposeStats(): void;
+  resetSession(): void;
   queryAutocomplete(clearMatches: boolean, inputMethod?: InputMethod): void;
   clearAutocompleteMatches(): void;
   computeSubmitEnabled(): boolean;

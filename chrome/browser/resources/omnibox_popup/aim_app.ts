@@ -243,12 +243,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   private async clearPopup_(): Promise<{input: string}> {
     const input = this.$.composebox.input;
     if (!this.preserveContextOnClose_) {
-      this.$.composebox.clearAllInputs(
-          /* querySubmitted= */ false,
-          /* shouldBlockAutoSuggestedTabs= */ false);
-      this.$.composebox.clearAutocompleteMatches();
-      this.$.composebox.resetModes();
-      this.$.composebox.resetToolsAndModels();
+      this.$.composebox.resetSession();
     }
     await this.updateComplete;
     // Transfer input text to the location bar.
