@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -333,12 +334,7 @@ class EventRouterFilterTest : public ExtensionsTest,
   const base::ListValue* GetFilterList(const ExtensionId& extension_id,
                                        const std::string& event_name) {
     const base::DictValue* filtered_events = GetFilteredEvents(extension_id);
-    const auto iter = filtered_events->begin();
-    if (iter->first != event_name) {
-      return nullptr;
-    }
-
-    return iter->second.is_list() ? &iter->second.GetList() : nullptr;
+    return filtered_events ? filtered_events->FindList(event_name) : nullptr;
   }
 
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
@@ -715,6 +711,12 @@ TEST_P(EventRouterFilterTest, DISABLED_Basic) {
   auto param = mojom::EventListenerOwner::NewExtensionId(kExtensionId);
   const std::string kHostSuffixes[] = {"foo.com", "bar.com", "baz.com"};
 
+  // The extension must be enabled so the lazy listeners actually land in the
+  // in-memory map; otherwise removal never reaches the persisted filters.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").SetID(kExtensionId).Build();
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
   std::unique_ptr<mojom::ServiceWorkerContext> worker_context;
   if (is_for_service_worker()) {
     worker_context = std::make_unique<mojom::ServiceWorkerContext>(
@@ -760,13 +762,13 @@ TEST_P(EventRouterFilterTest, DISABLED_Basic) {
   ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[1]));
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filters[2]));
 
-  // Remove the third filter.
+  // Removing the third filter erases the empty event key.
   event_router()->RemoveFilteredEventListener(
       kEventName, render_process_host(), param.Clone(), worker_context.get(),
       filters[2], true);
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[0]));
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[1]));
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[2]));
+  const base::DictValue* remaining_events = GetFilteredEvents(kExtensionId);
+  ASSERT_TRUE(remaining_events);
+  EXPECT_FALSE(remaining_events->contains(kEventName));
 }
 
 TEST_P(EventRouterFilterTest, AddFilteredLazyListenerForUnloadedExtension) {
@@ -912,6 +914,95 @@ TEST_P(EventRouterFilterTest,
   // Prefs also reflect only the latest filter.
   EXPECT_TRUE(ContainsFilter(kExtensionId, kEventName, filter_bar));
   EXPECT_FALSE(ContainsFilter(kExtensionId, kEventName, filter_foo));
+}
+
+// Tests that removing the last filter of a sub-event listener deletes the empty
+// list and its key from preferences. Regression test for crbug.com/526929792.
+TEST_P(EventRouterFilterTest, RemoveLastFilterErasesSubEventKey) {
+  const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
+  auto param = mojom::EventListenerOwner::NewExtensionId(kExtensionId);
+
+  // The extension must be enabled so lazy listeners are tracked in memory;
+  // otherwise removal does not update persisted filters.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").SetID(kExtensionId).Build();
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  std::unique_ptr<mojom::ServiceWorkerContext> worker_context;
+  if (is_for_service_worker()) {
+    worker_context = std::make_unique<mojom::ServiceWorkerContext>(
+        Extension::GetBaseURLFromExtensionId(kExtensionId),
+        99,    // Placeholder version_id.
+        199);  // Placeholder thread_id.
+  }
+
+  const base::DictValue filter = CreateHostSuffixFilter("foo.com");
+  for (int i = 0; i < 3; ++i) {
+    // Each addListener call in the renderer creates a unique sub-event name.
+    const std::string event_name =
+        "webRequest.onBeforeRequest/s" + base::NumberToString(i);
+    event_router()->AddFilteredEventListener(
+        event_name, render_process_host(), param.Clone(), worker_context.get(),
+        filter, /*add_lazy_listener=*/true);
+    ASSERT_TRUE(ContainsFilter(kExtensionId, event_name, filter));
+
+    event_router()->RemoveFilteredEventListener(
+        event_name, render_process_host(), param.Clone(), worker_context.get(),
+        filter, /*remove_lazy_listener=*/true);
+    const base::DictValue* filtered_events = GetFilteredEvents(kExtensionId);
+    ASSERT_TRUE(filtered_events);
+    EXPECT_FALSE(filtered_events->contains(event_name));
+  }
+
+  // No keys should remain after all filters are removed.
+  EXPECT_TRUE(GetFilteredEvents(kExtensionId)->empty());
+}
+
+// Tests that removing the last filter from a standard (non-sub-event) filtered
+// event deletes its key from preferences. Regression test for
+// crbug.com/526929792.
+TEST_P(EventRouterFilterTest, RemoveLastFilterErasesEventKey) {
+  const std::string kEventName = "webNavigation.onBeforeNavigate";
+  const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
+  auto param = mojom::EventListenerOwner::NewExtensionId(kExtensionId);
+
+  // The extension must be enabled so lazy listeners are tracked in memory;
+  // otherwise removal does not update persisted filters.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").SetID(kExtensionId).Build();
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  std::unique_ptr<mojom::ServiceWorkerContext> worker_context;
+  if (is_for_service_worker()) {
+    worker_context = std::make_unique<mojom::ServiceWorkerContext>(
+        Extension::GetBaseURLFromExtensionId(kExtensionId),
+        99,    // Placeholder version_id.
+        199);  // Placeholder thread_id.
+  }
+
+  const base::DictValue filter_foo = CreateHostSuffixFilter("foo.com");
+  const base::DictValue filter_bar = CreateHostSuffixFilter("bar.com");
+  event_router()->AddFilteredEventListener(
+      kEventName, render_process_host(), param.Clone(), worker_context.get(),
+      filter_foo, /*add_lazy_listener=*/true);
+  event_router()->AddFilteredEventListener(
+      kEventName, render_process_host(), param.Clone(), worker_context.get(),
+      filter_bar, /*add_lazy_listener=*/true);
+
+  // Removing one filter leaves the other in place, so the key is preserved.
+  event_router()->RemoveFilteredEventListener(
+      kEventName, render_process_host(), param.Clone(), worker_context.get(),
+      filter_foo, /*remove_lazy_listener=*/true);
+  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filter_bar));
+
+  // Removing the last filter erases the key.
+  event_router()->RemoveFilteredEventListener(
+      kEventName, render_process_host(), param.Clone(), worker_context.get(),
+      filter_bar, /*remove_lazy_listener=*/true);
+  const base::DictValue* filtered_events = GetFilteredEvents(kExtensionId);
+  ASSERT_TRUE(filtered_events);
+  EXPECT_FALSE(filtered_events->contains(kEventName));
+  EXPECT_TRUE(filtered_events->empty());
 }
 
 // TODO(crbug.com/40281129): test is flaky across platforms.

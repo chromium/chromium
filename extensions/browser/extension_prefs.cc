@@ -2229,6 +2229,8 @@ ExtensionPrefs::ExtensionPrefs(
 
   CleanUpDuplicateSubEventFilters();
 
+  CleanUpEmptyFilteredEventLists();
+
 #if BUILDFLAG(IS_CHROMEOS)
   ApplyPendingUpdates();
 #endif
@@ -2682,6 +2684,40 @@ void ExtensionPrefs::CleanUpDuplicateSubEventFilters() {
       }
       for (auto& [name, list] : replacements) {
         filtered_events->SetKey(name, base::Value(std::move(list)));
+      }
+    }
+  }
+}
+
+void ExtensionPrefs::CleanUpEmptyFilteredEventLists() {
+  const base::DictValue& extensions = prefs_->GetDict(pref_names::kExtensions);
+  for (const auto [extension_id, _] : extensions) {
+    if (!crx_file::id_util::IdIsValid(extension_id)) {
+      continue;
+    }
+    // Clean up both standard and service worker filtered event preferences.
+    for (auto* pref_key : {EventRouter::kFilteredEvents,
+                           EventRouter::kFilteredServiceWorkerEvents}) {
+      const base::DictValue* filtered_events =
+          ReadPrefAsDict(extension_id, pref_key);
+      if (!filtered_events) {
+        continue;
+      }
+      // Rebuild the dictionary, omitting empty filter lists and malformed
+      // non-list values.
+      base::DictValue cleaned;
+      for (const auto [event_name, value] : *filtered_events) {
+        if (value.is_list() && !value.GetList().empty()) {
+          cleaned.Set(event_name, value.Clone());
+        }
+      }
+      if (cleaned.empty()) {
+        // If no valid entries remain, delete the preference entirely.
+        UpdateExtensionPref(extension_id, pref_key, std::nullopt);
+      } else if (cleaned != *filtered_events) {
+        // Otherwise, write back the dictionary if any entries were removed.
+        UpdateExtensionPref(extension_id, pref_key,
+                            base::Value(std::move(cleaned)));
       }
     }
   }
