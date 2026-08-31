@@ -317,6 +317,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   self.manualFillButton.hidden = hideManualFillButton;
 
   [self updateSplitViewConstraints];
+  [self setHorizontalConstraints];
 }
 
 - (FormInputAccessoryViewSubitemGroup)currentGroup {
@@ -1147,6 +1148,18 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // accessory is in compact mode (tablet only).
 - (void)setHorizontalConstraints {
   if (!_isTabletFormFactor || !_largeAccessoryViewEnabled) {
+    return;
+  }
+
+  // When iPad is showing manual fill buttons, or AtMemory full button,
+  // they will appear in the middle of the screen. In such cases, we need to
+  // disable trailing constraint.
+  BOOL centerMode =
+      _currentGroup == FormInputAccessoryViewSubitemGroup::kManualFillButtons ||
+      _currentGroup == FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton;
+  if ([self isSplitViewActive] && centerMode) {
+    _trailingConstraint.active = NO;
+    _compactTrailingConstraint.active = NO;
     return;
   }
 
