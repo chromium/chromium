@@ -13638,6 +13638,24 @@
             ]
         }
     ],
+    "NtpRealboxCyclingPlaceholders": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260828",
+                    "enable_features": [
+                        "NtpRealboxCyclingPlaceholders"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpScaledActionChips": [
         {
             "platforms": [
