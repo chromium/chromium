@@ -193,6 +193,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     protected String mFormattedFullUrl;
     protected String mUrlForDisplay;
     private LocationBarDataProvider.@Nullable AppInstalledDelegate mAppInstalledDelegate;
+    private final Runnable mAppInstallationObserver = this::notifyAppInstallationStateChanged;
 
     // notifyUrlChanged and notifySecurityStateChanged are usually called 3 times across a same
     // document navigation. The first call is usually necessary, which updates the UrlBar to reflect
@@ -275,6 +276,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             mChromeAutocompleteSchemeClassifier.destroy();
             mChromeAutocompleteSchemeClassifier = null;
         }
+
+        setAppInstalledDelegate(null);
 
         if (mNativeLocationBarModelAndroid == 0) return;
         LocationBarModelJni.get().destroy(mNativeLocationBarModelAndroid);
@@ -1070,7 +1073,19 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void setAppInstalledDelegate(LocationBarDataProvider.AppInstalledDelegate delegate) {
+        if (mAppInstalledDelegate != null) {
+            mAppInstalledDelegate.removeObserver(mAppInstallationObserver);
+        }
         mAppInstalledDelegate = delegate;
+        if (mAppInstalledDelegate != null) {
+            mAppInstalledDelegate.addObserver(mAppInstallationObserver);
+        }
+    }
+
+    public void notifyAppInstallationStateChanged() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onAppInstallationStateChanged();
+        }
     }
 
     @Override

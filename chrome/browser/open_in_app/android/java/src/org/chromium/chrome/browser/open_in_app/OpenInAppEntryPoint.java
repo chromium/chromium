@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.open_in_app;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -13,6 +15,7 @@ import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -30,6 +33,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
@@ -42,6 +46,16 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
     private final TabSupplierObserver mTabSupplierObserver;
     private @Nullable Tab mCurrentTab;
     private @Nullable OpenInAppDelegate mOpenInAppDelegate;
+    private boolean mIsPackageReceiverRegistered;
+    private int mCurrentResolveTaskId;
+
+    private final BroadcastReceiver mPackageChangeReceiver =
+            new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    onAppInstallationStateChanged();
+                }
+            };
 
     sealed interface ResolveResult
             permits ResolveResult.Info, ResolveResult.ResolverActivity, ResolveResult.None {
@@ -66,85 +80,98 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                         NavigationHandle navigationHandle) {
                     if (!navigationHandle.hasCommitted()) return;
 
-                    if (mOpenInAppDelegate == null) return;
-                    var delegate = mOpenInAppDelegate;
-
-                    GURL url = navigationHandle.getUrl();
-                    delegate.setLastNavigatedUrl(url);
-                    // New navigation committed, so we should clear the open in app info to
-                    // prevent trying to open an app based on outdated info.
-                    updateOpenInAppInfo(delegate, null);
-
-                    if (!UrlUtilities.isHttpOrHttps(navigationHandle.getUrl())) return;
-
-                    Intent targetIntent = new Intent(Intent.ACTION_VIEW);
-                    targetIntent.setData(Uri.parse(url.getSpec()));
-                    ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(targetIntent);
-
-                    new AsyncTask<ResolveResult>() {
-                        @Override
-                        protected ResolveResult doInBackground() {
-                            List<ResolveInfo> resolveInfos =
-                                    PackageManagerUtils.queryIntentActivities(
-                                            targetIntent,
-                                            PackageManager.GET_RESOLVED_FILTER
-                                                    | PackageManager.GET_META_DATA);
-
-                            var browserPackages =
-                                    ExternalNavigationHandler.getInstalledBrowserPackages();
-
-                            ArrayList<ResolveInfo> suitableApps = new ArrayList<>();
-                            for (var info : resolveInfos) {
-                                if (browserPackages.contains(info.activityInfo.packageName)) {
-                                    continue;
-                                }
-
-                                boolean isDefault =
-                                        info.filter != null
-                                                && info.filter.hasCategory(Intent.CATEGORY_DEFAULT);
-                                boolean isWebApk =
-                                        WebApkValidator.isValidWebApk(
-                                                mContext, info.activityInfo.packageName);
-
-                                if (isDefault || isWebApk) {
-                                    suitableApps.add(info);
-                                }
-                            }
-
-                            if (suitableApps.isEmpty()) {
-                                return new ResolveResult.None();
-                            }
-
-                            if (suitableApps.size() > 1) {
-                                ResolveInfo resolveActivity =
-                                        PackageManagerUtils.resolveActivity(
-                                                targetIntent, PackageManager.MATCH_DEFAULT_ONLY);
-
-                                if (resolveActivity != null) {
-                                    if (ExternalNavigationHandler.resolvesToChooser(
-                                            resolveActivity, resolveInfos)) {
-                                        return new ResolveResult.ResolverActivity();
-                                    } else {
-                                        return new ResolveResult.Info(resolveActivity);
-                                    }
-                                }
-                            }
-
-                            return new ResolveResult.Info(suitableApps.get(0));
-                        }
-
-                        @Override
-                        protected void onPostExecute(ResolveResult result) {
-                            onResolveInfosFetched(
-                                    delegate,
-                                    result,
-                                    targetIntent,
-                                    url,
-                                    navigationHandle.getNavigationId());
-                        }
-                    }.executeWithTaskTraits(TaskTraits.UI_DEFAULT);
+                    resolveIntent(navigationHandle.getUrl(), navigationHandle.getNavigationId());
                 }
             };
+
+    /** Resolves the app intent when the app installation state on the device changes. */
+    public void onAppInstallationStateChanged() {
+        Tab tab = mCurrentTab;
+        if (tab == null) return;
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+        GURL url = webContents.getLastCommittedUrl();
+        if (url == null || url.isEmpty() || !UrlUtilities.isHttpOrHttps(url)) {
+            updateOpenInAppInfo(mOpenInAppDelegate, null);
+            return;
+        }
+        resolveIntent(url, -1);
+    }
+
+    /**
+     * Resolves the app intent whenever navigation completes, or an app was recently installed. A
+     * navigationId of -1 means that an app installation state has changed, and no new navigation
+     * happened.
+     */
+    private void resolveIntent(GURL url, long navigationId) {
+        if (mOpenInAppDelegate == null) return;
+        var delegate = mOpenInAppDelegate;
+
+        delegate.setLastNavigatedUrl(url);
+        // Clear the open in app info to prevent trying to open an app based on outdated info.
+        updateOpenInAppInfo(delegate, null);
+
+        if (!UrlUtilities.isHttpOrHttps(url)) return;
+
+        final int taskId = ++mCurrentResolveTaskId;
+        Intent targetIntent = new Intent(Intent.ACTION_VIEW);
+        targetIntent.setData(Uri.parse(url.getSpec()));
+        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(targetIntent);
+
+        new AsyncTask<ResolveResult>() {
+            @Override
+            protected ResolveResult doInBackground() {
+                List<ResolveInfo> resolveInfos =
+                        PackageManagerUtils.queryIntentActivities(
+                                targetIntent,
+                                PackageManager.GET_RESOLVED_FILTER | PackageManager.GET_META_DATA);
+
+                var browserPackages = ExternalNavigationHandler.getInstalledBrowserPackages();
+
+                ArrayList<ResolveInfo> suitableApps = new ArrayList<>();
+                for (var info : resolveInfos) {
+                    if (browserPackages.contains(info.activityInfo.packageName)) {
+                        continue;
+                    }
+
+                    boolean isDefault =
+                            info.filter != null && info.filter.hasCategory(Intent.CATEGORY_DEFAULT);
+                    boolean isWebApk =
+                            WebApkValidator.isValidWebApk(mContext, info.activityInfo.packageName);
+
+                    if (isDefault || isWebApk) {
+                        suitableApps.add(info);
+                    }
+                }
+
+                if (suitableApps.isEmpty()) {
+                    return new ResolveResult.None();
+                }
+
+                if (suitableApps.size() > 1) {
+                    ResolveInfo resolveActivity =
+                            PackageManagerUtils.resolveActivity(
+                                    targetIntent, PackageManager.MATCH_DEFAULT_ONLY);
+
+                    if (resolveActivity != null) {
+                        if (ExternalNavigationHandler.resolvesToChooser(
+                                resolveActivity, resolveInfos)) {
+                            return new ResolveResult.ResolverActivity();
+                        } else {
+                            return new ResolveResult.Info(resolveActivity);
+                        }
+                    }
+                }
+
+                return new ResolveResult.Info(suitableApps.get(0));
+            }
+
+            @Override
+            protected void onPostExecute(ResolveResult result) {
+                onResolveInfosFetched(delegate, result, targetIntent, url, navigationId, taskId);
+            }
+        }.executeWithTaskTraits(TaskTraits.UI_DEFAULT);
+    }
 
     protected OpenInAppDelegate.@Nullable OpenInAppInfo mOpenInAppInfo;
     protected final Context mContext;
@@ -160,6 +187,7 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ false) {
                     @Override
                     protected void onObservingDifferentTab(@Nullable Tab tab) {
+                        mCurrentResolveTaskId++;
                         mCurrentTab = tab;
 
                         if (mCurrentTab == null) {
@@ -178,9 +206,21 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                     }
                 };
         mContext = context;
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        filter.addDataScheme("package");
+        ContextUtils.registerProtectedBroadcastReceiver(mContext, mPackageChangeReceiver, filter);
+        mIsPackageReceiverRegistered = true;
     }
 
     public void destroy() {
+        if (mIsPackageReceiverRegistered) {
+            mContext.unregisterReceiver(mPackageChangeReceiver);
+            mIsPackageReceiverRegistered = false;
+        }
         mTabSupplierObserver.destroy();
         mWebContentsObserver.observe(null);
         mOpenInAppDelegate = null;
@@ -194,6 +234,23 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
             Intent targetIntent,
             GURL url,
             long navigationId) {
+        onResolveInfosFetched(
+                delegate, result, targetIntent, url, navigationId, mCurrentResolveTaskId);
+    }
+
+    void setResolveTaskIdForTesting(int taskId) {
+        mCurrentResolveTaskId = taskId;
+    }
+
+    @VisibleForTesting
+    void onResolveInfosFetched(
+            OpenInAppDelegate delegate,
+            ResolveResult result,
+            Intent targetIntent,
+            GURL url,
+            long navigationId,
+            int taskId) {
+        if (taskId != mCurrentResolveTaskId) return;
         GURL lastUrl = delegate.getLastNavigatedUrl();
         if (lastUrl == null || !lastUrl.equals(url)) return;
 

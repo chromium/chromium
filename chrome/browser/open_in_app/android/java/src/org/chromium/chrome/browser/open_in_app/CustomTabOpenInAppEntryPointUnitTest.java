@@ -24,6 +24,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -100,6 +101,11 @@ public class CustomTabOpenInAppEntryPointUnitTest {
 
         mEntryPoint = new CustomTabOpenInAppEntryPoint(mTabSupplier, mContext);
         mTabSupplier.set(mTab);
+    }
+
+    @After
+    public void tearDown() {
+        mEntryPoint.destroy();
     }
 
     @Test

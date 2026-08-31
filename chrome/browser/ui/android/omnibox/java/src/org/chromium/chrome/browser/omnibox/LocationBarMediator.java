@@ -2957,6 +2957,11 @@ class LocationBarMediator
     }
 
     @Override
+    public void onAppInstallationStateChanged() {
+        updateInstallButtonVisibility(/* notifyEmbedder= */ true);
+    }
+
+    @Override
     public void onIncognitoStateChanged() {
         mIsLensOnOmniboxEnabled = isLensEnabled(LensEntryPoint.OMNIBOX);
         updateButtonVisibility();

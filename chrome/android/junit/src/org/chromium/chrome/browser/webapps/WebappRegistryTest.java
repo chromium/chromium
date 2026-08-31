@@ -1073,4 +1073,27 @@ public class WebappRegistryTest {
                         .getOriginsWithInstalledApp()
                         .contains(startUrlOrigin.toString()));
     }
+
+    @Test
+    @Feature({"Webapp"})
+    public void testWebappRegistryObserverNotifiedOnRegister() throws Exception {
+        String webApkPackage = "test.webapk.package";
+        String startUrl = "https://example.com/start";
+        BrowserServicesIntentDataProvider intentDataProvider =
+                new WebApkIntentDataProviderBuilder(webApkPackage, startUrl).build();
+
+        // 1. Set up observer
+        final int[] notificationCount = {0};
+        WebappRegistry.Observer observer = () -> notificationCount[0]++;
+        WebappRegistry.getInstance().registerObserver(observer);
+
+        // 2. Register webapp
+        registerWebapp(intentDataProvider);
+
+        // 3. Verify observer was notified
+        assertEquals(1, notificationCount[0]);
+
+        // Clean up
+        WebappRegistry.getInstance().unregisterObserver(observer);
+    }
 }

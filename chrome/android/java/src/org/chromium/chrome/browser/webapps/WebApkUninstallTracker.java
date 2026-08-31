@@ -34,6 +34,7 @@ public class WebApkUninstallTracker {
         long fallbackUninstallTimestamp = System.currentTimeMillis();
         WebappRegistry.warmUpSharedPrefs();
         WebappsUtils.prepareIsRequestPinShortcutSupported();
+        boolean changed = false;
         for (String uninstalledPackage : uninstalledPackages) {
             RecordHistogram.recordBooleanHistogram("WebApk.Uninstall.Browser", true);
 
@@ -57,10 +58,14 @@ public class WebApkUninstallTracker {
                         webappDataStorage.getWebApkVersionCode(),
                         webappDataStorage.getLaunchCount(),
                         uninstallTimestamp - webappDataStorage.getWebApkInstallTimestamp());
+                changed = true;
             }
         }
         preferencesManager.writeStringSet(
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<>());
+        if (changed) {
+            WebappRegistry.getInstance().notifyOriginsWithInstalledAppChanged();
+        }
     }
 
     /**

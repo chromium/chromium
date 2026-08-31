@@ -43,6 +43,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
+import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -124,6 +125,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageTabData;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.LocationBarFocusScrimHandler;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -250,6 +252,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -365,6 +368,7 @@ public class ToolbarManager
     private final ActivityResultTracker mActivityResultTracker;
     private final SnackbarManager mSnackbarManager;
     private final LocationBarModel mLocationBarModel;
+    private @Nullable WebappRegistryAppInstalledDelegate mAppInstalledDelegate;
     private NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ValueChangedCallback<@Nullable BookmarkModel> mBookmarkModelSupplierObserver =
             new ValueChangedCallback<>(this::setBookmarkModel);
@@ -1382,16 +1386,8 @@ public class ToolbarManager
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);
             mLocationBar = locationBarCoordinator;
-            mLocationBarModel.setAppInstalledDelegate(
-                    (url) -> {
-                        org.chromium.components.embedder_support.util.Origin origin =
-                                org.chromium.components.embedder_support.util.Origin.create(
-                                        url.getSpec());
-                        return origin != null
-                                && WebappRegistry.getInstance()
-                                        .getOriginsWithInstalledApp()
-                                        .contains(origin.toString());
-                    });
+            mAppInstalledDelegate = new WebappRegistryAppInstalledDelegate();
+            mLocationBarModel.setAppInstalledDelegate(mAppInstalledDelegate);
             locationBarCoordinator.setOnStatusViewHiddenForPageInfoRemoval(
                     () -> {
                         if (mSiteControlsIphController == null) {
@@ -2959,6 +2955,11 @@ public class ToolbarManager
         if (mIsDestroyed) return;
         mIsDestroyed = true;
 
+        if (mAppInstalledDelegate != null) {
+            mAppInstalledDelegate.destroy();
+            mAppInstalledDelegate = null;
+        }
+
         var omnibox = mLocationBar.getOmniboxStub();
         if (omnibox != null) {
             omnibox.removeUrlFocusChangeListener(this);
@@ -4085,5 +4086,44 @@ public class ToolbarManager
 
     @Nullable HubExitNavigationHelper getHubExitNavigationHelperForTesting() {
         return mHubExitNavigationHelper;
+    }
+
+    private static class WebappRegistryAppInstalledDelegate
+            implements LocationBarDataProvider.AppInstalledDelegate, WebappRegistry.Observer {
+        private final ObserverList<Runnable> mObservers = new ObserverList<>();
+
+        public WebappRegistryAppInstalledDelegate() {
+            WebappRegistry.getInstance().registerObserver(this);
+        }
+
+        @Override
+        public boolean isAppInstalled(GURL url) {
+            Origin origin = Origin.create(url.getSpec());
+            return origin != null
+                    && WebappRegistry.getInstance()
+                            .getOriginsWithInstalledApp()
+                            .contains(origin.toString());
+        }
+
+        @Override
+        public void addObserver(Runnable observer) {
+            mObservers.addObserver(observer);
+        }
+
+        @Override
+        public void removeObserver(Runnable observer) {
+            mObservers.removeObserver(observer);
+        }
+
+        @Override
+        public void onOriginsWithInstalledAppChanged() {
+            for (Runnable observer : mObservers) {
+                observer.run();
+            }
+        }
+
+        public void destroy() {
+            WebappRegistry.getInstance().unregisterObserver(this);
+        }
     }
 }

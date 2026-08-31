@@ -92,11 +92,18 @@ public interface LocationBarDataProvider {
 
         /** Notifies when the tab crashes. */
         default void onTabCrashed() {}
+
+        /** Notifies when whether the current URL has an installed app might have changed. */
+        default void onAppInstallationStateChanged() {}
     }
 
     /** Delegate to resolve whether an app is installed for a URL. */
     interface AppInstalledDelegate {
         boolean isAppInstalled(GURL url);
+
+        default void addObserver(Runnable observer) {}
+
+        default void removeObserver(Runnable observer) {}
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */

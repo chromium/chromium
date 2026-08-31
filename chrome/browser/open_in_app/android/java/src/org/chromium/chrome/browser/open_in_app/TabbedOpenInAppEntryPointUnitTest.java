@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.open_in_app;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -27,7 +28,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,13 +41,16 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -113,6 +119,11 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
         mEntryPoint = new TabbedOpenInAppEntryPoint(mTabSupplier, mOmniboxChipManager, mContext);
         mTabSupplier.set(mTab);
+    }
+
+    @After
+    public void tearDown() {
+        mEntryPoint.destroy();
     }
 
     @Test
@@ -232,5 +243,95 @@ public class TabbedOpenInAppEntryPointUnitTest {
                 ArgumentCaptor.forClass(TabClosureParams.class);
         verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture(), eq(false));
         assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
+    }
+
+    @Test
+    public void testOnAppInstallationStateChanged() {
+        OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
+        delegate.setExternalNavigationHelper(mExternalNavigationHelper);
+
+        // Set up ShadowPackageManager to resolve the intent.
+        var shadowPackageManager =
+                Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager());
+        Intent targetIntent = new Intent(Intent.ACTION_VIEW);
+        targetIntent.setData(android.net.Uri.parse(mUrl.getSpec()));
+        targetIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+
+        // Local real ActivityInfo with enabled state, and not the mock ones so that
+        // the Robolectric test runner doesn't drop it.
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = PACKAGE;
+        activityInfo.name = PACKAGE + ".MainActivity";
+        activityInfo.enabled = true;
+        activityInfo.exported = true;
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.packageName = PACKAGE;
+        appInfo.enabled = true;
+        activityInfo.applicationInfo = appInfo;
+
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = activityInfo;
+
+        // Use a real IntentFilter instead of the mock mIntentFilter so Robolectric's
+        // matching logic works correctly.
+        IntentFilter realFilter = new IntentFilter(Intent.ACTION_VIEW);
+        realFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        realFilter.addCategory(Intent.CATEGORY_BROWSABLE);
+        realFilter.addDataScheme("http");
+        realFilter.addDataScheme("https");
+        resolveInfo.filter = realFilter;
+
+        // Add the resolve info to fake package manager.
+        shadowPackageManager.addResolveInfoForIntent(targetIntent, resolveInfo);
+
+        // Mock current committed URL of WebContents.
+        when(mWebContents.getLastCommittedUrl()).thenReturn(mUrl);
+
+        // 1. Trigger app installation state changed via OS package broadcast.
+        Intent packageAddedIntent = new Intent(Intent.ACTION_PACKAGE_ADDED);
+        packageAddedIntent.setData(Uri.parse("package:" + PACKAGE));
+        mContext.sendBroadcast(packageAddedIntent);
+
+        // 2. AsyncTask executes intent query. Pump background tasks and UI thread.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // 3. Verify it resolved successfully and app info is not null.
+        assertNotNull(delegate.getCurrentOpenInAppInfo());
+
+        // 4. Remove package and resolve info from PackageManager, trigger package removal
+        // broadcast, and verify it cleans up.
+        shadowPackageManager.deletePackage(PACKAGE);
+        shadowPackageManager.removeResolveInfosForIntent(targetIntent, PACKAGE);
+        Intent packageRemovedIntent = new Intent(Intent.ACTION_PACKAGE_REMOVED);
+        packageRemovedIntent.setData(Uri.parse("package:" + PACKAGE));
+        mContext.sendBroadcast(packageRemovedIntent);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertNull(delegate.getCurrentOpenInAppInfo());
+    }
+
+    @Test
+    public void testOnResolveInfosFetched_dropsStaleOutOfOrderTask() {
+        OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
+        delegate.setLastNavigatedUrl(mUrl);
+
+        var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
+        mEntryPoint.setResolveTaskIdForTesting(2);
+
+        // Simulate resolution of a newer task (taskId = 2).
+        mEntryPoint.onResolveInfosFetched(
+                delegate, infos, mIntent, mUrl, /* navigationId= */ 1L, 2);
+        assertNotNull(delegate.getCurrentOpenInAppInfo());
+
+        // Simulate delayed completion of an older task (taskId = 1) resolving to None.
+        mEntryPoint.onResolveInfosFetched(
+                delegate,
+                new OpenInAppEntryPoint.ResolveResult.None(),
+                mIntent,
+                mUrl,
+                /* navigationId= */ 1L,
+                /* taskId= */ 1);
+
+        // The older task (None) must be ignored; the newer app info should be preserved.
+        assertNotNull(delegate.getCurrentOpenInAppInfo());
     }
 }

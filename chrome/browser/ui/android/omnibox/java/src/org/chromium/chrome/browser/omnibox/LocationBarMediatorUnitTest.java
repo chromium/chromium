@@ -2947,6 +2947,27 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testInstallButton_visibilityRespondsToAppInstallationStateChange() {
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        mMediator.onUrlFocusChange(false);
+        mMediator.setUrlFocusChangeInProgress(false);
+
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+
+        // 1. App is not installed yet -> Install button should show
+        doReturn(false).when(mLocationBarDataProvider).currentUrlHasInstalledApp();
+        mMediator.onAppInstallationStateChanged();
+        verify(mLocationBarLayout).setInstallButtonVisibility(true);
+
+        clearInvocations(mLocationBarLayout, mLocationBarEmbedder);
+
+        // 2. App becomes installed -> Install button should hide
+        doReturn(true).when(mLocationBarDataProvider).currentUrlHasInstalledApp();
+        mMediator.onAppInstallationStateChanged();
+        verify(mLocationBarLayout).setInstallButtonVisibility(false);
+    }
+
+    @Test
     public void testZoomButtonClicked() {
         mMediator.onFinishNativeInitialization();
         mMediator.zoomButtonClicked(null);

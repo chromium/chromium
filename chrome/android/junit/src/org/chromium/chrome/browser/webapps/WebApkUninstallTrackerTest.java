@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -137,5 +138,33 @@ public class WebApkUninstallTrackerTest {
 
         // Verify AppBannerManager JNI recheck is called.
         verify(mAppBannerManager).recheckInstallability();
+    }
+
+    @Test
+    public void testUninstallNotifiesWebappRegistryObserver() throws Exception {
+        // Register WebAPK in WebappRegistry.
+        WebappDataStorage storage = registerWebappAndGetStorage(WEBAPK_PACKAGE);
+
+        BrowserServicesIntentDataProvider intentDataProvider =
+                new WebApkIntentDataProviderBuilder(WEBAPK_PACKAGE, SCOPE + "/start")
+                        .setWebApkManifestId(MANIFEST_ID)
+                        .setScope(SCOPE)
+                        .build();
+        storage.updateFromWebappIntentDataProvider(intentDataProvider);
+
+        // Setup observer
+        final int[] notificationCount = {0};
+        WebappRegistry.Observer observer = () -> notificationCount[0]++;
+        WebappRegistry.getInstance().registerObserver(observer);
+
+        // Call tracker.
+        WebApkUninstallTracker.deferRecordWebApkUninstalled(WEBAPK_PACKAGE);
+
+        // Verify observer was notified
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(1, notificationCount[0]);
+
+        // Clean up
+        WebappRegistry.getInstance().unregisterObserver(observer);
     }
 }

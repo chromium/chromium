@@ -1022,6 +1022,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mEdgeToEdgeChangeObserver = null;
         }
 
+        if (mOpenInAppEntryPoint != null) {
+            mOpenInAppEntryPoint.destroy();
+            mOpenInAppEntryPoint = null;
+        }
+
         super.onDestroy();
 
         if (mBrandingController != null) {
