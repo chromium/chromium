@@ -42,7 +42,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -84,7 +83,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
 @DisableFeatures(ChromeFeatureList.FEED_CONTAINMENT)
 public class FeedStreamTest {

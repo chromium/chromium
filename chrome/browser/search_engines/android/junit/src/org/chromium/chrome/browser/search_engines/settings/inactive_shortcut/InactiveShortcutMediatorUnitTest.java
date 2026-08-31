@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,7 +57,6 @@ import java.util.List;
 
 /** Unit tests for {@link InactiveShortcutMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(OmniboxFeatureList.STARTER_PACK_EXPANSION)
 public class InactiveShortcutMediatorUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();

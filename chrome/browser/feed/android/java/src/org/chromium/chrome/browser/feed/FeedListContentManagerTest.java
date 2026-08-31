@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
@@ -41,7 +40,6 @@ import java.util.Map;
 
 /** Unit tests for {@link FeedListContentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FeedListContentManagerTest implements ListContentManagerObserver {
     private FeedListContentManager mManager;
     private Context mContext;

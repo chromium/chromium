@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,7 +25,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link AuxiliarySearchModuleViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AuxiliarySearchModuleViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AuxiliarySearchModuleView mView;

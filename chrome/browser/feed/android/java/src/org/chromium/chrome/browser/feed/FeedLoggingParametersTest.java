@@ -13,14 +13,12 @@ import com.google.protobuf.ByteString;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.feed.proto.FeedUiProto;
 
 /** Test for FeedLoggingParameters. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class FeedLoggingParametersTest {
     @Test
     @SmallTest

@@ -33,7 +33,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
@@ -42,7 +41,6 @@ import java.util.Arrays;
 
 /** Unit tests for {@link NativeViewListRenderer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NativeViewListRendererTest {
     static class DummyViewGroup extends ViewGroup {
         DummyViewGroup(Context context) {

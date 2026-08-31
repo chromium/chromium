@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger;
@@ -33,7 +32,6 @@ import org.chromium.net.NetError;
 
 /** Unit tests for {@link FeedReliabilityLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FeedReliabilityLoggerTest {
     static final int CARD_CATEGORY = 101;
     static final int PAGE_ID = 5;

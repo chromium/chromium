@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -39,7 +38,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for {@link KeyboardShortcutRadioButtonGroupPreference}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class KeyboardShortcutRadioButtonGroupPreferenceUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

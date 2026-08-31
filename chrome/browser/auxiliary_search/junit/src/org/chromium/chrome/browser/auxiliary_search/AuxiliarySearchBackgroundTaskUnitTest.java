@@ -54,9 +54,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.List;
 
 /** Unit tests for AuxiliarySearchBackgroundTask. */
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 @RunWith(BaseRobolectricTestRunner.class)
 public class AuxiliarySearchBackgroundTaskUnitTest {
     private static final long FAKE_NATIVE_PTR = 1L;

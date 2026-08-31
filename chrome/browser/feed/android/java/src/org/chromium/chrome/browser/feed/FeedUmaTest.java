@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 
 /** Unit tests for {@link FeedUma}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FeedUmaTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,7 +39,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for {@link SiteSearchSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SiteSearchSettingsUnitTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
     private SiteSearchSettings mFragment;
