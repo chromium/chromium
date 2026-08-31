@@ -327,6 +327,7 @@ public class AutofillAndPasswordsFragmentTest {
 
         mSettingsTestRule.startSettingsActivity(createFragmentArgs());
 
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_primary_button)).perform(click());
 
         verify(mAutofillAndPasswordsSigninCoordinator).startSigninFlow(any());
