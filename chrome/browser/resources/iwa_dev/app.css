@@ -17,7 +17,7 @@
 
 h1 {
   font-size: 1.75rem;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .subtitle {
@@ -37,7 +37,7 @@ h1 {
 }
 
 #learn-more {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 #dev-mode-disabled-message {
@@ -53,7 +53,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 h2 {
@@ -62,7 +62,7 @@ h2 {
 }
 
 #installed-apps-subtitle {
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 #iwa-list {
