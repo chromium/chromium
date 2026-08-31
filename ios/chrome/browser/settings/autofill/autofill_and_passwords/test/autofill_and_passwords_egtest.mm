@@ -101,6 +101,28 @@
       performAction:grey_tap()];
 }
 
+// Helper to open a settings subpage, verify expected matchers are visible, and
+// pop back.
+- (void)openAndCloseSubpageWithCellID:(NSString*)cellID
+                  subpageViewMatchers:(NSArray<id<GREYMatcher>>*)matchers {
+  id<GREYMatcher> interactableCellMatcher =
+      grey_allOf(grey_accessibilityID(cellID), grey_interactable(), nil);
+  [[[EarlGrey selectElementWithMatcher:interactableCellMatcher]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:grey_allOf(grey_kindOfClass([UITableView class]),
+                                      grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  for (id<GREYMatcher> matcher in matchers) {
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:matcher];
+  }
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(cellID)];
+}
+
 // Tests that the sign-in promo is visible on the Autofill and Passwords page
 // when the user is not signed in.
 - (void)testSignInPromoVisibleWhenLoggedOut {
@@ -213,92 +235,57 @@
   [self openAutofillAndPasswordsSettings];
 
   // 1. Password Manager.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSettingsPasswordsCellId)]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  [self openAndCloseSubpageWithCellID:kSettingsPasswordsCellId
+                  subpageViewMatchers:@[ grey_accessibilityID(
+                                          kPasswordsTableViewID) ]];
 
   // 2. Payments.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsPaymentMethodsCellId)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillCreditCardTableViewId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_AUTOFILL_PAYMENTS_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  [self openAndCloseSubpageWithCellID:kSettingsPaymentMethodsCellId
+                  subpageViewMatchers:@[
+                    grey_accessibilityID(kAutofillCreditCardTableViewId),
+                    grey_text(
+                        l10n_util::GetNSString(IDS_AUTOFILL_PAYMENTS_TITLE)),
+                  ]];
 
   // 3. Contact info.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsAddressesAndMoreCellId)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillProfileTableViewID)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_AUTOFILL_CONTACT_INFO_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  [self openAndCloseSubpageWithCellID:kSettingsAddressesAndMoreCellId
+                  subpageViewMatchers:@[
+                    grey_accessibilityID(kAutofillProfileTableViewID),
+                    grey_text(l10n_util::GetNSString(
+                        IDS_AUTOFILL_CONTACT_INFO_TITLE)),
+                  ]];
 
   // 4. Identity docs.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsIdentityDocsCellId)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_AUTOFILL_IDENTITY_DOCS_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  [self openAndCloseSubpageWithCellID:kSettingsIdentityDocsCellId
+                  subpageViewMatchers:@[
+                    grey_text(l10n_util::GetNSString(
+                        IDS_AUTOFILL_IDENTITY_DOCS_TITLE)),
+                  ]];
 
   // 5. Travel.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSettingsTravelInfoCellId)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_AUTOFILL_TRAVEL_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  [self
+      openAndCloseSubpageWithCellID:kSettingsTravelInfoCellId
+                subpageViewMatchers:@[
+                  grey_text(l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE)),
+                ]];
 
   // 6. Shopping.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsShoppingInfoCellId)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_AUTOFILL_SHOPPING_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  [self openAndCloseSubpageWithCellID:kSettingsShoppingInfoCellId
+                  subpageViewMatchers:@[
+                    grey_text(
+                        l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE)),
+                  ]];
 
   // 7. Autofill Settings.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsAutofillSettingsCellId)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kEnhancedAutofillSwitchViewId,
-                                          /*is_toggled_on=*/NO,
-                                          /*is_enabled=*/YES)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_SETTINGS_AUTOFILL_SETTINGS))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  [self openAndCloseSubpageWithCellID:kSettingsAutofillSettingsCellId
+                  subpageViewMatchers:@[
+                    chrome_test_util::TableViewSwitchCell(
+                        kEnhancedAutofillSwitchViewId,
+                        /*is_toggled_on=*/NO,
+                        /*is_enabled=*/YES),
+                    grey_text(l10n_util::GetNSString(
+                        IDS_IOS_SETTINGS_AUTOFILL_SETTINGS)),
+                  ]];
 }
 
 // Tests that viewing and editing sensitive Autofill AI data (e.g. Redress
