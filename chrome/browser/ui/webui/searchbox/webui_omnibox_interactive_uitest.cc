@@ -19,16 +19,17 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
@@ -72,8 +73,6 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kClassicPopupWebView);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebView);
-using HeightObserver = views::test::PollingViewObserver<int, views::View>;
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(HeightObserver, kAimPopupHeightState);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
@@ -139,7 +138,7 @@ class OmniboxWebUiInteractiveTestBase
       auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
           BrowserView::GetBrowserViewForBrowser(browser())
               ->toolbar()
-              ->location_bar_view()
+              ->location_bar()
               ->GetOmniboxPopupView());
       return popup_view->presenter()->GetWebUIContent();
     });
@@ -339,11 +338,11 @@ class OmniboxAimWebUiInteractiveTestBase
 
   auto GetActiveAimPopupWebView() {
     return base::BindLambdaForTesting([&]() -> views::View* {
-      auto* aim_presenter = static_cast<OmniboxPopupAimPresenter*>(
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->toolbar()
-              ->location_bar_view()
-              ->GetOmniboxPopupAimPresenter());
+      auto* aim_presenter = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->toolbar()
+                                ->location_bar()
+                                ->GetPresenterDelegate()
+                                ->GetOmniboxPopupAimPresenter();
       return aim_presenter->GetWebUIContent();
     });
   }
@@ -361,9 +360,18 @@ class OmniboxAimWebUiInteractiveTestBase
   // Opens the AIM popup by clicking the page action icon.
   auto OpenAimPopup() {
     return Steps(
-        WaitForPageActionChipVisible(kActionAiMode),
         FocusElement(kOmniboxElementId),
-        PressButton(kAiModePageActionIconElementId), WaitForAimPopupReady(),
+        WaitForPageActionChipVisible(kActionAiMode),
+        // TODO(crbug.com/553004577): `InvokePageAction(kActionAiMode)` cannot
+        // be used here because it prefers `PressButton(element_id)` for actions
+        // with an element ID, which fails when `kWebUILocationBar` is enabled
+        // since the button is rendered in WebUI rather than as a Views View.
+        // Update `InvokePageAction` to support WebUILocationBar.
+        Do([this]() {
+          page_actions::PageActionTestAccessor(browser(), kActionAiMode)
+              .Click();
+        }),
+        WaitForAimPopupReady(),
         InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)),
         InAnyContext(ExecuteJsAt(
             kAimPopupWebView, {"omnibox-aim-app"},
@@ -386,6 +394,7 @@ class OmniboxAimWebUiInteractiveTestBase
     value_changed.where = element;
     value_changed.test_function =
         base::StringPrintf("(el) => el.value === '%s'", expected_value.c_str());
+    value_changed.continue_across_navigation = true;
     return WaitForStateChange(contents_id, value_changed);
   }
 
@@ -395,6 +404,7 @@ class OmniboxAimWebUiInteractiveTestBase
     submit_enabled.event = kAimSubmitEnabled;
     submit_enabled.where = DeepQuery{"omnibox-aim-app", "#composebox"};
     submit_enabled.test_function = "(el) => el && el.canSubmitFilesAndInput";
+    submit_enabled.continue_across_navigation = true;
     return Steps(WaitForElementToRender(contents_id, kAimSubmit),
                  WaitForStateChange(contents_id, submit_enabled));
   }
@@ -425,13 +435,14 @@ class OmniboxAimWebUiInteractiveTestBase
   }
 
   auto WaitForAimPopupTallLayoutSettled() {
-    return Steps(
-        InAnyContext(
-            PollView(kAimPopupHeightState,
-                     OmniboxPopupPresenterBase::kRoundedResultsFrame,
-                     [](const views::View* view) { return view->height(); })),
-        WaitForState(kAimPopupHeightState, testing::Optional(testing::Gt(170))),
-        StopObservingState(kAimPopupHeightState));
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimLayoutSettled);
+    StateChange layout_settled;
+    layout_settled.event = kAimLayoutSettled;
+    layout_settled.where = DeepQuery{"omnibox-aim-app"};
+    layout_settled.test_function =
+        "(el) => window.innerHeight > 170 || el.offsetHeight > 170";
+    layout_settled.continue_across_navigation = true;
+    return InAnyContext(WaitForStateChange(kAimPopupWebView, layout_settled));
   }
 
   auto ClickAimSubmit(const ui::ElementIdentifier& contents_id) {
@@ -754,11 +765,11 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
       // Submit query by pressing enter key or by clicking the submit button.
       // Skip this step if voice search auto-submits.
       If([&]() { return !param.is_voice; },
-         Then(param.submit_via_keyboard
-                  ? InAnyContext(
-                        SendKeyPress(kOmniboxElementId, ui::VKEY_RETURN))
-                  : Steps(WaitForAimPopupTallLayoutSettled(),
-                          ClickAimSubmit(kAimPopupWebView)))),
+         Then(
+             param.submit_via_keyboard
+                 ? InAnyContext(SendKeyPress(kAimPopupWebView, ui::VKEY_RETURN))
+                 : Steps(WaitForAimPopupTallLayoutSettled(),
+                         ClickAimSubmit(kAimPopupWebView)))),
       // Ensure tab navigates to a Google search results page.
       WaitForGoogleSearch(kNewTab, {{"q", query}}));
 }
