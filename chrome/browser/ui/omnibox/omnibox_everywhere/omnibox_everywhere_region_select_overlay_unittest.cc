@@ -19,8 +19,10 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/views_drawing_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -397,14 +399,15 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
-       SmallSelectionAboveThresholdClampsReticlesAndReturnsBitmap) {
+       SmallSelectionAboveThresholdClampsCornersAndReturnsBitmap) {
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
       CreateTestBitmap(), RegionCaptureSource::AllDisplays(),
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
 
-  // Drag 14x14 rectangle (above 10px min size, below 20px reticle len).
+  // Drag 14x14 rectangle (above 10px min size, below 20px default corner
+  // radius).
   SimulateMouseDrag(overlay->widget()->GetContentsView(), gfx::Point(10, 10),
                     gfx::Point(24, 24));
 
@@ -443,6 +446,173 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MouseMoveUpdatesHoverStateAndPaints) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 200, 200))});
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(200, 200);
+  bitmap.eraseColor(SK_ColorGREEN);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+
+  views::View* contents_view = overlay->widget()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  // Mouse move updates hover cursor position and triggers repaint.
+  ui::MouseEvent move_event(ui::EventType::kMouseMoved, gfx::Point(50, 50),
+                            gfx::Point(50, 50), base::TimeTicks::Now(), 0, 0);
+  contents_view->OnMouseMoved(move_event);
+
+  // Paint during hover state (rendering rainbow gradient wash and teardrop
+  // chip).
+  SkBitmap hover_painted =
+      views::test::PaintViewToBitmap(overlay->widget()->GetRootView());
+  EXPECT_FALSE(hover_painted.empty());
+
+  // Mouse press and drag to create selection.
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(20, 20),
+                             gfx::Point(20, 20), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view->OnMousePressed(press_event);
+
+  ui::MouseEvent drag_event(ui::EventType::kMouseDragged, gfx::Point(120, 120),
+                            gfx::Point(120, 120), base::TimeTicks::Now(),
+                            ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view->OnMouseDragged(drag_event);
+
+  // Paint during drag selection state (rendering rounded punch-out and
+  // continuous perimeter).
+  SkBitmap drag_painted =
+      views::test::PaintViewToBitmap(overlay->widget()->GetRootView());
+  EXPECT_FALSE(drag_painted.empty());
+
+  // Release mouse to complete selection.
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased,
+                               gfx::Point(120, 120), gfx::Point(120, 120),
+                               base::TimeTicks::Now(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view->OnMouseReleased(release_event);
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().empty());
+  EXPECT_EQ(future.Get().width(), 100);
+  EXPECT_EQ(future.Get().height(), 100);
+  EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorGREEN);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ChildViewsAndToastPositioning) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600))});
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(800, 600);
+  bitmap.eraseColor(SK_ColorBLUE);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+
+  views::View* contents_view = overlay->widget()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  // Contains toast chip and cursor chip child views.
+  EXPECT_EQ(contents_view->children().size(), 2u);
+
+  views::View* toast_chip = contents_view->children()[0];
+  views::View* cursor_chip = contents_view->children()[1];
+
+  ASSERT_TRUE(toast_chip);
+  ASSERT_TRUE(cursor_chip);
+
+  // Toast chip is visible and positioned at the top of the display.
+  EXPECT_TRUE(toast_chip->GetVisible());
+  EXPECT_GT(toast_chip->width(), 0);
+  EXPECT_EQ(toast_chip->y(), 28);
+  EXPECT_EQ(toast_chip->x(),
+            (overlay->widget()->GetWindowBoundsInScreen().width() -
+             toast_chip->width()) /
+                2);
+
+  // Cursor chip is initially hidden before mouse enters.
+  EXPECT_FALSE(cursor_chip->GetVisible());
+
+  // Moving mouse makes cursor chip visible and positions it near the cursor.
+  ui::MouseEvent move_event(ui::EventType::kMouseMoved, gfx::Point(100, 100),
+                            gfx::Point(100, 100), base::TimeTicks::Now(), 0, 0);
+  contents_view->OnMouseMoved(move_event);
+
+  EXPECT_TRUE(cursor_chip->GetVisible());
+  EXPECT_EQ(cursor_chip->width(), 56);
+  EXPECT_EQ(cursor_chip->height(), 56);
+  EXPECT_EQ(cursor_chip->x(), 108);
+  EXPECT_EQ(cursor_chip->y(), 108);
+
+  // Moving mouse near bottom-right edge flips cursor chip.
+  ui::MouseEvent move_edge(ui::EventType::kMouseMoved, gfx::Point(780, 580),
+                           gfx::Point(780, 580), base::TimeTicks::Now(), 0, 0);
+  contents_view->OnMouseMoved(move_edge);
+  EXPECT_TRUE(cursor_chip->GetVisible());
+  EXPECT_LT(cursor_chip->x(), 780);
+  EXPECT_LT(cursor_chip->y(), 580);
+
+  // Mouse leaving hides the cursor chip.
+  ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
+                            gfx::Point(), base::TimeTicks::Now(), 0, 0);
+  contents_view->OnMouseExited(exit_event);
+  EXPECT_FALSE(cursor_chip->GetVisible());
+
+  // Mouse press starts drag and hides both toast and cursor chips.
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(50, 50),
+                             gfx::Point(50, 50), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view->OnMousePressed(press_event);
+  EXPECT_FALSE(toast_chip->GetVisible());
+  EXPECT_FALSE(cursor_chip->GetVisible());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ToastPositioning_MultiDisplayNegativeCoordinates) {
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  display::Display display2(2, gfx::Rect(-800, 0, 800, 600));
+  SetDisplays({display1, display2});
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1600, 600);
+  bitmap.eraseColor(SK_ColorBLUE);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+
+  views::View* contents_view = overlay->widget()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+  ASSERT_GE(contents_view->children().size(), 1u);
+  views::View* toast_chip = contents_view->children()[0];
+  ASSERT_TRUE(toast_chip);
+
+  // Re-trigger layout positioning on the display2 screen coordinates (-400,
+  // 300).
+  ui::MouseEvent move_display2(ui::EventType::kMouseMoved, gfx::Point(400, 300),
+                               gfx::Point(-400, 300), base::TimeTicks::Now(), 0,
+                               0);
+  contents_view->OnMouseMoved(move_display2);
+
+  EXPECT_TRUE(toast_chip->GetVisible());
+  EXPECT_EQ(toast_chip->y(), 28);
 }
 
 }  // namespace omnibox_everywhere

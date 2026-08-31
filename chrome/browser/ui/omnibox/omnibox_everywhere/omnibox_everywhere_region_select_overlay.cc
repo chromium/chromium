@@ -12,12 +12,18 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_shader.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
@@ -25,19 +31,27 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -55,6 +69,14 @@ using RegionCaptureSource =
 // Lens dark slate scrim.
 constexpr SkColor kChromnientSlateScrim =
     SkColorSetA(SkColorSetRGB(0x18, 0x1C, 0x22), 165);
+
+constexpr float kGlifGradientWashAlpha = 0.18f;
+
+SkColor4f ColorWithAlpha(SkColor color, float alpha) {
+  SkColor4f c = SkColor4f::FromColor(color);
+  c.fA = alpha;
+  return c;
+}
 
 gfx::Rect GetOverlayBoundsForSource(const RegionCaptureSource& source) {
   auto* screen = display::Screen::Get();
@@ -86,6 +108,137 @@ gfx::Rect GetOverlayBoundsForSource(const RegionCaptureSource& source) {
       .bounds();
 }
 
+class InstructionToastChipView : public views::View {
+  METADATA_HEADER(InstructionToastChipView, views::View)
+
+ public:
+  InstructionToastChipView() {
+    SetCanProcessEventsWithinSubtree(false);
+    GetViewAccessibility().SetIsIgnored(true);
+
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets::VH(0, 16),
+        /*between_child_spacing=*/8));
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    constexpr SkColor kForegroundColor = SkColorSetRGB(0xEE, 0xF0, 0xF9);
+    constexpr int kIconSize = 20;
+
+    auto icon_view = std::make_unique<views::ImageView>();
+    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kSearchIcon, kForegroundColor, kIconSize));
+    AddChildView(std::move(icon_view));
+
+    auto label = std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+        IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED));
+    label->SetEnabledColor(kForegroundColor);
+    label->SetAutoColorReadabilityEnabled(false);
+    label->SetSubpixelRenderingEnabled(false);
+    AddChildView(std::move(label));
+  }
+
+  InstructionToastChipView(const InstructionToastChipView&) = delete;
+  InstructionToastChipView& operator=(const InstructionToastChipView&) = delete;
+  ~InstructionToastChipView() override = default;
+
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size size = views::View::CalculatePreferredSize(available_size);
+    return gfx::Size(size.width(), 40);
+  }
+
+  void OnPaintBackground(gfx::Canvas* canvas) override {
+    gfx::RectF chip_rect(GetLocalBounds());
+    cc::PaintFlags fill_flags;
+    fill_flags.setColor(SkColorSetA(SkColorSetRGB(0x18, 0x1C, 0x22), 220));
+    fill_flags.setStyle(cc::PaintFlags::kFill_Style);
+    fill_flags.setAntiAlias(true);
+    canvas->DrawRoundRect(chip_rect, height() * 0.5f, fill_flags);
+  }
+
+  void OnPaintBorder(gfx::Canvas* canvas) override {
+    gfx::RectF border_rect(GetLocalBounds());
+    border_rect.Inset(0.5f);
+    cc::PaintFlags border_flags;
+    border_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    border_flags.setStrokeWidth(1.0f);
+    border_flags.setColor(SkColorSetA(SK_ColorWHITE, 40));
+    border_flags.setAntiAlias(true);
+    canvas->DrawRoundRect(border_rect, border_rect.height() * 0.5f,
+                          border_flags);
+  }
+};
+
+BEGIN_METADATA(InstructionToastChipView)
+END_METADATA
+
+class TeardropCursorChipView : public views::View {
+  METADATA_HEADER(TeardropCursorChipView, views::View)
+
+ public:
+  static constexpr int kChipSize = 32;
+  static constexpr int kPadding = 12;
+  static constexpr int kTotalSize = kChipSize + (kPadding * 2);
+
+  TeardropCursorChipView() {
+    SetCanProcessEventsWithinSubtree(false);
+    GetViewAccessibility().SetIsIgnored(true);
+
+    shadow_fill_flags_.setAntiAlias(true);
+    shadow_fill_flags_.setStyle(cc::PaintFlags::kFill_Style);
+    shadow_fill_flags_.setColor(SK_ColorWHITE);
+    shadow_fill_flags_.setImageFilter(sk_make_sp<cc::DropShadowPaintFilter>(
+        0.0f, 2.0f, 4.0f, 4.0f, SkColor4f{0.0f, 0.0f, 0.0f, 0.24f},
+        cc::DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
+        nullptr));
+
+    border_flags_.setStyle(cc::PaintFlags::kStroke_Style);
+    border_flags_.setStrokeWidth(1.0f);
+    border_flags_.setColor(SkColorSetA(SK_ColorBLACK, 25));
+    border_flags_.setAntiAlias(true);
+  }
+
+  TeardropCursorChipView(const TeardropCursorChipView&) = delete;
+  TeardropCursorChipView& operator=(const TeardropCursorChipView&) = delete;
+  ~TeardropCursorChipView() override = default;
+
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return gfx::Size(kTotalSize, kTotalSize);
+  }
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    // Asymmetrical teardrop chip (radii: 4px top-left, 16px other 3
+    // corners).
+    const SkVector radii[4] = {SkVector::Make(4, 4), SkVector::Make(16, 16),
+                               SkVector::Make(16, 16), SkVector::Make(16, 16)};
+    SkRRect teardrop_rrect = SkRRect::MakeRectRadii(
+        SkRect::MakeXYWH(kPadding, kPadding, kChipSize, kChipSize), radii);
+    SkPath teardrop_path = SkPath::RRect(teardrop_rrect);
+
+    canvas->DrawPath(teardrop_path, shadow_fill_flags_);
+    canvas->DrawPath(teardrop_path, border_flags_);
+
+    // Magnifying glass icon.
+    constexpr int kIconSize = 16;
+    const int icon_x = kPadding + (kChipSize - kIconSize) / 2;
+    const int icon_y = kPadding + (kChipSize - kIconSize) / 2;
+    canvas->Save();
+    canvas->Translate(gfx::Vector2d(icon_x, icon_y));
+    gfx::PaintVectorIcon(canvas, vector_icons::kSearchIcon, kIconSize,
+                         SkColorSetRGB(0x1F, 0x1F, 0x1F));
+    canvas->Restore();
+  }
+
+ private:
+  cc::PaintFlags shadow_fill_flags_;
+  cc::PaintFlags border_flags_;
+};
+
+BEGIN_METADATA(TeardropCursorChipView)
+END_METADATA
+
 class RegionSelectOverlayView : public views::View {
   METADATA_HEADER(RegionSelectOverlayView, views::View)
 
@@ -105,21 +258,35 @@ class RegionSelectOverlayView : public views::View {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_OMNIBOX_EVERYWHERE_REGION_SELECT_ACCESSIBLE_NAME));
     AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+
+    toast_chip_ = AddChildView(std::make_unique<InstructionToastChipView>());
+    cursor_chip_ = AddChildView(std::make_unique<TeardropCursorChipView>());
+    cursor_chip_->SetVisible(false);
   }
 
   RegionSelectOverlayView(const RegionSelectOverlayView&) = delete;
   RegionSelectOverlayView& operator=(const RegionSelectOverlayView&) = delete;
   ~RegionSelectOverlayView() override = default;
 
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
+    return ui::Cursor(ui::mojom::CursorType::kCross);
+  }
+
+  void AddedToWidget() override {
+    views::View::AddedToWidget();
+    UpdateToastPosition();
+  }
+
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    views::View::OnBoundsChanged(previous_bounds);
+    UpdateToastPosition();
+  }
+
   void DrawScreenshotImage(gfx::Canvas* canvas) {
     CHECK(!bitmap_.empty());
     gfx::ImageSkiaRep rep(bitmap_, canvas->image_scale());
     gfx::ImageSkia image(rep);
     canvas->DrawImageInt(image, 0, 0);
-  }
-
-  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
-    return ui::Cursor(ui::mojom::CursorType::kCross);
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
@@ -129,24 +296,32 @@ class RegionSelectOverlayView : public views::View {
       return;
     }
 
-    // Draw base un-dimmed screenshot.
+    // 1. Draw base un-dimmed screenshot.
     DrawScreenshotImage(canvas);
 
-    // Apply dark scrim over the screen.
+    // 2. Apply dark scrim over the screen.
     canvas->FillRect(GetLocalBounds(), kChromnientSlateScrim);
 
-    if (selection_rect_.IsEmpty()) {
-      // Draw Lens instruction chip when idle / pre-drag.
-      DrawInstructionChip(canvas);
-    } else {
-      // Re-draw full-clarity screenshot inside selection_rect_.
-      canvas->Save();
-      canvas->ClipRect(selection_rect_);
-      DrawScreenshotImage(canvas);
-      canvas->Restore();
+    // 3. GLIF rainbow gradient wash.
+    DrawRainbowGradientWash(canvas);
 
-      // Draw corner reticles.
-      DrawCornerReticles(canvas);
+    if (!selection_rect_.IsEmpty()) {
+      // 4. Selection perimeter.
+      DrawSelectionRegion(canvas);
+    }
+  }
+
+  void OnMouseMoved(const ui::MouseEvent& event) override {
+    UpdateCursorChipPosition(event.location());
+  }
+
+  void OnMouseEntered(const ui::MouseEvent& event) override {
+    UpdateCursorChipPosition(event.location());
+  }
+
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    if (cursor_chip_) {
+      cursor_chip_->SetVisible(false);
     }
   }
 
@@ -155,6 +330,12 @@ class RegionSelectOverlayView : public views::View {
       is_dragging_ = true;
       drag_start_ = event.location();
       selection_rect_ = gfx::Rect(drag_start_, gfx::Size(0, 0));
+      if (cursor_chip_) {
+        cursor_chip_->SetVisible(false);
+      }
+      if (toast_chip_) {
+        toast_chip_->SetVisible(false);
+      }
       SchedulePaint();
       return true;
     }
@@ -194,6 +375,12 @@ class RegionSelectOverlayView : public views::View {
         is_dragging_ = true;
         drag_start_ = event->location();
         selection_rect_ = gfx::Rect(drag_start_, gfx::Size(0, 0));
+        if (cursor_chip_) {
+          cursor_chip_->SetVisible(false);
+        }
+        if (toast_chip_) {
+          toast_chip_->SetVisible(false);
+        }
         SchedulePaint();
         event->SetHandled();
         break;
@@ -226,62 +413,125 @@ class RegionSelectOverlayView : public views::View {
   }
 
  private:
-  void DrawInstructionChip(gfx::Canvas* canvas) {
-    const std::u16string toast_text = l10n_util::GetStringUTF16(
-        IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED);
-    gfx::FontList font_list;
-    const int text_width = gfx::Canvas::GetStringWidth(toast_text, font_list);
-    constexpr int kHorizontalPadding = 20;
-    const int chip_w = text_width + (kHorizontalPadding * 2);
-    constexpr int chip_h = 40;
-    const int chip_x = (width() - chip_w) / 2;
-    constexpr int chip_y = 28;
+  void UpdateToastPosition() {
+    if (!toast_chip_ || width() <= 0 || height() <= 0) {
+      return;
+    }
+    gfx::Size toast_size = toast_chip_->GetPreferredSize();
+    constexpr int kTopMargin = 28;
+    auto* screen = display::Screen::Get();
+    if (!screen) {
+      toast_chip_->SetBounds((width() - toast_size.width()) / 2, kTopMargin,
+                             toast_size.width(), toast_size.height());
+      return;
+    }
 
-    gfx::RectF chip_rect(chip_x, chip_y, chip_w, chip_h);
+    gfx::Point cursor_point = screen->GetCursorScreenPoint();
+    display::Display target_display =
+        screen->GetDisplayNearestPoint(cursor_point);
 
-    // Pill background
-    cc::PaintFlags fill_flags;
-    fill_flags.setColor(SkColorSetA(SkColorSetRGB(0x18, 0x1C, 0x22), 220));
-    fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-    fill_flags.setAntiAlias(true);
-    canvas->DrawRoundRect(chip_rect, chip_h * 0.5f, fill_flags);
+    gfx::Rect widget_screen_bounds =
+        GetWidget() ? GetWidget()->GetWindowBoundsInScreen()
+                    : gfx::Rect(0, 0, width(), height());
+    gfx::Rect display_bounds = target_display.is_valid()
+                                   ? target_display.bounds()
+                                   : gfx::Rect(0, 0, width(), height());
 
-    // Border
-    cc::PaintFlags border_flags;
-    border_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    border_flags.setStrokeWidth(1.0f);
-    border_flags.setColor(SkColorSetA(SK_ColorWHITE, 40));
-    border_flags.setAntiAlias(true);
-    canvas->DrawRoundRect(chip_rect, chip_h * 0.5f, border_flags);
+    int local_display_x = display_bounds.x() - widget_screen_bounds.x();
+    int local_display_y = display_bounds.y() - widget_screen_bounds.y();
 
-    // Centered instruction text
-    canvas->DrawStringRectWithFlags(toast_text, font_list,
-                                    SkColorSetRGB(0xEE, 0xF0, 0xF9),
-                                    gfx::Rect(chip_x, chip_y, chip_w, chip_h),
-                                    gfx::Canvas::TEXT_ALIGN_CENTER);
+    int toast_x =
+        local_display_x + (display_bounds.width() - toast_size.width()) / 2;
+    int toast_y = local_display_y + kTopMargin;
+
+    toast_x = std::clamp(toast_x, 0, std::max(0, width() - toast_size.width()));
+    toast_y =
+        std::clamp(toast_y, 0, std::max(0, height() - toast_size.height()));
+
+    toast_chip_->SetBounds(toast_x, toast_y, toast_size.width(),
+                           toast_size.height());
   }
 
-  void DrawCornerReticles(gfx::Canvas* canvas) {
-    constexpr int kCornerLen = 20;
-    const int max_corner_len =
-        std::min(selection_rect_.width(), selection_rect_.height()) / 2;
-    const int corner_len = std::min(kCornerLen, max_corner_len);
-
-    cc::PaintFlags flags;
-    flags.setColor(SK_ColorWHITE);
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(3.5f);
-    flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-    flags.setAntiAlias(true);
-
-    for (int x : {selection_rect_.x(), selection_rect_.right()}) {
-      for (int y : {selection_rect_.y(), selection_rect_.bottom()}) {
-        int dx = (x == selection_rect_.x()) ? corner_len : -corner_len;
-        int dy = (y == selection_rect_.y()) ? corner_len : -corner_len;
-        canvas->DrawLine(gfx::PointF(x, y), gfx::PointF(x + dx, y), flags);
-        canvas->DrawLine(gfx::PointF(x, y), gfx::PointF(x, y + dy), flags);
-      }
+  void UpdateCursorChipPosition(const gfx::Point& pos) {
+    if (!cursor_chip_) {
+      return;
     }
+    if (is_dragging_) {
+      cursor_chip_->SetVisible(false);
+      return;
+    }
+
+    constexpr int kOffset = 8;
+    int chip_x = pos.x() + kOffset;
+    int chip_y = pos.y() + kOffset;
+
+    if (chip_x + TeardropCursorChipView::kTotalSize > width()) {
+      chip_x = pos.x() - TeardropCursorChipView::kTotalSize - kOffset;
+    }
+    if (chip_y + TeardropCursorChipView::kTotalSize > height()) {
+      chip_y = pos.y() - TeardropCursorChipView::kTotalSize - kOffset;
+    }
+    chip_x = std::clamp(
+        chip_x, 0, std::max(0, width() - TeardropCursorChipView::kTotalSize));
+    chip_y = std::clamp(
+        chip_y, 0, std::max(0, height() - TeardropCursorChipView::kTotalSize));
+
+    cursor_chip_->SetBounds(chip_x, chip_y, TeardropCursorChipView::kTotalSize,
+                            TeardropCursorChipView::kTotalSize);
+    cursor_chip_->SetVisible(true);
+  }
+
+  void DrawRainbowGradientWash(gfx::Canvas* canvas) {
+    if (width() <= 0 || height() <= 0) {
+      return;
+    }
+    // GLIF rainbow gradient.
+    const SkColor4f kGlifColors[] = {
+        ColorWithAlpha(gfx::kGoogleBlue500, kGlifGradientWashAlpha),
+        ColorWithAlpha(gfx::kGoogleRed500, kGlifGradientWashAlpha),
+        ColorWithAlpha(gfx::kGoogleYellow500, kGlifGradientWashAlpha),
+        ColorWithAlpha(gfx::kGoogleGreen500, kGlifGradientWashAlpha),
+        ColorWithAlpha(gfx::kGoogleBlue500, kGlifGradientWashAlpha),
+    };
+    SkPoint points[2] = {SkPoint::Make(0, 0), SkPoint::Make(width(), height())};
+    cc::PaintFlags gradient_flags;
+    gradient_flags.setAntiAlias(true);
+    gradient_flags.setStyle(cc::PaintFlags::kFill_Style);
+    gradient_flags.setShader(cc::PaintShader::MakeLinearGradient(
+        points, kGlifColors, nullptr, std::size(kGlifColors),
+        SkTileMode::kClamp));
+    canvas->DrawRect(gfx::RectF(GetLocalBounds()), gradient_flags);
+  }
+
+  void DrawSelectionRegion(gfx::Canvas* canvas) {
+    if (selection_rect_.IsEmpty()) {
+      return;
+    }
+
+    constexpr float kIdealCornerRadius = 14.0f;
+    const float corner_radius =
+        std::min({kIdealCornerRadius, selection_rect_.width() / 2.0f,
+                  selection_rect_.height() / 2.0f});
+
+    SkRect sk_sel_rect =
+        SkRect::MakeXYWH(selection_rect_.x(), selection_rect_.y(),
+                         selection_rect_.width(), selection_rect_.height());
+    SkPath sel_path = SkPath::RRect(
+        SkRRect::MakeRectXY(sk_sel_rect, corner_radius, corner_radius));
+
+    // Re-draw full-clarity screenshot inside rounded selection path.
+    canvas->Save();
+    canvas->ClipPath(sel_path, true);
+    DrawScreenshotImage(canvas);
+    canvas->Restore();
+
+    // Perimeter border with rounded corners.
+    cc::PaintFlags stroke_flags;
+    stroke_flags.setColor(SK_ColorWHITE);
+    stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    stroke_flags.setStrokeWidth(2.5f);
+    stroke_flags.setAntiAlias(true);
+    canvas->DrawPath(sel_path, stroke_flags);
   }
 
   void Cancel() {
@@ -325,6 +575,8 @@ class RegionSelectOverlayView : public views::View {
   RegionCaptureSource source_;
   ConfirmCallback on_confirm_;
   base::OnceClosure on_cancel_;
+  raw_ptr<InstructionToastChipView> toast_chip_ = nullptr;
+  raw_ptr<TeardropCursorChipView> cursor_chip_ = nullptr;
   gfx::Point drag_start_;
   gfx::Rect selection_rect_;
   bool is_dragging_ = false;
