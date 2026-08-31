@@ -16,9 +16,9 @@
 
 namespace chrome {
 
-std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
-    std::unique_ptr<aura::Window> window,
-    BrowserWindowCreateParams params) {
+std::unique_ptr<BrowserWindowInterface>
+CreateBrowserWithAuraTestWindowForParams(std::unique_ptr<aura::Window> window,
+                                         BrowserWindowCreateParams params) {
   if (!window) {
     window = std::make_unique<aura::Window>(nullptr);
     window->SetId(0);
@@ -33,9 +33,9 @@ std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
   return browser_window.release()->CreateBrowser(std::move(params));
 }
 
-std::unique_ptr<Browser> CreateBrowserWithViewsTestWindowForParams(
-    BrowserWindowCreateParams params,
-    aura::Window* parent) {
+std::unique_ptr<BrowserWindowInterface>
+CreateBrowserWithViewsTestWindowForParams(BrowserWindowCreateParams params,
+                                          aura::Window* parent) {
   auto browser_window = std::make_unique<TestBrowserWindowViews>(parent);
   // Returned Browser takes ownership of `browser_window`.
   return browser_window.release()->CreateBrowser(std::move(params));
@@ -84,7 +84,7 @@ gfx::Rect TestBrowserWindowAura::GetBounds() const {
   return native_window_->bounds();
 }
 
-std::unique_ptr<Browser> TestBrowserWindowAura::CreateBrowser(
+std::unique_ptr<BrowserWindowInterface> TestBrowserWindowAura::CreateBrowser(
     BrowserWindowCreateParams params) {
   // Resulting Browser owns `this`.
   params.window = this;
@@ -134,7 +134,7 @@ gfx::Rect TestBrowserWindowViews::GetBounds() const {
   return widget_->GetWindowBoundsInScreen();
 }
 
-std::unique_ptr<Browser> TestBrowserWindowViews::CreateBrowser(
+std::unique_ptr<BrowserWindowInterface> TestBrowserWindowViews::CreateBrowser(
     BrowserWindowCreateParams params) {
   // Resulting Browser owns `this`.
   params.window = this;

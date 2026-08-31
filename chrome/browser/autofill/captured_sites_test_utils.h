@@ -20,7 +20,7 @@
 #include "base/time/time_override.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "content/public/browser/browser_context.h"
@@ -266,7 +266,7 @@ class TestRecipeReplayer {
   };
 
   TestRecipeReplayer(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       TestRecipeReplayChromeFeatureActionExecutor* feature_action_executor);
 
   TestRecipeReplayer(const TestRecipeReplayer&) = delete;
@@ -313,7 +313,7 @@ class TestRecipeReplayer {
       content::RenderFrameHost* frame,
       gfx::Rect* output_rect);
 
-  Browser* browser();
+  BrowserWindowInterface* browser();
 
   TestRecipeReplayChromeFeatureActionExecutor* feature_action_executor();
   WebPageReplayServerWrapper* web_page_replay_server_wrapper();
@@ -424,7 +424,7 @@ class TestRecipeReplayer {
   // timeout elapses.
   bool WaitForVisualUpdate(base::TimeDelta timeout = visual_update_timeout);
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<TestRecipeReplayChromeFeatureActionExecutor> feature_action_executor_;
   // The Web Page Replay server that serves the captured sites.
   std::unique_ptr<captured_sites_test_utils::WebPageReplayServerWrapper>

@@ -15,8 +15,8 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -168,7 +168,8 @@ class IncognitoNavigationThrottleBrowserTest
   raw_ptr<extensions::ExtensionRegistry, AcrossTasksDanglingUntriaged>
       registry_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      incognito_browser_ = nullptr;
 };
 
 // TODO(crbug.com/406464640): leaks flakily on LSAN bots.

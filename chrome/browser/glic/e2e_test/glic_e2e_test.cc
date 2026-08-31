@@ -204,8 +204,9 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
         GetTestAccounts()->GetAccount(account_label);
     signin::test::SignInFunctions sign_in_functions =
         signin::test::SignInFunctions(
-            base::BindLambdaForTesting(
-                [this]() -> Browser* { return this->browser(); }),
+            base::BindLambdaForTesting([this]() -> BrowserWindowInterface* {
+              return this->browser();
+            }),
             base::BindLambdaForTesting(
                 [this](int index, const GURL& url,
                        ui::PageTransition transition) -> bool {

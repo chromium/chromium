@@ -180,7 +180,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   // This is a convenience function. The new tab will be added at index 0.
   // WARNING: this creates a real WebContents. If you want to add a test
   // WebContents create it directly and insert it into the TabStripModel.
-  void AddTab(Browser* browser, const GURL& url);
+  void AddTab(BrowserWindowInterface* browser, const GURL& url);
 
   // Commits the pending load on the given controller. It will keep the
   // URL of the pending load. If there is no pending load, this does nothing.
@@ -195,7 +195,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   void NavigateAndCommitActiveTab(const GURL& url);
 
   // Set the |title| of the current tab.
-  void NavigateAndCommitActiveTabWithTitle(Browser* browser,
+  void NavigateAndCommitActiveTabWithTitle(BrowserWindowInterface* browser,
                                            const GURL& url,
                                            const std::u16string& title);
 

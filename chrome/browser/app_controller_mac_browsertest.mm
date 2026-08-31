@@ -865,7 +865,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   std::ignore = AppController.sharedController;
 
   // Create an incognito browser and make it the last active browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
   EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
@@ -907,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   // Create an incognito browser.
   Profile* profile = browser()->GetProfile();
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
@@ -955,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   std::ignore = AppController.sharedController;
 
   // Create a guest browser and make it the last active browser.
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, guest_browser->tab_strip_model()->count());
   EXPECT_TRUE(guest_browser->GetProfile()->IsGuestSession());
@@ -1033,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
   // Create an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
   // Close the current non-incognito browser.
   CloseBrowserSynchronously(browser());
@@ -1528,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   ASSERT_TRUE(item);
   [app_controller commandDispatch:item];
   // Check that a new incognito browser is opened.
-  Browser* new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_TRUE(new_browser->GetProfile()->IsPrimaryOTRProfile());
   EXPECT_EQ(profile, new_browser->GetProfile()->GetOriginalProfile());
@@ -1551,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   tab_strip->CloseAllTabsInGroup(group_id);
 
   // Destroy the browser that set _lastActiveBrowser.
-  Browser* browser2 = CreateBrowser(profile);
+  BrowserWindowInterface* browser2 = CreateBrowser(profile);
   CloseBrowserSynchronously(browser());
 
   // Force a HistoryMenuBridge rebuild. setLastProfile: early-returns when
@@ -1600,7 +1601,7 @@ class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
 
   void TearDownInProcessBrowserTestFixture() override { swizzler_.reset(); }
   // Closes the tab, and waits for the close to finish.
-  void CloseTab(Browser* browser, int index) {
+  void CloseTab(BrowserWindowInterface* browser, int index) {
     content::WebContentsDestroyedWatcher destroyed_watcher(
         browser->tab_strip_model()->GetWebContentsAt(index));
     browser->tab_strip_model()->CloseWebContentsAt(
@@ -1652,7 +1653,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(test_url3), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  Browser* const browser2 = browser_created_observer->Wait();
+  BrowserWindowInterface* const browser2 = browser_created_observer->Wait();
   EXPECT_EQ(g_handoff_url, test_url3);
   EXPECT_EQ(g_handoff_title, u"Title Of More Awesomeness");
 
@@ -1670,7 +1671,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(test_url4), WindowOpenDisposition::OFF_THE_RECORD,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  Browser* const browser3 = browser_created_observer->Wait();
+  BrowserWindowInterface* const browser3 = browser_created_observer->Wait();
   EXPECT_EQ(g_handoff_url, GURL());
   EXPECT_EQ(g_handoff_title, u"");
 

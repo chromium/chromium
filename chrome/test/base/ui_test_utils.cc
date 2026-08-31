@@ -694,14 +694,14 @@ bool IsBrowserActive(BrowserWindowInterface* browser) {
   return widget->native_widget_active();
 }
 
-Browser* OpenNewEmptyWindowAndWaitUntilActivated(
+BrowserWindowInterface* OpenNewEmptyWindowAndWaitUntilActivated(
     Profile* profile,
     bool should_trigger_session_restore) {
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewEmptyWindow(profile, should_trigger_session_restore);
   BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   WaitUntilBrowserBecomeActive(new_browser);
-  return new_browser->GetBrowserForMigrationOnly();
+  return new_browser;
 }
 
 BrowserDidBecomeActiveWaiter::BrowserDidBecomeActiveWaiter(
@@ -775,7 +775,7 @@ void SendToOmniboxAndSubmit(BrowserWindowInterface* browser,
   }
 }
 
-Browser* GetBrowserNotInSet(
+BrowserWindowInterface* GetBrowserNotInSet(
     const std::set<BrowserWindowInterface*>& excluded_browsers) {
   BrowserWindowInterface* browser_not_in_set = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -786,8 +786,7 @@ Browser* GetBrowserNotInSet(
         }
         return true;  // Continue iterating.
       });
-  return browser_not_in_set ? browser_not_in_set->GetBrowserForMigrationOnly()
-                            : nullptr;
+  return browser_not_in_set;
 }
 
 std::vector<BrowserWindowInterface*> FindMatchingBrowsers(
@@ -1056,7 +1055,7 @@ void WaitForHistoryToLoad(history::HistoryService* history_service) {
   }
 }
 
-Browser* WaitForBrowserToOpen() {
+BrowserWindowInterface* WaitForBrowserToOpen() {
   return BrowserCreatedObserver().Wait();
 }
 
@@ -1183,12 +1182,12 @@ BrowserCreatedObserver::BrowserCreatedObserver() {
 
 BrowserCreatedObserver::~BrowserCreatedObserver() = default;
 
-Browser* BrowserCreatedObserver::Wait() {
+BrowserWindowInterface* BrowserCreatedObserver::Wait() {
   if (!browser_) {
     run_loop_.Run();
   }
   CHECK(browser_);
-  return browser_->GetBrowserForMigrationOnly();
+  return browser_;
 }
 
 void BrowserCreatedObserver::OnBrowserCreated(BrowserWindowInterface* browser) {

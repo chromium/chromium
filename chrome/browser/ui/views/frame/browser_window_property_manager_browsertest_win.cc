@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
       base::UTF8ToUTF16(browser()->GetProfile()->GetProfileUserName()));
 
   // The second profile's name should be part of the relaunch name.
-  Browser* profile2_browser =
+  BrowserWindowInterface* profile2_browser =
       CreateBrowser(profile_manager->GetProfileByPath(path_profile2));
   ProfileAttributesEntry* entry =
       profile_manager->GetProfileAttributesStorage()

@@ -37,7 +37,8 @@
 namespace {
 
 // Returns the DSE reset bubble if it is currently showing, otherwise nullptr.
-views::BubbleDialogDelegate* GetDseResetBubble(Browser* browser) {
+views::BubbleDialogDelegate* GetDseResetBubble(
+    BrowserWindowInterface* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view || !browser_view->toolbar_button_provider()) {
     return nullptr;
@@ -60,7 +61,6 @@ views::BubbleDialogDelegate* GetDseResetBubble(Browser* browser) {
   }
   return nullptr;
 }
-
 
 }  // namespace
 

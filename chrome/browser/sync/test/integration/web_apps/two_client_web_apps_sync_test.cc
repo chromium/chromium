@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   // Install favicon only page as web app.
   webapps::AppId app_id;
   {
-    Browser* browser = CreateBrowser(sourceProfile);
+    BrowserWindowInterface* browser = CreateBrowser(sourceProfile);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser,
         embedded_test_server()->GetURL("/web_apps/favicon_only.html")));

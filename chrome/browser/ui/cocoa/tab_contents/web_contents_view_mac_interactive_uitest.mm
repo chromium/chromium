@@ -7,8 +7,7 @@
 #include "base/run_loop.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,8 +27,8 @@ namespace {
 // A helper that will wait until a tab is removed from a specific Browser.
 class TabRemovedWaiter : public TabStripModelObserver {
  public:
-  explicit TabRemovedWaiter(Browser* browser) {
-    browser->tab_strip_model()->AddObserver(this);
+  explicit TabRemovedWaiter(BrowserWindowInterface* browser) {
+    browser->GetTabStripModel()->AddObserver(this);
   }
   TabRemovedWaiter(const TabRemovedWaiter&) = delete;
   TabRemovedWaiter& operator=(const TabRemovedWaiter&) = delete;

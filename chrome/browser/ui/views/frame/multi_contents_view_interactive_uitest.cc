@@ -86,7 +86,6 @@ class ViewBoundsChangedObserver : public views::ViewObserver,
   void OnViewIsDeleting(views::View* view) override { observation_.Reset(); }
 
  private:
-  raw_ptr<Browser> browser_;
   int bounds_changed_count_ = 0;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };

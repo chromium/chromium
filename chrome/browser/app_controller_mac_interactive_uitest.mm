@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest, DeleteEphemeralProfile) {
   Profile& profile2 = profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
       profile_manager->user_data_dir().AppendASCII("Profile 2"));
-  Browser* browser2 = CreateBrowser(&profile2);
+  BrowserWindowInterface* browser2 = CreateBrowser(&profile2);
   // This should not crash.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
@@ -152,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 
   // Create an incognito browser.
   Profile* original_profile = browser()->GetProfile();
-  Browser* incognito_browser = CreateIncognitoBrowser(original_profile);
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(original_profile);
   EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
@@ -172,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   [app_controller commandDispatch:item];
 
   // Check that a new non-incognito browser is opened.
-  Browser* new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_TRUE(new_browser->GetProfile()->IsRegularProfile());
   EXPECT_EQ(original_profile, new_browser->GetProfile());

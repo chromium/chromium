@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -28,7 +29,7 @@ content::WebContents* GetActiveWebContents(
   }
   NOTREACHED() << "No active TabModel??";
 #else
-  return browser_test->browser()->tab_strip_model()->GetActiveWebContents();
+  return browser_test->browser()->GetTabStripModel()->GetActiveWebContents();
 #endif
 }
 
@@ -41,7 +42,7 @@ tabs::TabInterface* GetActiveTab(const PlatformBrowserTest* browser_test) {
   }
   NOTREACHED() << "No active TabModel??";
 #else
-  return browser_test->browser()->tab_strip_model()->GetActiveTab();
+  return browser_test->browser()->GetTabStripModel()->GetActiveTab();
 #endif
 }
 
@@ -55,7 +56,7 @@ content::WebContents* GetWebContentsAt(const PlatformBrowserTest* browser_test,
   }
   NOTREACHED() << "No active TabModel??";
 #else
-  return browser_test->browser()->tab_strip_model()->GetWebContentsAt(index);
+  return browser_test->browser()->GetTabStripModel()->GetWebContentsAt(index);
 #endif
 }
 

@@ -146,7 +146,7 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<Browser> second_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> second_browser_ = nullptr;
 };
 
 // Tests that the browser can be toggled into and out of immersive fullscreen,

@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
 
   CreateAndCancelPrintJob(kTitle);
 
-  Browser* const new_browser = CreateBrowser(profile());
+  BrowserWindowInterface* const new_browser = CreateBrowser(profile());
   SetCustomArg(kTitle);
   extensions::ResultCatcher catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, OnPrintJobFinished) {
   ForceInstallExtensionByPolicy();
 
   ResultCatcher catcher;
-  Browser* const new_browser = CreateBrowser(profile());
+  BrowserWindowInterface* const new_browser = CreateBrowser(profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       new_browser, extension()->GetResourceURL("on_print_job_finished.html")));
 

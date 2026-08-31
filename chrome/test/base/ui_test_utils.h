@@ -32,7 +32,6 @@
 #include "ui/views/test/widget_test_api.h"
 #endif
 
-class Browser;
 class BrowserWindowInterface;
 class FullscreenController;
 class GlobalBrowserCollection;
@@ -198,7 +197,7 @@ BrowserWindowInterface* FindAnyBrowser(const Profile* profile,
                                        bool match_original_profiles = true);
 
 // Blocks until a Browser is created.
-Browser* WaitForBrowserToOpen();
+BrowserWindowInterface* WaitForBrowserToOpen();
 
 // Blocks until a Browser is closed. If |browser| is null, the removal of any
 // browser will suffice; otherwise the removed browser must match |browser|.
@@ -339,7 +338,7 @@ bool IsBrowserActive(BrowserWindowInterface* browser);
 // Opens a new browser window with chrome::NewEmptyWindow() and wait until it
 // becomes active.
 // Returns newly created browser.
-Browser* OpenNewEmptyWindowAndWaitUntilActivated(
+BrowserWindowInterface* OpenNewEmptyWindowAndWaitUntilActivated(
     Profile* profile,
     bool should_trigger_session_restore = false);
 
@@ -380,7 +379,7 @@ void SendToOmniboxAndSubmit(
     bool wait_for_autocomplete_done = true);
 
 // Gets the first browser that is not in the specified set.
-Browser* GetBrowserNotInSet(
+BrowserWindowInterface* GetBrowserNotInSet(
     const std::set<BrowserWindowInterface*>& excluded_browsers);
 
 // Returns a list of browsers for which `matcher` returns true.
@@ -659,7 +658,7 @@ class BrowserCreatedObserver : public BrowserCollectionObserver {
   BrowserCreatedObserver& operator=(const BrowserCreatedObserver&) = delete;
   ~BrowserCreatedObserver() override;
 
-  Browser* Wait();
+  BrowserWindowInterface* Wait();
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;

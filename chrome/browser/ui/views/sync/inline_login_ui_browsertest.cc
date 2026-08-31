@@ -94,7 +94,7 @@ struct ContentInfo {
   raw_ptr<content::StoragePartition> storage_partition;
 };
 
-ContentInfo NavigateAndGetInfo(Browser* browser,
+ContentInfo NavigateAndGetInfo(BrowserWindowInterface* browser,
                                const GURL& url,
                                WindowOpenDisposition disposition) {
   ui_test_utils::NavigateToURLWithDisposition(

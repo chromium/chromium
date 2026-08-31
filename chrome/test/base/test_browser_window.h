@@ -287,7 +287,7 @@ class TestBrowserWindow : public BrowserWindow,
 };
 
 // Helper that handle the lifetime of TestBrowserWindow instances.
-std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
+std::unique_ptr<BrowserWindowInterface> CreateBrowserWithTestWindowForParams(
     BrowserWindowCreateParams params);
 
 #endif  // CHROME_TEST_BASE_TEST_BROWSER_WINDOW_H_

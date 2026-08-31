@@ -233,7 +233,8 @@ gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
 #endif
 }
 
-void BrowserWithTestWindowTest::AddTab(Browser* browser, const GURL& url) {
+void BrowserWithTestWindowTest::AddTab(BrowserWindowInterface* browser,
+                                       const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_TYPED);
   params.tabstrip_index = 0;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -262,15 +263,15 @@ void BrowserWithTestWindowTest::NavigateAndCommit(WebContents* web_contents,
 }
 
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTab(const GURL& url) {
-  NavigateAndCommit(browser()->tab_strip_model()->GetActiveWebContents(), url);
+  NavigateAndCommit(browser()->GetTabStripModel()->GetActiveWebContents(), url);
 }
 
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
-    Browser* navigating_browser,
+    BrowserWindowInterface* navigating_browser,
     const GURL& url,
     const std::u16string& title) {
   WebContents* contents =
-      navigating_browser->tab_strip_model()->GetActiveWebContents();
+      navigating_browser->GetTabStripModel()->GetActiveWebContents();
   NavigateAndCommit(contents, url);
   contents->UpdateTitleForEntry(contents->GetController().GetActiveEntry(),
                                 title);
@@ -330,7 +331,9 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
     params.type = browser_type;
   }
   params.window = browser_window;
-  return DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
+  return base::WrapUnique(static_cast<Browser*>(
+      DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params))
+          .release()));
 }
 
 std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(

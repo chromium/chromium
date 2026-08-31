@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "content/public/browser/context_menu_params.h"
