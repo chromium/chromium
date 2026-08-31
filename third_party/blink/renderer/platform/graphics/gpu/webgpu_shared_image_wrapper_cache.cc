@@ -409,26 +409,27 @@ WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
 
     auto* sii =
         context_provider_wrapper->ContextProvider().SharedImageInterface();
-    // The SharedImages created by this provider serve as a means of
-    // import/export between VideoFrames/canvas and WebGPU, e.g.:
-    // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
-    //   WebGPU textures will then be read by clients)
-    // * Export from WebGPU into a static bitmap image via
-    //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
-    //   export happens via the WebGPU interface)
-    // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
-    // Additionally, these SharedImages are both read and written by the
-    // raster interface (both occur, for example, when copying canvas
-    // resources between canvases) and can be put into
-    // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-    // GL textures by WebGL (via
-    // AcceleratedStaticBitmapImage::CopyToTexture()).
+    // The SharedImages created by this cache serve as intermediate buffers to
+    // import VideoFrames, canvas resources, or static bitmap images into WebGPU
+    // (e.g., via CreateExternalTexture() or CopyTextureForBrowser()).
+    // Data is written into these SharedImages via the raster interface
+    // (requiring RASTER_WRITE), and then read/sampled by WebGPU (requiring
+    // WEBGPU_READ).
+    //
+    // Note on other usages:
+    // - WEBGPU_WRITE is currently required because FromStaticBitmapImage() in
+    //   external_image_utils.cc passes wgpu::TextureUsage::CopyDst when
+    //   creating the WebGPUMailboxTexture wrapper, triggering a non-readonly
+    //   check in WebGPUTextureScopedAccess.
+    // - RASTER_READ is currently required because WriteToBackingSharedImage()
+    //   issues a readonly BeginRasterAccess() call to generate a sync token
+    //   after external writes, triggering a read usage check in
+    //   RasterScopedAccess.
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
         gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
 
     auto shared_image = sii->CreateSharedImage(
         {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
