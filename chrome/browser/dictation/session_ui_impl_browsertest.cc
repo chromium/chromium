@@ -33,7 +33,10 @@
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "extensions/common/switches.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/state_observer.h"
@@ -563,6 +566,34 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     }),
 
     // The UI should hide and the session should be ended immediately.
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckHasSession(false),
+    CheckShowingDictationStoppedToast(true)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabCrashEndsSession) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    Do([this]{
+      web_contents()
+          ->GetPrimaryMainFrame()
+          ->GetProcess()
+          ->Shutdown(content::RESULT_CODE_KILLED);
+    }),
+
     WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
     CheckHasSession(false),
     CheckShowingDictationStoppedToast(true)

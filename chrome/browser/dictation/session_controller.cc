@@ -206,6 +206,15 @@ void SessionController::PrimaryPageChanged(content::Page& page) {
   EndSessionAsynchronously();
 }
 
+void SessionController::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // If the page crashes, immediately end the session.
+  if (ui_) {
+    ui_->OnStopped();
+  }
+  EndSessionAsynchronously();
+}
+
 void SessionController::EndDictationStream(DictationStreamEndTrigger trigger) {
   VT_LOG(GetBrowserContext()) << __func__;
   CHECK(attached_stream_provider_);
