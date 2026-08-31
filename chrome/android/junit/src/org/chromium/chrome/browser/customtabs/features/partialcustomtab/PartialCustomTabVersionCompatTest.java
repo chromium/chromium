@@ -27,7 +27,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link PartialCustomTabVersionCompat}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PartialCustomTabVersionCompatTest {
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 

@@ -19,7 +19,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -31,7 +30,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Tests that {@link CustomTabActivity} launches into the correct color scheme. */
 @RunWith(ChromeRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     BaseSwitches.DISABLE_NATIVE_INITIALIZATION

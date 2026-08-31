@@ -57,9 +57,7 @@ import org.chromium.components.embedder_support.util.Origin;
 
 /** Tests for ClientManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPackageManager.class})
+@Config(shadows = {ShadowPackageManager.class})
 public class ClientManagerTest {
     private static final String URL = "https://www.android.com";
     private static final String PACKAGE_NAME = "org.chromium.chrome";

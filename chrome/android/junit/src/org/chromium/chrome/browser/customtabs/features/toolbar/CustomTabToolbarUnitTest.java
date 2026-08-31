@@ -82,9 +82,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests AMP url handling in the CustomTab Toolbar. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowLooper.class})
+@Config(shadows = {ShadowLooper.class})
 public class CustomTabToolbarUnitTest {
     private static final GURL TEST_URL = JUnitTestGURLs.INITIAL_URL;
     private static final GURL AMP_URL =

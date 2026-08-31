@@ -68,7 +68,6 @@ import java.util.Objects;
 
 /** Tests for {@link WebAppLaunchHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebAppLaunchHandlerTest {
     static final int WRONG_CLIENT_MODE = 65;
 

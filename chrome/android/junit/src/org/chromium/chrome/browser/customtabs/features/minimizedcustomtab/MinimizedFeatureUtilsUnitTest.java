@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,7 +38,6 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 
 /** Unit tests for {@link MinimizedFeatureUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MinimizedFeatureUtilsUnitTest {
     private static final String NAME = "Chrome";
     private static final int UID = 101;

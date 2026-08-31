@@ -36,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -56,7 +55,6 @@ import java.util.function.Supplier;
 
 /** Tests for {@link CustomTabAdaptiveToolbarBehavior}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
 public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 

@@ -66,7 +66,6 @@ import org.chromium.url.GURL;
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CustomTabActivityNavigationControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

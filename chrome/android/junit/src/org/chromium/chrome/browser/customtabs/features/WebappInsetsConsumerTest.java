@@ -30,9 +30,7 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
 
 /** Tests for {@link WebappInsetsConsumer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        sdk = {Build.VERSION_CODES.R, BaseRobolectricTestRunner.MAX_SDK},
-        manifest = Config.NONE)
+@Config(sdk = {Build.VERSION_CODES.R, BaseRobolectricTestRunner.MAX_SDK})
 public class WebappInsetsConsumerTest {
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 100, 0, 0);
     private static final Insets NAV_BAR_INSETS = Insets.of(0, 0, 0, 150);

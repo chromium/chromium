@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -35,7 +34,6 @@ import java.util.function.Supplier;
 
 /** Robolectric tests for {@link IncognitoCustomTabSnapshotController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class IncognitoCustomTabSnapshotControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

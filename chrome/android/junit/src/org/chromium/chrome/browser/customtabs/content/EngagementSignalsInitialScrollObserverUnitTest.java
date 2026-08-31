@@ -21,7 +21,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
@@ -37,7 +36,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link EngagementSignalsInitialScrollObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class EngagementSignalsInitialScrollObserverUnitTest {
     private static final int SCROLL_EXTENT = 100;
 

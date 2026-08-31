@@ -18,7 +18,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
@@ -44,7 +43,6 @@ import org.chromium.url.GURL;
  * functionality.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TrustedCdnTest {
     private static final GURL PUBLISHER_URL = new GURL("https://www.publisher.com/");
 
