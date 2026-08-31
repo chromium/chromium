@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
@@ -1191,6 +1192,35 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetNextAvailableIds(
                                &next_avail_resource_id_);
   if (status != Status::kOk)
     return status;
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerDatabaseDoomOnMissingNextId) &&
+      (next_avail_registration_id_ == 0 || next_avail_version_id_ == 0 ||
+       next_avail_resource_id_ == 0)) {
+    // If any next available ID metadata is 0 while pre-existing registrations
+    // exist on disk, the database ID metadata was lost or corrupted.
+    // Treat this as database corruption to allow ServiceWorkerStorage to doom
+    // the database and recover cleanly.
+    {
+      std::unique_ptr<leveldb::Iterator> itr(
+          db_->NewIterator(leveldb::ReadOptions()));
+      itr->Seek(service_worker_internals::kRegKeyPrefix);
+      status = LevelDBStatusToServiceWorkerDBStatus(itr->status());
+      if (status == Status::kOk && itr->Valid()) {
+        std::string_view key_str(itr->key().data(), itr->key().size());
+        if (base::StartsWith(key_str, service_worker_internals::kRegKeyPrefix,
+                             base::CompareCase::SENSITIVE)) {
+          DLOG(ERROR) << "Registrations exist on disk but next available ID "
+                         "metadata is missing.";
+          status = Status::kErrorCorrupted;
+        }
+      }
+    }
+    if (status != Status::kOk) {
+      HandleReadResult(FROM_HERE, status);
+      return status;
+    }
+  }
 
   *next_avail_registration_id = next_avail_registration_id_;
   *next_avail_version_id = next_avail_version_id_;

@@ -1654,6 +1654,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerSyntheticResponse);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kServiceWorkerDatabaseDoomOnMissingNextId);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kServiceWorkerSyntheticResponseUseCacheStorageParam);

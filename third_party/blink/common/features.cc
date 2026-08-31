@@ -2104,6 +2104,13 @@ BASE_FEATURE(kServiceWorkerRaceNetworkRequestFallbackOnDisconnect,
 // ServiceWorker. For navigation requests, the pre-learned static response
 // header is returned in parallel with dispatching the network request.
 BASE_FEATURE(kServiceWorkerSyntheticResponse,
+             "ServiceWorkerSyntheticResponse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// (crbug.com/539155958): When enabled, ServiceWorkerDatabase treats missing
+// next available ID metadata as database corruption if registrations exist on
+// disk, triggering database doom and clean recovery.
+BASE_FEATURE(kServiceWorkerDatabaseDoomOnMissingNextId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Define the allowed websites to enable SyntheticResponse. Allowed urls are

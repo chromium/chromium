@@ -25,6 +25,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
@@ -381,6 +382,97 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   EXPECT_EQ(101, ids.reg_id);
   EXPECT_EQ(201, ids.ver_id);
   EXPECT_EQ(21, ids.res_id);
+}
+
+TEST(ServiceWorkerDatabaseTest,
+     GetNextAvailableIds_MissingMetadataWithRegistrations) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kServiceWorkerDatabaseDoomOnMissingNextId);
+
+  base::ScopedTempDir database_dir;
+  ASSERT_TRUE(database_dir.CreateUniqueTempDir());
+  std::unique_ptr<ServiceWorkerDatabase> database(
+      CreateDatabase(database_dir.GetPath()));
+
+  GURL origin("https://example.com");
+  std::vector<ResourceRecordPtr> resources;
+  RegistrationData data;
+  ServiceWorkerDatabase::DeletedVersion deleted_version;
+  data.registration_id = 72;
+  data.scope = URL(origin, "/scope");
+  data.key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(data.scope));
+  data.script = URL(origin, "/script.js");
+  data.version_id = 150;
+  data.resources_total_size = base::ByteSize(300);
+  resources.push_back(CreateResource(25, data.script, 300));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+  // Simulate metadata corruption/loss by deleting the next id keys from DB.
+  leveldb::WriteBatch batch;
+  batch.Delete("INITDATA_NEXT_REGISTRATION_ID");
+  batch.Delete("INITDATA_NEXT_VERSION_ID");
+  batch.Delete("INITDATA_NEXT_RESOURCE_ID");
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk, database->WriteBatch(&batch));
+
+  // Close and reopen the database.
+  database.reset(CreateDatabase(database_dir.GetPath()));
+
+  // GetNextAvailableIds should detect corruption because registrations exist on
+  // disk while next available ID metadata is missing.
+  AvailableIds ids;
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kErrorCorrupted,
+      database->GetNextAvailableIds(&ids.reg_id, &ids.ver_id, &ids.res_id));
+}
+
+TEST(ServiceWorkerDatabaseTest,
+     GetNextAvailableIds_MissingMetadataWithRegistrations_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kServiceWorkerDatabaseDoomOnMissingNextId);
+
+  base::ScopedTempDir database_dir;
+  ASSERT_TRUE(database_dir.CreateUniqueTempDir());
+  std::unique_ptr<ServiceWorkerDatabase> database(
+      CreateDatabase(database_dir.GetPath()));
+
+  GURL origin("https://example.com");
+  std::vector<ResourceRecordPtr> resources;
+  RegistrationData data;
+  ServiceWorkerDatabase::DeletedVersion deleted_version;
+  data.registration_id = 72;
+  data.scope = URL(origin, "/scope");
+  data.key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(data.scope));
+  data.script = URL(origin, "/script.js");
+  data.version_id = 150;
+  data.resources_total_size = base::ByteSize(300);
+  resources.push_back(CreateResource(25, data.script, 300));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+  // Simulate metadata corruption/loss by deleting the next id keys from DB.
+  leveldb::WriteBatch batch;
+  batch.Delete("INITDATA_NEXT_REGISTRATION_ID");
+  batch.Delete("INITDATA_NEXT_VERSION_ID");
+  batch.Delete("INITDATA_NEXT_RESOURCE_ID");
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk, database->WriteBatch(&batch));
+
+  // Close and reopen the database.
+  database.reset(CreateDatabase(database_dir.GetPath()));
+
+  // Without the feature, next available IDs are reset to 0 upon missing
+  // metadata.
+  AvailableIds ids;
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->GetNextAvailableIds(&ids.reg_id, &ids.ver_id, &ids.res_id));
+  EXPECT_EQ(0, ids.reg_id);
+  EXPECT_EQ(0, ids.ver_id);
+  EXPECT_EQ(0, ids.res_id);
 }
 
 TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
