@@ -115,8 +115,13 @@ class GlicInstanceImpl : public GlicInstance,
     virtual bool IsInvoking(const GlicInstanceImpl* instance) const = 0;
     virtual void CancelInvoke(GlicInstanceImpl* instance) = 0;
 
-    virtual void OnInvoked() = 0;
-    virtual void OnUserInputSubmitted() = 0;
+    // TODO(crbug.com/545714879): Remove OnInvoked, OnUserInputSubmitted,
+    // and OnFreOptInShown from InstanceCoordinatorDelegate when onboarding
+    // tracking is refactored into direct profile helpers.
+    virtual void OnInvoked(mojom::InvocationSource source,
+                           ukm::SourceId source_id) = 0;
+    virtual void OnUserInputSubmitted(ukm::SourceId source_id) = 0;
+    virtual void OnFreOptInShown(ukm::SourceId source_id) = 0;
 
     // Called to create a new web contents for the glic instance.
     virtual std::unique_ptr<WebUIContentsContainer>

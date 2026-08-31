@@ -107,8 +107,13 @@ class GlicInstanceCoordinatorImpl
                                      bool enabled) override;
   bool IsInvoking(const GlicInstanceImpl* instance) const override;
   void CancelInvoke(GlicInstanceImpl* instance) override;
-  void OnInvoked() override;
-  void OnUserInputSubmitted() override;
+  // TODO(crbug.com/545714879): Remove OnInvoked, OnUserInputSubmitted, and
+  // OnFreOptInShown delegate overrides when GlicOnboardingTracker is refactored
+  // to free-standing profile helper functions.
+  void OnInvoked(mojom::InvocationSource source,
+                 ukm::SourceId source_id) override;
+  void OnUserInputSubmitted(ukm::SourceId source_id) override;
+  void OnFreOptInShown(ukm::SourceId source_id) override;
   std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
       override;
 

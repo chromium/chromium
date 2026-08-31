@@ -10779,6 +10779,42 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Glic.Onboarding">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Recorded when an unconsented user interacts with Glic during the onboarding
+    funnel (opening Glic, viewing the FRE opt-in UI, accepting consent, or
+    submitting a prompt). The source_id reflects the focused tab at the moment
+    the event occurs, or NoURLSourceId if no tab is focused.
+  </summary>
+  <metric name="FunnelStep" enum="GlicOnboardingFunnelStep">
+    <summary>
+      The onboarding funnel step reached (NewUserOpen, FreOptInShown,
+      FreOptInAccepted, FirstPromptSubmitted).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InvocationSource" enum="GlicInvocationSource">
+    <summary>
+      The entry point used to invoke Glic.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Glic.Response">
   <owner>erikchen@chromium.org</owner>
   <owner>iwells@google.com</owner>

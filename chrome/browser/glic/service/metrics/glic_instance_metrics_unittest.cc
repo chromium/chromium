@@ -83,6 +83,22 @@ TEST_F(GlicInstanceMetricsTest, OptinImpression) {
       user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, OptinImpression_InvokesCallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicOptInImpressionMetrics);
+
+  int callback_call_count = 0;
+  metrics_.SetOptInShownCallback(base::BindRepeating(
+      [](int* count, ukm::SourceId source_id) { (*count)++; },
+      &callback_call_count));
+
+  metrics_.OnOptinImpression();
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnClientReady();
+
+  EXPECT_EQ(callback_call_count, 1);
+}
+
 TEST_F(GlicInstanceMetricsTest, OptinImpression_KillSwitchDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
   disabled_feature_list.InitAndDisableFeature(

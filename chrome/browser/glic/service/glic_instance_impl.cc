@@ -50,6 +50,7 @@
 #include "chrome/browser/glic/service/glic_tab_group_utils.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
@@ -306,6 +307,10 @@ GlicInstanceImpl::GlicInstanceImpl(
   base::trace_event::EmitNamedTrigger("glic-instance-created");
   TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::GlicInstanceImpl",
                       perfetto::Flow::FromPointer(this));
+  if (coordinator_delegate_) {
+    instance_metrics_.SetOptInShownCallback(base::BindRepeating(
+        &InstanceCoordinatorDelegate::OnFreOptInShown, coordinator_delegate_));
+  }
   if (auto* actor_keyed_service =
           actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_)) {
     actor_task_manager_ = std::make_unique<GlicActorTaskManager>(
@@ -526,7 +531,12 @@ void GlicInstanceImpl::Show(ShowOptions options) {
     service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
                                                     options.invocation_source);
     if (coordinator_delegate_) {
-      coordinator_delegate_->OnInvoked();
+      tabs::TabInterface* tab = GetTabFromEmbedderKey(new_key);
+      if (!tab) {
+        tab = GetSharingManagerInternal().GetFocusedTabData().focus();
+      }
+      coordinator_delegate_->OnInvoked(options.invocation_source,
+                                       GetUkmSourceIdForTab(tab));
     }
   }
 
@@ -801,7 +811,9 @@ void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode) {
   }
   last_prompt_submission_time_ = base::TimeTicks::Now();
   if (coordinator_delegate_) {
-    coordinator_delegate_->OnUserInputSubmitted();
+    tabs::TabInterface* tab =
+        GetSharingManagerInternal().GetFocusedTabData().focus();
+    coordinator_delegate_->OnUserInputSubmitted(GetUkmSourceIdForTab(tab));
   }
   // TODO(harringtond): The only subscriber to this event is the tab underline
   // controller and I think it makes more sense for it to get that signal from

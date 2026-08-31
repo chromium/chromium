@@ -213,6 +213,12 @@ void GlicInstanceMetrics::MaybeRecordOptInImpression() {
       base::UserMetricsAction("Glic.Onboarding.OptInImpression"));
   base::UmaHistogramEnumeration("Glic.Onboarding.OptInImpression.FlowSource",
                                 OptInFlow::kGlicFre);
+  if (opt_in_shown_callback_) {
+    tabs::TabInterface* tab =
+        sharing_manager_ ? sharing_manager_->GetFocusedTabData().focus()
+                         : nullptr;
+    opt_in_shown_callback_.Run(GetUkmSourceIdForTab(tab));
+  }
   is_opt_in_pending_ = false;
 }
 
@@ -1088,10 +1094,8 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   if (sharing_manager_) {
     // Use the focused tab for UKM source if available. If no tab is focused,
     // leave turn_.chosen_source_id_ as its default of NoURLSourceId.
-    if (auto* focused = sharing_manager_->GetFocusedTabData().focus()) {
-      turn_.chosen_source_id_ =
-          focused->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-    }
+    turn_.chosen_source_id_ =
+        GetUkmSourceIdForTab(sharing_manager_->GetFocusedTabData().focus());
   }
 
   turn_.ui_mode_ = current_ui_mode_;
