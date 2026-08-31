@@ -26,9 +26,12 @@
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_coordinator.h"
+#import "ios/chrome/browser/tab_picker/public/tab_picker_snackbar_presenter.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -303,5 +306,42 @@ TEST_F(
                                             kShareSheet];
 
   EXPECT_TRUE(start_future.Wait());
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-showTabPickerWithParams:...` and `-hideTabPicker` correctly
+// start and stop the TabPickerCoordinator.
+TEST_F(BrowserModalHostTest, StartsAndStopsTabPickerCoordinator) {
+  id classMock = OCMClassMock([TabPickerCoordinator class]);
+  TabPickerCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()])
+      .andReturn(mockCoordinator);
+  __block base::test::TestFuture<void> start_future;
+  OCMExpect([mockCoordinator start]).andDo(^(NSInvocation* invocation) {
+    start_future.SetValue();
+  });
+  __block base::test::TestFuture<void> stop_future;
+  OCMExpect([mockCoordinator stop]).andDo(^(NSInvocation* invocation) {
+    stop_future.SetValue();
+  });
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<TabPickerCommands> handler =
+      HandlerForProtocol(dispatcher, TabPickerCommands);
+
+  id mockPresenter = OCMProtocolMock(@protocol(TabPickerSnackbarPresenter));
+  TabPickerParams* params =
+      [[TabPickerParams alloc] initWithSnackbarPresenter:mockPresenter];
+
+  [handler showTabPickerWithParams:params completion:nil];
+
+  EXPECT_TRUE(start_future.Wait());
+
+  [handler hideTabPicker];
+
+  EXPECT_TRUE(stop_future.Wait());
   EXPECT_OCMOCK_VERIFY(classMock);
 }

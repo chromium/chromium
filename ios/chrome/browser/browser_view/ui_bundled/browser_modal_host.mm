@@ -92,6 +92,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
+#import "ios/chrome/browser/shared/public/commands/collaboration_group_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
@@ -129,6 +130,7 @@
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
@@ -145,6 +147,7 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
@@ -168,6 +171,7 @@ const char kChromeAppStoreUrl[] =
                                 AddContactsCommands,
                                 AutofillCommands,
                                 CobaltCommands,
+                                CollaborationGroupCommands,
                                 ContextualSheetCommands,
                                 CountryCodePickerCommands,
                                 DockingPromoCommands,
@@ -203,6 +207,7 @@ const char kChromeAppStoreUrl[] =
                                 SharedTabGroupLastTabAlertCommands,
                                 SyncedSetUpCommands,
                                 SyncedSetUpCoordinatorDelegate,
+                                TabPickerCommands,
                                 TipsPasswordsCommands,
                                 TipsPasswordsCoordinatorDelegate,
                                 UnitConversionCommands,
@@ -276,6 +281,7 @@ const char kChromeAppStoreUrl[] =
   SharingCoordinator* _sharingCoordinator;
   SyncedSetUpCoordinator* _syncedSetUpCoordinator;
   ProceduralBlock _runAfterSyncedSetUpDismissal;
+  TabPickerCoordinator* _tabPickerCoordinator;
   TipsPasswordsCoordinator* _tipsPasswordsCoordinator;
   UnitConversionCoordinator* _unitConversionCoordinator;
   VirtualCardEnrollmentBottomSheetCoordinator*
@@ -369,6 +375,7 @@ const char kChromeAppStoreUrl[] =
   [self stopSendTabToSelf];
   [self stopSharingSheet];
   [self stopSyncedSetUpCoordinator];
+  [self stopTabPickerCoordinator];
   [self dismissPasswordsTip];
   [self hideUnitConversion];
   [self dismissWalletReminderNotice];
@@ -468,6 +475,12 @@ const char kChromeAppStoreUrl[] =
   }
 }
 
+// Stops the tab picker coordinator.
+- (void)stopTabPickerCoordinator {
+  [_tabPickerCoordinator stop];
+  _tabPickerCoordinator = nil;
+}
+
 // Starts dispatching to the various command protocols.
 - (void)startDispatching {
   NSArray<Protocol*>* protocols = @[
@@ -476,6 +489,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(AddContactsCommands),
     @protocol(AutofillCommands),
     @protocol(CobaltCommands),
+    @protocol(CollaborationGroupCommands),
     @protocol(ContextualSheetCommands),
     @protocol(CountryCodePickerCommands),
     @protocol(DockingPromoCommands),
@@ -504,6 +518,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(SendTabToSelfCommands),
     @protocol(SharedTabGroupLastTabAlertCommands),
     @protocol(SyncedSetUpCommands),
+    @protocol(TabPickerCommands),
     @protocol(TipsPasswordsCommands),
     @protocol(UnitConversionCommands),
     @protocol(WelcomeBackPromoCommands),
@@ -1012,6 +1027,25 @@ const char kChromeAppStoreUrl[] =
 - (void)hideCobaltPopup {
   [_cobaltPopupCoordinator stop];
   _cobaltPopupCoordinator = nil;
+}
+
+#pragma mark - CollaborationGroupCommands
+
+- (void)
+    shareOrManageTabGroup:(const TabGroup*)tabGroup
+               entryPoint:
+                   (collaboration::CollaborationServiceShareOrManageEntryPoint)
+                       entryPoint {
+  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          _browser, CreateControllerDelegateParamsFromProfile(
+                        _browser->GetProfile(), _baseViewController,
+                        collaboration::FlowType::kShareOrManage));
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          _browser->GetProfile());
+  collaborationService->StartShareOrManageFlow(
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 #pragma mark - ContextualSheetCommands
@@ -2013,6 +2047,31 @@ const char kChromeAppStoreUrl[] =
     (SyncedSetUpCoordinator*)coordinator {
   CHECK_EQ(_syncedSetUpCoordinator, coordinator);
   [self stopSyncedSetUpCoordinator];
+}
+
+#pragma mark - TabPickerCommands
+
+- (void)showTabPickerWithParams:(TabPickerParams*)params
+                     completion:(TabPickerCompletionBlock)completion {
+  if (_tabPickerCoordinator) {
+    return;
+  }
+
+  UIViewController* baseViewController = params.baseViewController
+                                             ? params.baseViewController
+                                             : _baseViewController;
+
+  _tabPickerCoordinator = [[TabPickerCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:_browser];
+  _tabPickerCoordinator.params = params;
+  _tabPickerCoordinator.tabPickerCompletionBlock = completion;
+  _tabPickerCoordinator.tabPickerHandler = self;
+  [_tabPickerCoordinator start];
+}
+
+- (void)hideTabPicker {
+  [self stopTabPickerCoordinator];
 }
 
 #pragma mark - TipsPasswordsCommands
