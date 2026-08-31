@@ -84,7 +84,9 @@ class BookmarkContextMenuControllerTest : public testing::Test {
         BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
     profile_->GetPrefs()->SetInteger(
-        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings, 0);
+        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+        static_cast<int>(
+            enterprise_isolated_mode::IsolatedModeSetting::kDisabled));
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);
     AddTestData(model_);
@@ -781,7 +783,9 @@ TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleURL) {
   scoped_feature_list.InitAndEnableFeature(
       enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
   profile_->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings, 1);
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children().front().get(),
@@ -838,7 +842,9 @@ TEST_F(BookmarkContextMenuControllerTest, IsolatedModeSingleFolder) {
   scoped_feature_list.InitAndEnableFeature(
       enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
   profile_->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings, 1);
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
 
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       model_->bookmark_bar_node()->children()[1].get(),  // F1 folder

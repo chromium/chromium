@@ -9,7 +9,9 @@ namespace enterprise_isolated_mode {
 const char kEnterpriseIsolatedModeSettings[] = "enterprise.isolated_mode";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kEnterpriseIsolatedModeSettings, 0);
+  registry->RegisterIntegerPref(
+      kEnterpriseIsolatedModeSettings,
+      static_cast<int>(IsolatedModeSetting::kDisabled));
 }
 
 }  // namespace enterprise_isolated_mode

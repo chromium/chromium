@@ -43,7 +43,8 @@ TEST_F(SettingsTest, FeatureOnlyDoesNotEnable) {
 }
 
 TEST_F(SettingsTest, PolicyOnlyDoesNotEnable) {
-  pref_service_.SetInteger(kEnterpriseIsolatedModeSettings, 1);
+  pref_service_.SetInteger(kEnterpriseIsolatedModeSettings,
+                           static_cast<int>(IsolatedModeSetting::kEnabled));
   IsolatedModeSettingsService service(&pref_service_,
                                       version_info::Channel::DEV);
   EXPECT_FALSE(service.ReplacesIncognito());
@@ -51,7 +52,8 @@ TEST_F(SettingsTest, PolicyOnlyDoesNotEnable) {
 
 TEST_F(SettingsTest, FeatureAndPolicyEnables) {
   feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
-  pref_service_.SetInteger(kEnterpriseIsolatedModeSettings, 1);
+  pref_service_.SetInteger(kEnterpriseIsolatedModeSettings,
+                           static_cast<int>(IsolatedModeSetting::kEnabled));
   IsolatedModeSettingsService service(&pref_service_,
                                       version_info::Channel::DEV);
   EXPECT_TRUE(service.ReplacesIncognito());
@@ -83,7 +85,8 @@ TEST_F(SettingsTest, PrefChangeAfterStartupIgnoredInServiceDueToLock) {
   EXPECT_FALSE(service.ReplacesIncognito());
 
   // Dynamically modifying the pref at runtime does not alter the service state.
-  pref_service_.SetInteger(kEnterpriseIsolatedModeSettings, 1);
+  pref_service_.SetInteger(kEnterpriseIsolatedModeSettings,
+                           static_cast<int>(IsolatedModeSetting::kEnabled));
   EXPECT_FALSE(service.ReplacesIncognito());
 
   // Simulating restart/new service creation picks up the new pref value.

@@ -32,8 +32,9 @@ bool ComputeReplacesIncognito(const PrefService* prefs,
     return false;
   }
 
-  // Treat non-zero as enabled (since it's registered as an integer).
-  return prefs->GetInteger(kEnterpriseIsolatedModeSettings) != 0;
+  auto setting = static_cast<IsolatedModeSetting>(
+      prefs->GetInteger(kEnterpriseIsolatedModeSettings));
+  return setting == IsolatedModeSetting::kEnabled;
 }
 
 }  // namespace

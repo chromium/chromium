@@ -9,6 +9,12 @@
 
 namespace enterprise_isolated_mode {
 
+// Values for the "IsolatedModeSettings" policy.
+enum class IsolatedModeSetting {
+  kDisabled = 0,
+  kEnabled = 1,
+};
+
 // Pref that maps to the "IsolatedModeSettings" policy.
 // It is an int-enum preference.
 extern const char kEnterpriseIsolatedModeSettings[];
