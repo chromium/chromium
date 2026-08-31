@@ -293,4 +293,32 @@ TEST_F(MatchedPropertiesCacheTest, HighlightStyleGetsVariablesFromOriginating) {
                           kPseudoIdHighlight));
 }
 
+TEST_F(MatchedPropertiesCacheTest,
+       NonInheritedDependencyWithExplicitInheritance) {
+  TestCache cache(GetDocument());
+
+  auto parent_builder_a = CreateStyleBuilder();
+  parent_builder_a.SetOpacity(0.5f);
+  auto parent_builder_b = CreateStyleBuilder();
+  parent_builder_b.SetOpacity(0.8f);
+
+  const auto* parent_a = parent_builder_a.TakeStyle();
+  const auto* parent_b = parent_builder_b.TakeStyle();
+
+  EXPECT_NE(parent_a->Opacity(), parent_b->Opacity());
+
+  auto child_builder = CreateStyleBuilder();
+  child_builder.SetHasExplicitInheritance();
+  const auto* child_style = child_builder.TakeStyle();
+
+  EXPECT_TRUE(child_style->HasExplicitInheritance());
+
+  TestKey key("opacity:inherit", 1, GetDocument());
+
+  cache.Add(key, *child_style, *parent_a);
+
+  EXPECT_TRUE(cache.Find(key, *child_style, *parent_a));
+  EXPECT_FALSE(cache.Find(key, *child_style, *parent_b));
+}
+
 }  // namespace blink

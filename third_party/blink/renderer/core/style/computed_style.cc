@@ -743,6 +743,15 @@ bool ComputedStyle::InheritedEqualIncludingInheritedVariables(
   return ComputedStyleBase::InheritedEqualIncludingInheritedVariables(other);
 }
 
+ComputedStyle::InheritedPropertyHash
+ComputedStyle::FirstDifferingInheritedProperty(
+    const ComputedStyle& other) const {
+  // We use a by-value check that is a bit more expensive than
+  // pointer comparison, but yields many more MPC hits,
+  // so it generally makes up for it.
+  return ComputedStyleBase::FirstDifferingInheritedProperty(other);
+}
+
 StyleDifference ComputedStyle::VisualInvalidationDiff(
     const Document& document,
     const ComputedStyle& other) const {

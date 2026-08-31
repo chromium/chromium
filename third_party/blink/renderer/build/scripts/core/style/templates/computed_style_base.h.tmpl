@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, field_group_access_bit_name %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, field_group_access_bit_name, compare %}
 {% from 'templates/fields/group.tmpl' import declare_field_group_class %}
 {{license()}}
 
@@ -7,6 +7,8 @@
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_H_
+
+#include <optional>
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -112,6 +114,18 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     std::optional<bool> inherited_hint);
 
  public:
+  enum class InheritedPropertyHash : uint32_t {
+    kNone = 0,
+    {% for field in computed_style.all_fields|selectattr("is_inherited")|sort(attribute="name") %}
+    k{{field.name}} = {{field.name|hash_name}}U,
+    {% endfor %}
+    {% for subgroup in computed_style.all_subgroups|sort(attribute="member_name") %}
+      {% if subgroup.all_fields|selectattr("is_inherited")|list|length > 0 %}
+    k{{subgroup.member_name}} = {{subgroup.member_name|hash_name}}U,
+      {% endif %}
+    {% endfor %}
+  };
+
   inline bool IndependentInheritedEqual(const ComputedStyleBase& o) const {
     return (
         {{fieldwise_compare(computed_style, computed_style.all_fields
@@ -192,6 +206,38 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
             |list
           )|indent(8)}}
     );
+  }
+
+  inline InheritedPropertyHash FirstDifferingInheritedProperty(const ComputedStyleBase& o) const {
+    {{fieldwise_diff(computed_style, computed_style.all_fields
+        |selectattr("is_property")
+        |selectattr("is_inherited")
+        |list,
+        'InheritedPropertyHash'
+      )|indent(4)}}
+    return InheritedPropertyHash::kNone;
+  }
+
+  enum class NonInheritedPropertyHash : uint32_t {
+    kNone = 0,
+    {% for field in computed_style.all_fields|rejectattr("is_inherited")|sort(attribute="name") %}
+    k{{field.name}} = {{field.name|hash_name}}U,
+    {% endfor %}
+    {% for subgroup in computed_style.all_subgroups|sort(attribute="member_name") %}
+      {% if subgroup.all_fields|rejectattr("is_inherited")|list|length > 0 %}
+    k{{subgroup.member_name}} = {{subgroup.member_name|hash_name}}U,
+      {% endif %}
+    {% endfor %}
+  };
+
+  inline NonInheritedPropertyHash FirstDifferingNonInheritedProperty(const ComputedStyleBase& o) const {
+    {{fieldwise_diff(computed_style, computed_style.all_fields
+        |selectattr("is_property")
+        |rejectattr("is_inherited")
+        |list,
+        'NonInheritedPropertyHash'
+      )|indent(4)}}
+    return NonInheritedPropertyHash::kNone;
   }
 
   // Fields.

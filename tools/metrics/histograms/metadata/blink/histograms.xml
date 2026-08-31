@@ -5560,6 +5560,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Style.MatchedPropertiesCache.InheritedCollisionReason"
+    units="hash" expires_after="2027-03-12">
+  <owner>etiennep@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/core/css/OWNERS</owner>
+  <summary>
+    The hash of the first inherited property field name (C++ member name) that
+    differed when a MatchedPropertiesCache entry was rejected due to parent
+    style mismatch (collision). Recorded when a collision occurs in
+    MatchedPropertiesCache::Find (subsampled to 1%).
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Style.MatchedPropertiesCache.NonInheritedCollisionReason"
+    units="hash" expires_after="2027-03-12">
+  <owner>etiennep@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/core/css/OWNERS</owner>
+  <summary>
+    The hash of the first non-inherited property field name (C++ member name)
+    that differed when a MatchedPropertiesCache entry was rejected due to parent
+    style mismatch (collision) and the child has explicit inheritance. Recorded
+    when a collision occurs in MatchedPropertiesCache::Find (subsampled to 1%).
+  </summary>
+</histogram>
+
 <histogram name="Blink.Style.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-02-07">
   <owner>pdr@chromium.org</owner>

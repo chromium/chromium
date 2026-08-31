@@ -216,6 +216,25 @@ if (!({{compare_expr(field.wrapper_pointer_name, field.name + "_expr", "o_" + fi
 {% endfor %}
 {% endmacro %}
 
+{% macro fieldwise_diff(group, fields_to_compare, enum_name) %}
+{% for subgroup in group.subgroups %}
+  {% set group_expression = group_getter_expression(subgroup) %}
+  {% if subgroup.all_fields|rejectattr("custom_compare")|select("in", fields_to_compare)|list|length > 0 -%}
+    if ({{group_expression}}.Get() != o.{{group_expression}}.Get()) {
+      if (!{{group_expression}} || !o.{{group_expression}}) {
+        return {{enum_name}}::k{{subgroup.member_name}};
+      }
+      {{fieldwise_diff(subgroup, fields_to_compare, enum_name)|indent(6)}}
+    }
+  {% endif %}
+{% endfor %}
+{% for field in group.fields|rejectattr("custom_compare")|select("in", fields_to_compare) -%}
+  if (!({{compare(field.wrapper_pointer_name, getter_expression(field), "o")}})) {
+    return {{enum_name}}::k{{field.name}};
+  }
+{% endfor %}
+{% endmacro %}
+
 {% macro reset_group_access(group) -%}
   {{access_flag(group)}} = false;
   {% for subgroup in group.subgroups -%}
