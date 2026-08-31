@@ -64,6 +64,9 @@ const char* kUnsafeHeaders[] = {
     // Semantically a response header, so not useful on requests.
     "Set-Cookie",
 
+    // Compression dictionary transport header managed by the network stack.
+    net::shared_dictionary::kAvailableDictionaryHeaderName,
+
     // TODO(mmenke): Figure out what to do about the remaining headers:
     // Cookie, Date, Expect, Referer, Via.
 };
@@ -78,21 +81,19 @@ bool IsRequestHeaderSafe(std::string_view key, std::string_view value) {
 
   // The Accept-Encoding header can be set by the media pipeline (e.g.
   // "identity;q=1, *;q=0"), but must not be used to negotiate shared
-  // dictionary compression (dcb, dcz) which is managed by the network stack.
+  // dictionary compression (dcb, dcz) or arbitrary wildcard encodings (*).
   if (base::EqualsCaseInsensitiveASCII(
           key, net::HttpRequestHeaders::kAcceptEncoding)) {
-    net::HttpUtil::ValuesIterator encodings(value, ',');
-    while (encodings.GetNext()) {
-      if (base::StartsWith(
-              encodings.value(),
-              net::shared_dictionary::kSharedBrotliContentEncodingName,
-              base::CompareCase::INSENSITIVE_ASCII) ||
-          base::StartsWith(
-              encodings.value(),
-              net::shared_dictionary::kSharedZstdContentEncodingName,
-              base::CompareCase::INSENSITIVE_ASCII)) {
-        return false;
-      }
+    std::set<std::string> encodings;
+    if (!net::HttpUtil::ParseAcceptEncoding(std::string(value), &encodings)) {
+      return false;
+    }
+    if (encodings.contains(
+            net::shared_dictionary::kSharedBrotliContentEncodingName) ||
+        encodings.contains(
+            net::shared_dictionary::kSharedZstdContentEncodingName) ||
+        encodings.contains("*")) {
+      return false;
     }
   }
 
