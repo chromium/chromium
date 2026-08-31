@@ -41,6 +41,7 @@ class BrowserContext;
 }  // namespace content
 
 namespace actor {
+class AggregatedJournalFileSerializer;
 namespace ui {
 class ActorUiStateManagerInterface;
 }
@@ -270,6 +271,13 @@ class ActorKeyedService : public KeyedService,
   // The jounrnal should be last in destruction order since other things like
   // ActorTask might be using a SafeRef to this object.
   AggregatedJournal journal_;
+
+  void InitializeTraceRecording(const base::FilePath& trace_path);
+  void OnTraceFilePathResolved(const base::FilePath& resolved_path);
+  void OnTraceFileInitDone(bool success);
+
+  // Serializes journal events to a file when --actor-trace-path is set.
+  std::unique_ptr<AggregatedJournalFileSerializer> trace_file_serializer_;
 
   // download notifier for metrics and the profile observer to help set up the
   // download notifier.

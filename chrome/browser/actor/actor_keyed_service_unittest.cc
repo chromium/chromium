@@ -7,8 +7,13 @@
 #include <memory>
 #include <optional>
 
+#include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -21,6 +26,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -66,6 +72,8 @@ class ActorKeyedServiceTest : public testing::Test {
   }
 
   TestingProfile* profile() { return profile_.get(); }
+
+  void RunTasksUntilIdle() { task_environment_.RunUntilIdle(); }
 
  protected:
   base::CallbackListSubscription user_confirmation_dialog_subscription_;
@@ -283,6 +291,66 @@ TEST_F(ActorKeyedServiceTest, InitialTabAssociationOnCreate) {
   EXPECT_TRUE(task->IsActingOnTab(tab_handle));
   EXPECT_EQ(task->GetTabs().size(), 1u);
   EXPECT_TRUE(task->GetTabs().contains(tab_handle));
+}
+
+TEST_F(ActorKeyedServiceTest, TraceRecordingToFile) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath trace_file = temp_dir.GetPath().AppendASCII("test_trace.pb");
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kActorTracePath, trace_file);
+
+  TestingProfile* test_profile =
+      testing_profile_manager()->CreateTestingProfile("trace_profile");
+  auto* actor_service = ActorKeyedService::Get(test_profile);
+  ASSERT_TRUE(actor_service);
+  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
+
+  RunTasksUntilIdle();
+
+  TaskId id = actor_service->CreateTask(TestTaskSourceInfo(),
+                                        NoEnterprisePolicyChecker());
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+  testing_profile_manager()->DeleteTestingProfile("trace_profile");
+
+  RunTasksUntilIdle();
+
+  std::optional<int64_t> file_size = base::GetFileSize(trace_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_GT(*file_size, 0);
+}
+
+TEST_F(ActorKeyedServiceTest, TraceRecordingToDirectory) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kActorTracePath, temp_dir.GetPath());
+
+  TestingProfile* test_profile =
+      testing_profile_manager()->CreateTestingProfile("trace_profile_dir");
+  auto* actor_service = ActorKeyedService::Get(test_profile);
+  ASSERT_TRUE(actor_service);
+  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
+
+  RunTasksUntilIdle();
+
+  base::FilePath expected_trace_file =
+      temp_dir.GetPath().AppendASCII("actor_trace.pb");
+
+  TaskId id = actor_service->CreateTask(TestTaskSourceInfo(),
+                                        NoEnterprisePolicyChecker());
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+  testing_profile_manager()->DeleteTestingProfile("trace_profile_dir");
+
+  RunTasksUntilIdle();
+
+  std::optional<int64_t> file_size = base::GetFileSize(expected_trace_file);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_GT(*file_size, 0);
 }
 
 }  // namespace

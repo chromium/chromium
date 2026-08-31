@@ -10,9 +10,12 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -48,7 +51,9 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
+#include "components/actor/core/aggregated_journal_file_serializer.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -104,6 +109,21 @@ void OnCreateActorTabComplete(
   }
 }
 
+base::FilePath ResolveActorTraceFilePath(const base::FilePath& path) {
+  if (base::DirectoryExists(path) || path.EndsWithSeparator()) {
+    if (!base::CreateDirectory(path)) {
+      return base::FilePath();
+    }
+    base::FilePath file_path = path.AppendASCII("actor_trace.pb");
+    return base::GetUniquePathWithSuffixFormat(file_path,
+                                               base::cstring_view("_%d"));
+  }
+  if (!base::CreateDirectory(path.DirName())) {
+    return base::FilePath();
+  }
+  return base::GetUniquePathWithSuffixFormat(path, base::cstring_view("_%d"));
+}
+
 }  // namespace
 
 namespace actor {
@@ -132,6 +152,43 @@ ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
   profile_observation_.Observe(profile_);
   actor::InitActionBlocklist(profile_);
+
+  base::FilePath trace_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          switches::kActorTracePath);
+  if (!trace_path.empty()) {
+    InitializeTraceRecording(trace_path);
+  }
+}
+
+void ActorKeyedService::InitializeTraceRecording(
+    const base::FilePath& trace_path) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ResolveActorTraceFilePath, trace_path),
+      base::BindOnce(&ActorKeyedService::OnTraceFilePathResolved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorKeyedService::OnTraceFilePathResolved(
+    const base::FilePath& resolved_path) {
+  if (resolved_path.empty()) {
+    LOG(ERROR) << "Failed to resolve a path for actor trace recording.";
+    return;
+  }
+  VLOG(1) << "Actor trace recording to: " << resolved_path;
+  trace_file_serializer_ =
+      std::make_unique<AggregatedJournalFileSerializer>(journal_);
+  trace_file_serializer_->Init(
+      resolved_path, base::BindOnce(&ActorKeyedService::OnTraceFileInitDone,
+                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorKeyedService::OnTraceFileInitDone(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to initialize actor trace file recording.";
+    trace_file_serializer_.reset();
+  }
 }
 
 void ActorKeyedService::OnProfileInitializationComplete(Profile* profile) {
@@ -155,6 +212,7 @@ void ActorKeyedService::Shutdown() {
   // Ensure tasks get deleted synchronously to avoid dangling refs.
   CHECK(active_tasks_.empty());
   pending_delete_tasks_.clear();
+  trace_file_serializer_.reset();
 }
 
 // static
