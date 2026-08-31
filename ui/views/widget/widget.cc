@@ -2046,7 +2046,8 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
   const bool was_paint_as_active = ShouldPaintAsActive();
 
   // Widgets in a widget tree should share the same ShouldPaintAsActive().
-  // Lock the parent as paint-as-active when this widget becomes active.
+  // Lock the parent as paint-as-active when this widget becomes active (if not
+  // already locked).
   // If we're in the process of closing the widget, delay resetting the
   // `parent_paint_as_active_lock_` until the owning native widget destroys this
   // widget (i.e. wait until widget destruction). Do this as closing a widget
@@ -2059,10 +2060,14 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
   // native widget to destroy this widget we ensure that resetting the paint
   // lock happens synchronously with the activation the next widget (see
   // crbug/1303549).
-  if (!active && !paint_as_active_refcount_ && !widget_closed_) {
-    parent_paint_as_active_lock_.reset();
-  } else if (parent()) {
-    parent_paint_as_active_lock_ = parent()->LockPaintAsActive();
+  if (active) {
+    if (parent() && !parent_paint_as_active_lock_) {
+      parent_paint_as_active_lock_ = parent()->LockPaintAsActive();
+    }
+  } else {
+    if (!paint_as_active_refcount_ && !widget_closed_) {
+      parent_paint_as_active_lock_.reset();
+    }
   }
 
   native_widget_active_ = active;
