@@ -8,7 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -206,7 +205,7 @@ public class BookmarkSearchBoxRowTest {
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(false)));
         verifyNoInteractions(mFocusChangeCallback);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.performClick());
         verify(mFocusChangeCallback).onResult(true);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mEditText.clearFocus());
@@ -236,18 +235,8 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
-    public void testTapSearchRowLayoutClearsSearchFocus() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
-        verify(mFocusChangeCallback).onResult(true);
-
-        onView(withId(R.id.bookmark_toolbar)).perform(click());
-        verify(mFocusChangeCallback).onResult(false);
-    }
-
-    @Test
-    @MediumTest
     public void testTogglingChipDoesNotClearSearchFocus() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.performClick());
         verify(mFocusChangeCallback).onResult(true);
 
         onView(withId(R.id.shopping_filter_chip)).perform(click());
@@ -255,16 +244,6 @@ public class BookmarkSearchBoxRowTest {
 
         onView(withId(R.id.shopping_filter_chip)).perform(click());
         verify(mFocusChangeCallback, never()).onResult(false);
-    }
-
-    @Test
-    @MediumTest
-    public void testTapFilterLayoutClearsSearchFocus() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
-        verify(mFocusChangeCallback).onResult(true);
-
-        onView(withChild(withId(R.id.shopping_filter_chip))).perform(click());
-        verify(mFocusChangeCallback).onResult(false);
     }
 
     @Test

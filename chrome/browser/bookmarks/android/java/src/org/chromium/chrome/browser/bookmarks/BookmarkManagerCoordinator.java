@@ -210,6 +210,14 @@ public class BookmarkManagerCoordinator
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
 
+        mMainView.setFocusable(false);
+        mMainView.setFocusableInTouchMode(false);
+        mMainView.setDefaultFocusHighlightEnabled(false);
+
+        mSelectableListLayout.setFocusable(false);
+        mSelectableListLayout.setFocusableInTouchMode(false);
+        mSelectableListLayout.setDefaultFocusHighlightEnabled(false);
+
         mModelList = new ModelList();
         DragTouchHandler dragTouchHandler = new DragTouchHandler(mContext, mModelList);
 

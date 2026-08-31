@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
+import android.view.FocusFinder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -190,8 +191,21 @@ public class BookmarkManagerCoordinatorTest {
         View mainView = mCoordinator.getView();
 
         assertNotNull(mainView);
-        assertNotNull(mainView.findViewById(R.id.selectable_list));
+        assertFalse(mainView.isFocusable());
+        assertFalse(mainView.isFocusableInTouchMode());
+        assertFalse(mainView.getDefaultFocusHighlightEnabled());
+
+        View selectableList = mainView.findViewById(R.id.selectable_list);
+        assertNotNull(selectableList);
+        assertFalse(selectableList.isFocusable());
+        assertFalse(selectableList.isFocusableInTouchMode());
+        assertFalse(selectableList.getDefaultFocusHighlightEnabled());
+
         assertNotNull(mainView.findViewById(R.id.action_bar));
+        BookmarkToolbar toolbar = mCoordinator.getToolbarForTesting();
+        assertNotNull(toolbar);
+        assertFalse(toolbar.isFocusable());
+        assertFalse(toolbar.isFocusableInTouchMode());
     }
 
     @Test
@@ -236,6 +250,18 @@ public class BookmarkManagerCoordinatorTest {
         assertEquals(
                 R.drawable.bookmark_promo_desktop_background,
                 Shadows.shadowOf(cardWrapper.getBackground()).getCreatedFromResId());
+
+        View searchBoxRow = mCoordinator.buildSearchBoxRow(parent);
+        assertNotNull(searchBoxRow);
+        assertFalse(searchBoxRow.isFocusable());
+        assertFalse(searchBoxRow.isFocusableInTouchMode());
+        assertFalse(searchBoxRow.isClickable());
+
+        View searchText = searchBoxRow.findViewById(R.id.search_text);
+        assertNotNull(searchText);
+        assertTrue(searchText.isFocusable());
+        assertFalse(searchText.isFocusableInTouchMode());
+        assertTrue(searchText.isEnabled());
     }
 
     @Test
@@ -541,5 +567,106 @@ public class BookmarkManagerCoordinatorTest {
                         .getToolbarCoordinatorForTesting()
                         .getMediatorForTesting()
                         .isSmallScreenForTesting());
+    }
+
+    @Test
+    @Config(qualifiers = "w1000dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testDesktopContainerFocusability() {
+        recreateCoordinatorForDesktop();
+
+        View mainView = mCoordinator.getView();
+        assertNotNull(mainView);
+        assertFalse(mainView.isFocusable());
+        assertFalse(mainView.isFocusableInTouchMode());
+        assertFalse(mainView.getDefaultFocusHighlightEnabled());
+
+        View selectableList = mainView.findViewById(R.id.selectable_list);
+        assertNotNull(selectableList);
+        assertFalse(selectableList.isFocusable());
+        assertFalse(selectableList.isFocusableInTouchMode());
+        assertFalse(selectableList.getDefaultFocusHighlightEnabled());
+
+        BookmarkToolbar toolbar = mCoordinator.getToolbarForTesting();
+        assertNotNull(toolbar);
+        assertFalse(toolbar.isFocusable());
+        assertFalse(toolbar.isFocusableInTouchMode());
+
+        View desktopSearchBoxRow = mainView.findViewById(R.id.desktop_search_box_row);
+        assertNotNull(desktopSearchBoxRow);
+        assertFalse(desktopSearchBoxRow.isFocusable());
+        assertFalse(desktopSearchBoxRow.isFocusableInTouchMode());
+        assertFalse(desktopSearchBoxRow.isClickable());
+
+        View searchText = desktopSearchBoxRow.findViewById(R.id.search_text);
+        assertNotNull(searchText);
+        assertTrue(searchText.isFocusable());
+        assertFalse(searchText.isFocusableInTouchMode());
+        assertTrue(searchText.isEnabled());
+    }
+
+    @Test
+    @Config(qualifiers = "w700dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testResponsiveContainerFocusability() {
+        recreateCoordinatorForDesktop();
+
+        View mainView = mCoordinator.getView();
+        assertNotNull(mainView);
+        assertFalse(mainView.isFocusable());
+        assertFalse(mainView.isFocusableInTouchMode());
+        assertFalse(mainView.getDefaultFocusHighlightEnabled());
+
+        View selectableList = mainView.findViewById(R.id.selectable_list);
+        assertNotNull(selectableList);
+        assertFalse(selectableList.isFocusable());
+        assertFalse(selectableList.isFocusableInTouchMode());
+        assertFalse(selectableList.getDefaultFocusHighlightEnabled());
+
+        BookmarkToolbar toolbar = mCoordinator.getToolbarForTesting();
+        assertNotNull(toolbar);
+        assertFalse(toolbar.isFocusable());
+        assertFalse(toolbar.isFocusableInTouchMode());
+
+        // In responsive mode (< 840dp), desktop search box row is gone and inline search is used.
+        View desktopSearchBoxRow = mainView.findViewById(R.id.desktop_search_box_row);
+        assertNotNull(desktopSearchBoxRow);
+        assertEquals(View.GONE, desktopSearchBoxRow.getVisibility());
+
+        FrameLayout parent = new FrameLayout(mActivity);
+        View inlineSearchBoxRow = mCoordinator.buildSearchBoxRow(parent);
+        assertNotNull(inlineSearchBoxRow);
+        assertFalse(inlineSearchBoxRow.isFocusable());
+        assertFalse(inlineSearchBoxRow.isFocusableInTouchMode());
+        assertFalse(inlineSearchBoxRow.isClickable());
+
+        View searchText = inlineSearchBoxRow.findViewById(R.id.search_text);
+        assertNotNull(searchText);
+        assertTrue(searchText.isFocusable());
+        assertFalse(searchText.isFocusableInTouchMode());
+        assertTrue(searchText.isEnabled());
+    }
+
+    @Test
+    @Config(qualifiers = "w1000dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testKeyboardFocusTraversalDoesNotFocusContainers() {
+        recreateCoordinatorForDesktop();
+
+        ViewGroup mainView = (ViewGroup) mCoordinator.getView();
+        View desktopSearchBoxRow = mainView.findViewById(R.id.desktop_search_box_row);
+        View searchText = desktopSearchBoxRow.findViewById(R.id.search_text);
+        assertNotNull(searchText);
+
+        // Verify that navigating forward from the search text does not focus any intermediate
+        // containers.
+        View nextFocus =
+                FocusFinder.getInstance().findNextFocus(mainView, searchText, View.FOCUS_FORWARD);
+        if (nextFocus != null) {
+            assertNotEquals(mainView, nextFocus);
+            assertNotEquals(desktopSearchBoxRow, nextFocus);
+            assertNotEquals(mainView.findViewById(R.id.selectable_list), nextFocus);
+            assertNotEquals(mCoordinator.getToolbarForTesting(), nextFocus);
+        }
     }
 }
