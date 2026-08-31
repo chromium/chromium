@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/geic/geic.mojom.h"
+#include "chrome/browser/geic/geic_pwc_manager.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
@@ -362,6 +363,52 @@ TEST_F(GeicBrowserHostImplTest, IsTabValidForSharingAllowsHttpAndHttpsOnly) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       pwc_contents->web_contents(), pwc_url);
   EXPECT_FALSE(IsTabValidForSharing(pwc_contents->web_contents()));
+}
+
+TEST_F(GeicBrowserHostImplTest,
+       OpenSignInTabRejectsInvalidOrDisallowedSchemesAndOrigins) {
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+
+  // Invalid URL:
+  host_remote_->OpenSignInTab(GURL(""));
+  host_remote_.FlushForTesting();
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+
+  // Disallowed plain HTTP scheme (must be HTTPS):
+  host_remote_->OpenSignInTab(GURL("http://accounts.google.com/signin"));
+  host_remote_.FlushForTesting();
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+
+  // Disallowed chrome:// scheme:
+  host_remote_->OpenSignInTab(GURL("chrome://settings"));
+  host_remote_.FlushForTesting();
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+
+  // Disallowed javascript: scheme:
+  host_remote_->OpenSignInTab(GURL("javascript:alert(1)"));
+  host_remote_.FlushForTesting();
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+
+  // Disallowed file:// scheme:
+  host_remote_->OpenSignInTab(GURL("file:///etc/passwd"));
+  host_remote_.FlushForTesting();
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+
+  // Disallowed external HTTPS origin:
+  host_remote_->OpenSignInTab(GURL("https://evil.com/signin"));
+  host_remote_.FlushForTesting();
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+}
+
+TEST_F(GeicBrowserHostImplTest, CloseSignInTabReturnsNoSignInTabWhenNeverOpened) {
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+  EXPECT_EQ(tab_strip_model_->active_index(), 0);
+
+  base::test::TestFuture<mojom::CloseSignInTabResult> close_future;
+  host_remote_->CloseSignInTab(close_future.GetCallback());
+  EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kNoSignInTab);
+  EXPECT_EQ(tab_strip_model_->count(), 1);
+  EXPECT_EQ(tab_strip_model_->active_index(), 0);
 }
 
 }  // namespace

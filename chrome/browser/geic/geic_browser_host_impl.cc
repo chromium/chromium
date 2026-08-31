@@ -12,10 +12,13 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "chrome/browser/geic/geic_pwc_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/content_extraction/content/browser/inner_text.h"
@@ -27,12 +30,38 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "url/origin.h"
 
 namespace geic {
 
 namespace {
+
+bool IsSignInURLAllowed(const GURL& url, Profile* profile) {
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+  url::Origin origin = url::Origin::Create(url);
+  if (origin == GaiaUrls::GetInstance()->gaia_origin()) {
+    return true;
+  }
+  GURL configured_guest_url = GeicPwcManager::GetConfiguredGuestURL();
+  if (!configured_guest_url.is_empty() &&
+      origin == url::Origin::Create(configured_guest_url)) {
+    return true;
+  }
+  if (profile) {
+    if (auto* manager = GeicPwcManager::GetOrCreateForProfile(profile)) {
+      if (!manager->guest_url().is_empty() &&
+          origin == url::Origin::Create(manager->guest_url())) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 std::string_view RejectionKindToReasonString(RejectionKind kind) {
   switch (kind) {
@@ -371,6 +400,96 @@ void GeicBrowserHostImpl::DidCaptureScreenshot(
   }
 
   std::move(callback).Run(std::move(data));
+}
+
+void GeicBrowserHostImpl::OpenSignInTab(const GURL& signin_url) {
+  DVLOG(1) << "[geic] OpenSignInTab: " << signin_url;
+  if (!tab_) {
+    return;
+  }
+  BrowserWindowInterface* browser_window = tab_->GetBrowserWindowInterface();
+  if (!browser_window) {
+    return;
+  }
+  Profile* profile = browser_window->GetProfile();
+  if (!profile || profile->IsOffTheRecord()) {
+    return;
+  }
+  if (!IsSignInURLAllowed(signin_url, profile)) {
+    DVLOG(1) << "[geic] OpenSignInTab rejected disallowed sign-in URL: "
+             << signin_url;
+    return;
+  }
+  if (signin_web_contents_) {
+    if (auto* tab_strip = browser_window->GetTabStripModel()) {
+      int index = tab_strip->GetIndexOfWebContents(signin_web_contents_.get());
+      if (index != TabStripModel::kNoTab) {
+        tab_strip->ActivateTabAt(index);
+        return;
+      }
+    }
+  }
+  if (auto* active_tab = browser_window->GetActiveTabInterface()) {
+    original_tab_ = active_tab->GetWeakPtr();
+  }
+  NavigateParams params(browser_window, signin_url,
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.user_gesture = false;
+  Navigate(&params);
+  if (params.navigated_or_inserted_contents) {
+    signin_web_contents_ = params.navigated_or_inserted_contents->GetWeakPtr();
+    has_opened_signin_tab_ = true;
+  }
+}
+
+void GeicBrowserHostImpl::CloseSignInTab(CloseSignInTabCallback callback) {
+  DVLOG(1) << "[geic] CloseSignInTab, signin_web_contents="
+           << signin_web_contents_.get()
+           << ", has_opened_signin_tab=" << has_opened_signin_tab_;
+  if (!has_opened_signin_tab_) {
+    std::move(callback).Run(mojom::CloseSignInTabResult::kNoSignInTab);
+    return;
+  }
+
+  has_opened_signin_tab_ = false;
+
+  if (!signin_web_contents_) {
+    original_tab_.reset();
+    std::move(callback).Run(mojom::CloseSignInTabResult::kAlreadyClosed);
+    return;
+  }
+
+  content::WebContents* signin_contents = signin_web_contents_.get();
+  signin_web_contents_.reset();
+  bool closed = false;
+  BrowserWindowInterface* browser_window =
+      tab_ ? tab_->GetBrowserWindowInterface() : nullptr;
+  if (browser_window) {
+    if (auto* tab_strip = browser_window->GetTabStripModel()) {
+      int index = tab_strip->GetIndexOfWebContents(signin_contents);
+      if (index != TabStripModel::kNoTab) {
+        tab_strip->CloseWebContentsAt(
+            index, TabCloseTypes::CLOSE_USER_GESTURE |
+                       TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+        closed = true;
+      }
+    }
+  }
+  if (!closed) {
+    signin_contents->Close();
+  }
+  if (original_tab_ && original_tab_->GetBrowserWindowInterface()) {
+    if (auto* tab_strip =
+            original_tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
+      int index = tab_strip->GetIndexOfTab(original_tab_.get());
+      if (index != TabStripModel::kNoTab) {
+        tab_strip->ActivateTabAt(index);
+      }
+    }
+  }
+  original_tab_.reset();
+  std::move(callback).Run(mojom::CloseSignInTabResult::kSuccess);
 }
 
 void GeicBrowserHostImpl::ClosePanel() {

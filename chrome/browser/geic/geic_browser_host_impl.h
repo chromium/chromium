@@ -93,6 +93,8 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
   void GetContextFromFocusedTab(
       mojom::TabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override;
+  void OpenSignInTab(const GURL& signin_url) override;
+  void CloseSignInTab(CloseSignInTabCallback callback) override;
   void ClosePanel() override;
 
   // TabStripModelObserver:
@@ -147,6 +149,9 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
   const raw_ptr<Profile> profile_ = nullptr;
   base::CallbackListSubscription will_detach_subscription_;
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
+  base::WeakPtr<tabs::TabInterface> original_tab_;
+  base::WeakPtr<content::WebContents> signin_web_contents_;
+  bool has_opened_signin_tab_ = false;
   mojo::Receiver<mojom::GeicBrowserHost> receiver_{this};
   mojo::Remote<mojom::GeicClient> client_remote_;
   base::WeakPtrFactory<GeicBrowserHostImpl> weak_ptr_factory_{this};

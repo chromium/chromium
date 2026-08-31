@@ -148,11 +148,56 @@ enum GetTabContextError {
   kInternalError = 4,
 };
 
+// Result of attempting to close the sign-in tab.
+[Extensible]
+enum CloseSignInTabResult {
+  [Default] kUnknown = 0,
+  // The sign-in tab was found and closed.
+  kSuccess = 1,
+  // A sign-in tab was previously opened, but had already been closed.
+  kAlreadyClosed = 2,
+  // No sign-in tab was open or tracked.
+  kNoSignInTab = 3,
+};
+
 // TODO(crbug.com/539909218): Converge GeicBrowserHost and GeicClient with the
 // PWC-scoped GeicApi / GeicHost interface above.
 
 // Main IPC interface from the GE web app to browser for GEiC side panel
 // interaction.
+//
+// Version Evolution and Stability Rules:
+//
+// 1. Definition of Version 0:
+// Version 0 is defined as whatever this interface contains at the moment the
+// bindings become independently deployable via the Chrome WebUI SDK sync.
+// Declarations added prior to that cutover point deliberately carry no
+// [MinVersion] attribute. This is an architectural boundary decision, not an
+// omission; version 0 encompasses the entire baseline interface.
+//
+// 2. Build coupling and versioning rules:
+// While client and browser bindings are compiled together in the same tree,
+// both ends of every pipe are guaranteed to agree, making versioning
+// machinery inert. As soon as bindings deploy independently, cross-version
+// compatibility rules become mandatory: the interface must be marked [Stable],
+// every subsequent addition must carry [MinVersion=N], every enum must be
+// marked [Extensible] with a [Default] member, and the client-browser
+// handshake must verify capability versions. These requirements must land
+// together, because satisfying only a subset still allows version mismatches
+// through in a quieter form.
+//
+// 3. Failure mode being defended against:
+// An unrecognized method ordinal or enum value is treated as a fatal Mojo
+// validation error, not a graceful degradation. For a PrivilegedWebContents,
+// dropping the pipe terminates the renderer process outright, causing the
+// side panel to vanish with no error visible to the user. This failure mode
+// was previously hit when official builds rejected every ordinal on this
+// interface because message ID scrambling
+// (enable_mojom_message_id_scrambling = is_official_build, salted with
+// //chrome/VERSION) rewrote them, an issue that took two days to diagnose
+// because every source-level check passed.
+//
+// Next version: 1
 interface GeicBrowserHost {
   // Registers the GE web app's client endpoint and returns the state the
   // GE web app needs before its first frame. The browser is always ready before
@@ -181,6 +226,16 @@ interface GeicBrowserHost {
 
   // Requests the browser to close the GEiC side panel for this tab.
   ClosePanel();
+
+  // Opens the authentication endpoint in a new top-level browser tab
+  // and captures the originating tab for focus restoration.
+  // The `signin_url` is enforced browser-side to require HTTPS and match the
+  // component's configured guest or authentication origin.
+  OpenSignInTab(url.mojom.Url signin_url);
+
+  // Closes the active sign-in tab (if open) and restores focus to the
+  // user's originating tab. Returns the status of the operation.
+  CloseSignInTab() => (CloseSignInTabResult result);
 };
 
 // Client callbacks sent from browser C++ to the GE web app.

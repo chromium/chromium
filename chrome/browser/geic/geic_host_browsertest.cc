@@ -7,15 +7,21 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/geic/geic.mojom.h"
+#include "chrome/browser/geic/geic_browser_host_impl.h"
+#include "chrome/browser/geic/geic_pwc_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -178,6 +184,133 @@ IN_PROC_BROWSER_TEST_F(GeicApiBrowserTest, SubframeKilled) {
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(subframe);
   ExpectBindKillsRenderer(subframe);
+}
+
+IN_PROC_BROWSER_TEST_F(GeicApiBrowserTest, OpenAndCloseSignInTabLifecycle) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip->count(), 1);
+  tabs::TabInterface* initial_tab = tab_strip->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  GeicBrowserHostImpl host_impl(initial_tab);
+  mojo::Remote<mojom::GeicBrowserHost> host_remote;
+  host_impl.BindBrowserHost(host_remote.BindNewPipeAndPassReceiver());
+
+  // Open sign-in tab.
+  GURL signin_url("https://accounts.google.com/signin");
+  host_remote->OpenSignInTab(signin_url);
+  host_remote.FlushForTesting();
+
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(), signin_url);
+
+  // Close sign-in tab.
+  base::test::TestFuture<mojom::CloseSignInTabResult> close_future;
+  host_remote->CloseSignInTab(close_future.GetCallback());
+  EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kSuccess);
+
+  // Verify sign-in tab is closed and focus is restored to the original tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetActiveTab(), initial_tab);
+}
+
+IN_PROC_BROWSER_TEST_F(GeicApiBrowserTest,
+                       OpenSignInTabReusesExistingSignInTab) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip->count(), 1);
+  tabs::TabInterface* initial_tab = tab_strip->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  GeicBrowserHostImpl host_impl(initial_tab);
+  mojo::Remote<mojom::GeicBrowserHost> host_remote;
+  host_impl.BindBrowserHost(host_remote.BindNewPipeAndPassReceiver());
+
+  GURL signin_url("https://accounts.google.com/signin");
+  host_remote->OpenSignInTab(signin_url);
+  host_remote.FlushForTesting();
+
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  // Switch back to tab 0:
+  tab_strip->ActivateTabAt(0);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  // Second OpenSignInTab should activate tab 1 without opening a new tab:
+  host_remote->OpenSignInTab(signin_url);
+  host_remote.FlushForTesting();
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  base::test::TestFuture<mojom::CloseSignInTabResult> close_future;
+  host_remote->CloseSignInTab(close_future.GetCallback());
+  EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kSuccess);
+  EXPECT_EQ(tab_strip->count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GeicApiBrowserTest,
+                       CloseSignInTabReturnsAlreadyClosedWhenUserClosedTab) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip->count(), 1);
+  tabs::TabInterface* initial_tab = tab_strip->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  GeicBrowserHostImpl host_impl(initial_tab);
+  mojo::Remote<mojom::GeicBrowserHost> host_remote;
+  host_impl.BindBrowserHost(host_remote.BindNewPipeAndPassReceiver());
+
+  GURL signin_url("https://accounts.google.com/signin");
+  host_remote->OpenSignInTab(signin_url);
+  host_remote.FlushForTesting();
+
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  // User closes sign-in tab manually:
+  tab_strip->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(tab_strip->count(), 1);
+
+  // CloseSignInTab should report kAlreadyClosed:
+  base::test::TestFuture<mojom::CloseSignInTabResult> close_future;
+  host_remote->CloseSignInTab(close_future.GetCallback());
+  EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kAlreadyClosed);
+}
+
+class GeicBrowserHostCustomGuestUrlBrowserTest : public GeicApiBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GeicApiBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        kGeicGuestURLSwitch,
+        "https://localhost.corp.google.com:10443/side-panel");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GeicBrowserHostCustomGuestUrlBrowserTest,
+                       AllowsConfiguredGuestOrigin) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip->count(), 1);
+  tabs::TabInterface* initial_tab = tab_strip->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  GeicBrowserHostImpl host_impl(initial_tab);
+  mojo::Remote<mojom::GeicBrowserHost> host_remote;
+  host_impl.BindBrowserHost(host_remote.BindNewPipeAndPassReceiver());
+
+  GURL guest_signin_url("https://localhost.corp.google.com:10443/auth/signin");
+  host_remote->OpenSignInTab(guest_signin_url);
+  host_remote.FlushForTesting();
+
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(),
+            guest_signin_url);
+
+  base::test::TestFuture<mojom::CloseSignInTabResult> close_future;
+  host_remote->CloseSignInTab(close_future.GetCallback());
+  EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kSuccess);
+  EXPECT_EQ(tab_strip->count(), 1);
 }
 
 }  // namespace
