@@ -43,7 +43,7 @@
 
 namespace ash {
 
-BrowserDelegateImpl::BrowserDelegateImpl(Browser* browser)
+BrowserDelegateImpl::BrowserDelegateImpl(BrowserWindowInterface* browser)
     : browser_(CHECK_DEREF(browser)) {}
 
 BrowserDelegateImpl::~BrowserDelegateImpl() = default;

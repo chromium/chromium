@@ -227,12 +227,11 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
   FilesPolicyDialogFactory* factory() { return factory_.get(); }
 
   // Returns the last active Files app window, or nullptr when none are found.
-  Browser* FindFilesApp() {
+  BrowserWindowInterface* FindFilesApp() {
     ash::BrowserDelegate* delegate = FindSystemWebAppBrowser(
         browser()->GetProfile(), ash::SystemWebAppType::FILE_MANAGER,
         ash::BrowserType::kApp);
-    return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
-                    : nullptr;
+    return delegate ? &delegate->GetBrowser() : nullptr;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1187,7 +1186,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
   bridge_->Click(kNotificationId1, NotificationButton::OK);
 
-  Browser* first_app;
+  BrowserWindowInterface* first_app;
 
   // If a modal parent was present, assert a new Files App was opened.
   bool first_call_has_modal_parent = modal_parent_present_future.Take();
@@ -1411,7 +1410,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   bridge_->Click(kNotificationId1, NotificationButton::OK);
 
   // Check that a new Files app is opened.
-  Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* first_app = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(first_app);
   ASSERT_EQ(first_app, FindFilesApp());
   // Task info is removed after the dialog is shown.

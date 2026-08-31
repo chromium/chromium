@@ -53,6 +53,7 @@ source_set("impl") {
     if (is_chromeos) {
       sources += [ "window_sizer_chromeos.cc" ]
       deps += [
+        "//chrome/browser/ui/window_feature_controller",
         "//chrome/common:constants",
         "//ui/aura",
       ]

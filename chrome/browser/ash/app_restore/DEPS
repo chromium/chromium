@@ -55,6 +55,7 @@ specific_include_rules = {
   ],
 
   "full_restore_app_launch_handler_browsertest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+ui/message_center/message_center.h",
   ],
 

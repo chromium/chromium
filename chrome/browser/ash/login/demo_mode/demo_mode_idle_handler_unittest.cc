@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -169,10 +169,12 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
       demo_mode_idle_handler()->GetMGSLogoutTimeoutForTest().has_value());
 
   // Initialize 2 browsers.
-  std::unique_ptr<Browser> browser_1 = CreateBrowserWithTestWindowForParams(
-      BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
-  std::unique_ptr<Browser> browser_2 = CreateBrowserWithTestWindowForParams(
-      BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
+  std::unique_ptr<BrowserWindowInterface> browser_1 =
+      CreateBrowserWithTestWindowForParams(
+          BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
+  std::unique_ptr<BrowserWindowInterface> browser_2 =
+      CreateBrowserWithTestWindowForParams(
+          BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2U);
 
   // Trigger close all browsers by being idle for

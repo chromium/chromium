@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -66,7 +67,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
 
   BrowserWindowInterface* DetachTabToNewBrowser(BrowserWindowInterface* browser,
                                                 int tab_index);
-  content::WebContents* Navigate(Browser* browser,
+  content::WebContents* Navigate(BrowserWindowInterface* browser,
                                  const std::string& url_in,
                                  WindowOpenDisposition disposition);
 
@@ -124,7 +125,7 @@ BrowserWindowInterface* WebTimeCalculationBrowserTest::DetachTabToNewBrowser(
 }
 
 content::WebContents* WebTimeCalculationBrowserTest::Navigate(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& url_in,
     WindowOpenDisposition disposition) {
   GURL url =

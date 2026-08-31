@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ash/web_ui_test_handler.h"
 #include "chrome/test/data/grit/webui_test_resources.h"
@@ -133,7 +134,7 @@ void MojoWebUIBrowserTest::SetupHandlers() {
   content::WebUI* web_ui_instance =
       override_selected_web_ui()
           ? override_selected_web_ui()
-          : browser()->tab_strip_model()->GetActiveWebContents()->GetWebUI();
+          : browser()->GetTabStripModel()->GetActiveWebContents()->GetWebUI();
   ASSERT_TRUE(web_ui_instance != nullptr);
 
   auto test_handler = std::make_unique<WebUITestPageHandler>(web_ui_instance);
@@ -147,7 +148,7 @@ void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
     return;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::string test_mojo_lite_js =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_WEBUI_CHROMEOS_TEST_WEB_UI_TEST_MOJOM_LITE_JS);

@@ -81,10 +81,11 @@ specific_include_rules = {
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h",
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h",
     "+chrome/browser/ui/ash/system_web_apps",
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window/public/browser_window_features.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/exclusive_access",
     "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h",
   ],
 }

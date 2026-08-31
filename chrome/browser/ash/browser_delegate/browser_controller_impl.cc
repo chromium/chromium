@@ -109,9 +109,7 @@ BrowserDelegate* BrowserControllerImpl::GetDelegate(
 
   auto it = browsers_.find(bwi);
   if (it == browsers_.end()) {
-    it = browsers_
-             .emplace(bwi, std::make_unique<BrowserDelegateImpl>(
-                               bwi->GetBrowserForMigrationOnly()))
+    it = browsers_.emplace(bwi, std::make_unique<BrowserDelegateImpl>(bwi))
              .first;
   }
   return it->second.get();

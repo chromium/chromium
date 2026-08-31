@@ -17,6 +17,7 @@
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

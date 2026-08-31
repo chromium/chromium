@@ -21,3 +21,10 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+}

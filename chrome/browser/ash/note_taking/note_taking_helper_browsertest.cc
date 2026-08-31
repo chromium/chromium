@@ -8,7 +8,8 @@
 #include "ash/public/cpp/note_taking_client.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -47,10 +48,10 @@ IN_PROC_BROWSER_TEST_F(NoteTakingHelperBrowserTest, LaunchWebApp) {
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   NoteTakingClient::GetInstance()->CreateNote();
-  Browser* app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* app_browser = browser_created_observer.Wait();
 
-  ASSERT_TRUE(app_browser->tab_strip_model()->GetActiveWebContents());
-  GURL url = app_browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+  ASSERT_TRUE(app_browser->GetTabStripModel()->GetActiveWebContents());
+  GURL url = app_browser->GetTabStripModel()->GetActiveWebContents()->GetURL();
   ASSERT_EQ(new_note_url, url);
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 
@@ -77,10 +78,10 @@ IN_PROC_BROWSER_TEST_F(NoteTakingHelperBrowserTest, LaunchHardcodedWebApp) {
   // Fire a "Create Note" action and check the app is launched.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   NoteTakingClient::GetInstance()->CreateNote();
-  Browser* app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* app_browser = browser_created_observer.Wait();
 
-  ASSERT_TRUE(app_browser->tab_strip_model()->GetActiveWebContents());
-  GURL url = app_browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+  ASSERT_TRUE(app_browser->GetTabStripModel()->GetActiveWebContents());
+  GURL url = app_browser->GetTabStripModel()->GetActiveWebContents()->GetURL();
   ASSERT_EQ(app_url, url);
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 }

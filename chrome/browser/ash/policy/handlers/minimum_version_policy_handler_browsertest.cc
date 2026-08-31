@@ -748,10 +748,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, EolNotificationClick) {
           kUpdateRequiredNotificationId));
 
   // 4. Wait for the new browser window to be created and get a handle to it.
-  Browser* settings_browser = browser_observer.Wait();
+  BrowserWindowInterface* settings_browser = browser_observer.Wait();
   ASSERT_TRUE(settings_browser);
   content::WebContents* web_contents =
-      settings_browser->tab_strip_model()->GetActiveWebContents();
+      settings_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(web_contents->GetVisibleURL(), "chrome://management/");
 }
 

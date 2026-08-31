@@ -24,7 +24,8 @@
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -219,9 +220,10 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
 
   // Creates a test browser window and sets its visibility, activity and
   // incognito status.
-  std::unique_ptr<Browser> CreateTestBrowser(bool is_visible,
-                                             bool is_focused,
-                                             bool is_incognito = false) {
+  std::unique_ptr<BrowserWindowInterface> CreateTestBrowser(
+      bool is_visible,
+      bool is_focused,
+      bool is_incognito = false) {
     Profile* const original_profile = profile();
     Profile* const used_profile =
         is_incognito
@@ -239,7 +241,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
       dummy_window->Hide();
     }
 
-    std::unique_ptr<Browser> browser =
+    std::unique_ptr<BrowserWindowInterface> browser =
         chrome::CreateBrowserWithAuraTestWindowForParams(
             std::move(dummy_window), std::move(params));
     if (is_focused) {
@@ -1271,10 +1273,10 @@ TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
 
-  std::unique_ptr<Browser> browser =
+  std::unique_ptr<BrowserWindowInterface> browser =
       CreateTestBrowser(true /* is_visible */, true /* is_focused */);
   ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   const ukm::SourceId source_id1 = CreateTestWebContents(
       tab_strip_model, url1_, true /* is_active */, "application/pdf");
   site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
@@ -1307,26 +1309,26 @@ TEST_F(UserActivityManagerTest, DISABLED_MultiBrowsersAndTabs) {
   // Simulates three browsers:
   //  - browser1 is the last active but minimized and so not visible.
   //  - browser2 and browser3 are both visible but browser2 is the topmost.
-  std::unique_ptr<Browser> browser1 =
+  std::unique_ptr<BrowserWindowInterface> browser1 =
       CreateTestBrowser(false /* is_visible */, false /* is_focused */);
-  std::unique_ptr<Browser> browser2 =
+  std::unique_ptr<BrowserWindowInterface> browser2 =
       CreateTestBrowser(true /* is_visible */, true /* is_focused */);
-  std::unique_ptr<Browser> browser3 =
+  std::unique_ptr<BrowserWindowInterface> browser3 =
       CreateTestBrowser(true /* is_visible */, false /* is_focused */);
 
   ui_test_utils::DeprecatedFakeActivateBrowser(browser3.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser1.get());
 
-  TabStripModel* tab_strip_model1 = browser1->tab_strip_model();
+  TabStripModel* tab_strip_model1 = browser1->GetTabStripModel();
   CreateTestWebContents(tab_strip_model1, url1_, false /* is_active */);
   CreateTestWebContents(tab_strip_model1, url2_, true /* is_active */);
 
-  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
+  TabStripModel* tab_strip_model2 = browser2->GetTabStripModel();
   const ukm::SourceId source_id3 =
       CreateTestWebContents(tab_strip_model2, url3_, true /* is_active */);
 
-  TabStripModel* tab_strip_model3 = browser3->tab_strip_model();
+  TabStripModel* tab_strip_model3 = browser3->GetTabStripModel();
   CreateTestWebContents(tab_strip_model3, url4_, true /* is_active */);
 
   IdleEventNotifier::ActivityData data;
@@ -1351,11 +1353,11 @@ TEST_F(UserActivityManagerTest, Incognito) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
 
-  std::unique_ptr<Browser> browser = CreateTestBrowser(
+  std::unique_ptr<BrowserWindowInterface> browser = CreateTestBrowser(
       true /* is_visible */, true /* is_focused */, true /* is_incognito */);
   ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
 
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   CreateTestWebContents(tab_strip_model, url1_, true /* is_active */);
   CreateTestWebContents(tab_strip_model, url2_, false /* is_active */);
 
@@ -1379,7 +1381,7 @@ TEST_F(UserActivityManagerTest, NoOpenTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
 
-  std::unique_ptr<Browser> browser =
+  std::unique_ptr<BrowserWindowInterface> browser =
       CreateTestBrowser(true /* is_visible */, true /* is_focused */);
 
   IdleEventNotifier::ActivityData data;

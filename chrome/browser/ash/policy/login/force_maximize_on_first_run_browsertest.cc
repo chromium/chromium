@@ -51,7 +51,7 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
         .UpdateDisplay(resolution);
   }
 
-  const Browser* OpenNewBrowserWindow() {
+  const BrowserWindowInterface* OpenNewBrowserWindow() {
     const user_manager::User* const user =
         user_manager::UserManager::Get()->GetActiveUser();
     Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, TwoRuns) {
                                           true /* check_if_submittable */);
   ash::test::WaitForPrimaryUserSessionStart();
 
-  const Browser* const browser = OpenNewBrowserWindow();
+  const BrowserWindowInterface* const browser = OpenNewBrowserWindow();
   ASSERT_TRUE(browser);
   EXPECT_FALSE(browser->GetWindow()->IsMaximized());
 }

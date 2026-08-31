@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -191,7 +192,7 @@ IN_PROC_BROWSER_TEST_P(PostLoginDeferredTaskTest, PRE_Basic) {
 
   // Creates a browser window and loads page other than new tab page.
   Profile* user_profile = ProfileManager::GetActiveUserProfile();
-  Browser* browser = CreateBrowser(user_profile);
+  BrowserWindowInterface* browser = CreateBrowser(user_profile);
   ASSERT_NE(browser, nullptr);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser, GURL("http://www.google.com")));

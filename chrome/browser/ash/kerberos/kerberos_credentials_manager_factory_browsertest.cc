@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
 IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
                        GetServiceForIncognitoProfile) {
   Profile* const profile = browser()->GetProfile();
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile);
   ASSERT_TRUE(incognito_browser);
 
   Profile* incognito_profile = incognito_browser->GetProfile();

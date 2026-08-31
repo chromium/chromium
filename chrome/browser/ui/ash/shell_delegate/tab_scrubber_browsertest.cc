@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -120,10 +121,10 @@ class TabScrubberTest : public InProcessBrowserTest,
   void TearDownOnMainThread() override {
     wm_helper_.reset();
 
-    browser()->tab_strip_model()->RemoveObserver(this);
+    browser()->GetTabStripModel()->RemoveObserver(this);
   }
 
-  TabStrip* GetTabStrip(Browser* browser) {
+  TabStrip* GetTabStrip(BrowserWindowInterface* browser) {
     aura::Window* window = browser->GetWindow()->GetNativeWindow();
     // This test depends on TabStrip impl.
     TabStrip* tab_strip = BrowserView::GetBrowserViewForNativeWindow(window)
@@ -132,12 +133,14 @@ class TabScrubberTest : public InProcessBrowserTest,
     return tab_strip;
   }
 
-  int GetStartX(Browser* browser, int index, TabScrubber::Direction direction) {
+  int GetStartX(BrowserWindowInterface* browser,
+                int index,
+                TabScrubber::Direction direction) {
     return TabScrubber::GetStartPoint(GetTabStrip(browser), index, direction)
         .x();
   }
 
-  int GetTabCenter(Browser* browser, int index) {
+  int GetTabCenter(BrowserWindowInterface* browser, int index) {
     return GetTabStrip(browser)
         ->tab_at(index)
         ->GetMirroredBounds()
@@ -164,9 +167,9 @@ class TabScrubberTest : public InProcessBrowserTest,
 
   // Sends one scroll event synchronously without initial or final
   // fling events.
-  void SendScrubEvent(Browser* browser, int index) {
+  void SendScrubEvent(BrowserWindowInterface* browser, int index) {
     auto event_generator = CreateEventGenerator(browser);
-    int active_index = browser->tab_strip_model()->active_index();
+    int active_index = browser->GetTabStripModel()->active_index();
     TabScrubber::Direction direction =
         index < active_index ? TabScrubber::LEFT : TabScrubber::RIGHT;
 
@@ -188,10 +191,10 @@ class TabScrubberTest : public InProcessBrowserTest,
 
   // Sends asynchronous events and waits for tab at |index| to become
   // active.
-  void Scrub(Browser* browser, int index, ScrubType scrub_type) {
+  void Scrub(BrowserWindowInterface* browser, int index, ScrubType scrub_type) {
     auto event_generator = CreateEventGenerator(browser);
     activation_order_.clear();
-    int active_index = browser->tab_strip_model()->active_index();
+    int active_index = browser->GetTabStripModel()->active_index();
     ASSERT_NE(index, active_index);
     ASSERT_TRUE(scrub_type != SKIP_TABS || ((index - active_index) % 2) == 0);
     TabScrubber::Direction direction;
@@ -209,7 +212,7 @@ class TabScrubberTest : public InProcessBrowserTest,
     if (scrub_type == SKIP_TABS) {
       increment *= 2;
     }
-    browser->tab_strip_model()->AddObserver(this);
+    browser->GetTabStripModel()->AddObserver(this);
     ScrollGenerator scroll_generator(event_generator.get());
     int last = GetStartX(browser, active_index, direction);
     for (int i = active_index + increment; i != (index + increment);
@@ -222,23 +225,25 @@ class TabScrubberTest : public InProcessBrowserTest,
         last += increment;
       }
     }
-    browser->tab_strip_model()->RemoveObserver(this);
+    browser->GetTabStripModel()->RemoveObserver(this);
   }
 
   // Sends events and waits for tab at |index| to become active
   // if it's different from the currently active tab.
   // If the active tab is expected to stay the same, send events
   // synchronously (as we don't have anything to wait for).
-  void SendScrubSequence(Browser* browser, float x_offset, int index) {
+  void SendScrubSequence(BrowserWindowInterface* browser,
+                         float x_offset,
+                         int index) {
     auto event_generator = CreateEventGenerator(browser);
-    browser->tab_strip_model()->AddObserver(this);
+    browser->GetTabStripModel()->AddObserver(this);
     ScrollGenerator scroll_generator(event_generator.get());
     scroll_generator.GenerateScroll(x_offset);
-    browser->tab_strip_model()->RemoveObserver(this);
+    browser->GetTabStripModel()->RemoveObserver(this);
   }
 
   // Sends alt-tab key press event to start the window cycle list.
-  void StartCyclingWindows(Browser* browser) {
+  void StartCyclingWindows(BrowserWindowInterface* browser) {
     auto event_generator = CreateEventGenerator(browser);
     // Views use VKEY_MENU for both left and right Alt keys.
     event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
@@ -247,7 +252,7 @@ class TabScrubberTest : public InProcessBrowserTest,
   }
 
   // Sends alt-tab key release event to start the window cycle list.
-  void StopCyclingWindows(Browser* browser) {
+  void StopCyclingWindows(BrowserWindowInterface* browser) {
     auto event_generator = CreateEventGenerator(browser);
     event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
   }
@@ -256,12 +261,12 @@ class TabScrubberTest : public InProcessBrowserTest,
     return TabScrubber::GetInstance()->GetEnabledForTesting();
   }
 
-  void AddTabs(Browser* browser, int num_tabs) {
+  void AddTabs(BrowserWindowInterface* browser, int num_tabs) {
     for (int i = 0; i < num_tabs; ++i) {
       AddBlankTabAndShow(browser);
     }
-    ASSERT_EQ(num_tabs + 1, browser->tab_strip_model()->count());
-    ASSERT_EQ(num_tabs, browser->tab_strip_model()->active_index());
+    ASSERT_EQ(num_tabs + 1, browser->GetTabStripModel()->count());
+    ASSERT_EQ(num_tabs, browser->GetTabStripModel()->active_index());
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     CHECK(browser_view);
     // Perform any scheduled layouts so the tabstrip is in a steady state.
@@ -282,7 +287,7 @@ class TabScrubberTest : public InProcessBrowserTest,
   }
 
   std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
-      Browser* browser) {
+      BrowserWindowInterface* browser) {
     aura::Window* window = browser->GetWindow()->GetNativeWindow();
     aura::Window* root = window->GetRootWindow();
     return std::make_unique<ui::test::EventGenerator>(root, window);
@@ -351,11 +356,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, Single) {
 
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(0));
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   Scrub(browser(), 1, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(1));
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 }
 
 // Swipe 4 tabs in each direction. Each of the tabs should become active.
@@ -364,26 +369,26 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, Multi) {
 
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   Scrub(browser(), 4, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(1, 2, 3, 4));
-  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(4, browser()->GetTabStripModel()->active_index());
 }
 
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, MultiBrowser) {
   AddTabs(browser(), 1);
   Scrub(browser(), 0, EACH_TAB);
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   browser2->GetWindow()->Activate();
   ASSERT_TRUE(browser2->GetWindow()->IsActive());
   ASSERT_FALSE(browser()->GetWindow()->IsActive());
   AddTabs(browser2, 1);
 
   Scrub(browser2, 0, EACH_TAB);
-  EXPECT_EQ(0, browser2->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser2->GetTabStripModel()->active_index());
 }
 
 // Tests that tab scrubbing works correctly for a full-screen browser.
@@ -394,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, FullScreenBrowser) {
   event_generator->MoveMouseTo(
       gfx::Point(0, browser()->GetWindow()->GetBounds().height()));
   AddTabs(browser(), 6);
-  browser()->tab_strip_model()->ActivateTabAt(4);
+  browser()->GetTabStripModel()->ActivateTabAt(4);
 
   chrome::ToggleFullscreenMode(browser());
   auto* const immersive_controller = ImmersiveModeController::From(browser());
@@ -405,9 +410,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, FullScreenBrowser) {
 
   EXPECT_FALSE(immersive_controller->IsRevealed());
 
-  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(4, browser()->GetTabStripModel()->active_index());
   Scrub(browser(), 0, EACH_TAB);
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
   EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
 }
 
@@ -418,11 +423,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, Repeated) {
 
   Scrub(browser(), 0, REPEAT_TABS);
   EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   Scrub(browser(), 4, REPEAT_TABS);
   EXPECT_THAT(activation_order_, testing::ElementsAre(1, 2, 3, 4));
-  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(4, browser()->GetTabStripModel()->active_index());
 }
 
 // Confirm that we get the last tab made active when we skip tabs.
@@ -433,11 +438,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, Skipped) {
 
   Scrub(browser(), 0, SKIP_TABS);
   EXPECT_THAT(activation_order_, testing::ElementsAre(2, 0));
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   Scrub(browser(), 4, SKIP_TABS);
   EXPECT_THAT(activation_order_, testing::ElementsAre(2, 4));
-  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(4, browser()->GetTabStripModel()->active_index());
 }
 
 // Confirm that nothing happens when the swipe is small.
@@ -445,10 +450,10 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, NoChange) {
   AddTabs(browser(), 1);
 
   SendScrubSequence(browser(), -1, 1);
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   SendScrubSequence(browser(), 1, 1);
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 }
 
 // Confirm that very large swipes go to the beginning and and of the tabstrip.
@@ -456,10 +461,10 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, Bounds) {
   AddTabs(browser(), 1);
 
   SendScrubSequence(browser(), -10000, 0);
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   SendScrubSequence(browser(), 10000, 1);
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 }
 
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, DeleteHighlighted) {
@@ -467,8 +472,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DeleteHighlighted) {
 
   SendScrubEvent(browser(), 0);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->GetTabStripModel()->CloseWebContentsAt(0,
+                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(TabScrubber::GetInstance()->IsActivationPending());
 }
 
@@ -479,8 +484,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DeleteBeforeHighlighted) {
 
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->GetTabStripModel()->CloseWebContentsAt(0,
+                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }
 
@@ -490,9 +495,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveHighlighted) {
 
   SendScrubEvent(browser(), 0);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->SelectTabAt(0);
-  browser()->tab_strip_model()->DeselectTabAt(1);
-  browser()->tab_strip_model()->MoveSelectedTabsTo(1, std::nullopt);
+  browser()->GetTabStripModel()->SelectTabAt(0);
+  browser()->GetTabStripModel()->DeselectTabAt(1);
+  browser()->GetTabStripModel()->MoveSelectedTabsTo(1, std::nullopt);
   EXPECT_EQ(1, TabScrubber::GetInstance()->highlighted_tab());
 }
 
@@ -503,9 +508,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveBefore) {
 
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->SelectTabAt(0);
-  browser()->tab_strip_model()->SelectTabAt(2);
-  browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
+  browser()->GetTabStripModel()->SelectTabAt(0);
+  browser()->GetTabStripModel()->SelectTabAt(2);
+  browser()->GetTabStripModel()->MoveSelectedTabsTo(2, std::nullopt);
   EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }
 
@@ -516,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveAfter) {
 
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->MoveSelectedTabsTo(0, std::nullopt);
+  browser()->GetTabStripModel()->MoveSelectedTabsTo(0, std::nullopt);
   EXPECT_EQ(2, TabScrubber::GetInstance()->highlighted_tab());
 }
 
@@ -541,11 +546,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMulti) {
 
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   Scrub(browser(), 4, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(1, 2, 3, 4));
-  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(4, browser()->GetTabStripModel()->active_index());
 }
 
 // In an RTL layout, confirm that we get the last tab made active when we skip
@@ -560,11 +565,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLSkipped) {
 
   Scrub(browser(), 0, SKIP_TABS);
   EXPECT_THAT(activation_order_, testing::ElementsAre(2, 0));
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   Scrub(browser(), 4, SKIP_TABS);
   EXPECT_THAT(activation_order_, testing::ElementsAre(2, 4));
-  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(4, browser()->GetTabStripModel()->active_index());
 }
 
 // In an RTL layout, move a tab to before the highlighted one. Make sure that
@@ -578,9 +583,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMoveBefore) {
 
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->SelectTabAt(0);
-  browser()->tab_strip_model()->SelectTabAt(2);
-  browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
+  browser()->GetTabStripModel()->SelectTabAt(0);
+  browser()->GetTabStripModel()->SelectTabAt(2);
+  browser()->GetTabStripModel()->MoveSelectedTabsTo(2, std::nullopt);
   EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }
 
@@ -589,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DisabledIfWindowCycleListOpen) {
   AddTabs(browser(), 4);
 
   // Create a second browser, but don't make it active.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   browser()->GetWindow()->Activate();
   ASSERT_FALSE(browser2->GetWindow()->IsActive());
   ASSERT_TRUE(browser()->GetWindow()->IsActive());
@@ -600,14 +605,14 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DisabledIfWindowCycleListOpen) {
   EXPECT_FALSE(IsTabScrubberEnabled());
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_EQ(0u, activation_order_.size());
-  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(4, browser()->GetTabStripModel()->active_index());
 
   // Stop cycling. Scrub should work again.
   StopCyclingWindows(browser());
   EXPECT_TRUE(IsTabScrubberEnabled());
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 }
 
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, VerticalAndHorizontalScroll) {

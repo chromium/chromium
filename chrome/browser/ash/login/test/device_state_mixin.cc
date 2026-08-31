@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_paths.h"

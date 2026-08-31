@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   EXPECT_EQ(
-      Browser::CreationStatus::kErrorProfileUnsuitable,
+      BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable,
       GetBrowserWindowCreationStatusForProfile(*Profile::FromBrowserContext(
           ash::BrowserContextHelper::Get()
               ->DeprecatedGetOrCreateSigninBrowserContext())));
@@ -147,11 +147,11 @@ class BrowserGuestSessionNavigatorTest : public BrowserNavigatorTest {
 // in Guest Session (as well as all other windows in Guest session).
 IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
                        Disposition_Settings_UseIncognitoWindow) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
 
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(1, browser()->GetTabStripModel()->count());
-  EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito_browser->GetTabStripModel()->count());
 
   // Navigate to the settings page.
   NavigateParams params(MakeNavigateParams(incognito_browser));
@@ -164,10 +164,10 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
   // Settings page should be opened in incognito window.
   EXPECT_NE(browser(), params.browser);
   EXPECT_EQ(incognito_browser, params.browser);
-  EXPECT_EQ(2, incognito_browser->tab_strip_model()->count());
+  EXPECT_EQ(2, incognito_browser->GetTabStripModel()->count());
   EXPECT_EQ(
       GURL("chrome://settings"),
-      incognito_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+      incognito_browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 }
 
 class BrowserNavigatorMultiUserTestChromeOS

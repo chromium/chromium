@@ -38,6 +38,7 @@ include_rules = [
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/immersive",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
+  "+chrome/browser/ui/tabs/tab_strip_user_gesture_details.h",
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/views/tabs",
   "+chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h",
@@ -53,7 +54,8 @@ specific_include_rules = {
   ],
 
   ".*browsertest\\.cc": [
-    "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/tabs/tab_enums.h",
     "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   ]

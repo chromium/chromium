@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        IncognitoMarkedAsAssistantBlocked) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   EXPECT_TRUE(incognito_browser->GetWindow()->GetNativeWindow()->GetProperty(
       chromeos::kBlockedForAssistantSnapshotKey));
 }
@@ -1234,7 +1234,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 // Tests that we don't accidentally change the color of app frame title bars.
 // Update expectation if change is intentional.
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, AppFrameColor) {
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->GetProfile());
 
   aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
@@ -1363,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        ImmersiveModeTopViewInset) {
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->GetProfile());
 
   auto* const immersive_mode_controller =
@@ -1531,7 +1531,7 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
 // in tablet mode.
 IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
                        BrowserAppHeaderVisibilityInTabletModeTest) {
-  Browser* browser2 =
+  BrowserWindowInterface* browser2 =
       CreateBrowserForApp("test_browser_app", browser()->GetProfile());
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
   views::Widget* widget2 = browser_view2->GetWidget();
@@ -1668,7 +1668,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
                        TabletModeAppCaptionButtonVisibility) {
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->GetProfile());
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);

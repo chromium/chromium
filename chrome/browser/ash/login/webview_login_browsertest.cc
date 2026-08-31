@@ -68,6 +68,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
@@ -827,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
-  Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* browser = ui_test_utils::WaitForBrowserToOpen();
   test::WaitForPrimaryUserSessionStart();
 
   // AddRecoveryMethod() logic is deferred until refresh tokens are loaded.

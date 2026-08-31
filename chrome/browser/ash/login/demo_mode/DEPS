@@ -44,13 +44,15 @@ specific_include_rules = {
   ".*test(|_.*)\\.(cc|h)": [
     "+chrome/browser/ash/browser_delegate/browser_delegate.h",
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
-    "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/test/base",
   ],
   ".*test\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
+  ],
+  "demo_mode_idle_handler_unittest\\.cc": [
+    "+chrome/browser/ui/browser_window/public/create_browser_window.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   ],
   "demo_mode_test_helper\\.cc": [
     "+chrome/browser/browser_process_platform_part.h",

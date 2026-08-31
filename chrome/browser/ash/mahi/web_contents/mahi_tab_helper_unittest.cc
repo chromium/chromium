@@ -10,8 +10,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/mahi/web_contents/test_support/mock_mahi_web_contents_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
@@ -37,7 +39,7 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
     // Initialize browser.
     BrowserWindowCreateParams params(profile(), /*user_gesture=*/true);
     browser_ = CreateBrowserWithTestWindowForParams(std::move(params));
-    tab_strip_model_ = browser_->tab_strip_model();
+    tab_strip_model_ = browser_->GetTabStripModel();
   }
 
   void TearDown() override {
@@ -57,7 +59,7 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   TabActivitySimulator tab_activity_simulator_;
   raw_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<BrowserWindowInterface> browser_;
 };
 
 TEST_F(MahiTabHelperTest, FocusedTabLoadComplete) {

@@ -29,9 +29,12 @@ specific_include_rules = {
   ".*test\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/create_browser_window.h",
     "+chrome/browser/ui/browser_window.h",
-    "+chrome/browser/ui/tabs",
+    "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/browser/ui/tabs/tab_ukm_test_helper.h",
     "+chrome/test/base",
   ],
 }

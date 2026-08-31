@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, NavigateExisting) {
   for (unsigned short i = 0; i < 2; i++) {
     LaunchExtensionAndCatchResult(*extension);
     UNSAFE_TODO(web_contents[i]) =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   // GetWindowIdOfTab() returns -1 for SessionID::InvalidValue().

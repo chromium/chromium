@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -155,7 +156,7 @@ class FamilyUserChromeActivityMetricsTest
 
   PrefService* pref_service() { return profile()->GetPrefs(); }
 
-  std::unique_ptr<Browser> test_browser_;
+  std::unique_ptr<BrowserWindowInterface> test_browser_;
 
  private:
   std::unique_ptr<FamilyUserChromeActivityMetrics>

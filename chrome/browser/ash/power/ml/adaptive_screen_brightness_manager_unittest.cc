@@ -17,7 +17,10 @@
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "chrome/browser/ash/power/ml/screen_brightness_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
@@ -178,9 +181,10 @@ class AdaptiveScreenBrightnessManagerTest
 
   // Creates a test browser window and sets its visibility, activity and
   // incognito status.
-  std::unique_ptr<Browser> CreateTestBrowser(bool is_visible,
-                                             bool is_focused,
-                                             bool is_incognito = false) {
+  std::unique_ptr<BrowserWindowInterface> CreateTestBrowser(
+      bool is_visible,
+      bool is_focused,
+      bool is_incognito = false) {
     Profile* const original_profile = profile();
     Profile* const used_profile =
         is_incognito
@@ -198,7 +202,7 @@ class AdaptiveScreenBrightnessManagerTest
       dummy_window->Hide();
     }
 
-    std::unique_ptr<Browser> browser =
+    std::unique_ptr<BrowserWindowInterface> browser =
         chrome::CreateBrowserWithAuraTestWindowForParams(
             std::move(dummy_window), std::move(params));
     if (is_focused) {
@@ -630,10 +634,10 @@ TEST_F(AdaptiveScreenBrightnessManagerTest, UserEventCounts) {
 
 // Test is flaky. See https://crbug.com/41444814.
 TEST_F(AdaptiveScreenBrightnessManagerTest, DISABLED_SingleBrowser) {
-  std::unique_ptr<Browser> browser =
+  std::unique_ptr<BrowserWindowInterface> browser =
       CreateTestBrowser(true /* is_visible */, true /* is_focused */);
   ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   CreateTestWebContents(tab_strip_model, kUrl1, false /* is_active */);
   const ukm::SourceId source_id2 =
       CreateTestWebContents(tab_strip_model, kUrl2, true /* is_active */);
@@ -657,25 +661,25 @@ TEST_F(AdaptiveScreenBrightnessManagerTest,
   //  - browser1 is the last active but minimized, so not visible.
   //  - browser2 and browser3 are both visible but browser2 is the topmost.
 
-  std::unique_ptr<Browser> browser1 =
+  std::unique_ptr<BrowserWindowInterface> browser1 =
       CreateTestBrowser(false /* is_visible */, false /* is_focused */);
-  std::unique_ptr<Browser> browser2 =
+  std::unique_ptr<BrowserWindowInterface> browser2 =
       CreateTestBrowser(true /* is_visible */, true /* is_focused */);
-  std::unique_ptr<Browser> browser3 =
+  std::unique_ptr<BrowserWindowInterface> browser3 =
       CreateTestBrowser(true /* is_visible */, false /* is_focused */);
 
   ui_test_utils::DeprecatedFakeActivateBrowser(browser3.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser1.get());
 
-  TabStripModel* tab_strip_model1 = browser1->tab_strip_model();
+  TabStripModel* tab_strip_model1 = browser1->GetTabStripModel();
   CreateTestWebContents(tab_strip_model1, kUrl1, true /* is_active */);
 
-  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
+  TabStripModel* tab_strip_model2 = browser2->GetTabStripModel();
   const ukm::SourceId source_id2 =
       CreateTestWebContents(tab_strip_model2, kUrl2, true /* is_active */);
 
-  TabStripModel* tab_strip_model3 = browser3->tab_strip_model();
+  TabStripModel* tab_strip_model3 = browser3->GetTabStripModel();
   CreateTestWebContents(tab_strip_model3, kUrl3, true /* is_active */);
 
   InitializeBrightness(75.0f);
@@ -699,25 +703,25 @@ TEST_F(AdaptiveScreenBrightnessManagerTest,
   //  - browser2 and browser3 are both visible but not focused so not active.
   //  - browser2 is the topmost.
 
-  std::unique_ptr<Browser> browser1 =
+  std::unique_ptr<BrowserWindowInterface> browser1 =
       CreateTestBrowser(false /* is_visible */, false /* is_focused */);
-  std::unique_ptr<Browser> browser2 =
+  std::unique_ptr<BrowserWindowInterface> browser2 =
       CreateTestBrowser(true /* is_visible */, false /* is_focused */);
-  std::unique_ptr<Browser> browser3 =
+  std::unique_ptr<BrowserWindowInterface> browser3 =
       CreateTestBrowser(true /* is_visible */, false /* is_focused */);
 
   ui_test_utils::DeprecatedFakeActivateBrowser(browser3.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser1.get());
 
-  TabStripModel* tab_strip_model1 = browser1->tab_strip_model();
+  TabStripModel* tab_strip_model1 = browser1->GetTabStripModel();
   CreateTestWebContents(tab_strip_model1, kUrl1, true /* is_active */);
 
-  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
+  TabStripModel* tab_strip_model2 = browser2->GetTabStripModel();
   const ukm::SourceId source_id2 =
       CreateTestWebContents(tab_strip_model2, kUrl2, true /* is_active */);
 
-  TabStripModel* tab_strip_model3 = browser3->tab_strip_model();
+  TabStripModel* tab_strip_model3 = browser3->GetTabStripModel();
   CreateTestWebContents(tab_strip_model3, kUrl3, true /* is_active */);
 
   InitializeBrightness(75.0f);
@@ -740,25 +744,25 @@ TEST_F(AdaptiveScreenBrightnessManagerTest, BrowsersWithIncognito) {
   //  - browser2 is visible but not focused so not active.
   //  - browser3 is visible and focused, but incognito.
 
-  std::unique_ptr<Browser> browser1 =
+  std::unique_ptr<BrowserWindowInterface> browser1 =
       CreateTestBrowser(false /* is_visible */, false /* is_focused */);
-  std::unique_ptr<Browser> browser2 =
+  std::unique_ptr<BrowserWindowInterface> browser2 =
       CreateTestBrowser(true /* is_visible */, false /* is_focused */);
-  std::unique_ptr<Browser> browser3 = CreateTestBrowser(
+  std::unique_ptr<BrowserWindowInterface> browser3 = CreateTestBrowser(
       true /* is_visible */, true /* is_focused */, true /* is_incognito */);
 
   ui_test_utils::DeprecatedFakeActivateBrowser(browser3.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
   ui_test_utils::DeprecatedFakeActivateBrowser(browser1.get());
 
-  TabStripModel* tab_strip_model1 = browser1->tab_strip_model();
+  TabStripModel* tab_strip_model1 = browser1->GetTabStripModel();
   CreateTestWebContents(tab_strip_model1, kUrl1, true /* is_active */);
 
-  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
+  TabStripModel* tab_strip_model2 = browser2->GetTabStripModel();
   const ukm::SourceId source_id2 =
       CreateTestWebContents(tab_strip_model2, kUrl2, true /* is_active */);
 
-  TabStripModel* tab_strip_model3 = browser3->tab_strip_model();
+  TabStripModel* tab_strip_model3 = browser3->GetTabStripModel();
   CreateTestWebContents(tab_strip_model3, kUrl3, true /* is_active */);
 
   InitializeBrightness(75.0f);

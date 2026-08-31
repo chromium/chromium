@@ -43,12 +43,13 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -99,14 +100,14 @@ class FakeBrowser {
       : FakeBrowser(
             DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params))) {}
 
-  explicit FakeBrowser(std::unique_ptr<Browser> browser)
+  explicit FakeBrowser(std::unique_ptr<BrowserWindowInterface> browser)
       : browser_(std::move(browser)) {
     if (browser_->GetType() !=
         BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
       // Add a tab to the browser to ensure that `CloseAllTabs()` works.
       // Note that tabs are not supported with PICTURE_IN_PICTURE windows.
       TabActivitySimulator().AddWebContentsAndNavigate(
-          browser_->tab_strip_model(), GURL(kTestUrl));
+          browser_->GetTabStripModel(), GURL(kTestUrl));
     }
     static_cast<TestBrowserWindow*>(browser_->GetWindow())
         ->SetCloseCallback(base::BindOnce(&FakeBrowser::OnBrowserWindowClosed,
@@ -114,10 +115,10 @@ class FakeBrowser {
   }
 
   ~FakeBrowser() {
-    if (browser_ && !browser_->tab_strip_model()->empty()) {
+    if (browser_ && !browser_->GetTabStripModel()->empty()) {
       // This is required to prevent a DCHECK crash in the destructor of
       // `Browser` if tabs remain open.
-      browser_->tab_strip_model()->CloseAllTabs();
+      browser_->GetTabStripModel()->CloseAllTabs();
     }
   }
 
@@ -145,7 +146,7 @@ class FakeBrowser {
   void RemoveBrowser() { browser_.reset(); }
 
   base::test::TestFuture<void> closed_future_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<BrowserWindowInterface> browser_;
   base::WeakPtrFactory<FakeBrowser> weak_ptr_{this};
 };
 
@@ -601,13 +602,14 @@ TEST_F(KioskBrowserSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
 
 TEST_F(KioskBrowserSessionTest,
        DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
-  const std::vector<Browser::Type> not_app_popup_browser_types = {
-      Browser::Type::TYPE_NORMAL,
-      Browser::Type::TYPE_POPUP,
-      Browser::Type::TYPE_APP,
-      Browser::Type::TYPE_DEVTOOLS,
-      Browser::Type::TYPE_PICTURE_IN_PICTURE,
-  };
+  const std::vector<BrowserWindowInterface::Type> not_app_popup_browser_types =
+      {
+          BrowserWindowInterface::Type::TYPE_NORMAL,
+          BrowserWindowInterface::Type::TYPE_POPUP,
+          BrowserWindowInterface::Type::TYPE_APP,
+          BrowserWindowInterface::Type::TYPE_DEVTOOLS,
+          BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE,
+      };
 
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppId1);
@@ -868,15 +870,17 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
 
 TEST_P(KioskBrowserSessionTroubleshootingTest,
        OnlyAllowRegularBrowserAndDevToolsAsTroubleshootingBrowsers) {
-  const std::vector<Browser::Type> should_be_closed_browser_types = {
-      Browser::Type::TYPE_POPUP,        Browser::Type::TYPE_APP,
-      Browser::Type::TYPE_APP_POPUP,
-      Browser::TYPE_PICTURE_IN_PICTURE,
-  };
+  const std::vector<BrowserWindowInterface::Type>
+      should_be_closed_browser_types = {
+          BrowserWindowInterface::Type::TYPE_POPUP,
+          BrowserWindowInterface::Type::TYPE_APP,
+          BrowserWindowInterface::Type::TYPE_APP_POPUP,
+          BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE,
+      };
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  for (Browser::Type type : should_be_closed_browser_types) {
+  for (BrowserWindowInterface::Type type : should_be_closed_browser_types) {
     EXPECT_TRUE(
         DidSessionCloseNewWindow(CreateBrowserWithTestWindowAndType(type)));
   }

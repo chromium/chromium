@@ -1479,7 +1479,7 @@ class V1App {
   V1App& operator=(const V1App&) = delete;
   ~V1App() {
     // close all tabs. Note that we do not need to destroy the browser itself.
-    browser_->tab_strip_model()->CloseAllTabs();
+    browser_->GetTabStripModel()->CloseAllTabs();
   }
 
   Browser* browser() { return browser_.get(); }

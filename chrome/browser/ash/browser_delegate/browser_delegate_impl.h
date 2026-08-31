@@ -8,14 +8,13 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace ash {
 
 class BrowserDelegateImpl : public BrowserDelegate {
  public:
-  explicit BrowserDelegateImpl(Browser* browser);
+  explicit BrowserDelegateImpl(BrowserWindowInterface* browser);
   virtual ~BrowserDelegateImpl();
 
   // BrowserDelegate:
@@ -80,7 +79,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void SetDevToolsCommandsEnabled(bool enabled);
   void SetTabSwitchCommandsEnabled(bool enabled);
 
-  const raw_ref<Browser> browser_;
+  const raw_ref<BrowserWindowInterface> browser_;
 };
 
 }  // namespace ash

@@ -30,7 +30,7 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
   ],
   "kerberos_credentials_manager_factory_browsertest\\.cc": [
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   ],
   "kerberos_credentials_manager_unittest\\.cc": [
     "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",

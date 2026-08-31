@@ -54,6 +54,7 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/ui/ash/new_window/chrome_new_window_client.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
   ],
   "system_tray_client_impl_browsertest\\.cc": [

@@ -17,6 +17,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -106,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
       controller->GetSearchResultsPanel()->search_results_view();
 
   // Browser tests start out with 1 browser tab by default.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Simulate clicking on a new URL in the web view.
   auto* child_view =
@@ -144,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
   // Test it opens a new tab and ends the session.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_FALSE(controller->IsActive());
   histogram_tester.ExpectTotalCount(kSearchResultClickedHistogram, 1);
 }
