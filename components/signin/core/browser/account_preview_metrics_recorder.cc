@@ -12,9 +12,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "components/metrics/profile_metrics_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_metrics_id_allocator.h"
 #include "components/signin/core/browser/account_preview_data.h"
+#include "components/signin/core/browser/account_preview_heuristic.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
@@ -62,7 +66,8 @@ AccountPreviewMetricsRecorder::AccountPreviewMetricsRecorder(
     PrefService& pref_service,
     const IdentityManager& identity_manager,
     const metrics::ProfileMetricsService& profile_metrics_service)
-    : signin_prefs_(pref_service),
+    : pref_service_(pref_service),
+      signin_prefs_(pref_service),
       identity_manager_(identity_manager),
       profile_metrics_service_(profile_metrics_service) {}
 
@@ -138,6 +143,88 @@ void AccountPreviewMetricsRecorder::RecordMetrics(
         break;
     }
   }
+}
+
+void AccountPreviewMetricsRecorder::RecordSelectionHeuristicResult(
+    base::span<const AccountPreviewHeuristicContext> accounts,
+    const AccountPreviewSelectionResult& selection_result) {
+  base::Time last_recorded = pref_service_->GetTime(
+      prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref);
+  base::Time now = base::Time::Now();
+  if (!last_recorded.is_null() && now >= last_recorded &&
+      (now - last_recorded) < base::Days(1)) {
+    return;
+  }
+
+  profile_metrics_service_->UmaHistogramEnumeration(
+      "Signin.SelectionHeuristic.Reason", selection_result.selection_reason);
+
+  if (selection_result.selection_reason !=
+      AccountPreviewSelectionReason::kSyncDataScore) {
+    pref_service_->SetTime(
+        prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref, now);
+    return;
+  }
+  CHECK(selection_result.selected_account.has_value());
+
+  std::string_view count_suffix = selection_result.account_scores.size() > 1
+                                      ? ".MultipleAccounts"
+                                      : ".SingleAccount";
+
+  const GaiaId& preferred_gaia_id = *selection_result.selected_account;
+  auto pref_score_it = selection_result.account_scores.find(preferred_gaia_id);
+  CHECK(pref_score_it != selection_result.account_scores.end());
+  profile_metrics_service_->UmaHistogramCounts100(
+      base::StrCat(
+          {"Signin.SelectionHeuristicScore.PreferredAccount", count_suffix}),
+      pref_score_it->second);
+
+  CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin);
+  bool has_primary_account = !primary_account.IsEmpty();
+
+  if (has_primary_account) {
+    profile_metrics_service_->UmaHistogramBoolean(
+        base::StrCat(
+            {"Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred",
+             count_suffix}),
+        primary_account.gaia != preferred_gaia_id);
+
+    auto primary_score_it =
+        selection_result.account_scores.find(primary_account.gaia);
+    if (primary_score_it != selection_result.account_scores.end()) {
+      profile_metrics_service_->UmaHistogramCounts100(
+          base::StrCat(
+              {"Signin.SelectionHeuristicScore.PrimaryAccount", count_suffix}),
+          primary_score_it->second);
+    }
+  }
+
+  std::optional<int> max_other_score;
+  for (const auto& account : accounts) {
+    if (account.gaia_id == preferred_gaia_id) {
+      continue;
+    }
+    if (has_primary_account && account.gaia_id == primary_account.gaia) {
+      continue;
+    }
+    if (!account.is_regular_account()) {
+      continue;
+    }
+    auto score_it = selection_result.account_scores.find(account.gaia_id);
+    CHECK(score_it != selection_result.account_scores.end());
+    max_other_score = max_other_score.has_value()
+                          ? std::max(*max_other_score, score_it->second)
+                          : score_it->second;
+  }
+
+  if (max_other_score.has_value()) {
+    profile_metrics_service_->UmaHistogramCounts100(
+        "Signin.SelectionHeuristicScore.OtherAccount", *max_other_score);
+  }
+
+  pref_service_->SetTime(
+      prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref, now);
 }
 
 }  // namespace signin

@@ -547,11 +547,8 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
   it->second->Start();
 }
 
-std::optional<AccountPreviewDataService::AccountPreviewPreference>
-AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
-  CHECK(base::FeatureList::IsEnabled(
-      switches::kEnableAccountPreviewPreferredAccount));
-
+std::vector<AccountPreviewHeuristicContext>
+AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
   // Get candidate accounts in platform display priority order (where index 0 is
   // the platform's default account for promos).
   std::vector<AccountInfo> ordered_accounts =
@@ -581,16 +578,18 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
 #endif
     });
   }
-
-  return ComputePreferredAccountForPromo(contexts);
+  return contexts;
 }
 
 void AccountPreviewDataServiceImpl::ComputeAndStorePreferredAccount() {
   if (base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccount)) {
-    std::optional<AccountPreviewPreference> preferred_account =
-        ComputePreferredAccount();
-    WritePreferredAccountToPrefs(preferred_account);
+    std::vector<AccountPreviewHeuristicContext> contexts =
+        GetHeuristicContexts();
+    AccountPreviewSelectionResult result =
+        ComputePreferredAccountForPromo(contexts);
+    WritePreferredAccountToPrefs(result.preference);
+    metrics_recorder_.RecordSelectionHeuristicResult(contexts, result);
   }
 }
 

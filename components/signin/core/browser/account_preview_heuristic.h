@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "components/signin/core/browser/account_preview_data.h"
@@ -37,8 +38,48 @@ struct AccountPreviewHeuristicContext {
   bool has_other_devices() const { return !preview_data->devices.empty(); }
 };
 
-// Selects the preferred account for sign-in promo among the given list of
-// accounts in the profile.
+// Reasons why an account was selected as the preferred account for sign-in
+// promo.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AccountPreviewSelectionReason)
+enum class AccountPreviewSelectionReason {
+  // No account was selected (e.g. empty accounts list or feature disabled).
+  kNoSelection = 0,
+  // Priority 1: Default account is not a regular account (managed or child).
+  kNonRegularDefault = 1,
+  // Priority 2: An external app primary (AGA) regular account was selected.
+  kExternalAppPrimary = 2,
+  // Priority 3: Regular accounts were compared based on sync data score.
+  kSyncDataScore = 3,
+
+  kMaxValue = kSyncDataScore,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewSelectionReason)
+
+// Result of evaluating the heuristic to select the preferred account for
+// sign-in promo.
+struct AccountPreviewSelectionResult {
+  // The computed preference for the selected account (if an account was
+  // selected and the feature is enabled).
+  std::optional<AccountPreviewDataService::AccountPreviewPreference> preference;
+
+  // The GaiaId of the selected account, or std::nullopt if none.
+  std::optional<GaiaId> selected_account;
+
+  // The reason why this account was selected.
+  AccountPreviewSelectionReason selection_reason =
+      AccountPreviewSelectionReason::kNoSelection;
+
+  // Calculated sync data scores for evaluated accounts when `selection_reason`
+  // is `kSyncDataScore`, mapped by GaiaId. Empty if score computation was not
+  // performed (e.g. Priority 1 or 2 matched).
+  base::flat_map<GaiaId, int> account_scores;
+};
+
+// Evaluates the heuristic across all candidate accounts in the profile to
+// select the preferred account for sign-in promo.
 // The first account in the list (`accounts[0]`) must be the default account
 // (i.e. the candidate account that would be promoted by default in the absence
 // of account previews, as determined by
@@ -51,9 +92,10 @@ struct AccountPreviewHeuristicContext {
 //    account. Ties are broken in favor of the earlier account in the list
 //    (favoring the default account).
 //
-// Returns std::nullopt if no valid candidate is found or the list is empty.
-std::optional<AccountPreviewDataService::AccountPreviewPreference>
-ComputePreferredAccountForPromo(
+// Returns a result with `preference = std::nullopt` and
+// `selected_account = std::nullopt` if no valid candidate is found or
+// `accounts` is empty.
+AccountPreviewSelectionResult ComputePreferredAccountForPromo(
     base::span<const AccountPreviewHeuristicContext> accounts);
 
 }  // namespace signin

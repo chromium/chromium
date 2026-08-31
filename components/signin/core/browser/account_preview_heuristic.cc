@@ -259,32 +259,40 @@ ComputeAccountPreviewPreference(const GaiaId& gaia_id,
   return preference;
 }
 
-std::optional<AccountPreviewDataService::AccountPreviewPreference>
-ComputePreferredAccountForPromo(
+AccountPreviewSelectionResult ComputePreferredAccountForPromo(
     base::span<const AccountPreviewHeuristicContext> accounts) {
   if (!base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccount)) {
-    return std::nullopt;
+    return {};
   }
 
   if (accounts.empty()) {
-    return std::nullopt;
+    return {};
   }
+
+  AccountPreviewSelectionResult result;
 
   // The first account in the list (`accounts[0]`) is the default account (the
   // account that would be promoted by default in the absence of previews).
   // Priority 1: If the default account is not a regular account, select it.
   const AccountPreviewHeuristicContext& default_account = accounts[0];
   if (!default_account.is_regular_account()) {
-    return ComputeAccountPreviewPreference(default_account.gaia_id,
-                                           *default_account.preview_data);
+    result.selected_account = default_account.gaia_id;
+    result.selection_reason = AccountPreviewSelectionReason::kNonRegularDefault;
+    result.preference = ComputeAccountPreviewPreference(
+        default_account.gaia_id, *default_account.preview_data);
+    return result;
   }
 
   // Priority 2: If an AGA (external app primary) account exists, select it.
   for (const auto& account : accounts) {
     if (account.is_external_app_primary && account.is_regular_account()) {
-      return ComputeAccountPreviewPreference(account.gaia_id,
-                                             *account.preview_data);
+      result.selected_account = account.gaia_id;
+      result.selection_reason =
+          AccountPreviewSelectionReason::kExternalAppPrimary;
+      result.preference = ComputeAccountPreviewPreference(
+          account.gaia_id, *account.preview_data);
+      return result;
     }
   }
 
@@ -294,18 +302,23 @@ ComputePreferredAccountForPromo(
     if (!account.is_regular_account()) {
       continue;
     }
+    result.account_scores[account.gaia_id] =
+        CalculateSyncDataScore(*account.preview_data).total_score;
     if (!best_candidate ||
         IsCandidatePreferredOverCurrentBest(account, *best_candidate)) {
       best_candidate = &account;
     }
   }
 
-  if (!best_candidate) {
-    return std::nullopt;
-  }
-
-  return ComputeAccountPreviewPreference(best_candidate->gaia_id,
-                                         *best_candidate->preview_data);
+  // At this point, the default account (`accounts[0]`) is guaranteed to be a
+  // regular account (otherwise Priority 1 would have matched), so
+  // `best_candidate` is guaranteed to be non-null.
+  CHECK(best_candidate);
+  result.selected_account = best_candidate->gaia_id;
+  result.selection_reason = AccountPreviewSelectionReason::kSyncDataScore;
+  result.preference = ComputeAccountPreviewPreference(
+      best_candidate->gaia_id, *best_candidate->preview_data);
+  return result;
 }
 
 }  // namespace signin

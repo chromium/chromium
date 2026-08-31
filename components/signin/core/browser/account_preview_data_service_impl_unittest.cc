@@ -1017,6 +1017,82 @@ TEST_F(AccountPreviewDataServiceTest,
                   &AccountPreviewPreference::gaia_id, kFakeGaiaId)));
 }
 
+TEST_F(AccountPreviewDataServiceTest,
+       RecordsSelectionHeuristicScoreMetricsOnPreferredAccountComputed) {
+  base::HistogramTester histogram_tester;
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@gmail.com", ConsentLevel::kSignin);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts({{account.email, account.gaia}});
+#endif
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.SingleAccount", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".SingleAccount",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount", 0);
+  EXPECT_FALSE(
+      prefs_
+          .GetTime(
+              prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref)
+          .is_null());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RecordsSelectionHeuristicReasonMetricsOnNonSyncReason) {
+  base::HistogramTester histogram_tester;
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@managed.com", ConsentLevel::kSignin);
+  identity_test_env_.UpdateAccountInfoForAccount(
+      AccountInfo::Builder(account).SetHostedDomain("managed.com").Build());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts({{account.email, account.gaia}});
+#endif
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kNonRegularDefault, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.SingleAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".SingleAccount",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount", 0);
+  EXPECT_FALSE(
+      prefs_
+          .GetTime(
+              prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref)
+          .is_null());
+}
+
 TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
   base::DictValue dict;
   dict.Set("gaia_id", "test_gaia_id");

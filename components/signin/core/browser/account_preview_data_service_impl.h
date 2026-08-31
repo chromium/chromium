@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/core/browser/account_preview_heuristic.h"
 #include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -131,7 +132,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void OnSigninAllowedPrefChanged();
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
-  std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
+  std::vector<AccountPreviewHeuristicContext> GetHeuristicContexts() const;
   void ComputeAndStorePreferredAccount();
 
   void NotifyBatchBarrierOnFetchCompleted(const GaiaId& gaia_id);

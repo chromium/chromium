@@ -3635,6 +3635,78 @@ accounts .-->
   </summary>
 </histogram>
 
+<histogram name="Signin.SelectionHeuristic.Reason{ProfileIndex}"
+    enum="AccountPreviewSelectionReason" expires_after="2027-08-26">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the reason an account was chosen as the preferred account by the
+    selection heuristic (or why no selection occurred). Recorded once per day at
+    most when the preferred account is computed or updated for a profile.
+
+    {ProfileIndex}
+  </summary>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
+</histogram>
+
+<histogram
+    name="Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred{AccountCount}{ProfileIndex}"
+    enum="Boolean" expires_after="2027-08-26">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the Chrome primary account (signed in to Chrome) is
+    different from the computed preferred account. Recorded only if a primary
+    account exists in the profile, and once per day at most when account scores
+    are used as part of the heuristic computation (i.e. regular consumer
+    accounts evaluated based on sync data).
+
+    {AccountCount}
+
+    {ProfileIndex}
+  </summary>
+  <token key="AccountCount">
+    <variant name=".MultipleAccounts"
+        summary="Recorded when multiple regular accounts exist for scoring."/>
+    <variant name=".SingleAccount"
+        summary="Recorded when only a single regular account exists for
+                 scoring."/>
+  </token>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
+</histogram>
+
+<histogram name="Signin.SelectionHeuristicScore.{AccountType}{ProfileIndex}"
+    units="score" expires_after="2027-08-26">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the selection heuristic sync data score for the {AccountType} in the
+    profile. Recorded once per day at most when a preferred account is computed
+    or changed, and when account scores are used as part of the heuristic
+    computation (i.e. regular consumer accounts evaluated based on sync data).
+
+    {ProfileIndex}
+  </summary>
+  <token key="AccountType">
+    <variant name="OtherAccount"
+        summary="maximum score among all other regular accounts (recorded
+                 only when multiple regular accounts exist)"/>
+    <variant name="PreferredAccount.MultipleAccounts"
+        summary="computed preferred account, when multiple regular accounts
+                 were compared"/>
+    <variant name="PreferredAccount.SingleAccount"
+        summary="computed preferred account, when only a single regular
+                 account exists"/>
+    <variant name="PrimaryAccount.MultipleAccounts"
+        summary="primary account (signed in to Chrome on IdentityManager),
+                 when multiple regular accounts exist"/>
+    <variant name="PrimaryAccount.SingleAccount"
+        summary="primary account (signed in to Chrome on IdentityManager),
+                 when only a single regular account exists"/>
+  </token>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
+</histogram>
+
 <histogram name="Signin.SessionWithCookieSigninStatusUnknown.Duration"
     units="ms" expires_after="2027-02-14">
   <owner>msarda@chromium.org</owner>

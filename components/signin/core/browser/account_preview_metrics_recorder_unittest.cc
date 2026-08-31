@@ -10,12 +10,17 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/core/browser/account_metrics_id_allocator.h"
 #include "components/signin/core/browser/account_preview_data.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/core/browser/account_preview_heuristic.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
@@ -27,6 +32,7 @@ class AccountPreviewMetricsRecorderTest : public testing::Test {
  public:
   AccountPreviewMetricsRecorderTest() {
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
+    AccountPreviewDataService::RegisterProfilePrefs(pref_service_.registry());
   }
 
   PrefService* pref_service() { return &pref_service_; }
@@ -36,7 +42,10 @@ class AccountPreviewMetricsRecorderTest : public testing::Test {
   IdentityTestEnvironment* identity_test_env() { return &identity_test_env_; }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kEnableAccountPreviewPreferredAccount};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   IdentityTestEnvironment identity_test_env_;
   metrics::ProfileMetricsService profile_metrics_service_{1};
@@ -212,6 +221,478 @@ TEST_F(AccountPreviewMetricsRecorderTest, RecordMetricsProfileOverflow) {
       base::StrCat({prefix, "DEVICE_INFO", account_suffix}), 12, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({prefix, "APP", account_suffix, ".Profile20Plus"}), 1, 1);
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSelectionHeuristicScores_SignedOutProfile_SingleAccount) {
+  base::HistogramTester histogram_tester;
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data;
+  data.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+  data.counts[syncer::BOOKMARKS] = switches::kBookmarksMedianThreshold.Get();
+  // Passwords (Q3 -> score 8) + Bookmarks (Median -> score 4) = 12.
+
+  AccountPreviewHeuristicContext ctx{
+      .gaia_id = GaiaId("user0"),
+      .preview_data = raw_ref(data),
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount.Profile1",
+      12, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.MultipleAccounts", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.SingleAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.MultipleAccounts", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".SingleAccount",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount.Profile1", 0);
+
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref),
+            base::Time::Now());
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSelectionHeuristicScores_SignedInProfile_SingleAccount) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "user0@gmail.com", ConsentLevel::kSignin);
+
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data;
+  data.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+  data.counts[syncer::BOOKMARKS] = switches::kBookmarksMedianThreshold.Get();
+  // Score = 12
+
+  AccountPreviewHeuristicContext ctx{
+      .gaia_id = primary_info.gaia,
+      .preview_data = raw_ref(data),
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.SingleAccount", 12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.SingleAccount.Profile1",
+      12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount.Profile1",
+      12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".SingleAccount",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".SingleAccount.Profile1",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount", 0);
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSelectionHeuristicScores_SignedInProfile_PrimaryEqualsPreferred) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "user0@gmail.com", ConsentLevel::kSignin);
+
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data0;
+  data0.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+  data0.counts[syncer::BOOKMARKS] = switches::kBookmarksMedianThreshold.Get();
+  // Score = 8 + 4 = 12
+
+  AccountPreviewData data1;
+  data1.counts[syncer::PASSWORDS] = switches::kPasswordsMedianThreshold.Get();
+  // Score = 4
+
+  AccountPreviewData data2;
+  data2.counts[syncer::PASSWORDS] = switches::kPasswordsMedianThreshold.Get();
+  data2.counts[syncer::AUTOFILL] = switches::kAutofillQ1Threshold.Get();
+  // Score = 4 + 2 = 6
+
+  AccountPreviewHeuristicContext ctx0{
+      .gaia_id = primary_info.gaia,
+      .preview_data = raw_ref(data0),
+  };
+  AccountPreviewHeuristicContext ctx1{
+      .gaia_id = GaiaId("user1"),
+      .preview_data = raw_ref(data1),
+  };
+  AccountPreviewHeuristicContext ctx2{
+      .gaia_id = GaiaId("user2"),
+      .preview_data = raw_ref(data2),
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1, ctx2};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.MultipleAccounts", 12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.MultipleAccounts.Profile1",
+      12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.MultipleAccounts", 12,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.MultipleAccounts."
+      "Profile1",
+      12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts.Profile1",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.OtherAccount", 6, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.OtherAccount.Profile1", 6, 1);
+}
+
+TEST_F(
+    AccountPreviewMetricsRecorderTest,
+    RecordSelectionHeuristicScores_SignedInProfile_PrimaryDifferentFromPreferred_NoOther) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "user0@gmail.com", ConsentLevel::kSignin);
+
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data0;
+  data0.counts[syncer::PASSWORDS] = switches::kPasswordsQ1Threshold.Get();
+  // Score = 2, single device
+
+  AccountPreviewData data1;
+  data1.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+  data1.counts[syncer::BOOKMARKS] = switches::kBookmarksMedianThreshold.Get();
+  DevicePreview device;
+  device.form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  data1.devices.push_back(device);
+  // Score = 12, cross device
+
+  AccountPreviewHeuristicContext ctx0{
+      .gaia_id = primary_info.gaia,
+      .preview_data = raw_ref(data0),
+  };
+  AccountPreviewHeuristicContext ctx1{
+      .gaia_id = GaiaId("user1"),
+      .preview_data = raw_ref(data1),
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.MultipleAccounts", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.MultipleAccounts", 12,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts.Profile1",
+      true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount", 0);
+}
+
+TEST_F(
+    AccountPreviewMetricsRecorderTest,
+    RecordSelectionHeuristicScores_SignedInProfile_PrimaryDifferentFromPreferred_WithOther) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "user0@gmail.com", ConsentLevel::kSignin);
+
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data0;
+  data0.counts[syncer::PASSWORDS] = switches::kPasswordsQ1Threshold.Get();
+  // Score = 2, single device
+
+  AccountPreviewData data1;
+  data1.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+  data1.counts[syncer::BOOKMARKS] = switches::kBookmarksMedianThreshold.Get();
+  DevicePreview device;
+  device.form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  data1.devices.push_back(device);
+  // Score = 12, cross device
+
+  AccountPreviewData data2;
+  data2.counts[syncer::PASSWORDS] = switches::kPasswordsMedianThreshold.Get();
+  // Score = 4
+
+  AccountPreviewData data3;
+  data3.counts[syncer::PASSWORDS] = switches::kPasswordsMedianThreshold.Get();
+  data3.counts[syncer::AUTOFILL] = switches::kAutofillQ1Threshold.Get();
+  data3.counts[syncer::AUTOFILL_WALLET_METADATA] =
+      switches::kAutofillWalletMetadataQ1Threshold.Get();
+  // Score = 4 + 2 + 2 = 8
+
+  AccountPreviewHeuristicContext ctx0{
+      .gaia_id = primary_info.gaia,
+      .preview_data = raw_ref(data0),
+  };
+  AccountPreviewHeuristicContext ctx1{
+      .gaia_id = GaiaId("user1"),
+      .preview_data = raw_ref(data1),
+  };
+  AccountPreviewHeuristicContext ctx2{
+      .gaia_id = GaiaId("user2"),
+      .preview_data = raw_ref(data2),
+  };
+  AccountPreviewHeuristicContext ctx3{
+      .gaia_id = GaiaId("user3"),
+      .preview_data = raw_ref(data3),
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1, ctx2,
+                                                          ctx3};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.MultipleAccounts", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.PreferredAccount.MultipleAccounts", 12,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts.Profile1",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristicScore.OtherAccount", 8, 1);
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSelectionHeuristicScores_Priority1_NonRegularDefault) {
+  base::HistogramTester histogram_tester;
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data0;
+  AccountPreviewData data1;
+  data1.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+
+  AccountPreviewHeuristicContext ctx0{
+      .gaia_id = GaiaId("user0"),
+      .preview_data = raw_ref(data0),
+      .is_managed = true,
+  };
+  AccountPreviewHeuristicContext ctx1{
+      .gaia_id = GaiaId("user1"),
+      .preview_data = raw_ref(data1),
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kNonRegularDefault, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kNonRegularDefault, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.MultipleAccounts", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.SingleAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.MultipleAccounts", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".SingleAccount",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount", 0);
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref),
+            base::Time::Now());
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSelectionHeuristicScores_Priority2_AGAAccount) {
+  base::HistogramTester histogram_tester;
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data0;
+  data0.counts[syncer::PASSWORDS] = switches::kPasswordsMedianThreshold.Get();
+
+  AccountPreviewData data1;
+  data1.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+
+  AccountPreviewHeuristicContext ctx0{
+      .gaia_id = GaiaId("user0"),
+      .preview_data = raw_ref(data0),
+  };
+  AccountPreviewHeuristicContext ctx1{
+      .gaia_id = GaiaId("user1"),
+      .preview_data = raw_ref(data1),
+      .is_external_app_primary = true,
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kExternalAppPrimary, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kExternalAppPrimary, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.MultipleAccounts", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PrimaryAccount.SingleAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.MultipleAccounts", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".MultipleAccounts",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.IsPrimaryDifferentFromPreferred"
+      ".SingleAccount",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.OtherAccount", 0);
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref),
+            base::Time::Now());
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSelectionHeuristicScores_DailyRateLimit) {
+  base::HistogramTester histogram_tester;
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data;
+  data.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+
+  AccountPreviewHeuristicContext ctx{
+      .gaia_id = GaiaId("user0"),
+      .preview_data = raw_ref(data),
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
+
+  // 1st recording succeeds.
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+  histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 1);
+
+  // 2nd call immediately after is rate-limited.
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+  histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 1);
+
+  // Fast forward 23 hours -> still rate-limited.
+  task_environment_.FastForwardBy(base::Hours(23));
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+  histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 1);
+
+  // Fast forward 2 more hours (total 25 hours) -> records again.
+  task_environment_.FastForwardBy(base::Hours(2));
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+  histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 2);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 2);
 }
 
 }  // namespace signin

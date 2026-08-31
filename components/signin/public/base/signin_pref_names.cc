@@ -35,6 +35,11 @@ const char kAccountPreviewDataLast429TimePref[] =
 const char kAccountPreviewDataLastFetchAccounts[] =
     "signin.account_preview_data_last_fetch_accounts";
 
+// Time pref that tracks the last time account preview selection heuristic
+// scores metrics were recorded.
+const char kAccountPreviewSelectionHeuristicScoresLastRecordedPref[] =
+    "signin.account_preview.selection_heuristic_scores_last_recorded";
+
 #if BUILDFLAG(IS_ANDROID)
 // Dictionary pref that contains the external app account GaiaId and timestamp.
 const char kAccountPreviewExternalAppAccount[] =
