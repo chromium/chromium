@@ -30,7 +30,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/menu/ui_bundled:tab_context_menu_delegate",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/recent_tabs/model",
     "//ios/chrome/browser/recent_tabs/ui",
@@ -39,6 +41,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -60,6 +63,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/web/public",
     "//ui/base",
   ]
   public_deps = [ "//components/sync_sessions" ]
