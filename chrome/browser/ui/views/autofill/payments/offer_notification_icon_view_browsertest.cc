@@ -4,14 +4,10 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
@@ -19,9 +15,7 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_tracker.h"
-#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
@@ -59,6 +53,8 @@ class OfferNotificationIconViewBrowserTest
 
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
     AutofillOfferData offer = CreateTestOffer(
         /*merchant_origins=*/{GURL(kTestURL)}, kTestPromoCode);
     auto* autofill_client =
@@ -71,22 +67,22 @@ class OfferNotificationIconViewBrowserTest
   }
 
   bool VerifyUi() override {
-    auto* offer_notification_icon_view = GetIcon();
-    if (!offer_notification_icon_view) {
+    page_actions::PageActionTestAccessor accessor(
+        browser(), kActionOffersAndRewardsForPage);
+    if (!accessor.GetVisible()) {
       return false;
     }
 
-    EXPECT_EQ(
-        offer_notification_icon_view->GetViewAccessibility().GetCachedName(),
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT),
+              accessor.GetAccessibleName());
 
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
 
     if (test_name.find("InvokeUi_show_offer_notification_icon_only") !=
         std::string::npos) {
-      EXPECT_FALSE(offer_notification_icon_view->ShouldShowLabel());
+      EXPECT_FALSE(accessor.IsChipVisible());
     }
 
     return true;
@@ -101,23 +97,6 @@ class OfferNotificationIconViewBrowserTest
  protected:
   content::WebContents* GetWebContents() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
-  }
-
-  page_actions::PageActionView* GetIcon() {
-    const ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForView(GetLocationBarView());
-    return views::ElementTrackerViews::GetInstance()
-        ->GetFirstMatchingViewAs<page_actions::PageActionView>(
-            kOfferNotificationChipElementId, context);
-  }
-
- private:
-  BrowserView* GetBrowserView() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
-  LocationBarView* GetLocationBarView() {
-    return GetBrowserView()->toolbar()->location_bar_view();
   }
 };
 
