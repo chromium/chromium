@@ -86,8 +86,6 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
   CreateUploadEventsRequest() override;
   bool ShouldIncludeDeviceInfo(bool per_profile) override;
   void UploadCallback(
-      bool per_profile,
-      policy::CloudPolicyClient* client,
       EnterpriseReportingEventType event_type,
       base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) override;
@@ -105,7 +103,7 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
   // Add Crowdstrike signals to event report and upload it.
   void PopulateSignalsAndReportEvent(
       ::chrome::cros::reporting::proto::Event event,
-      policy::CloudPolicyClient* client,
+      base::WeakPtr<policy::CloudPolicyClient> client,
       ReportingSettings settings,
       device_signals::SignalsAggregationResponse response);
 #endif

@@ -321,7 +321,8 @@ void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEvent(
     signals_aggregator->GetSignals(
         request,
         base::BindOnce(&RealtimeReportingClient::PopulateSignalsAndReportEvent,
-                       AsWeakPtrImpl(), std::move(event), client, settings));
+                       AsWeakPtrImpl(), std::move(event), client->GetWeakPtr(),
+                       settings));
   } else {
     UploadSecurityEvent(std::move(event), client, settings);
   }
@@ -329,11 +330,16 @@ void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEvent(
 
 void RealtimeReportingClient::PopulateSignalsAndReportEvent(
     Event event,
-    policy::CloudPolicyClient* client,
+    base::WeakPtr<policy::CloudPolicyClient> client,
     ReportingSettings settings,
     device_signals::SignalsAggregationResponse response) {
+  if (!client) {
+    VLOG(1) << "CloudPolicyClient destroyed while collecting device signals; "
+               "dropping event.";
+    return;
+  }
   AddCrowdstrikeSignalsToEvent(event, response);
-  UploadSecurityEvent(std::move(event), client, settings);
+  UploadSecurityEvent(std::move(event), client.get(), settings);
 }
 
 #endif
@@ -357,8 +363,6 @@ base::DictValue RealtimeReportingClient::ReportErrorDetails(
 }
 
 void RealtimeReportingClient::UploadCallback(
-    bool per_profile,
-    policy::CloudPolicyClient* client,
     EnterpriseReportingEventType event_type,
     base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {

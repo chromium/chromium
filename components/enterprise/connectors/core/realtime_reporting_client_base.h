@@ -128,8 +128,6 @@ class RealtimeReportingClientBase : public KeyedService,
   // Callback used in FinishUploadSecurityEvent() to log UMA metrics and add
   // events with response to chrome://safe-browsing#tab-reporting page.
   virtual void UploadCallback(
-      bool per_profile,
-      policy::CloudPolicyClient* client,
       EnterpriseReportingEventType event_type,
       base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) = 0;
@@ -147,7 +145,7 @@ class RealtimeReportingClientBase : public KeyedService,
                                    const std::string& dm_token);
 
   void OnIpAddressesFetched(::chrome::cros::reporting::proto::Event event,
-                            policy::CloudPolicyClient* client,
+                            base::WeakPtr<policy::CloudPolicyClient> client,
                             const ReportingSettings& settings,
                             std::vector<std::string> ip_addresses);
 

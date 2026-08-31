@@ -60,8 +60,6 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
   bool ShouldIncludeDeviceInfo(bool per_profile) override;
 
   void UploadCallback(
-      bool per_profile,
-      policy::CloudPolicyClient* client,
       EnterpriseReportingEventType event_type,
       base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) override;
