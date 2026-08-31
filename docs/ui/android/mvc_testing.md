@@ -41,7 +41,6 @@ Ideally, the Mediator should be testable using Robolectric on the host machine (
 ### Good examples of Mediator/Test pairs:
 
  * [TabListMediator](/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListMediator.java) / [TabListMediatorUnitTest](/chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListMediatorUnitTest.java)
- * [TabSwitcherMediator](/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherMediator.java) / [TabSwitcherMediatorUnitTest](/chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherMediatorUnitTest.java)
 
 
 ## Testing your View
