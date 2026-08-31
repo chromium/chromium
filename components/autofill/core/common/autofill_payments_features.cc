@@ -15,7 +15,7 @@ BASE_FEATURE(kAllowReentryFromRespondToDelegate,
 // Payments includes the Chrome client type and major version (otherwise
 // available via the user agent).
 BASE_FEATURE(kAutofillAddChromeUserContextFields,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the BNPL flow acts as if the user has not yet seen the AI
 // terms. This allows the AI terms to be shown as bold font repeatedly for
