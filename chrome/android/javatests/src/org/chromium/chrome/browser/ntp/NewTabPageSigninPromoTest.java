@@ -494,6 +494,33 @@ public class NewTabPageSigninPromoTest {
     // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
     @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     public void
+            testSignInPromo_hiddenIfTimeElapsedSinceFirstShownExceedsFirstShownLimitButNotResetThreshold() {
+        // Show the promo for the first time.
+        openNewTabPage();
+        verifySigninPromoShown();
+
+        // Advance time beyond the first time shown limit, but not beyond the last time shown reset
+        // period.
+        mFakeTimeTestRule.advanceMillis(
+                (NtpSigninPromoDelegate.NTP_SYNC_PROMO_RESET_AFTER_DAYS - 1)
+                        * DateUtils.DAY_IN_MILLIS);
+
+        // Open a new tab, the promo should not be shown.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
+    public void
             testSignInPromo_shownIfTimeElapsedSinceFirstShownExceedsFirstShownLimitAndResetThreshold() {
         // Show the promo for the first time.
         openNewTabPage();
