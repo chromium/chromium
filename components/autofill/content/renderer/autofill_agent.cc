@@ -1809,7 +1809,7 @@ void AutofillAgent::ObserveFieldVisibility(
         std::move(remote));
     form_element_intersection_observer_ = element.MonitorVisibility(
         /*minimum_visible_duration=*/base::Milliseconds(800),
-        std::move(callback));
+        std::move(callback), /*visibility_threshold=*/0.80f);
   }
 }
 
