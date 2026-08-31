@@ -113,17 +113,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataUse.ContentType.UserTrafficKB" enum="DataUseContentType"
-    expires_after="2023-03-05">
-  <owner>spelchat@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    Data use of user traffic by different content types. Recorded in KB when
-    network bytes are received by Chrome.
-  </summary>
-</histogram>
-
 <histogram name="DataUse.TrafficSize.User{DataUse_Dimensions}" units="bytes"
     expires_after="2026-06-13">
   <owner>spelchat@chromium.org</owner>

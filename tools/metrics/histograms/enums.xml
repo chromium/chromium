@@ -2820,22 +2820,6 @@ shown properly on the user-facing crash UI.
   <int value="2" label="Clock Changed"/>
 </enum>
 
-<enum name="DataUseContentType">
-  <int value="0" label="Other"/>
-  <int value="1" label="Mainframe HTML"/>
-  <int value="2" label="Non Mainframe HTML"/>
-  <int value="3" label="CSS"/>
-  <int value="4" label="Image"/>
-  <int value="5" label="Javascript"/>
-  <int value="6" label="Font"/>
-  <int value="7" label="Audio - App in background"/>
-  <int value="8" label="Audio - Tab in background"/>
-  <int value="9" label="Audio - Tab in foreground"/>
-  <int value="10" label="Video - App in background"/>
-  <int value="11" label="Video - Tab in background"/>
-  <int value="12" label="Video - Tab in foreground"/>
-</enum>
-
 <enum name="DayOfWeek">
   <int value="0" label="Sunday"/>
   <int value="1" label="Monday"/>
