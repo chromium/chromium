@@ -48,6 +48,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -639,6 +640,30 @@ TEST_F(GlicEnablingProfileEligibilityTest,
                                                          account_info));
   EXPECT_TRUE(GlicEnabling::IsEnabledForFirstRunProfile(profile(), "us", "us",
                                                         account_info));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest, IsEnabledForFirstRunProfileU18) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kGlicEligibilitySeparateAccountCapability);
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      /*email=*/"test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  // User is eligible for Gemini in Chrome, but is U18 (cannot use adult
+  // features).
+  mutator.set_can_use_gemini_in_chrome(true);
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  // Overall profile is enabled for Gemini in Chrome.
+  EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+  // But FRE should NOT be enabled for U18 users.
+  EXPECT_FALSE(GlicEnabling::IsEnabledForFirstRunProfile(
+      profile(), /*permanent_country=*/"us", /*session_country=*/"us",
+      account_info));
 }
 
 class GlicEnablingProfileReadyStateTestBase

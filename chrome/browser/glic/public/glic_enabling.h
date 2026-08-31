@@ -219,6 +219,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // the standard country determination methods, nor does it query
   // `IdentityManager` directly. The caller is responsible for resolving the
   // country data and account capabilities and providing them as arguments.
+  //
+  // Certain users may not be eligible for the GiC opt-in in Chrome First Run
+  // (e.g. U18).
   static bool IsEnabledForFirstRunProfile(Profile* profile,
                                           std::string_view permanent_country,
                                           std::string_view session_country,

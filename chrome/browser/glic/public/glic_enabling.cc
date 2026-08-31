@@ -935,6 +935,11 @@ bool GlicEnabling::IsEnabledForFirstRunProfile(
     std::string_view permanent_country,
     std::string_view session_country,
     const AccountInfo& account_info) {
+  // Chrome First Run dedicated checks should go first before 'general' GiC
+  // eligibility checks.
+  if (!CanUseAdultFeatures(account_info.GetAccountCapabilities())) {
+    return false;
+  }
   return ComputeProfileEnablement(
              profile, std::make_pair(permanent_country, session_country),
              &account_info)
