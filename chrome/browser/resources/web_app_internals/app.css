@@ -19,57 +19,6 @@ button {
   padding: 4px;
 }
 
-div#iwa-update-manifest-version {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-}
-
-div#iwa-update-manifest-dialog-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-dialog {
-  border: 0;
-  border-radius: 8px;
-
-  > * {
-    margin: 8px 0;
-  }
-}
-
-dialog[open] {
-  display: flex;
-  flex-direction: column;
-}
-
-div .dialog-buttons {
-  display: flex;
-  gap: 4px;
-}
-
-.iwa-dev-mode-list-item {
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-}
-
-.iwa-dev-mode-list-item>* {
-  margin: 4px;
-}
-
-.dev-iwa-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  gap: 8px;
-  >* {
-      padding: 4px;
-    }
-}
-
 #app-index {
   margin: 8px 0;
   padding: 8px;
