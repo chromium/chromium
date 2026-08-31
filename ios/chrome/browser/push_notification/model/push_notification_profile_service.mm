@@ -32,8 +32,7 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
   if (!service->DeviceTokenIsSet()) {
-    [PushNotificationUtil
-        registerDeviceWithAPNSWithProvisionalNotificationsAvailable:NO];
+    [PushNotificationUtil registerDeviceWithAPNS];
   }
 
   GaiaId gaia = primary_account.gaia;

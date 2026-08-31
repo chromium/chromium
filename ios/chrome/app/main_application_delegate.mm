@@ -222,26 +222,10 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // APNS and retrieval of the device's APNS token.
   base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
                             true);
+  __weak MainApplicationDelegate* weakSelf = self;
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
-        if ([self provisionalNotificationTypesEnabled]) {
-          // TODO(crbug.com/341906612) Remove use of
-          // browserProviderInterfaceDoNotUse.
-          Browser* browser =
-              self.mainController.browserProviderInterfaceDoNotUse
-                  .mainBrowserProvider.browser;
-          [self.pushNotificationDelegate
-              applicationDidRegisterWithAPNS:deviceToken
-                                     profile:browser->GetProfile()];
-          // Logs when a Registration succeeded with a loaded BrowserState.
-          base::UmaHistogramBoolean(
-              "ContentNotifications.Registration.BrowserStateUnavailable",
-              false);
-        } else {
-          [self.pushNotificationDelegate
-              applicationDidRegisterWithAPNS:deviceToken
-                                     profile:nil];
-        }
+        [weakSelf handleAPNSDeviceRegistration:deviceToken];
       }));
 }
 
@@ -326,9 +310,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
       });
 
   if (_mainController.isColdStart) {
-    [PushNotificationUtil
-        registerDeviceWithAPNSWithProvisionalNotificationsAvailable:
-            [self provisionalNotificationTypesEnabled]];
+    [PushNotificationUtil registerDeviceWithAPNS];
   }
 
   [_mainController
@@ -388,21 +370,27 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   }
 }
 
-// `YES` if Content or Send Tab notifications are enabled or registered. Called
-// before register device With APNS.
-- (BOOL)provisionalNotificationTypesEnabled {
-  // TODO(crbug.com/341903881) Do not use
-  // mainController.browserProviderInterfaceDoNotUse.
-  Browser* browser = _mainController.browserProviderInterfaceDoNotUse
+// Handles APNS device registration on the UI thread when the device token is
+// received from iOS.
+- (void)handleAPNSDeviceRegistration:(NSData*)deviceToken {
+  // TODO(crbug.com/341906612) Remove use of
+  // browserProviderInterfaceDoNotUse.
+  Browser* browser = self.mainController.browserProviderInterfaceDoNotUse
                          .mainBrowserProvider.browser;
-
-  if (!browser) {
+  if (browser) {
+    [self.pushNotificationDelegate
+        applicationDidRegisterWithAPNS:deviceToken
+                               profile:browser->GetProfile()];
+    // Logs when a Registration succeeded with a loaded BrowserState.
+    base::UmaHistogramBoolean(
+        "ContentNotifications.Registration.BrowserStateUnavailable", false);
+  } else {
+    [self.pushNotificationDelegate applicationDidRegisterWithAPNS:deviceToken
+                                                          profile:nil];
+    // Logs when a Registration succeeded without a loaded BrowserState.
     base::UmaHistogramBoolean(
         "ContentNotifications.Registration.BrowserStateUnavailable", true);
-    return NO;
   }
-
-  return YES;
 }
 
 @end
