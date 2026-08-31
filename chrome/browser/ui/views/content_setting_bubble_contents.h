@@ -57,6 +57,7 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
       const ContentSettingBubbleModel::ListItem& item) override;
   void OnListItemRemovedAt(int index) override;
   int GetSelectedRadioOption() override;
+  void CloseBubble() override;
 
   void managed_button_clicked_for_test() {
     content_setting_bubble_model_->is_UMA_for_test = true;

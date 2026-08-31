@@ -29,9 +29,13 @@ class FakeOwner : public ContentSettingBubbleModel::Owner {
     model_->CommitChanges();
   }
 
+  void CloseBubble() override;
+  bool was_closed() const { return was_closed_; }
+
  private:
   const raw_ref<ContentSettingBubbleModel> model_;
   int selected_radio_option_;
+  bool was_closed_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_FAKE_OWNER_H_

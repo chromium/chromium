@@ -5,8 +5,10 @@
 #include "content/browser/permissions/permission_service_impl.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -16,6 +18,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -23,6 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
@@ -234,6 +238,150 @@ TEST_F(PermissionServiceImplTest, RevokePermission) {
   EXPECT_EQ(has_future.Take(),
             blink::mojom::PermissionStatusWithDetails::New(
                 blink::mojom::PermissionStatus::ASK, nullptr));
+}
+
+class PermissionServiceImplPageEmbeddedTest : public RenderViewHostTestHarness {
+ public:
+  PermissionServiceImplPageEmbeddedTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kGeolocationElement, blink::features::kInstallElement,
+         blink::features::kUserMediaElement},
+        {});
+  }
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL(kTestUrl));
+  }
+
+  mojo::Remote<blink::mojom::PermissionService> BindService() {
+    mojo::Remote<blink::mojom::PermissionService> remote;
+    PermissionServiceContext::GetOrCreateForCurrentDocument(main_rfh())
+        ->CreateService(remote.BindNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  blink::mojom::EmbeddedPermissionRequestDescriptorPtr CreateRequestDescriptor(
+      blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag tag) {
+    auto descriptor = blink::mojom::EmbeddedPermissionRequestDescriptor::New();
+    switch (tag) {
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kGeolocation:
+        descriptor->detail = blink::mojom::
+            EmbeddedPermissionControlDescriptorExtension::NewGeolocation(
+                blink::mojom::GeolocationEmbeddedPermissionRequestDescriptor::
+                    New());
+        break;
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kInstall:
+        descriptor->detail = blink::mojom::
+            EmbeddedPermissionControlDescriptorExtension::NewInstall(
+                blink::mojom::InstallEmbeddedPermissionRequestDescriptor::
+                    New());
+        break;
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kUserMedia:
+        descriptor->detail = blink::mojom::
+            EmbeddedPermissionControlDescriptorExtension::NewUserMedia(
+                blink::mojom::UserMediaEmbeddedPermissionRequestDescriptor::
+                    New());
+        break;
+    }
+    return descriptor;
+  }
+
+  std::vector<blink::mojom::PermissionDescriptorPtr> CreatePermissions(
+      std::vector<blink::mojom::PermissionName> names) {
+    std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
+    for (auto name : names) {
+      auto permission = blink::mojom::PermissionDescriptor::New();
+      permission->name = name;
+      permissions.push_back(std::move(permission));
+    }
+    return permissions;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PermissionServiceImplPageEmbeddedTest,
+       RequestPageEmbeddedPermissionMatchingDescriptor) {
+  using Tag = blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag;
+  const struct {
+    Tag tag;
+    std::vector<blink::mojom::PermissionName> permissions;
+  } kCases[] = {
+      {Tag::kGeolocation, {blink::mojom::PermissionName::GEOLOCATION}},
+      {Tag::kInstall, {blink::mojom::PermissionName::WEB_APP_INSTALLATION}},
+      {Tag::kUserMedia, {blink::mojom::PermissionName::AUDIO_CAPTURE}},
+      {Tag::kUserMedia, {blink::mojom::PermissionName::VIDEO_CAPTURE}},
+      {Tag::kUserMedia,
+       {blink::mojom::PermissionName::AUDIO_CAPTURE,
+        blink::mojom::PermissionName::VIDEO_CAPTURE}},
+  };
+  for (const auto& test : kCases) {
+    auto remote = BindService();
+    remote->RequestPageEmbeddedPermission(CreatePermissions(test.permissions),
+                                          CreateRequestDescriptor(test.tag),
+                                          base::DoNothing());
+    remote.FlushForTesting();
+    EXPECT_EQ(0, process()->bad_msg_count());
+  }
+}
+
+TEST_F(PermissionServiceImplPageEmbeddedTest,
+       RequestPageEmbeddedPermissionMismatchedDescriptor) {
+  using Tag = blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag;
+  const struct {
+    Tag tag;
+    std::vector<blink::mojom::PermissionName> permissions;
+  } kCases[] = {
+      {Tag::kGeolocation, {blink::mojom::PermissionName::WEB_APP_INSTALLATION}},
+      {Tag::kGeolocation, {blink::mojom::PermissionName::AUDIO_CAPTURE}},
+      {Tag::kInstall, {blink::mojom::PermissionName::GEOLOCATION}},
+      {Tag::kInstall, {blink::mojom::PermissionName::VIDEO_CAPTURE}},
+      {Tag::kUserMedia, {blink::mojom::PermissionName::GEOLOCATION}},
+      {Tag::kUserMedia, {blink::mojom::PermissionName::WEB_APP_INSTALLATION}},
+      {Tag::kUserMedia,
+       {blink::mojom::PermissionName::AUDIO_CAPTURE,
+        blink::mojom::PermissionName::GEOLOCATION}},
+  };
+  int expected_bad_msg_count = 0;
+  for (const auto& test : kCases) {
+    auto remote = BindService();
+    remote->RequestPageEmbeddedPermission(CreatePermissions(test.permissions),
+                                          CreateRequestDescriptor(test.tag),
+                                          base::DoNothing());
+    remote.FlushForTesting();
+    ++expected_bad_msg_count;
+    EXPECT_EQ(expected_bad_msg_count, process()->bad_msg_count());
+  }
+}
+
+TEST_F(PermissionServiceImplPageEmbeddedTest,
+       RegisterPageEmbeddedPermissionControlMismatchedDescriptor) {
+  using Tag = blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag;
+  const struct {
+    Tag tag;
+    std::vector<blink::mojom::PermissionName> permissions;
+  } kCases[] = {
+      {Tag::kGeolocation, {blink::mojom::PermissionName::WEB_APP_INSTALLATION}},
+      {Tag::kInstall, {blink::mojom::PermissionName::AUDIO_CAPTURE}},
+      {Tag::kUserMedia, {blink::mojom::PermissionName::GEOLOCATION}},
+  };
+  int expected_bad_msg_count = 0;
+  for (const auto& test : kCases) {
+    auto remote = BindService();
+    mojo::PendingRemote<blink::mojom::EmbeddedPermissionControlClient> client;
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
+    remote->RegisterPageEmbeddedPermissionControl(
+        CreatePermissions(test.permissions), CreateRequestDescriptor(test.tag),
+        std::move(client));
+    remote.FlushForTesting();
+    ++expected_bad_msg_count;
+    EXPECT_EQ(expected_bad_msg_count, process()->bad_msg_count());
+  }
 }
 
 TEST_F(PermissionServiceImplTest, RequestPermissions) {

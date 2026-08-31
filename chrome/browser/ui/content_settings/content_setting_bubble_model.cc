@@ -1764,10 +1764,11 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
   }
   CHECK_GT(manager->Requests().size(), 0u);
   DCHECK_EQ(manager->Requests().size(), 1u);
-  const permissions::RequestType request_type =
-      manager->Requests()[0]->request_type();
+  request_type_ = manager->Requests()[0]->request_type();
+  quiet_ui_reason_ = quiet_ui_reason;
+  prm_observation_.Observe(manager);
   int bubble_title_string_id = 0;
-  switch (request_type) {
+  switch (*request_type_) {
     case permissions::RequestType::kNotifications:
       bubble_title_string_id = IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_TITLE;
       break;
@@ -1778,12 +1779,12 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       NOTREACHED();
   }
   set_title(l10n_util::GetStringUTF16(bubble_title_string_id));
-  switch (*quiet_ui_reason) {
+  switch (*quiet_ui_reason_) {
     case QuietUiReason::kEnabledInPrefs:
-      DCHECK(request_type == permissions::RequestType::kNotifications ||
-             request_type == permissions::RequestType::kGeolocation);
+      DCHECK(*request_type_ == permissions::RequestType::kNotifications ||
+             *request_type_ == permissions::RequestType::kGeolocation);
       set_message(l10n_util::GetStringUTF16(
-          request_type == permissions::RequestType::kNotifications
+          *request_type_ == permissions::RequestType::kNotifications
               ? IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION
               : IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1793,7 +1794,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
           base::UserMetricsAction("Notifications.Quiet.AnimatedIconClicked"));
       break;
     case QuietUiReason::kTriggeredByCrowdDeny:
-      DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
+      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1804,7 +1805,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
-      DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
+      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ABUSIVE_DESCRIPTION));
       // TODO(crbug.com/40131070): It is rather confusing to have the `Cancel`
@@ -1819,7 +1820,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
           base::UserMetricsAction("Notifications.Quiet.StaticIconClicked"));
       break;
     case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
-      DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
+      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DISRUPTIVE_DESCRIPTION));
       set_cancel_button_text(l10n_util::GetStringUTF16(
@@ -1837,7 +1838,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
     case QuietUiReason::kTriggeredDueToLackOfGesture:
       int bubble_message_string_id = 0;
       int bubble_done_button_string_id = 0;
-      switch (request_type) {
+      switch (*request_type_) {
         case permissions::RequestType::kNotifications:
           bubble_message_string_id =
               IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION;
@@ -1871,21 +1872,57 @@ ContentSettingQuietRequestBubbleModel::AsQuietRequestBubbleModel() {
   return this;
 }
 
-void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
+bool ContentSettingQuietRequestBubbleModel::IsBoundRequestStillActive() const {
+  if (!quiet_ui_reason_ || !request_type_) {
+    return false;
+  }
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
-  CHECK_GT(manager->Requests().size(), 0u);
-  DCHECK_EQ(manager->Requests().size(), 1u);
+  return manager && !manager->Requests().empty() &&
+         manager->Requests()[0]->request_type() == *request_type_ &&
+         manager->ReasonForUsingQuietUi() == quiet_ui_reason_;
+}
+
+void ContentSettingQuietRequestBubbleModel::CloseBubble() {
+  if (owner()) {
+    owner()->CloseBubble();
+  }
+}
+
+void ContentSettingQuietRequestBubbleModel::OnPromptRemoved() {
+  CloseBubble();
+}
+
+void ContentSettingQuietRequestBubbleModel::OnRequestsFinalized() {
+  CloseBubble();
+}
+
+void ContentSettingQuietRequestBubbleModel::OnRequestDecided(
+    permissions::PermissionAction action) {
+  CloseBubble();
+}
+
+void ContentSettingQuietRequestBubbleModel::
+    OnPermissionRequestManagerDestructed() {
+  prm_observation_.Reset();
+  CloseBubble();
+}
+
+void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
+  if (!IsBoundRequestStillActive()) {
+    CloseBubble();
+    return;
+  }
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
   manager->set_manage_clicked();
   if (is_UMA_for_test) {
     // `delegate()->ShowContentSettingsPage` opens a new tab. It is not needed
     // for UMA tests.
     return;
   }
-  const permissions::RequestType request_type =
-      manager->Requests()[0]->request_type();
   if (delegate()) {
-    switch (request_type) {
+    switch (*request_type_) {
       case permissions::RequestType::kNotifications:
         delegate()->ShowContentSettingsPage(ContentSettingsType::NOTIFICATIONS);
         break;
@@ -1899,6 +1936,10 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
 }
 
 void ContentSettingQuietRequestBubbleModel::OnLearnMoreClicked() {
+  if (!IsBoundRequestStillActive()) {
+    CloseBubble();
+    return;
+  }
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   manager->set_learn_more_clicked();
@@ -1912,34 +1953,28 @@ void ContentSettingQuietRequestBubbleModel::OnLearnMoreClicked() {
     // We only show learn more button for Notification quiet ui dialog when it
     // is triggered due to abusive requests or contents. We don't have any learn
     // more button for the geolocation quiet ui dialogs.
-    DCHECK_EQ(
-        permissions::PermissionRequestManager::FromWebContents(web_contents())
-            ->Requests()[0]
-            ->request_type(),
-        permissions::RequestType::kNotifications);
+    DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
     delegate()->ShowLearnMorePage(ContentSettingsType::NOTIFICATIONS);
   }
 }
 
 void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
+  if (!IsBoundRequestStillActive()) {
+    CloseBubble();
+    return;
+  }
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
-  CHECK_GT(manager->Requests().size(), 0u);
   DCHECK_EQ(manager->Requests().size(), 1u);
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  const permissions::PermissionRequest& request = *manager->Requests()[0];
-  DCHECK(quiet_ui_reason);
-  DCHECK(request.request_type() == permissions::RequestType::kNotifications ||
-         request.request_type() == permissions::RequestType::kGeolocation);
 
   // GEOLOCATION_WITH_OPTIONS is currently not supported on desktop.
   //
   // TODO(crbug.com/430494523): Plumb through the selected PromptOptions once it
   // is.
-  CHECK_NE(request.GetContentSettingsType(),
+  CHECK_NE(manager->Requests()[0]->GetContentSettingsType(),
            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
 
-  switch (*quiet_ui_reason) {
+  switch (*quiet_ui_reason_) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredDueToLackOfGesture:
     case QuietUiReason::kTriggeredByCrowdDeny:
@@ -1958,14 +1993,13 @@ void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
 }
 
 void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents());
-
-  auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason) {
+  if (!IsBoundRequestStillActive()) {
+    CloseBubble();
     return;
   }
-  switch (*quiet_ui_reason) {
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  switch (*quiet_ui_reason_) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredDueToLackOfGesture:
     case QuietUiReason::kTriggeredByCrowdDeny:
@@ -1976,8 +2010,7 @@ void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
     case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
-      CHECK_EQ(manager->Requests()[0]->request_type(),
-               permissions::RequestType::kNotifications);
+      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
       manager->Accept(/*prompt_options=*/std::monostate());
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.ShowForSiteClicked"));

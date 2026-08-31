@@ -26,6 +26,9 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/request_type.h"
 #include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -110,6 +113,7 @@ class ContentSettingBubbleModel {
     virtual void OnListItemAdded(const ListItem& item) {}
     virtual void OnListItemRemovedAt(int index) {}
     virtual int GetSelectedRadioOption() = 0;
+    virtual void CloseBubble() {}
 
    protected:
     virtual ~Owner() = default;
@@ -261,6 +265,7 @@ class ContentSettingBubbleModel {
   content::WebContents* web_contents() const;
   Profile* GetProfile() const;
   Delegate* delegate() const { return delegate_; }
+  Owner* owner() const { return owner_; }
   int selected_item() const { return owner_->GetSelectedRadioOption(); }
   content::Page& GetPage() const;
 
@@ -452,7 +457,9 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
 // (which display the current permission state after the user makes the initial
 // decision), this is shown before the user makes the first ever permission
 // decisions.
-class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
+class ContentSettingQuietRequestBubbleModel
+    : public ContentSettingBubbleModel,
+      public permissions::PermissionRequestManager::Observer {
  public:
   ContentSettingQuietRequestBubbleModel(Delegate* delegate,
                                         content::Page& page);
@@ -467,12 +474,37 @@ class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
  private:
   void SetManageText();
 
+  // Returns true if the request this bubble was created for is still the
+  // currently active quiet request.
+  bool IsBoundRequestStillActive() const;
+
+  // Requests the bubble owner to close the bubble widget.
+  void CloseBubble();
+
   // ContentSettingBubbleModel:
   void OnManageButtonClicked() override;
   void OnLearnMoreClicked() override;
   void OnDoneButtonClicked() override;
   void OnCancelButtonClicked() override;
   ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel() override;
+
+  // permissions::PermissionRequestManager::Observer:
+  void OnPromptRemoved() override;
+  void OnRequestsFinalized() override;
+  void OnRequestDecided(permissions::PermissionAction action) override;
+  void OnPermissionRequestManagerDestructed() override;
+
+  // The request type and quiet-UI reason this bubble was created for. The
+  // button labels are derived from these values, so the click handlers must
+  // act on them rather than re-reading the current request, which may have
+  // changed since the bubble was opened.
+  std::optional<permissions::RequestType> request_type_;
+  std::optional<permissions::PermissionUiSelector::QuietUiReason>
+      quiet_ui_reason_;
+
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      prm_observation_{this};
 };
 
 // The model for the deceptive content bubble.

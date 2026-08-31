@@ -145,17 +145,33 @@ bool HasDuplicatesOrInvalidPermissions(
   return false;
 }
 
-// Helper check if permission types are all supported by Page Embedded
-// Permission.
+// Helper which returns true if all permission types match the embedded
+// permission element type identified by `descriptor`.
 bool CheckPageEmbeddedPermissionTypes(
-    const std::vector<PermissionDescriptorPtr>& permissions) {
-  for (const auto& permission_type : permissions) {
-    auto type = blink::PermissionDescriptorToPermissionType(permission_type);
-    if (type != blink::PermissionType::GEOLOCATION &&
-        type != blink::PermissionType::WEB_APP_INSTALLATION &&
-        type != blink::PermissionType::AUDIO_CAPTURE &&
-        type != blink::PermissionType::VIDEO_CAPTURE) {
-      return false;
+    const std::vector<PermissionDescriptorPtr>& permissions,
+    const EmbeddedPermissionRequestDescriptorPtr& descriptor) {
+  for (const auto& permission : permissions) {
+    auto type = blink::PermissionDescriptorToPermissionType(permission);
+    switch (descriptor->detail->which()) {
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kGeolocation:
+        if (type != blink::PermissionType::GEOLOCATION) {
+          return false;
+        }
+        break;
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kInstall:
+        if (type != blink::PermissionType::WEB_APP_INSTALLATION) {
+          return false;
+        }
+        break;
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kUserMedia:
+        if (type != blink::PermissionType::AUDIO_CAPTURE &&
+            type != blink::PermissionType::VIDEO_CAPTURE) {
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -227,6 +243,11 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
         return;
       }
       break;
+  }
+
+  if (!CheckPageEmbeddedPermissionTypes(permissions, descriptor)) {
+    ReceivedBadMessage();
+    return;
   }
 
   WebContents* web_contents =
@@ -302,11 +323,13 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     RequestPageEmbeddedPermissionCallback callback) {
   if (permissions.empty()) {
     ReceivedBadMessage();
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
     return;
   }
 
   if (!std::ranges::all_of(permissions, &ValidatePermissionDescriptor)) {
     ReceivedBadMessage();
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
     return;
   }
   const base::Feature* required_feature = nullptr;
@@ -329,13 +352,15 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
         bad_message::PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE);
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
     return;
   }
 
   if (auto* browser_context = context_->GetBrowserContext()) {
     if (HasDuplicatesOrInvalidPermissions(permissions) ||
-        !CheckPageEmbeddedPermissionTypes(permissions)) {
+        !CheckPageEmbeddedPermissionTypes(permissions, descriptor)) {
       ReceivedBadMessage();
+      std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
       return;
     }
 
@@ -352,6 +377,8 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
                                      std::move(descriptor)),
         base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
                        initial_statuses, std::move(callback)));
+  } else {
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
   }
 }
 

@@ -418,6 +418,12 @@ int ContentSettingBubbleContents::GetSelectedRadioOption() {
   NOTREACHED();
 }
 
+void ContentSettingBubbleContents::CloseBubble() {
+  if (GetWidget()) {
+    GetWidget()->Close();
+  }
+}
+
 std::u16string ContentSettingBubbleContents::GetWindowTitle() const {
   if (!content_setting_bubble_model_) {
     return std::u16string();

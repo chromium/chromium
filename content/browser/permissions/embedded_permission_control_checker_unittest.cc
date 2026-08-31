@@ -5,6 +5,7 @@
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -159,13 +160,17 @@ TEST_F(EmbeddedPermissionControlCheckerTest,
        IgnoreRegisteregisterPageEmbeddedPermissionCheck) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(blink::features::kBypassPepcSecurityForTesting);
-  for (PermissionName name :
-       {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE,
-        PermissionName::GEOLOCATION}) {
+  for (const auto& [name, source] :
+       {std::make_pair(PermissionName::AUDIO_CAPTURE,
+                       CapabilityElementSource::kUserMedia),
+        std::make_pair(PermissionName::VIDEO_CAPTURE,
+                       CapabilityElementSource::kUserMedia),
+        std::make_pair(PermissionName::GEOLOCATION,
+                       CapabilityElementSource::kGeolocation)}) {
     std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>> clients(
         kMaxPEPCPerPage + 3);
     for (size_t i = 0; i < kMaxPEPCPerPage + 3; ++i) {
-      clients[i] = CreateEmbeddedPermissionControlClient({name});
+      clients[i] = CreateEmbeddedPermissionControlClient({name}, source);
       clients[i]->ExpectEmbeddedPermissionControlRegistered();
     }
   }
@@ -173,19 +178,25 @@ TEST_F(EmbeddedPermissionControlCheckerTest,
 
 TEST_F(EmbeddedPermissionControlCheckerTest,
        RegisterPageEmbeddedPermissionSinglePermission) {
-  for (PermissionName name :
-       {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE,
-        PermissionName::GEOLOCATION}) {
+  for (const auto& [name, source] :
+       {std::make_pair(PermissionName::AUDIO_CAPTURE,
+                       CapabilityElementSource::kUserMedia),
+        std::make_pair(PermissionName::VIDEO_CAPTURE,
+                       CapabilityElementSource::kUserMedia),
+        std::make_pair(PermissionName::GEOLOCATION,
+                       CapabilityElementSource::kGeolocation)}) {
     std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>> clients(
         kMaxPEPCPerPage);
     for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
-      clients[i] = CreateEmbeddedPermissionControlClient({name});
+      clients[i] = CreateEmbeddedPermissionControlClient({name}, source);
       clients[i]->ExpectEmbeddedPermissionControlRegistered();
     }
 
-    auto pending_client_1 = CreateEmbeddedPermissionControlClient({name});
+    auto pending_client_1 =
+        CreateEmbeddedPermissionControlClient({name}, source);
     pending_client_1->ExpectEmbeddedPermissionControlNotRegistered();
-    auto pending_client_2 = CreateEmbeddedPermissionControlClient({name});
+    auto pending_client_2 =
+        CreateEmbeddedPermissionControlClient({name}, source);
     pending_client_2->ExpectEmbeddedPermissionControlNotRegistered();
     clients.pop_back();
     pending_client_1->ExpectEmbeddedPermissionControlRegistered();
@@ -207,13 +218,17 @@ TEST_F(EmbeddedPermissionControlCheckerTest,
 
   // Embedded permission control of a single permission will not count towards
   // the grouped one.
-  for (PermissionName name :
-       {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE,
-        PermissionName::GEOLOCATION}) {
+  for (const auto& [name, source] :
+       {std::make_pair(PermissionName::AUDIO_CAPTURE,
+                       CapabilityElementSource::kUserMedia),
+        std::make_pair(PermissionName::VIDEO_CAPTURE,
+                       CapabilityElementSource::kUserMedia),
+        std::make_pair(PermissionName::GEOLOCATION,
+                       CapabilityElementSource::kGeolocation)}) {
     std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>> clients(
         kMaxPEPCPerPage);
     for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
-      clients[i] = CreateEmbeddedPermissionControlClient({name});
+      clients[i] = CreateEmbeddedPermissionControlClient({name}, source);
       clients[i]->ExpectEmbeddedPermissionControlRegistered();
     }
   }
@@ -246,13 +261,13 @@ class GeolocationEmbeddedPermissionControlCheckerTest
 
 TEST_F(GeolocationEmbeddedPermissionControlCheckerTest,
        DecouplePermissionSources) {
-  // Register `kMaxPEPCPerPage` clients for the permission element source.
+  // Register `kMaxPEPCPerPage` clients for the user-media element source.
   std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>>
-      permission_clients(kMaxPEPCPerPage);
+      user_media_clients(kMaxPEPCPerPage);
   for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
-    permission_clients[i] = CreateEmbeddedPermissionControlClient(
-        {PermissionName::GEOLOCATION}, CapabilityElementSource::kUserMedia);
-    permission_clients[i]->ExpectEmbeddedPermissionControlRegistered();
+    user_media_clients[i] = CreateEmbeddedPermissionControlClient(
+        {PermissionName::AUDIO_CAPTURE}, CapabilityElementSource::kUserMedia);
+    user_media_clients[i]->ExpectEmbeddedPermissionControlRegistered();
   }
 
   // Register `kMaxPEPCPerPage` clients for the geolocation element source.
@@ -266,18 +281,18 @@ TEST_F(GeolocationEmbeddedPermissionControlCheckerTest,
   }
 
   // Create one more client for each source, which should not be registered yet.
-  auto pending_permission_client = CreateEmbeddedPermissionControlClient(
-      {PermissionName::GEOLOCATION}, CapabilityElementSource::kUserMedia);
-  pending_permission_client->ExpectEmbeddedPermissionControlNotRegistered();
+  auto pending_user_media_client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::AUDIO_CAPTURE}, CapabilityElementSource::kUserMedia);
+  pending_user_media_client->ExpectEmbeddedPermissionControlNotRegistered();
 
   auto pending_geolocation_client = CreateEmbeddedPermissionControlClient(
       {PermissionName::GEOLOCATION}, CapabilityElementSource::kGeolocation);
   pending_geolocation_client->ExpectEmbeddedPermissionControlNotRegistered();
 
-  // Disconnect one client from the permission element source.
-  permission_clients.pop_back();
-  // The pending permission client should now be registered.
-  pending_permission_client->ExpectEmbeddedPermissionControlRegistered();
+  // Disconnect one client from the user-media element source.
+  user_media_clients.pop_back();
+  // The pending user-media client should now be registered.
+  pending_user_media_client->ExpectEmbeddedPermissionControlRegistered();
   // The pending geolocation client should still not be registered.
   pending_geolocation_client->ExpectEmbeddedPermissionControlNotRegistered();
 
@@ -324,14 +339,13 @@ TEST_F(InstallEmbeddedPermissionControlCheckerTest, InstallElementHigherLimit) {
 
 TEST_F(InstallEmbeddedPermissionControlCheckerTest,
        DecoupleInstallFromOtherSources) {
-  // Register `kMaxPEPCPerPage` (3) clients for the permission element source.
+  // Register `kMaxPEPCPerPage` (3) clients for the user-media element source.
   std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>>
-      permission_clients(kMaxPEPCPerPage);
+      user_media_clients(kMaxPEPCPerPage);
   for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
-    permission_clients[i] = CreateEmbeddedPermissionControlClient(
-        {PermissionName::WEB_APP_INSTALLATION},
-        CapabilityElementSource::kUserMedia);
-    permission_clients[i]->ExpectEmbeddedPermissionControlRegistered();
+    user_media_clients[i] = CreateEmbeddedPermissionControlClient(
+        {PermissionName::AUDIO_CAPTURE}, CapabilityElementSource::kUserMedia);
+    user_media_clients[i]->ExpectEmbeddedPermissionControlRegistered();
   }
 
   // Register `kMaxInstallElementsPerPage` (24) clients for the install element
@@ -346,20 +360,19 @@ TEST_F(InstallEmbeddedPermissionControlCheckerTest,
   }
 
   // Create one more client for each source, which should not be registered yet.
-  auto pending_permission_client = CreateEmbeddedPermissionControlClient(
-      {PermissionName::WEB_APP_INSTALLATION},
-      CapabilityElementSource::kUserMedia);
-  pending_permission_client->ExpectEmbeddedPermissionControlNotRegistered();
+  auto pending_user_media_client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::AUDIO_CAPTURE}, CapabilityElementSource::kUserMedia);
+  pending_user_media_client->ExpectEmbeddedPermissionControlNotRegistered();
 
   auto pending_install_client = CreateEmbeddedPermissionControlClient(
       {PermissionName::WEB_APP_INSTALLATION},
       CapabilityElementSource::kInstall);
   pending_install_client->ExpectEmbeddedPermissionControlNotRegistered();
 
-  // Disconnect one client from the permission element source.
-  permission_clients.pop_back();
-  // The pending permission client should now be registered.
-  pending_permission_client->ExpectEmbeddedPermissionControlRegistered();
+  // Disconnect one client from the user-media element source.
+  user_media_clients.pop_back();
+  // The pending user-media client should now be registered.
+  pending_user_media_client->ExpectEmbeddedPermissionControlRegistered();
   // The pending install client should still not be registered.
   pending_install_client->ExpectEmbeddedPermissionControlNotRegistered();
 
