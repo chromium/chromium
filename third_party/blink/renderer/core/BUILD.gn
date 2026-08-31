@@ -1455,6 +1455,9 @@ action("generate_eventhandler_names") {
              "//tools/idl_parser/idl_node.py",
              "//tools/idl_parser/idl_parser.py",
              "events/event_type_names.json5",
+             "html/html_attribute_names.json5",
+             "mathml/mathml_attribute_names.json5",
+             "svg/svg_attribute_names.json5",
              web_idl_database_filepath,
              real_script,
            ]
@@ -1471,6 +1474,12 @@ action("generate_eventhandler_names") {
     rebase_path(outputs[0], root_build_dir),
     "--event-handler-names",
     rebase_path("events/event_type_names.json5", root_build_dir),
+    "--html-attribute-names",
+    rebase_path("html/html_attribute_names.json5", root_build_dir),
+    "--svg-attribute-names",
+    rebase_path("svg/svg_attribute_names.json5", root_build_dir),
+    "--mathml-attribute-names",
+    rebase_path("mathml/mathml_attribute_names.json5", root_build_dir),
   ]
 }
 

@@ -27,9 +27,19 @@ def main(argv):
     parser.add_option("--out")
     parser.add_option("--webidl")
     parser.add_option("--event-handler-names")
+    parser.add_option("--html-attribute-names")
+    parser.add_option("--svg-attribute-names")
+    parser.add_option("--mathml-attribute-names")
     options, args = parser.parse_args(argv[1:])
 
-    for option in ("out", "webidl", "event_handler_names"):
+    for option in (
+            "out",
+            "webidl",
+            "event_handler_names",
+            "html_attribute_names",
+            "svg_attribute_names",
+            "mathml_attribute_names",
+    ):
         if not getattr(options, option):
             parser.error(f"--{option} is required.")
     if args:
@@ -47,6 +57,19 @@ def main(argv):
         event_type_names = json5.load(f)
         for entry in event_type_names["data"]:
             event_handlers.add(f"on{entry.lower()}")
+
+    for path in (
+            options.html_attribute_names,
+            options.svg_attribute_names,
+            options.mathml_attribute_names,
+    ):
+        with open(path) as f:
+            attribute_data = json5.load(f)
+            for entry in attribute_data["data"]:
+                name = entry if isinstance(entry, str) else entry.get(
+                    "name", "")
+                if name.lower().startswith("on"):
+                    event_handlers.add(name.lower())
 
 
     license_and_header = """\
