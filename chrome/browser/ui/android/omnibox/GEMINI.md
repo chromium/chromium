@@ -31,15 +31,17 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - The status view (e.g., `StatusView`) should not construct template URL icon resources.
 - **Clank MVC Principles**:
   All Omnibox UI modules must strictly follow Clank MVC conventions:
-  - **Coordinator**: The component's public API. It handles creation, lifecycle, and external integration.
-  - **Mediator**: Contains the component's business logic. It handles events and triggers state updates. The Mediator **must only** communicate with the View by updating the `PropertyModel`. It must not retain direct references to View objects.
+  - **Coordinator**: The component's public API. It handles creation, lifecycle, and external integration. Like Mediators, Coordinators should avoid direct manipulation of views.
+  - **Mediator**: Contains the component's business logic. It handles events and triggers state updates. The Mediator **must only** communicate with the View by updating the `PropertyModel`. It must not retain direct references to View objects or manipulate them directly.
   - **ViewBinder**: A stateless component that translates changes in the `PropertyModel` to the View. This is the **only** class that is permitted to manipulate View properties at runtime.
   - **View**: Android `View` components that hold layout references. They should host very little logic, if any.
+  - **Property-Driven View Updates**: Coordinators and Mediators **must avoid manipulating views directly**. If the component is a proper MVC component, and a change can be represented using properties, it **must** be represented via properties in the `PropertyModel`. In almost all cases (including context menu content, visibility, click handlers, styling, and text state), properties should be used. Exceptions may arise only when it is impossible to capture and agree on a discrete state (e.g. transient actions like `requestFocus()`).
 
 ## Coding
 
 ### Model Properties (`*Properties.java`) & ViewBinders
 
+- **Property-Driven State Representation**: If a component is a proper MVC component and a change can be represented using properties, it **must** be captured as a property in `PropertyModel`. Coordinators and Mediators should avoid manipulating views directly. In virtually all cases (including context menu content, text state, styling, listeners, and visibility), properties should be used; exceptions arise only when it is impossible to capture and agree on a state (e.g. `requestFocus()`).
 - **Alphabetical Sorting**: Properties listed in `*Properties.java` files must be sorted alphabetically for easier lookup (both within field declarations and in `ALL_KEYS` / `ALL_UNIQUE_KEYS` arrays).
 - **Semantic Grouping & Naming**: Properties listed in `*Properties.java` files must be grouped semantically by prefix (e.g. `BTN_ADD_VISIBLE`, `BTN_ADD_ENABLED`, `BTN_ADD_CALLBACK`) so alphabetical sorting naturally groups related properties together.
 - **ViewBinder Order Consistency**: `ViewBinder` binding logic (`bind(...)` method's `if/else if` chain or dispatch logic) must follow the exact same order as `*Properties.java` for all new code.
