@@ -9,16 +9,14 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 class Browser;
 
@@ -26,11 +24,11 @@ namespace ash {
 class BrowserDelegate;
 }
 
-// BrowserStatusMonitor monitors creation/deletion of Browser and its
-// TabStripModel to keep the shelf representation up to date as the
-// active tab changes.
+// BrowserStatusMonitor monitors creation/deletion of browsers and their
+// tabs to keep the shelf representation up to date as the active tab
+// changes.
 class BrowserStatusMonitor : public ash::BrowserController::Observer,
-                             public TabStripModelObserver {
+                             public ash::BrowserController::TabObserver {
  public:
   explicit BrowserStatusMonitor(ChromeShelfController* shelf_controller);
 
@@ -62,11 +60,18 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
   void OnBrowserCreated(ash::BrowserDelegate* browser) override;
   void OnBrowserClosed(ash::BrowserDelegate* browser) override;
 
-  // TabStripModelObserver overrides:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
+  // ash::BrowserController::TabObserver overrides:
+  void OnTabInserted(ash::BrowserDelegate* browser,
+                     content::WebContents* contents) override;
+  void OnTabRemoved(ash::BrowserDelegate* browser,
+                    content::WebContents* contents,
+                    bool will_delete) override;
+  void OnTabReplaced(ash::BrowserDelegate* browser,
+                     content::WebContents* old_contents,
+                     content::WebContents* new_contents) override;
+  void OnActiveWebContentsChanged(ash::BrowserDelegate* browser,
+                                  content::WebContents* old_contents,
+                                  content::WebContents* new_contents) override;
 
  private:
   // Add a windowed browser-based app to the shelf.
@@ -80,19 +85,6 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
   bool IsAppBrowserInShelfWithAppId(const std::string& app_id);
 
   class LocalWebContentsObserver;
-
-  // Called by TabStripModelChanged()
-  void OnActiveTabChanged(content::WebContents* old_contents,
-                          content::WebContents* new_contents);
-  void OnTabReplaced(TabStripModel* tab_strip_model,
-                     content::WebContents* old_contents,
-                     content::WebContents* new_contents);
-  void OnTabInserted(TabStripModel* tab_strip_model,
-                     content::WebContents* contents);
-  void OnTabClosing(content::WebContents* contents);
-  // Tab is moved between browsers
-  void OnTabMoved(TabStripModel* tab_strip_model,
-                  content::WebContents* contents);
 
   // Called by LocalWebContentsObserver.
   void OnTabNavigationFinished(content::WebContents* contents);
@@ -108,26 +100,18 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
                                           content::WebContents* web_contents);
 
   raw_ptr<ChromeShelfController> shelf_controller_;
-
   std::map<raw_ptr<BrowserWindowInterface>, std::string> browser_to_app_id_map_;
   std::map<content::WebContents*, std::unique_ptr<LocalWebContentsObserver>>
       webcontents_to_observer_map_;
-
-  BrowserTabStripTracker browser_tab_strip_tracker_;
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_observation_{this};
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::TabObserver>
+      tab_observation_{this};
   bool initialized_ = false;
-
   raw_ptr<AppServiceInstanceRegistryHelper> app_service_instance_helper_ =
       nullptr;
-
-#if DCHECK_IS_ON()
-  // Browsers for which OnBrowserAdded() was called, but not OnBrowserRemoved().
-  // Used to validate that OnBrowserAdded() is invoked before
-  // OnTabStripModelChanged().
-  std::set<raw_ptr<BrowserWindowInterface, SetExperimental>> known_browsers_;
-  // Tabs that are removed from one browser and are getting reinserted into
-  // another.
-  std::set<raw_ptr<content::WebContents>> tabs_in_transit_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_BROWSER_STATUS_MONITOR_H_

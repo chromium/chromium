@@ -16,6 +16,7 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
@@ -353,7 +354,7 @@ void BrowserControllerImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
   for (size_t i = browser_delegate->GetWebContentsCount(); i-- > 0;) {
     content::WebContents* contents = browser_delegate->GetWebContentsAt(i);
     for (auto& observer : tab_observers_) {
-      observer.OnTabRemoved(browser_delegate, contents);
+      observer.OnTabRemoved(browser_delegate, contents, /*will_delete=*/true);
     }
   }
   browser->GetTabStripModel()->RemoveObserver(this);
@@ -386,8 +387,10 @@ void BrowserControllerImpl::OnTabStripModelChanged(
       break;
     case TabStripModelChange::kRemoved:
       for (const auto& item : change.GetRemove()->contents) {
+        bool will_delete =
+            TabRemoveReasonUtils::WillDeleteTab(item.remove_reason);
         for (auto& observer : tab_observers_) {
-          observer.OnTabRemoved(browser, item.contents);
+          observer.OnTabRemoved(browser, item.contents, will_delete);
         }
       }
       break;

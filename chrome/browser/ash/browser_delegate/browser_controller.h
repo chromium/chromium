@@ -94,9 +94,12 @@ class BrowserController {
 
     // Called when a tab in `browser` is removed from its tab strip
     // (including when an entire browser window closes with remaining tabs).
-    // `browser` and `contents` are never nullptr.
+    // `browser` and `contents` are never nullptr. `will_delete` is true if the
+    // tab will be destroyed (e.g. closing), and false if it will just move to
+    // another browser window dynamically.
     virtual void OnTabRemoved(BrowserDelegate* browser,
-                              content::WebContents* contents) {}
+                              content::WebContents* contents,
+                              bool will_delete) {}
 
     // Called when a tab's WebContents in `browser` is replaced in place (e.g.
     // discard or prerender swap).
