@@ -2442,7 +2442,9 @@ void CacheStorageCache::KeysDidQueryCache(
 }
 
 void CacheStorageCache::CloseImpl(base::OnceClosure callback) {
-  CHECK_EQ(BACKEND_OPEN, backend_state_, base::NotFatalUntil::M158);
+  // TODO(crbug.com/554523653): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(BACKEND_OPEN, backend_state_);
 
   CHECK(scheduler_->IsRunningExclusiveOperation(), base::NotFatalUntil::M158);
   backend_.reset();
