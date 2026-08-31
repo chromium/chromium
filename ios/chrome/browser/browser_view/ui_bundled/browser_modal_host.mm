@@ -967,14 +967,7 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {
-  if (_autofillAISaveEntityCoordinator) {
-    // TODO(crbug.com/544603147): Check if it is necessary, and if it is, add a
-    // comment.
-    std::move(params.callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown,
-             std::nullopt, {});
-    return;
-  }
+  [_autofillAISaveEntityCoordinator stop];
 
   _autofillAISaveEntityCoordinator = [[AutofillAISaveEntityCoordinator alloc]
       initWithBaseViewController:_baseViewController
