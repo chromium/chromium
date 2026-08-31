@@ -115,8 +115,12 @@ class PdfToolbarViewBinder {
             ImageView fitToPageButton = view.findViewById(R.id.fit_to_page_button);
             if (model.get(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON)) {
                 fitToPageButton.setImageResource(R.drawable.ic_fit_page_height_24dp);
+                fitToPageButton.setContentDescription(
+                        view.getContext().getString(R.string.pdf_fit_page));
             } else {
                 fitToPageButton.setImageResource(R.drawable.ic_fit_page_width_24dp);
+                fitToPageButton.setContentDescription(
+                        view.getContext().getString(R.string.pdf_fit_width));
             }
         } else if (PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE == key) {
             view.setDownloadButtonVisible(model.get(PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE));

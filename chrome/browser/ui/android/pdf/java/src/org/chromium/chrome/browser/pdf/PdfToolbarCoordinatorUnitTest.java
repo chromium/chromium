@@ -423,13 +423,23 @@ public class PdfToolbarCoordinatorUnitTest {
         View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
         int targetPageIndex = Integer.parseInt(INITIAL_PAGE_NUMBER) - 1;
 
+        assertEquals(
+                mActivity.getString(R.string.pdf_fit_page),
+                fitToPageButton.getContentDescription().toString());
+
         // Initial state: click triggers fit-to-page and changes state to fit-to-width.
         fitToPageButton.performClick();
         verify(mDelegate).toggleFitToPage(true, targetPageIndex);
+        assertEquals(
+                mActivity.getString(R.string.pdf_fit_width),
+                fitToPageButton.getContentDescription().toString());
 
         // Second click triggers fit-to-width and changes state back to fit-to-page.
         fitToPageButton.performClick();
         verify(mDelegate).toggleFitToPage(false, targetPageIndex);
+        assertEquals(
+                mActivity.getString(R.string.pdf_fit_page),
+                fitToPageButton.getContentDescription().toString());
     }
 
     @Test
