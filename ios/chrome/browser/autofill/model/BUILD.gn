@@ -37,6 +37,8 @@ source_set("model") {
     "ios_autofill_entity_data_manager_factory.mm",
     "ios_autofill_entity_data_manager_observer_bridge.h",
     "ios_autofill_entity_data_manager_observer_bridge.mm",
+    "ios_autofill_entity_suppression_manager_factory.h",
+    "ios_autofill_entity_suppression_manager_factory.mm",
     "ios_autofill_field_classification_model_handler_factory.h",
     "ios_autofill_field_classification_model_handler_factory.mm",
     "ios_wallet_pass_access_manager_factory.h",

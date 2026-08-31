@@ -536,4 +536,11 @@ TEST_F(ChromeAutofillClientIOSTest, OnActorTaskStateChange_ReparsesForms) {
   EXPECT_TRUE(client().IsTabInActorMode());
 }
 
+// Test that `GetEntitySuppressionManager` returns the manager for the profile.
+TEST_F(ChromeAutofillClientIOSTest, GetEntitySuppressionManager) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAmbientAutofillSuppression);
+  EXPECT_NE(client().GetEntitySuppressionManager(), nullptr);
+}
+
 }  // namespace autofill

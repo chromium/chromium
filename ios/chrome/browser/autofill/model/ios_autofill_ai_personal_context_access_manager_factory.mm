@@ -10,6 +10,7 @@
 #import "components/personal_context/core/personal_context_eligibility_service.h"
 #import "components/personal_context/core/personal_context_service.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -41,6 +42,7 @@ IOSAutofillAiPersonalContextAccessManagerFactory::
   DependsOn(IOSPersonalContextServiceFactory::GetInstance());
   DependsOn(SubscriptionEligibilityServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(IOSAutofillEntitySuppressionManagerFactory::GetInstance());
 }
 
 IOSAutofillAiPersonalContextAccessManagerFactory::
@@ -71,5 +73,5 @@ IOSAutofillAiPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
       personal_context_service, personal_context_eligibility_service,
       subscription_eligibility_service, profile->GetPrefs(),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
-      /*suppression_manager=*/nullptr);
+      IOSAutofillEntitySuppressionManagerFactory::GetForProfile(profile));
 }

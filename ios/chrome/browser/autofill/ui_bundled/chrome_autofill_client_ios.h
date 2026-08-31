@@ -64,6 +64,7 @@ class AutofillAiSaveEntityInfoBarDelegateIOS;
 class AutofillSuggestionDelegate;
 class LogRouter;
 class AutofillAiPersonalContextAccessManager;
+class EntitySuppressionManager;
 class FormPredictionsTracker;
 
 enum class SuggestionType;
@@ -109,6 +110,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   PersonalDataManager& GetPersonalDataManager() override;
   ValuablesDataManager* GetValuablesDataManager() override;
   EntityDataManager* GetEntityDataManager() override;
+  EntitySuppressionManager* GetEntitySuppressionManager() override;
   WalletPassAccessManager* GetWalletPassAccessManager() override;
   FieldClassificationModelHandler*
   GetAutofillFieldClassificationModelHandler() override;
