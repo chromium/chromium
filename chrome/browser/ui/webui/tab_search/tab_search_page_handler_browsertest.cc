@@ -1190,7 +1190,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
 }
 
 // TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_RecentlyClosedTabEntriesFilterOpenTabUrls \
   DISABLED_RecentlyClosedTabEntriesFilterOpenTabUrls
 #else
@@ -1293,7 +1294,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
 }
 
 // TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_RecentlyClosedTabInFuture DISABLED_RecentlyClosedTabInFuture
 #else
 #define MAYBE_RecentlyClosedTabInFuture RecentlyClosedTabInFuture
@@ -1392,7 +1394,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_ReplaceActiveSplitTab) {
 }
 
 // TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_TabSearchUsedPref DISABLED_TabSearchUsedPref
 #else
 #define MAYBE_TabSearchUsedPref TabSearchUsedPref
