@@ -4,6 +4,7 @@
 
 #include <gtk/gtk.h>
 
+#include <algorithm>
 #include <memory>
 #include <numbers>
 #include <vector>
@@ -11,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/i18n/char_iterator.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -31,6 +33,9 @@ namespace {
 
 // The amount of time to wait before allowing another position toggle.
 constexpr base::TimeDelta kToggleCooldown = base::Seconds(3);
+
+// Maximum length of the username / client identity in UTF-16 characters.
+constexpr size_t kMaxUsernameLength = 50;
 
 // Margins from screen edges to ensure the dialog is not obscured by the top bar
 // or an auto-hiding dock/panel at the bottom.
@@ -250,10 +255,13 @@ void DisconnectWindowGtk::Start(
           &DisconnectWindowGtk::OnToggleClicked);
 
   message_ = gtk_label_new(nullptr);
+  gtk_label_set_ellipsize(GTK_LABEL(message_.get()), PANGO_ELLIPSIZE_MIDDLE);
+  gtk_label_set_max_width_chars(GTK_LABEL(message_.get()), 30);
 #if GTK_CHECK_VERSION(3, 90, 0)
   gtk_box_pack_start(GTK_BOX(button_row), message_.get());
+  gtk_widget_set_hexpand(message_.get(), TRUE);
 #else
-  gtk_box_pack_start(GTK_BOX(button_row), message_.get(), FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(button_row), message_.get(), TRUE, TRUE, 0);
 #endif
 
   button_ = gtk_button_new_with_label(
@@ -296,9 +304,21 @@ void DisconnectWindowGtk::Start(
   std::string client_jid = client_session_control_->client_jid();
   std::u16string username =
       base::UTF8ToUTF16(client_jid.substr(0, client_jid.find('/')));
-  gtk_label_set_text(
-      GTK_LABEL(message_.get()),
-      l10n_util::GetStringFUTF8(IDS_MESSAGE_SHARED, username).c_str());
+  username = base::CollapseWhitespace(username,
+                                      /*trim_sequences_with_line_breaks=*/true);
+  // Truncate username safely at a Unicode character boundary so that
+  // truncation does not split UTF-16 surrogate pairs. Truncating before
+  // formatting ensures localized punctuation and grammar in IDS_MESSAGE_SHARED
+  // (e.g. trailing periods) are preserved.
+  if (username.length() > kMaxUsernameLength) {
+    username.erase(
+        base::i18n::UTF16CharIterator::LowerBound(username, kMaxUsernameLength)
+            .array_pos());
+  }
+
+  std::string message_text =
+      l10n_util::GetStringFUTF8(IDS_MESSAGE_SHARED, username);
+  gtk_label_set_text(GTK_LABEL(message_.get()), message_text.c_str());
   SetDialogPosition();
   gtk_window_present(window);
 }
@@ -405,7 +425,7 @@ void DisconnectWindowGtk::SetDialogPosition() {
     height = requisition.height;
   }
 
-  int left = geometry.x + (geometry.width - width) / 2;
+  int left = geometry.x + std::max(0, (geometry.width - width) / 2);
   int top = (g_current_anchor == WindowAnchor::kTop)
                 ? (geometry.y + kTopMargin)
                 : (geometry.y + geometry.height - height - kBottomMargin);
