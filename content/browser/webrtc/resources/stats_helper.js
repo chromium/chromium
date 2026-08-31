@@ -24,12 +24,12 @@ export function generateStatsLabel(rtcStats) {
   let labels = [];
   if (['outbound-rtp', 'remote-outbound-rtp', 'inbound-rtp',
       'remote-inbound-rtp'].includes(rtcStats.type)) {
-    labels = ['kind', 'mid', 'rid', 'ssrc', 'rtxSsrc', 'fecSsrc',
-      'frameHeight', 'contentType',
-      'active', 'scalabilityMode',
-      'encoderImplementation', 'decoderImplementation',
-      'powerEfficientEncoder', 'powerEfficientDecoder',
-      '[codec]'];
+    labels = [
+      'kind', 'mid', 'rid', 'encodingIndex', 'ssrc', 'rtxSsrc', 'fecSsrc',
+      'frameHeight', 'contentType', 'active', 'scalabilityMode',
+      'encoderImplementation', 'decoderImplementation', 'powerEfficientEncoder',
+      'powerEfficientDecoder', '[codec]'
+    ];
   } else if (['local-candidate', 'remote-candidate'].includes(rtcStats.type)) {
     labels = ['candidateType', 'tcpType', 'relayProtocol'];
   } else if (rtcStats.type === 'codec') {
