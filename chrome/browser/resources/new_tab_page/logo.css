@@ -141,4 +141,6 @@
 
 :host-context([webui-rounded-icons]) #shareButtonIcon {
   mask-image: url(chrome://new-tab-page/icons/share_unfilled.svg);
+  mask-repeat: no-repeat;
+  mask-size: contain;
 }
