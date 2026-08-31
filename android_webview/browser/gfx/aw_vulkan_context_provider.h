@@ -54,6 +54,9 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
     ScopedSecondaryCBDraw(AwVulkanContextProvider* provider,
                           sk_sp<GrVkSecondaryCBDrawContext> draw_context);
 
+    ScopedSecondaryCBDraw(ScopedSecondaryCBDraw&&);
+    ScopedSecondaryCBDraw& operator=(ScopedSecondaryCBDraw&&);
+
     ScopedSecondaryCBDraw(const ScopedSecondaryCBDraw&) = delete;
     ScopedSecondaryCBDraw& operator=(const ScopedSecondaryCBDraw&) = delete;
 
@@ -62,7 +65,7 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
     void RecordingFinished();
 
    private:
-    raw_ptr<AwVulkanContextProvider> const provider_;
+    raw_ptr<AwVulkanContextProvider> provider_;
     SecondaryCBDrawState state_;
     bool recording_active_ = true;
   };

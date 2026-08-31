@@ -219,6 +219,12 @@ AwVulkanContextProvider::ScopedSecondaryCBDraw::ScopedSecondaryCBDraw(
   provider_->SecondaryCBDrawBegin(&state_);
 }
 
+AwVulkanContextProvider::ScopedSecondaryCBDraw::ScopedSecondaryCBDraw(
+    ScopedSecondaryCBDraw&&) = default;
+AwVulkanContextProvider::ScopedSecondaryCBDraw&
+AwVulkanContextProvider::ScopedSecondaryCBDraw::operator=(
+    ScopedSecondaryCBDraw&&) = default;
+
 AwVulkanContextProvider::ScopedSecondaryCBDraw::~ScopedSecondaryCBDraw() {
   // Ensure we detach from provider if RecordingFinished() was not called yet.
   RecordingFinished();
