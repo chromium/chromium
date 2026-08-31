@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- GM3 dynamic colors for Android S and above.-->
+  <!-- go/keep-sorted start group_start_regex=<color -->
   <color name="material_primary_10">@color/material_dynamic_primary10</color>
   <color name="material_primary_20">@color/material_dynamic_primary20</color>
   <color name="material_primary_30">@color/material_dynamic_primary30</color>
@@ -26,4 +27,5 @@ found in the LICENSE file.
   <color name="material_secondary_90">@color/material_dynamic_secondary90</color>
   <color name="material_tertiary_80">@color/material_dynamic_tertiary80</color>
   <color name="material_tertiary_90">@color/material_dynamic_tertiary90</color>
+  <!-- go/keep-sorted end -->
 </resources>
