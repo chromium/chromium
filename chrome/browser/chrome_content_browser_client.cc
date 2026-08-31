@@ -529,6 +529,8 @@
 #include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #elif BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/application_status_listener.h"
 #include "base/feature_list.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"  // nogncheck crbug.com/40147906
@@ -3481,7 +3483,25 @@ void ChromeContentBrowserClient::RequestPlatformLocalNetworkPermission(
   const std::vector<ContentSettingsType> types = {
       ContentSettingsType::LOCAL_NETWORK_ACCESS};
 
-  switch (permissions::ShouldRepromptUserForPermissions(&web_contents, types)) {
+  permissions::PermissionRepromptState reprompt_state =
+      permissions::ShouldRepromptUserForPermissions(&web_contents, types);
+  base::UmaHistogramEnumeration(
+      "Android.LocalNetworkAccess.PermissionRepromptState", reprompt_state);
+
+  static const base::NoDestructor<std::string> histogram_name([] {
+    std::string_view sdk_suffix = (base::android::android_info::sdk_int() >= 37)
+                                      ? "Sdk37Plus"
+                                      : "SdkPre37";
+    std::string_view target_sdk_suffix =
+        (base::android::apk_info::target_sdk_version() >= 37)
+            ? "TargetSdk37Plus"
+            : "TargetSdkPre37";
+    return base::StrCat({"Android.LocalNetworkAccess.PermissionRepromptState.",
+                         sdk_suffix, ".", target_sdk_suffix});
+  }());
+  base::UmaHistogramEnumeration(*histogram_name, reprompt_state);
+
+  switch (reprompt_state) {
     case permissions::PermissionRepromptState::kNoNeed:
       std::move(callback).Run(/*permission_granted=*/true);
       return;

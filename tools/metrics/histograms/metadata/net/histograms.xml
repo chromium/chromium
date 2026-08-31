@@ -4796,6 +4796,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.LocalNetworkAccess.RestartIgnoringLastErrorResult"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records the net error code (or ERR_IO_PENDING) when restarting an HTTP(S)
+    transaction after the user has granted local network access permission on
+    Android.
+
+    Recorded each time a network request that was blocked by the OS due to
+    missing local network access permission is restarted following the user
+    granting the permission via the platform prompt. Not recorded if permission
+    was denied or if no local network permission prompt was triggered.
+  </summary>
+</histogram>
+
 <histogram name="Net.MultiThreadedCertVerifier.RequestDuration{HostType}"
     units="ms" expires_after="2027-02-07">
   <owner>nidhijaju@chromium.org</owner>

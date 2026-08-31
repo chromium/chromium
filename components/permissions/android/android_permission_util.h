@@ -56,6 +56,7 @@ bool HasRequiredAndroidPermissionsForContentSetting(
     ui::WindowAndroid* window_android,
     ContentSettingsType content_settings_type);
 
+// LINT.IfChange(PermissionRepromptState)
 // The states that indicate if the user should/can be re-nudged to accept
 // permissions. In Chrome this correlates to the PermissionUpdateInfoBar.
 enum class PermissionRepromptState {
@@ -66,7 +67,9 @@ enum class PermissionRepromptState {
   // Can't show the permission infobar due to an internal state issue like
   // the WebContents or the AndroidWindow are not available.
   kCannotShow,
+  kMaxValue = kCannotShow,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionRepromptState)
 
 PermissionRepromptState ShouldRepromptUserForPermissions(
     content::WebContents* web_contents,

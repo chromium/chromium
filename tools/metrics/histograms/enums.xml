@@ -23693,6 +23693,16 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionPromptDispositionReason) -->
 
+<!-- LINT.IfChange(PermissionRepromptState) -->
+
+<enum name="PermissionRepromptState">
+  <int value="0" label="No need (already granted or not required)"/>
+  <int value="1" label="Show permission prompt"/>
+  <int value="2" label="Cannot show (internal state issue)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/android/android_permission_util.h:PermissionRepromptState) -->
+
 <!-- LINT.IfChange(PermissionRequestType) -->
 
 <enum name="PermissionRequestType">

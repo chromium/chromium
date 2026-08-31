@@ -1744,6 +1744,10 @@ void URLRequestHttpJob::SetPlatformLocalNetworkAccessGranted() {
 
   int rv = transaction_->RestartIgnoringLastError(base::BindOnce(
       &URLRequestHttpJob::OnStartCompleted, base::Unretained(this)));
+
+  base::UmaHistogramSparse(
+      "Net.LocalNetworkAccess.RestartIgnoringLastErrorResult", -rv);
+
   if (rv == ERR_IO_PENDING) {
     return;
   }

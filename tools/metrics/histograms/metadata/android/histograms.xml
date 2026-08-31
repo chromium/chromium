@@ -3340,6 +3340,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.LocalNetworkAccess.PermissionRepromptState"
+    enum="PermissionRepromptState" expires_after="2027-08-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>src/chrome/browser/permissions/OWNERS</owner>
+  <summary>
+    Records the reprompt decision state (no need, show prompt, cannot show) when
+    Chrome evaluates whether to request the Android platform
+    ACCESS_LOCAL_NETWORK permission for a local network access request.
+
+    Recorded for all Android OS and target SDK versions each time Chrome's
+    network stack determines that local network access permission is required
+    for a network request.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.LocalNetworkAccess.PermissionRepromptState.{SdkVersion}.{TargetSdkVersion}"
+    enum="PermissionRepromptState" expires_after="2027-08-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>src/chrome/browser/permissions/OWNERS</owner>
+  <summary>
+    Records the reprompt decision state (no need, show prompt, cannot show) when
+    Chrome evaluates whether to request the Android platform
+    ACCESS_LOCAL_NETWORK permission for a local network access request.
+
+    Recorded each time Chrome's network stack determines that local network
+    access permission is required for a network request. {SdkVersion}
+    {TargetSdkVersion}
+  </summary>
+  <token key="SdkVersion">
+    <variant name="Sdk37Plus"
+        summary="Recorded on Android devices with SDK &gt;= 37 (Android 17
+                 and above)."/>
+    <variant name="SdkPre37"
+        summary="Recorded on Android devices with SDK &lt; 37 (Android 16 and
+                 below)."/>
+  </token>
+  <token key="TargetSdkVersion">
+    <variant name="TargetSdk37Plus"
+        summary="Recorded when Chrome targetSdkVersion &gt;= 37."/>
+    <variant name="TargetSdkPre37"
+        summary="Recorded when Chrome targetSdkVersion &lt; 37."/>
+  </token>
+</histogram>
+
 <histogram name="Android.MaybeCopyContentAreaAsBitmap.Time" units="ms"
     expires_after="2027-01-24">
   <owner>chikamune@chromium.org</owner>
