@@ -97,8 +97,6 @@ AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
       channels_.emplace_back();
     }
   }
-
-  layout_ = kLayoutCanonical;  // for now this is the only layout we define
 }
 
 void AudioBus::SetChannelMemory(unsigned channel_index,
@@ -127,11 +125,6 @@ void AudioBus::Zero() {
 }
 
 const AudioChannel* AudioBus::ChannelByType(unsigned channel_type) const {
-  // For now we only support canonical channel layouts...
-  if (layout_ != kLayoutCanonical) {
-    return nullptr;
-  }
-
   switch (NumberOfChannels()) {
     case 1:  // mono
       if (channel_type == kChannelMono || channel_type == kChannelLeft) {

@@ -52,11 +52,6 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
     kChannelSurroundRight = 5,
   };
 
-  enum {
-    kLayoutCanonical = 0
-    // Can define non-standard layouts here
-  };
-
   enum ChannelInterpretation {
     kSpeakers,
     kDiscrete,
@@ -198,7 +193,6 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
 
   uint32_t length_;
   Vector<AudioChannel, 2> channels_;
-  int layout_;
   float sample_rate_;  // 0.0 if unknown or N/A
 };
 
