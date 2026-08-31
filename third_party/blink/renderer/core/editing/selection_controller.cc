@@ -173,12 +173,10 @@ bool IsEditableBoxEmpty(const Node* node) {
   if (!node) {
     return true;
   }
-  if (RuntimeEnabledFeatures::TextAreaEmptyPlaceholderBreakEnabled()) {
-    if (auto* text_control = EnclosingTextControl(node)) {
-      // We don't use `HasChildren()` for text controls because text controls
-      // may have placeholder break elements even for empty values.
-      return text_control->InnerEditorValue().empty();
-    }
+  if (auto* text_control = EnclosingTextControl(node)) {
+    // We don't use `HasChildren()` for text controls because text controls
+    // may have placeholder break elements even for empty values.
+    return text_control->InnerEditorValue().empty();
   }
   Element* root = RootEditableElement(*node);
   return !root || !root->HasChildren();

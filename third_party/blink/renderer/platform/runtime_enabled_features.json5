@@ -6241,10 +6241,6 @@
       status: "stable",
     },
     {
-      name: "TextAreaEmptyPlaceholderBreak",
-      status: "stable",
-    },
-    {
       name: "TextAreaResizerFixedSize",
       status: "stable",
     },
