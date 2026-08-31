@@ -16,8 +16,9 @@ import urllib
 import urllib.parse
 import urllib.request
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import bidimapper.append_notices as notices
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), '..', 'chromium-bidi', 'tools'))
+import append_notices as notices
 
 _ALLOWED_LICENSES = [
     # Regular valid open source licenses supported by Google.

@@ -51,11 +51,13 @@ const mapperTabConfig = {
         output: {
           file: noticesFile,
           template(dependencies) {
-            const sortedDependencies = [...dependencies].sort((a, b) => {
-              const nameA = a.name || '';
-              const nameB = b.name || '';
-              return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
-            });
+            const sortedDependencies = [...dependencies]
+              .filter((dependency) => dependency.name !== 'chromium-bidi')
+              .sort((a, b) => {
+                const nameA = a.name || '';
+                const nameB = b.name || '';
+                return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+              });
             const stringified_dependencies = sortedDependencies.map(
               (dependency) => {
                 let arr = [];

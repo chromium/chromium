@@ -33,9 +33,11 @@ origin_files = glob(
     ["third_party/chromium-bidi/**"],
     exclude = [
         "third_party/chromium-bidi/README.chromium",
+        "third_party/chromium-bidi/README.chromium.in",
         "third_party/chromium-bidi/OWNERS",
         "third_party/chromium-bidi/DIR_METADATA",
         "third_party/chromium-bidi/copy.bara.sky",
+        "third_party/chromium-bidi/licenses/**",
     ],
 )
 

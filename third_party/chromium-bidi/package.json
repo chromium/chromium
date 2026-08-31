@@ -24,7 +24,8 @@
     "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",
     "server": "npm run build && ./tools/node.py tools/run-bidi-server.mjs",
     "test": "npm run unit && npm run e2e",
-    "unit": "npm run build && ./tools/node.py --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=./tools/unit-resultsink-reporter.mjs --test-reporter-destination=stdout 'out/Default/gen/src/**/*.test.js'"
+    "unit": "npm run build && ./tools/node.py --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=./tools/unit-resultsink-reporter.mjs --test-reporter-destination=stdout 'out/Default/gen/src/**/*.test.js'",
+    "update:notices": "./tools/append_notices.py"
   },
   "type": "module",
   "main": "./out/Default/gen/src/index.js",

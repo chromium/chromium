@@ -17,27 +17,3 @@ The software is compiled into mapperTab.js script that is uploaded by ChromeDriv
 
 Local Modifications:
 None for now, but further development continues here.
-
--------------------- DEPENDENCY DIVIDER --------------------
-
-Name: mitt
-URL: https://github.com/developit/mitt
-Version: 3.0.1
-License: MIT
-Revision: b240473b5707857ba2c6a8e6d707c28d1e39da49
-Update Mechanism: Manual
-Security Critical: no
-Shipped: yes
-License File: licenses/LICENSE.mitt
-
--------------------- DEPENDENCY DIVIDER --------------------
-
-Name: zod
-URL: https://zod.dev
-Version: 3.25.76
-License: MIT
-Revision: 50606616c0d291caf3210a7521da51271b918333
-Update Mechanism: Manual
-Security Critical: no
-Shipped: yes
-License File: licenses/LICENSE.zod

@@ -514,11 +514,15 @@ new command, add it to `_processCommand`, write and call the module processor fo
    ../../out/Default/bin/run_webdriver_bidi_unittests
    ../../out/Default/bin/run_webdriver_bidi_e2e_tests
    ```
-3. Upload the filtered `node_modules` to Google Cloud Storage and update `DEPS`:
+3. If production dependencies (in `dependencies` of `package.json`) were added or updated, update `README.chromium` and third-party license notices:
+   ```sh
+   ./tools/append_notices.py
+   ```
+4. Upload the filtered `node_modules` to Google Cloud Storage and update `DEPS`:
    ```sh
    ./tools/update_node_modules.mjs --force
    ```
-4. Upload a CL with `package.json`, `package-lock.json`, and `DEPS` via `git cl upload` and submit for review.
+5. Upload a CL with `package.json`, `package-lock.json`, `DEPS`, and any updated `README.chromium` / `licenses/` via `git cl upload` and submit for review.
 
 ### Publish new `npm` release
 
