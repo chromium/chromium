@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs",
     "//components/sync:test_support",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/push_notification/model:push_notification_client",

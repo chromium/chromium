@@ -113,6 +113,8 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 @property(nonatomic, strong, readwrite) UIButton* primaryButton;
 @property(nonatomic, strong, readwrite) UIButton* secondaryButton;
 @property(nonatomic, strong, readwrite) UIButton* closeButton;
+
+// Properties below do not appear in the header.
 // Contains the two main sections of the promo (image and Text).
 @property(nonatomic, strong) UIStackView* contentStackView;
 // Contains all the text elements of the promo (title,body).

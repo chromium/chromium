@@ -9,6 +9,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator+testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mutator.h"
@@ -33,6 +35,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 class FeedTopSectionMediatorTest : public PlatformTest {
  public:
@@ -102,6 +105,33 @@ TEST_F(FeedTopSectionMediatorTest, TestPromoForNotEngagedUser) {
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered", signin_metrics::AccessPoint::kNtpFeedTopPromo,
       0);
+}
+
+// Tests that `configureSigninPromoWithConfigurator:` updates the cached
+// configurator and forwards it to the consumer.
+TEST_F(FeedTopSectionMediatorTest, TestConfigureSigninPromoWithConfigurator) {
+  id consumer_mock = OCMProtocolMock(@protocol(FeedTopSectionConsumer));
+  feed_top_section_mediator_ = [[FeedTopSectionMediator alloc]
+                        initWithConsumer:consumer_mock
+                         identityManager:IdentityManagerFactory::GetForProfile(
+                                             fake_profile_.get())
+                             authService:fake_authentication_service_
+      provisionalPushNotificationService:nullptr
+                               incognito:fake_profile_.get()->IsOffTheRecord()
+                             prefService:fake_pref_service_];
+  SigninPromoViewConfigurator* configurator =
+      [[SigninPromoViewConfigurator alloc]
+          initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
+                            userEmail:@"test@example.com"
+                        userGivenName:@"Test"
+                            userImage:nil
+                       hasCloseButton:NO
+                     hasSignInSpinner:NO];
+  OCMExpect([consumer_mock updateSigninPromoWithConfigurator:configurator]);
+  [feed_top_section_mediator_
+      configureSigninPromoWithConfigurator:configurator];
+  EXPECT_EQ(feed_top_section_mediator_.signinPromoConfigurator, configurator);
+  EXPECT_OCMOCK_VERIFY(consumer_mock);
 }
 
 #pragma mark - Notifications Promo Action Tests

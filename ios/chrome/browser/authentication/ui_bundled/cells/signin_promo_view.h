@@ -15,7 +15,8 @@
 // configured with 2 modes : "Cold State" and "Warm State".
 // + "Cold State" mode displays the chomium icon in the image view, and only
 //   displays the primary button.
-// + "Warm State" mode displays the image view (big than the cold state mode),
+// + "Warm State" mode displays the image view (bigger than the cold state
+// mode),
 //   displays both buttons.
 //
 //  For the warm state, the owner should set:

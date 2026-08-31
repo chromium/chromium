@@ -621,7 +621,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   return pref_key;
 }
 
-// See documentation of displayedIdentity property.
+// See documentation of displayedIdentity property in the header.
 id<SystemIdentity> GetDisplayedIdentity(
     AuthenticationService* authService,
     signin::IdentityManager* identityManager,
