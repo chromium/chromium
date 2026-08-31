@@ -126,6 +126,9 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     // kForcedStyleAndLayout and subsequent metrics report and record
     // differently.
     for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
+      if (!LocalFrameUkmAggregator::metrics_data()[i].has_ukm) {
+        continue;
+      }
       EXPECT_TRUE(
           ukm::TestUkmRecorder::EntryHasMetric(entry, GetMetricName(i)));
       const int64_t* metric_value =
@@ -171,6 +174,9 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       // kForcedStyleAndLayout and subsequent metrics report and record
       // differently.
       for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
+        if (!LocalFrameUkmAggregator::metrics_data()[i].has_ukm) {
+          continue;
+        }
         EXPECT_TRUE(
             ukm::TestUkmRecorder::EntryHasMetric(entry, GetMetricName(i)));
         const int64_t* metric_value =
@@ -249,6 +255,9 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     for (int i = LocalFrameUkmAggregator::kForcedStyleAndLayout + 1;
          i < LocalFrameUkmAggregator::kCount; ++i) {
       if (i != target_metric) {
+        if (!LocalFrameUkmAggregator::metrics_data()[i].has_ukm) {
+          continue;
+        }
         EXPECT_TRUE(
             ukm::TestUkmRecorder::EntryHasMetric(entry, GetMetricName(i)));
         metric_value =
@@ -534,6 +543,64 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutReasonsReportOnlyMetric) {
                                       LocalFrameUkmAggregator::kCount, 27u);
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kUnknown,
                                       LocalFrameUkmAggregator::kCount, 28u);
+}
+
+TEST_F(LocalFrameUkmAggregatorTest, MetricConfigurationFlags) {
+  if (!base::TimeTicks::IsHighResolution()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+  base::TimeTicks start_time = Now();
+
+  // 1. Simulate a frame before FCP with 10ms per step.
+  SimulateFrame(start_time, 10, 0, /*mark_fcp=*/false);
+  ResetAggregator();
+
+  // kUpdateLayers has has_uma = false, has_ukm = true.
+  // Verify that it is recorded in UKM, but NOT in UMA.
+  auto entries = recorder().GetEntriesByName("Blink.UpdateTime");
+  ASSERT_EQ(entries.size(), 1u);
+  auto* entry = entries[0].get();
+
+  EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
+      entry, GetMetricName(LocalFrameUkmAggregator::kUpdateLayers)));
+  histogram_tester.ExpectTotalCount("Blink.UpdateLayers.UpdateTime.PreFCP", 0);
+  histogram_tester.ExpectTotalCount("Blink.UpdateLayers.UpdateTime.PostFCP", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.UpdateLayers.UpdateTime.AggregatedPreFCP", 0);
+
+  // kLayout has has_uma = true, has_ukm = true.
+  // Verify that it is recorded in both UKM and UMA.
+  EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
+      entry, GetMetricName(LocalFrameUkmAggregator::kLayout)));
+  histogram_tester.ExpectTotalCount("Blink.Layout.UpdateTime.PreFCP", 1);
+  histogram_tester.ExpectTotalCount("Blink.Layout.UpdateTime.AggregatedPreFCP",
+                                    0);
+
+  // 2. Simulate reaching FCP with a null UKM recorder to verify that pre-FCP
+  // UMA aggregate counter recording is decoupled from UKM emission.
+  RestartAggregator();
+  start_time = Now();
+  aggregator().BeginMainFrame();
+  for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
+    auto timer = aggregator().GetScopedTimer(i);
+    if (i == static_cast<int>(LocalFrameUkmAggregator::kPaint)) {
+      aggregator().DidReachFirstContentfulPaint();
+    }
+    test_task_runner_->FastForwardBy(base::Milliseconds(10));
+  }
+  aggregator().RecordEndOfFrameMetrics(start_time, Now(), 0, source_id(),
+                                       /*recorder=*/nullptr);
+  ResetAggregator();
+
+  // kLayout should have its AggregatedPreFCP UMA metric recorded even with null
+  // recorder.
+  histogram_tester.ExpectTotalCount("Blink.Layout.UpdateTime.AggregatedPreFCP",
+                                    1);
+  // kUpdateLayers should not have AggregatedPreFCP recorded as has_uma = false.
+  histogram_tester.ExpectTotalCount(
+      "Blink.UpdateLayers.UpdateTime.AggregatedPreFCP", 0);
 }
 
 TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {

@@ -489,34 +489,29 @@ void LocalFrameUkmAggregator::UpdateSample(
 
 void LocalFrameUkmAggregator::ReportPreFCPEvent(int64_t source_id,
                                                 ukm::UkmRecorder* recorder) {
-#define RECORD_METRIC(name)                                         \
-  {                                                                 \
-    auto& absolute_record = absolute_metric_records_[k##name];      \
-    if (absolute_record.uma_aggregate_counter) {                    \
-      absolute_record.uma_aggregate_counter->Count(                 \
-          ToSample(absolute_record.pre_fcp_aggregate));             \
-    }                                                               \
-    builder.Set##name(ToSample(absolute_record.pre_fcp_aggregate)); \
+  if (primary_metric_.uma_aggregate_counter) {
+    primary_metric_.uma_aggregate_counter->Count(
+        ToSample(primary_metric_.pre_fcp_aggregate));
   }
-
-#define RECORD_BUCKETED_METRIC(name)                               \
-  {                                                                \
-    auto& absolute_record = absolute_metric_records_[k##name];     \
-    if (absolute_record.uma_aggregate_counter) {                   \
-      absolute_record.uma_aggregate_counter->Count(                \
-          ToSample(absolute_record.pre_fcp_aggregate));            \
-    }                                                              \
-    builder.Set##name(                                             \
-        ToSample(ApplyBucket(absolute_record.pre_fcp_aggregate))); \
+  for (auto& record : absolute_metric_records_) {
+    if (record.uma_aggregate_counter) {
+      record.uma_aggregate_counter->Count(ToSample(record.pre_fcp_aggregate));
+    }
   }
 
   if (!recorder) {
     return;
   }
   ukm::builders::Blink_PageLoad builder(source_id);
-  primary_metric_.uma_aggregate_counter->Count(
-      ToSample(primary_metric_.pre_fcp_aggregate));
   builder.SetMainFrame(ToSample(primary_metric_.pre_fcp_aggregate));
+
+#define RECORD_METRIC(name) \
+  builder.Set##name(        \
+      ToSample(absolute_metric_records_[k##name].pre_fcp_aggregate));
+
+#define RECORD_BUCKETED_METRIC(name) \
+  builder.Set##name(ToSample(        \
+      ApplyBucket(absolute_metric_records_[k##name].pre_fcp_aggregate)));
 
   RECORD_METRIC(CompositingCommit);
   RECORD_METRIC(CompositingInputs);
