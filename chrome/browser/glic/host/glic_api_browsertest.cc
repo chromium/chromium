@@ -2182,13 +2182,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 }
 
 // TODO(crbug.com/410881522): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_testNavigateToBadPage DISABLED_testNavigateToBadPage
-#else
-#define MAYBE_testNavigateToBadPage testNavigateToBadPage
-#endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
-                       MAYBE_testNavigateToBadPage) {
+                       DISABLED_testNavigateToBadPage) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
