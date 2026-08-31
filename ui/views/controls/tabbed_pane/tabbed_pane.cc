@@ -972,6 +972,22 @@ void TabbedPane::SetDrawTabDivider(bool draw) {
   tab_strip_->SetDrawTabDivider(draw);
 }
 
+bool TabbedPane::GetIncludeHiddenViewsInLayout() const {
+  if (!contents_ || !contents_->GetLayoutManager()) {
+    return false;
+  }
+  return static_cast<FillLayout*>(contents_->GetLayoutManager())
+      ->include_hidden_views();
+}
+
+void TabbedPane::SetIncludeHiddenViewsInLayout(bool include) {
+  if (!contents_ || !contents_->GetLayoutManager()) {
+    return;
+  }
+  static_cast<FillLayout*>(contents_->GetLayoutManager())
+      ->SetIncludeHiddenViews(include);
+}
+
 TabbedPaneTab* TabbedPane::GetSelectedTab() {
   return tab_strip_->GetSelectedTab();
 }
@@ -993,6 +1009,7 @@ gfx::Size TabbedPane::CalculatePreferredSize(
 }
 
 BEGIN_METADATA(TabbedPane)
+ADD_PROPERTY_METADATA(bool, IncludeHiddenViewsInLayout)
 END_METADATA
 
 }  // namespace views

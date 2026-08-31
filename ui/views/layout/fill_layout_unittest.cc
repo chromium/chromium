@@ -259,4 +259,40 @@ TEST_F(FillLayoutTest, MinimumSizeExcludesView) {
   EXPECT_EQ(gfx::Size(2, 3), host_->GetMinimumSize());
 }
 
+TEST_F(FillLayoutTest, LayoutExcludesHiddenView) {
+  layout()->SetIncludeHiddenViews(false);
+  View* const child_1 = AddChildView(10, 50);
+  View* const child_2 = AddChildView(5, 5);
+  View* const child_3 = AddChildView(25, 10);
+  child_3->SetVisible(false);
+
+  EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
+  EXPECT_EQ(50, GetPreferredHeightForWidth(0));
+  test::RunScheduledLayout(host_.get());
+
+  const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
+  EXPECT_EQ(kExpectedSize, child_1->size());
+  EXPECT_EQ(kExpectedSize, child_2->size());
+  EXPECT_EQ(gfx::Size(25, 10), child_3->size());
+
+  // Making child_3 visible should update preferred size and layout.
+  child_3->SetVisible(true);
+  EXPECT_EQ(gfx::Size(25, 50), GetPreferredSize());
+  test::RunScheduledLayout(host_.get());
+  EXPECT_EQ(kExpectedSize, child_3->size());
+}
+
+TEST_F(FillLayoutTest, MinimumSizeExcludesHiddenView) {
+  layout()->SetMinimumSizeEnabled(true);
+  layout()->SetIncludeHiddenViews(false);
+  StaticSizedView* const child_1 = AddChildView(10, 50);
+  StaticSizedView* const child_2 = AddChildView(5, 5);
+  StaticSizedView* const child_3 = AddChildView(25, 10);
+  child_1->set_minimum_size({1, 3});
+  child_2->set_minimum_size({3, 1});
+  child_3->set_minimum_size({2, 2});
+  child_2->SetVisible(false);
+  EXPECT_EQ(gfx::Size(2, 3), host_->GetMinimumSize());
+}
+
 }  // namespace views
