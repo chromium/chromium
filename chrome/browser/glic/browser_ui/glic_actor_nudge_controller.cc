@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
@@ -22,10 +23,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
-#endif
 
 namespace glic {
 
@@ -48,18 +45,16 @@ GlicActorNudgeController::GlicActorNudgeController(
     RegisterActorNudgeStateCallback();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  ActorTaskListBubbleController* bubble_controller =
-      ActorTaskListBubbleController::From(browser_);
-  bubble_visibility_change_subscription_.push_back(
-      bubble_controller->RegisterBubbleShownCallback(base::BindRepeating(
-          &GlicActorNudgeController::OnBubbleVisibilityChange,
-          weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/true)));
-  bubble_visibility_change_subscription_.push_back(
-      bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
-          &GlicActorNudgeController::OnBubbleVisibilityChange,
-          weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
-#endif
+  if (auto* bubble_controller = ActorTaskListBubbleController::From(browser_)) {
+    bubble_visibility_change_subscription_.push_back(
+        bubble_controller->RegisterBubbleShownCallback(base::BindRepeating(
+            &GlicActorNudgeController::OnBubbleVisibilityChange,
+            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/true)));
+    bubble_visibility_change_subscription_.push_back(
+        bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
+            &GlicActorNudgeController::OnBubbleVisibilityChange,
+            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
+  }
 }
 
 GlicActorNudgeController::~GlicActorNudgeController() = default;
@@ -199,19 +194,15 @@ void GlicActorNudgeController::TriggerGlicActorNudge(
 }
 
 void GlicActorNudgeController::ShowBubble() {
-#if !BUILDFLAG(IS_ANDROID)
   if (auto* bubble_controller = ActorTaskListBubbleController::From(browser_)) {
     bubble_controller->ShowBubble();
   }
-#endif
 }
 
 void GlicActorNudgeController::CloseBubble() {
-#if !BUILDFLAG(IS_ANDROID)
   if (auto* bubble_controller = ActorTaskListBubbleController::From(browser_)) {
     bubble_controller->CloseBubble();
   }
-#endif
 }
 
 bool GlicActorNudgeController::IsShowingNudge() {

@@ -32,6 +32,7 @@ source_set("controller_impl") {
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/actor/ui:metrics",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/browser_ui",

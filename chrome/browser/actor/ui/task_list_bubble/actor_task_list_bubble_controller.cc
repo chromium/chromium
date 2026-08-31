@@ -83,14 +83,17 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
       browser_->GetProfile());
   DCHECK(manager);
 
-  // TODO(crbug.com/518584352): Implement for Android. Figure out what to do
-  // instead of browser_->IsActive().
-#if !BUILDFLAG(IS_ANDROID)
   // If the browser is in the background, only show the bubble if this is a
   // start notification for an experimentalTriggering task triggered while
   // the Glic panel is visible on this window. We avoid popping up the bubble
   // for subsequent background task status updates to avoid disturbing the user.
-  if (!browser_->IsActive()) {
+#if BUILDFLAG(IS_ANDROID)
+  const bool is_active =
+      browser_->GetWindow() && browser_->GetWindow()->IsActive();
+#else
+  const bool is_active = browser_->IsActive();
+#endif
+  if (!is_active) {
     auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         browser_->GetProfile());
     if (!is_start_notification || !glic_service ||
@@ -98,7 +101,6 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
       return;
     }
   }
-#endif
 
   const auto& task_id_to_state = manager->actor_task_list_bubble_rows();
   // Do not show bubble if there are no rows to show.
@@ -155,7 +157,9 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
     TabListInterface::From(last_tab->GetBrowserWindowInterface())
         ->ActivateTab(last_tab->GetHandle());
     // Activate the window that the tab is in as it may not be the current one.
-    last_tab->GetBrowserWindowInterface()->GetWindow()->Activate();
+    if (auto* window = last_tab->GetBrowserWindowInterface()->GetWindow()) {
+      window->Activate();
+    }
     if (auto* glic_service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
       glic_service->ShowUI(browser_,
