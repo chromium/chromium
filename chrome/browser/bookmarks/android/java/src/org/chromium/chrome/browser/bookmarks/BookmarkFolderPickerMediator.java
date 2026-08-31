@@ -322,6 +322,7 @@ class BookmarkFolderPickerMediator {
 
     private void onNewFolderClicked() {
         assumeNonNull(mCurrentParentItem);
+        BookmarkFolderPickerMetrics.recordCreateNewFolderOpened();
         mAddNewFolderCoordinator.show(mCurrentParentItem.getId());
     }
 

@@ -566,6 +566,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.FolderPicker.Outcome"
+    enum="BookmarkFolderPickerOutcome" expires_after="2027-01-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Recorded when a bookmark folder picker session completes, logging the
+    terminal outcome (moved, closed, or dismissed).
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.IdsReassigned2.OnProfileLoad.{BookmarksFileType}"
     enum="BooleanReassigned" expires_after="2026-10-06">
   <owner>mastiz@chromium.org</owner>

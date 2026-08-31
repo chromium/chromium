@@ -140,6 +140,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Edited by another source"/>
 </enum>
 
+<!-- LINT.IfChange(BookmarkFolderPickerOutcome) -->
+
+<enum name="BookmarkFolderPickerOutcome">
+  <int value="0" label="Moved"/>
+  <int value="1" label="Closed"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerMetrics.java:BookmarkFolderPickerOutcome) -->
+
 <enum name="BookmarkFolderType">
   <int value="0" label="Bookmarks Bar"/>
   <int value="1" label="Other Bookmarks"/>

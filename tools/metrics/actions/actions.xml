@@ -7205,6 +7205,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="BookmarkFolderPicker.CreateNewFolderOpened">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <description>
+    Recorded when the user taps the new folder text button (on desktop) or the
+    new folder icon (on mobile) to open the 'create new folder' dialog within
+    the bookmark folder picker.
+  </description>
+</action>
+
 <action name="BookmarkManager_Command_AddPage">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

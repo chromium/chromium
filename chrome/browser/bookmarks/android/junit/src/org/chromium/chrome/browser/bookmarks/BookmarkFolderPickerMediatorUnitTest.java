@@ -39,6 +39,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -425,8 +426,14 @@ public class BookmarkFolderPickerMediatorUnitTest {
 
     @Test
     public void testOptionsItemSelected_AddNewFolder() {
+        var userActionTester = new UserActionTester();
         mMediator.optionsItemSelected(R.id.create_new_folder_menu_id);
         verify(mAddNewFolderCoordinator).show(any());
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("BookmarkFolderPicker.CreateNewFolderOpened"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -437,8 +444,14 @@ public class BookmarkFolderPickerMediatorUnitTest {
 
     @Test
     public void testNewFolderButtonClicked() {
+        var userActionTester = new UserActionTester();
         mModel.get(BookmarkFolderPickerProperties.NEW_FOLDER_CLICK_LISTENER).run();
         verify(mAddNewFolderCoordinator).show(mMobileFolderId);
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("BookmarkFolderPicker.CreateNewFolderOpened"));
+        userActionTester.tearDown();
     }
 
     @Test
