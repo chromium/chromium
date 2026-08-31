@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -14,6 +15,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_switches.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/scoped_os_info_override_win.h"
@@ -51,6 +56,7 @@ class CaptionUtilTest : public testing::Test {
   }
 
   TestingPrefServiceSimple pref_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CaptionUtilTest, CommandLineOverride) {
@@ -69,16 +75,46 @@ TEST_F(CaptionUtilTest, CommandLineOverride) {
 }
 
 TEST_F(CaptionUtilTest, IsHeadlessCaptionFeatureSupportedReturnsFalse) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(media::kHeadlessLiveCaption);
+  scoped_feature_list_.InitAndDisableFeature(media::kHeadlessLiveCaption);
   EXPECT_FALSE(IsHeadlessCaptionFeatureSupported());
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+TEST_F(CaptionUtilTest,
+       IsHeadlessCaptionFeatureSupportedReturnsFalseOnFuchsia) {
+  scoped_feature_list_.InitAndEnableFeature(media::kHeadlessLiveCaption);
+  EXPECT_FALSE(IsHeadlessCaptionFeatureSupported());
+}
+#elif BUILDFLAG(IS_LINUX) && !defined(ARCH_CPU_X86_FAMILY)
+TEST_F(CaptionUtilTest,
+       IsHeadlessCaptionFeatureSupportedReturnsFalseOnLinuxArm) {
+  scoped_feature_list_.InitAndEnableFeature(media::kHeadlessLiveCaption);
+  EXPECT_FALSE(IsHeadlessCaptionFeatureSupported());
+}
+#else
 TEST_F(CaptionUtilTest, IsHeadlessCaptionFeatureSupportedReturnsTrue) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(media::kHeadlessLiveCaption);
+#if BUILDFLAG(IS_CHROMEOS)
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{media::kHeadlessLiveCaption,
+                            ash::features::kOnDeviceSpeechRecognition},
+      /*disabled_features=*/{});
+#else
+  scoped_feature_list_.InitAndEnableFeature(media::kHeadlessLiveCaption);
+#endif
   EXPECT_TRUE(IsHeadlessCaptionFeatureSupported());
 }
+#endif
+
+TEST_F(CaptionUtilTest,
+       IsHeadlessCaptionFeatureSupportedWithSmallExpertModelReturnsTrue) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{media::kHeadlessLiveCaption,
+                            media::
+                                kLiveCaptionSpeechRecognitionSmallExpertModel},
+      /*disabled_features=*/{});
+  EXPECT_TRUE(IsHeadlessCaptionFeatureSupported());
+}
+
 TEST_F(CaptionUtilTest, ReturnsCorrectCaptionSettingsUrl) {
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(GetCaptionSettingsUrl(), "chrome://os-settings/audioAndCaptions");
@@ -94,4 +130,5 @@ TEST_F(CaptionUtilTest, ReturnsCorrectCaptionSettingsUrl) {
   EXPECT_EQ(GetCaptionSettingsUrl(), "chrome://settings/accessibility");
 #endif  // BUILDFLAG(IS_LINUX)
 }
+
 }  // namespace captions
