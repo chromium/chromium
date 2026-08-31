@@ -39,6 +39,7 @@
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/language_detection/core/constants.h"
@@ -485,6 +486,36 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
 
   void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) {
     handler_->OnTranslateDriverDestroyed(driver);
+  }
+
+  void SetUpHandler() {
+    ASSERT_TRUE(
+        content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
+    test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
+    handler_ = CreateHandler();
+  }
+
+  void GrantUserActivation(content::RenderFrameHost* rfh) {
+    handler_remote_.FlushForTesting();
+    page_.receiver_.FlushForTesting();
+    content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
+    content::SimulateMouseClick(web_contents_.get(), 0,
+                                blink::WebMouseEvent::Button::kLeft);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return rfh->HasTransientUserActivation(); }));
+    EXPECT_TRUE(rfh->HasTransientUserActivation());
+  }
+
+  content::RenderFrameHost* LoadPdf(const GURL& url) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (!ui_test_utils::NavigateToURL(browser(), url)) {
+      return nullptr;
+    }
+    if (!pdf_extension_test_util::EnsurePDFHasLoaded(web_contents)) {
+      return nullptr;
+    }
+    return pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
   }
 
  protected:
@@ -1038,6 +1069,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnImageDataRequested_IgnoresBadTreeId) {
   base::HistogramTester histogram_tester;
+
+  // In order to test the bad tree id, first ensure that reading mode is not
+  // on a privileged page.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/downloads/large_image.html")));
+
   handler_ = CreateHandler();
   auto tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXNodeID node_id = 1;
@@ -1045,9 +1084,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   OnImageDataRequested(tree_id, node_id);
 
   histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.RendererRequestForImageDataDownload."
-      "IsFromObservedTree",
-      false, 1);
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kNotObservedTree, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1065,9 +1103,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   OnImageDataRequested(tree_id, 1);
 
   histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.RendererRequestForImageDataDownload."
-      "IsFromObservedTree",
-      true, 1);
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kAllowed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -2453,14 +2490,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerAutomationTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnLinkClicked_RequiresTransientUserActivation) {
   const std::string histogram_name =
-      "Accessibility.ReadAnything.RendererRequestForLinkClick."
-      "IsFromObservedTree";
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result";
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
-  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
-  handler_ = CreateHandler();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  SetUpHandler();
 
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   content::RenderFrameHost* main_rfh =
@@ -2475,29 +2511,24 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   histogram_tester.ExpectTotalCount(histogram_name, 0);
 
   // Grant User Activation via simulated mouse click.
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
-  content::SimulateMouseClick(web_contents_.get(), 0,
-                              blink::WebMouseEvent::Button::kLeft);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return rfh->HasTransientUserActivation(); }));
-  EXPECT_TRUE(rfh->HasTransientUserActivation());
+  GrantUserActivation(rfh);
   handler_remote_->OnLinkClicked(tree_id, node_id);
   handler_remote_.FlushForTesting();
-  histogram_tester.ExpectUniqueSample(histogram_name, /*sample=*/true,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      histogram_name, ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnSelectionChange_RequiresTransientUserActivation) {
   const std::string histogram_name =
-      "Accessibility.ReadAnything.RendererRequestForSelection."
-      "IsFromObservedTree";
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result";
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
-  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
-  handler_ = CreateHandler();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  SetUpHandler();
 
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   content::RenderFrameHost* main_rfh =
@@ -2512,17 +2543,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   histogram_tester.ExpectTotalCount(histogram_name, 0);
 
   // Grant User Activation via simulated mouse click.
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
-  content::SimulateMouseClick(web_contents_.get(), 0,
-                              blink::WebMouseEvent::Button::kLeft);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return rfh->HasTransientUserActivation(); }));
-  EXPECT_TRUE(rfh->HasTransientUserActivation());
+  GrantUserActivation(rfh);
   handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
                                      /*focus_node_id=*/2, 5);
   handler_remote_.FlushForTesting();
-  histogram_tester.ExpectUniqueSample(histogram_name, /*sample=*/true,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      histogram_name, ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -2556,10 +2583,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
     return view && !view->GetSelectedText().empty();
   }));
 
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
-  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
-  handler_ = CreateHandler();
+  SetUpHandler();
 
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
@@ -2574,11 +2598,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
             initial_seq);
 
   // Grant User Activation via simulated mouse click.
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
-  content::SimulateMouseClick(web_contents_.get(), 0,
-                              blink::WebMouseEvent::Button::kLeft);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return rfh->HasTransientUserActivation(); }));
+  GrantUserActivation(rfh);
 
   handler_remote_->OnCopy();
   handler_remote_.FlushForTesting();
@@ -2603,10 +2623,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
     return view && !view->GetSelectedText().empty();
   }));
 
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
-  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
-  handler_ = CreateHandler();
+  SetUpHandler();
 
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
 
@@ -2618,11 +2635,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       main_contents->GetRenderWidgetHostView()->GetSelectedText().empty());
 
   // Grant User Activation via simulated mouse click.
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
-  content::SimulateMouseClick(web_contents_.get(), 0,
-                              blink::WebMouseEvent::Button::kLeft);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return rfh->HasTransientUserActivation(); }));
+  GrantUserActivation(rfh);
 
   handler_remote_->OnCollapseSelection();
   handler_remote_.FlushForTesting();
@@ -2633,4 +2646,152 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   }));
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       PrivilegedScheme_DisallowsActions) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+  SetUpHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_rfh =
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryMainFrame();
+  ui::AXTreeID tree_id = main_rfh->GetAXTreeID();
+
+  GrantUserActivation(rfh);
+
+  // Link clicks are dropped without error.
+  handler_remote_->OnLinkClicked(tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kDisallowedActionOnPageType,
+      /*expected_bucket_count=*/1);
+
+  // Image data requests are dropped without error.
+  handler_remote_->OnImageDataRequested(tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kDisallowedActionOnPageType,
+      /*expected_bucket_count=*/1);
+
+  // Scroll requests succeed on privileged schemes.
+  handler_remote_->ScrollToTargetNode(tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Selection change requests are dropped without error.
+  handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result",
+      ReadAnythingRendererRequestResult::kDisallowedActionOnPageType,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       Pdf_AllowsActions) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::RenderFrameHost* pdf_rfh =
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(pdf_rfh);
+  SetUpHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  GrantUserActivation(rfh);
+
+  // Link clicks succeed for PDF tree.
+  handler_remote_->OnLinkClicked(pdf_rfh->GetAXTreeID(), /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Image data requests succeed for PDF tree.
+  handler_remote_->OnImageDataRequested(pdf_rfh->GetAXTreeID(),
+                                        /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Scroll requests succeed for PDF tree.
+  handler_remote_->ScrollToTargetNode(pdf_rfh->GetAXTreeID(),
+                                      /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Selection change requests succeed for PDF tree.
+  handler_remote_->OnSelectionChange(pdf_rfh->GetAXTreeID(),
+                                     /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       LocalPdf_AllowsActions) {
+  base::HistogramTester histogram_tester;
+
+  content::RenderFrameHost* pdf_rfh = LoadPdf(chrome_test_utils::GetTestUrl(
+      base::FilePath(FILE_PATH_LITERAL("pdf")),
+      base::FilePath(FILE_PATH_LITERAL("test.pdf"))));
+  ASSERT_TRUE(pdf_rfh);
+  SetUpHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  GrantUserActivation(rfh);
+
+  // Link clicks succeed for local PDF tree.
+  handler_remote_->OnLinkClicked(pdf_rfh->GetAXTreeID(), /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Image data requests succeed for local PDF tree.
+  handler_remote_->OnImageDataRequested(pdf_rfh->GetAXTreeID(),
+                                        /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Scroll requests succeed for local PDF tree.
+  handler_remote_->ScrollToTargetNode(pdf_rfh->GetAXTreeID(),
+                                      /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Selection change requests succeed for local PDF tree.
+  handler_remote_->OnSelectionChange(pdf_rfh->GetAXTreeID(),
+                                     /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+}
 }  // namespace
