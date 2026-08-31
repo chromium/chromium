@@ -4,10 +4,14 @@
 
 #include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
 
+#include <string_view>
+
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/public/common/child_process_id.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -16,10 +20,26 @@ MemoryPressureListenerPolicy::MemoryPressureListenerPolicy(
     : PredicateMemoryCoordinatorPolicy(
           manager,
           base::BindRepeating([](uint32_t consumer_id,
+                                 std::string_view consumer_name,
                                  base::MemoryConsumerTraits traits,
                                  ProcessType process_type,
                                  ChildProcessId child_process_id) {
-            return child_process_id.is_null();
+            // Only target consumers in the local process.
+            if (!child_process_id.is_null()) {
+              return false;
+            }
+
+            // TODO(pmonette): MemoryCache is temporarily singled out here
+            // because releasing strong references on generic memory
+            // pressure is disabled on Mac and Windows. Remove this string
+            // check once a cleaner mechanism is available.
+            if (consumer_name == "MemoryCache" &&
+                !base::FeatureList::IsEnabled(
+                    blink::features::
+                        kReleaseResourceStrongReferencesOnMemoryPressure)) {
+              return false;
+            }
+            return true;
           })),
       registration_(
           base::MemoryPressureListenerTag::kMemoryPressureListenerPolicy,

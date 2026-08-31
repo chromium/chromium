@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -285,7 +286,8 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest,
   });
   PredicateMemoryCoordinatorPolicy local_policy(
       coordinator().policy_manager(),
-      base::BindRepeating([](uint32_t, base::MemoryConsumerTraits, ProcessType,
+      base::BindRepeating([](uint32_t, std::string_view,
+                             base::MemoryConsumerTraits, ProcessType,
                              ChildProcessId) { return true; }));
   MemoryCoordinatorPolicyRegistration local_policy_reg(
       coordinator().policy_manager(), local_policy);

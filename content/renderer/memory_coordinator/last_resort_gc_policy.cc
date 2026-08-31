@@ -38,6 +38,7 @@ LastResortGCPolicy::LastResortGCPolicy(MemoryCoordinatorPolicyManager& manager)
     : PredicateMemoryCoordinatorPolicy(
           manager,
           base::BindRepeating([](uint32_t consumer_id,
+                                 std::string_view consumer_name,
                                  base::MemoryConsumerTraits traits,
                                  ProcessType process_type,
                                  ChildProcessId child_process_id) {

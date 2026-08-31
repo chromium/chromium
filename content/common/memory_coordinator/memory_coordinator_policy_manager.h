@@ -109,6 +109,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
   using ConsumerFilter =
       base::FunctionRef<bool(uint32_t consumer_id,
+                             std::string_view consumer_name,
                              base::MemoryConsumerTraits traits,
                              ProcessType process_type,
                              ChildProcessId child_process_id)>;

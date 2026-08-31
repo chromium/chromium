@@ -87,7 +87,7 @@ enum class MemoryPressureListenerTag {
   kUniqueFontSelector = 54,
   kParkableStringManager = 55,
   kPlainTextPainter = 56,
-  kMemoryCache = 57,
+  // kMemoryCache = 57,
   kResource = 58,
   // kResourceFetcher = 59,
   kGlicProfileManager = 60,

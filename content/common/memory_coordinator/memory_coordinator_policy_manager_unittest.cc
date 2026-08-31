@@ -473,8 +473,9 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_Filter) {
 
   policy.manager().UpdateConsumers(
       &policy,
-      [](uint32_t consumer_id, base::MemoryConsumerTraits traits,
-         ProcessType process_type, ChildProcessId child_process_id) {
+      [](uint32_t consumer_id, std::string_view consumer_name,
+         base::MemoryConsumerTraits traits, ProcessType process_type,
+         ChildProcessId child_process_id) {
         return traits.supports_memory_limit ==
                base::MemoryConsumerTraits::SupportsMemoryLimit::kYes;
       },

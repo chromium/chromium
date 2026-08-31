@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -291,8 +292,8 @@ void MemoryCoordinatorPolicyManager::UpdateConsumers(
   for (auto const& [child_id, host_state] : hosts_) {
     std::vector<MemoryConsumerUpdate> updates;
     for (auto const& [consumer_id, group_state] : host_state->groups) {
-      if (filter(consumer_id, group_state->traits(), host_state->process_type,
-                 child_id)) {
+      if (filter(consumer_id, group_state->consumer_name(),
+                 group_state->traits(), host_state->process_type, child_id)) {
         updates.push_back({consumer_id, percentage, release_memory});
       }
     }

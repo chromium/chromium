@@ -187,11 +187,7 @@ MemoryCache* MemoryCache::Get() {
 
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kMemoryCache,
-          this),
-      memory_consumer_registration_(
+    : memory_consumer_registration_(
           "MemoryCache",
           kMemoryCacheTraits,
           this,
@@ -215,7 +211,6 @@ void MemoryCache::Trace(Visitor* visitor) const {
 }
 
 void MemoryCache::Dispose() {
-  memory_pressure_listener_registration_.Dispose();
   memory_consumer_registration_.Dispose();
 }
 
@@ -562,16 +557,7 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   return true;
 }
 
-void MemoryCache::OnMemoryPressure(base::MemoryPressureLevel level) {
-  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
 
-  if (base::FeatureList::IsEnabled(
-          features::kReleaseResourceStrongReferencesOnMemoryPressure)) {
-    ClearStrongReferences();
-  }
-}
 
 size_t MemoryCache::GetTargetStrongReferencesMaxSize() const {
   const size_t baseline = static_cast<size_t>(
