@@ -92,7 +92,8 @@ bool JourneysDatabase::InitJourneysTables() {
             base::StrCat({"CREATE TABLE ", kHistoryEntriesTableName,
                           " (journey_id TEXT NOT NULL, "
                           "visit_timestamp_micros INTEGER NOT NULL, "
-                          "UNIQUE(journey_id, visit_timestamp_micros) )"}))) {
+                          "PRIMARY KEY (journey_id, visit_timestamp_micros)) "
+                          "WITHOUT ROWID"}))) {
       return false;
     }
 
@@ -110,7 +111,7 @@ bool JourneysDatabase::InitJourneysTables() {
   if (!GetDB().DoesTableExist(kContinuationQueriesTableName)) {
     if (!GetDB().Execute(
             base::StrCat({"CREATE TABLE ", kContinuationQueriesTableName,
-                          " (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                          " (id INTEGER PRIMARY KEY, "
                           "journey_id TEXT NOT NULL, "
                           "title TEXT NOT NULL, "
                           "prompt TEXT NOT NULL)"}))) {
@@ -131,12 +132,12 @@ bool JourneysDatabase::InitJourneysTables() {
 }
 
 bool JourneysDatabase::DropJourneysTables() {
-  return GetDB().Execute(
-             base::StrCat({"DROP TABLE IF EXISTS ", kJourneysTableName})) &&
-         GetDB().Execute(base::StrCat(
+  return GetDB().Execute(base::StrCat(
              {"DROP TABLE IF EXISTS ", kHistoryEntriesTableName})) &&
          GetDB().Execute(base::StrCat(
-             {"DROP TABLE IF EXISTS ", kContinuationQueriesTableName}));
+             {"DROP TABLE IF EXISTS ", kContinuationQueriesTableName})) &&
+         GetDB().Execute(
+             base::StrCat({"DROP TABLE IF EXISTS ", kJourneysTableName}));
 }
 
 bool JourneysDatabase::AddOrUpdateJourneys(

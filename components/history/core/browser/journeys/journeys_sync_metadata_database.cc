@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "components/sync/model/metadata_batch.h"
@@ -144,9 +145,9 @@ bool JourneysSyncMetadataDatabase::GetAllEntityMetadata(
 
   while (s.Step()) {
     std::string storage_key = s.ColumnString(0);
-    std::string_view serialized_metadata = s.ColumnStringView(1);
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
-    if (!entity_metadata->ParseFromString(serialized_metadata)) {
+    base::span<const uint8_t> blob = s.ColumnBlob(1);
+    if (!entity_metadata->ParseFromArray(blob.data(), blob.size())) {
       DLOG(WARNING) << "Failed to deserialize JOURNEY data type "
                        "sync_pb::EntityMetadata.";
       return false;
