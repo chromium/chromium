@@ -161,8 +161,6 @@ class TestScreenWinInitializer {
                               DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER) = 0;
 
   virtual HWND CreateFakeHwnd(const gfx::Rect& bounds) = 0;
-
-  virtual HMONITOR CreateFakeHMONITOR(const MONITORINFOEX& info) = 0;
 };
 
 class TestScreenWinManager final : public TestScreenWinInitializer {
@@ -184,14 +182,10 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
     MONITORINFOEX monitor_info =
         win::test::CreateMonitorInfo(pixel_bounds, pixel_work, device_name);
     HMONITOR monitor = CreateFakeHMONITOR(monitor_info);
-    std::optional<HMONITOR> cached_hmonitor;
-    if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
-      cached_hmonitor = monitor;
-    }
     display_infos_.push_back(internal::DisplayInfo(
-        std::move(cached_hmonitor), monitor_info, device_scale_factor,
-        text_scale_multiplier, Display::kDefaultBitsPerPixel, 1.0f,
-        Display::ROTATE_0, 60.0f, gfx::Vector2dF(), tech, std::string()));
+        monitor, monitor_info, device_scale_factor, text_scale_multiplier,
+        Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+        gfx::Vector2dF(), tech, std::string()));
   }
 
   HWND CreateFakeHwnd(const gfx::Rect& bounds) override {
@@ -200,14 +194,6 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
     hwndLast_ = reinterpret_cast<HWND>(++handle_val);
     hwnd_map_.emplace(hwndLast_, bounds);
     return hwndLast_;
-  }
-
-  HMONITOR CreateFakeHMONITOR(const MONITORINFOEX& info) override {
-    EXPECT_EQ(screen_win_, nullptr);
-    intptr_t handle_val = reinterpret_cast<intptr_t>(hmonitorLast_);
-    hmonitorLast_ = reinterpret_cast<HMONITOR>(++handle_val);
-    hmonitor_map_.emplace(hmonitorLast_, info);
-    return hmonitorLast_;
   }
 
   void InitializeScreenWin() {
@@ -221,6 +207,14 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
   }
 
  private:
+  HMONITOR CreateFakeHMONITOR(const MONITORINFOEX& info) {
+    EXPECT_EQ(screen_win_, nullptr);
+    intptr_t handle_val = reinterpret_cast<intptr_t>(hmonitorLast_);
+    hmonitorLast_ = reinterpret_cast<HMONITOR>(++handle_val);
+    hmonitor_map_.emplace(hmonitorLast_, info);
+    return hmonitorLast_;
+  }
+
   HWND hwndLast_ = nullptr;
   HMONITOR hmonitorLast_ = nullptr;
   std::unique_ptr<ScreenWin> screen_win_;
@@ -229,32 +223,18 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
   base::flat_map<HWND, gfx::Rect> hwnd_map_;
 };
 
-class ScreenWinTest : public ::testing::TestWithParam<bool> {
-  using Super = ::testing::TestWithParam<bool>;
-
+class ScreenWinTest : public ::testing::Test {
  public:
   ScreenWinTest(const ScreenWinTest&) = delete;
   ScreenWinTest& operator=(const ScreenWinTest&) = delete;
 
-  static std::string ParamInfoToString(
-      ::testing::TestParamInfo<bool> param_info) {
-    return param_info.param ? "CachedHmonitor" : "UncachedHmonitor";
-  }
-
  protected:
   ScreenWinTest() {
-    // Always enable kReducePPMs. Toggle kScreenWinDisplayLookupByHMONITOR
-    // based on the test param, to make sure it can be disabled independently.
-    scoped_feature_list_.InitWithFeatureStates({
-        {base::features::kReducePPMs, true},
-        {::features::kUseRoundedPointConversion, true},
-        {display::features::kScreenWinDisplayLookupByHMONITOR,
-         use_cached_hmonitor_},
-    });
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kUseRoundedPointConversion);
   }
 
   void SetUp() override {
-    Super::SetUp();
     screen_win_initializer_ = std::make_unique<TestScreenWinManager>();
     SetUpScreen(screen_win_initializer_.get());
     screen_win_initializer_->InitializeScreenWin();
@@ -262,7 +242,6 @@ class ScreenWinTest : public ::testing::TestWithParam<bool> {
 
   void TearDown() override {
     screen_win_initializer_.reset();
-    Super::TearDown();
   }
 
   virtual void SetUpScreen(TestScreenWinInitializer* initializer) = 0;
@@ -273,9 +252,6 @@ class ScreenWinTest : public ::testing::TestWithParam<bool> {
   }
 
   ScreenWin* GetScreenWin() { return screen_win_initializer_->GetScreenWin(); }
-
- protected:
-  bool use_cached_hmonitor_ = GetParam();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -307,10 +283,6 @@ class ScreenWinTestSingleDisplay1x : public ScreenWinTest {
   HWND fake_hwnd_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestSingleDisplay1x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 void expect_point_f_eq(gfx::PointF val1, gfx::PointF val2) {
   EXPECT_FLOAT_EQ(val1.x(), val2.x());
@@ -319,7 +291,7 @@ void expect_point_f_eq(gfx::PointF val1, gfx::PointF val2) {
 
 }  // namespace
 
-TEST_P(ScreenWinTestSingleDisplay1x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay1x, ScreenToDIPPoints) {
   gfx::PointF origin(0, 0);
   gfx::PointF middle(365, 694);
   gfx::PointF lower_right(1919, 1199);
@@ -328,7 +300,7 @@ TEST_P(ScreenWinTestSingleDisplay1x, ScreenToDIPPoints) {
   EXPECT_EQ(lower_right, GetScreenWin()->ScreenToDIPPoint(lower_right));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestSingleDisplay1x, DIPToScreenPoints) {
   gfx::Point origin(0, 0);
   gfx::Point middle(365, 694);
   gfx::Point lower_right(1919, 1199);
@@ -337,7 +309,7 @@ TEST_P(ScreenWinTestSingleDisplay1x, DIPToScreenPoints) {
   EXPECT_EQ(lower_right, GetScreenWin()->DIPToScreenPoint(lower_right));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay1x, ClientToDIPPoints) {
   HWND hwnd = GetFakeHwnd();
   gfx::Point origin(0, 0);
   gfx::Point middle(365, 694);
@@ -347,7 +319,7 @@ TEST_P(ScreenWinTestSingleDisplay1x, ClientToDIPPoints) {
   EXPECT_EQ(lower_right, GetScreenWin()->ClientToDIPPoint(hwnd, lower_right));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, DIPToClientPoints) {
+TEST_F(ScreenWinTestSingleDisplay1x, DIPToClientPoints) {
   HWND hwnd = GetFakeHwnd();
   gfx::Point origin(0, 0);
   gfx::Point middle(365, 694);
@@ -357,7 +329,7 @@ TEST_P(ScreenWinTestSingleDisplay1x, DIPToClientPoints) {
   EXPECT_EQ(lower_right, GetScreenWin()->DIPToClientPoint(hwnd, lower_right));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay1x, ScreenToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
@@ -365,7 +337,7 @@ TEST_P(ScreenWinTestSingleDisplay1x, ScreenToDIPRects) {
   EXPECT_EQ(middle, GetScreenWin()->ScreenToDIPRect(hwnd, middle));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, DIPToScreenRects) {
+TEST_F(ScreenWinTestSingleDisplay1x, DIPToScreenRects) {
   HWND hwnd = GetFakeHwnd();
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
@@ -373,14 +345,14 @@ TEST_P(ScreenWinTestSingleDisplay1x, DIPToScreenRects) {
   EXPECT_EQ(middle, GetScreenWin()->DIPToScreenRect(hwnd, middle));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestSingleDisplay1x, DIPToScreenRectNullHWND) {
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
   EXPECT_EQ(origin, GetScreenWin()->DIPToScreenRect(nullptr, origin));
   EXPECT_EQ(middle, GetScreenWin()->DIPToScreenRect(nullptr, middle));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, ClientToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay1x, ClientToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
@@ -388,7 +360,7 @@ TEST_P(ScreenWinTestSingleDisplay1x, ClientToDIPRects) {
   EXPECT_EQ(middle, GetScreenWin()->ClientToDIPRect(hwnd, middle));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, DIPToClientRects) {
+TEST_F(ScreenWinTestSingleDisplay1x, DIPToClientRects) {
   HWND hwnd = GetFakeHwnd();
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
@@ -396,52 +368,52 @@ TEST_P(ScreenWinTestSingleDisplay1x, DIPToClientRects) {
   EXPECT_EQ(middle, GetScreenWin()->DIPToClientRect(hwnd, middle));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestSingleDisplay1x, ScreenToDIPSize) {
   HWND hwnd = GetFakeHwnd();
   gfx::Size size(42, 131);
   EXPECT_EQ(size, GetScreenWin()->ScreenToDIPSize(hwnd, size));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, DIPToScreenSize) {
+TEST_F(ScreenWinTestSingleDisplay1x, DIPToScreenSize) {
   HWND hwnd = GetFakeHwnd();
   gfx::Size size(42, 131);
   EXPECT_EQ(size, GetScreenWin()->DIPToScreenSize(hwnd, size));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetSystemMetricsInDIP) {
   EXPECT_EQ(31, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(42, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetScaleFactorForHWND) {
   EXPECT_EQ(1.0, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetDisplays) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(1u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 1920, 1200), displays[0].bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 1920, 1100), displays[0].work_area());
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetNumDisplays) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetNumDisplays) {
   EXPECT_EQ(1, GetScreen()->GetNumDisplays());
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   gfx::NativeWindow native_window = GetNativeWindowFromHWND(GetFakeHwnd());
   EXPECT_EQ(screen->GetAllDisplays()[0],
             screen->GetDisplayNearestWindow(native_window));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(0, 0)));
@@ -449,7 +421,7 @@ TEST_P(ScreenWinTestSingleDisplay1x, GetDisplayNearestPoint) {
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetDisplayMatching) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
@@ -457,28 +429,26 @@ TEST_P(ScreenWinTestSingleDisplay1x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(1819, 1099, 100, 100)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestSingleDisplay1x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x, DisconnectPrimaryDisplay) {
+TEST_F(ScreenWinTestSingleDisplay1x, DisconnectPrimaryDisplay) {
   auto* screen = GetScreen();
   ASSERT_EQ(1, screen->GetNumDisplays());
   auto primary = screen->GetPrimaryDisplay();
   const int64_t primary_id = primary.id();
   EXPECT_NE(primary_id, display::kInvalidDisplayId);
 
-  if (use_cached_hmonitor_) {
-    // Validate that the ScreenWinDisplay starts with a cached HMONITOR.
-    const auto screen_win_display =
-        GetScreenWin()->GetScreenWinDisplayWithDisplayId(primary_id);
-    EXPECT_NE(screen_win_display.hmonitor(), std::nullopt);
-    EXPECT_EQ(GetScreenWin()
-                  ->GetScreenWinDisplayNearestScreenPoint(gfx::Point(0, 0))
-                  .display(),
-              screen_win_display.display());
-  }
+  // Validate that the ScreenWinDisplay starts with a cached HMONITOR.
+  const auto screen_win_display =
+      GetScreenWin()->GetScreenWinDisplayWithDisplayId(primary_id);
+  EXPECT_NE(screen_win_display.hmonitor(), std::nullopt);
+  EXPECT_EQ(GetScreenWin()
+                ->GetScreenWinDisplayNearestScreenPoint(gfx::Point(0, 0))
+                .display(),
+            screen_win_display.display());
 
   GetScreenWin()->UpdateFromDisplayInfos({});
 
@@ -492,17 +462,15 @@ TEST_P(ScreenWinTestSingleDisplay1x, DisconnectPrimaryDisplay) {
     new_primary.set_detected(true);
     EXPECT_EQ(primary, new_primary);
 
-    if (use_cached_hmonitor_) {
-      // The ScreenWinDisplay's cached HMONITOR should be invalidated.
-      // GetScreenWinDisplayNearestScreenPoint() should still work without it.
-      const auto screen_win_display =
-          GetScreenWin()->GetScreenWinDisplayWithDisplayId(primary_id);
-      EXPECT_EQ(screen_win_display.hmonitor(), std::nullopt);
-      EXPECT_EQ(GetScreenWin()
-                    ->GetScreenWinDisplayNearestScreenPoint(gfx::Point(0, 0))
-                    .display(),
-                screen_win_display.display());
-    }
+    // The ScreenWinDisplay's cached HMONITOR should be invalidated.
+    // GetScreenWinDisplayNearestScreenPoint() should still work without it.
+    const auto updated_screen_win_display =
+        GetScreenWin()->GetScreenWinDisplayWithDisplayId(primary_id);
+    EXPECT_EQ(updated_screen_win_display.hmonitor(), std::nullopt);
+    EXPECT_EQ(GetScreenWin()
+                  ->GetScreenWinDisplayNearestScreenPoint(gfx::Point(0, 0))
+                  .display(),
+              updated_screen_win_display.display());
   }
 }
 
@@ -534,14 +502,10 @@ class ScreenWinTestSingleDisplay1_25x : public ScreenWinTest {
   HWND fake_hwnd_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestSingleDisplay1_25x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(292, 555.2F),
@@ -550,7 +514,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(304, 578),
@@ -559,7 +523,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(1279, 799)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, ClientToDIPPoints) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(0, 0)));
@@ -569,7 +533,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, ClientToDIPPoints) {
             GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToClientPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, DIPToClientPoints) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(0, 0)));
@@ -579,7 +543,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToClientPoints) {
             GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(1279, 799)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, ScreenToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 40, 80),
             GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -587,7 +551,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, ScreenToDIPRects) {
             GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToScreenRects) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, DIPToScreenRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 43, 84),
             GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(0, 0, 34, 67)));
@@ -595,7 +559,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToScreenRects) {
             GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(168, 330, 28, 36)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 43, 84),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 34, 67)));
   EXPECT_EQ(
@@ -603,7 +567,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(168, 330, 28, 36)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, ClientToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, ClientToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 40, 80),
             GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -611,7 +575,7 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, ClientToDIPRects) {
             GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToClientRects) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, DIPToClientRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 43, 84),
             GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(0, 0, 34, 67)));
@@ -619,40 +583,40 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToClientRects) {
             GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(168, 330, 28, 36)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, ScreenToDIPSize) {
   EXPECT_EQ(gfx::Size(34, 105),
             GetScreenWin()->ScreenToDIPSize(GetFakeHwnd(), gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, DIPToScreenSize) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, DIPToScreenSize) {
   EXPECT_EQ(gfx::Size(35, 110),
             GetScreenWin()->DIPToScreenSize(GetFakeHwnd(), gfx::Size(28, 88)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, GetSystemMetricsInDIP) {
   EXPECT_EQ(25, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(34, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, GetScaleFactorForHWND) {
   EXPECT_EQ(1.25, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, GetDisplays) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(1u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 1536, 960), displays[0].bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 1536, 880), displays[0].work_area());
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   gfx::NativeWindow native_window = GetNativeWindowFromHWND(GetFakeHwnd());
   EXPECT_EQ(screen->GetAllDisplays()[0],
             screen->GetDisplayNearestWindow(native_window));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(0, 0)));
@@ -660,14 +624,14 @@ TEST_P(ScreenWinTestSingleDisplay1_25x, GetDisplayNearestPoint) {
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(1535, 959)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_25x, GetDisplayMatching) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(display,
             screen->GetDisplayMatching(gfx::Rect(1435, 859, 100, 100)));
 }
-TEST_P(ScreenWinTestSingleDisplay1_25x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestSingleDisplay1_25x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -700,14 +664,10 @@ class ScreenWinTestSingleDisplay1_5x : public ScreenWinTest {
   HWND fake_hwnd_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestSingleDisplay1_5x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(243.3333F, 462.6666F),
@@ -716,7 +676,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(365, 693),
@@ -725,7 +685,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(1279, 799)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, ClientToDIPPoints) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(0, 0)));
@@ -735,7 +695,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, ClientToDIPPoints) {
             GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToClientPoints) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, DIPToClientPoints) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(0, 0)));
@@ -745,7 +705,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToClientPoints) {
             GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(1279, 799)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, ScreenToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 34, 67),
             GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -753,7 +713,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, ScreenToDIPRects) {
             GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToScreenRects) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, DIPToScreenRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 51, 101),
             GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(0, 0, 34, 67)));
@@ -761,7 +721,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToScreenRects) {
             GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(168, 330, 28, 36)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 51, 101),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 34, 67)));
   EXPECT_EQ(
@@ -769,7 +729,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(168, 330, 28, 36)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, ClientToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, ClientToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 34, 67),
             GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -777,7 +737,7 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, ClientToDIPRects) {
             GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToClientRects) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, DIPToClientRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 51, 101),
             GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(0, 0, 34, 67)));
@@ -785,40 +745,40 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToClientRects) {
             GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(168, 330, 28, 36)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, ScreenToDIPSize) {
   EXPECT_EQ(gfx::Size(28, 88),
             GetScreenWin()->ScreenToDIPSize(GetFakeHwnd(), gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, DIPToScreenSize) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, DIPToScreenSize) {
   EXPECT_EQ(gfx::Size(42, 132),
             GetScreenWin()->DIPToScreenSize(GetFakeHwnd(), gfx::Size(28, 88)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, GetSystemMetricsInDIP) {
   EXPECT_EQ(21, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(28, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, GetScaleFactorForHWND) {
   EXPECT_EQ(1.5, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, GetDisplays) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(1u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 1280, 800), displays[0].bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 1280, 734), displays[0].work_area());
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   gfx::NativeWindow native_window = GetNativeWindowFromHWND(GetFakeHwnd());
   EXPECT_EQ(screen->GetAllDisplays()[0],
             screen->GetDisplayNearestWindow(native_window));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(0, 0)));
@@ -826,14 +786,14 @@ TEST_P(ScreenWinTestSingleDisplay1_5x, GetDisplayNearestPoint) {
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(1279, 733)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay1_5x, GetDisplayMatching) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
   EXPECT_EQ(display,
             screen->GetDisplayMatching(gfx::Rect(1179, 633, 100, 100)));
 }
-TEST_P(ScreenWinTestSingleDisplay1_5x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestSingleDisplay1_5x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -865,14 +825,10 @@ class ScreenWinTestSingleDisplay2x : public ScreenWinTest {
   HWND fake_hwnd_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestSingleDisplay2x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestSingleDisplay2x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay2x, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(182.5, 347),
@@ -881,7 +837,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestSingleDisplay2x, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(364, 694),
@@ -890,7 +846,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(959, 599)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestSingleDisplay2x, ClientToDIPPoints) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(0, 0)));
@@ -900,7 +856,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, ClientToDIPPoints) {
             GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, DIPToClientPoints) {
+TEST_F(ScreenWinTestSingleDisplay2x, DIPToClientPoints) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(0, 0)));
@@ -910,7 +866,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, DIPToClientPoints) {
             GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(959, 599)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay2x, ScreenToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50),
             GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -918,7 +874,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, ScreenToDIPRects) {
             GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, DIPToScreenRects) {
+TEST_F(ScreenWinTestSingleDisplay2x, DIPToScreenRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -926,7 +882,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, DIPToScreenRects) {
             GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(126, 248, 21, 26)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestSingleDisplay2x, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 25, 50)));
   EXPECT_EQ(
@@ -934,7 +890,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(126, 248, 21, 26)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, ClientToDIPRects) {
+TEST_F(ScreenWinTestSingleDisplay2x, ClientToDIPRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50),
             GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -942,7 +898,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, ClientToDIPRects) {
             GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, DIPToClientRects) {
+TEST_F(ScreenWinTestSingleDisplay2x, DIPToClientRects) {
   HWND hwnd = GetFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -950,40 +906,40 @@ TEST_P(ScreenWinTestSingleDisplay2x, DIPToClientRects) {
             GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(126, 248, 21, 26)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestSingleDisplay2x, ScreenToDIPSize) {
   EXPECT_EQ(gfx::Size(21, 66),
             GetScreenWin()->ScreenToDIPSize(GetFakeHwnd(), gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, DIPToScreenSize) {
+TEST_F(ScreenWinTestSingleDisplay2x, DIPToScreenSize) {
   EXPECT_EQ(gfx::Size(42, 132),
             GetScreenWin()->DIPToScreenSize(GetFakeHwnd(), gfx::Size(21, 66)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestSingleDisplay2x, GetSystemMetricsInDIP) {
   EXPECT_EQ(16, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(21, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestSingleDisplay2x, GetScaleFactorForHWND) {
   EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, GetDisplays) {
+TEST_F(ScreenWinTestSingleDisplay2x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(1u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 960, 600), displays[0].bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 960, 550), displays[0].work_area());
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestSingleDisplay2x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   gfx::NativeWindow native_window = GetNativeWindowFromHWND(GetFakeHwnd());
   EXPECT_EQ(screen->GetAllDisplays()[0],
             screen->GetDisplayNearestWindow(native_window));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestSingleDisplay2x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(0, 0)));
@@ -991,7 +947,7 @@ TEST_P(ScreenWinTestSingleDisplay2x, GetDisplayNearestPoint) {
   EXPECT_EQ(display, screen->GetDisplayNearestPoint(gfx::Point(959, 599)));
 }
 
-TEST_P(ScreenWinTestSingleDisplay2x, GetDisplayMatching) {
+TEST_F(ScreenWinTestSingleDisplay2x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   Display display = screen->GetAllDisplays()[0];
   EXPECT_EQ(display, screen->GetDisplayMatching(gfx::Rect(0, 0, 100, 100)));
@@ -1036,14 +992,10 @@ class ScreenWinTestTwoDisplays1x : public ScreenWinTest {
   HWND fake_hwnd_right_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestTwoDisplays1x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestTwoDisplays1x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x, ScreenToDIPPoints) {
   gfx::PointF left_origin(0, 0);
   gfx::PointF left_middle(365, 694);
   gfx::PointF left_lower_right(1919, 1199);
@@ -1061,7 +1013,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, ScreenToDIPPoints) {
             GetScreenWin()->ScreenToDIPPoint(right_lower_right));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x, DIPToScreenPoints) {
   gfx::Point left_origin(0, 0);
   gfx::Point left_middle(365, 694);
   gfx::Point left_lower_right(1919, 1199);
@@ -1079,7 +1031,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(right_lower_right));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x, ClientToDIPPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Point origin(0, 0);
   gfx::Point middle(365, 694);
@@ -1096,7 +1048,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, ClientToDIPPoints) {
             GetScreenWin()->ClientToDIPPoint(right_hwnd, lower_right));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, DIPToClientPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x, DIPToClientPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Point origin(0, 0);
   gfx::Point middle(365, 694);
@@ -1113,7 +1065,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, DIPToClientPoints) {
             GetScreenWin()->DIPToClientPoint(right_hwnd, lower_right));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays1x, ScreenToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Rect left_origin(0, 0, 50, 100);
   gfx::Rect left_middle(253, 495, 41, 52);
@@ -1135,7 +1087,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, ScreenToDIPRects) {
             GetScreenWin()->ScreenToDIPRect(right_hwnd, right_origin_left));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenRects) {
+TEST_F(ScreenWinTestTwoDisplays1x, DIPToScreenRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Rect left_origin(0, 0, 50, 100);
   gfx::Rect left_middle(253, 495, 41, 52);
@@ -1157,7 +1109,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenRects) {
             GetScreenWin()->DIPToScreenRect(right_hwnd, right_origin_left));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestTwoDisplays1x, DIPToScreenRectNullHWND) {
   gfx::Rect left_origin(0, 0, 50, 100);
   gfx::Rect left_middle(253, 495, 41, 52);
   EXPECT_EQ(left_origin, GetScreenWin()->DIPToScreenRect(nullptr, left_origin));
@@ -1175,7 +1127,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenRectNullHWND) {
             GetScreenWin()->DIPToScreenRect(nullptr, right_origin_left));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, ClientToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays1x, ClientToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
@@ -1187,7 +1139,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, ClientToDIPRects) {
   EXPECT_EQ(middle, GetScreenWin()->ClientToDIPRect(right_hwnd, middle));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, DIPToClientRects) {
+TEST_F(ScreenWinTestTwoDisplays1x, DIPToClientRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
@@ -1199,7 +1151,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, DIPToClientRects) {
   EXPECT_EQ(middle, GetScreenWin()->DIPToClientRect(right_hwnd, middle));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestTwoDisplays1x, ScreenToDIPSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Size size(42, 131);
   EXPECT_EQ(size, GetScreenWin()->ScreenToDIPSize(left_hwnd, size));
@@ -1208,7 +1160,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, ScreenToDIPSize) {
   EXPECT_EQ(size, GetScreenWin()->ScreenToDIPSize(right_hwnd, size));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenSize) {
+TEST_F(ScreenWinTestTwoDisplays1x, DIPToScreenSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   gfx::Size size(42, 131);
   EXPECT_EQ(size, GetScreenWin()->DIPToScreenSize(left_hwnd, size));
@@ -1217,17 +1169,17 @@ TEST_P(ScreenWinTestTwoDisplays1x, DIPToScreenSize) {
   EXPECT_EQ(size, GetScreenWin()->DIPToScreenSize(right_hwnd, size));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetSystemMetricsInDIP) {
   EXPECT_EQ(31, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(42, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetScaleFactorForHWND) {
   EXPECT_EQ(1.0, GetScreenWin()->GetScaleFactorForHWND(GetLeftFakeHwnd()));
   EXPECT_EQ(1.0, GetScreenWin()->GetScaleFactorForHWND(GetRightFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetDisplays) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 1920, 1200), displays[0].bounds());
@@ -1236,17 +1188,17 @@ TEST_P(ScreenWinTestTwoDisplays1x, GetDisplays) {
   EXPECT_EQ(gfx::Rect(1920, 0, 800, 600), displays[1].work_area());
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetNumDisplays) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetNumDisplays) {
   EXPECT_EQ(2, GetScreen()->GetNumDisplays());
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -1258,7 +1210,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, GetDisplayNearestWindow) {
   EXPECT_EQ(right_display, screen->GetDisplayNearestWindow(right_window));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -1275,7 +1227,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(2719, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetDisplayMatching) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -1291,7 +1243,7 @@ TEST_P(ScreenWinTestTwoDisplays1x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(2619, 499, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays1x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -1334,14 +1286,10 @@ class ScreenWinTestTwoDisplays2x : public ScreenWinTest {
   HWND fake_hwnd_right_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestTwoDisplays2x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestTwoDisplays2x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(182.5, 347),
@@ -1357,7 +1305,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(2719, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(364, 694),
@@ -1373,7 +1321,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(1359, 299)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x, ClientToDIPPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(left_hwnd, gfx::Point(0, 0)));
@@ -1391,7 +1339,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, ClientToDIPPoints) {
                                       right_hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, DIPToClientPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x, DIPToClientPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(left_hwnd, gfx::Point(0, 0)));
@@ -1409,7 +1357,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, DIPToClientPoints) {
             GetScreenWin()->DIPToClientPoint(right_hwnd, gfx::Point(959, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays2x, ScreenToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50), GetScreenWin()->ScreenToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -1430,7 +1378,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, ScreenToDIPRects) {
                                             gfx::Rect(1900, 200, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenRects) {
+TEST_F(ScreenWinTestTwoDisplays2x, DIPToScreenRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToScreenRect(
                                           left_hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -1451,7 +1399,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenRects) {
       GetScreenWin()->DIPToScreenRect(right_hwnd, gfx::Rect(950, 100, 50, 50)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestTwoDisplays2x, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 25, 50)));
   EXPECT_EQ(
@@ -1470,7 +1418,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(950, 100, 50, 50)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, ClientToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays2x, ClientToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50), GetScreenWin()->ClientToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -1486,7 +1434,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, ClientToDIPRects) {
       GetScreenWin()->ClientToDIPRect(right_hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, DIPToClientRects) {
+TEST_F(ScreenWinTestTwoDisplays2x, DIPToClientRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToClientRect(
                                           left_hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -1495,7 +1443,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, DIPToClientRects) {
       GetScreenWin()->DIPToClientRect(left_hwnd, gfx::Rect(126, 248, 21, 26)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestTwoDisplays2x, ScreenToDIPSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(21, 66),
             GetScreenWin()->ScreenToDIPSize(left_hwnd, gfx::Size(42, 131)));
@@ -1505,7 +1453,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, ScreenToDIPSize) {
             GetScreenWin()->ScreenToDIPSize(right_hwnd, gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenSize) {
+TEST_F(ScreenWinTestTwoDisplays2x, DIPToScreenSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(42, 132),
             GetScreenWin()->DIPToScreenSize(left_hwnd, gfx::Size(21, 66)));
@@ -1515,17 +1463,17 @@ TEST_P(ScreenWinTestTwoDisplays2x, DIPToScreenSize) {
             GetScreenWin()->DIPToScreenSize(right_hwnd, gfx::Size(21, 66)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetSystemMetricsInDIP) {
   EXPECT_EQ(16, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(21, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetScaleFactorForHWND) {
   EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetLeftFakeHwnd()));
   EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetRightFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetDisplays) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 960, 600), displays[0].bounds());
@@ -1534,13 +1482,13 @@ TEST_P(ScreenWinTestTwoDisplays2x, GetDisplays) {
   EXPECT_EQ(gfx::Rect(960, 0, 400, 300), displays[1].work_area());
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -1552,7 +1500,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, GetDisplayNearestWindow) {
   EXPECT_EQ(right_display, screen->GetDisplayNearestWindow(right_window));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -1569,7 +1517,7 @@ TEST_P(ScreenWinTestTwoDisplays2x, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(1359, 299)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetDisplayMatching) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -1585,12 +1533,12 @@ TEST_P(ScreenWinTestTwoDisplays2x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(1259, 199, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays2x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x, CheckIdStability) {
+TEST_F(ScreenWinTestTwoDisplays2x, CheckIdStability) {
   // Callers may use the display ID as a way to persist data like window
   // coordinates across runs. As a result, the IDs must remain stable.
   Screen* screen = GetScreen();
@@ -1665,14 +1613,10 @@ class ScreenWinTestManyDisplays1x : public ScreenWinTest {
   std::vector<HWND> fake_hwnds_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestManyDisplays1x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestManyDisplays1x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestManyDisplays1x, ScreenToDIPPoints) {
   gfx::PointF primary_origin(0, 0);
   gfx::PointF primary_middle(250, 252);
   gfx::PointF primary_lower_right(639, 479);
@@ -1714,7 +1658,7 @@ TEST_P(ScreenWinTestManyDisplays1x, ScreenToDIPPoints) {
             GetScreenWin()->ScreenToDIPPoint(monitor4_lower_right));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestManyDisplays1x, DIPToScreenPoints) {
   gfx::Point primary_origin(0, 0);
   gfx::Point primary_middle(250, 252);
   gfx::Point primary_lower_right(639, 479);
@@ -1756,7 +1700,7 @@ TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(monitor4_lower_right));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestManyDisplays1x, ClientToDIPPoints) {
   gfx::Point origin(0, 0);
   gfx::Point middle(250, 194);
   gfx::Point lower_right(299, 299);
@@ -1770,7 +1714,7 @@ TEST_P(ScreenWinTestManyDisplays1x, ClientToDIPPoints) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, DIPToClientPoints) {
+TEST_F(ScreenWinTestManyDisplays1x, DIPToClientPoints) {
   gfx::Point origin(0, 0);
   gfx::Point middle(250, 194);
   gfx::Point lower_right(299, 299);
@@ -1784,7 +1728,7 @@ TEST_P(ScreenWinTestManyDisplays1x, DIPToClientPoints) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestManyDisplays1x, ScreenToDIPRects) {
   gfx::Rect primary_origin(0, 0, 50, 100);
   gfx::Rect primary_middle(250, 252, 40, 50);
   EXPECT_EQ(primary_origin,
@@ -1821,7 +1765,7 @@ TEST_P(ScreenWinTestManyDisplays1x, ScreenToDIPRects) {
             GetScreenWin()->ScreenToDIPRect(GetFakeHwnd(4), monitor4_middle));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenRects) {
+TEST_F(ScreenWinTestManyDisplays1x, DIPToScreenRects) {
   gfx::Rect primary_origin(0, 0, 50, 100);
   gfx::Rect primary_middle(250, 252, 40, 50);
   EXPECT_EQ(primary_origin,
@@ -1858,7 +1802,7 @@ TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenRects) {
             GetScreenWin()->DIPToScreenRect(GetFakeHwnd(4), monitor4_middle));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestManyDisplays1x, DIPToScreenRectNullHWND) {
   gfx::Rect primary_origin(0, 0, 50, 100);
   gfx::Rect primary_middle(250, 252, 40, 50);
   EXPECT_EQ(primary_origin,
@@ -1895,7 +1839,7 @@ TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenRectNullHWND) {
             GetScreenWin()->DIPToScreenRect(nullptr, monitor4_middle));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, ClientToDIPRects) {
+TEST_F(ScreenWinTestManyDisplays1x, ClientToDIPRects) {
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
   ASSERT_EQ(5, GetScreen()->GetNumDisplays());
@@ -1906,7 +1850,7 @@ TEST_P(ScreenWinTestManyDisplays1x, ClientToDIPRects) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, DIPToClientRects) {
+TEST_F(ScreenWinTestManyDisplays1x, DIPToClientRects) {
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
   ASSERT_EQ(5, GetScreen()->GetNumDisplays());
@@ -1917,7 +1861,7 @@ TEST_P(ScreenWinTestManyDisplays1x, DIPToClientRects) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestManyDisplays1x, ScreenToDIPSize) {
   gfx::Size size(42, 131);
   ASSERT_EQ(5, GetScreen()->GetNumDisplays());
   for (size_t i = 0; i < 5u; ++i) {
@@ -1926,7 +1870,7 @@ TEST_P(ScreenWinTestManyDisplays1x, ScreenToDIPSize) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenSize) {
+TEST_F(ScreenWinTestManyDisplays1x, DIPToScreenSize) {
   gfx::Size size(42, 131);
   ASSERT_EQ(5, GetScreen()->GetNumDisplays());
   for (size_t i = 0; i < 5u; ++i) {
@@ -1935,19 +1879,19 @@ TEST_P(ScreenWinTestManyDisplays1x, DIPToScreenSize) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestManyDisplays1x, GetSystemMetricsInDIP) {
   EXPECT_EQ(31, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(42, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestManyDisplays1x, GetScaleFactorForHWND) {
   for (size_t i = 0; i < 5u; ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%zu", i));
     EXPECT_EQ(1.0, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd(i)));
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetDisplays) {
+TEST_F(ScreenWinTestManyDisplays1x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 640, 480), displays[0].bounds());
@@ -1962,17 +1906,17 @@ TEST_P(ScreenWinTestManyDisplays1x, GetDisplays) {
   EXPECT_EQ(gfx::Rect(1864, 1168, 200, 200), displays[4].work_area());
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetNumDisplays) {
+TEST_F(ScreenWinTestManyDisplays1x, GetNumDisplays) {
   EXPECT_EQ(5, GetScreen()->GetNumDisplays());
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestManyDisplays1x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestManyDisplays1x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   std::vector<Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
@@ -1984,7 +1928,7 @@ TEST_P(ScreenWinTestManyDisplays1x, GetDisplayNearestWindow) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestManyDisplays1x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   std::vector<Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
@@ -2010,7 +1954,7 @@ TEST_P(ScreenWinTestManyDisplays1x, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(2063, 1367)));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetDisplayMatching) {
+TEST_F(ScreenWinTestManyDisplays1x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   std::vector<Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
@@ -2035,7 +1979,7 @@ TEST_P(ScreenWinTestManyDisplays1x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(1963, 1267, 100, 100)));
 }
 
-TEST_P(ScreenWinTestManyDisplays1x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestManyDisplays1x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -2106,14 +2050,10 @@ class ScreenWinTestManyDisplays2x : public ScreenWinTest {
   std::vector<HWND> fake_hwnds_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestManyDisplays2x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestManyDisplays2x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestManyDisplays2x, ScreenToDIPPoints) {
   // Primary Monitor Points
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
@@ -2155,7 +2095,7 @@ TEST_P(ScreenWinTestManyDisplays2x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(2063, 1367)));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestManyDisplays2x, DIPToScreenPoints) {
   // Primary Monitor Points
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
@@ -2197,7 +2137,7 @@ TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(1031, 683)));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestManyDisplays2x, ClientToDIPPoints) {
   gfx::Point client_origin(0, 0);
   gfx::Point client_middle(250, 194);
   gfx::Point client_lower_right(299, 299);
@@ -2216,7 +2156,7 @@ TEST_P(ScreenWinTestManyDisplays2x, ClientToDIPPoints) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, DIPToClientPoints) {
+TEST_F(ScreenWinTestManyDisplays2x, DIPToClientPoints) {
   gfx::Point dip_origin(0, 0);
   gfx::Point dip_middle(125, 97);
   gfx::Point dip_lower_right(149, 149);
@@ -2235,7 +2175,7 @@ TEST_P(ScreenWinTestManyDisplays2x, DIPToClientPoints) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestManyDisplays2x, ScreenToDIPRects) {
   // Primary Monitor
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50),
             GetScreenWin()->ScreenToDIPRect(GetFakeHwnd(0),
@@ -2277,7 +2217,7 @@ TEST_P(ScreenWinTestManyDisplays2x, ScreenToDIPRects) {
                                             gfx::Rect(1955, 1224, 25, 30)));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenRects) {
+TEST_F(ScreenWinTestManyDisplays2x, DIPToScreenRects) {
   // Primary Monitor
   EXPECT_EQ(
       gfx::Rect(0, 0, 50, 100),
@@ -2319,7 +2259,7 @@ TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenRects) {
                                             gfx::Rect(977, 612, 13, 15)));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestManyDisplays2x, DIPToScreenRectNullHWND) {
   // Primary Monitor
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 25, 50)));
@@ -2358,7 +2298,7 @@ TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(977, 612, 13, 15)));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, ClientToDIPRects) {
+TEST_F(ScreenWinTestManyDisplays2x, ClientToDIPRects) {
   gfx::Rect client_screen_origin(0, 0, 50, 100);
   gfx::Rect client_dip_origin(0, 0, 25, 50);
   gfx::Rect client_screen_middle(253, 495, 41, 52);
@@ -2373,7 +2313,7 @@ TEST_P(ScreenWinTestManyDisplays2x, ClientToDIPRects) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, DIPToClientRects) {
+TEST_F(ScreenWinTestManyDisplays2x, DIPToClientRects) {
   gfx::Rect client_dip_origin(0, 0, 25, 50);
   gfx::Rect client_screen_origin(0, 0, 50, 100);
   gfx::Rect client_dip_middle(126, 247, 21, 26);
@@ -2388,7 +2328,7 @@ TEST_P(ScreenWinTestManyDisplays2x, DIPToClientRects) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestManyDisplays2x, ScreenToDIPSize) {
   gfx::Size screen_size(42, 131);
   gfx::Size dip_size(21, 66);
   ASSERT_EQ(5, GetScreen()->GetNumDisplays());
@@ -2399,7 +2339,7 @@ TEST_P(ScreenWinTestManyDisplays2x, ScreenToDIPSize) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenSize) {
+TEST_F(ScreenWinTestManyDisplays2x, DIPToScreenSize) {
   gfx::Size dip_size(21, 66);
   gfx::Size screen_size(42, 132);
   ASSERT_EQ(5, GetScreen()->GetNumDisplays());
@@ -2410,19 +2350,19 @@ TEST_P(ScreenWinTestManyDisplays2x, DIPToScreenSize) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestManyDisplays2x, GetSystemMetricsInDIP) {
   EXPECT_EQ(16, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(21, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestManyDisplays2x, GetScaleFactorForHWND) {
   for (size_t i = 0; i < 5u; ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%zu", i));
     EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd(i)));
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetDisplays) {
+TEST_F(ScreenWinTestManyDisplays2x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 320, 240), displays[0].bounds());
@@ -2437,17 +2377,17 @@ TEST_P(ScreenWinTestManyDisplays2x, GetDisplays) {
   EXPECT_EQ(gfx::Rect(932, 584, 100, 100), displays[4].work_area());
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetNumDisplays) {
+TEST_F(ScreenWinTestManyDisplays2x, GetNumDisplays) {
   EXPECT_EQ(5, GetScreen()->GetNumDisplays());
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestManyDisplays2x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestManyDisplays2x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   std::vector<Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
@@ -2459,7 +2399,7 @@ TEST_P(ScreenWinTestManyDisplays2x, GetDisplayNearestWindow) {
   }
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestManyDisplays2x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   std::vector<Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
@@ -2485,7 +2425,7 @@ TEST_P(ScreenWinTestManyDisplays2x, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(1031, 683)));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetDisplayMatching) {
+TEST_F(ScreenWinTestManyDisplays2x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   std::vector<Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(5u, displays.size());
@@ -2510,7 +2450,7 @@ TEST_P(ScreenWinTestManyDisplays2x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(931, 583, 100, 100)));
 }
 
-TEST_P(ScreenWinTestManyDisplays2x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestManyDisplays2x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -2553,14 +2493,10 @@ class ScreenWinTestTwoDisplays1x2x : public ScreenWinTest {
   HWND fake_hwnd_right_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestTwoDisplays1x2x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(365, 694),
@@ -2576,7 +2512,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(2719, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(365, 694),
@@ -2592,7 +2528,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(2319, 299)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, ClientToDIPPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(left_hwnd, gfx::Point(0, 0)));
@@ -2610,7 +2546,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, ClientToDIPPoints) {
                                       right_hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToClientPoints) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, DIPToClientPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(left_hwnd, gfx::Point(0, 0)));
@@ -2628,7 +2564,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToClientPoints) {
             GetScreenWin()->DIPToClientPoint(right_hwnd, gfx::Point(959, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, ScreenToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->ScreenToDIPRect(
                                           left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -2649,7 +2585,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, ScreenToDIPRects) {
                                             gfx::Rect(1900, 200, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenRects) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, DIPToScreenRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToScreenRect(
                                           left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -2670,7 +2606,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenRects) {
                                             gfx::Rect(1910, 100, 50, 50)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 50, 100)));
   EXPECT_EQ(
@@ -2689,7 +2625,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(1910, 100, 50, 50)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, ClientToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, ClientToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->ClientToDIPRect(
                                           left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -2705,7 +2641,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, ClientToDIPRects) {
       GetScreenWin()->ClientToDIPRect(right_hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToClientRects) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, DIPToClientRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToClientRect(
                                           left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -2721,7 +2657,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToClientRects) {
       GetScreenWin()->DIPToClientRect(right_hwnd, gfx::Rect(126, 248, 21, 26)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, ScreenToDIPSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(42, 131),
             GetScreenWin()->ScreenToDIPSize(left_hwnd, gfx::Size(42, 131)));
@@ -2731,7 +2667,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, ScreenToDIPSize) {
             GetScreenWin()->ScreenToDIPSize(right_hwnd, gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenSize) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, DIPToScreenSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(21, 66),
             GetScreenWin()->DIPToScreenSize(left_hwnd, gfx::Size(21, 66)));
@@ -2741,17 +2677,17 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, DIPToScreenSize) {
             GetScreenWin()->DIPToScreenSize(right_hwnd, gfx::Size(21, 66)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetSystemMetricsInDIP) {
   EXPECT_EQ(31, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(42, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetScaleFactorForHWND) {
   EXPECT_EQ(1.0, GetScreenWin()->GetScaleFactorForHWND(GetLeftFakeHwnd()));
   EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetRightFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplays) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 1920, 1200), displays[0].bounds());
@@ -2760,17 +2696,17 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplays) {
   EXPECT_EQ(gfx::Rect(1920, 0, 400, 300), displays[1].work_area());
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetNumDisplays) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetNumDisplays) {
   EXPECT_EQ(2, GetScreen()->GetNumDisplays());
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -2782,7 +2718,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestWindow) {
   EXPECT_EQ(right_display, screen->GetDisplayNearestWindow(right_window));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -2799,7 +2735,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(2319, 299)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplayMatching) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -2815,7 +2751,7 @@ TEST_P(ScreenWinTestTwoDisplays1x2x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(2219, 199, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1x2x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays1x2x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -2859,14 +2795,10 @@ class ScreenWinTestTwoDisplays1_5x1x : public ScreenWinTest {
   HWND fake_hwnd_right_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestTwoDisplays1_5x1x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(243.3333F, 301.3333F),
@@ -2882,7 +2814,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(1439, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(365, 452),
@@ -2898,7 +2830,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(1173, 399)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, ClientToDIPPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(left_hwnd, gfx::Point(0, 0)));
@@ -2916,7 +2848,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, ClientToDIPPoints) {
                                         right_hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToClientPoints) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, DIPToClientPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(left_hwnd, gfx::Point(0, 0)));
@@ -2934,7 +2866,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToClientPoints) {
                                         right_hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 34, 67), GetScreenWin()->ScreenToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -2955,7 +2887,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPRects) {
                                             gfx::Rect(780, 200, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenRects) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 51, 101), GetScreenWin()->DIPToScreenRect(
                                           left_hwnd, gfx::Rect(0, 0, 34, 67)));
@@ -2976,7 +2908,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenRects) {
       GetScreenWin()->DIPToScreenRect(right_hwnd, gfx::Rect(514, 0, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 51, 101),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 34, 67)));
   EXPECT_EQ(
@@ -2995,7 +2927,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(514, 0, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, ClientToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, ClientToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 34, 67), GetScreenWin()->ClientToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -3012,7 +2944,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, ClientToDIPRects) {
       GetScreenWin()->ClientToDIPRect(right_hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToClientRects) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, DIPToClientRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 51, 101), GetScreenWin()->DIPToClientRect(
                                           left_hwnd, gfx::Rect(0, 0, 34, 67)));
@@ -3029,7 +2961,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToClientRects) {
       GetScreenWin()->DIPToClientRect(right_hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(28, 88),
             GetScreenWin()->ScreenToDIPSize(left_hwnd, gfx::Size(42, 131)));
@@ -3039,7 +2971,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, ScreenToDIPSize) {
             GetScreenWin()->ScreenToDIPSize(right_hwnd, gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenSize) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(42, 131),
             GetScreenWin()->DIPToScreenSize(left_hwnd, gfx::Size(28, 87)));
@@ -3049,17 +2981,17 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, DIPToScreenSize) {
             GetScreenWin()->DIPToScreenSize(right_hwnd, gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetSystemMetricsInDIP) {
   EXPECT_EQ(21, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(28, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetScaleFactorForHWND) {
   EXPECT_EQ(1.5, GetScreenWin()->GetScaleFactorForHWND(GetLeftFakeHwnd()));
   EXPECT_EQ(1.0, GetScreenWin()->GetScaleFactorForHWND(GetRightFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplays) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 534, 400), displays[0].bounds());
@@ -3068,13 +3000,13 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplays) {
   EXPECT_EQ(gfx::Rect(534, -80, 640, 480), displays[1].work_area());
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3086,7 +3018,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestWindow) {
   EXPECT_EQ(right_display, screen->GetDisplayNearestWindow(right_window));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3104,7 +3036,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(1173, 399)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplayMatching) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3120,7 +3052,7 @@ TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(1073, 299, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays1_5x1x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays1_5x1x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -3163,14 +3095,10 @@ class ScreenWinTestTwoDisplays2x1x : public ScreenWinTest {
   HWND fake_hwnd_right_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestTwoDisplays2x1x,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(182.5, 347),
@@ -3186,7 +3114,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(2719, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(364, 694),
@@ -3202,7 +3130,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(1759, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, ClientToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, ClientToDIPPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(left_hwnd, gfx::Point(0, 0)));
@@ -3220,7 +3148,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, ClientToDIPPoints) {
                                         right_hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToClientPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, DIPToClientPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(left_hwnd, gfx::Point(0, 0)));
@@ -3238,7 +3166,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToClientPoints) {
                                         right_hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, ScreenToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, ScreenToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50), GetScreenWin()->ScreenToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -3259,7 +3187,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, ScreenToDIPRects) {
                                             gfx::Rect(1900, 200, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, DIPToScreenRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToScreenRect(
                                           left_hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -3280,7 +3208,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenRects) {
                                             gfx::Rect(940, 200, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 25, 50)));
   EXPECT_EQ(
@@ -3299,7 +3227,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(940, 200, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, ClientToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, ClientToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50), GetScreenWin()->ClientToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -3316,7 +3244,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, ClientToDIPRects) {
       GetScreenWin()->ClientToDIPRect(right_hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToClientRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, DIPToClientRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToClientRect(
                                           left_hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -3333,7 +3261,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToClientRects) {
       GetScreenWin()->DIPToClientRect(right_hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, ScreenToDIPSize) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, ScreenToDIPSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(21, 66),
             GetScreenWin()->ScreenToDIPSize(left_hwnd, gfx::Size(42, 131)));
@@ -3343,7 +3271,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, ScreenToDIPSize) {
             GetScreenWin()->ScreenToDIPSize(right_hwnd, gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenSize) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, DIPToScreenSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(42, 132),
             GetScreenWin()->DIPToScreenSize(left_hwnd, gfx::Size(21, 66)));
@@ -3353,17 +3281,17 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, DIPToScreenSize) {
             GetScreenWin()->DIPToScreenSize(right_hwnd, gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetSystemMetricsInDIP) {
   EXPECT_EQ(16, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(21, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetScaleFactorForHWND) {
   EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetLeftFakeHwnd()));
   EXPECT_EQ(1.0, GetScreenWin()->GetScaleFactorForHWND(GetRightFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplays) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 960, 600), displays[0].bounds());
@@ -3372,17 +3300,17 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplays) {
   EXPECT_EQ(gfx::Rect(960, 0, 800, 600), displays[1].work_area());
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetNumDisplays) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetNumDisplays) {
   EXPECT_EQ(2, GetScreen()->GetNumDisplays());
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestWindowPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3394,7 +3322,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestWindow) {
   EXPECT_EQ(right_display, screen->GetDisplayNearestWindow(right_window));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3411,7 +3339,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(1659, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplayMatching) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetDisplayMatching) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3427,7 +3355,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1x, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(1559, 499, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1x, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays2x1x, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -3473,14 +3401,10 @@ class ScreenWinTestTwoDisplays2x1xVirtualized : public ScreenWinTest {
   HWND fake_hwnd_right_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestTwoDisplays2x1xVirtualized,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPPoints) {
   expect_point_f_eq(gfx::PointF(0, 0),
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(0, 0)));
   expect_point_f_eq(gfx::PointF(182.5, 347),
@@ -3496,7 +3420,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPPoints) {
                     GetScreenWin()->ScreenToDIPPoint(gfx::PointF(10239, 2399)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenPoints) {
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToScreenPoint(gfx::Point(0, 0)));
   EXPECT_EQ(gfx::Point(364, 694),
@@ -3512,7 +3436,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenPoints) {
             GetScreenWin()->DIPToScreenPoint(gfx::Point(5119, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ClientToDIPPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, ClientToDIPPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->ClientToDIPPoint(left_hwnd, gfx::Point(0, 0)));
@@ -3530,7 +3454,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ClientToDIPPoints) {
                                       right_hwnd, gfx::Point(1919, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToClientPoints) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToClientPoints) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Point(0, 0),
             GetScreenWin()->DIPToClientPoint(left_hwnd, gfx::Point(0, 0)));
@@ -3548,7 +3472,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToClientPoints) {
             GetScreenWin()->DIPToClientPoint(right_hwnd, gfx::Point(959, 599)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50), GetScreenWin()->ScreenToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -3569,7 +3493,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPRects) {
                                             gfx::Rect(6380, 200, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToScreenRect(
                                           left_hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -3590,7 +3514,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenRects) {
                                             gfx::Rect(3190, 100, 50, 50)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenRectNullHWND) {
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
             GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 25, 50)));
   EXPECT_EQ(
@@ -3609,7 +3533,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenRectNullHWND) {
       GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(3190, 100, 50, 50)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ClientToDIPRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, ClientToDIPRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 25, 50), GetScreenWin()->ClientToDIPRect(
                                          left_hwnd, gfx::Rect(0, 0, 50, 100)));
@@ -3625,7 +3549,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ClientToDIPRects) {
       GetScreenWin()->ClientToDIPRect(right_hwnd, gfx::Rect(253, 496, 41, 52)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToClientRects) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToClientRects) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), GetScreenWin()->DIPToClientRect(
                                           left_hwnd, gfx::Rect(0, 0, 25, 50)));
@@ -3641,7 +3565,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToClientRects) {
       GetScreenWin()->DIPToClientRect(right_hwnd, gfx::Rect(126, 248, 21, 26)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPSize) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(21, 66),
             GetScreenWin()->ScreenToDIPSize(left_hwnd, gfx::Size(42, 131)));
@@ -3651,7 +3575,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, ScreenToDIPSize) {
             GetScreenWin()->ScreenToDIPSize(right_hwnd, gfx::Size(42, 131)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenSize) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenSize) {
   HWND left_hwnd = GetLeftFakeHwnd();
   EXPECT_EQ(gfx::Size(42, 132),
             GetScreenWin()->DIPToScreenSize(left_hwnd, gfx::Size(21, 66)));
@@ -3661,17 +3585,17 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, DIPToScreenSize) {
             GetScreenWin()->DIPToScreenSize(right_hwnd, gfx::Size(21, 66)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetSystemMetricsInDIP) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetSystemMetricsInDIP) {
   EXPECT_EQ(16, GetScreenWin()->GetSystemMetricsInDIP(31));
   EXPECT_EQ(21, GetScreenWin()->GetSystemMetricsInDIP(42));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetScaleFactorForHWND) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetScaleFactorForHWND) {
   EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetLeftFakeHwnd()));
   EXPECT_EQ(2.0, GetScreenWin()->GetScaleFactorForHWND(GetRightFakeHwnd()));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplays) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
   EXPECT_EQ(gfx::Rect(0, 0, 1600, 800), displays[0].bounds());
@@ -3680,18 +3604,18 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplays) {
   EXPECT_EQ(gfx::Rect(3200, 0, 1920, 1200), displays[1].work_area());
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetNumDisplays) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetNumDisplays) {
   EXPECT_EQ(2, GetScreen()->GetNumDisplays());
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized,
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized,
        GetDisplayNearestWindowPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(screen->GetPrimaryDisplay(),
             screen->GetDisplayNearestWindow(nullptr));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayNearestWindow) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayNearestWindow) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3703,7 +3627,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayNearestWindow) {
   EXPECT_EQ(right_display, screen->GetDisplayNearestWindow(right_window));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayNearestPoint) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayNearestPoint) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3720,7 +3644,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayNearestPoint) {
             screen->GetDisplayNearestPoint(gfx::Point(5119, 1199)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayMatching) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayMatching) {
   Screen* screen = GetScreen();
   const Display left_display = screen->GetAllDisplays()[0];
   const Display right_display = screen->GetAllDisplays()[1];
@@ -3736,7 +3660,7 @@ TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetDisplayMatching) {
             screen->GetDisplayMatching(gfx::Rect(5019, 1099, 100, 100)));
 }
 
-TEST_P(ScreenWinTestTwoDisplays2x1xVirtualized, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestTwoDisplays2x1xVirtualized, GetPrimaryDisplay) {
   Screen* screen = GetScreen();
   EXPECT_EQ(gfx::Point(0, 0), screen->GetPrimaryDisplay().bounds().origin());
 }
@@ -3754,7 +3678,6 @@ class ScreenWinUninitializedForced1x : public testing::Test {
       const ScreenWinUninitializedForced1x&) = delete;
 
   void SetUp() override {
-    testing::Test::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kForceDeviceScaleFactor, "1");
   }
@@ -3762,7 +3685,6 @@ class ScreenWinUninitializedForced1x : public testing::Test {
   void TearDown() override {
     ScreenWin::ResetFallbackScreenForTesting();
     Display::ResetForceDeviceScaleFactorForTesting();
-    testing::Test::TearDown();
   }
 };
 
@@ -3867,7 +3789,6 @@ class ScreenWinUninitializedForced2x : public testing::Test {
       const ScreenWinUninitializedForced2x&) = delete;
 
   void SetUp() override {
-    testing::Test::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kForceDeviceScaleFactor, "2");
   }
@@ -3875,7 +3796,6 @@ class ScreenWinUninitializedForced2x : public testing::Test {
   void TearDown() override {
     ScreenWin::ResetFallbackScreenForTesting();
     Display::ResetForceDeviceScaleFactorForTesting();
-    testing::Test::TearDown();
   }
 };
 
@@ -3991,14 +3911,10 @@ class ScreenWinTestTwoDisplaysOneInternal : public ScreenWinTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestTwoDisplaysOneInternal,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestTwoDisplaysOneInternal, InternalDisplayIdSet) {
+TEST_F(ScreenWinTestTwoDisplaysOneInternal, InternalDisplayIdSet) {
   EXPECT_NE(Display::InternalDisplayId(), kInvalidDisplayId);
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
@@ -4027,14 +3943,10 @@ class ScreenWinTestOneDisplayLongName : public ScreenWinTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestOneDisplayLongName,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestOneDisplayLongName, CheckIdStability) {
+TEST_F(ScreenWinTestOneDisplayLongName, CheckIdStability) {
   // Callers may use the display ID as a way to persist data like window
   // coordinates across runs. As a result, the IDs must remain stable.
   Screen* screen = GetScreen();
@@ -4052,14 +3964,10 @@ class ScreenWinTestNoDisplay : public ScreenWinTest {
   void SetUpScreen(TestScreenWinInitializer* initializer) override {}
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestNoDisplay,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
-TEST_P(ScreenWinTestNoDisplay, DIPToScreenPoints) {
+TEST_F(ScreenWinTestNoDisplay, DIPToScreenPoints) {
   gfx::Point origin(0, 0);
   gfx::Point middle(365, 694);
   gfx::Point lower_right(1919, 1199);
@@ -4068,7 +3976,7 @@ TEST_P(ScreenWinTestNoDisplay, DIPToScreenPoints) {
   EXPECT_EQ(lower_right, GetScreenWin()->DIPToScreenPoint(lower_right));
 }
 
-TEST_P(ScreenWinTestNoDisplay, DIPToScreenRectNullHWND) {
+TEST_F(ScreenWinTestNoDisplay, DIPToScreenRectNullHWND) {
   gfx::Rect origin(0, 0, 50, 100);
   gfx::Rect middle(253, 495, 41, 52);
   EXPECT_EQ(origin, GetScreenWin()->DIPToScreenRect(nullptr, origin));
@@ -4076,7 +3984,7 @@ TEST_P(ScreenWinTestNoDisplay, DIPToScreenRectNullHWND) {
 }
 
 // GetPrimaryDisplay should return a valid display even if there is no display.
-TEST_P(ScreenWinTestNoDisplay, GetPrimaryDisplay) {
+TEST_F(ScreenWinTestNoDisplay, GetPrimaryDisplay) {
   auto primary = GetScreen()->GetPrimaryDisplay();
   EXPECT_NE(primary.id(), display::kInvalidDisplayId);
   EXPECT_TRUE(primary.bounds().origin().IsOrigin());
@@ -4085,12 +3993,12 @@ TEST_P(ScreenWinTestNoDisplay, GetPrimaryDisplay) {
   EXPECT_FALSE(primary.detected());
 }
 
-TEST_P(ScreenWinTestNoDisplay, GetDisplays) {
+TEST_F(ScreenWinTestNoDisplay, GetDisplays) {
   std::vector<Display> displays = GetScreen()->GetAllDisplays();
   ASSERT_EQ(0u, displays.size());
 }
 
-TEST_P(ScreenWinTestNoDisplay, GetNumDisplays) {
+TEST_F(ScreenWinTestNoDisplay, GetNumDisplays) {
   EXPECT_EQ(0, GetScreen()->GetNumDisplays());
 }
 
@@ -4113,15 +4021,11 @@ class ScreenWinTestWithTextScaleMultiplier : public ScreenWinTest {
   HWND fake_hwnd_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScreenWinTestWithTextScaleMultiplier,
-                         ::testing::Bool(),
-                         ScreenWinTest::ParamInfoToString);
 
 }  // namespace
 
 // Verifies text scale safely carries through without modifying the device scale
-TEST_P(ScreenWinTestWithTextScaleMultiplier, GetScaleFactors) {
+TEST_F(ScreenWinTestWithTextScaleMultiplier, GetScaleFactors) {
   EXPECT_EQ(1.25, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd()));
   EXPECT_EQ(1.25, GetScreen()->GetAllDisplays()[0].device_scale_factor());
   EXPECT_EQ(2.0, GetScreen()->GetAllDisplays()[0].text_scale_multiplier());
@@ -4158,7 +4062,7 @@ class ReentrantScreenWinObserver : public DisplayObserver {
 
 }  // namespace
 
-TEST_P(ScreenWinTestSingleDisplay1x, ReentrantUpdateAllDisplaysAndNotify) {
+TEST_F(ScreenWinTestSingleDisplay1x, ReentrantUpdateAllDisplaysAndNotify) {
   base::HistogramTester histogram_tester;
   TestScreenWin* test_screen_win = static_cast<TestScreenWin*>(GetScreenWin());
 
@@ -4166,10 +4070,8 @@ TEST_P(ScreenWinTestSingleDisplay1x, ReentrantUpdateAllDisplaysAndNotify) {
       gfx::Rect(0, 0, 1600, 1200), gfx::Rect(0, 0, 1600, 1100), L"primary");
   MONITORINFOEX reentrant_monitor_info = win::test::CreateMonitorInfo(
       gfx::Rect(0, 0, 1920, 1200), gfx::Rect(0, 0, 1920, 1100), L"primary");
-  std::optional<HMONITOR> cached_hmonitor;
-  if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
-    cached_hmonitor = reinterpret_cast<HMONITOR>(1);
-  }
+  std::optional<HMONITOR> cached_hmonitor =
+      reinterpret_cast<HMONITOR>(intptr_t(1));
 
   internal::DisplayInfo initial_info(
       cached_hmonitor, initial_monitor_info, 1.0f, 1.0f,
@@ -4194,17 +4096,15 @@ TEST_P(ScreenWinTestSingleDisplay1x, ReentrantUpdateAllDisplaysAndNotify) {
   GetScreen()->RemoveObserver(&observer);
 }
 
-TEST_P(ScreenWinTestSingleDisplay1x,
+TEST_F(ScreenWinTestSingleDisplay1x,
        ReentrantUpdateAllDisplaysAndNotify_UnchangedSkipped) {
   base::HistogramTester histogram_tester;
   TestScreenWin* test_screen_win = static_cast<TestScreenWin*>(GetScreenWin());
 
   MONITORINFOEX initial_monitor_info = win::test::CreateMonitorInfo(
       gfx::Rect(0, 0, 1600, 1200), gfx::Rect(0, 0, 1600, 1100), L"primary");
-  std::optional<HMONITOR> cached_hmonitor;
-  if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
-    cached_hmonitor = reinterpret_cast<HMONITOR>(1);
-  }
+  std::optional<HMONITOR> cached_hmonitor =
+      reinterpret_cast<HMONITOR>(intptr_t(1));
 
   internal::DisplayInfo initial_info(
       cached_hmonitor, initial_monitor_info, 1.0f, 1.0f,

@@ -114,18 +114,6 @@ bool IsOpsDisplayScaleFactorEnabled() {
   return base::FeatureList::IsEnabled(kOpsDisplayScaleFactor);
 }
 
-// Optimizes ScreenWinDisplay lookup by caching an HMONITOR for each display.
-// This is part of a combined performance experiment so requires both this flag
-// and "ReducePPMs". In case of errors this flag can be disabled without
-// affecting the rest of the experiment.
-BASE_FEATURE(kScreenWinDisplayLookupByHMONITOR,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsScreenWinDisplayLookupByHMONITOREnabled() {
-  return base::FeatureList::IsEnabled(base::features::kReducePPMs) &&
-         base::FeatureList::IsEnabled(kScreenWinDisplayLookupByHMONITOR);
-}
-
 // When this feature is enabled, a different notification will be displayed to
 // indicate there is a limit on the number of displays supported by the device.
 // This feature takes in a param "display_limit", and it has to be an integer

@@ -510,15 +510,10 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
         GetMonitorPixelsPerInch(monitor).value_or(
             GetDefaultMonitorPhysicalPixelsPerInch());
     const auto path_info = GetDisplayConfigPathInfo(monitor);
-    std::optional<HMONITOR> cached_hmonitor;
-    if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
-      cached_hmonitor = monitor;
-    }
     display_infos.emplace_back(
-        std::move(cached_hmonitor), *monitor_info, scale_factors.device,
-        scale_factors.text, Display::kDefaultBitsPerPixel,
-        GetSDRWhiteLevel(path_info), display_settings.rotation,
-        display_settings.frequency, pixels_per_inch,
+        monitor, *monitor_info, scale_factors.device, scale_factors.text,
+        Display::kDefaultBitsPerPixel, GetSDRWhiteLevel(path_info),
+        display_settings.rotation, display_settings.frequency, pixels_per_inch,
         GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
 
     // Gauge ids derived from DISPLAY_DEVICE's DeviceID and DeviceKey.
@@ -1223,29 +1218,18 @@ void ScreenWin::UpdateAllDisplaysIfPrimaryMonitorChanged() {
 }
 
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayNearestHWND(HWND hwnd) const {
-  if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
-    return GetScreenWinDisplayForHMONITOR(
-        HMONITORFromWindow(hwnd, MONITOR_DEFAULTTONEAREST));
-  }
-  return GetScreenWinDisplay(MonitorInfoFromWindow(hwnd,
-                                                   MONITOR_DEFAULTTONEAREST));
+  return GetScreenWinDisplayForHMONITOR(
+      HMONITORFromWindow(hwnd, MONITOR_DEFAULTTONEAREST));
 }
 
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayNearestScreenRect(
     const gfx::Rect& screen_rect) const {
-  if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
-    return GetScreenWinDisplayForHMONITOR(HMONITORFromScreenRect(screen_rect));
-  }
-  return GetScreenWinDisplay(MonitorInfoFromScreenRect(screen_rect));
+  return GetScreenWinDisplayForHMONITOR(HMONITORFromScreenRect(screen_rect));
 }
 
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayNearestScreenPoint(
     const gfx::Point& screen_point) const {
-  if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
-    return GetScreenWinDisplayForHMONITOR(
-        HMONITORFromScreenPoint(screen_point));
-  }
-  return GetScreenWinDisplay(MonitorInfoFromScreenPoint(screen_point));
+  return GetScreenWinDisplayForHMONITOR(HMONITORFromScreenPoint(screen_point));
 }
 
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayNearestDIPPoint(
@@ -1319,7 +1303,6 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplay(
 
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayForHMONITOR(
     HMONITOR monitor) const {
-  CHECK(features::IsScreenWinDisplayLookupByHMONITOREnabled());
   const auto it =
       std::ranges::find(screen_win_displays_, monitor,
                         [](const auto& display) { return display.hmonitor(); });
