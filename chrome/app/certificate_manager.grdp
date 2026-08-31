@@ -50,16 +50,16 @@
 
     <if expr="is_macosx">
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM" desc="Label for the OS platform.">
-        MacOS
+        macOS
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage.">
-        Imported from MacOS
+        Imported from macOS
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK" desc="Label for a link opening the platform cert manager.">
-        Manage imported certificates from MacOS
+        Manage imported certificates from macOS
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs.">
-        View imported certificates from MacOS
+        View imported certificates from macOS
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION" desc="Text read by screen readers for the row that opens the Mac certificate management application. When clicked, it will open the Mac certificate management application in a separate window. This text will only be announced by a screen reader and will not be visible in the UI.">
         Opens in a separate application
