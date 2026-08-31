@@ -4,12 +4,24 @@
 
 #import "ios/chrome/browser/webui/ui_bundled/connectors_internals/connectors_internals_page_handler.h"
 
+#import <string>
+#import <vector>
+
+#import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/i18n/time_formatting.h"
+#import "base/json/json_writer.h"
 #import "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #import "components/enterprise/client_certificates/core/client_identity.h"
 #import "components/enterprise/client_certificates/ios/certificate_provisioning_service_ios.h"
 #import "components/enterprise/connectors/core/connectors_internals_utils.h"
+#import "components/enterprise/device_trust/core/common_types.h"
+#import "components/enterprise/device_trust/core/device_trust_connector_service.h"
+#import "components/enterprise/device_trust/core/device_trust_service.h"
 #import "ios/chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_connector_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -18,6 +30,31 @@ namespace {
 
 constexpr char kProfile[] = "Profile";
 constexpr char kBrowser[] = "Browser";
+constexpr char kUser[] = "User";
+
+std::string ConvertPolicyLevelToString(
+    enterprise_connectors::DTCPolicyLevel level) {
+  switch (level) {
+    case enterprise_connectors::DTCPolicyLevel::kBrowser:
+      return kBrowser;
+    case enterprise_connectors::DTCPolicyLevel::kUser:
+      return kUser;
+  }
+}
+
+connectors_internals::mojom::DeviceTrustStatePtr
+CreateUnsupportedDeviceTrustState() {
+  return connectors_internals::mojom::DeviceTrustState::New(
+      /*is_enabled=*/false,
+      /*policy_enabled_levels=*/std::vector<std::string>(),
+      /*key_info=*/
+      connectors_internals::mojom::KeyInfo::New(
+          connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
+          nullptr,
+          connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED),
+      /*signals_json=*/std::string(),
+      /*consent_metadata=*/nullptr);
+}
 
 }  // namespace
 
@@ -30,13 +67,63 @@ ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 
 void ConnectorsInternalsPageHandler::GetDeviceTrustState(
     GetDeviceTrustStateCallback callback) {
-  auto state = connectors_internals::mojom::DeviceTrustState::New(
-      false, std::vector<std::string>(),
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::features::kEnableIOSDeviceTrustConnector)) {
+    std::move(callback).Run(CreateUnsupportedDeviceTrustState());
+    return;
+  }
+
+  enterprise_connectors::DeviceTrustService* device_trust_service =
+      DeviceTrustServiceFactoryIOS::GetForProfile(profile_);
+
+  if (!device_trust_service) {
+    std::move(callback).Run(CreateUnsupportedDeviceTrustState());
+    return;
+  }
+
+  // Since this page is used for debugging purposes, show the signals regardless
+  // of the policy value (i.e. even if `service->IsEnabled` is false).
+  device_trust_service->GetSignals(
+      base::BindOnce(&ConnectorsInternalsPageHandler::OnSignalsCollected,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     device_trust_service->IsEnabled()));
+}
+
+void ConnectorsInternalsPageHandler::OnSignalsCollected(
+    GetDeviceTrustStateCallback callback,
+    bool is_device_trust_enabled,
+    base::DictValue signals) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::string signals_json;
+  base::JSONWriter::WriteWithOptions(
+      signals, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);
+
+  std::vector<std::string> policy_enabled_levels;
+  enterprise_connectors::DeviceTrustConnectorService* connector_service =
+      DeviceTrustConnectorServiceFactoryIOS::GetForProfile(profile_);
+  if (connector_service) {
+    for (enterprise_connectors::DTCPolicyLevel level :
+         connector_service->GetSignalsPolicyScope()) {
+      policy_enabled_levels.push_back(ConvertPolicyLevelToString(level));
+    }
+  }
+
+  // iOS uses unsigned Device Trust attestation and does not manage or persist
+  // signing keys. Always report NO_KEY.
+  connectors_internals::mojom::KeyInfoPtr key_info =
       connectors_internals::mojom::KeyInfo::New(
-          connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
+          connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY,
           nullptr,
-          connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED),
-      std::string(), nullptr);
+          connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED);
+
+  connectors_internals::mojom::DeviceTrustStatePtr state =
+      connectors_internals::mojom::DeviceTrustState::New(
+          is_device_trust_enabled, std::move(policy_enabled_levels),
+          std::move(key_info), std::move(signals_json),
+          /*consent_metadata=*/nullptr);
   std::move(callback).Run(std::move(state));
 }
 
