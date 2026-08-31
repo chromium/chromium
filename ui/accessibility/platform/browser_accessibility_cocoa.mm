@@ -3011,8 +3011,12 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     [actions addObject:NSAccessibilityScrollToVisibleAction];
   }
 
-  if (ui::IsMenuRelated(_owner->GetRole()))
+  // TODO(accessibility): Views should probably support this action to dismiss
+  // a menu too.
+  if (_owner->manager()->IsWebContentSource() &&
+      ui::IsMenuRelated(_owner->GetRole())) {
     [actions addObject:NSAccessibilityCancelAction];
+  }
 
   if ([self internalRole] == ax::mojom::Role::kSlider ||
       [self internalRole] == ax::mojom::Role::kSpinButton) {

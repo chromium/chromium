@@ -398,4 +398,43 @@ TEST_P(BrowserAccessibilityCocoaTest, ScrollToVisibleMatchesSource) {
   EXPECT_TRUE([[web_node internalAccessibilityActionNames]
       containsObject:NSAccessibilityScrollToVisibleAction]);
 }
+
+TEST_P(BrowserAccessibilityCocoaTest, CancelActionMatchesSource) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kMenuItem;
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+
+  TestAXNodeIdDelegate node_id_delegate;
+  TestAXPlatformTreeManagerDelegate views_delegate;
+  views_delegate.is_web_content_source_ = false;
+  auto views_manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      update, node_id_delegate, &views_delegate);
+  BrowserAccessibilityCocoa* views_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          views_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible()
+              .Get());
+
+  EXPECT_FALSE([[views_node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityCancelAction]);
+  EXPECT_FALSE(
+      [LegacyActionNames(root) containsObject:NSAccessibilityCancelAction]);
+
+  TestAXNodeIdDelegate web_node_id_delegate;
+  TestAXPlatformTreeManagerDelegate web_delegate;
+  web_delegate.is_web_content_source_ = true;
+  auto web_manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      update, web_node_id_delegate, &web_delegate);
+  BrowserAccessibilityCocoa* web_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          web_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible()
+              .Get());
+
+  EXPECT_TRUE([[web_node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityCancelAction]);
+}
 }  // namespace ui
