@@ -3005,7 +3005,11 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     [actions addObject:NSAccessibilityShowMenuAction];
   }
 
-  [actions addObject:NSAccessibilityScrollToVisibleAction];
+  // TODO(accessibility): Should Views descendants of a scroll area support
+  // AXScrollToVisible?
+  if (_owner->manager()->IsWebContentSource()) {
+    [actions addObject:NSAccessibilityScrollToVisibleAction];
+  }
 
   if (ui::IsMenuRelated(_owner->GetRole()))
     [actions addObject:NSAccessibilityCancelAction];
@@ -3322,6 +3326,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
       PerformShowMenuAction(*actionTarget);
     }
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
+    if (!actionTarget->manager()->IsWebContentSource()) {
+      return;
+    }
     ui::AXPlatformNodeBase* mac_obj =
         [ObjCCastStrict<BrowserAccessibilityCocoa>(
             actionTarget->GetNativeViewAccessible().Get()) node];

@@ -10,11 +10,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gtest_mac.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
+#include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
+#include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace {
@@ -67,6 +71,20 @@ class BrowserAccessibilityCocoaTest
     } else {
       features_.InitAndDisableFeature(features::kMacAccessibilityAPIMigration);
     }
+  }
+
+  NSArray<NSString*>* LegacyActionNames(const AXNodeData& data) {
+    Init(data);
+    TestAXNodeWrapper* wrapper =
+        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
+    AXPlatformNodeCocoa* node =
+        base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(
+            wrapper->ax_platform_node()->GetNativeViewAccessible().Get());
+    NSArray<NSString*>* actions =
+        [NSArray arrayWithArray:[node internalAccessibilityActionNames]];
+    TestAXNodeWrapper::ResetGlobalState();
+    DestroyTree();
+    return actions;
   }
 
  private:
@@ -339,5 +357,45 @@ TEST_P(BrowserAccessibilityCocoaTest, ViewsPopupShowMenuUsesDefaultAction) {
       containsObject:NSAccessibilityShowMenuAction]);
   EXPECT_CALL(*manager, DoDefaultAction(::testing::Ref(*root_node)));
   EXPECT_TRUE([node accessibilityPerformShowMenu]);
+}
+
+TEST_P(BrowserAccessibilityCocoaTest, ScrollToVisibleMatchesSource) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kGroup;
+  root.AddAction(ax::mojom::Action::kScrollToMakeVisible);
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+
+  TestAXNodeIdDelegate node_id_delegate;
+  TestAXPlatformTreeManagerDelegate views_delegate;
+  views_delegate.is_web_content_source_ = false;
+  auto views_manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      update, node_id_delegate, &views_delegate);
+  BrowserAccessibilityCocoa* views_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          views_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible()
+              .Get());
+
+  EXPECT_FALSE([[views_node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityScrollToVisibleAction]);
+  EXPECT_FALSE([LegacyActionNames(root)
+      containsObject:NSAccessibilityScrollToVisibleAction]);
+
+  TestAXNodeIdDelegate web_node_id_delegate;
+  TestAXPlatformTreeManagerDelegate web_delegate;
+  web_delegate.is_web_content_source_ = true;
+  auto web_manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      update, web_node_id_delegate, &web_delegate);
+  BrowserAccessibilityCocoa* web_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          web_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible()
+              .Get());
+
+  EXPECT_TRUE([[web_node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityScrollToVisibleAction]);
 }
 }  // namespace ui
