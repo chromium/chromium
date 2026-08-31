@@ -22,7 +22,7 @@ updatereadme() {
 
 previousrev() {
   STEP="original revision" &&
-  PREVIOUS_HARFBUZZ_REV=$(git grep "'harfbuzz_revision':" HEAD~1 -- DEPS | grep -Eho "[0-9a-fA-F]{32}")
+  PREVIOUS_HARFBUZZ_REV=$(git grep "'harfbuzz_revision':" HEAD~1 -- DEPS | grep -Eho "[0-9a-fA-F]{32,40}")
 }
 
 check_added_deleted_files() {
@@ -47,34 +47,46 @@ check_all_files_are_categorized() {
   #    should be removed from BUILD.gn
 
   STEP="Updating BUILD.gn" &&
-  ( # Create subshell for IFS, CDPATH, and cd.
-    # This implementation doesn't handle '"' or '\n' in file names.
-    IFS=$'\n' &&
+  ( # Create subshell for CDPATH, and cd.
     CDPATH= && cd -- "$(dirname -- "$0")" &&
 
-    HB_SOURCE_MISSING=false &&
-    find src/src -type f \( -name "hb-*.cc" -o -name "hb-*.h" -o -name "hb-*.hh" \) | while read HB_SOURCE
-    do
-      if ! grep -qF "$HB_SOURCE" BUILD.gn; then
-        if ! ${HB_SOURCE_MISSING}; then
-          echo "Is in src/src/hb-*.{cc,h,hh} but not in BUILD.gn:"
-          HB_SOURCE_MISSING=true
-        fi
-        echo "      \"$HB_SOURCE\","
-      fi
-    done &&
+    if grep -q "have not been categorized" BUILD.gn; then
+      sed -i '/have not been categorized/d' BUILD.gn
+    fi
 
-    GN_SOURCE_MISSING=false
-    grep -oE "\"src/src/[^\"]+\"" BUILD.gn | sed 's/^.\(.*\).$/\1/' | while read GN_SOURCE
-    do
-      if [ ! -f "$GN_SOURCE" ]; then
-        if ! ${GN_SOURCE_MISSING}; then
-          echo "Is referenced in BUILD.gn but does not exist:" &&
-          GN_SOURCE_MISSING=true
-        fi
-        echo "\"$GN_SOURCE\""
+    HB_SOURCE_MISSING=()
+    while IFS= read -r HB_SOURCE; do
+      if ! grep -qF "\"$HB_SOURCE\"" BUILD.gn; then
+        HB_SOURCE_MISSING+=("$HB_SOURCE")
       fi
-    done
+    done < <(find src/src -type f \( -name "hb-*.cc" -o -name "hb-*.h" -o -name "hb-*.hh" \) | sort)
+
+    GN_SOURCE_MISSING=()
+    while IFS= read -r GN_SOURCE; do
+      if [ ! -f "$GN_SOURCE" ]; then
+        GN_SOURCE_MISSING+=("$GN_SOURCE")
+      fi
+    done < <(grep -oE "\"src/src/[^\"]+\"" BUILD.gn | sed 's/^.\(.*\).$/\1/' | sort -u)
+
+    if [ ${#HB_SOURCE_MISSING[@]} -gt 0 ]; then
+      echo "Is in src/src/hb-*.{cc,h,hh} but not in BUILD.gn:"
+      for f in "${HB_SOURCE_MISSING[@]}"; do
+        echo "      \"$f\","
+      done
+    fi
+
+    if [ ${#GN_SOURCE_MISSING[@]} -gt 0 ]; then
+      echo "Is referenced in BUILD.gn but does not exist:"
+      for f in "${GN_SOURCE_MISSING[@]}"; do
+        echo "\"$f\""
+      done
+    fi
+
+    if [ ${#HB_SOURCE_MISSING[@]} -gt 0 ] || [ ${#GN_SOURCE_MISSING[@]} -gt 0 ]; then
+      echo -e "\nA failing assertion was added to BUILD.gn. Please categorize the files into 'sources' or 'unused_sources' and remove the assertion."
+      printf '\nassert(false, "Added or deleted files have not been categorized as used or unused sources: Added in upstream: %s Missing in upstream: %s")\n' "${HB_SOURCE_MISSING[*]}" "${GN_SOURCE_MISSING[*]}" >> BUILD.gn &&
+      git add BUILD.gn
+    fi
   )
 }
 
