@@ -8,14 +8,26 @@ source_set("model") {
     "device_trust_connector_service_factory_ios.mm",
     "device_trust_key_manager_ios.h",
     "device_trust_key_manager_ios.mm",
+    "device_trust_service_factory_ios.h",
+    "device_trust_service_factory_ios.mm",
   ]
 
   deps = [
     "//base",
+    "//components/enterprise",
     "//components/enterprise/device_trust",
     "//components/enterprise/device_trust/core",
     "//components/enterprise/device_trust/core:device_trust_connector_service",
+    "//components/enterprise/device_trust/core:device_trust_service",
+    "//components/enterprise/device_trust/core/attestation",
+    "//components/enterprise/device_trust/core/signals",
+    "//components/enterprise/device_trust/core/signals/decorators/common",
+    "//components/policy/core/common",
     "//components/pref_registry",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/enterprise/signals/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
@@ -26,14 +38,21 @@ source_set("unit_tests") {
   sources = [
     "device_trust_connector_service_factory_ios_unittest.mm",
     "device_trust_key_manager_ios_unittest.mm",
+    "device_trust_service_factory_ios_unittest.mm",
   ]
 
   deps = [
     ":model",
     "//base/test:test_support",
+    "//components/device_signals/core/browser:test_support",
     "//components/enterprise/device_trust",
     "//components/enterprise/device_trust/core:device_trust_connector_service",
+    "//components/enterprise/device_trust/core:device_trust_service",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/enterprise/signals/model",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
     "//url",

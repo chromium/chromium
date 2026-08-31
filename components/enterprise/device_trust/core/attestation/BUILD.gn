@@ -26,7 +26,7 @@ source_set("attestation") {
 
   deps = []
 
-  if (is_linux || is_win || is_mac || is_chromeos) {
+  if (is_linux || is_win || is_mac || is_chromeos || is_ios) {
     public += [
       "attestation_switches.h",
       "browser_attestation_service.h",
@@ -51,7 +51,7 @@ source_set("attestation") {
     ]
   }
 
-  if (is_linux || is_win || is_mac) {
+  if (is_linux || is_win || is_mac || is_ios) {
     public += [ "device_attester.h" ]
     sources += [ "device_attester.cc" ]
 
@@ -101,7 +101,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_linux || is_win || is_mac || is_chromeos) {
+  if (is_linux || is_win || is_mac || is_chromeos || is_ios) {
     sources += [ "browser_attestation_service_unittest.cc" ]
   }
 }
