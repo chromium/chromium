@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
@@ -68,6 +69,14 @@ bool ShouldShowDefaultBrowserToggle() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+bool ShouldShowMetricsOptIn() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return !metrics::IsMetricsReportingPolicyManaged();
+#else
+  return false;
+#endif
 }
 }  // namespace
 
@@ -144,6 +153,32 @@ IntroUI::IntroUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(localized_strings);
 
+  // Metrics popup on welcome page is only shown for branded builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static constexpr webui::LocalizedString kMetricsStrings[] = {
+      {"welcomeMetricsLabel", IDS_FRE_WELCOME_METRICS_LABEL},
+      {"welcomeMetricsOffLabel", IDS_FRE_WELCOME_METRICS_OFF_LABEL},
+      {"welcomeMetricsPopupTitle", IDS_FRE_WELCOME_METRICS_POPUP_TITLE},
+      {"welcomeMetricsPopupDescription",
+       IDS_FRE_WELCOME_METRICS_POPUP_DESCRIPTION},
+      {"welcomeMetricsPopupTurnOffButtonLabel",
+       IDS_FRE_WELCOME_METRICS_POPUP_TURN_OFF_BUTTON_LABEL},
+      {"welcomeMetricsPopupTurnOnButtonLabel",
+       IDS_FRE_WELCOME_METRICS_POPUP_TURN_ON_BUTTON_LABEL},
+      {"welcomeMetricsPopupCloseButtonLabel",
+       IDS_FRE_WELCOME_METRICS_POPUP_CLOSE_BUTTON_LABEL},
+  };
+  source->AddLocalizedStrings(kMetricsStrings);
+#else
+  source->AddString("welcomeMetricsLabel", "");
+  source->AddString("welcomeMetricsOffLabel", "");
+  source->AddString("welcomeMetricsPopupTitle", "");
+  source->AddString("welcomeMetricsPopupDescription", "");
+  source->AddString("welcomeMetricsPopupTurnOffButtonLabel", "");
+  source->AddString("welcomeMetricsPopupTurnOnButtonLabel", "");
+  source->AddString("welcomeMetricsPopupCloseButtonLabel", "");
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   source->AddLocalizedString("pageTitle", title_id);
   source->AddLocalizedString(
       "backupCardDescription",
@@ -194,6 +229,7 @@ IntroUI::IntroUI(content::WebUI* web_ui)
                      is_first_run_desktop_revamp_enabled);
   source->AddBoolean("showDefaultBrowserToggle",
                      ShouldShowDefaultBrowserToggle());
+  source->AddBoolean("showMetricsOptIn", ShouldShowMetricsOptIn());
   if (base::FeatureList::IsEnabled(
           switches::kDisableFirstRunAnimationsForTesting)) {
     CHECK_IS_TEST();

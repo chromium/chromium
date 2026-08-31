@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/shell_integration.h"
 
 WelcomeHandler::WelcomeHandler(
@@ -22,11 +23,15 @@ WelcomeHandler::WelcomeHandler(
 WelcomeHandler::WelcomeHandler(
     base::OnceClosure callback,
     mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver,
-    base::OnceClosure on_set_as_default_completed_callback)
+    base::OnceClosure on_set_as_default_completed_callback,
+    base::OnceCallback<void(bool)>
+        on_change_metrics_reporting_state_callback)
     : WelcomeHandler(std::move(callback), std::move(receiver)) {
   CHECK_IS_TEST();
   on_set_as_default_completed_callback_for_testing_ =
       std::move(on_set_as_default_completed_callback);
+  on_change_metrics_reporting_state_callback_for_testing_ =
+      std::move(on_change_metrics_reporting_state_callback);
 }
 
 WelcomeHandler::~WelcomeHandler() = default;
@@ -37,7 +42,17 @@ void WelcomeHandler::Continue(std::optional<bool> is_uma_opt_in,
     return;
   }
 
-  // TODO(crbug.com/542895787): Handle UMA opt-in
+  if (is_uma_opt_in.has_value()) {
+    if (on_change_metrics_reporting_state_callback_for_testing_) {
+      std::move(on_change_metrics_reporting_state_callback_for_testing_)
+          .Run(*is_uma_opt_in);
+    } else {
+      metrics::ChangeMetricsReportingState(
+          *is_uma_opt_in,
+          metrics::ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
+    }
+  }
+
   if (is_default_browser.has_value() && *is_default_browser) {
     base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
         ->StartSetAsDefault(base::BindOnce(

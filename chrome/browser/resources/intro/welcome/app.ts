@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {browserProxyFactory as welcomeMojoProxyFactory} from '../welcome.mojom-webui.js';
@@ -41,22 +46,43 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
   static override get properties() {
     return {
       anyButtonClicked_: {type: Boolean},
+      isMetricsEnabled_: {type: Boolean},
       setDefaultBrowser_: {type: Boolean},
-      showDefaultBrowserToggle_: {type: Boolean},
     };
   }
 
-  protected accessor showDefaultBrowserToggle_: boolean =
-      loadTimeData.getBoolean('showDefaultBrowserToggle');
   protected accessor setDefaultBrowser_: boolean | null =
-      this.showDefaultBrowserToggle_ ? true : null;
+      loadTimeData.getBoolean('showDefaultBrowserToggle') ? true : null;
   private accessor anyButtonClicked_: boolean = false;
+  private accessor isMetricsEnabled_: boolean | null =
+      loadTimeData.getBoolean('showMetricsOptIn') ? true : null;
+
+  protected showDefaultBrowserToggle_: boolean =
+      loadTimeData.getBoolean('showDefaultBrowserToggle');
+  protected showMetricsOptIn_: boolean =
+      loadTimeData.getBoolean('showMetricsOptIn');
   private browserProxy_: WelcomeBrowserProxy =
       welcomeMojoProxyFactory.getInstance();
 
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+  }
+
+  private getToast_(): CrToastElement | null {
+    return this.shadowRoot.querySelector<CrToastElement>('#toast');
+  }
+
+  protected getToastActionButtonLabel_(): string {
+    return this.isMetricsEnabled_ ?
+        this.i18n('welcomeMetricsPopupTurnOffButtonLabel') :
+        this.i18n('welcomeMetricsPopupTurnOnButtonLabel');
+  }
+
+  protected getMetricsLabel_(): TrustedHTML {
+    return this.isMetricsEnabled_ ?
+        this.i18nAdvanced('welcomeMetricsLabel') :
+        this.i18nAdvanced('welcomeMetricsOffLabel');
   }
 
   protected shouldDisableButtons_(): boolean {
@@ -69,8 +95,29 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
   protected onAcceptButtonClick_() {
     this.anyButtonClicked_ = true;
-    // TODO(crbug.com/542895787): Pass in UMA opt-in state.
-    this.browserProxy_.handler.continue(null, this.setDefaultBrowser_);
+    this.getToast_()?.hide();
+    this.browserProxy_.handler.continue(
+        this.isMetricsEnabled_, this.setDefaultBrowser_);
+  }
+
+  protected onManageLinkClicked_(e: CustomEvent<{event: Event}>) {
+    e.detail.event.preventDefault();
+    const toast = this.getToast_();
+    assert(toast);
+    toast.show();
+  }
+
+  protected onToastCloseButtonClick_() {
+    const toast = this.getToast_();
+    assert(toast);
+    toast.hide();
+  }
+
+  protected onToastActionButtonClick_() {
+    this.isMetricsEnabled_ = !this.isMetricsEnabled_;
+    const toast = this.getToast_();
+    assert(toast);
+    toast.hide();
   }
 }
 

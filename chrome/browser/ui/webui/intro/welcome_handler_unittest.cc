@@ -9,9 +9,8 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/webui/intro/welcome.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,7 +20,7 @@
 
 namespace {
 
-using ::testing::StrictMock;
+using ::testing::NiceMock;
 
 class WelcomeHandlerTest : public testing::Test {
  public:
@@ -32,78 +31,108 @@ class WelcomeHandlerTest : public testing::Test {
     shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
   }
 
-  void CreateHandler(base::OnceClosure on_set_as_default_completed_callback =
-                         base::NullCallback()) {
+  void CreateHandler() {
     remote_.reset();
     handler_ = std::make_unique<WelcomeHandler>(
-        mock_callback_.Get(), remote_.BindNewPipeAndPassReceiver(),
-        std::move(on_set_as_default_completed_callback));
+        mock_continue_callback_.Get(), remote_.BindNewPipeAndPassReceiver(),
+        mock_set_as_default_callback_.Get(), mock_metrics_callback_.Get());
   }
 
   mojo::Remote<intro::mojom::WelcomePageHandler>& remote() { return remote_; }
-  base::MockCallback<base::OnceClosure>& mock_callback() {
-    return mock_callback_;
+  base::MockCallback<base::OnceClosure>& mock_continue_callback() {
+    return mock_continue_callback_;
+  }
+  base::MockCallback<base::OnceCallback<void(bool)>>& mock_metrics_callback() {
+    return mock_metrics_callback_;
+  }
+  base::MockCallback<base::OnceClosure>& mock_set_as_default_callback() {
+    return mock_set_as_default_callback_;
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  StrictMock<base::MockCallback<base::OnceClosure>> mock_callback_;
+  NiceMock<base::MockCallback<base::OnceClosure>> mock_continue_callback_;
+  NiceMock<base::MockCallback<base::OnceCallback<void(bool)>>>
+      mock_metrics_callback_;
+  NiceMock<base::MockCallback<base::OnceClosure>>
+      mock_set_as_default_callback_;
   mojo::Remote<intro::mojom::WelcomePageHandler> remote_;
   std::unique_ptr<WelcomeHandler> handler_;
 };
 
 TEST_F(WelcomeHandlerTest, ContinueWithDefaultBrowserTrue) {
-  base::HistogramTester histogram_tester;
-  base::RunLoop run_loop;
-  CreateHandler(run_loop.QuitClosure());
+  CreateHandler();
 
-  EXPECT_CALL(mock_callback(), Run());
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(mock_set_as_default_callback(), Run())
+      .WillOnce(base::test::InvokeFuture(future));
 
-  remote()->Continue(/*is_uma_opt_in=*/true, /*is_default_browser=*/true);
+  remote()->Continue(/*is_uma_opt_in=*/std::nullopt,
+                     /*is_default_browser=*/true);
   remote().FlushForTesting();
-  run_loop.Run();
-
-  histogram_tester.ExpectTotalCount("DefaultBrowser.SetDefaultResult2", 1);
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(WelcomeHandlerTest, ContinueWithDefaultBrowserFalse) {
-  base::HistogramTester histogram_tester;
   CreateHandler();
 
-  EXPECT_CALL(mock_callback(), Run());
+  EXPECT_CALL(mock_set_as_default_callback(), Run()).Times(0);
 
-  remote()->Continue(/*is_uma_opt_in=*/true, /*is_default_browser=*/false);
+  remote()->Continue(/*is_uma_opt_in=*/std::nullopt,
+                     /*is_default_browser=*/false);
   remote().FlushForTesting();
-
-  histogram_tester.ExpectTotalCount("DefaultBrowser.SetDefaultResult2", 0);
 }
 
 TEST_F(WelcomeHandlerTest, ContinueWithDefaultBrowserNullopt) {
-  base::HistogramTester histogram_tester;
   CreateHandler();
 
-  EXPECT_CALL(mock_callback(), Run());
+  EXPECT_CALL(mock_set_as_default_callback(), Run()).Times(0);
+
+  remote()->Continue(/*is_uma_opt_in=*/std::nullopt,
+                     /*is_default_browser=*/std::nullopt);
+  remote().FlushForTesting();
+}
+
+TEST_F(WelcomeHandlerTest, ContinueWithUmaOptInTrue) {
+  CreateHandler();
+
+  EXPECT_CALL(mock_metrics_callback(), Run(true));
 
   remote()->Continue(/*is_uma_opt_in=*/true,
                      /*is_default_browser=*/std::nullopt);
   remote().FlushForTesting();
+}
 
-  histogram_tester.ExpectTotalCount("DefaultBrowser.SetDefaultResult2", 0);
+TEST_F(WelcomeHandlerTest, ContinueWithUmaOptInFalse) {
+  CreateHandler();
+
+  EXPECT_CALL(mock_metrics_callback(), Run(false));
+
+  remote()->Continue(/*is_uma_opt_in=*/false,
+                     /*is_default_browser=*/std::nullopt);
+  remote().FlushForTesting();
+}
+
+TEST_F(WelcomeHandlerTest, ContinueWithUmaOptInNullopt) {
+  CreateHandler();
+
+  EXPECT_CALL(mock_metrics_callback(), Run).Times(0);
+
+  remote()->Continue(/*is_uma_opt_in=*/std::nullopt,
+                     /*is_default_browser=*/std::nullopt);
+  remote().FlushForTesting();
 }
 
 TEST_F(WelcomeHandlerTest, ContinueCalledMultipleTimes) {
-  base::HistogramTester histogram_tester;
-  base::RunLoop run_loop;
-  CreateHandler(run_loop.QuitClosure());
+  CreateHandler();
 
-  EXPECT_CALL(mock_callback(), Run());
+  EXPECT_CALL(mock_continue_callback(), Run()).Times(1);
 
-  remote()->Continue(/*is_uma_opt_in=*/true, /*is_default_browser=*/true);
-  remote()->Continue(/*is_uma_opt_in=*/true, /*is_default_browser=*/false);
+  remote()->Continue(/*is_uma_opt_in=*/std::nullopt,
+                     /*is_default_browser=*/std::nullopt);
+  remote()->Continue(/*is_uma_opt_in=*/std::nullopt,
+                     /*is_default_browser=*/std::nullopt);
   remote().FlushForTesting();
-  run_loop.Run();
-
-  histogram_tester.ExpectTotalCount("DefaultBrowser.SetDefaultResult2", 1);
 }
 
 }  // namespace

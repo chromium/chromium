@@ -22,7 +22,9 @@ class WelcomeHandler : public intro::mojom::WelcomePageHandler {
   WelcomeHandler(
       base::OnceClosure callback,
       mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver,
-      base::OnceClosure on_set_as_default_completed_callback);
+      base::OnceClosure on_set_as_default_completed_callback,
+      base::OnceCallback<void(bool)>
+          on_change_metrics_reporting_state_callback);
 
   WelcomeHandler(const WelcomeHandler&) = delete;
   WelcomeHandler& operator=(const WelcomeHandler&) = delete;
@@ -37,6 +39,8 @@ class WelcomeHandler : public intro::mojom::WelcomePageHandler {
   base::OnceClosure callback_;
   mojo::Receiver<intro::mojom::WelcomePageHandler> receiver_;
   base::OnceClosure on_set_as_default_completed_callback_for_testing_;
+  base::OnceCallback<void(bool)>
+      on_change_metrics_reporting_state_callback_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTRO_WELCOME_HANDLER_H_

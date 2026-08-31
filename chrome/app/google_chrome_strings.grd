@@ -2680,6 +2680,27 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_FRE_WELCOME_START_BUTTON_LABEL" desc="This string is found on a primary button that takes the user into the main browser experience. It is a verb-based call to action. (CHAR LIMIT = 20)">
           Start Chrome
         </message>
+        <message name="IDS_FRE_WELCOME_METRICS_LABEL" desc="This string is a confirmation message regarding data sharing settings. It informs users that their data helps improve the product. 'Manage' is a link that navigates to detailed settings. The tone should be informative and transparent.">
+          You’re helping make Chrome better by sending usage statistics and crash reports to Google. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Manage<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_FRE_WELCOME_METRICS_OFF_LABEL" desc="This string is a status message shown when data sharing is disabled. It identifies the current state of privacy settings. The tone should be neutral and cautionary.">
+          You’re not sending usage statistics and crash reports to Google. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Manage<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_FRE_WELCOME_METRICS_POPUP_DESCRIPTION" desc="This is the body text of a card explaining the intent of data sharing. It provides context on user control ('change... anytime'). The tone should be informative.">
+          Automatically sending this data to Google helps make Chrome better. You can change this setting anytime.
+        </message>
+        <message name="IDS_FRE_WELCOME_METRICS_POPUP_TITLE" desc="This is the title of a setting in a dialog regarding technical data sharing. It refers to data about app performance and stability. (CHAR LIMIT = 35)">
+          Usage statistics and crash reports
+        </message>
+        <message name="IDS_FRE_WELCOME_METRICS_POPUP_TURN_OFF_BUTTON_LABEL" desc="This string is found on a button that disables the current setting. It is a direct action verb. (CHAR LIMIT = 15)">
+          Turn off
+        </message>
+        <message name="IDS_FRE_WELCOME_METRICS_POPUP_TURN_ON_BUTTON_LABEL" desc="This string is found on a button that enables the current setting. It is a direct action verb. (CHAR LIMIT = 15)">
+          Turn on
+        </message>
+        <message name="IDS_FRE_WELCOME_METRICS_POPUP_CLOSE_BUTTON_LABEL" desc="Accessibility label for the close button on the first run welcome screen popup.">
+          Close
+        </message>
 
         <message name="IDS_FRE_SIGN_IN_TITLE_0" meaning="Title"
           desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. The tone should be inviting and alluring.">
