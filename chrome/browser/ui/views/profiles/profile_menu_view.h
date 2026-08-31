@@ -14,8 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
-#include "chrome/browser/profiles/avatar_menu.h"
-#include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"

@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"

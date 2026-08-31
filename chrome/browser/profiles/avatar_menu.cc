@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -29,7 +28,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -89,16 +87,6 @@ AvatarMenu::AvatarMenu(ProfileAttributesStorage* profile_storage,
 
   // Register this as an observer of the info cache.
   profile_storage_->AddObserver(this);
-
-  // Register this as an observer of the SupervisedUserService to be notified
-  // of changes to the custodian info.
-  if (browser_) {
-    auto* supervised_user_service =
-        supervised_user::SupervisedUserServiceFactory::GetForProfile(browser_->GetProfile());
-    if (supervised_user_service) {
-      supervised_user_observation_.Observe(supervised_user_service);
-    }
-  }
 }
 
 AvatarMenu::~AvatarMenu() {
@@ -271,10 +259,6 @@ void AvatarMenu::OnProfileSigninRequiredChanged(
 }
 
 void AvatarMenu::OnProfileIsOmittedChanged(const base::FilePath& profile_path) {
-  Update();
-}
-
-void AvatarMenu::OnCustodianInfoChanged() {
   Update();
 }
 

@@ -13,11 +13,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/common/buildflags.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "ui/gfx/image/image.h"
 
 class AvatarMenuObserver;
@@ -30,8 +27,7 @@ class ProfileListDesktop;
 // browser window frame. This class will notify its observer when the backend
 // data changes, and the view for this model should forward actions
 // back to it in response to user events.
-class AvatarMenu : public SupervisedUserServiceObserver,
-                   public ProfileAttributesStorage::Observer {
+class AvatarMenu : public ProfileAttributesStorage::Observer {
  public:
   // Represents an item in the menu.
   struct Item {
@@ -156,19 +152,11 @@ class AvatarMenu : public SupervisedUserServiceObserver,
       const base::FilePath& profile_path) override;
   void OnProfileIsOmittedChanged(const base::FilePath& profile_path) override;
 
-  // SupervisedUserServiceObserver:
-  void OnCustodianInfoChanged() override;
-
   // Rebuilds the menu and notifies any observers that an update occurred.
   void Update();
 
   // The model that provides the list of menu items.
   std::unique_ptr<ProfileListDesktop> profile_list_;
-
-  // Observes changes to a supervised user's custodian info.
-  base::ScopedObservation<supervised_user::SupervisedUserService,
-                          SupervisedUserServiceObserver>
-      supervised_user_observation_{this};
 
   // The storage that provides the profile attributes.
   base::WeakPtr<ProfileAttributesStorage> profile_storage_;

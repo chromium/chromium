@@ -132,6 +132,7 @@ source_set("misc") {
     "//components/embedder_support",
     "//components/guest_view/buildflags",
     "//components/heavy_ad_intervention",
+    "//components/history/core/common",
     "//components/keyed_service/content",
     "//components/language/core/common",
     "//components/policy/core/browser",
@@ -143,7 +144,7 @@ source_set("misc") {
     "//components/signin/public/identity_manager",
     "//components/site_isolation",
     "//components/spellcheck:buildflags",
-    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//components/user_prefs",
     "//components/webui/flags",
     "//components/zoom",
@@ -685,10 +686,6 @@ source_set("profile_util_impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views:dotted_icon",
     ]
-  }
-
-  if (is_android) {
-    deps += [ "//components/supervised_user/core/browser/android" ]
   }
 
   if (is_chromeos) {
