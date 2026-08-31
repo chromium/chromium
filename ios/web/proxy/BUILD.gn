@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("proxy") {
+  deps = [
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public/proxy",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+  ]
+
+  sources = [ "proxy_configuration_provider.mm" ]
+}
+
+source_set("unittests") {
+  testonly = true
+  deps = [
+    ":proxy",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public/proxy",
+    "//ios/web/public/test",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//testing/gtest",
+  ]
+
+  sources = [ "proxy_configuration_provider_unittest.mm" ]
+}
