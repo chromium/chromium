@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/browser_actuator/internal/metrics_utils.h"
 #include "components/browser_actuator/public/common.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -65,6 +66,7 @@ class UpstreamMessageClient {
  private:
   void OnMessageSent(
       endpoint_fetcher::EndpointFetcher* fetcher,
+      UpstreamRequestLog metrics_log,
       SendCompleteCallback callback,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 

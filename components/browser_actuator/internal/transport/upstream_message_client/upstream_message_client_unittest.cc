@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -55,6 +56,7 @@ class BrowserActuatorUpstreamMessageClientTest : public testing::Test {
 };
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
+  base::HistogramTester histogram_tester;
   UpstreamMessageClient client(test_shared_loader_factory_,
                                identity_test_env_.identity_manager(),
                                GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -93,10 +95,49 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   EXPECT_EQ("type.googleapis.com/browser_actuator.ControlCommand",
             typed_payload.proto_payload().type_url());
   EXPECT_EQ(command.SerializeAsString(), typed_payload.proto_payload().value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Upstream.UploadLatency.Control", 1);
+  histogram_tester.ExpectUniqueSample("Browser.Actuator.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendMessageGlicExperimentalTriggeringSuccess) {
+  base::HistogramTester histogram_tester;
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
+
+  ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
+                             /*responding_to_sequence_number=*/std::nullopt,
+                             PayloadType::kExperimentalTriggering, command,
+                             future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Upstream.PayloadSize.GlicExperimentalTriggering",
+      command.ByteSizeLong(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Upstream.UploadLatency.GlicExperimentalTriggering", 1);
+  histogram_tester.ExpectUniqueSample("Browser.Actuator.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
        SendMessageWithRespondingToSequenceNumber) {
+  base::HistogramTester histogram_tester;
   UpstreamMessageClient client(test_shared_loader_factory_,
                                identity_test_env_.identity_manager(),
                                GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -126,9 +167,18 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   EXPECT_EQ(2, upstream.client_sequence_number());
   EXPECT_TRUE(upstream.has_responding_to_sequence_number());
   EXPECT_EQ(42, upstream.responding_to_sequence_number());
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Upstream.UploadLatency.Control", 1);
+  histogram_tester.ExpectUniqueSample("Browser.Actuator.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageHttpError) {
+  base::HistogramTester histogram_tester;
   UpstreamMessageClient client(test_shared_loader_factory_,
                                identity_test_env_.identity_manager(),
                                GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -147,10 +197,19 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageHttpError) {
 
   EXPECT_FALSE(future.Get<0>());
   EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, future.Get<1>());
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Upstream.UploadLatency.Control", 1);
+  histogram_tester.ExpectUniqueSample("Browser.Actuator.Upstream.HttpStatus",
+                                      net::HTTP_INTERNAL_SERVER_ERROR, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
        DestructionCancelsInFlightRequest) {
+  base::HistogramTester histogram_tester;
   auto client = std::make_unique<UpstreamMessageClient>(
       test_shared_loader_factory_, identity_test_env_.identity_manager(),
       GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -167,10 +226,20 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   EXPECT_TRUE(
       base::test::RunUntil([this]() { return requests_.size() == 1u; }));
 
+  // Payload size should be logged immediately upon sending.
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
+
   // Destroying the client while the network request is pending cancels cleanly.
   client.reset();
 
   EXPECT_FALSE(future.IsReady());
+
+  // Latency and HttpStatus should not be logged for cancelled/aborted requests.
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Upstream.UploadLatency.Control", 0);
+  histogram_tester.ExpectTotalCount("Browser.Actuator.Upstream.HttpStatus", 0);
 }
 
 }  // namespace

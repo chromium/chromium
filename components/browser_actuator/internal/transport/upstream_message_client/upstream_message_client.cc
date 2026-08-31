@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/uuid.h"
+#include "components/browser_actuator/internal/metrics_utils.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
@@ -78,6 +79,9 @@ void UpstreamMessageClient::SendUpstreamMessage(
   any_proto->set_value(message.SerializeAsString());
   typed_payload->set_payload_type(ToProtoPayloadType(payload_type));
 
+  UpstreamRequestLog metrics_log(payload_type);
+  metrics_log.RecordPayloadSize(message.ByteSizeLong());
+
   SendSessionMessageRequest request;
   request.set_request_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
   *request.mutable_actuator_upstream_message() = std::move(upstream);
@@ -97,19 +101,23 @@ void UpstreamMessageClient::SendUpstreamMessage(
   auto* fetcher_ptr = fetcher.get();
   pending_requests_.emplace(fetcher_ptr, std::move(fetcher));
 
-  fetcher_ptr->Fetch(base::BindOnce(&UpstreamMessageClient::OnMessageSent,
-                                    weak_ptr_factory_.GetWeakPtr(), fetcher_ptr,
-                                    std::move(callback)));
+  fetcher_ptr->Fetch(base::BindOnce(
+      &UpstreamMessageClient::OnMessageSent, weak_ptr_factory_.GetWeakPtr(),
+      fetcher_ptr, std::move(metrics_log), std::move(callback)));
 }
 
 void UpstreamMessageClient::OnMessageSent(
     endpoint_fetcher::EndpointFetcher* fetcher,
+    UpstreamRequestLog metrics_log,
     SendCompleteCallback callback,
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int response_code = response ? response->http_status_code : -1;
   bool success = response_code == net::HTTP_OK;
+
+  metrics_log.RecordResponse(
+      response ? std::make_optional(response->http_status_code) : std::nullopt);
 
   // Move the fetcher out of pending_requests_ so it is owned by local stack
   // and stays alive until this function returns, even if `callback` destroys

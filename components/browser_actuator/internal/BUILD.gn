@@ -5,6 +5,18 @@
 # Features and params internal to the browser_actuator implementation.
 # A leaf target (only //base) so that anything under internal/ can depend
 # on it without cycles.
+# Utilities internal to the browser_actuator implementation.
+source_set("metrics_utils") {
+  sources = [ "metrics_utils.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public",
+  ]
+
+  visibility = [ "//components/browser_actuator/*" ]
+}
+
 source_set("features") {
   sources = [
     "features.cc",

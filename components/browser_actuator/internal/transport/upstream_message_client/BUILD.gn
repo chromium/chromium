@@ -17,6 +17,7 @@ source_set("upstream_message_client") {
   ]
 
   deps = [
+    "//components/browser_actuator/internal:metrics_utils",
     "//components/browser_actuator/internal/proto",
     "//components/endpoint_fetcher",
     "//components/signin/public/base",

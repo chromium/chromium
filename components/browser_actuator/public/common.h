@@ -11,11 +11,15 @@ namespace browser_actuator {
 // DownstreamMessage.PayloadType.
 // TODO(crbug.com/532660606): Update this to map to the enum once it is synced
 // under components/optimization_guide/proto/.
+// LINT.IfChange(PayloadType)
 enum class PayloadType {
   kUnspecified = 0,
   kControl = 1,
   kExperimentalTriggering = 2,
 };
+// LINT.ThenChange(
+//     ../internal/metrics_utils.h:PayloadTypeToMetricSuffix,
+//     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml)
 
 // Identifies the feature factory instance, to ensure we do not re-register
 // factories of the same type.

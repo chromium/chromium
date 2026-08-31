@@ -22,6 +22,24 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(BrowserActuatorPayloadType) -->
+
+<variants name="BrowserActuatorPayloadType">
+  <variant name="Control" summary="Control/acknowledgement command messages">
+    <owner>src/components/browser_actuator/OWNERS</owner>
+  </variant>
+  <variant name="GlicExperimentalTriggering"
+      summary="Experimental triggering messages">
+    <owner>qinmin@chromium.org</owner>
+    <owner>src/chrome/browser/glic/OWNERS</owner>
+  </variant>
+</variants>
+
+<!-- LINT.ThenChange(
+  //components/browser_actuator/public/common.h:PayloadType,
+  //components/browser_actuator/internal/metrics_utils.h:PayloadTypeToMetricSuffix
+) -->
+
 <histogram name="Browser.Actuator.SessionRegistry.ExistingSessionsCount"
     units="sessions" expires_after="2027-08-01">
   <owner>andylky@google.com</owner>
@@ -48,6 +66,44 @@ chromium-metrics-reviews@google.com.
     made for a session ID that is not currently in the registry (false = session
     created, true = limit reached).
   </summary>
+</histogram>
+
+<histogram name="Browser.Actuator.Upstream.HttpStatus" enum="HttpResponseCode"
+    expires_after="2027-09-01">
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/browser_actuator/OWNERS</owner>
+  <summary>
+    Records the HTTP response status codes returned by the upstream endpoint
+    fetcher for POST upload requests. Recorded when an HTTP response is received
+    from the server.
+  </summary>
+</histogram>
+
+<histogram name="Browser.Actuator.Upstream.PayloadSize.{PayloadType}"
+    units="bytes" expires_after="2027-09-01">
+  <owner>anushamuley@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/browser_actuator/OWNERS</owner>
+  <summary>
+    Records the serialized payload size in bytes of outgoing messages of the
+    specified {PayloadType}. Recorded immediately before the message is
+    serialized and dispatched via HTTP POST to the upstream endpoint.
+  </summary>
+  <token key="PayloadType" variants="BrowserActuatorPayloadType"/>
+</histogram>
+
+<histogram name="Browser.Actuator.Upstream.UploadLatency.{PayloadType}"
+    units="ms" expires_after="2027-09-01">
+  <owner>anushamuley@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/browser_actuator/OWNERS</owner>
+  <summary>
+    Records round-trip latency (from SendUpstreamMessage invocation to network
+    POST response callback) for messages of the specified {PayloadType}.
+    Recorded when the upstream network response is received (or fails). Not
+    recorded for aborted or cancelled requests.
+  </summary>
+  <token key="PayloadType" variants="BrowserActuatorPayloadType"/>
 </histogram>
 
 </histograms>
