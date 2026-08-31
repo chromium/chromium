@@ -42,7 +42,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -76,7 +75,6 @@ import java.util.Map;
 /** Unit tests for {@link PlayerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
-@Config(manifest = Config.NONE)
 public class PlayerMediatorUnitTest {
     private static final String TITLE = "Title";
     private static final String PUBLISHER = "Publisher";

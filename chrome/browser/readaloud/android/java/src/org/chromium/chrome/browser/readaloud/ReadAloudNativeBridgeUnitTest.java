@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,7 +35,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ReadAloudNativeBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ReadAloudNativeBridgeUnitTest {
     private static final long NATIVE_PTR = 12345L;
     private static final GURL TEST_GURL = JUnitTestGURLs.EXAMPLE_URL;

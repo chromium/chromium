@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -32,7 +31,6 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 
 /** Unit tests for {ReadAloudMiniPlayerSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ReadAloudMiniPlayerSceneLayerUnitTest {
     private static final RectF VIEWPORT = new RectF(0f, 0f, 500f, 1000f);
     private static final long PTR = 123456789L;

@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,7 +31,6 @@ import java.util.LinkedHashSet;
 
 /** Tests for the AppPromoDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AppLanguagePromoDialogTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

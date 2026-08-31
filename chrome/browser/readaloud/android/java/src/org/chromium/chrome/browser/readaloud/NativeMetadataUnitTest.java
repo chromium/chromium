@@ -9,14 +9,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 
 /** Unit tests for {@link NativeMetadata}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NativeMetadataUnitTest {
     private static final String LANGUAGE = "en";
     private static final String CANONICAL_URL = "https://example.com/article";

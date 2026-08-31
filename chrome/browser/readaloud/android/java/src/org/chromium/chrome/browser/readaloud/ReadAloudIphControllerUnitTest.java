@@ -27,7 +27,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -49,7 +48,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link ReadAloudIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures({ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT})
 public class ReadAloudIphControllerUnitTest {
 

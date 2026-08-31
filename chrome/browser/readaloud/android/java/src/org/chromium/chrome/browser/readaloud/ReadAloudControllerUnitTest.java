@@ -49,7 +49,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
@@ -135,7 +134,6 @@ import java.util.Locale;
 
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures({
     ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
     ChromeFeatureList.GLIC,

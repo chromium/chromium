@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -52,7 +51,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
 
 /** Unit tests for {@link PlayerCoordinator}. */
-@Config(manifest = Config.NONE)
 @DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerCoordinatorUnitTest {
