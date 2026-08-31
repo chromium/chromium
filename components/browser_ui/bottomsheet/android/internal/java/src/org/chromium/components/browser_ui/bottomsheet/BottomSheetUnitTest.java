@@ -58,7 +58,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.ShadowLayerView;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.util.ColorUtils;
 
@@ -83,8 +82,6 @@ public class BottomSheetUnitTest {
     @Captor
     private ArgumentCaptor<InsetObserver.WindowInsetsAnimationListener>
             mInsetsAnimationListenerCaptor;
-
-    @Captor private ArgumentCaptor<KeyboardVisibilityListener> mKeyboardListenerCaptor;
 
     private SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
     private BottomSheet mBottomSheet;
