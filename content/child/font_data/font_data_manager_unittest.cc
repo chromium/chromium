@@ -11,6 +11,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
@@ -47,6 +48,7 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
                        font_data_service::mojom::TypefaceStylePtr style,
                        MatchFamilyNameCallback callback) override {
     match_family_call_count_++;
+    last_match_family_name_ = family_name;
     if (fail_match_family_) {
       std::move(callback).Run(nullptr);
       return;
@@ -55,8 +57,14 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
     int ttc_index = 0;
     SkFontStyle font_style(style->weight, style->width,
                            static_cast<SkFontStyle::Slant>(style->slant));
+    const std::string& family_to_match =
+        matched_family_name_.empty() ? family_name : matched_family_name_;
     sk_sp<SkTypeface> typeface =
-        skia::MakeTypefaceFromName(family_name.c_str(), font_style);
+        skia::MakeTypefaceFromName(family_to_match.c_str(), font_style);
+    if (!typeface) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
     std::unique_ptr<SkStreamAsset> asset = typeface->openStream(&ttc_index);
     auto result = font_data_service::mojom::MatchFamilyNameResult::New();
     result->ttc_index = ttc_index;
@@ -145,6 +153,9 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
   }
 
   size_t match_family_call_count() const { return match_family_call_count_; }
+  const std::string& last_match_family_name() const {
+    return last_match_family_name_;
+  }
   size_t match_family_character_call_count() const {
     return match_family_character_call_count_;
   }
@@ -162,6 +173,9 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
     use_memory_fallback_ = fallback;
   }
   void set_fail_match_family(bool fail) { fail_match_family_ = fail; }
+  void set_matched_family_name(std::string family_name) {
+    matched_family_name_ = std::move(family_name);
+  }
 
   size_t GetUniqueFileId(base::FilePath path) {
     size_t new_id = unique_path_ids_.size() + 1;
@@ -172,11 +186,13 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
  private:
   mojo::ReceiverSet<font_data_service::mojom::FontDataService> receivers_;
   size_t match_family_call_count_ = 0;
+  std::string last_match_family_name_;
   size_t match_family_character_call_count_ = 0;
   std::vector<std::string> last_match_family_character_call_bcp47s_;
   int32_t last_match_family_character_call_character_;
   size_t legacy_make_typeface_call_count_ = 0;
   bool fail_match_family_ = false;
+  std::string matched_family_name_;
   base::MappedReadOnlyRegion memory_map_region_;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Linux/ChromeOS, only the shared memory fallback is supported.
@@ -365,6 +381,53 @@ TEST_F(FontDataManagerUnitTest, MatchFamilyStyle) {
   result->getFamilyName(&result_family_name);
   EXPECT_STREQ(result_family_name.c_str(), family_name.data());
   EXPECT_EQ(test_font_data_service_app_.legacy_make_typeface_call_count(), 1u);
+}
+
+TEST_F(FontDataManagerUnitTest, MatchFamilyStyleCacheIgnoresAsciiCase) {
+  const SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
+#if BUILDFLAG(IS_WIN)
+  constexpr char kFamilyName[] = "Segoe UI";
+#else
+  constexpr char kFamilyName[] = "Arimo";
+#endif
+
+  const sk_sp<SkTypeface> mixed_case_result =
+      skia_font_manager_->matchFamilyStyle(kFamilyName, style);
+  ASSERT_TRUE(mixed_case_result);
+  EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
+
+  const std::string lowercase_family = base::ToLowerASCII(kFamilyName);
+  ASSERT_NE(lowercase_family, kFamilyName);
+
+  const sk_sp<SkTypeface> lowercase_result =
+      skia_font_manager_->matchFamilyStyle(lowercase_family.c_str(), style);
+  ASSERT_TRUE(lowercase_result);
+  EXPECT_EQ(lowercase_result->uniqueID(), mixed_case_result->uniqueID());
+  EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
+}
+
+TEST_F(FontDataManagerUnitTest, MatchFamilyStyleCacheIgnoresUnicodeCase) {
+  const SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
+  constexpr char kUppercaseFamilyName[] = "СКОРБЬ СХОДИТ ЩЕДРОТ";
+  constexpr char kLowercaseFamilyName[] = "скорбь сходит щедрот";
+#if BUILDFLAG(IS_WIN)
+  test_font_data_service_app_.set_matched_family_name("Segoe UI");
+#else
+  test_font_data_service_app_.set_matched_family_name("Arimo");
+#endif
+
+  const sk_sp<SkTypeface> uppercase_result =
+      skia_font_manager_->matchFamilyStyle(kUppercaseFamilyName, style);
+  ASSERT_TRUE(uppercase_result);
+  EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
+  EXPECT_EQ(test_font_data_service_app_.last_match_family_name(),
+            kUppercaseFamilyName);
+
+  const sk_sp<SkTypeface> lowercase_result =
+      skia_font_manager_->matchFamilyStyle(kLowercaseFamilyName, style);
+  ASSERT_TRUE(lowercase_result);
+  EXPECT_EQ(lowercase_result->uniqueID(), uppercase_result->uniqueID());
+  EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
 }
 
 TEST_F(FontDataManagerUnitTest, LegacyMakeTypefaceNullFamilyName) {

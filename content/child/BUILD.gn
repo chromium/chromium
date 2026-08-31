@@ -165,6 +165,7 @@ target(link_target_type, "child") {
     ]
     deps += [
       # For font_data_manager
+      "//base:i18n",
       "//components/services/font_data/public/mojom",
       "//third_party:freetype_buildflags",
     ]

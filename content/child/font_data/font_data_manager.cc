@@ -15,9 +15,11 @@
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
+#include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
@@ -39,6 +41,14 @@ namespace font_data_service {
 namespace {
 
 const int kTypefaceCacheSize = 128;
+
+std::optional<std::string> CanonicalizeFontFamilyNameForCache(
+    std::optional<std::string> name) {
+  if (name) {
+    return base::UTF16ToUTF8(base::i18n::FoldCase(base::UTF8ToUTF16(*name)));
+  }
+  return std::nullopt;
+}
 
 // Binds a pending receiver. Must be invoked from the main thread.
 void BindHostReceiverOnMainThread(
@@ -576,7 +586,10 @@ FontDataManager::MatchFamilyRequest::MatchFamilyRequest(
     int weight,
     int width,
     SkFontStyle::Slant slant)
-    : name(name), weight(weight), width(width), slant(slant) {}
+    : name(CanonicalizeFontFamilyNameForCache(std::move(name))),
+      weight(weight),
+      width(width),
+      slant(slant) {}
 FontDataManager::MatchFamilyRequest::MatchFamilyRequest(
     const MatchFamilyRequest&) = default;
 FontDataManager::MatchFamilyRequest::MatchFamilyRequest(
