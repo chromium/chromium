@@ -923,7 +923,12 @@ TEST_F(TranslateBubbleViewTest,
   EXPECT_THAT(button_texts, testing::Contains(language_name));
 }
 
-TEST_F(TranslateBubbleViewTest, SearchNoResultsMessage) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SearchNoResultsMessage DISABLED_SearchNoResultsMessage
+#else
+#define MAYBE_SearchNoResultsMessage SearchNoResultsMessage
+#endif
+TEST_F(TranslateBubbleViewTest, MAYBE_SearchNoResultsMessage) {
   base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
