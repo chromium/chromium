@@ -13,10 +13,18 @@ Workflow:
 """
 
 import argparse
+from pathlib import Path
 import re
 import subprocess
 import sys
 from typing import Dict, Any, Optional, Tuple
+
+_SRC_ROOT = Path(__file__).resolve().parents[4]
+_DEPOT_TOOLS = _SRC_ROOT / "third_party" / "depot_tools"
+if _DEPOT_TOOLS.is_dir() and str(_DEPOT_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_DEPOT_TOOLS))
+
+import gerrit_util  # pylint: disable=import-error
 
 
 def run_command(cmd: list[str]) -> Tuple[int, str, str]:
@@ -149,18 +157,52 @@ def evaluate_results(stdout: str) -> Dict[str, Any]:
     }
 
 
-def abandon_cl() -> bool:
-    """Abandons the current Gerrit CL branch."""
-    print("Abandoning CL via `git cl abandon`...")
-    code, out, _ = run_command(
-        [
-            "git",
-            "cl",
-            "abandon",
-            "-m",
-            "Pinpoint evaluation showed no statistically significant speedup.",
-        ]
-    )
+def get_issue_id() -> Optional[str]:
+    """Retrieves current Gerrit issue ID from git cl status."""
+    code, out, _ = run_command(["git", "cl", "status"])
+    if code != 0 or not out:
+        return None
+    match = re.search(r"Issue (?:number: )?(\d+)", out)
+    return match.group(1) if match else None
+
+
+def set_gerrit_topic(issue_id: str, topic: str) -> bool:
+    """Sets topic on Gerrit CL before closing/abandoning."""
+    try:
+        gerrit_util.CallGerritApi(
+            "chromium-review.googlesource.com",
+            f"/changes/{issue_id}/topic",
+            reqtype="PUT",
+            body={"topic": topic},
+        )
+        print(f"Successfully set Gerrit topic to '{topic}' on CL {issue_id}")
+        return True
+    except Exception as e:
+        print(f"Failed to set topic on CL {issue_id}: {e}", file=sys.stderr)
+        return False
+
+
+def accept_cl(topic: str = "chrome-perf-opt-accepted") -> bool:
+    """Marks winning CL as accepted by setting the appropriate topic."""
+    issue_id = get_issue_id()
+    if not issue_id:
+        print("Error: Could not determine git cl issue ID", file=sys.stderr)
+        return False
+    return set_gerrit_topic(issue_id, topic)
+
+
+def abandon_cl(
+    reason: str = (
+        "Pinpoint evaluation showed no statistically significant speedup."
+    ),
+    topic: str = "chrome-perf-opt-rejected",
+) -> bool:
+    """Sets rejected topic and abandons the current Gerrit CL branch."""
+    issue_id = get_issue_id()
+    if issue_id:
+        set_gerrit_topic(issue_id, topic)
+    print(f"Closing/abandoning CL ({reason}) via `git cl set-close`...")
+    code, out, _ = run_command(["git", "cl", "set-close"])
     print(out)
     return code == 0
 
@@ -171,7 +213,7 @@ def main():
     )
     parser.add_argument(
         "--action",
-        choices=["launch", "check", "evaluate", "abandon"],
+        choices=["launch", "check", "evaluate", "abandon", "accept", "reject"],
         default="launch",
     )
     parser.add_argument(
@@ -228,8 +270,10 @@ def main():
                 " significant regressions detected)"
             )
         print("=" * 80)
-    elif args.action == "abandon":
+    elif args.action in ("abandon", "reject"):
         abandon_cl()
+    elif args.action == "accept":
+        accept_cl()
 
 
 if __name__ == "__main__":

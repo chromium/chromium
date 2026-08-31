@@ -277,7 +277,7 @@ ______________________________________________________________________
        increase in composite `Score` with zero significant regressions.
      - Set Gerrit topic to `chrome-perf-opt-accepted`:
        ```bash
-       vpython3 -c "import sys; sys.path.insert(0, 'third_party/depot_tools'); import gerrit_util; gerrit_util.CallGerritApi('chromium-review.googlesource.com', f'/changes/{$(git cl issue)}/topic', reqtype='PUT', body={'topic': 'chrome-perf-opt-accepted'})"
+       vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action accept
        ```
      - Add Pinpoint benchmark results to CL description:
        ```bash
@@ -287,14 +287,13 @@ ______________________________________________________________________
    - ❌ **Neutral or Regressed**:
      - Positive delta (`+X%`) on `smaller-better` metrics indicates a
        **regression**, or no metric reaches $p < 0.05$.
-     - Set Gerrit topic to `chrome-perf-opt-rejected` before abandoning:
+     - Set Gerrit topic to `chrome-perf-opt-rejected` and abandon the CL:
        ```bash
-       vpython3 -c "import sys; sys.path.insert(0, 'third_party/depot_tools'); import gerrit_util; gerrit_util.CallGerritApi('chromium-review.googlesource.com', f'/changes/{$(git cl issue)}/topic', reqtype='PUT', body={'topic': 'chrome-perf-opt-rejected'})"
+       vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action reject
        ```
-     - Abandon the CL immediately:
-       ```bash
-       git cl abandon -m "Pinpoint try job (150 iterations on M1) showed no statistically significant speedup."
-       ```
+       *(Note: Gerrit returns `403 Forbidden` if attempting to change the topic
+       after the CL is already closed/abandoned; the topic must always be set
+       prior to abandoning).*
      - Free the worktree and iterate on the next candidate in the pipeline.
 
 ______________________________________________________________________
