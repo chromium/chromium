@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.StreamUtil;
 import org.chromium.base.Token;
@@ -45,7 +44,6 @@ import java.nio.channels.FileChannel;
 
 /** Unit tests for {@link TabStateFileManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabStateFileManagerUnitTest {
     private static final byte[] CONTENTS_STATE_BYTES = new byte[] {1, 2, 3};
     private static final long TIMESTAMP = 10L;

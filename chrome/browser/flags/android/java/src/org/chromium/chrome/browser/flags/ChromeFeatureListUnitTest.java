@@ -12,7 +12,6 @@ import com.google.common.collect.Sets;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,7 +30,6 @@ import java.util.Set;
 
 /** Tests the behavior of {@link ChromeFeatureList}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChromeFeatureListUnitTest {
     private static final double EPSILON = 1e-7f;
 

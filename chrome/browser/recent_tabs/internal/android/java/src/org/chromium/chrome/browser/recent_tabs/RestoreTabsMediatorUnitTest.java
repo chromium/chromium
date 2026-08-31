@@ -37,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -66,7 +65,6 @@ import java.util.List;
 
 /** Tests for RestoreTabsMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class RestoreTabsMediatorUnitTest {
     private static final String RESTORE_TABS_USED = EventConstants.RESTORE_TABS_PROMO_USED;
 

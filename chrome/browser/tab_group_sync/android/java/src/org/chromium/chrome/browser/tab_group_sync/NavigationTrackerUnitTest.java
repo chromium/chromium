@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.tab_group_sync;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the {@link NavigationTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NavigationTrackerUnitTest {
     private final NavigationTracker mNavigationTracker = new NavigationTracker();
 

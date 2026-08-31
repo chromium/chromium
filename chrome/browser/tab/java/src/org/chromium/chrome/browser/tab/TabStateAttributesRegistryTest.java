@@ -23,9 +23,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for TabStateAttributesRegistry. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowLooper.class})
+@Config(shadows = {ShadowLooper.class})
 public class TabStateAttributesRegistryTest {
     private static class FakeKey1 implements TabStateAttributes.StoreKey {}
 

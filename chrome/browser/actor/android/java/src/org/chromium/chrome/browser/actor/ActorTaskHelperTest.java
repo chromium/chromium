@@ -52,7 +52,6 @@ import java.util.Collections;
 
 /** Unit tests for {@link ActorTaskHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
 public class ActorTaskHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -18,7 +18,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,7 +31,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link IncognitoTabModelImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class IncognitoTabModelImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

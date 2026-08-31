@@ -56,7 +56,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link OptionalNewTabButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class OptionalNewTabButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 

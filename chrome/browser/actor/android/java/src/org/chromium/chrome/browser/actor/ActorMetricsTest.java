@@ -30,9 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ActorMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class ActorMetricsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

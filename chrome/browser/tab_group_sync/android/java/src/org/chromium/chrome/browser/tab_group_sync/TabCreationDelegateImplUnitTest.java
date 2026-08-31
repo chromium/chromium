@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,7 +25,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for the {@link TabCreationDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabCreationDelegateImplUnitTest {
     private static final GURL TEST_URL = new GURL("https://example.com");
     private static final GURL TEST_URL2 = new GURL("https://example2.com");

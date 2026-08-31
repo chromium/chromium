@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -25,7 +24,6 @@ import java.util.Set;
 
 /** Tests for {@link TabGroupVisualDataStore}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabGroupVisualDataStoreUnitTest {
     private static final int TAB_ID = 456;
     private static final Token TOKEN_ID = new Token(123L, 456L);

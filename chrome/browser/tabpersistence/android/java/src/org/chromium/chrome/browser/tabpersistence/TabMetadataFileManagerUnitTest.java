@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,7 +31,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabMetadataFileManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabMetadataFileManagerUnitTest {
     @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 

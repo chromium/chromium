@@ -25,7 +25,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -46,7 +45,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for the {@link TabGroupSyncControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabGroupSyncControllerImplUnitTest {
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final int TAB_ID_1 = 1;

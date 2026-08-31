@@ -21,7 +21,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,7 +39,6 @@ import java.util.List;
 
 /** Unit tests for {@link DataSharingFaviconProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class RecentActivityActionHandlerUnitTest {
     private static final String COLLABORATION_ID = "collaboration_1";
     private static final String SYNC_TAB_GROUP_ID = "sync_tab_group_1";

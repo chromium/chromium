@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotification;
 import org.robolectric.shadows.ShadowPendingIntent;
 
@@ -52,7 +51,6 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link DataSharingNotificationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
-@Config(manifest = Config.NONE)
 public class DataSharingNotificationManagerUnitTest {
     private static final String TAG = "data_sharing";
 

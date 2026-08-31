@@ -10,7 +10,6 @@ import android.graphics.Color;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.DisplayMode;
@@ -23,7 +22,6 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Tests the WebappInfo class's ability to parse various URLs. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebappInfoTest {
     @Test
     public void testAbout() {

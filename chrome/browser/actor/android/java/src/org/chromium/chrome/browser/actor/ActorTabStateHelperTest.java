@@ -25,7 +25,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -52,7 +51,6 @@ import java.util.List;
 
 /** Unit tests for {@link ActorTabStateHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ActorTabStateHelperTest {
     private static final int TAB_ID = 100;
     private static final boolean IS_PINNED = false;

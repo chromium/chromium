@@ -17,14 +17,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link PlatformUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PlatformUtilTest {
     private ShadowApplication mShadowApplication;
     private static final String EXTENSION_CONTENT_URI_STRING =

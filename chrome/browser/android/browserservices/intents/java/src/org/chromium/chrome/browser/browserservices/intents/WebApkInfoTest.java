@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.XmlResourceParserImpl;
-import org.robolectric.annotation.Config;
 import org.robolectric.res.ResourceTable;
 import org.w3c.dom.Document;
 
@@ -50,7 +49,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 /** Tests {@link WebappInfo} with WebAPKs. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkInfoTest {
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String UNBOUND_WEBAPK_PACKAGE_NAME = "unbound.webapk";

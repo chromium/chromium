@@ -50,9 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for TabStateAttributes. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowLooper.class})
+@Config(shadows = {ShadowLooper.class})
 public class TabStateAttributesTest {
 
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();

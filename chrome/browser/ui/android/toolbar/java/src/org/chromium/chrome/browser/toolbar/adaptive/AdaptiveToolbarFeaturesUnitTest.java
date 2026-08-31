@@ -40,7 +40,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Unit tests for {@link AdaptiveToolbarFeatures}. */
-@Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdaptiveToolbarFeaturesUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

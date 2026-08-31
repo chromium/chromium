@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -19,7 +18,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Unit tests for {@link ContextualTasksUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ContextualTasksUtilsUnitTest {
 
     @Test

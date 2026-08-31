@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.ActivityState;
@@ -47,7 +46,6 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 /** Unit tests for {@link ActorNotificationFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
 public class ActorNotificationFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

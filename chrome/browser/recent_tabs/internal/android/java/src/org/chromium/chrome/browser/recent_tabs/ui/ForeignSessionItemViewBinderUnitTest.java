@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -39,7 +38,6 @@ import java.util.List;
 
 /** Tests for ForeignSessionItemViewBinder. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ForeignSessionItemViewBinderUnitTest {
     private static final long JAN_1_1970 = new Date(70, Calendar.JANUARY, 1).getTime();
 

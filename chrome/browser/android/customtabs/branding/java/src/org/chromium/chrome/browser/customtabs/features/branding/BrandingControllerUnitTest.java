@@ -54,9 +54,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit test for {@link BrandingController} and {@link SharedPreferencesBrandingTimeStorage}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class, ShadowToast.class})
+@Config(shadows = {ShadowSystemClock.class, ShadowToast.class})
 public class BrandingControllerUnitTest {
     @Rule public MockitoRule mTestRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();

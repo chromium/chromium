@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -19,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link ActorTaskTimeoutParameters}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT)
 public class ActorTaskTimeoutParametersTest {
     private static final int THIRTY_MIN_MS = (int) TimeUnit.MINUTES.toMillis(30);
