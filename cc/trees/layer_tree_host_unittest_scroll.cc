@@ -1151,20 +1151,9 @@ MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyScroll);
 // This test simulates scrolling on the impl thread such that it starts a scroll
 // animation. It ensures that RequestScrollAnimationEndNotification() correctly
 // notifies the callback after the animation ends.
-// TODO(crbug.com/40451005): Mac currently doesn't support smooth scrolling
-// wheel events.
-// TODO(crbug.com/440535492): Flaky on Win dbg.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
-#define MAYBE_SmoothScrollAnimationEndNotification \
-  DISABLED_SmoothScrollAnimationEndNotification
-#else
-#define MAYBE_SmoothScrollAnimationEndNotification \
-  SmoothScrollAnimationEndNotification
-#endif
-class MAYBE_SmoothScrollAnimationEndNotification
-    : public LayerTreeHostScrollTest {
+class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
  public:
-  MAYBE_SmoothScrollAnimationEndNotification() = default;
+  SmoothScrollAnimationEndNotification() = default;
 
   void InitializeSettings(LayerTreeSettings* settings) override {
     LayerTreeHostScrollTest::InitializeSettings(settings);
@@ -1243,9 +1232,9 @@ class MAYBE_SmoothScrollAnimationEndNotification
 
     if (layer_tree_host()->HasCompositorDrivenScrollAnimationForTesting()) {
       scroll_animation_started_ = true;
-      layer_tree_host()->RequestScrollAnimationEndNotification(base::BindOnce(
-          &MAYBE_SmoothScrollAnimationEndNotification::OnScrollEnd,
-          base::Unretained(this)));
+      layer_tree_host()->RequestScrollAnimationEndNotification(
+          base::BindOnce(&SmoothScrollAnimationEndNotification::OnScrollEnd,
+                         base::Unretained(this)));
     }
   }
 
@@ -1268,7 +1257,7 @@ class MAYBE_SmoothScrollAnimationEndNotification
   bool scroll_animation_ended_ = false;
 };
 
-MULTI_THREAD_TEST_F(MAYBE_SmoothScrollAnimationEndNotification);
+MULTI_THREAD_TEST_F(SmoothScrollAnimationEndNotification);
 
 void DoGestureScroll(LayerTreeHostImpl* host_impl,
                      gfx::Vector2dF offset,

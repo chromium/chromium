@@ -301,6 +301,7 @@ void TestLayerTreeFrameSink::UnregisterBeginFrameSource() {
 
 void TestLayerTreeFrameSink::DetachFromClient() {
   DebugScopedSetImplThread impl(task_runner_provider_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   if (display_begin_frame_source_) {
     frame_sink_manager_->UnregisterBeginFrameSource(
@@ -375,7 +376,12 @@ void TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(
   // used.
   if (!display_->has_scheduler())
     return;
-  client_->DidReceiveCompositorFrameAck();
+  // Post this to get a new stack frame so that we exit SubmitCompositorFrame
+  // before calling the client to tell it that it is done.
+  compositor_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TestLayerTreeFrameSink::SendCompositorFrameAckToClient,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TestLayerTreeFrameSink::OnBeginFrame(
@@ -433,6 +439,9 @@ void TestLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
 
 void TestLayerTreeFrameSink::SendCompositorFrameAckToClient() {
   DebugScopedSetImplThread impl(task_runner_provider_);
+  if (!client_) {
+    return;
+  }
   client_->DidReceiveCompositorFrameAck();
 }
 
