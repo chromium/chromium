@@ -769,7 +769,6 @@ suite('NewTabPageAppTest', () => {
       ['ntp-logo', NtpElement.LOGO],
       ['ntp-searchbox', NtpElement.REALBOX],
       ['cr-most-visited', NtpElement.MOST_VISITED],
-      ['ntp-middle-slot-promo', NtpElement.MIDDLE_SLOT_PROMO],
       ['#modules', NtpElement.MODULE],
     ] as Array<[string, NtpElement]>)
         .forEach(([selector, element]) => {
@@ -810,24 +809,14 @@ suite('NewTabPageAppTest', () => {
   });
 
   function modulesCommonTests(modulesElementTag: string) {
-    test('promo and modules coordinate', async () => {
+    test('modules loaded', async () => {
       // Arrange.
       loadTimeData.overrideValues({navigationStartTime: 0.0});
       windowProxy.setResultFor('now', 123.0);
-      const middleSlotPromo = $$(app, 'ntp-middle-slot-promo');
-      assertTrue(!!middleSlotPromo);
       const modules = $$(app, modulesElementTag)!;
       assertTrue(!!modules);
 
       // Assert.
-      assertStyle(middleSlotPromo, 'display', 'none');
-      assertStyle(modules, 'display', 'none');
-
-      // Act.
-      middleSlotPromo.dispatchEvent(new Event('ntp-middle-slot-promo-loaded'));
-
-      // Assert.
-      assertStyle(middleSlotPromo, 'display', 'none');
       assertStyle(modules, 'display', 'none');
 
       // Act.
@@ -835,7 +824,6 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertNotStyle(middleSlotPromo, 'display', 'none');
       assertNotStyle(modules, 'display', 'none');
       assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime'));
       assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime', 123));

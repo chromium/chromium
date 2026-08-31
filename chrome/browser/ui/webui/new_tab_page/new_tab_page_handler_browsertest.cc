@@ -74,7 +74,6 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD(void, SetActionChipsVisibility, (bool));
   MOCK_METHOD(void, SetModulesFreVisibility, (bool));
   MOCK_METHOD(void, SetCustomizeChromeSidePanelVisibility, (bool));
-  MOCK_METHOD(void, SetPromo, (new_tab_page::mojom::PromoPtr));
   MOCK_METHOD(void, ShowWebstoreToast, ());
   MOCK_METHOD(void, SetWallpaperSearchButtonVisibility, (bool));
   MOCK_METHOD(void, FooterVisibilityUpdated, (bool));

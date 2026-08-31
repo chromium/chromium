@@ -124,36 +124,6 @@ enum DoodleShareChannel {
   kLinkCopy,
 };
 
-struct PromoImagePart {
-  url.mojom.Url image_url;
-  url.mojom.Url target;
-};
-
-struct PromoLinkPart {
-  string text;
-  url.mojom.Url url;
-};
-
-struct PromoTextPart {
-  string text;
-};
-
-union PromoPart {
-  PromoImagePart image;
-  PromoLinkPart link;
-  PromoTextPart text;
-};
-
-// Homepage promo used to display a message with a link on the NTP.
-struct Promo {
-  // A unique identifier for this promo.
-  string? id;
-  // URL to ping to log a promo impression. May be invalid.
-  url.mojom.Url? log_url;
-  // Middle slot promo data.
-  array<PromoPart> middle_slot_parts;
-};
-
 // Used to determine available modules for the NTP.
 struct ModuleIdName {
   // A unique identifier associated with a module.
@@ -204,12 +174,6 @@ interface PageHandler {
     bool shortcuts_visible);
   // Gets current doodle if there is one.
   GetDoodle() => (Doodle? doodle);
-  // Updates middle slot promo data. Triggers a call to |SetPromo|.
-  UpdatePromoData();
-  // Marks a promo as blocked.
-  BlocklistPromo(string promo_id);
-  // Unmarks a promo as blocked.
-  UndoBlocklistPromo(string promo_id);
   // Called when a module the given id is dismissed.
   OnDismissModule(string module_id);
   // Called when a module the given id is restored.
@@ -254,9 +218,6 @@ interface PageHandler {
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
   // |time|.
   OnOneGoogleBarRendered(double time);
-  // Logs that the promo iframe was loaded at |time| and pings |log_url| for
-  // promo metrics logging.
-  OnPromoRendered(double time, url.mojom.Url? log_url);
   // Logs an action performed in the customize dialog.
   OnCustomizeDialogAction(CustomizeDialogAction action);
   // Logs that the |type| image of an image doodle has been clicked. If set, the
@@ -277,8 +238,6 @@ interface PageHandler {
   OnDoodleShared(DoodleShareChannel channel,
                  string doodle_id,
                  string? share_id);
-  // Logs that a link on a promo has been clicked.
-  OnPromoLinkClicked();
   // Logs that the <ntp-app> element's |ready| callback method was called.
   OnAppRendered(double time);
   // Queries whether the Realbox "+" context menu button animation should be shown.
@@ -302,8 +261,6 @@ interface Page {
   SetModulesLoadable();
   // Sets the action chips visibility.
   SetActionChipsVisibility(bool visible);
-  // Sets NTP homepage promo.
-  SetPromo(Promo? promo);
   // Shows a toast with information about Chrome Webstore themes.
   ShowWebstoreToast();
   // Sets wallpaper search button's visibility to |visible|.

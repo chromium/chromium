@@ -44,8 +44,6 @@
  * so they are not tabbable.
  */
 :host([show-composebox_]:not([ntp-realbox-next-enabled_])) cr-most-visited,
-:host([show-composebox_]:not([ntp-realbox-next-enabled_]))
-  ntp-middle-slot-promo,
 :host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-modules,
 :host([show-composebox_]:not([ntp-realbox-next-enabled_]))
   #backgroundImageAttribution,
@@ -217,22 +215,12 @@ cr-most-visited {
   }
 }
 
-ntp-middle-slot-promo {
-  max-width: var(--ntp-search-box-width);
-}
-
 ntp-searchbox {
   visibility: hidden;
 }
 
 ntp-searchbox[shown] {
   visibility: visible;
-}
-
-/* ~ because the dom-if results in a template between the middle-slot-promo
-   and ntp-modules. */
-ntp-middle-slot-promo:not([hidden]) ~ #modules {
-  margin-top: 16px;
 }
 
 #themeAttribution {

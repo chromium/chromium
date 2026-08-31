@@ -1721,8 +1721,6 @@ inline constexpr char kNtpOutlookCalendarRetryAfterTime[] =
 // Whether NTP Outlook Calendar module is visible.
 inline constexpr char kNtpOutlookModuleVisible[] =
     "NewTabPage.OutlookModuleVisible";
-// List of promos that the user has dismissed while on the NTP.
-inline constexpr char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
 // Whether the promo is visible.
 inline constexpr char kNtpPromoVisible[] = "ntp.promo_visible";
 // Whether NTP Sharepoint module is visible.

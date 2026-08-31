@@ -19,8 +19,6 @@
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_observer.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
-#include "chrome/browser/new_tab_page/promos/promo_service.h"
-#include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -81,7 +79,6 @@ class NewTabPageHandler
       public ui::NativeThemeObserver,
       public ThemeServiceObserver,
       public NtpCustomBackgroundServiceObserver,
-      public PromoServiceObserver,
       public optimization_guide::SettingsEnabledObserver,
       public MicrosoftAuthServiceObserver,
       public new_tab_footer::NewTabFooterControllerObserver {
@@ -131,9 +128,6 @@ class NewTabPageHandler
   void SetMostVisitedSettings(ntp_tiles::TileType type, bool visible) override;
   void GetMostVisitedSettings(GetMostVisitedSettingsCallback callback) override;
   void GetDoodle(GetDoodleCallback callback) override;
-  void UpdatePromoData() override;
-  void BlocklistPromo(const std::string& promo_id) override;
-  void UndoBlocklistPromo(const std::string& promo_id) override;
   void OnDismissModule(const std::string& module_id) override;
   void OnRestoreModule(const std::string& module_id) override;
   void SetModulesVisible(bool visible) override;
@@ -154,8 +148,6 @@ class NewTabPageHandler
   void UpdateActionChipsVisibility() override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
-  void OnPromoRendered(double time,
-                       const std::optional<GURL>& log_url) override;
   void OnCustomizeDialogAction(
       new_tab_page::mojom::CustomizeDialogAction action) override;
   void OnDoodleImageClicked(new_tab_page::mojom::DoodleImageType type,
@@ -167,7 +159,6 @@ class NewTabPageHandler
   void OnDoodleShared(new_tab_page::mojom::DoodleShareChannel channel,
                       const std::string& doodle_id,
                       const std::optional<std::string>& share_id) override;
-  void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
   void MaybeTriggerAutomaticCustomizeChromePromo() override;
   void CanShowRealboxContextMenuAnimation(
@@ -184,10 +175,6 @@ class NewTabPageHandler
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
-
-  // PromoServiceObserver:
-  void OnPromoDataUpdated() override;
-  void OnPromoServiceShuttingDown() override;
 
   // SettingsEnabledObserver:
   void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
@@ -268,8 +255,6 @@ class NewTabPageHandler
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
 #endif
-  base::ScopedObservation<PromoService, PromoServiceObserver>
-      promo_service_observation_{this};
   base::ScopedObservation<MicrosoftAuthService, MicrosoftAuthServiceObserver>
       microsoft_auth_service_observation_{this};
 #if !BUILDFLAG(IS_ANDROID)
@@ -297,7 +282,6 @@ class NewTabPageHandler
       loader_map_;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
-  raw_ptr<PromoService> promo_service_;
   raw_ptr<MicrosoftAuthService> const microsoft_auth_service_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
@@ -306,7 +290,6 @@ class NewTabPageHandler
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_{this};
-  std::optional<base::TimeTicks> promo_load_start_time_;
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
   base::DictValue interaction_module_id_trigger_dict_;

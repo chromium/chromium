@@ -46,7 +46,6 @@
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
-#include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -394,73 +393,6 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
   return doodle;
 }
 
-new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
-  // |data.middle_slot_json| is safe to be decoded here. The JSON string is part
-  // of a larger JSON initially decoded using the data decoder utility in the
-  // PromoService to base::Value. The middle-slot promo part is then reencoded
-  // from base::Value to a JSON string stored in |data.middle_slot_json|.
-  auto middle_slot = base::JSONReader::Read(
-      data.middle_slot_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  if (!middle_slot.has_value()) {
-    return nullptr;
-  }
-
-  base::DictValue& middle_slot_dict = middle_slot->GetDict();
-  if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false)) {
-    return nullptr;
-  }
-
-  auto promo = new_tab_page::mojom::Promo::New();
-  promo->id = data.promo_id;
-  auto* parts = middle_slot_dict.FindList("part");
-  if (parts) {
-    std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
-    for (const base::Value& part : *parts) {
-      const base::DictValue& part_dict = part.GetDict();
-      if (part_dict.Find("image")) {
-        auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
-        auto* image_url = part_dict.FindStringByDottedPath("image.image_url");
-        if (!image_url || image_url->empty()) {
-          continue;
-        }
-        mojom_image->image_url = GURL(*image_url);
-        auto* target = part_dict.FindStringByDottedPath("image.target");
-        if (target && !target->empty()) {
-          mojom_image->target = GURL(*target);
-        }
-        mojom_parts.push_back(
-            new_tab_page::mojom::PromoPart::NewImage(std::move(mojom_image)));
-      } else if (part_dict.Find("link")) {
-        auto mojom_link = new_tab_page::mojom::PromoLinkPart::New();
-        auto* url = part_dict.FindStringByDottedPath("link.url");
-        if (!url || url->empty()) {
-          continue;
-        }
-        mojom_link->url = GURL(*url);
-        auto* text = part_dict.FindStringByDottedPath("link.text");
-        if (!text || text->empty()) {
-          continue;
-        }
-        mojom_link->text = *text;
-        mojom_parts.push_back(
-            new_tab_page::mojom::PromoPart::NewLink(std::move(mojom_link)));
-      } else if (part_dict.Find("text")) {
-        auto mojom_text = new_tab_page::mojom::PromoTextPart::New();
-        auto* text = part_dict.FindStringByDottedPath("text.text");
-        if (!text || text->empty()) {
-          continue;
-        }
-        mojom_text->text = *text;
-        mojom_parts.push_back(
-            new_tab_page::mojom::PromoPart::NewText(std::move(mojom_text)));
-      }
-    }
-    promo->middle_slot_parts = std::move(mojom_parts);
-  }
-  promo->log_url = data.promo_log_url;
-  return promo;
-}
-
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
 base::DictValue MakeModuleInteractionTriggerIdDictionary() {
@@ -541,7 +473,6 @@ NewTabPageHandler::NewTabPageHandler(
 #endif
       ntp_navigation_start_time_(ntp_navigation_start_time),
       module_id_details_(module_id_details),
-      promo_service_(PromoServiceFactory::GetForProfile(profile)),
       microsoft_auth_service_(
           MicrosoftAuthServiceFactory::GetForProfile(profile)),
 #if !BUILDFLAG(IS_ANDROID)
@@ -559,7 +490,6 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(ntp_custom_background_service_);
   CHECK(logo_service_);
   CHECK(web_contents_);
-  CHECK(promo_service_);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(theme_service_);
   CHECK(feature_promo_helper_);
@@ -568,7 +498,6 @@ NewTabPageHandler::NewTabPageHandler(
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
-  promo_service_observation_.Observe(promo_service_.get());
   if (microsoft_auth_service_) {
     microsoft_auth_service_->AddObserver(this);
   }
@@ -707,28 +636,6 @@ void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
   // new doodle will be returned on subsequent NTP loads.
   logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/true,
                          enable_animated_logo);
-}
-
-void NewTabPageHandler::UpdatePromoData() {
-  if (promo_service_->promo_data().has_value()) {
-    OnPromoDataUpdated();
-  }
-  promo_load_start_time_ = base::TimeTicks::Now();
-  promo_service_->Refresh();
-}
-
-void NewTabPageHandler::BlocklistPromo(const std::string& promo_id) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  promo_service_->BlocklistPromo(promo_id);
-#endif
-}
-
-void NewTabPageHandler::UndoBlocklistPromo(const std::string& promo_id) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  promo_service_->UndoBlocklistPromo(promo_id);
-#endif
 }
 
 void NewTabPageHandler::OnDismissModule(const std::string& module_id) {
@@ -1007,16 +914,6 @@ void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
                ntp_navigation_start_time_);
 }
 
-void NewTabPageHandler::OnPromoRendered(double time,
-                                        const std::optional<GURL>& log_url) {
-  LogEvent(NTP_MIDDLE_SLOT_PROMO_SHOWN,
-           base::Time::FromMillisecondsSinceUnixEpoch(time) -
-               ntp_navigation_start_time_);
-  if (log_url.has_value() && log_url->is_valid()) {
-    Fetch(*log_url, base::NullCallback());
-  }
-}
-
 void NewTabPageHandler::OnCustomizeDialogAction(
     new_tab_page::mojom::CustomizeDialogAction action) {
   NTPLoggingEventType event;
@@ -1153,10 +1050,6 @@ void NewTabPageHandler::OnDoodleShared(
   Fetch(url, base::NullCallback());
 }
 
-void NewTabPageHandler::OnPromoLinkClicked() {
-  LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
-}
-
 void NewTabPageHandler::IncrementComposeButtonShownCount() {
   const int shown_count = profile_->GetPrefs()->GetInteger(
       prefs::kNtpComposeButtonShownCountPrefName);
@@ -1171,8 +1064,7 @@ void NewTabPageHandler::CanShowRealboxContextMenuAnimation(
       prefs->GetDict(prefs::kContextMenuAnimationState);
 
   int lifetime_count = state_dict.FindInt("realbox_lifetime_count").value_or(0);
-  if (lifetime_count >=
-      omnibox::kContextMenuAnimationLifetimeLimit.Get()) {
+  if (lifetime_count >= omnibox::kContextMenuAnimationLifetimeLimit.Get()) {
     std::move(callback).Run(false);
     return;
   }
@@ -1188,8 +1080,7 @@ void NewTabPageHandler::CanShowRealboxContextMenuAnimation(
     daily_count = 0;
   }
 
-  bool can_show =
-      daily_count < omnibox::kContextMenuAnimationDailyLimit.Get();
+  bool can_show = daily_count < omnibox::kContextMenuAnimationDailyLimit.Get();
   std::move(callback).Run(can_show);
 }
 
@@ -1217,10 +1108,8 @@ void NewTabPageHandler::RecordRealboxContextMenuAnimationImpression(
     daily_count = 0;
   }
 
-  if (lifetime_count <
-          omnibox::kContextMenuAnimationLifetimeLimit.Get() &&
-      daily_count <
-          omnibox::kContextMenuAnimationDailyLimit.Get()) {
+  if (lifetime_count < omnibox::kContextMenuAnimationLifetimeLimit.Get() &&
+      daily_count < omnibox::kContextMenuAnimationDailyLimit.Get()) {
     daily_count++;
     lifetime_count++;
 
@@ -1258,48 +1147,6 @@ void NewTabPageHandler::OnThemeChanged() {
 
 void NewTabPageHandler::OnCustomBackgroundImageUpdated() {
   OnThemeChanged();
-}
-
-void NewTabPageHandler::OnPromoDataUpdated() {
-  if (promo_load_start_time_.has_value()) {
-    base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
-    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2",
-                                          duration);
-    if (promo_service_->promo_status() == PromoService::Status::OK_WITH_PROMO) {
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessWithPromo", duration);
-    } else if (promo_service_->promo_status() ==
-               PromoService::Status::OK_BUT_BLOCKED) {
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessButBlocked", duration);
-    } else if (promo_service_->promo_status() ==
-               PromoService::Status::OK_WITHOUT_PROMO) {
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
-    } else {
-      DCHECK(promo_service_->promo_status() !=
-             PromoService::Status::NOT_UPDATED);
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.Failure", duration);
-    }
-    promo_load_start_time_ = std::nullopt;
-  }
-
-  const auto& data = promo_service_->promo_data();
-  if (data.has_value() &&
-      promo_service_->promo_status() != PromoService::Status::OK_BUT_BLOCKED) {
-    page_->SetPromo(MakePromo(data.value()));
-  } else {
-    page_->SetPromo(nullptr);
-  }
-}
-
-void NewTabPageHandler::OnPromoServiceShuttingDown() {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  promo_service_observation_.Reset();
-#endif
-  promo_service_ = nullptr;
 }
 
 void NewTabPageHandler::OnChangeInFeatureCurrentlyEnabledState(

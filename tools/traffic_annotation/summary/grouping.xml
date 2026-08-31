@@ -638,7 +638,6 @@ after discussions on the right group.
       <annotation id="backdrop_next_image_download"/>
       <annotation id="drive_service"/>
       <annotation id="popular_sites_fetch"/>
-      <annotation id="promo_service"/>
     </sender>
     <sender name="Speech Recognition">
       <annotation id="speech_recognition_downstream"/>
