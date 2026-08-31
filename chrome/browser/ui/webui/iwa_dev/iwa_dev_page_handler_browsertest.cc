@@ -8,6 +8,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -182,79 +184,6 @@ class IwaDevHandlerBrowserTest
   }
 
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
-  CallSelectAndInstallAppFromLocalWebBundle(
-      std::optional<base::FilePath> path) {
-    ui::FakeSelectFileDialog::Factory* factory =
-        ui::FakeSelectFileDialog::RegisterFactory();
-
-    base::test::TestFuture<void> dialog_opened_future;
-    factory->SetOpenCallback(dialog_opened_future.GetRepeatingCallback());
-
-    base::test::TestFuture<
-        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
-        future;
-    GetHandler()->SelectAndInstallAppFromLocalWebBundle(future.GetCallback());
-
-    if (!dialog_opened_future.Wait()) {
-      ADD_FAILURE() << "Timed out waiting for file dialog to open.";
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument,
-          "Timed out waiting for file dialog to open."));
-    }
-
-    ui::FakeSelectFileDialog* fake_dialog = factory->GetLastDialog();
-    if (!fake_dialog) {
-      ADD_FAILURE() << "fake_dialog is nullptr.";
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument, "fake_dialog is nullptr."));
-    }
-    if (path.has_value()) {
-      EXPECT_TRUE(fake_dialog->CallFileSelected(*path, "swbn"));
-    } else {
-      fake_dialog->CallFileSelectionCanceled();
-    }
-
-    return future.Take();
-  }
-
-  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
-  CallSelectAndUpdateAppFromLocalWebBundle(const std::string& app_id,
-                                           std::optional<base::FilePath> path) {
-    ui::FakeSelectFileDialog::Factory* factory =
-        ui::FakeSelectFileDialog::RegisterFactory();
-
-    base::test::TestFuture<void> dialog_opened_future;
-    factory->SetOpenCallback(dialog_opened_future.GetRepeatingCallback());
-
-    base::test::TestFuture<
-        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
-        future;
-    GetHandler()->SelectAndUpdateAppFromLocalWebBundle(app_id,
-                                                       future.GetCallback());
-
-    if (!dialog_opened_future.Wait()) {
-      ADD_FAILURE() << "Timed out waiting for file dialog to open.";
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument,
-          "Timed out waiting for file dialog to open."));
-    }
-
-    ui::FakeSelectFileDialog* fake_dialog = factory->GetLastDialog();
-    if (!fake_dialog) {
-      ADD_FAILURE() << "fake_dialog is nullptr.";
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kInvalidArgument, "fake_dialog is nullptr."));
-    }
-    if (path.has_value()) {
-      EXPECT_TRUE(fake_dialog->CallFileSelected(*path, "swbn"));
-    } else {
-      fake_dialog->CallFileSelectionCanceled();
-    }
-
-    return future.Take();
-  }
-
-  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
   CallUpdateDevProxyInstalledApp(const std::string& app_id) {
     base::test::TestFuture<
         base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
@@ -362,13 +291,106 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   EXPECT_EQ(result.error()->message, "App not found.");
 }
 
-IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
+class IwaDevHandlerLocalBundleBrowserTest : public IwaDevHandlerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    IwaDevHandlerBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  }
+
+  std::unique_ptr<web_app::BundledIsolatedWebApp> BuildBundle(
+      std::string_view name = kLocalBundleName,
+      std::string_view version = kAppBaseVersion,
+      const web_package::test::Ed25519KeyPair& key_pair =
+          web_package::test::Ed25519KeyPair::CreateRandom()) {
+    base::FilePath bundle_path = temp_dir_.GetPath().AppendASCII(
+        base::StrCat({name, "_", version, ".swbn"}));
+    return web_app::IsolatedWebAppBuilder(
+               web_app::ManifestBuilder().SetName(name).SetVersion(version))
+        .BuildBundle(bundle_path, key_pair);
+  }
+
+ protected:
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+  CallSelectAndInstallAppFromLocalWebBundle(
+      std::optional<base::FilePath> path) {
+    ui::FakeSelectFileDialog::Factory* factory =
+        ui::FakeSelectFileDialog::RegisterFactory();
+
+    base::test::TestFuture<void> dialog_opened_future;
+    factory->SetOpenCallback(dialog_opened_future.GetRepeatingCallback());
+
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    GetHandler()->SelectAndInstallAppFromLocalWebBundle(future.GetCallback());
+
+    if (!dialog_opened_future.Wait()) {
+      ADD_FAILURE() << "Timed out waiting for file dialog to open.";
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument,
+          "Timed out waiting for file dialog to open."));
+    }
+
+    ui::FakeSelectFileDialog* fake_dialog = factory->GetLastDialog();
+    if (!fake_dialog) {
+      ADD_FAILURE() << "fake_dialog is nullptr.";
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument, "fake_dialog is nullptr."));
+    }
+    if (path.has_value()) {
+      EXPECT_TRUE(fake_dialog->CallFileSelected(*path, "swbn"));
+    } else {
+      fake_dialog->CallFileSelectionCanceled();
+    }
+
+    return future.Take();
+  }
+
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+  CallSelectAndUpdateAppFromLocalWebBundle(const std::string& app_id,
+                                           std::optional<base::FilePath> path) {
+    ui::FakeSelectFileDialog::Factory* factory =
+        ui::FakeSelectFileDialog::RegisterFactory();
+
+    base::test::TestFuture<void> dialog_opened_future;
+    factory->SetOpenCallback(dialog_opened_future.GetRepeatingCallback());
+
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    GetHandler()->SelectAndUpdateAppFromLocalWebBundle(app_id,
+                                                       future.GetCallback());
+
+    if (!dialog_opened_future.Wait()) {
+      ADD_FAILURE() << "Timed out waiting for file dialog to open.";
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument,
+          "Timed out waiting for file dialog to open."));
+    }
+
+    ui::FakeSelectFileDialog* fake_dialog = factory->GetLastDialog();
+    if (!fake_dialog) {
+      ADD_FAILURE() << "fake_dialog is nullptr.";
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument, "fake_dialog is nullptr."));
+    }
+    if (path.has_value()) {
+      EXPECT_TRUE(fake_dialog->CallFileSelected(*path, "swbn"));
+    } else {
+      fake_dialog->CallFileSelectionCanceled();
+    }
+
+    return future.Take();
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
                        SelectAndInstallAppFromLocalWebBundle_Success) {
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
-                                         .SetName(kLocalBundleName)
-                                         .SetVersion(kAppBaseVersion))
-          .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
+  auto app = BuildBundle();
 
   auto result = CallSelectAndInstallAppFromLocalWebBundle(app->path());
   EXPECT_TRUE(result.has_value());
@@ -381,31 +403,34 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    IwaDevHandlerBrowserTest,
+    IwaDevHandlerLocalBundleBrowserTest,
     SelectAndInstallAppFromLocalWebBundle_Error_NoFileSelected) {
   auto result = CallSelectAndInstallAppFromLocalWebBundle(std::nullopt);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error()->message, "No file selected");
 }
 
-IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(
+    IwaDevHandlerLocalBundleBrowserTest,
+    SelectAndInstallAppFromLocalWebBundle_Error_InvalidFileType) {
+  auto result = CallSelectAndInstallAppFromLocalWebBundle(
+      base::FilePath(FILE_PATH_LITERAL("app.json")));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error()->message,
+      "Invalid file type. Please select a Signed Web Bundle (.swbn) file.");
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerLocalBundleBrowserTest,
                        SelectAndUpdateAppFromLocalWebBundle_Success) {
   web_package::test::Ed25519KeyPair key_pair =
       web_package::test::Ed25519KeyPair::CreateRandom();
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
-                                         .SetName(kLocalBundleName)
-                                         .SetVersion(kAppBaseVersion))
-          .BuildBundle(key_pair);
+  auto app = BuildBundle(kLocalBundleName, kAppBaseVersion, key_pair);
   auto install_result = app->InstallWithSource(
       profile(), &web_app::IsolatedWebAppInstallSource::FromDevUi);
   ASSERT_TRUE(install_result.has_value());
 
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> updated_app =
-      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
-                                         .SetName(kLocalBundleName)
-                                         .SetVersion("2.0.0"))
-          .BuildBundle(key_pair);
+  auto updated_app = BuildBundle(kLocalBundleName, "2.0.0", key_pair);
 
   auto result = CallSelectAndUpdateAppFromLocalWebBundle(
       install_result->app_id(), updated_app->path());
@@ -419,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    IwaDevHandlerBrowserTest,
+    IwaDevHandlerLocalBundleBrowserTest,
     SelectAndUpdateAppFromLocalWebBundle_Error_NoFileSelected) {
   web_app::IsolatedWebAppUrlInfo app = InstallBundleApp();
 
@@ -430,13 +455,22 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    IwaDevHandlerBrowserTest,
+    IwaDevHandlerLocalBundleBrowserTest,
+    SelectAndUpdateAppFromLocalWebBundle_Error_InvalidFileType) {
+  web_app::IsolatedWebAppUrlInfo app = InstallBundleApp();
+
+  auto result = CallSelectAndUpdateAppFromLocalWebBundle(
+      app.app_id(), base::FilePath(FILE_PATH_LITERAL("app.json")));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error()->message,
+      "Invalid file type. Please select a Signed Web Bundle (.swbn) file.");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IwaDevHandlerLocalBundleBrowserTest,
     SelectAndUpdateAppFromLocalWebBundle_Error_AppNotInstalled) {
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
-                                         .SetName(kLocalBundleName)
-                                         .SetVersion(kAppBaseVersion))
-          .BuildBundle(web_package::test::Ed25519KeyPair::CreateRandom());
+  auto app = BuildBundle();
 
   auto result =
       CallSelectAndUpdateAppFromLocalWebBundle("invalid_app_id", app->path());

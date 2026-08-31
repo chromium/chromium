@@ -203,7 +203,17 @@ class IwaDevPageHandler::LocalBundleSelectListener
     auto& file = *files[0];
     // `params.need_local_path` is true so the result should be a native file.
     CHECK(file.is_native_file());
-    std::move(callback_).Run(file.get_native_file()->file_path);
+
+    const base::FilePath& file_path = file.get_native_file()->file_path;
+    if (!file_path.MatchesExtension(FILE_PATH_LITERAL(".swbn"))) {
+      std::move(callback_).Run(base::unexpected(
+          mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                       "Invalid file type. Please select a "
+                                       "Signed Web Bundle (.swbn) file.")));
+      return;
+    }
+
+    std::move(callback_).Run(file_path);
   }
 
   void FileSelectionCanceled() override {
