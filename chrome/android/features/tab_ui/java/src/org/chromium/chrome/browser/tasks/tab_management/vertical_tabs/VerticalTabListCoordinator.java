@@ -1883,13 +1883,11 @@ public class VerticalTabListCoordinator {
         if (resolvedItemViewType == UiType.TAB || resolvedItemViewType == UiType.PINNED_TAB) {
             // The user clicked directly on a tab item (regular tab, pinned tab, or child tab).
             int tabId = TabProperties.getTabId(item.model);
-            showTabItemContextMenu(rectProvider, activity, tabId);
-            return true;
+            return showTabItemContextMenu(rectProvider, activity, tabId);
         } else if (resolvedItemViewType == UiType.TAB_GROUP) {
             Token tabGroupId = item.model.get(TabProperties.TAB_GROUP_HEADER_ID);
             if (tabGroupId != null) {
-                showTabGroupHeaderContextMenu(rectProvider, tabGroupId);
-                return true;
+                return showTabGroupHeaderContextMenu(rectProvider, tabGroupId);
             }
         }
         return false;
@@ -1933,7 +1931,28 @@ public class VerticalTabListCoordinator {
                 });
     }
 
-    private void showTabGroupHeaderContextMenu(RectProvider rectProvider, Token tabGroupId) {
+    private boolean showTabGroupHeaderContextMenu(RectProvider rectProvider, Token tabGroupId) {
+        if (tabGroupId == null) return false;
+
+        TabModel currentModel = mTabModelSelector.getCurrentModel();
+        if (currentModel == null || !currentModel.tabGroupExists(tabGroupId)) {
+            return false;
+        }
+        List<Tab> tabsInGroup = currentModel.getTabsInGroup(tabGroupId);
+        if (tabsInGroup.isEmpty()) {
+            return false;
+        }
+        boolean hasNonClosingTab = false;
+        for (Tab tab : tabsInGroup) {
+            if (!tab.isClosing()) {
+                hasNonClosingTab = true;
+                break;
+            }
+        }
+        if (!hasNonClosingTab) {
+            return false;
+        }
+
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
                     TabGroupContextMenuCoordinator.createContextMenuCoordinator(
@@ -1951,10 +1970,19 @@ public class VerticalTabListCoordinator {
         }
         mTabHoverCardController.hideHoverCard();
         mTabGroupContextMenuCoordinator.showMenu(rectProvider, tabGroupId);
+        return true;
     }
 
-    private void showTabItemContextMenu(RectProvider rectProvider, Activity activity, int tabId) {
+    private boolean showTabItemContextMenu(
+            RectProvider rectProvider, Activity activity, int tabId) {
+        if (tabId == Tab.INVALID_TAB_ID) return false;
+
         TabModel tabModel = mTabModelSelector.getCurrentModel();
+        if (tabModel == null) return false;
+
+        Tab tab = tabModel.getTabById(tabId);
+        if (tab == null || tab.isClosing()) return false;
+
         List<Integer> allTabIds;
         if (TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)
                 && tabModel.isTabMultiSelected(tabId)) {
@@ -1999,6 +2027,7 @@ public class VerticalTabListCoordinator {
         }
         mTabHoverCardController.hideHoverCard();
         mTabContextMenuCoordinator.showMenu(rectProvider, anchorInfo);
+        return true;
     }
 
     private void showEmptySpaceContextMenu(RectProvider rectProvider, Activity activity) {
@@ -2070,8 +2099,7 @@ public class VerticalTabListCoordinator {
                 if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
                     View childView = rv.findChildViewUnder(e.getX(), e.getY());
                     if (childView != null) {
-                        handleContextMenuInteraction(activity, rv, e.getX(), e.getY());
-                        return true;
+                        return handleContextMenuInteraction(activity, rv, e.getX(), e.getY());
                     }
                     // For empty space context menus, we let
                     // recyclerView.setOnContextClickListener call

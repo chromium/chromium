@@ -733,6 +733,8 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testTabGroupHeaderInteraction_LaunchesGroupHeaderContextMenu() {
         TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
         when(mMockTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mMockTab1));
 
         assertNull(mCoordinator.getTabGroupContextMenuCoordinatorForTesting());
 
@@ -786,6 +788,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(tab);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(tab));
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(tab));
 
         createCoordinator();
@@ -908,6 +911,117 @@ public class VerticalTabListCoordinatorUnitTest {
         if (mCoordinator.getTabContextMenuCoordinatorForTesting() != null) {
             mCoordinator.getTabContextMenuCoordinatorForTesting().dismiss();
         }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    public void testShowTabItemContextMenu_ClosingTab_ReturnsFalse() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+        when(mMockTab1.isClosing()).thenReturn(true);
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+
+        when(recyclerViewSpy.findChildViewUnder(150f, 250f)).thenReturn(mMockChildView);
+        when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
+
+        boolean handled =
+                mCoordinator.handleContextMenuInteractionForTesting(
+                        mActivity, recyclerViewSpy, /* localX= */ 150f, /* localY= */ 250f);
+
+        assertFalse("Context interaction on a closing tab should return false.", handled);
+        verify(mTabContextMenuCoordinator, never()).showMenu(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    public void testShowTabItemContextMenu_DeletedTab_ReturnsFalse() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(null);
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+
+        when(recyclerViewSpy.findChildViewUnder(150f, 250f)).thenReturn(mMockChildView);
+        when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
+
+        boolean handled =
+                mCoordinator.handleContextMenuInteractionForTesting(
+                        mActivity, recyclerViewSpy, /* localX= */ 150f, /* localY= */ 250f);
+
+        assertFalse("Context interaction on a deleted tab should return false.", handled);
+        verify(mTabContextMenuCoordinator, never()).showMenu(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    public void testShowTabItemContextMenu_InvalidTabId_ReturnsFalse() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+        SimpleRecyclerViewAdapter adapter =
+                (SimpleRecyclerViewAdapter) recyclerViewSpy.getAdapter();
+        adapter.getModelList().get(0).model.set(TabProperties.TAB_ID, Tab.INVALID_TAB_ID);
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+
+        when(recyclerViewSpy.findChildViewUnder(150f, 250f)).thenReturn(mMockChildView);
+        when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
+
+        boolean handled =
+                mCoordinator.handleContextMenuInteractionForTesting(
+                        mActivity, recyclerViewSpy, /* localX= */ 150f, /* localY= */ 250f);
+
+        assertFalse("Context interaction on an invalid tab ID should return false.", handled);
+        verify(mTabContextMenuCoordinator, never()).showMenu(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    public void testShowTabGroupHeaderContextMenu_NonExistentGroup_ReturnsFalse() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        SimpleRecyclerViewAdapter adapter =
+                (SimpleRecyclerViewAdapter) recyclerViewSpy.getAdapter();
+        PropertyModel groupPropertyModel = adapter.getModelList().get(0).model;
+        groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+
+        when(recyclerViewSpy.findChildViewUnder(200f, 150f)).thenReturn(mMockChildView);
+        when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
+
+        boolean handled =
+                mCoordinator.handleContextMenuInteractionForTesting(
+                        mActivity, recyclerViewSpy, /* localX= */ 200f, /* localY= */ 150f);
+
+        assertFalse(
+                "Context interaction on a non-existent tab group should return false.", handled);
+        verify(mTabGroupContextMenuCoordinator, never()).showMenu(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    public void testShowTabGroupHeaderContextMenu_ClosingGroup_ReturnsFalse() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        SimpleRecyclerViewAdapter adapter =
+                (SimpleRecyclerViewAdapter) recyclerViewSpy.getAdapter();
+        PropertyModel groupPropertyModel = adapter.getModelList().get(0).model;
+        groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mMockTab1.isClosing()).thenReturn(true);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mMockTab1));
+
+        when(recyclerViewSpy.findChildViewUnder(200f, 150f)).thenReturn(mMockChildView);
+        when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
+
+        boolean handled =
+                mCoordinator.handleContextMenuInteractionForTesting(
+                        mActivity, recyclerViewSpy, /* localX= */ 200f, /* localY= */ 150f);
+
+        assertFalse("Context interaction on a closing tab group should return false.", handled);
+        verify(mTabGroupContextMenuCoordinator, never()).showMenu(any(), any());
     }
 
     // =============================================================================================
@@ -2796,6 +2910,8 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(unpinnedTab);
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(unpinnedTab);
+        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(unpinnedTab));
 
         createCoordinator();
 
@@ -4270,6 +4386,7 @@ public class VerticalTabListCoordinatorUnitTest {
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
             when(mTabModel.getRelatedTabList(tab.getId())).thenReturn(tabsInGroup);
         }
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(tabsInGroup);
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(repTab));
         when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(repTabId);
