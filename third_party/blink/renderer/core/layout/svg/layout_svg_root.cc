@@ -312,7 +312,8 @@ void LayoutSVGRoot::StyleDidChange(
 
   SVGResources::UpdateEffects(*this, diff, old_style);
 
-  if (diff.transform_changed) {
+  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
+      diff.transform_changed) {
     for (auto& svg_text : text_set_) {
       svg_text->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
                                kMarkContainerChain);
@@ -531,12 +532,14 @@ void LayoutSVGRoot::IntersectChildren(HitTestResult& result,
 
 void LayoutSVGRoot::AddSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
   DCHECK(!text_set_.Contains(&svg_text));
   text_set_.insert(&svg_text);
 }
 
 void LayoutSVGRoot::RemoveSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
   DCHECK(text_set_.Contains(&svg_text));
   text_set_.erase(&svg_text);
 }

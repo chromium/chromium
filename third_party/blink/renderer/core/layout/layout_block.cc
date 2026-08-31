@@ -120,7 +120,8 @@ void LayoutBlock::StyleDidChange(
   // Computes old scaling factor before PaintLayer::UpdateTransform()
   // updates Layer()->Transform().
   double old_squared_scale = 1;
-  if (Layer() && diff.transform_changed && HasSVGTextDescendants()) {
+  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() && Layer() &&
+      diff.transform_changed && HasSVGTextDescendants()) {
     old_squared_scale =
         ComputeSquaredLocalFontSizeScalingFactor(Layer()->Transform());
   }
@@ -144,7 +145,8 @@ void LayoutBlock::StyleDidChange(
 
   PropagateStyleToAnonymousChildren();
 
-  if (diff.transform_changed && HasSVGTextDescendants()) {
+  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
+      diff.transform_changed && HasSVGTextDescendants()) {
     const double new_squared_scale = ComputeSquaredLocalFontSizeScalingFactor(
         Layer() ? Layer()->Transform() : nullptr);
     // Compare local scale before and after.
@@ -339,6 +341,7 @@ void LayoutBlock::RemovePositionedObjects(LayoutObject* stay_within) {
 
 void LayoutBlock::AddSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
   auto result = View()->SvgTextDescendantsMap().insert(this, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
@@ -350,6 +353,7 @@ void LayoutBlock::AddSvgTextDescendant(LayoutSVGText& svg_text) {
 
 void LayoutBlock::RemoveSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
   auto& map = View()->SvgTextDescendantsMap();
   auto it = map.find(this);
   if (it == map.end())

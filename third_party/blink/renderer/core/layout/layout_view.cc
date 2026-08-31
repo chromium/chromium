@@ -124,7 +124,8 @@ bool LayoutView::HitTest(const HitTestLocation& location,
                          HitTestResult& result) {
   NOT_DESTROYED();
   TRACE_EVENT0("blink", "LayoutView::HitTest");
-  if (HasSVGTextDescendants()) {
+  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
+      HasSVGTextDescendants()) {
     // This is necessary because SVG <text> might have obsolete geometry after
     // scale-only changes.  See crbug.com/1296089#c16
     auto it = svg_text_descendants_.find(this);

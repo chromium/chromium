@@ -53,7 +53,8 @@ void LayoutSVGText::StyleDidChange(
     const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  if (needs_text_metrics_update_ && diff.HasDifference() && old_style) {
+  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
+      needs_text_metrics_update_ && diff.HasDifference() && old_style) {
     diff.SetNeedsFullLayout();
   }
   LayoutSVGBlock::StyleDidChange(diff, old_style, new_style,
@@ -115,6 +116,9 @@ void LayoutSVGText::RemoveChild(LayoutObject* child) {
 void LayoutSVGText::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutSVGBlock::InsertedIntoTree();
+  if (RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled()) {
+    return;
+  }
   bool seen_svg_root = false;
   for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
     auto* root = DynamicTo<LayoutSVGRoot>(ancestor);
@@ -129,6 +133,10 @@ void LayoutSVGText::InsertedIntoTree() {
 
 void LayoutSVGText::WillBeRemovedFromTree() {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled()) {
+    LayoutSVGBlock::WillBeRemovedFromTree();
+    return;
+  }
   bool seen_svg_root = false;
   for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
     auto* root = DynamicTo<LayoutSVGRoot>(ancestor);
