@@ -20,12 +20,16 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Fragment to manage 'Universal Opt Out' preference and to explain to the user what it does. */
 @NullMarked
@@ -56,6 +60,24 @@ public class UniversalOptOutSettings extends ChromeBaseSettingsFragment {
                     prefService.setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, (boolean) newValue);
                     return true;
                 });
+
+        ChromeBasePreference universalOptOutInfoText =
+                findPreference(PREF_UNIVERSAL_OPT_OUT_INFO_TEXT);
+        // TODO(b/552612002): Update link to a more specific article once it is ready.
+        ChromeClickableSpan learnMoreLink =
+                new ChromeClickableSpan(
+                        getContext(),
+                        (view) -> {
+                            getCustomTabLauncher()
+                                    .openUrlInCct(
+                                            getContext(),
+                                            "https://support.google.com/");
+                        });
+
+        universalOptOutInfoText.setSummary(
+                SpanApplier.applySpans(
+                        getString(R.string.universal_opt_out_info_text),
+                        new SpanInfo("<link>", "</link>", learnMoreLink)));
     }
 
     @Override

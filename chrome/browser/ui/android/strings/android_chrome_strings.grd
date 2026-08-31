@@ -1048,14 +1048,14 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites you’ve visited. Many websites will still collect and use your browsing data — for example to improve security, to provide content, ads and recommendations, and to generate reporting statistics.
       </message>
-      <message name="IDS_UNIVERSAL_OPT_OUT_TITLE" desc="Title for the 'Universal Opt Out' preference." translateable="false">
+      <message name="IDS_UNIVERSAL_OPT_OUT_TITLE" desc="Title of an entry point in settings. Users can tap this button to navigate to a subpage where users request how sites can use their user data. It appears in the ‘Privacy and security’ page. The tone should be informative.">
         Send an opt-out request to sites regarding use of your data
       </message>
-      <message name="IDS_UNIVERSAL_OPT_OUT_SUB_PAGE_TITLE" desc="Title for the sub-page of the 'Universal Opt Out' settings." translateable="false">
+      <message name="IDS_UNIVERSAL_OPT_OUT_SUB_PAGE_TITLE" desc="Title of a subpage in settings. Users choose whether they want to send a request to sites about how to treat their user data. On mobile devices, this string appears on its own subpage. It is short for ‘Send an opt-out request to sites regarding use of your data’. The tone should be informative.">
         Opt-out request
       </message>
-      <message name="IDS_UNIVERSAL_OPT_OUT_INFO_TEXT" desc="Info text for the 'Universal Opt Out' preference." translateable="false">
-        The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale or sharing of your data or its use for personalized ads.
+      <message name="IDS_UNIVERSAL_OPT_OUT_INFO_TEXT" desc="Subtitle of a setting. It appears below the title: ‘Send an opt-out request to sites regarding use of your data’. Users choose whether they want to send a request to sites about how to treat their user data. This string explains that sites may not respond to the user’s request even when this toggle is on; and, even when they do respond, sites may handle opt-out requests differently based on regional laws. This string appears on its own subpage. The tone should be informative. Clicking on Learn more link opens a help center article, the link tag should not be translated but the 'learn more' text inside the link tag should be translated.">
+        The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale and sharing of your data or its use for personalized ads. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_CAN_MAKE_PAYMENT_TITLE" desc="Title for preference to allow websites to know whether you have payment methods available through PaymentRequest.CanMakePayment interface">
         Access payment methods

@@ -11,8 +11,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="universal_opt_out_switch"
-        android:summaryOn="@string/text_on"
-        android:summaryOff="@string/text_off" />
+        android:summary="@string/universal_opt_out_title" />
 
     <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
         android:key="universal_opt_out_info_text"

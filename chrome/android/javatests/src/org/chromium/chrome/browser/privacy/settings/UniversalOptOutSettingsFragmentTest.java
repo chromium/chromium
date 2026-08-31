@@ -141,7 +141,8 @@ public class UniversalOptOutSettingsFragmentTest {
 
         String expectedSummary =
                 ApplicationProvider.getApplicationContext()
-                        .getString(R.string.universal_opt_out_info_text);
+                        .getString(R.string.universal_opt_out_info_text)
+                        .replaceAll("<.?link>", "");
         assertEquals(expectedSummary, infoTextPref.getSummary().toString());
     }
 
