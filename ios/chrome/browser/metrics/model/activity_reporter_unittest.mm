@@ -14,6 +14,16 @@
 
 namespace {
 
+// Returns whether MetricKitReportSubscriber is compiled with full SDK 27+
+// support and running on iOS 27+.
+bool IsMetricKitSubscriberSupported() {
+#if defined(__IPHONE_27_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_0
+  return true;
+#else
+  return false;
+#endif
+}
+
 NSString* GetReportJsonWithEnvironment(BOOL includes_multiple_versions,
                                        NSString* app_build_version) {
   return [NSString
@@ -82,6 +92,9 @@ TEST_F(ActivityReporterTest, WithIncognitoSmokeTest) {
 
 // Tests that the MetricKitReportSubscriber can be enabled and disabled.
 TEST_F(ActivityReporterTest, ReportSubscriberSmokeTest) {
+  if (!IsMetricKitSubscriberSupported()) {
+    GTEST_SKIP() << "MetricKitReportSubscriber is not supported.";
+  }
   if (@available(iOS 27.0, *)) {
     MetricKitReportSubscriber* subscriber =
         [MetricKitReportSubscriber sharedInstance];
@@ -94,6 +107,9 @@ TEST_F(ActivityReporterTest, ReportSubscriberSmokeTest) {
 // Tests that the MetricKitReportSubscriber decodes reports and logs all
 // expected histograms correctly.
 TEST_F(ActivityReporterTest, ReportSubscriberHistogramsTest) {
+  if (!IsMetricKitSubscriberSupported()) {
+    GTEST_SKIP() << "MetricKitReportSubscriber is not supported.";
+  }
   if (@available(iOS 27.0, *)) {
     base::HistogramTester histogram_tester;
 
@@ -229,6 +245,9 @@ TEST_F(ActivityReporterTest, ReportSubscriberHistogramsTest) {
 // `includesMultipleApplicationVersions` when logging to standard vs
 // `IncludingMismatch.` histograms.
 TEST_F(ActivityReporterTest, ReportSubscriberVersionCheckTest) {
+  if (!IsMetricKitSubscriberSupported()) {
+    GTEST_SKIP() << "MetricKitReportSubscriber is not supported.";
+  }
   if (@available(iOS 27.0, *)) {
     // 1. Matches current version and `includesMultipleApplicationVersions` is
     // false: logs to both prefix and `IncludingMismatch.` prefix.
