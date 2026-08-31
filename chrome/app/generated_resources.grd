@@ -13923,6 +13923,24 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BODY" desc="Body label text of the send-tab-to-self sign-in promo bubble.">
         To send links between devices, ensure both are signed in to the same Google account.
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_IPH_TUTORIAL_TITLE" desc="Title for the Send Tab to Self tutorial promo bubble.">
+        Send a link to another device
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_IPH_TUTORIAL_BODY" desc="Body text for the Send Tab to Self tutorial promo bubble.">
+        Quickly send links to your phone or any other device where you're signed in
+      </message>
+      <message name="IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_1_BODY" desc="Step 1 instruction for Send Tab to Self tutorial.">
+        Right-click on a tab with the link you want to send
+      </message>
+      <message name="IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_2_BODY" desc="Step 2 instruction for Send Tab to Self tutorial.">
+        Select “Send to your device” and choose where you want to get the link
+      </message>
+      <message name="IDS_TUTORIAL_SEND_TAB_TO_SELF_SUCCESS_TITLE" desc="Title for the completed Send Tab to Self tutorial step.">
+        Sent!
+      </message>
+      <message name="IDS_TUTORIAL_SEND_TAB_TO_SELF_SUCCESS_BODY" desc="Success description educating about sign-in and cross-device sharing.">
+        When you’re signed in to Chrome with the same account, you can quickly send links between any devices
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_VERIFY_ITS_YOU_PROMO_TITLE" desc="Title of the send-tab-to-self sign-in promo bubble when the user needs to verify their identity (reauthenticate).">
         Send a link to another device
       </message>

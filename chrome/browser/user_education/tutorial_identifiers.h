@@ -38,4 +38,7 @@ inline constexpr char kContextualTasksTutorialMetricPrefix[] =
 inline constexpr char kSaveVideoFrameTutorialId[] = "Save Video Frame Tutorial";
 inline constexpr char kSaveVideoFrameTutorialMetricPrefix[] = "SaveVideoFrame";
 
+inline constexpr char kSendTabToSelfTutorialId[] = "Send Tab To Self Tutorial";
+inline constexpr char kSendTabToSelfTutorialMetricPrefix[] = "SendTabToSelf";
+
 #endif  // CHROME_BROWSER_USER_EDUCATION_TUTORIAL_IDENTIFIERS_H_

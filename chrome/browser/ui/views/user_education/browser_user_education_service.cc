@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/tabs/split_view_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -65,7 +66,9 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
@@ -179,6 +182,8 @@ constexpr std::initializer_list<Platforms> kComposePlatforms{
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 constexpr char kChromeThemeBackElementName[] = "ChromeThemeBackElement";
 constexpr char kLastInactiveTabElementName[] = "LastInactiveTab";
+constexpr char kSendTabToSelfActiveTabElementName[] =
+    "SendTabToSelfActiveTabElement";
 
 class IfView : public user_education::TutorialDescription::If {
  public:
@@ -260,6 +265,27 @@ bool HasTabGroups(const BrowserView* browser_view) {
 
 bool IsInVerticalTabsMode(const BrowserView* browser_view) {
   return browser_view->ShouldDrawVerticalTabStrip();
+}
+
+ui::TrackedElement* FilterToActiveTab(
+    const ui::ElementTracker::ElementList& elements) {
+  for (ui::TrackedElement* const element : elements) {
+    if (const auto* const tracked_views =
+            element->AsA<views::TrackedElementViews>()) {
+      const views::View* const view = tracked_views->view();
+      if (const auto* const tab = views::AsViewClass<Tab>(view)) {
+        if (tab->IsActive()) {
+          return element;
+        }
+      } else if (const auto* const tab_view =
+                     views::AsViewClass<TabView>(view)) {
+        if (tab_view->IsActive()) {
+          return element;
+        }
+      }
+    }
+  }
+  return nullptr;
 }
 
 using ContextPtr = const user_education::UserEducationContextPtr&;
@@ -1367,6 +1393,20 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(141, "lugli@google.com",
                        "Triggered when user swaps between two tabs three times "
                        "quickly.")));
+
+  // kIPHSendTabToSelfTutorialFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForTutorialPromo(
+          feature_engagement::kIPHSendTabToSelfTutorialFeature, kTabElementId,
+          IDS_SEND_TAB_TO_SELF_IPH_TUTORIAL_BODY, kSendTabToSelfTutorialId)
+          .SetAnchorElementFilter(base::BindRepeating(&FilterToActiveTab))
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleIcon(&(features::IsRoundedIconsEnabled() ? kDevicesIcon
+                                                             : kDevicesOldIcon))
+          .SetBubbleTitleText(IDS_SEND_TAB_TO_SELF_IPH_TUTORIAL_TITLE)
+          .SetMetadata(
+              154, "ankushkush@google.com",
+              "Triggered on the first eligible tab after browser startup.")));
 
   // kIPHSidePanelGenericPinnableFeature:
   registry.RegisterFeature(std::move(
@@ -2572,6 +2612,56 @@ void MaybeRegisterChromeTutorials(
 
     tutorial_registry.AddTutorial(kSaveVideoFrameTutorialId,
                                   std::move(save_video_frame_tutorial));
+  }
+
+  {  // Send Tab to Self tutorial
+    auto send_tab_to_self_tutorial =
+        TutorialDescription::Create<kSendTabToSelfTutorialMetricPrefix>(
+            // Hidden step - name the active tab (horizontal or vertical)
+            HiddenStep::WaitForShown(kBrowserViewElementId)
+                .NameElements(
+                    base::BindRepeating([](ui::InteractionSequence* sequence,
+                                           ui::TrackedElement* element) {
+                      const auto elements =
+                          ui::ElementTracker::GetElementTracker()
+                              ->GetAllMatchingElements(kTabElementId,
+                                                       element->context());
+                      if (ui::TrackedElement* const active_tab =
+                              FilterToActiveTab(elements)) {
+                        sequence->NameElement(
+                            active_tab, kSendTabToSelfActiveTabElementName);
+                        return true;
+                      }
+                      return false;
+                    })),
+
+            // Bubble step - Right-click on the active tab
+            BubbleStep(kSendTabToSelfActiveTabElementName)
+                .SetBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_1_BODY)
+                .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+                .InAnyContext(),
+
+            // Bubble step - Send to your devices menu item
+            BubbleStep(kTabSendTabToSelfMenuItem)
+                .SetBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_2_BODY)
+                .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+                .InAnyContext()
+                .AbortIfVisibilityLost(false),
+
+            // Completion of the tutorial.
+            BubbleStep(toasts::ToastView::kToastViewId)
+                .SetBubbleTitleText(IDS_TUTORIAL_SEND_TAB_TO_SELF_SUCCESS_TITLE)
+                .SetBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_SUCCESS_BODY)
+                .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
+                .InAnyContext());
+
+    send_tab_to_self_tutorial.metadata.additional_description =
+        "Tutorial for sending tabs to other devices.";
+    send_tab_to_self_tutorial.metadata.launch_milestone = 154;
+    send_tab_to_self_tutorial.metadata.owners = "ankushkush@google.com";
+
+    tutorial_registry.AddTutorial(kSendTabToSelfTutorialId,
+                                  std::move(send_tab_to_self_tutorial));
   }
 }
 

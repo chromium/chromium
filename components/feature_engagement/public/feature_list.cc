@@ -321,6 +321,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReadingModePageActionLabelFeature,
     &kIPHReadingModePresentationModeFeature,
     &kIPHReadingModeSidePanelFeature,
+    &kIPHSendTabToSelfTutorialFeature,
     &kIPHShoppingCollectionFeature,
     &kIPHSideBySidePinnableFeature,
     &kIPHSideBySideTabSwitchFeature,

@@ -124,6 +124,8 @@ source_set("impl") {
     "//chrome/browser/ui/views/global_media_controls",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/promos",
+    "//chrome/browser/ui/views/tabs:tab",
+    "//chrome/browser/ui/views/tabs/common:impl",
     "//chrome/browser/ui/views/tabs/horizontal",
     "//chrome/browser/ui/views/tabs/tab",
     "//chrome/browser/ui/views/toolbar",
