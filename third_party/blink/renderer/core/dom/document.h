@@ -1992,10 +1992,7 @@ class CORE_EXPORT Document : public ContainerNode,
     return slot_assignment_recalc_depth_;
   }
   bool IsInSlotAssignmentRecalc() const {
-    // Since we forbid recursive slot assignement recalc, the depth should be
-    // <= 1.
-    DCHECK_LE(slot_assignment_recalc_depth_, 1u);
-    return slot_assignment_recalc_depth_ == 1;
+    return slot_assignment_recalc_depth_ > 0;
   }
 
   bool IsVerticalScrollEnforced() const { return is_vertical_scroll_enforced_; }
