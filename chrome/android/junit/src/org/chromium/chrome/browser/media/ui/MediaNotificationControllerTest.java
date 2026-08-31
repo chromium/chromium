@@ -13,12 +13,12 @@ import android.content.Intent;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.view.KeyEvent;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationListener;
 
@@ -30,65 +30,112 @@ import org.chromium.components.browser_ui.media.MediaNotificationListener;
 public class MediaNotificationControllerTest extends MediaNotificationTestBase {
 
     @Test
-    public void testOnMediaButton_WhenAlreadyPaused_SyntheticPauseTriggersPlay() {
-        // Arrange: paused state
-        getController().mMediaNotificationInfo =
-                mMediaNotificationInfoBuilder.setPaused(true).build();
-
-        // Create a media button intent with KEYCODE_MEDIA_PAUSE and eventTime = 0 (synthetic)
-        Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
-        intent.putExtra(Intent.EXTRA_KEY_EVENT, event);
-
-        // Call maybeTogglePausedPlayback. It should return true because it's synthetic.
-        Assert.assertTrue(getController().maybeTogglePausedPlayback(intent));
-
-        // Verify onPlay is called
-        verify(mListener).onPlay(MediaNotificationListener.ACTION_SOURCE_MEDIA_SESSION);
-    }
-
-    @Test
-    public void testOnMediaButton_WhenAlreadyPaused_SystemPauseDoesNotTriggerPlay() {
-        // Arrange: paused state
-        getController().mMediaNotificationInfo =
-                mMediaNotificationInfoBuilder.setPaused(true).build();
-
-        // Create a media button intent with KEYCODE_MEDIA_PAUSE and eventTime > 0 (system)
-        Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        KeyEvent event =
-                new KeyEvent(100, 100, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
-        intent.putExtra(Intent.EXTRA_KEY_EVENT, event);
-
-        // Call maybeTogglePausedPlayback. It should return false because it's a system event.
-        Assert.assertFalse(getController().maybeTogglePausedPlayback(intent));
-
-        // Verify onPlay is NOT called
-        verify(mListener, never()).onPlay(anyInt());
-    }
-
-    @Test
-    public void testOnMediaButtonEvent_DelegatesToMaybeTogglePausedPlayback() {
-        // Create a fresh controller to avoid spy vs inner class state discrepancy
+    public void testOnMediaButtonEvent_WhenPaused_PauseDoesNotTriggerPlay() {
         MediaNotificationController controller =
                 new MockMediaNotificationController(
                         new ChromeMediaNotificationControllerDelegate(
                                 getNotificationId(), getMediaTypeId()));
         controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
-
-        // Mock MediaSession for the controller
         controller.mMediaSession = mock(MediaSessionCompat.class);
 
-        // Create a media button intent with KEYCODE_MEDIA_PAUSE and eventTime = 0 (synthetic)
         Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
         intent.putExtra(Intent.EXTRA_KEY_EVENT, event);
 
-        // Call onMediaButtonEvent on the callback retrieved via the new getter
-        boolean handled = controller.getMediaSessionCallbackForTesting().onMediaButtonEvent(intent);
+        controller.getMediaSessionCallbackForTesting().onMediaButtonEvent(intent);
 
-        // Verify it was handled and onPlay was called on the listener
-        Assert.assertTrue(handled);
+        // Verify onPlay is NOT called (pause should not toggle to play).
+        verify(mListener, never()).onPlay(anyInt());
+    }
+
+    @Test
+    public void testOnMediaSessionCallback_OnPlayTriggersListenerPlay() {
+        MediaNotificationController controller =
+                new MockMediaNotificationController(
+                        new ChromeMediaNotificationControllerDelegate(
+                                getNotificationId(), getMediaTypeId()));
+        controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
+        controller.mMediaSession = mock(MediaSessionCompat.class);
+
+        controller.getMediaSessionCallbackForTesting().onPlay();
+
+        // Verify onPlay is called on the listener.
         verify(mListener).onPlay(MediaNotificationListener.ACTION_SOURCE_MEDIA_SESSION);
+    }
+
+    @Test
+    public void testOnMediaButtonEvent_WhenPaused_RecordsHistogram() {
+        MediaNotificationController controller =
+                new MockMediaNotificationController(
+                        new ChromeMediaNotificationControllerDelegate(
+                                getNotificationId(), getMediaTypeId()));
+        controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
+        controller.mMediaSession = mock(MediaSessionCompat.class);
+        controller.mTimeOfLastPauseMs = 0;
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Media.Android.MediaButtonWhilePaused.TimeSincePause.Pause")
+                        .build();
+
+        Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
+        intent.putExtra(Intent.EXTRA_KEY_EVENT, event);
+
+        controller.getMediaSessionCallbackForTesting().onMediaButtonEvent(intent);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnMediaButtonEvent_WhenActionUp_DoesNotRecordHistogram() {
+        MediaNotificationController controller =
+                new MockMediaNotificationController(
+                        new ChromeMediaNotificationControllerDelegate(
+                                getNotificationId(), getMediaTypeId()));
+        controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
+        controller.mMediaSession = mock(MediaSessionCompat.class);
+        controller.mTimeOfLastPauseMs = 0;
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Media.Android.MediaButtonWhilePaused.TimeSincePause.Pause")
+                        .build();
+
+        Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
+        intent.putExtra(Intent.EXTRA_KEY_EVENT, event);
+
+        controller.getMediaSessionCallbackForTesting().onMediaButtonEvent(intent);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnMediaButtonEvent_WhenPlaying_DoesNotRecordHistogram() {
+        MediaNotificationController controller =
+                new MockMediaNotificationController(
+                        new ChromeMediaNotificationControllerDelegate(
+                                getNotificationId(), getMediaTypeId()));
+        controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(false).build();
+        controller.mMediaSession = mock(MediaSessionCompat.class);
+        controller.mTimeOfLastPauseMs = -1;
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Media.Android.MediaButtonWhilePaused.TimeSincePause.Pause")
+                        .build();
+
+        Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE, 0);
+        intent.putExtra(Intent.EXTRA_KEY_EVENT, event);
+
+        controller.getMediaSessionCallbackForTesting().onMediaButtonEvent(intent);
+
+        watcher.assertExpected();
     }
 
     @Test

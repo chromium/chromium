@@ -752,6 +752,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.MediaButtonWhilePaused.TimeSincePause.Pause"
+    units="ms" expires_after="2027-06-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the elapsed time since media was paused when a KEYCODE_MEDIA_PAUSE
+    button event is received while the media notification is already paused.
+    Helps isolate rapid redundant pause events (such as dual earbud removal)
+    from delayed background events.
+  </summary>
+</histogram>
+
 <histogram name="Media.Android.MediaCodec.VideoInputExceedsMaxCapacity"
     enum="Boolean" expires_after="2027-03-24">
   <owner>sobek@google.com</owner>

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.media;
 
+import android.view.KeyEvent;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -44,6 +46,15 @@ public class MediaSessionUma {
         if (action != null) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Media.Session.Pause", action, MediaSessionActionSource.NUM_ENTRIES);
+        }
+    }
+
+    public static void recordMediaButtonWhilePaused(int keyCode, long timeSincePauseMs) {
+        if (timeSincePauseMs < 0) return;
+
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+            RecordHistogram.recordTimesHistogram(
+                    "Media.Android.MediaButtonWhilePaused.TimeSincePause.Pause", timeSincePauseMs);
         }
     }
 }

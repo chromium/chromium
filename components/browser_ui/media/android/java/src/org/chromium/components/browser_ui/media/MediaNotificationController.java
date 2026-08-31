@@ -29,6 +29,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -113,6 +114,8 @@ public class MediaNotificationController {
 
     // |mMediaNotificationInfo| should be not null if and only if the notification is showing.
     @VisibleForTesting public @Nullable MediaNotificationInfo mMediaNotificationInfo;
+
+    @VisibleForTesting public long mTimeOfLastPauseMs = -1;
 
     private boolean mIsForeground;
 
@@ -322,40 +325,27 @@ public class MediaNotificationController {
         }
     }
 
-    /**
-     * Toggles playback if the media is currently paused and a specific media button event is
-     * received. This is primarily to support Bluetooth headsets that send KEYCODE_MEDIA_PAUSE
-     * shortly after media is paused when intending to resume playback.
-     *
-     * @param mediaButtonIntent The intent containing the media button event.
-     * @return True if the event was handled by toggling playback, false otherwise.
-     */
-    @VisibleForTesting
-    public boolean maybeTogglePausedPlayback(Intent mediaButtonIntent) {
-        KeyEvent event =
-                IntentUtils.safeGetParcelableExtra(mediaButtonIntent, Intent.EXTRA_KEY_EVENT);
-        if (event != null && event.getAction() == KeyEvent.ACTION_DOWN) {
-            int keyCode = event.getKeyCode();
-            // When media is already paused, receiving KEYCODE_MEDIA_PAUSE with a 0 timestamp
-            // indicates that the external controller is out of sync (e.g. it believes the
-            // audio stream is active when it is not). We interpret this redundant PAUSE as a
-            // user intent to resume playback.
-            if (mMediaNotificationInfo != null
-                    && mMediaNotificationInfo.isPaused
-                    && keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE
-                    && event.getEventTime() == 0) {
-                onPlay(MediaNotificationListener.ACTION_SOURCE_MEDIA_SESSION);
-                return true;
-            }
-        }
-        return false;
-    }
-
     private final MediaSessionCompat.Callback mMediaSessionCallback =
             new MediaSessionCompat.Callback() {
                 @Override
                 public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
-                    if (maybeTogglePausedPlayback(mediaButtonIntent)) return true;
+                    if (mediaButtonIntent == null) {
+                        return super.onMediaButtonEvent(mediaButtonIntent);
+                    }
+                    KeyEvent event =
+                            IntentUtils.safeGetParcelableExtra(
+                                    mediaButtonIntent, Intent.EXTRA_KEY_EVENT);
+                    if (event != null
+                            && event.getAction() == KeyEvent.ACTION_DOWN
+                            && mMediaNotificationInfo != null
+                            && mMediaNotificationInfo.isPaused) {
+                        long timeSincePauseMs =
+                                mTimeOfLastPauseMs >= 0
+                                        ? TimeUtils.elapsedRealtimeMillis() - mTimeOfLastPauseMs
+                                        : -1;
+                        MediaSessionUma.recordMediaButtonWhilePaused(
+                                event.getKeyCode(), timeSincePauseMs);
+                    }
                     return super.onMediaButtonEvent(mediaButtonIntent);
                 }
 
@@ -706,6 +696,8 @@ public class MediaNotificationController {
             return;
         }
 
+        updateTimeOfLastPause(mediaNotificationInfo.isPaused);
+
         mMediaNotificationInfo = mediaNotificationInfo;
 
         if (mService == null && mediaNotificationInfo.isPaused) return;
@@ -767,6 +759,7 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo != null) {
             BaseNotificationManagerProxyFactory.create().cancel(mMediaNotificationInfo.id);
             mMediaNotificationInfo = null;
+            mTimeOfLastPauseMs = -1;
         }
 
         if (mMediaSession != null) {
@@ -779,7 +772,20 @@ public class MediaNotificationController {
         mNotificationBuilder = null;
     }
 
+    private void updateTimeOfLastPause(boolean isPaused) {
+        if (isPaused) {
+            if (mTimeOfLastPauseMs < 0) {
+                mTimeOfLastPauseMs = TimeUtils.elapsedRealtimeMillis();
+            }
+        } else {
+            mTimeOfLastPauseMs = -1;
+        }
+    }
+
     public void queueNotification(MediaNotificationInfo mediaNotificationInfo) {
+        // Record pause timestamp immediately at the time the pause event is received,
+        // preventing the timestamp from being delayed by Throttler (up to 500ms).
+        updateTimeOfLastPause(mediaNotificationInfo.isPaused);
         mThrottler.queueNotification(mediaNotificationInfo);
     }
 
