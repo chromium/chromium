@@ -39,7 +39,7 @@ InternalUnorderedMap<uint32_t, size_t>& GetLeakSizePerTypeIdMap() {
 }  // namespace
 
 // static
-void PartitionRoot::Zap(internal::SlotStart slot_start,
+void PartitionRoot::Zap(SlotStart slot_start,
                         SlotSpanMetadata* slot_span,
                         uint32_t type_id) {
   void* object = reinterpret_cast<void*>(slot_start.value());

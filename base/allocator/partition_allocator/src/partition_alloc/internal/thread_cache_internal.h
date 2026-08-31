@@ -297,7 +297,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Insertion can fail either because the cache is full or the
   // allocation was too large.
   PA_ALWAYS_INLINE std::optional<size_t> MaybePutInCache(
-      internal::UntaggedSlotStart slot_start,
+      UntaggedSlotStart slot_start,
       size_t bucket_index);
 
   // Tries to allocate a memory slot from the cache.
@@ -305,8 +305,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
   // handling. Sets |slot_size| to the allocated size upon success.
-  PA_ALWAYS_INLINE internal::UntaggedSlotStart GetFromCache(size_t bucket_index,
-                                                            size_t* slot_size);
+  PA_ALWAYS_INLINE UntaggedSlotStart GetFromCache(size_t bucket_index,
+                                                  size_t* slot_size);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
@@ -387,7 +387,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   // Returns true if the given address is in the thread cache's freelist.
   // Otherwise, returns false.
-  bool IsInFreelist(internal::UntaggedSlotStart address,
+  bool IsInFreelist(UntaggedSlotStart address,
                     size_t bucket_index,
                     size_t& position);
 
@@ -410,7 +410,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
   PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket,
-                                    internal::UntaggedSlotStart slot_start);
+                                    UntaggedSlotStart slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
   void FreeAfter(internal::FreelistEntry* head, size_t slot_size);
@@ -472,7 +472,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 };
 
 PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
-    internal::UntaggedSlotStart slot_start,
+    UntaggedSlotStart slot_start,
     size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
@@ -507,9 +507,8 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   return bucket.slot_size;
 }
 
-PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
-    size_t bucket_index,
-    size_t* slot_size) {
+PA_ALWAYS_INLINE UntaggedSlotStart
+ThreadCache::GetFromCache(size_t bucket_index, size_t* slot_size) {
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
@@ -520,7 +519,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
   if (bucket_index > largest_active_bucket_index_) [[unlikely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     PA_INCREMENT_COUNTER(stats_.alloc_misses);
-    return internal::UntaggedSlotStart();
+    return UntaggedSlotStart();
   }
 
   auto& bucket = buckets_[bucket_index];
@@ -536,7 +535,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
     // Very unlikely, means that the central allocator is out of memory. Let it
     // deal with it (may return 0, may crash).
     if (!bucket.freelist_head) [[unlikely]] {
-      return internal::UntaggedSlotStart();
+      return UntaggedSlotStart();
     }
   }
 
@@ -546,7 +545,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
 #if PA_BUILDFLAG(IS_CHROMEOS) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && \
     PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   // x86_64 architecture now supports 57 bits of address space, as of Ice Lake
-  // for Intel. However Chrome OS systems do not ship with kernel support for
+  // for Intel. Chrome OS systems do not ship with kernel support for
   // it, but with 48 bits, so all canonical addresses have the upper 16 bits
   // zeroed (17 in practice, since the upper half of address space is reserved
   // by the kernel).
@@ -576,12 +575,11 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
   PA_DCHECK(cached_memory_ >= bucket.slot_size);
   cached_memory_ -= bucket.slot_size;
 
-  return internal::SlotStart::Unchecked(entry).Untag();
+  return SlotStart::Unchecked(entry).Untag();
 }
 
-PA_ALWAYS_INLINE void ThreadCache::PutInBucket(
-    Bucket& bucket,
-    internal::UntaggedSlotStart slot_start) {
+PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
+                                               UntaggedSlotStart slot_start) {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && \
     PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely

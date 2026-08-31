@@ -67,7 +67,7 @@ bool ExtremeLightweightDetectorQuarantineBranch::IsQuarantinedForTesting(
     void* object) {
   partition_alloc::internal::ScopedGuard guard(lock_);
   uintptr_t slot_start =
-      partition_alloc::internal::SlotStart::Unchecked(object).Untag().value();
+      partition_alloc::SlotStart::Unchecked(object).Untag().value();
   for (const auto& slot : slots_) {
     if (slot.slot_start == slot_start) {
       return true;
@@ -101,8 +101,7 @@ bool ExtremeLightweightDetectorQuarantineBranch::Quarantine(
     // cannot fit within the capacity.
     root_->allocator_root_
         ->FreeNoHooksImmediate<partition_alloc::FreeFlags::kNone>(
-            partition_alloc::internal::UntaggedSlotStart::Unchecked(slot_start)
-                .Tag(),
+            partition_alloc::UntaggedSlotStart::Unchecked(slot_start).Tag(),
             slot_span);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return false;
@@ -178,9 +177,8 @@ ALWAYS_INLINE void ExtremeLightweightDetectorQuarantineBranch::PurgeInternal(
     const auto& to_free = slots_.back();
     size_t to_free_size = to_free.usable_size;
 
-    const auto slot_start =
-        partition_alloc::internal::UntaggedSlotStart::Checked(
-            to_free.slot_start, &root_->allocator_root_.get());
+    const auto slot_start = partition_alloc::UntaggedSlotStart::Checked(
+        to_free.slot_start, &root_->allocator_root_.get());
     auto* slot_span =
         partition_alloc::internal::SlotSpanMetadata::FromSlotStart(
             slot_start, &root_->allocator_root_.get());
@@ -244,9 +242,8 @@ ALWAYS_INLINE void ExtremeLightweightDetectorQuarantineBranch::BatchFree(
     size_t num_of_slots) {
   CHECK(num_of_slots <= kMaxFreeTimesPerPurge);
   for (size_t i = 0; i < num_of_slots; ++i) {
-    const auto slot_start =
-        partition_alloc::internal::UntaggedSlotStart::Checked(
-            to_be_freed[i], &root_->allocator_root_.get());
+    const auto slot_start = partition_alloc::UntaggedSlotStart::Checked(
+        to_be_freed[i], &root_->allocator_root_.get());
     DCHECK(slot_start);
     auto* slot_span =
         partition_alloc::internal::SlotSpanMetadata::FromSlotStart(

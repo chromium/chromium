@@ -92,7 +92,7 @@ SlotAddressAndSize SlotAddressAndSize::From(
     PA_IMMEDIATE_CRASH();
   }
   return SlotAddressAndSize{
-      .slot_start = internal::UntaggedSlotStart::Unchecked(
+      .slot_start = UntaggedSlotStart::Unchecked(
           slot_span_start.value() +
           bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span)),
       .size = bucket->slot_size};

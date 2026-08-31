@@ -687,7 +687,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // Use a slightly larger buffer to be safe.
   constexpr size_t kMaxBatchSize = 64;
   count = std::min(count, static_cast<int>(kMaxBatchSize));
-  std::array<internal::UntaggedSlotStart, kMaxBatchSize> slot_starts;
+  std::array<UntaggedSlotStart, kMaxBatchSize> slot_starts;
 
   {
     // Same as calling RawAlloc() |count| times, but acquires the lock only
@@ -704,7 +704,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
       // only used for direct-mapped allocations and single-slot ones anyway,
       // which are not handled here.
       size_t ret_slot_size;
-      internal::UntaggedSlotStart slot_start =
+      UntaggedSlotStart slot_start =
           root_->AllocFromBucket<AllocFlags::kFastPathOrReturnNull |
                                  AllocFlags::kReturnNull>(
               &PA_UNSAFE_TODO(root_->buckets_[bucket_index]),
@@ -795,8 +795,7 @@ void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
   // acquisitions can be expensive.
   internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   while (head) {
-    internal::UntaggedSlotStart slot_start =
-        internal::SlotStart::Unchecked(head).Untag();
+    UntaggedSlotStart slot_start = SlotStart::Unchecked(head).Untag();
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     head = head->GetNextForThreadCache(slot_size, offset_lookup_);
 #else
@@ -898,7 +897,7 @@ PartitionRoot* ThreadCache::GetRoot() {
   return root_;
 }
 
-bool ThreadCache::IsInFreelist(internal::UntaggedSlotStart address,
+bool ThreadCache::IsInFreelist(UntaggedSlotStart address,
                                size_t bucket_index,
                                size_t& position) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
@@ -919,7 +918,7 @@ bool ThreadCache::IsInFreelist(internal::UntaggedSlotStart address,
   size_t index = 0;
   size_t length = bucket.count;
   while (entry != nullptr && index < length) {
-    if (address == internal::SlotStart::Unchecked(entry).Untag()) {
+    if (address == SlotStart::Unchecked(entry).Untag()) {
       position = index;
       return true;
     }

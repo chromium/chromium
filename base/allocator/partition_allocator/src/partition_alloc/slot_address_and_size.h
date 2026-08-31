@@ -22,7 +22,7 @@ class ReservationOffsetTableAddressInfo;
 }
 
 struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotAddressAndSize {
-  internal::UntaggedSlotStart slot_start = {};
+  UntaggedSlotStart slot_start = {};
   size_t size = 0u;
 
   // Gets the start address and size of the allocated slot. The input |address|

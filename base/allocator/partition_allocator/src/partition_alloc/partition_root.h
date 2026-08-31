@@ -522,7 +522,7 @@ class alignas(internal::kPartitionCachelineSize)
   PA_NOINLINE void FreeInline(void* object,
                               FreeHintType<FreeHintFlags(flags)> hint);
   // |object| must be a non-null pointer.
-  PA_ALWAYS_INLINE std::pair<internal::SlotStart, internal::SlotSpanMetadata*>
+  PA_ALWAYS_INLINE std::pair<SlotStart, internal::SlotSpanMetadata*>
   GetSlotStartAndSlotSpanFromAddress(void* object);
 
   template <FreeFlags flags = FreeFlags::kNone>
@@ -544,18 +544,18 @@ class alignas(internal::kPartitionCachelineSize)
   PA_NOINLINE static PartitionRoot* GetRootFromAddress(void* object);
 
   template <FreeFlags flags>
-  PA_ALWAYS_INLINE void FreeNoHooksImmediate(internal::SlotStart slot_start,
+  PA_ALWAYS_INLINE void FreeNoHooksImmediate(SlotStart slot_start,
                                              SlotSpanMetadata* slot_span);
   template <FreeFlags flags>
   PA_ALWAYS_INLINE void FreeNoHooksImmediate(
-      internal::SlotStart slot_start,
+      SlotStart slot_start,
       SlotSpanMetadata* slot_span,
       FreeHintType<FreeHintFlags(flags)> hint);
   // Immediately frees the pointer bypassing the quarantine. `slot_start` is the
   // beginning of the slot that contains `object`.
   template <FreeFlags flags>
   PA_ALWAYS_INLINE void FreeNoHooksImmediateInternal(
-      internal::SlotStart slot_start,
+      SlotStart slot_start,
       SlotSpanMetadata* slot_span,
       FreeHintType<FreeHintFlags(flags)> hint,
       const internal::BucketSizeDetails& size_details);
@@ -585,7 +585,7 @@ class alignas(internal::kPartitionCachelineSize)
           PageAccessibilityConfiguration::Permissions) const;
 
   PA_ALWAYS_INLINE size_t
-  AllocationCapacityFromSlotStart(internal::UntaggedSlotStart slot_start) const;
+  AllocationCapacityFromSlotStart(UntaggedSlotStart slot_start) const;
   PA_NOINLINE size_t AllocationCapacityFromRequestedSize(size_t size) const;
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -644,17 +644,17 @@ class alignas(internal::kPartitionCachelineSize)
       size_t requested_size,
       SlotSpanMetadata* slot_span) const;
 
-  PA_ALWAYS_INLINE void FreeInSlotSpan(internal::UntaggedSlotStart slot_start,
+  PA_ALWAYS_INLINE void FreeInSlotSpan(UntaggedSlotStart slot_start,
                                        SlotSpanMetadata* slot_span)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
 
   // Frees memory, with |slot_start| as returned by |RawAlloc()|.
-  PA_ALWAYS_INLINE void RawFree(internal::SlotStart slot_start,
+  PA_ALWAYS_INLINE void RawFree(SlotStart slot_start,
                                 SlotSpanMetadata* slot_span)
       PA_LOCKS_EXCLUDED(internal::PartitionRootLock(this));
 
   PA_ALWAYS_INLINE void RawFreeWithThreadCache(
-      internal::SlotStart slot_start,
+      SlotStart slot_start,
       const internal::BucketSizeDetails& size_details,
       SlotSpanMetadata* slot_span);
 
@@ -662,9 +662,8 @@ class alignas(internal::kPartitionCachelineSize)
   // Sets a new MTE tag on the slot. This must not be called when an object
   // enters BRP quarantine because it might cause a race with |raw_ptr|'s
   // ref-count decrement. (crbug.com/357526108)
-  PA_ALWAYS_INLINE void RetagSlotIfNeeded(
-      internal::UntaggedSlotStart slot_start_ptr,
-      size_t slot_size);
+  PA_ALWAYS_INLINE void RetagSlotIfNeeded(UntaggedSlotStart slot_start_ptr,
+                                          size_t slot_size);
 #endif
 
   // This is safe to do because we are switching to a bucket distribution with
@@ -859,21 +858,19 @@ class alignas(internal::kPartitionCachelineSize)
   //   Note, |usable_size| is guaranteed to be no smaller than Alloc()'s
   //   |requested_size|, and no larger than |slot_size|.
   template <AllocFlags flags>
-  PA_ALWAYS_INLINE internal::UntaggedSlotStart RawAlloc(
-      Bucket* bucket,
-      size_t raw_size,
-      size_t slot_span_alignment,
-      size_t* usable_size,
-      size_t* slot_size,
-      bool* is_already_zeroed);
+  PA_ALWAYS_INLINE UntaggedSlotStart RawAlloc(Bucket* bucket,
+                                              size_t raw_size,
+                                              size_t slot_span_alignment,
+                                              size_t* usable_size,
+                                              size_t* slot_size,
+                                              bool* is_already_zeroed);
   template <AllocFlags flags>
-  PA_ALWAYS_INLINE internal::UntaggedSlotStart AllocFromBucket(
-      Bucket* bucket,
-      size_t raw_size,
-      size_t slot_span_alignment,
-      size_t* usable_size,
-      size_t* slot_size,
-      bool* is_already_zeroed)
+  PA_ALWAYS_INLINE UntaggedSlotStart AllocFromBucket(Bucket* bucket,
+                                                     size_t raw_size,
+                                                     size_t slot_span_alignment,
+                                                     size_t* usable_size,
+                                                     size_t* slot_size,
+                                                     bool* is_already_zeroed)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
 
   // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
@@ -890,7 +887,7 @@ class alignas(internal::kPartitionCachelineSize)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
   void DecommitEmptySlotSpans()
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
-  PA_ALWAYS_INLINE void RawFreeLocked(internal::UntaggedSlotStart slot_start,
+  PA_ALWAYS_INLINE void RawFreeLocked(UntaggedSlotStart slot_start,
                                       SlotSpanMetadata* slot_span)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
   internal::ThreadCache* MaybeInitThreadCache()
@@ -911,7 +908,7 @@ class alignas(internal::kPartitionCachelineSize)
   GetSchedulerLoopQuarantineRoot();
 
   PA_ALWAYS_INLINE void SchedulerLoopQuarantine(
-      internal::SlotStart slot_start,
+      SlotStart slot_start,
       SlotSpanMetadata* slot_span,
       const internal::BucketSizeDetails& size_details);
 
@@ -926,10 +923,10 @@ class alignas(internal::kPartitionCachelineSize)
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PA_NOINLINE void QuarantineForBrp(const SlotSpanMetadata* slot_span,
-                                    internal::SlotStart slot_start);
+                                    SlotStart slot_start);
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  static void Zap(internal::SlotStart slot_start,
+  static void Zap(SlotStart slot_start,
                   SlotSpanMetadata* slot_span,
                   uint32_t type_id);
   static void RecordLeakSizePerTypeId(uint32_t type_id, size_t slot_size);

@@ -87,7 +87,7 @@ class SchedulerLoopQuarantineTest : public testing::Test {
   QuarantineBranch* GetQuarantineBranch() { return branch_; }
 
   void Quarantine(void* object) {
-    internal::SlotStart slot_start = internal::SlotStart::Unchecked(object);
+    SlotStart slot_start = SlotStart::Unchecked(object);
     auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(
         slot_start.Untag(), GetPartitionRoot());
     auto size_details =
@@ -96,7 +96,7 @@ class SchedulerLoopQuarantineTest : public testing::Test {
   }
 
   size_t GetObjectSize(void* object) {
-    internal::SlotStart slot_start = internal::SlotStart::Unchecked(object);
+    SlotStart slot_start = SlotStart::Unchecked(object);
     auto* entry_slot_span = internal::SlotSpanMetadata::FromSlotStart(
         slot_start.Untag(), GetPartitionRoot());
     return entry_slot_span->bucket->slot_size;
@@ -270,7 +270,7 @@ TEST(SchedulerLoopQuarantineTest, ExclusionWithInvalidFirstPartition) {
     branch.Configure(
         qroot, {.branch_capacity_in_bytes = 1024, .enable_quarantine = true});
 
-    internal::SlotStart slot_start = internal::SlotStart::Unchecked(ptr);
+    SlotStart slot_start = SlotStart::Unchecked(ptr);
     auto* slot_span =
         internal::SlotSpanMetadata::FromSlotStart(slot_start.Untag(), root1);
     auto size_details = root1->SlotSpanToBucketSizeDetails(slot_span);

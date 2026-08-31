@@ -108,8 +108,8 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     size_t usable_size = (~word & 0x0000FFFE00000000u) >> 32;
     size_t object_size = (~word & 0x00000000FFFF0000u) >> 16;
     bool is_aligned = ~word & 0x0000000100000000u;
-    partition_alloc::internal::UntaggedSlotStart slot_start =
-        partition_alloc::internal::SlotStart::Unchecked(object).Untag();
+    partition_alloc::UntaggedSlotStart slot_start =
+        partition_alloc::SlotStart::Unchecked(object).Untag();
     partition_alloc::internal::SlotSpanMetadata* slot_span =
         partition_alloc::internal::SlotSpanMetadata::FromSlotStart(slot_start);
     partition_alloc::PartitionRoot* root =

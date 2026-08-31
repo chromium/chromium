@@ -768,8 +768,7 @@ void FreeFullSlotSpan(PartitionRoot* root, const SlotSpan* slot_span) {
   uintptr_t address = SlotSpan::ToSlotSpanStart(slot_span, root).value();
   size_t i;
   for (i = 0; i < num_slots; ++i) {
-    root->Free(
-        internal::UntaggedSlotStart::Unchecked(address).Tag().ToObject());
+    root->Free(UntaggedSlotStart::Unchecked(address).Tag().ToObject());
     address += size;
   }
   EXPECT_TRUE(slot_span->is_empty());
@@ -4525,7 +4524,7 @@ TEST_P(PartitionAllocTest, FundamentalAlignment) {
     // C % kAlignment == (slot_size - ExtraAllocSize(allocator)) % kAlignment.
     // C % kAlignment == (-ExtraAllocSize(allocator)) % kAlignment.
     EXPECT_EQ(allocator.root()->AllocationCapacityFromSlotStart(
-                  internal::UntaggedSlotStart::Unchecked(slot_start)) %
+                  UntaggedSlotStart::Unchecked(slot_start)) %
                   fundamental_alignment,
               -ExtraAllocSize(allocator) % fundamental_alignment);
 
@@ -6774,11 +6773,11 @@ TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
   size_t bucket_index =
       SizeToIndex(kTestAllocSize + kExtraAllocSizeWithoutMetadata);
   size_t pos1, pos2;
-  EXPECT_TRUE(tcache1->IsInFreelist(
-      internal::SlotStart::Unchecked(ptr1).Untag(), bucket_index, pos1));
+  EXPECT_TRUE(tcache1->IsInFreelist(SlotStart::Unchecked(ptr1).Untag(),
+                                    bucket_index, pos1));
   EXPECT_EQ(pos1, 0u);
-  EXPECT_TRUE(tcache2->IsInFreelist(
-      internal::SlotStart::Unchecked(ptr2).Untag(), bucket_index, pos2));
+  EXPECT_TRUE(tcache2->IsInFreelist(SlotStart::Unchecked(ptr2).Untag(),
+                                    bucket_index, pos2));
   EXPECT_EQ(pos2, 0u);
 }
 

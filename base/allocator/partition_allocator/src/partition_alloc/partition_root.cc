@@ -1369,7 +1369,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     void* object,
     internal::SlotSpanMetadata* slot_span,
     size_t new_size) {
-  auto slot_start = internal::SlotStart::Unchecked(object).Untag();
+  auto slot_start = SlotStart::Unchecked(object).Untag();
   PA_DCHECK(
       GetReservationOffsetTable().IsManagedByNormalBuckets(slot_start.value()));
 
@@ -2010,7 +2010,7 @@ void PartitionRoot::ReconfigureSchedulerLoopQuarantineForCurrentThread(
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 PA_NOINLINE void PartitionRoot::QuarantineForBrp(
     const internal::SlotSpanMetadata* slot_span,
-    internal::SlotStart slot_start) {
+    SlotStart slot_start) {
   auto usable_size = GetSlotUsableSize(slot_span);
   auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
   if (hook) [[unlikely]] {
@@ -2024,7 +2024,7 @@ PA_NOINLINE void PartitionRoot::QuarantineForBrp(
 
 PA_NOINLINE size_t
 PartitionRoot::GetSlotSizeForTesting(const void* object) const {
-  auto slot_start = internal::SlotStart::Unchecked(object).Untag();
+  auto slot_start = SlotStart::Unchecked(object).Untag();
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, this);
   return slot_span->bucket->slot_size;
 }

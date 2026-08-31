@@ -21,15 +21,19 @@
 namespace partition_alloc {
 
 class PartitionRoot;
+class SlotStart;
+class UntaggedSlotStart;
 
 namespace internal {
 
-class UntaggedSlotStart;
+class SlotSpanStart;
+
+}  // namespace internal
 
 // Represents an address of a slot span start.
 // A slot span start is always also a slot start. This type is MTE-untagged.
 // It can be safely converted to `UntaggedSlotStart` or `SlotStart`.
-class SlotSpanStart {
+class internal::SlotSpanStart {
  public:
   PA_ALWAYS_INLINE constexpr SlotSpanStart() = default;
   PA_ALWAYS_INLINE explicit constexpr SlotSpanStart(uintptr_t address)
@@ -67,9 +71,9 @@ class SlotSpanStart {
   uintptr_t address_ = 0;
 };
 
-static_assert(sizeof(SlotSpanStart) == sizeof(void*));
-static_assert(std::is_trivially_copyable_v<SlotSpanStart>);
-static_assert(std::is_trivially_destructible_v<SlotSpanStart>);
+static_assert(sizeof(internal::SlotSpanStart) == sizeof(void*));
+static_assert(std::is_trivially_copyable_v<internal::SlotSpanStart>);
+static_assert(std::is_trivially_destructible_v<internal::SlotSpanStart>);
 
 // Represents an address of a slot start, MTE-tagged.
 // This type should be used when dealing with pointers that may carry an MTE
@@ -204,6 +208,8 @@ static_assert(sizeof(UntaggedSlotStart) == sizeof(void*));
 static_assert(std::is_trivially_copyable_v<UntaggedSlotStart>);
 static_assert(std::is_trivially_destructible_v<UntaggedSlotStart>);
 
+namespace internal {
+
 constexpr ptrdiff_t SlotSpanStart::offset(UntaggedSlotStart other) const {
   return offset(other.value());
 }
@@ -218,15 +224,17 @@ constexpr UntaggedSlotStart SlotSpanStart::GetNthSlotStart(
   return UntaggedSlotStart::Unchecked(address_ + n * slot_size);
 }
 
-SlotStart UntaggedSlotStart::Tag() const {
-  return SlotStart::Unchecked(reinterpret_cast<uintptr_t>(TagAddr(address_)));
+}  // namespace internal
+
+inline SlotStart UntaggedSlotStart::Tag() const {
+  return SlotStart::Unchecked(
+      reinterpret_cast<uintptr_t>(internal::TagAddr(address_)));
 }
 
 constexpr UntaggedSlotStart SlotStart::Untag() const {
-  return UntaggedSlotStart::Unchecked(UntagAddr(address_));
+  return UntaggedSlotStart::Unchecked(internal::UntagAddr(address_));
 }
 
-}  // namespace internal
 }  // namespace partition_alloc
 
 #endif  // PARTITION_ALLOC_SLOT_START_H_

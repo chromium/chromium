@@ -137,7 +137,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
 bool GwpAsanSupport::CanReuse(uintptr_t slot_start) {
   const size_t kSlotSize = 2 * internal::SystemPageSize();
   return internal::InSlotMetadata::From(
-             {internal::UntaggedSlotStart::Unchecked(slot_start), kSlotSize})
+             {UntaggedSlotStart::Unchecked(slot_start), kSlotSize})
       ->CanBeReusedByGwpAsan();
 }
 
