@@ -536,6 +536,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
 
   static size_t EstimateBitstreamBufferSize(const Bitrate& bitrate,
                                             uint32_t framerate,
+                                            VideoPixelFormat input_format,
                                             const gfx::Size& coded_size);
 };
 

@@ -90,6 +90,25 @@ TEST_F(SharedImageFactoryTest, Basic) {
   EXPECT_TRUE(factory_->DestroySharedImage(mailbox));
 }
 
+#if BUILDFLAG(IS_APPLE)
+TEST_F(SharedImageFactoryTest, CreateVideoEncodeGpuMemoryBufferHandles) {
+  const gfx::Size size(256, 256);
+  const gfx::GpuExtraInfo gpu_extra_info;
+  for (const auto format :
+       {viz::MultiPlaneFormat::kNV12, viz::MultiPlaneFormat::kNV16,
+        viz::MultiPlaneFormat::kNV24, viz::MultiPlaneFormat::kNV12A,
+        viz::MultiPlaneFormat::kP010, viz::MultiPlaneFormat::kP210,
+        viz::MultiPlaneFormat::kP410}) {
+    EXPECT_TRUE(SharedImageFactory::IsNativeBufferSupported(
+        format, gfx::BufferUsage::SCANOUT_VEA_CPU_READ, gpu_extra_info));
+    EXPECT_FALSE(factory_
+                     ->CreateNativeGpuMemoryBufferHandle(
+                         size, format, gfx::BufferUsage::SCANOUT_VEA_CPU_READ)
+                     .is_null());
+  }
+}
+#endif
+
 TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;

@@ -809,7 +809,8 @@ EncoderStatus NdkVideoEncodeAccelerator::Initialize(
   }
 
   const size_t bitstream_buffer_size = EstimateBitstreamBufferSize(
-      config_.bitrate, config_.framerate, config.input_visible_size);
+      config_.bitrate, config_.framerate, config.input_format,
+      config.input_visible_size);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::RequireBitstreamBuffers,

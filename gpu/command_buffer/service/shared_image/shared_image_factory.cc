@@ -438,8 +438,12 @@ bool SharedImageFactory::IsNativeBufferSupported(
              format == viz::SinglePlaneFormat::kRGBA_F16 ||
              format == viz::SinglePlaneFormat::kBGRA_1010102 ||
              format == viz::MultiPlaneFormat::kNV12 ||
+             format == viz::MultiPlaneFormat::kNV16 ||
+             format == viz::MultiPlaneFormat::kNV24 ||
              format == viz::MultiPlaneFormat::kNV12A ||
-             format == viz::MultiPlaneFormat::kP010;
+             format == viz::MultiPlaneFormat::kP010 ||
+             format == viz::MultiPlaneFormat::kP210 ||
+             format == viz::MultiPlaneFormat::kP410;
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
     case gfx::BufferUsage::PROTECTED_SCANOUT:
     case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:

@@ -980,7 +980,7 @@ EncoderStatus VTVideoEncodeAccelerator::Initialize(
   frame_rate_ = config.framerate;
   bitrate_ = config.bitrate;
   bitstream_buffer_size_ = EstimateBitstreamBufferSize(
-      bitrate_, frame_rate_, config.input_visible_size);
+      bitrate_, frame_rate_, input_format_, config.input_visible_size);
   require_low_delay_ = config.require_low_delay;
   required_encoder_type_ = config.required_encoder_type;
 

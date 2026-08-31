@@ -473,9 +473,9 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
   }
   bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
 
-  bitstream_buffer_size_ =
-      EstimateBitstreamBufferSize(bitrate_allocation_.GetSumBitrate(),
-                                  frame_rate_, config.input_visible_size);
+  bitstream_buffer_size_ = EstimateBitstreamBufferSize(
+      bitrate_allocation_.GetSumBitrate(), frame_rate_, input_format_,
+      config.input_visible_size);
   gop_length_ = config.gop_length.value_or(kDefaultGOPLength);
   low_latency_mode_ = config.require_low_delay;
   drop_frame_thresh_percentage_ = config.drop_frame_thresh_percentage;
@@ -1289,7 +1289,8 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   }
 
   bitstream_buffer_size_ = EstimateBitstreamBufferSize(
-      bitrate_allocation_.GetSumBitrate(), frame_rate_, input_visible_size_);
+      bitrate_allocation_.GetSumBitrate(), frame_rate_, input_format_,
+      input_visible_size_);
   bitstream_buffer_queue_.clear();
   // Reset the input frame counter since MFT was notified to end the streaming
   // and restart with new frame size.

@@ -460,11 +460,9 @@ EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
            << config.AsHumanReadableString();
 
   config_ = config;
-  // A NV12 format frame consists of a Y-plane which occupies the same
-  // size as the frame itself, and an UV-plane which is half the size
-  // of the frame. Reserving a buffer of 1 + 1/2 = 3/2 times the size
-  // of the frame bytes should be enough for a compressed bitstream.
-  bitstream_buffer_size_ = config.input_visible_size.GetArea() * 3 / 2;
+  bitstream_buffer_size_ = EstimateBitstreamBufferSize(
+      config.bitrate, config.framerate, config.input_format,
+      config.input_visible_size);
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
   client_ = client_ptr_factory_->GetWeakPtr();
   media_log_ = std::move(media_log);

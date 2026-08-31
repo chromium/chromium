@@ -1223,4 +1223,22 @@ INSTANTIATE_TEST_SUITE_P(VideoEncodeAcceleratorAdapterTest,
                                            PIXEL_FORMAT_NV12,
                                            PIXEL_FORMAT_XRGB));
 
+class BitstreamBufferSizeTestPeer : public FakeVideoEncodeAccelerator {
+ public:
+  using VideoEncodeAccelerator::EstimateBitstreamBufferSize;
+};
+
+TEST(VideoEncodeAcceleratorTest, EstimateBitstreamBufferSizeUsesInputFormat) {
+  const gfx::Size coded_size(1280, 720);
+  for (const auto format :
+       {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_NV16,
+        PIXEL_FORMAT_NV24, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_P210LE,
+        PIXEL_FORMAT_P410LE}) {
+    EXPECT_EQ(BitstreamBufferSizeTestPeer::EstimateBitstreamBufferSize(
+                  Bitrate::ConstantBitrate(0u), /*framerate=*/30u, format,
+                  coded_size),
+              VideoFrame::AllocationSize(format, coded_size) + 2048u);
+  }
+}
+
 }  // namespace media
