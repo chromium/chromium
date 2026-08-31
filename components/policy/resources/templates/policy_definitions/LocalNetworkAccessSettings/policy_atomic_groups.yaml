@@ -11,6 +11,3 @@ LocalNetworkAccessSettings:
   - LoopbackNetworkAllowedForUrls
   - LoopbackNetworkBlockedForUrls
   - LocalNetworkAccessPermissionsPolicyDefaultEnabled
-  - DeviceLocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessIpAddressSpaceOverrides
-  - DeviceLocalNetworkAccessBlockedForUrls
