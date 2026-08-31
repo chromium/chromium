@@ -184,6 +184,12 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 - (void)updateToggleButtonText {
   self.toggleButton.title =
       (g_current_anchor == WindowAnchor::kBottom) ? @"▲" : @"▼";
+  int string_id = (g_current_anchor == WindowAnchor::kBottom)
+                      ? IDS_MOVE_TO_TOP_BUTTON
+                      : IDS_MOVE_TO_BOTTOM_BUTTON;
+  NSString* tooltip_text = l10n_util::GetNSString(string_id);
+  self.toggleButton.toolTip = tooltip_text;
+  self.toggleButton.accessibilityLabel = tooltip_text;
 }
 
 - (BOOL)isRToL {
