@@ -376,12 +376,6 @@ void ManualFillingControllerImpl::UpdateVisibility() {
             last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&
             last_focused_field_type_ != FocusedFieldType::kUnknown),
         ManualFillingViewInterface::ShouldShowOnLargeFormFactor(
-            last_focused_field_type_ ==
-                FocusedFieldType::kFillableUsernameField ||
-            last_focused_field_type_ ==
-                FocusedFieldType::kFillablePasswordField ||
-            last_focused_field_type_ ==
-                FocusedFieldType::kContenteditableField ||
             available_sources_.contains(FillingSource::AUTOFILL)),
         ManualFillingViewInterface::IsContentEditable(
             last_focused_field_type_ ==
