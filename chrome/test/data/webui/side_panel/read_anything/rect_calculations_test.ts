@@ -25,10 +25,9 @@ suite('RectCalculations', () => {
     let halfHeight: number;
 
     setup(() => {
-      windowHeight = document.documentElement.clientHeight || 600;
+      windowHeight = 600;
       halfHeight = windowHeight / 2;
-      setWindowSize(
-          windowHeight, document.documentElement.clientWidth || 1000);
+      setWindowSize(windowHeight, 1000);
     });
 
     test('fully inside window returns true', () => {
@@ -77,11 +76,10 @@ suite('RectCalculations', () => {
     let minorityHeight: number;
 
     setup(() => {
-      windowHeight = document.documentElement.clientHeight || 600;
+      windowHeight = 600;
       majorityHeight = windowHeight * MOSTLY_VISIBLE_PERCENT;
       minorityHeight = windowHeight - majorityHeight;
-      setWindowSize(
-          windowHeight, document.documentElement.clientWidth || 1000);
+      setWindowSize(windowHeight, 1000);
     });
 
     test('fully inside window returns true', () => {

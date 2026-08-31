@@ -32,10 +32,7 @@ export function isRectVisible(rect: DOMRect): boolean {
 }
 
 function isPointVisible(point: number) {
-  return (
-      (point >= 0) &&
-      ((point <= window.innerHeight) ||
-       (point <= document.documentElement.clientHeight)));
+  return (point >= 0) && (point <= window.innerHeight);
 }
 
 // Recalculates line positions based on the container and height.
