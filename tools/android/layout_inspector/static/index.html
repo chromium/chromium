@@ -12,16 +12,19 @@ found in the LICENSE file.
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
   <script src="utils.js"></script>
+  <script src="math.js"></script>
   <script src="model.js"></script>
   <script src="ui_common.js"></script>
+  <script src="layout_ui.js"></script>
   <script src="screenshot_ui.js"></script>
   <script src="app.js"></script>
 </head>
 <body>
   <div id="div-controls">
-    <button id="btn-load" class="action-button">Load</button>
+    <button id="btn-load" class="action-button"
+         data-hint="CTRL_LOAD">Load</button>
   </div>
-  <div id="div-main">
+  <div id="div-main" class="main-layout">
     <div id="div-pane-screenshot">
       <div id="div-screenshot">
         <div class="screenshot-inner">
@@ -29,6 +32,8 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
+    <div id="div-main-splitter"></div>
+    <div id="div-pane-view-tree"></div>
   </div>
   <div id="div-info-bar" class="idle">
     <div class="hint-text"></div>

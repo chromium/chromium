@@ -6,6 +6,7 @@
 :root {
   --body-padding: 5px;
   --color-sep: #888;
+  --splitter-size: 7px;
   --z-index-overlay: 1000;
 }
 
@@ -65,9 +66,25 @@ button {
   width: 100%;
 }
 
+.main-layout[data-layout="left"] {
+  flex-direction: row;
+}
+
+.main-layout[data-layout="right"] {
+  flex-direction: row-reverse;
+}
+
+.main-layout[data-layout="top"] {
+  flex-direction: column;
+}
+
+.main-layout[data-layout="bottom"] {
+  flex-direction: column-reverse;
+}
+
 #div-pane-screenshot {
   display: flex;
-  flex-basis: 100%;
+  flex-basis: 50%;
   flex-direction: column;
   flex-grow: 0;
   flex-shrink: 0;
@@ -87,6 +104,11 @@ button {
   overflow: auto;
 }
 
+#div-main[data-layout="top"] #div-screenshot,
+#div-main[data-layout="bottom"] #div-screenshot {
+  align-items: safe center;
+}
+
 #div-screenshot .screenshot-inner {
   cursor: crosshair;
   flex-shrink: 0;
@@ -97,6 +119,55 @@ button {
   display: block;
   image-rendering: pixelated;
   transition: opacity 0.15s;
+}
+
+#div-main-splitter {
+  background-color: transparent;
+  flex-basis: var(--splitter-size);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+#div-main[data-layout="left"] #div-main-splitter,
+#div-main[data-layout="right"] #div-main-splitter {
+  cursor: col-resize;
+}
+
+#div-main[data-layout="top"] #div-main-splitter,
+#div-main[data-layout="bottom"] #div-main-splitter {
+  cursor: row-resize;
+}
+
+#div-main-splitter::before {
+  background-color: var(--color-sep);
+  content: '';
+  position: absolute;
+}
+
+#div-main[data-layout="left"] #div-main-splitter::before,
+#div-main[data-layout="right"] #div-main-splitter::before {
+  height: 100%;
+  left: 3px;
+  top: 0;
+  width: 1px;
+}
+
+#div-main[data-layout="top"] #div-main-splitter::before,
+#div-main[data-layout="bottom"] #div-main-splitter::before {
+  height: 1px;
+  left: 0;
+  top: 3px;
+  width: 100%;
+}
+
+#div-pane-view-tree {
+  display: flex;
+  flex-basis: 0;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 5px;
+  overflow: hidden;
 }
 
 #div-info-bar {

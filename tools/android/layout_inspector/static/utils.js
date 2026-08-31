@@ -19,3 +19,26 @@ function checkEnum(enumObj) {
   }
   return enumObj;
 }
+
+/**
+ * Asynchronously loads an image Blob into an HTMLImageElement, managing the
+ * temporary URL lifecycle.
+ *
+ * @param {!Blob} blob The raw image data blob.
+ * @return {!Promise<!HTMLImageElement>} Rejects if image loading fails.
+ */
+async function convertImageBlobToImage(blob) {
+  const blobUrl = URL.createObjectURL(blob);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(blobUrl);
+      resolve(img);
+    };
+    img.onerror = (e) => {
+      URL.revokeObjectURL(blobUrl);
+      reject(new Error(e));
+    };
+    img.src = blobUrl;
+  });
+}

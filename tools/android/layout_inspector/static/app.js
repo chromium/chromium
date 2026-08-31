@@ -12,8 +12,10 @@ class MainElements {
   constructor() {
     const getById = (id) => document.getElementById(id);
     this.btnLoad = getById('btn-load');
+    this.divControls = getById('div-controls');
     this.divInfoBar = getById('div-info-bar');
     this.divMain = getById('div-main');
+    this.divMainSplitter = getById('div-main-splitter');
     this.divOverlay = getById('div-overlay');
     this.divPaneScreenshot = getById('div-pane-screenshot');
     this.divScreenshot = getById('div-screenshot');
@@ -43,8 +45,8 @@ class MainVis {
 
 /******** MainController ********/
 /**
- * Root coordinator mapping DOM events to model state changes and visual
- * updates to child controllers.
+ * Root coordinator mapping DOM events to model state changes and cascading
+ * layout or visual updates to child controllers.
  */
 class MainController {
   constructor(model, vis) {
@@ -53,17 +55,26 @@ class MainController {
     this.el = this.vis.el;
 
     this.hintCtrl = new HintController(this.vis.infoBarVis);
+
+    this.layoutCtrl = new LayoutController(
+        this.model, this.el.divMain, this.el.divPaneScreenshot,
+        this.el.divMainSplitter, this.hintCtrl);
   }
 
   // Event Handlers - File Operations/Markup
   async handleLoad() {
     this.vis.clearUI();
     this.vis.overlayVis.show('overlay-loading', 'Loading...');
-    try {
-      await this.model.fetchData();
+    await this.model.unload();
 
-      await this.vis.screenshotVis.drawScreenshot(this.model.screenshotBlob,
-                                                  this.model.visOpts);
+    try {
+      await this.model.load();  // Also updates `visOpts`.
+
+      this.vis.screenshotVis.init(this.model.imgScreenshot, this.model.visOpts);
+
+      const {wDims} = this.model.visOpts;
+      this.layoutCtrl.setLayoutMode(LayoutMode.fromVector(-wDims.h, -wDims.w));
+
     } catch (error) {
       console.error('Failed to load screen data:', error);
       alert(`An error occurred: ${error.message}`);
@@ -74,11 +85,19 @@ class MainController {
 
   bindAll() {
     this.el.btnLoad.addEventListener('click', () => this.handleLoad());
-    this.el.btnLoad.addEventListener('mouseover', () => {
-      this.hintCtrl.setHint(HINT.CTRL_LOAD);
+
+    // Delegated hover hints for controls.
+    this.el.divControls.addEventListener('mouseover', (e) => {
+      const target = e.target.closest('[data-hint]');
+      if (target) {
+        const hintKey = target.getAttribute('data-hint');
+        if (HINT[hintKey]) this.hintCtrl.setHint(HINT[hintKey]);
+      }
     });
-    this.el.btnLoad.addEventListener('mouseout', () => {
-      this.hintCtrl.clear();
+    this.el.divControls.addEventListener('mouseout', (e) => {
+      if (!e.relatedTarget || !this.el.divControls.contains(e.relatedTarget)) {
+        this.hintCtrl.clear();
+      }
     });
   }
 
