@@ -17,6 +17,9 @@
 // to browse the item in case of a folder or download it in case of a file.
 - (void)selectOrDeselectDriveItem:(NSString*)itemIdentifier;
 
+// Informs the mutator that a disabled item was tapped.
+- (void)didTapDisabledDriveItem:(NSString*)itemIdentifier;
+
 // Ask the mutator to load the first drive items.
 - (void)loadFirstPage;
 

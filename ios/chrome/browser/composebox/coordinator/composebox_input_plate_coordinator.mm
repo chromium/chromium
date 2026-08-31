@@ -913,6 +913,11 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   return [_mediator maxTabAttachmentCount];
 }
 
+- (NSUInteger)maxDriveAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator remainingAttachmentCapacity];
+}
+
 - (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
     (ComposeboxPickerPresenter*)presenter {
   return [_mediator attachedImageAssetIDs];

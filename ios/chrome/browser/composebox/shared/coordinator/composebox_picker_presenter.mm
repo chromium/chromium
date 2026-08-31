@@ -210,11 +210,16 @@
   if (!_browser || ![self canShowDriveFilePicker]) {
     return;
   }
+  [self createSnackbarPresenterIfNeeded];
+  NSUInteger maxDriveAttachmentCount =
+      [self.dataSource maxDriveAttachmentCountForPresenter:self];
   id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
       _browser->GetCommandDispatcher(), DriveFilePickerCommands);
   [driveFilePickerCommands
       showDriveFilePickerWithComposeboxDelegate:self.delegate
-                             baseViewController:_baseViewController];
+                             baseViewController:_baseViewController
+                             maxAttachmentCount:maxDriveAttachmentCount
+                              snackbarPresenter:_snackbarPresenter];
 }
 
 #pragma mark - UIImagePickerControllerDelegate

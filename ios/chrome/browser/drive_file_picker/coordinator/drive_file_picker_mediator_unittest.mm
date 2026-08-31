@@ -83,6 +83,7 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
 @property(nonatomic, assign) DriveFilePickerOptions options;
 
 @property(nonatomic, assign) BOOL fileSelectionSubmitted;
+@property(nonatomic, assign) NSUInteger attachmentLimitReachedCount;
 
 @end
 
@@ -127,6 +128,10 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
     didPickDriveItems:(const std::vector<DriveItem>&)driveItems {
 }
 
+- (void)mediatorDidReachAttachmentLimit:(DriveFilePickerMediator*)mediator {
+  self.attachmentLimitReachedCount++;
+}
+
 @end
 
 // Fake drive file picker commands for `DriveFilePickerMediator`.
@@ -145,7 +150,10 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
 - (void)showDriveFilePickerWithComposeboxDelegate:
             (id<ComposeboxPickerPresenterDelegate>)delegate
                                baseViewController:
-                                   (UIViewController*)baseViewController {
+                                   (UIViewController*)baseViewController
+                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
+                                                      snackbarPresenter {
 }
 @end
 
@@ -157,6 +165,8 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
 @property(nonatomic, assign) DriveFilePickerSortingDirection sortingDirection;
 @property(nonatomic, strong) NSArray<DriveFilePickerItem*>* primaryItems;
 @property(nonatomic, strong) NSArray<DriveFilePickerItem*>* secondaryItems;
+@property(nonatomic, strong) NSSet<NSString*>* enabledItems;
+@property(nonatomic, assign) BOOL allFilesEnabled;
 @property(nonatomic, assign) DriveFilePickerFilter filter;
 @property(nonatomic, assign) BOOL setFetchedIconCalled;
 @property(nonatomic, strong) UIImage* lastFetchedIcon;
@@ -223,9 +233,11 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
 }
 
 - (void)setEnabledItems:(NSSet<NSString*>*)identifiers {
+  _enabledItems = identifiers;
 }
 
 - (void)setAllFilesEnabled:(BOOL)allFilesEnabled {
+  _allFilesEnabled = allFilesEnabled;
 }
 
 - (void)setFilter:(DriveFilePickerFilter)filter {
@@ -296,6 +308,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
     profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
     _identityManager = IdentityManagerFactory::GetForProfile(profile_.get());
@@ -417,6 +430,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     image_fetcher_ = nullptr;
     [mediator_ disconnect];
     mediator_ = nil;
+    browser_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -431,6 +445,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   raw_ptr<ChooseFileTabHelper> choose_file_tab_helper_;
   raw_ptr<drive::DriveService> drive_service_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<AuthenticationService> auth_service_;
@@ -739,4 +754,84 @@ TEST_F(DriveFilePickerMediatorTest, SigninDisabledClosesFilePicker) {
   GetApplicationContext()->GetLocalState()->SetBoolean(
       prefs::kSigninAllowedOnDevice, false);
   EXPECT_TRUE(fake_drive_file_picker_handler_.hideDriveFilePickerCalled);
+}
+
+// Tests that when presented for Composebox, attachment limit is enforced and
+// disabled state is communicated.
+TEST_F(DriveFilePickerMediatorTest, ComposeboxSelectionLimitEnforced) {
+  id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+  signin::MakePrimaryAccountAvailable(
+      _identityManager, base::SysNSStringToUTF8(identity.userEmail),
+      signin::ConsentLevel::kSignin);
+  std::unique_ptr<DriveFilePickerCollection> collection =
+      DriveFilePickerCollection::GetRoot(identity)->GetFolder(@"title", @"id");
+
+  mediator_ = [[DriveFilePickerMediator alloc]
+           initWithWebState:web_state_.get()
+                    options:DriveFilePickerOptions::Default()
+                     isRoot:NO
+              forComposebox:YES
+            identityManager:_identityManager
+      authenticationService:auth_service_];
+  mediator_.delegate = fake_delegate_;
+  mediator_.driveService = drive_service_;
+  mediator_.accountManagerService = _accountManagerService;
+  mediator_.driveFilePickerHandler = fake_drive_file_picker_handler_;
+  [mediator_ setCollection:std::move(collection)];
+  mediator_.imageFetcher = image_fetcher_;
+  mediator_.consumer = fake_consumer_;
+  mediator_.maxAttachmentCount = 2;
+
+  DriveItem file1;
+  file1.identifier = @"file_1";
+  file1.can_download = YES;
+  file1.mime_type = @"image/png";
+
+  DriveItem file2;
+  file2.identifier = @"file_2";
+  file2.can_download = YES;
+  file2.mime_type = @"image/png";
+
+  DriveItem file3;
+  file3.identifier = @"file_3";
+  file3.can_download = YES;
+  file3.mime_type = @"image/png";
+
+  DriveItem folder;
+  folder.identifier = @"folder_1";
+  folder.is_folder = YES;
+
+  DriveListResult fake_result;
+  fake_result.items = {file1, file2, file3, folder};
+  drive_list_->SetDriveListResult(fake_result);
+  drive_list_->SetListItemsCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  [mediator_ loadFirstPage];
+  task_environment_.RunUntilQuit();
+
+  // Select file 1.
+  [mediator_ selectOrDeselectDriveItem:file1.identifier];
+  EXPECT_EQ(0u, fake_delegate_.attachmentLimitReachedCount);
+
+  // Select file 2. Limit (2) is reached.
+  [mediator_ selectOrDeselectDriveItem:file2.identifier];
+  EXPECT_EQ(1u, fake_delegate_.attachmentLimitReachedCount);
+  EXPECT_FALSE(fake_consumer_.allFilesEnabled);
+  EXPECT_TRUE([fake_consumer_.enabledItems containsObject:file1.identifier]);
+  EXPECT_TRUE([fake_consumer_.enabledItems containsObject:file2.identifier]);
+  EXPECT_TRUE([fake_consumer_.enabledItems containsObject:folder.identifier]);
+  EXPECT_FALSE([fake_consumer_.enabledItems containsObject:file3.identifier]);
+
+  // Attempting to select file 3 is blocked and notifies delegate.
+  [mediator_ selectOrDeselectDriveItem:file3.identifier];
+  EXPECT_EQ(2u, fake_delegate_.attachmentLimitReachedCount);
+
+  // Tapping a disabled item directly notifies delegate.
+  [mediator_ didTapDisabledDriveItem:file3.identifier];
+  EXPECT_EQ(3u, fake_delegate_.attachmentLimitReachedCount);
+
+  // Deselecting file 2 opens up capacity again.
+  [mediator_ selectOrDeselectDriveItem:file2.identifier];
+  EXPECT_TRUE(fake_consumer_.allFilesEnabled);
+  EXPECT_TRUE([fake_consumer_.enabledItems containsObject:file3.identifier]);
 }

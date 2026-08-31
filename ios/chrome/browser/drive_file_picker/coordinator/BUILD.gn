@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/composebox/shared/coordinator",
+    "//ios/chrome/browser/composebox/shared/ui",
     "//ios/chrome/browser/drive/model:drive_file_downloader",
     "//ios/chrome/browser/drive/model:drive_list",
     "//ios/chrome/browser/drive/model:drive_service",

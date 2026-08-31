@@ -1169,8 +1169,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
   CHECK(item);
   if (item.enabled) {
-    // If selecting a disabled item, nothing should happen.
+    // If selecting an enabled item, notify mutator.
     [self.mutator selectOrDeselectDriveItem:itemIdentifier];
+  } else {
+    // If selecting a disabled item, notify mutator.
+    [self.mutator didTapDisabledDriveItem:itemIdentifier];
   }
   // Returning nil, items are only selected programmatically.
   return nil;

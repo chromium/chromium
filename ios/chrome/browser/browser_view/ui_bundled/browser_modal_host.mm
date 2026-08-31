@@ -1169,7 +1169,10 @@ const char kChromeAppStoreUrl[] =
 - (void)showDriveFilePickerWithComposeboxDelegate:
             (id<ComposeboxPickerPresenterDelegate>)delegate
                                baseViewController:
-                                   (UIViewController*)baseViewController {
+                                   (UIViewController*)baseViewController
+                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
+                                                      snackbarPresenter {
   // In the context of the compose box the user should not have been offered to
   // use the drive if they are not signed-in.
   CHECK(AuthenticationServiceFactory::GetForProfile(_browser->GetProfile())
@@ -1191,6 +1194,8 @@ const char kChromeAppStoreUrl[] =
                         webState:activeWebState
                    forComposebox:YES];
   _driveFilePickerCoordinator.composeboxDelegate = delegate;
+  _driveFilePickerCoordinator.maxAttachmentCount = maxAttachmentCount;
+  _driveFilePickerCoordinator.snackbarPresenter = snackbarPresenter;
   [_driveFilePickerCoordinator start];
 }
 

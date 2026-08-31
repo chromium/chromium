@@ -9,6 +9,7 @@
 
 @protocol SystemIdentity;
 @protocol ComposeboxPickerPresenterDelegate;
+@class ComposeboxSnackbarPresenter;
 namespace web {
 class WebState;
 }
@@ -19,6 +20,12 @@ class WebState;
 // Delegate to forward Composebox picker results to.
 @property(nonatomic, weak) id<ComposeboxPickerPresenterDelegate>
     composeboxDelegate;
+
+// Maximum number of attachments allowed when presented for composebox.
+@property(nonatomic, assign) NSUInteger maxAttachmentCount;
+
+// Snackbar presenter to show limit notifications.
+@property(nonatomic, weak) ComposeboxSnackbarPresenter* snackbarPresenter;
 
 // Creates a coordinator that uses `viewController`, `browser` and `webState`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

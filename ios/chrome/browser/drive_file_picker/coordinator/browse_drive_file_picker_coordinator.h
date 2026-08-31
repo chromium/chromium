@@ -15,6 +15,7 @@ class DriveFilePickerCollection;
 @class DriveFilePickerMetricsHelper;
 class DriveFilePickerImageFetcher;
 @protocol SystemIdentity;
+@class ComposeboxSnackbarPresenter;
 
 namespace web {
 class WebState;
@@ -28,6 +29,12 @@ class WebState;
 
 // Whether the coordinator is launched from/for the Composebox.
 @property(nonatomic, assign) BOOL forComposebox;
+
+// Maximum number of attachments allowed when presented for composebox.
+@property(nonatomic, assign) NSUInteger maxAttachmentCount;
+
+// Snackbar presenter to show limit notifications.
+@property(nonatomic, weak) ComposeboxSnackbarPresenter* snackbarPresenter;
 
 // Creates a coordinator that uses `viewController`, `browser`, `webState` and
 // `folder`.

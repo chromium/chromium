@@ -509,6 +509,12 @@ CGFloat const kSheetTopPadding = 40.0f;
   return _inputState.maxTabAttachmentCount;
 }
 
+- (NSUInteger)maxDriveAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  CHECK(_inputState);
+  return _inputState.remainingAttachmentCapacity;
+}
+
 - (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
     (ComposeboxPickerPresenter*)presenter {
   return [_mediator attachedImageAssetIDs];

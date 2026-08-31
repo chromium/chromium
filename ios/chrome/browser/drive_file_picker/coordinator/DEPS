@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h",
   "+ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h",
+  "+ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h",
   "+ios/chrome/browser/drive/model",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/signin/model",

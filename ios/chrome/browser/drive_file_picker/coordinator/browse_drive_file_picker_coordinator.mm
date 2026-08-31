@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
@@ -110,6 +111,7 @@
   _mediator.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _mediator.imageFetcher = _imageFetcher;
+  _mediator.maxAttachmentCount = self.maxAttachmentCount;
 
   _viewController.delegate = self;
   _viewController.driveFilePickerHandler = HandlerForProtocol(
@@ -167,6 +169,8 @@
                              metricsHelper:_metricsHelper];
   _childBrowseCoordinator.delegate = self;
   _childBrowseCoordinator.forComposebox = self.forComposebox;
+  _childBrowseCoordinator.maxAttachmentCount = self.maxAttachmentCount;
+  _childBrowseCoordinator.snackbarPresenter = self.snackbarPresenter;
   [_childBrowseCoordinator start];
 }
 
@@ -211,6 +215,11 @@
     didPickDriveItems:(const std::vector<DriveItem>&)driveItems {
   CHECK(self.forComposebox);
   [self.delegate coordinator:self didPickDriveItems:driveItems];
+}
+
+- (void)mediatorDidReachAttachmentLimit:(DriveFilePickerMediator*)mediator {
+  [self.snackbarPresenter
+      showSnackbarForAttachmentLimit:self.maxAttachmentCount];
 }
 
 #pragma mark - DriveFilePickerTableViewControllerDelegate

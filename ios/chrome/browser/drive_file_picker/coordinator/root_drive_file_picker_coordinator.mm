@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
@@ -157,6 +158,7 @@ void ConfirmChangeProfileWithCompletion(
   _mediator.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _mediator.imageFetcher = _imageFetcher.get();
+  _mediator.maxAttachmentCount = _maxAttachmentCount;
   _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];
   if (base::FeatureList::IsEnabled(kIOSChooseFromDriveSignedOut)) {
     signin::IdentityManager* identity_manager =
@@ -259,6 +261,8 @@ void ConfirmChangeProfileWithCompletion(
                              metricsHelper:_metricsHelper];
   _childBrowseCoordinator.delegate = self;
   _childBrowseCoordinator.forComposebox = _forComposebox;
+  _childBrowseCoordinator.maxAttachmentCount = _maxAttachmentCount;
+  _childBrowseCoordinator.snackbarPresenter = _snackbarPresenter;
   [_childBrowseCoordinator start];
 }
 
@@ -315,6 +319,10 @@ void ConfirmChangeProfileWithCompletion(
                                    didPickDriveItems:results];
 
   [self stopAnimated];
+}
+
+- (void)mediatorDidReachAttachmentLimit:(DriveFilePickerMediator*)mediator {
+  [_snackbarPresenter showSnackbarForAttachmentLimit:_maxAttachmentCount];
 }
 
 #pragma mark - BrowseDriveFilePickerCoordinatorDelegate

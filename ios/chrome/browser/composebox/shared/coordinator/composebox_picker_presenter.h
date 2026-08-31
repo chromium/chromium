@@ -59,6 +59,10 @@
 - (NSUInteger)maxTabAttachmentCountForPresenter:
     (ComposeboxPickerPresenter*)presenter;
 
+// Returns the max number of Drive attachments allowed.
+- (NSUInteger)maxDriveAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter;
+
 // Returns the asset IDs for currently attached images.
 - (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
     (ComposeboxPickerPresenter*)presenter;

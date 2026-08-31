@@ -49,6 +49,10 @@ struct DriveItem;
 - (void)mediator:(DriveFilePickerMediator*)mediator
     didPickDriveItems:(const std::vector<DriveItem>&)driveItems;
 
+// Called when the mediator reaches or tries to exceed the attachment limit (in
+// Composebox mode).
+- (void)mediatorDidReachAttachmentLimit:(DriveFilePickerMediator*)mediator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_DELEGATE_H_

@@ -19,6 +19,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
@@ -373,6 +374,13 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
                                            options:_options];
 }
 
+- (void)didTapDisabledDriveItem:(NSString*)itemIdentifier {
+  if (_forComposebox && _maxAttachmentCount > 0 &&
+      _selectedFiles.size() >= _maxAttachmentCount) {
+    [self.delegate mediatorDidReachAttachmentLimit:self];
+  }
+}
+
 - (void)loadFirstPage {
   [self loadItemsAppending:NO delayed:NO animated:NO];
 }
@@ -584,22 +592,30 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 
 // Update what items can be selected by the user.
 - (void)updateAcceptableItems {
+  BOOL limitReached = _forComposebox && _maxAttachmentCount > 0 &&
+                      _selectedFiles.size() >= _maxAttachmentCount;
   NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
   for (const DriveItem& item : _fetchedDriveItems) {
-    if (DriveFilePickerItemShouldBeEnabled(item, _acceptedTypes,
-                                           _options.ignore_accepted_types,
-                                           _forComposebox)) {
+    if (limitReached) {
+      if (item.CanBeBrowsed() || _selectedFiles.contains(item)) {
+        [enabledItemsIdentifiers addObject:item.identifier];
+      }
+    } else if (DriveFilePickerItemShouldBeEnabled(
+                   item, _acceptedTypes, _options.ignore_accepted_types,
+                   _forComposebox)) {
       [enabledItemsIdentifiers addObject:item.identifier];
     }
   }
   [self.consumer setEnabledItems:enabledItemsIdentifiers];
-  [self.consumer setAllFilesEnabled:_options.ignore_accepted_types];
+  [self.consumer
+      setAllFilesEnabled:(!limitReached &&
+                          (_options.ignore_accepted_types || _forComposebox))];
   // Update selected files to exclude items which should not be enabled.
   std::unordered_set<DriveItem> enabledSelectedFiles;
   for (const DriveItem& selectedFile : _selectedFiles) {
-    if (DriveFilePickerItemShouldBeEnabled(selectedFile, _acceptedTypes,
-                                           _options.ignore_accepted_types,
-                                           _forComposebox)) {
+    if (limitReached || DriveFilePickerItemShouldBeEnabled(
+                            selectedFile, _acceptedTypes,
+                            _options.ignore_accepted_types, _forComposebox)) {
       enabledSelectedFiles.insert(selectedFile);
     }
   }
@@ -713,10 +729,19 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
       // If the file was selected, deselect it.
       [self deselectFile:file];
     } else {
+      if (_forComposebox && _maxAttachmentCount > 0 &&
+          oldSelectedFiles.size() >= _maxAttachmentCount) {
+        [self.delegate mediatorDidReachAttachmentLimit:self];
+        return;
+      }
       // If the file was not selected, add it to the selection.
       std::unordered_set<DriveItem> newSelectedFiles = oldSelectedFiles;
       newSelectedFiles.insert(file);
       [self setSelectedFiles:newSelectedFiles];
+      if (_forComposebox && _maxAttachmentCount > 0 &&
+          newSelectedFiles.size() >= _maxAttachmentCount) {
+        [self.delegate mediatorDidReachAttachmentLimit:self];
+      }
     }
     return;
   }
@@ -789,6 +814,27 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   // Allow/forbid file picker dismissal.
   [self.delegate mediator:self didAllowDismiss:_selectedFiles.empty()];
   _metricsHelper.selectedFile = !_selectedFiles.empty();
+
+  if (_forComposebox && _maxAttachmentCount > 0) {
+    NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
+    BOOL limitReached = _selectedFiles.size() >= _maxAttachmentCount;
+    for (const DriveItem& item : _fetchedDriveItems) {
+      if (limitReached) {
+        if (item.CanBeBrowsed() || _selectedFiles.contains(item)) {
+          [enabledItemsIdentifiers addObject:item.identifier];
+        }
+      } else if (DriveFilePickerItemShouldBeEnabled(
+                     item, _acceptedTypes, _options.ignore_accepted_types,
+                     _forComposebox)) {
+        [enabledItemsIdentifiers addObject:item.identifier];
+      }
+    }
+    [self.consumer setEnabledItems:enabledItemsIdentifiers];
+    [self.consumer
+        setAllFilesEnabled:(!limitReached && (_options.ignore_accepted_types ||
+                                              _forComposebox))];
+  }
+
   [self processDownloadingQueue];
 }
 

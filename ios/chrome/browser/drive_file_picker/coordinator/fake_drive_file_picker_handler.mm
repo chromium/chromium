@@ -19,7 +19,10 @@
 - (void)showDriveFilePickerWithComposeboxDelegate:
             (id<ComposeboxPickerPresenterDelegate>)delegate
                                baseViewController:
-                                   (UIViewController*)baseViewControllerw {
+                                   (UIViewController*)baseViewController
+                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
+                                                      snackbarPresenter {
 }
 
 @end

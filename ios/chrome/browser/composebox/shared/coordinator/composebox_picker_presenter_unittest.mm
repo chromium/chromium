@@ -34,6 +34,8 @@
     : NSObject <DriveFilePickerCommands>
 
 @property(nonatomic, assign) BOOL drivePickerShown;
+@property(nonatomic, assign) NSUInteger maxAttachmentCount;
+@property(nonatomic, weak) ComposeboxSnackbarPresenter* snackbarPresenter;
 
 @end
 
@@ -52,8 +54,46 @@
 - (void)showDriveFilePickerWithComposeboxDelegate:
             (id<ComposeboxPickerPresenterDelegate>)composeboxDelegate
                                baseViewController:
-                                   (UIViewController*)baseViewController {
+                                   (UIViewController*)baseViewController
+                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
+                                                      snackbarPresenter {
   self.drivePickerShown = YES;
+  self.maxAttachmentCount = maxAttachmentCount;
+  self.snackbarPresenter = snackbarPresenter;
+}
+
+@end
+
+#pragma mark - FakePresenterDataSource
+
+@interface FakePresenterDataSource
+    : NSObject <ComposeboxPickerPresenterDataSource>
+
+@property(nonatomic, assign) NSUInteger remainingCapacity;
+
+@end
+
+@implementation FakePresenterDataSource
+
+- (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContextForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return {};
+}
+
+- (NSUInteger)maxTabAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return 10;
+}
+
+- (NSUInteger)maxDriveAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return self.remainingCapacity;
+}
+
+- (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return @[];
 }
 
 @end
@@ -82,9 +122,13 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
     [dispatcher startDispatchingToTarget:handler_
                              forProtocol:@protocol(DriveFilePickerCommands)];
 
+    data_source_ = [[FakePresenterDataSource alloc] init];
+    data_source_.remainingCapacity = 8;
+
     presenter_ = [[ComposeboxPickerPresenter alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
+    presenter_.dataSource = data_source_;
   }
 
   void SignIn() {
@@ -107,6 +151,7 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakePresenterDriveFilePickerHandler* handler_ = nil;
+  FakePresenterDataSource* data_source_ = nil;
   ComposeboxPickerPresenter* presenter_ = nil;
 };
 
@@ -122,6 +167,8 @@ TEST_F(ComposeboxPickerPresenterTest,
   [presenter_ presentDriveFilePicker];
 
   EXPECT_TRUE(handler_.drivePickerShown);
+  EXPECT_EQ(handler_.maxAttachmentCount, 8u);
+  EXPECT_NE(handler_.snackbarPresenter, nil);
 }
 
 // Tests that when the user has already consented, the Drive picker is
@@ -139,6 +186,8 @@ TEST_F(ComposeboxPickerPresenterTest, TestPresentDriveFilePicker_PreConsented) {
   [presenter_ presentDriveFilePicker];
 
   EXPECT_TRUE(handler_.drivePickerShown);
+  EXPECT_EQ(handler_.maxAttachmentCount, 8u);
+  EXPECT_NE(handler_.snackbarPresenter, nil);
 }
 
 // Tests that when kForceDriveDisclaimerAccepted is enabled, the Drive picker is
@@ -160,6 +209,8 @@ TEST_F(ComposeboxPickerPresenterTest,
   [presenter_ presentDriveFilePicker];
 
   EXPECT_TRUE(handler_.drivePickerShown);
+  EXPECT_EQ(handler_.maxAttachmentCount, 8u);
+  EXPECT_NE(handler_.snackbarPresenter, nil);
 }
 
 // Tests that attempting to present the Drive file picker when no identity is

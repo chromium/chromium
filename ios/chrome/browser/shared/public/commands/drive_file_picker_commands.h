@@ -9,6 +9,7 @@
 
 @protocol SystemIdentity;
 @protocol ComposeboxPickerPresenterDelegate;
+@class ComposeboxSnackbarPresenter;
 
 namespace web {
 class WebState;
@@ -32,7 +33,10 @@ class WebState;
 - (void)showDriveFilePickerWithComposeboxDelegate:
             (id<ComposeboxPickerPresenterDelegate>)delegate
                                baseViewController:
-                                   (UIViewController*)baseViewController;
+                                   (UIViewController*)baseViewController
+                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
+                                                      snackbarPresenter;
 
 @end
 
