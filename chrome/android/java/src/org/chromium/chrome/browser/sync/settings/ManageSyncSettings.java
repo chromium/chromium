@@ -407,7 +407,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PASSWORDS, passwordsToggle);
         ChromeSwitchPreference paymentsToggle =
                 findPreference(PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE);
-        paymentsToggle.setTitle(R.string.account_section_payments_and_info_toggle);
         mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PAYMENTS, paymentsToggle);
         mSyncTypeSwitchPreferencesMap.put(
                 UserSelectableType.PREFERENCES,

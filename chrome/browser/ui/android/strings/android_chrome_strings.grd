@@ -2334,9 +2334,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_SECTION_PASSWORDS_TOGGLE" desc="Saved passwords, one of the data types that we allow syncing. Shown on next to the toggle that controls whether passwords should be saved in the Google Account and synced across devices.">
         Passwords
       </message>
-      <message name="IDS_ACCOUNT_SECTION_PAYMENTS_TOGGLE" desc="Google Pay data for Autofill, one of the data types that we allow syncing. 'Google Pay' should not be translated as it is the product name. Shown on next to the toggle that controls whether Google Pay data for Autofill should be saved in the Google Account and synced across devices.">
-        Payment methods, offers, and addresses using Google Pay
-      </message>
       <message name="IDS_ACCOUNT_SECTION_PAYMENTS_AND_INFO_TOGGLE" desc="Google Wallet data for Autofill, one of the data types that we allow syncing. 'Google Wallet' should not be translated as it is the product name. Shown on next to the toggle that controls whether payments and other data from Google Wallet, for use in Autofill, should be saved in the Google Account and synced across devices.">
         Payment methods and other info from Google Wallet
       </message>
