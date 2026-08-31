@@ -7,22 +7,21 @@
 #ifndef ASH_CONSTANTS_ASH_CONSTANTS_H_
 #define ASH_CONSTANTS_ASH_CONSTANTS_H_
 
-#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FilePath::CharType kDriveCacheDirname[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FilePath::CharType kNssCertDbPath[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FilePath::CharType kNssKeyDbPath[];
 
 inline constexpr base::FilePath::CharType kChromeOSAssetPath[] =
     "/usr/share/chromeos-assets/";
+inline constexpr base::FilePath::CharType kDriveCacheDirname[] =
+    FILE_PATH_LITERAL("GCache");
+inline constexpr base::FilePath::CharType kNssCertDbPath[] =
+    FILE_PATH_LITERAL(".pki/nssdb/cert9.db");
+inline constexpr base::FilePath::CharType kNssKeyDbPath[] =
+    FILE_PATH_LITERAL(".pki/nssdb/key4.db");
 
 // The border thickness of keyboard focus for launcher items and system tray.
 constexpr int kFocusBorderThickness = 2;
@@ -47,15 +46,14 @@ constexpr SkColor kDefaultFlashNotificationsColor = 0xffff00;
 
 // These device types are a subset of ui::InputDeviceType. These strings are
 // also used in Switch Access webui.
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessInternalDevice[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessUsbDevice[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kSwitchAccessBluetoothDevice[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessUnknownDevice[];
+inline constexpr char kSwitchAccessInternalDevice[] = "internal";
+inline constexpr char kSwitchAccessUsbDevice[] = "usb";
+inline constexpr char kSwitchAccessBluetoothDevice[] = "bluetooth";
+inline constexpr char kSwitchAccessUnknownDevice[] = "unknown";
 
 // The string that represents the current time. Only used in pixel tests.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kFakeNowTimeStringInPixelTest[];
+inline constexpr char kFakeNowTimeStringInPixelTest[] =
+    "Sun, 6 May 2018 14:30:00 CDT";
 
 // The default delay before Switch Access automatically moves to the next
 // element on the page that is interesting, based on the Switch Access
@@ -92,9 +90,10 @@ constexpr base::TimeDelta kDefaultKeyAutoRepeatInterval =
     base::Milliseconds(50);
 
 // Constants for notification.
-const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
-const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
-const char kPrivacyIndicatorsMultiCaptureNotifierId[] =
+inline constexpr char kPrivacyIndicatorsNotificationIdPrefix[] =
+    "privacy-indicators";
+inline constexpr char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
+inline constexpr char kPrivacyIndicatorsMultiCaptureNotifierId[] =
     "ash.multi-capture-active-privacy-indicators";
 
 // The default delay between last key release and accepting a new key press.
@@ -106,43 +105,41 @@ inline constexpr base::TimeDelta kDefaultAccessibilitySlowKeysDelay =
     base::Milliseconds(500);
 
 // The default value for audio strategy in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxAudioStrategy[];
+inline constexpr char kDefaultAccessibilityChromeVoxAudioStrategy[] =
+    "audioNormal";
 
 // The default value for the braille table in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxBrailleTable[];
+inline constexpr char kDefaultAccessibilityChromeVoxBrailleTable[] = "";
 
 // The default value for the 6-dot braille table in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxBrailleTable6[];
+inline constexpr char kDefaultAccessibilityChromeVoxBrailleTable6[] =
+    "en-ueb-g2";
 
 // The default value for the 8-dot braille table in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxBrailleTable8[];
+inline constexpr char kDefaultAccessibilityChromeVoxBrailleTable8[] =
+    "en-nabcc";
 
 // The default value for the braille table type in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxBrailleTableType[];
+inline constexpr char kDefaultAccessibilityChromeVoxBrailleTableType[] =
+    "brailleTable8";
 
 // The default value for the capital strategy in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxCapitalStrategy[];
+inline constexpr char kDefaultAccessibilityChromeVoxCapitalStrategy[] =
+    "increasePitch";
 
 // The default value for the capital strategy backup pref in ChromeVox, used
 // on the settings page for saving a user's preference when they toggle
 // |usePitchChanges|.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxCapitalStrategyBackup[];
+inline constexpr char kDefaultAccessibilityChromeVoxCapitalStrategyBackup[] =
+    "";
 
 // The default value for number reading style in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxNumberReadingStyle[];
+inline constexpr char kDefaultAccessibilityChromeVoxNumberReadingStyle[] =
+    "asWords";
 
 // The default value for the preferred braille display address in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char
-    kDefaultAccessibilityChromeVoxPreferredBrailleDisplayAddress[];
+inline constexpr char
+    kDefaultAccessibilityChromeVoxPreferredBrailleDisplayAddress[] = "";
 
 enum ChromeVoxPunctuationEcho {
   kPunctuationEchoNone = 0,
@@ -161,8 +158,8 @@ constexpr int kDefaultAccessibilityChromeVoxVirtualBrailleColumns = 40;
 constexpr int kDefaultAccessibilityChromeVoxVirtualBrailleRows = 1;
 
 // The default value for voice name in ChromeVox.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilityChromeVoxVoiceName[];
+inline constexpr char kDefaultAccessibilityChromeVoxVoiceName[] =
+    "chromeos_system_voice";
 
 // Whether the enhanced network voices feature in Select-to-speak is allowed by
 // default.
@@ -178,8 +175,8 @@ constexpr bool kDefaultAccessibilitySelectToSpeakBackgroundShading = false;
 constexpr bool kDefaultAccessibilitySelectToSpeakEnhancedNetworkVoices = false;
 
 // The default preferred enhanced voice for Select-to-speak.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilitySelectToSpeakEnhancedVoiceName[];
+inline constexpr char kDefaultAccessibilitySelectToSpeakEnhancedVoiceName[] =
+    "default-wavenet";
 
 // Whether the initial popup authorizing enhanced network voices for
 // Select-to-speak has been shown to the user by default.
@@ -187,15 +184,15 @@ constexpr bool kDefaultAccessibilitySelectToSpeakEnhancedVoicesDialogShown =
     false;
 
 // The default word highlighting color for Select-to-speak.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilitySelectToSpeakHighlightColor[];
+inline constexpr char kDefaultAccessibilitySelectToSpeakHighlightColor[] =
+    "#5e9bff";
 
 // Whether Select-to-speak shows navigation controls by default.
 constexpr bool kDefaultAccessibilitySelectToSpeakNavigationControls = true;
 
 // The default preferred voice for Select-to-speak.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDefaultAccessibilitySelectToSpeakVoiceName[];
+inline constexpr char kDefaultAccessibilitySelectToSpeakVoiceName[] =
+    "select_to_speak_system_voice";
 
 // Whether Select-to-speak enables automatic voice switching between different
 // languages by default.

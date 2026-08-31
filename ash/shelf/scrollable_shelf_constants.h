@@ -46,22 +46,42 @@ constexpr int kEndPadding = 4;
 // offset on the main axis is smaller than the threshold.
 ASH_EXPORT constexpr int kScrollOffsetThreshold = 20;
 
-// Histogram names for the scrollable shelf dragging metrics.
-extern const char kScrollDraggingTabletLauncherVisibleHistogram[];
-extern const char kScrollDraggingTabletLauncherVisibleMaxLatencyHistogram[];
-extern const char kScrollDraggingTabletLauncherHiddenHistogram[];
-extern const char kScrollDraggingTabletLauncherHiddenMaxLatencyHistogram[];
-extern const char kScrollDraggingClamshellLauncherVisibleHistogram[];
-extern const char kScrollDraggingClamshellLauncherVisibleMaxLatencyHistogram[];
-extern const char kScrollDraggingClamshellLauncherHiddenHistogram[];
-extern const char kScrollDraggingClamshellLauncherHiddenMaxLatencyHistogram[];
-
 // Histogram names for the scrollable shelf animation smoothness metrics.
-extern const char kAnimationSmoothnessHistogram[];
-extern const char kAnimationSmoothnessTabletLauncherVisibleHistogram[];
-extern const char kAnimationSmoothnessTabletLauncherHiddenHistogram[];
-extern const char kAnimationSmoothnessClamshellLauncherVisibleHistogram[];
-extern const char kAnimationSmoothnessClamshellLauncherHiddenHistogram[];
+inline constexpr char kAnimationSmoothnessHistogram[] =
+    "Apps.ScrollableShelf.AnimationSmoothness";
+inline constexpr char kAnimationSmoothnessTabletLauncherVisibleHistogram[] =
+    "Apps.ScrollableShelf.AnimationSmoothness.TabletMode.LauncherVisible";
+inline constexpr char kAnimationSmoothnessTabletLauncherHiddenHistogram[] =
+    "Apps.ScrollableShelf.AnimationSmoothness.TabletMode.LauncherHidden";
+inline constexpr char kAnimationSmoothnessClamshellLauncherVisibleHistogram[] =
+    "Apps.ScrollableShelf.AnimationSmoothness.ClamshellMode.LauncherVisible";
+inline constexpr char kAnimationSmoothnessClamshellLauncherHiddenHistogram[] =
+    "Apps.ScrollableShelf.AnimationSmoothness.ClamshellMode.LauncherHidden";
+
+// Histogram names for the scrollable shelf dragging metrics.
+inline constexpr char kScrollDraggingTabletLauncherVisibleHistogram[] =
+    "Apps.ScrollableShelf.Drag.PresentationTime.TabletMode.LauncherVisible";
+inline constexpr char
+    kScrollDraggingTabletLauncherVisibleMaxLatencyHistogram[] =
+        "Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency.TabletMode."
+        "LauncherVisible";
+inline constexpr char kScrollDraggingTabletLauncherHiddenHistogram[] =
+    "Apps.ScrollableShelf.Drag.PresentationTime.TabletMode.LauncherHidden";
+inline constexpr char kScrollDraggingTabletLauncherHiddenMaxLatencyHistogram[] =
+    "Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency.TabletMode."
+    "LauncherHidden";
+inline constexpr char kScrollDraggingClamshellLauncherVisibleHistogram[] =
+    "Apps.ScrollableShelf.Drag.PresentationTime.ClamshellMode.LauncherVisible";
+inline constexpr char
+    kScrollDraggingClamshellLauncherVisibleMaxLatencyHistogram[] =
+        "Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency.ClamshellMode."
+        "LauncherVisible";
+inline constexpr char kScrollDraggingClamshellLauncherHiddenHistogram[] =
+    "Apps.ScrollableShelf.Drag.PresentationTime.ClamshellMode.LauncherHidden";
+inline constexpr char
+    kScrollDraggingClamshellLauncherHiddenMaxLatencyHistogram[] =
+        "Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency.ClamshellMode."
+        "LauncherHidden";
 
 }  // namespace scrollable_shelf_constants
 }  // namespace ash
