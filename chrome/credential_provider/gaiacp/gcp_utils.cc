@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <winsock2.h>
 
+#include <accctrl.h>
 #include <iphlpapi.h>
 #include <malloc.h>
 #include <memory.h>
@@ -42,7 +43,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "base/win/atl.h"
 #include "base/win/current_module.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/ntsecapi_shim.h"
@@ -1085,10 +1085,15 @@ std::wstring GetStringResource(UINT base_message_id) {
 
   UINT message_id =
       static_cast<UINT>(base_message_id + GetLanguageSelector().offset());
-  const ATLSTRINGRESOURCEIMAGE* image =
-      AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
-  if (image) {
-    localized_string = std::wstring(image->achString, image->nLength);
+  wchar_t* str_ptr;
+  // reinterpret_cast<wchar_t*> is needed as 0 tells LoadString to provide
+  // a pointer to the string instead of filling the buffer.
+  // The 'W' version is explicitly called as it's semantically different from
+  // LoadStringA for 0 length buffers.
+  const int str_len = ::LoadStringW(CURRENT_MODULE(), message_id,
+                                    reinterpret_cast<wchar_t*>(&str_ptr), 0);
+  if (str_len > 0 && str_ptr) {
+    localized_string = std::wstring(str_ptr, static_cast<size_t>(str_len));
   } else {
     NOTREACHED() << "Unable to find resource id " << message_id;
   }
