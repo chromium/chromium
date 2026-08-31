@@ -12,7 +12,6 @@
 
 #include "base/threading/thread.h"
 #include "base/values.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -44,7 +43,7 @@ enum FIELDID {
 // Implementation of an ICredentialProviderCredential backed by a Gaia account.
 // This is used as a base class for the COM objects that implement first time
 // sign in and password update.
-class ATL_NO_VTABLE CGaiaCredentialBase
+class __declspec(novtable) CGaiaCredentialBase
     : public IGaiaCredential,
       public ICredentialProviderCredential2 {
  public:

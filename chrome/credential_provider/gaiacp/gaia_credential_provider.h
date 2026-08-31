@@ -34,7 +34,7 @@ class DECLSPEC_UUID("fc2c889b-b468-4eb9-a61c-c984be8cc496")
 };
 
 // Implementation of ICredentialProvider backed by Gaia.
-class ATL_NO_VTABLE CGaiaCredentialProvider
+class __declspec(novtable) CGaiaCredentialProvider
     : public CComObjectRootEx<CComMultiThreadModel>,
       public CComCoClass<CGaiaCredentialProvider,
                          &CLSID_GaiaCredentialProvider>,

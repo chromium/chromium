@@ -73,7 +73,8 @@ class DECLSPEC_UUID("3710aa3a-13c7-44c2-bc38-09ba137804d8") ITestCredential
 // overridden: OnUserAuthenticated, ReportError, GetBaseGlsCommandline,
 // DisplayErrorInUI, ForkGaiaLogonStub, ResetInternalState.
 template <class T>
-class ATL_NO_VTABLE CTestCredentialBase : public T, public ITestCredential {
+class __declspec(novtable) CTestCredentialBase : public T,
+                                                 public ITestCredential {
  public:
   CTestCredentialBase();
   ~CTestCredentialBase();
@@ -410,7 +411,7 @@ HRESULT CTestCredentialBase<T>::InitializeThreadForNamedPipe(
 // implemented CGaiaCredentialBase class that does not expose
 // ICredentialProviderCredential2.
 template <class T>
-class ATL_NO_VTABLE CTestCredentialForBaseInherited
+class __declspec(novtable) CTestCredentialForBaseInherited
     : public CTestCredentialBase<T> {
  public:
   DECLARE_NO_REGISTRY()
@@ -440,7 +441,7 @@ CTestCredentialForBaseInherited<T>::~CTestCredentialForBaseInherited() =
 // implement a test credential for CReauthCredential which implements the
 // additional IReauthCredential interface)
 template <class T, class InterfaceT>
-class ATL_NO_VTABLE CTestCredentialForInherited
+class __declspec(novtable) CTestCredentialForInherited
     : public CTestCredentialBase<T> {
  public:
   DECLARE_NO_REGISTRY()

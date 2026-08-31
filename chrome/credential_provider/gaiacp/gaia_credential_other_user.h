@@ -5,6 +5,7 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_OTHER_USER_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_OTHER_USER_H_
 
+#include "base/win/atl.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
 
@@ -13,7 +14,7 @@ namespace credential_provider {
 // This version of the Gaia credential (unlike CGaiaCredential) supports
 // ICredentialProviderCredential2 which allows it to be added to the
 // "Other User" tile when certain system policies are enabled on the system.
-class ATL_NO_VTABLE COtherUserGaiaCredential
+class __declspec(novtable) COtherUserGaiaCredential
     : public CComObjectRootEx<CComMultiThreadModel>,
       public CGaiaCredentialBase {
  public:

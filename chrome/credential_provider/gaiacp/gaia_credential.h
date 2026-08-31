@@ -5,13 +5,14 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_H_
 
+#include "base/win/atl.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
 
 namespace credential_provider {
 
 // Implementation of an ICredentialProviderCredential backed by a Gaia account.
-class ATL_NO_VTABLE CGaiaCredential
+class __declspec(novtable) CGaiaCredential
     : public CComObjectRootEx<CComMultiThreadModel>,
       public CGaiaCredentialBase {
  public:

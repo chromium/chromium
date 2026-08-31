@@ -21,7 +21,7 @@ namespace credential_provider {
 
 extern const CLSID CLSID_CGaiaCredentialProviderFilter;
 
-class ATL_NO_VTABLE CGaiaCredentialProviderFilter
+class __declspec(novtable) CGaiaCredentialProviderFilter
     : public CComObjectRootEx<CComMultiThreadModel>,
       public CComCoClass<CGaiaCredentialProviderFilter,
                          &CLSID_CGaiaCredentialProviderFilter>,
