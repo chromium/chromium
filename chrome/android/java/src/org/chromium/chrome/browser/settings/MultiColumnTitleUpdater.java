@@ -278,6 +278,14 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     private List<MultiColumnSettings.Title> initTitlesList() {
         List<MultiColumnSettings.Title> navigatedTitles = mMultiColumnSettings.getTitles();
 
+        // If the user was in search mode (which sets mFirstVisibleTitleIndex > 0 to hide pre-search
+        // ancestor breadcrumbs) and selects a new category from MainSettings, the detail fragment
+        // stack is replaced and mFirstVisibleTitleIndex becomes out-of-bounds. Reset it to 0 so the
+        // new section's title is displayed. http://crbug.com/541086963
+        if (mFirstVisibleTitleIndex >= navigatedTitles.size()) {
+            mFirstVisibleTitleIndex = 0;
+        }
+
         if (mFirstVisibleTitleIndex == 0) {
             if (navigatedTitles.isEmpty()) {
                 mCachedDeepLinkPath = null;

@@ -316,6 +316,32 @@ public class MultiColumnTitleUpdaterTest {
         assertEquals("Theme", ((TextView) mContainer.getChildAt(1)).getText().toString());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testSelectSettingsElementAfterSearch_showsTitle() {
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+
+        // Focusing or tapping the search box triggers SettingsSearchCoordinator.enterSearchState(),
+        // which calls mUpdateFirstVisibleTitle.onResult(stackCount + 1). In two-column mode with
+        // the initial root detail fragment, stackCount is 0, so the first visible title index is
+        // set to 1 so that breadcrumb titles preceding search results are hidden.
+        updater.setFirstVisibleTitleIndex(1);
+
+        // User clicks on a category from MainSettings (e.g. "Privacy and security").
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title(
+                        "uuid1", createTitleSupplier("Privacy and security"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+        updater.onTitleUpdated();
+
+        // The detailed pane title should appear and not be hidden.
+        assertEquals(1, mContainer.getChildCount());
+        assertTrue(mContainer.getChildAt(0) instanceof TextView);
+        assertEquals(
+                "Privacy and security", ((TextView) mContainer.getChildAt(0)).getText().toString());
+    }
+
     public static class TestSearchViewProviderFragment extends Fragment
             implements SearchViewProvider {
         private @Nullable SearchView mSearchView;
