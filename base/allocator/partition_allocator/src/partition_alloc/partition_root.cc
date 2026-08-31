@@ -1097,6 +1097,14 @@ void PartitionRoot::Init(PartitionOptions opts) {
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
 #endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
+    settings_.intended_leak = opts.intended_leak == PartitionOptions::kEnabled;
+    if (settings_.intended_leak) {
+      PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled);
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+      PA_CHECK(!brp_enabled());
+#endif
+    }
+
     if (settings_.pool_handle == internal::kNullPoolHandle) {
       settings_.pool_handle = internal::kRegularPoolHandle;
     }
@@ -1195,6 +1203,7 @@ void PartitionRoot::EnableThreadCacheIfSupported() {
 #if PA_CONFIG(THREAD_CACHE_SUPPORTED)
   ::partition_alloc::internal::ScopedGuard guard{lock_};
   PA_CHECK(!settings_.with_thread_cache);
+  PA_CHECK(!settings_.intended_leak);
   // By the time we get there, there may be multiple threads created in the
   // process. Since `with_thread_cache` is accessed without a lock, it can
   // become visible to another thread before the effects of

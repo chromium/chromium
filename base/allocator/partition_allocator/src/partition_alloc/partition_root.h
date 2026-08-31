@@ -169,6 +169,12 @@ struct PartitionOptions {
 #endif
 
   EnableToggle tighter_aligned_alloc_bound = kDisabled;
+
+  // When enabled, any allocation freed through this partition root is
+  // sanitized (overwritten with a quarantine pattern) and permanently leaked
+  // without returning its slot to the freelist. Cannot be used with
+  // thread_cache or backup_ref_ptr.
+  EnableToggle intended_leak = kDisabled;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
@@ -213,6 +219,7 @@ class alignas(internal::kPartitionCachelineSize)
     BucketDistribution bucket_distribution = BucketDistribution::kNeutral;
 
     bool with_thread_cache = false;
+    bool intended_leak = false;
     size_t thread_cache_index = internal::kInvalidThreadCacheIndex;
 
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)

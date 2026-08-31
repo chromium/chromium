@@ -204,6 +204,7 @@ class IntendedLeakRootConstructor {
     partition_alloc::PartitionOptions opts;
     opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
     opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+    opts.intended_leak = partition_alloc::PartitionOptions::kEnabled;
     auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
     return new_root;
   }

@@ -951,6 +951,28 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
     size_t usable_size = GetSlotUsableSize(slot_span);
     thread_cache->RecordDeallocation(usable_size);
   }
+
+  if (settings_.intended_leak) [[unlikely]] {
+    // Note: RetagSlotIfNeeded() above retags the memory with a new MTE tag
+    // before reaching this intended-leak path. Although the slot is leaked and
+    // will never be reused by PartitionAlloc, retagging ensures that any
+    // subsequent accesses using the old tagged pointer will immediately trap,
+    // providing defense-in-depth against use-after-free alongside payload
+    // zapping.
+    //
+    // When a caller explicitly provides a type ID hint (e.g. via
+    // Free<kIntendedLeak | kWithTypeIdHint>()), it is handled earlier in
+    // FreeNoHooksImmediateInternal(). This path is only reached for normal
+    // deallocations (e.g. standard free() / delete) on an intended-leak root
+    // where no type ID hint was supplied by the caller, so we record
+    // kIntendedLeakUnknownTypeId.
+    uint32_t type_id = internal::kIntendedLeakUnknownTypeId;
+    Zap(slot_start, slot_span, type_id);
+    RecordLeakSizePerTypeId(type_id, size_details.slot_size);
+    intended_leak_size_.fetch_add(size_details.slot_size);
+    return;
+  }
+
   RawFree(slot_start, slot_span);
 }
 
