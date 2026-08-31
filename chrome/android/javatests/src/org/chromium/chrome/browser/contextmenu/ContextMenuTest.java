@@ -618,18 +618,24 @@ public class ContextMenuTest {
 
     @Test
     @LargeTest
+    // TODO(crbug.com/553228809): Re-enable once the test is fixed on other form factors.
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testSaveDataUrl() throws TimeoutException, SecurityException, IOException {
         saveMediaFromContextMenu("dataUrlIcon", R.id.contextmenu_save_image, FILENAME_GIF);
     }
 
     @Test
     @LargeTest
+    // TODO(crbug.com/553228809): Re-enable once the test is fixed on other form factors.
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testSaveImage() throws TimeoutException, SecurityException, IOException {
         saveMediaFromContextMenu("testImage", R.id.contextmenu_save_image, FILENAME_PNG);
     }
 
     @Test
     @LargeTest
+    // TODO(crbug.com/553228809): Re-enable once the test is fixed on other form factors.
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testSaveVideo() throws TimeoutException, SecurityException, IOException {
         saveMediaFromContextMenu("videoDOMElement", R.id.contextmenu_save_video, FILENAME_WEBM);
     }
@@ -667,6 +673,8 @@ public class ContextMenuTest {
      */
     @Test
     @LargeTest
+    // TODO(crbug.com/553228809): Re-enable once the test is fixed.
+    @DisabledTest(message = "crbug.com/553228809")
     public void testOpenLinksInNewTabsAndVerifyTabIndexOrdering() throws TimeoutException {
         TabModel tabModel = mActivityTestRule.getActivity().getCurrentTabModel();
         int numOpenedTabs = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getCount());
