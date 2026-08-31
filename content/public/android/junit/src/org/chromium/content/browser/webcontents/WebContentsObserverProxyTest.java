@@ -18,14 +18,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 /** Unit tests for {@link WebContentsObserverProxy}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebContentsObserverProxyTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebContentsObserver mWebContentsObserver;

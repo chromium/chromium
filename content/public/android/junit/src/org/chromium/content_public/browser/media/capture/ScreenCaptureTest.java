@@ -77,7 +77,6 @@ import java.util.Queue;
 /** Unit tests for {@link ScreenCapture}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
         shadows = {
             ScreenCaptureTest.ShadowMediaProjectionManager.class,

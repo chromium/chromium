@@ -36,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -52,7 +51,6 @@ import java.util.concurrent.Callable;
 
 /** Unit tests for {@link ThreadedInputConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ThreadedInputConnectionTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ImeAdapterImpl mImeAdapter;

@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -37,7 +36,6 @@ import org.chromium.ui.util.MotionEventUtils;
 
 /** Unit tests for {@link ContentUiEventHandler} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ContentUiEventHandlerTest {
     private static final long NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final long NATIVE_CONTENT_UI_EVENT_HANDLER = 2;

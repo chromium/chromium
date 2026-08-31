@@ -35,7 +35,6 @@ import org.chromium.media.mojom.AndroidOverlayConfig;
 
 /** Tests for DialogOverlayCore. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DialogOverlayCoreTest {
     private Activity mActivity;
 

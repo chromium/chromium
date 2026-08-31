@@ -9,7 +9,6 @@ import android.content.ComponentName;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.FeatureOverrides;
@@ -25,7 +24,6 @@ import org.chromium.content_public.browser.ContentFeatureList;
 
 /** Unit tests for ChildProessRanking */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChildProcessRankingTest {
     private TestChildProcessConnection createConnection() {
         TestChildProcessConnection connection =

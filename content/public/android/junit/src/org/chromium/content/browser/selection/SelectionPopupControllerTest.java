@@ -59,7 +59,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -111,7 +110,6 @@ import java.util.List;
 
 /** Unit tests for {@link SelectionPopupController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
 public class SelectionPopupControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
