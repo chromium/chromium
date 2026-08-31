@@ -442,6 +442,8 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/test/ios",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/signin/non_modal_promo/coordinator",
+    "//ios/chrome/browser/authentication/signin/non_modal_promo/coordinator:promo_types",
     "//ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",

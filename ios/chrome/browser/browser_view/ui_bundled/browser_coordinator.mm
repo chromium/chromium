@@ -50,7 +50,6 @@
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
-#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -211,7 +210,6 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
-#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -327,8 +325,6 @@
     FindInPageCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
-    NonModalSignInPromoCommands,
-    NonModalSignInPromoCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
     PasswordControllerDelegate,
@@ -486,10 +482,6 @@
 
 // The webState of the active tab.
 @property(nonatomic, readonly) web::WebState* activeWebState;
-
-// The coordinator in charge of the non modal sign in promo.
-@property(nonatomic, strong)
-    NonModalSignInPromoCoordinator* nonModalSignInPromoCoordinator;
 
 // Coordinator for the composebox.
 @property(nonatomic, strong) ComposeboxCoordinator* composeboxCoordinator;
@@ -1009,7 +1001,6 @@
     @protocol(FindInPageCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
-    @protocol(NonModalSignInPromoCommands),
     @protocol(QuickDeleteCommands),
     @protocol(SyncPresenterCommands),
     @protocol(TextZoomCommands),
@@ -1391,9 +1382,6 @@
 
   /* RepostFormCoordinator is created and started by a delegate method */
 
-  /* NonModalSignInPromoCoordinator is created and started by a BrowserCommand
-   */
-
   // TODO(crbug.com/40823248): Should start when the Sad Tab UI appears.
   self.sadTabCoordinator =
       [[SadTabCoordinator alloc] initWithBaseViewController:self.viewController
@@ -1492,9 +1480,6 @@
 
   [self.choiceCoordinator stop];
   self.choiceCoordinator = nil;
-
-  [self.nonModalSignInPromoCoordinator stop];
-  self.nonModalSignInPromoCoordinator = nil;
 
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
@@ -3688,30 +3673,6 @@
     (NotificationsOptInCoordinator*)coordinator {
   CHECK_EQ(coordinator, _notificationsOptInCoordinator);
   [self dismissNotificationsOptIn];
-}
-
-#pragma mark - NonModalSignInPromoCommands
-
-- (void)showNonModalSignInPromoWithType:(NonModalSignInPromoType)promoType {
-  if (self.nonModalSignInPromoCoordinator || !self.isStarted) {
-    return;
-  }
-  self.nonModalSignInPromoCoordinator = [[NonModalSignInPromoCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:signin::GetRegularBrowser(self.browser)
-                       promoType:promoType];
-  [self.nonModalSignInPromoCoordinator start];
-  self.nonModalSignInPromoCoordinator.delegate = self;
-}
-
-#pragma mark - NonModalSignInPromoCoordinatorDelegate
-
-- (void)dismissNonModalSignInPromo:
-    (NonModalSignInPromoCoordinator*)coordinator {
-  CHECK_EQ(self.nonModalSignInPromoCoordinator, coordinator);
-  [self.nonModalSignInPromoCoordinator stop];
-  self.nonModalSignInPromoCoordinator.delegate = nil;
-  self.nonModalSignInPromoCoordinator = nil;
 }
 
 #pragma mark - TrustedVaultReauthenticationCoordinatorDelegate

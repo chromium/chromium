@@ -17,7 +17,9 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_private_inference_notice_coordinator.h"
@@ -108,6 +110,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
@@ -185,6 +188,8 @@ const char kChromeAppStoreUrl[] =
                                 IOSPasskeyClientCommands,
                                 LevelUpCommands,
                                 MiniMapCommands,
+                                NonModalSignInPromoCommands,
+                                NonModalSignInPromoCoordinatorDelegate,
                                 PageActionMenuCommands,
                                 PageInfoCommands,
                                 ParentAccessCommands,
@@ -257,6 +262,7 @@ const char kChromeAppStoreUrl[] =
   TabGroupConfirmationCoordinator* _lastTabClosingAlert;
   LevelUpCoordinator* _levelUpCoordinator;
   MiniMapCoordinator* _miniMapCoordinator;
+  NonModalSignInPromoCoordinator* _nonModalSignInPromoCoordinator;
   PageActionMenuCoordinator* _pageActionMenuCoordinator;
   PageInfoCoordinator* _pageInfoCoordinator;
   ParentAccessCoordinator* _parentAccessCoordinator;
@@ -364,6 +370,7 @@ const char kChromeAppStoreUrl[] =
   [self closePasswordSuggestion];
   [self dismissPictureInPicture];
   [self hideMiniMap];
+  [self stopNonModalSignInPromoCoordinator];
   [self hidePageInfo];
   [self dismissPageActionMenuWithCompletion:nil];
   [self hideParentAccessBottomSheet];
@@ -481,6 +488,13 @@ const char kChromeAppStoreUrl[] =
   _tabPickerCoordinator = nil;
 }
 
+// Stops the non-modal sign-in promo coordinator.
+- (void)stopNonModalSignInPromoCoordinator {
+  [_nonModalSignInPromoCoordinator stop];
+  _nonModalSignInPromoCoordinator.delegate = nil;
+  _nonModalSignInPromoCoordinator = nil;
+}
+
 // Starts dispatching to the various command protocols.
 - (void)startDispatching {
   NSArray<Protocol*>* protocols = @[
@@ -502,6 +516,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(IOSPasskeyClientCommands),
     @protocol(LevelUpCommands),
     @protocol(MiniMapCommands),
+    @protocol(NonModalSignInPromoCommands),
     @protocol(PageActionMenuCommands),
     @protocol(PageInfoCommands),
     @protocol(ParentAccessCommands),
@@ -1506,6 +1521,29 @@ const char kChromeAppStoreUrl[] =
 - (void)hideMiniMap {
   [_miniMapCoordinator stop];
   _miniMapCoordinator = nil;
+}
+
+#pragma mark - NonModalSignInPromoCommands
+
+- (void)showNonModalSignInPromoWithType:(NonModalSignInPromoType)promoType {
+  if (_nonModalSignInPromoCoordinator) {
+    return;
+  }
+  _nonModalSignInPromoCoordinator = [[NonModalSignInPromoCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:signin::GetRegularBrowser(_browser)
+                       promoType:promoType];
+  _nonModalSignInPromoCoordinator.delegate = self;
+  [_nonModalSignInPromoCoordinator start];
+}
+
+#pragma mark - NonModalSignInPromoCoordinatorDelegate
+
+- (void)dismissNonModalSignInPromo:
+    (NonModalSignInPromoCoordinator*)coordinator {
+  // TODO(crbug.com/555077798): Replace this by command protocol.
+  CHECK_EQ(_nonModalSignInPromoCoordinator, coordinator);
+  [self stopNonModalSignInPromoCoordinator];
 }
 
 #pragma mark - PageActionMenuCommands

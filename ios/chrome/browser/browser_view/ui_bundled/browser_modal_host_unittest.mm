@@ -9,6 +9,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/send_tab_to_self/metrics_util.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
@@ -343,5 +346,37 @@ TEST_F(BrowserModalHostTest, StartsAndStopsTabPickerCoordinator) {
   [handler hideTabPicker];
 
   EXPECT_TRUE(stop_future.Wait());
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-showNonModalSignInPromoWithType:` starts the
+// NonModalSignInPromoCoordinator and delegate dismisses it.
+TEST_F(BrowserModalHostTest, StartsAndDismissesNonModalSignInPromo) {
+  id classMock = OCMClassMock([NonModalSignInPromoCoordinator class]);
+  NonModalSignInPromoCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()
+                                 promoType:NonModalSignInPromoType::kBookmark])
+      .andReturn(mockCoordinator);
+  OCMExpect([(NonModalSignInPromoCoordinator*)mockCoordinator
+      setDelegate:[OCMArg any]]);
+  OCMExpect([mockCoordinator start]);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<NonModalSignInPromoCommands> handler =
+      HandlerForProtocol(dispatcher, NonModalSignInPromoCommands);
+
+  [handler showNonModalSignInPromoWithType:NonModalSignInPromoType::kBookmark];
+
+  EXPECT_OCMOCK_VERIFY(classMock);
+
+  id<NonModalSignInPromoCoordinatorDelegate> delegate =
+      (id<NonModalSignInPromoCoordinatorDelegate>)modal_host_;
+  OCMExpect([mockCoordinator stop]);
+  OCMExpect([(NonModalSignInPromoCoordinator*)mockCoordinator setDelegate:nil]);
+  [delegate dismissNonModalSignInPromo:mockCoordinator];
+
   EXPECT_OCMOCK_VERIFY(classMock);
 }
