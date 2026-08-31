@@ -501,6 +501,8 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/555275379): Re-enable once the test is fixed on other form factors.
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testCopyEmailAddress() throws Throwable {
         doAnswer(sCopyIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
