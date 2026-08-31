@@ -6,10 +6,20 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "third_party/webrtc/api/ice_transport_factory.h"
 
 namespace blink {
+
+namespace {
+
+// TODO(crbug.com/488071544): Remove this kill switch after the new behavior
+// has been stable for one or two milestones without regressions.
+BASE_FEATURE(kWebRtcPreserveIceGatheringStateOrdering,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 IceTransportAdapterImpl::IceTransportAdapterImpl(
     Delegate* delegate,
@@ -120,6 +130,22 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
           that->OnRoleConflict(transport);
         }
       });
+
+  if (base::FeatureList::IsEnabled(
+          kWebRtcPreserveIceGatheringStateOrdering)) {
+    // The native transport may have started or completed gathering before this
+    // adapter was initialized. Replay the missed transitions so that the
+    // web-observable state still progresses through "gathering" before
+    // "complete".
+    const webrtc::IceGatheringState gathering_state =
+        ice_transport_channel()->gathering_state();
+    if (gathering_state != webrtc::kIceGatheringNew) {
+      delegate_->OnGatheringStateChanged(webrtc::kIceGatheringGathering);
+    }
+    if (gathering_state == webrtc::kIceGatheringComplete) {
+      delegate_->OnGatheringStateChanged(webrtc::kIceGatheringComplete);
+    }
+  }
 }
 
 void IceTransportAdapterImpl::OnGatheringStateChanged(
