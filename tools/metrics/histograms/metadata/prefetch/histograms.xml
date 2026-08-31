@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
     Records duration from when `PrefetchContainer` is added to `PrefetchService`
     to when `PrefetchContainer` received non-redirect header.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     received non-redirect header.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
     Records duration from when `PrefetchContainer` is added to `PrefetchService`
     to when `PrefetchContainer` received initial eligibility.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     passed initial eligibility check.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
     Records duration from when `PrefetchContainer` is added to `PrefetchService`
     to when `PrefetchContainer` finished load successfully.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     completed the load successfully.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
     to when `PrefetchService` starts its loading process (i.e.,
     `PrefetchService::StartSinglePrefetch` is called).
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     started the load.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
     before redirects, see
     `Prefetch.PrefetchContainer.AddedToFirstURLRequestStarted.{TriggerTypeAndEagerness}`.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     received a non-redirect header.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time taken to call http network transaction connected callback.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     started the load.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time taken for HTTP stream creation to finish.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     started the load.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
     `PrefetchService::StartSinglePrefetch` is called), which typically
     represents the duration the prefetch waits on the scheduler's queue.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     started the load.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
     Records the time taken for HTTP stream initialization to finish if the
     initialization was blocked, otherwise zero.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     started the load.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -438,7 +438,7 @@ chromium-metrics-reviews@google.com.
     (i.e., `PrefetchService::StartSinglePrefetch` is called) to when
     `PrefetchContainer` received non-redirect header.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     received non-redirect header.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
     (i.e., `PrefetchService::StartSinglePrefetch` is called) to when
     `PrefetchContainer` finished load successfully.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     completed the load successfully.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
     hop. To measure the duration to the initial request before redirects, see
     `Prefetch.PrefetchContainer.PrefetchStartedToFirstURLRequestStarted.{TriggerTypeAndEagerness}`.
 
-    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
     received a non-redirect header.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
