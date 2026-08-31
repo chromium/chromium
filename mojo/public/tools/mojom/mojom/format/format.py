@@ -119,6 +119,7 @@ def _write_import_list(nodes, state):
 
 def _write_import(node, state):
     assert isinstance(node, ast.Import)
+    _write_line_comments(node.comments_before, state)
     state.write(_format_attribute_list(node.attribute_list, state.get_indent()))
     state.write(f'import "{node.import_filename}";')
     _write_eol(node, state)

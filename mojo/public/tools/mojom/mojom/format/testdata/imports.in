@@ -2,10 +2,14 @@
 
 module foo.mojom;
 
+// comment about some other import
 import "a.mojom";
+// comment about that import
 import "i/before/e/when/not/sorted.mojom";
+// comment about this import
 import "e/should/be/reordered.mojom";
 
+// whee
 import "remove/newline/above.mojom";
 
 [EnableIf=is_mac] import "mac.mojom";
