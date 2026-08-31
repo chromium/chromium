@@ -323,6 +323,30 @@ public class TabBottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testMaxResizeContentHeightRatio_Default() {
+        simulateShowSuccessAndGetObserver();
+        verify(mMockBottomSheetController)
+                .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
+        TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
+        assertNotNull(content);
+        assertEquals(
+                BottomSheetContent.MAX_HEIGHT_RATIO,
+                content.getMaxResizeContentHeightRatio(),
+                EPSILON);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_FULL_HEIGHT + ":full_height_ratio/0.85")
+    public void testMaxResizeContentHeightRatio_WithCustomFinchParam() {
+        simulateShowSuccessAndGetObserver();
+        verify(mMockBottomSheetController)
+                .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
+        TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
+        assertNotNull(content);
+        assertEquals(0.85f, content.getMaxResizeContentHeightRatio(), EPSILON);
+    }
+
+    @Test
     public void testCorrectFullHeightRatio_WithKeyboard() {
         when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(true);
         simulateShowSuccessAndGetObserver();

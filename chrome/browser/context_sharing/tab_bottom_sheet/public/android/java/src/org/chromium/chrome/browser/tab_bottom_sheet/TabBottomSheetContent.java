@@ -148,6 +148,11 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public float getMaxResizeContentHeightRatio() {
+        return mFullHeightRatio;
+    }
+
+    @Override
     public String getSheetContentDescription(Context context) {
         return "";
     }
