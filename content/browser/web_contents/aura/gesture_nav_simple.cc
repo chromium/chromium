@@ -276,7 +276,9 @@ void Affordance::Abort() {
 
 void Affordance::Complete() {
   CHECK_EQ(State::DRAGGING, state_, base::NotFatalUntil::M158);
-  CHECK_LE(1.f, drag_progress_, base::NotFatalUntil::M158);
+  // TODO(crbug.com/553920158): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LE(1.f, drag_progress_);
 
   state_ = State::COMPLETING;
 
