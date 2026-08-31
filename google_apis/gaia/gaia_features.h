@@ -10,9 +10,6 @@
 
 namespace gaia::features {
 
-COMPONENT_EXPORT(GOOGLE_APIS)
-BASE_DECLARE_FEATURE(kGetAccountCapabilitiesUsesGetAllVisibleUrl);
-
 // Enables appending Google account session index (/u/[index]/) to the passkey
 // unlock URL.
 COMPONENT_EXPORT(GOOGLE_APIS)

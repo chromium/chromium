@@ -143,10 +143,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaOAuthClient {
   // values. The provided access token must have
   // https://www.googleapis.com/auth/account.capabilities in its scopes. See
   // |max_retries| docs above.
-  // When `gaia::features::kGetAccountCapabilitiesUsesGetAllVisibleUrl` is
-  // enabled, this fetches all available capabilities and `capabilities_names`
-  // is ignored. Otherwise, this only fetches values for capabilities listed in
-  // `capabilities_names`.
   void GetAccountCapabilities(
       const std::string& oauth_access_token,
       base::span<const std::string_view> capabilities_names,

@@ -87,9 +87,6 @@
     "account_capabilities_batch_get_url": {
       "url": "https://accountcapabilities.exampleapis.com/v1/capabilities"
     },
-    "account_capabilities_get_all_visible_url": {
-      "url": "https://accountcapabilities.exampleapis.com/v1/getAllVisibleCapabilities"
-    },
     "get_check_connection_info_url": {
       "url": "https://accounts.example.com/GetCheckConnectionInfo"
     },

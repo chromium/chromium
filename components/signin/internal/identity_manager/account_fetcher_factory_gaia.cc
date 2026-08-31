@@ -7,14 +7,12 @@
 #include <memory>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/types/to_address.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "google_apis/credentials_mode.h"
-#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_anonymization_key.h"
@@ -23,19 +21,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-
-namespace {
-
-const GURL& GetAccountCapabilitiesUrl() {
-  if (base::FeatureList::IsEnabled(
-          gaia::features::kGetAccountCapabilitiesUsesGetAllVisibleUrl)) {
-    return GaiaUrls::GetInstance()->account_capabilities_get_all_visible_url();
-  }
-
-  return GaiaUrls::GetInstance()->account_capabilities_batch_get_url();
-}
-
-}  // namespace
 
 AccountFetcherFactoryGaia::AccountFetcherFactoryGaia(
     ProfileOAuth2TokenService& token_service,
@@ -75,11 +60,13 @@ void AccountFetcherFactoryGaia::PrepareForFetchingAccountCapabilities() {
   // Account capabilities fetches are browser-wide sign-in operations not
   // associated with any page/frame, so no Connection Allowlist restrictions
   // should apply.
+  const GURL& account_capabilities_url =
+      GaiaUrls::GetInstance()->account_capabilities_batch_get_url();
   signin_client_->GetNetworkContext()->PreconnectSockets(
-      /*num_streams=*/1, GetAccountCapabilitiesUrl(),
+      /*num_streams=*/1, account_capabilities_url,
       google_apis::GetOmitCredentialsModeForGaiaRequests(),
       net::NetworkAnonymizationKey::CreateSameSite(
-          net::SchemefulSite(GetAccountCapabilitiesUrl())),
+          net::SchemefulSite(account_capabilities_url)),
       network::GetNoOpNetworkRestrictionsId(),
       net::MutableNetworkTrafficAnnotationTag(),
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());

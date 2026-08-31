@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -25,7 +24,6 @@
 #include "base/values.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/load_flags.h"
@@ -399,30 +397,20 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
           }
         })"));
 
-  if (base::FeatureList::IsEnabled(
-          gaia::features::kGetAccountCapabilitiesUsesGetAllVisibleUrl)) {
-    MakeRequest(ACCOUNT_CAPABILITIES,
-                GURL(GaiaUrls::GetInstance()
-                         ->account_capabilities_get_all_visible_url()),
-                /*post_body=*/std::string(), auth,
-                /*http_method_override_header=*/std::string(), max_retries,
-                delegate, traffic_annotation);
-  } else {
-    std::string post_body =
-        base::StrCat({"names=", base::EscapeUrlEncodedData(
-                                    *capabilities_names.begin(), true)});
-    for (auto it = capabilities_names.begin() + 1;
-         it != capabilities_names.end(); ++it) {
-      base::StrAppend(&post_body,
-                      {"&names=", base::EscapeUrlEncodedData(*it, true)});
-    }
-
-    MakeRequest(
-        ACCOUNT_CAPABILITIES,
-        GURL(GaiaUrls::GetInstance()->account_capabilities_batch_get_url()),
-        post_body, auth, /*http_method_override_header=*/"GET", max_retries,
-        delegate, traffic_annotation);
+  std::string post_body =
+      base::StrCat({"names=", base::EscapeUrlEncodedData(
+                                  *capabilities_names.begin(), true)});
+  for (auto it = capabilities_names.begin() + 1;
+       it != capabilities_names.end(); ++it) {
+    base::StrAppend(&post_body,
+                    {"&names=", base::EscapeUrlEncodedData(*it, true)});
   }
+
+  MakeRequest(
+      ACCOUNT_CAPABILITIES,
+      GURL(GaiaUrls::GetInstance()->account_capabilities_batch_get_url()),
+      post_body, auth, /*http_method_override_header=*/"GET", max_retries,
+      delegate, traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::MakeRequest(
