@@ -42,6 +42,20 @@
       ContextualSearchServiceFactory::GetForProfile(profile);
   static_cast<MockIOSContextualSearchService*>(service)
       ->SetTabUploadAutoSucceed(autoSucceed);
+
+  // Incognito tabs use a separate Off-The-Record profile and
+  // ContextualSearchService. Mock the OTR service as well so that tab uploads
+  // automatically succeed in incognito EG tests, allowing the 'Send' button to
+  // become enabled.
+  if (profile->HasOffTheRecordProfile()) {
+    contextual_search::ContextualSearchService* otr_service =
+        ContextualSearchServiceFactory::GetForProfile(
+            profile->GetOffTheRecordProfile());
+    if (otr_service) {
+      static_cast<MockIOSContextualSearchService*>(otr_service)
+          ->SetTabUploadAutoSucceed(autoSucceed);
+    }
+  }
 }
 
 + (void)enableAllTools {

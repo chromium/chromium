@@ -1322,4 +1322,26 @@ id<GREYMatcher> CloseButton() {
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that Co-browse cannot be opened in incognito tabs.
+- (void)testIncognitoDoesNotOpenCobrowse {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  OpenCoBrowse(_defaultURL);
+
+  // Verify the assistant is NOT visible.
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify the tab navigated away from the current page.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYAssertNotEqual(
+      [ChromeEarlGrey webStateVisibleURL], _defaultURL,
+      @"Tab should have navigated away instead of staying on the current page");
+}
+
 @end
