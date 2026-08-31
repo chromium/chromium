@@ -2,7 +2,7 @@ Name: Eigen
 Short Name: eigen3
 URL: https://gitlab.com/libeigen/eigen
 Version: N/A
-Revision: 841397a76b80d95b3041f7e202efb588a6020812
+Revision: e6f479ac744758c86dba5073264c0b806d6f37f2
 Update Mechanism: Autoroll
 License: MPL-2.0
 License Android Compatible: yes
