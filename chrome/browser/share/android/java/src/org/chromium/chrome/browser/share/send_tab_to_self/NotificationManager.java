@@ -21,6 +21,8 @@ import android.provider.Browser;
 
 import androidx.annotation.VisibleForTesting;
 
+import java.util.Collections;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -105,6 +107,14 @@ public class NotificationManager {
         boolean isBrowser =
                 ExternalNavigationHandler.getInstalledBrowserPackages().contains(packageName);
         if (isBrowser) return null;
+
+        // Ensure the resolved target has an explicit, non-wildcard host/path authority
+        // filter (such as App Links or a specific deep link) and is not a generic handler
+        // or system ResolverActivity.
+        if (!ExternalNavigationHandler.isPackageSpecializedHandler(
+                packageName, Collections.singletonList(resolveInfo))) {
+            return null;
+        }
 
         return resolveInfo;
     }
