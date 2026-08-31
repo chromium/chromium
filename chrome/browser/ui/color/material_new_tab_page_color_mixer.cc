@@ -17,8 +17,9 @@
 
 namespace {
 
-constexpr SkColor kColorSysSurface3_Light = SkColorSetRGB(0xEF, 0xF3, 0xFA);
 constexpr SkColor kColorSysSurface_Light = SkColorSetRGB(0xFF, 0xFF, 0xFF);
+constexpr SkColor kColorSysSurface1_Light = SkColorSetRGB(0xF8, 0xFA, 0xFD);
+constexpr SkColor kColorSysSurface3_Light = SkColorSetRGB(0xEF, 0xF3, 0xFA);
 constexpr SkColor kColorSysStateHoverOnSubtle_Light = SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F);
 constexpr SkColor kColorGemSysColorPrimary_Light =
     SkColorSetRGB(0x0B, 0x57, 0xD0);
@@ -83,6 +84,14 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageActionChipTextBody] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
       ui::kColorSysOnSurfaceSubtle};
+
+  // Isolated Tab colors.
+  // The Isolated Tab Page is designed to always remain in light mode.
+  mixer[kColorIsolatedTabPageBackground] = {kColorSysSurface_Light};
+  mixer[kColorIsolatedTabPageCardBackground] = {kColorSysSurface1_Light};
+  mixer[kColorIsolatedTabPageLink] = {kColorSysPrimary_Light};
+  mixer[kColorIsolatedTabPageNoticeBorder] = {kColorSysTonalOutline_Light};
+  mixer[kColorIsolatedTabPageNoticeIcon] = {SK_ColorBLACK};
 
   // Threads rail colors.
   mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysSurface2};

@@ -45,6 +45,18 @@ TEST(NewTabPageColorMixer, LightAndDarkThemeColors) {
       EXPECT_EQ(provider.GetColor(kColorNewTabPageModuleBackground),
                 gfx::kGoogleGrey800);
     }
+
+    // Isolated Tab Page colors always remain light.
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageBackground),
+              SK_ColorWHITE);
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageCardBackground),
+              SkColorSetRGB(0xF8, 0xFA, 0xFD));
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageNoticeBorder),
+              gfx::kGoogleBlue100);
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageLink),
+              gfx::kGoogleBlue600);
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageNoticeIcon),
+              SK_ColorBLACK);
   }
 }
 

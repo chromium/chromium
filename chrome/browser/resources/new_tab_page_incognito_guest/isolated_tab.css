@@ -3,14 +3,10 @@
  * found in the LICENSE file. */
 
 :root {
-  /* TODO(b/540253512): Migrate/port this surface color to the mixer to keep things simpler
-   * and handle these types of color definitions properly.
-   * Sample mixer: chrome/browser/ui/color/new_tab_page_color_mixer.cc */
+  /* Meaningful constants for repeated values */
   --desktop-sys-surface-colors-surface-1: rgb(248, 250, 253);
   --google-blue-100: rgb(210, 227, 252);
   --google-blue-600: rgb(26, 115, 232);
-
-  /* Meaningful constants for repeated values */
   --font-weight-medium: 500;
   --icon-size-small: 20px;
   --line-height-normal: 20px;
@@ -18,7 +14,7 @@
 
 body {
   -webkit-font-smoothing: antialiased;
-  background-color: white;
+  background-color: var(--color-isolated-tab-page-background);
   font-size: 100%;
   margin: 0;
 }
@@ -90,7 +86,8 @@ em {
 }
 
 .box-card {
-  background-color: var(--desktop-sys-surface-colors-surface-1);
+  background-color: var(
+      --color-isolated-tab-page-card-background);
   border-radius: 8px;
   box-sizing: border-box;
   display: flex;
@@ -106,7 +103,7 @@ em {
 }
 
 .box-icon {
-  background-color: black;
+  background-color: var(--color-isolated-tab-page-notice-icon);
   flex-shrink: 0;
   height: var(--icon-size-small);
   margin-right: 8px;
@@ -146,7 +143,8 @@ em {
 
 #visibility-notice {
   align-items: center;
-  border: 1px solid var(--google-blue-100);
+  border: 1px solid
+      var(--color-isolated-tab-page-notice-border);
   border-radius: 4px;
   box-sizing: border-box;
   display: flex;
@@ -162,7 +160,7 @@ em {
 }
 
 .visibility-notice-icon {
-  background-color: black;
+  background-color: var(--color-isolated-tab-page-notice-icon);
   flex-shrink: 0;
   height: var(--icon-size-small);
   margin-right: 8px;
@@ -176,7 +174,7 @@ em {
 .learn-more-button,
 #visibility-notice a,
 .box-content a {
-  color: var(--google-blue-600);
+  c: var(--color-isolated-tab-page-link);
   text-decoration: underline;
 }
 

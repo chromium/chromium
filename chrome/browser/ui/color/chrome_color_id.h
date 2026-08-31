@@ -245,6 +245,12 @@
   /* Intent Picker colors. */ \
   E_CPONLY(kColorIntentPickerItemBackgroundHovered) \
   E_CPONLY(kColorIntentPickerItemBackgroundSelected) \
+  /* Isolated Tab Page colors. */ \
+  E_CPONLY(kColorIsolatedTabPageBackground) \
+  E_CPONLY(kColorIsolatedTabPageCardBackground) \
+  E_CPONLY(kColorIsolatedTabPageLink) \
+  E_CPONLY(kColorIsolatedTabPageNoticeBorder) \
+  E_CPONLY(kColorIsolatedTabPageNoticeIcon) \
   /* Glic colors */ \
   E_CPONLY(kColorGlicBackground) \
   E_CPONLY(kColorGlicModalBackground) \

@@ -38,12 +38,27 @@ TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedEnabled) {
             color_provider().GetColor(ui::kColorSysSurface));
 }
 
-TEST_F(MaterialNewTabPageColorMixerTest, AddShortcutHoverColor) {
-  AddMaterialColorMixers();
+TEST_F(MaterialNewTabPageColorMixerTest, IsolatedTabPageColors) {
+  for (bool dark_mode : {false, true}) {
+    ui::ColorProvider provider;
+    ui::ColorProviderKey key;
+    if (dark_mode) {
+      key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
+    }
+    AddColorMixers(&provider, key);
+    AddChromeColorMixers(&provider, key);
 
-  EXPECT_EQ(
-      color_provider().GetColor(kColorNewTabPageAddShortcutBackgroundHovered),
-      SkColorSetA(color_provider().GetColor(ui::kColorSysOnSurface), 0x14));
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageBackground),
+              SK_ColorWHITE);
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageCardBackground),
+              SkColorSetRGB(0xF8, 0xFA, 0xFD));
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageLink),
+              SkColorSetRGB(0x0B, 0x57, 0xD0));
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageNoticeBorder),
+              SkColorSetRGB(0xA8, 0xC7, 0xFA));
+    EXPECT_EQ(provider.GetColor(kColorIsolatedTabPageNoticeIcon),
+              SK_ColorBLACK);
+  }
 }
 
 }  // namespace

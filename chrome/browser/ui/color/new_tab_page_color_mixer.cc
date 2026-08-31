@@ -649,5 +649,14 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
                                                          : gfx::kGoogleGrey800};
   mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
       dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
+
+  // Isolated Tab colors.
+  // The Isolated Tab Page is designed to always remain in light mode.
+  mixer[kColorIsolatedTabPageBackground] = {SK_ColorWHITE};
+  mixer[kColorIsolatedTabPageCardBackground] = {
+      SkColorSetRGB(0xF8, 0xFA, 0xFD)};
+  mixer[kColorIsolatedTabPageLink] = {gfx::kGoogleBlue600};
+  mixer[kColorIsolatedTabPageNoticeBorder] = {gfx::kGoogleBlue100};
+  mixer[kColorIsolatedTabPageNoticeIcon] = {SK_ColorBLACK};
   // LINT.ThenChange(//chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
 }
