@@ -63,8 +63,7 @@ class PointerLockControllerTest : public SimTest {
   }
 
   void TearDown() override {
-    PointerLockController().last_successful_lock_timestamp_ = base::TimeTicks();
-    PointerLockController().recent_lock_attempts_ = 0;
+    PointerLockController().recent_lock_request_timestamps_.clear();
     SimTest::TearDown();
   }
 
@@ -115,8 +114,8 @@ class PointerLockControllerTest : public SimTest {
     PointerLockController().ExitPointerLock();
   }
 
-  uint8_t GetRecentLockCount() {
-    return PointerLockController().recent_lock_attempts_;
+  wtf_size_t GetRecentLockCount() {
+    return PointerLockController().recent_lock_request_timestamps_.size();
   }
 
   // Loads a page containing a sandboxed iframe with the given `sandbox_tokens`
@@ -221,13 +220,13 @@ TEST_F(PointerLockControllerTest, RequestAcceptedAfterRateLimitWindowPasses) {
     PointerLockController().RequestPointerLock(resolver, target, nullptr);
     EXPECT_EQ(v8::Promise::kRejected, resolver->Promise().V8Promise()->State());
     // Counter is not reset yet since we're still within the window.
-    EXPECT_LT(static_cast<int>(GetMaxLocksInWindow()), GetRecentLockCount());
+    EXPECT_LE(static_cast<int>(GetMaxLocksInWindow()), GetRecentLockCount());
   }
 
-  // Advance time past the rate limit window. Counter should reset and request
-  // should be accepted (pending browser response).
+  // Advance time past the rate limit window. The queue should be flushed and
+  // the request should be accepted (pending browser response).
   task_environment().FastForwardBy(GetLockRateLimitWindow() / 2 +
-                                   base::Seconds(1));
+                                   base::Milliseconds(10));
   {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
@@ -236,8 +235,42 @@ TEST_F(PointerLockControllerTest, RequestAcceptedAfterRateLimitWindowPasses) {
     // The promise should be pending (waiting for browser response) after the
     // counter was reset.
     EXPECT_EQ(v8::Promise::kPending, promise.V8Promise()->State());
-    // Counter resets when the window passes.
-    EXPECT_EQ(0, GetRecentLockCount());
+    // Counter resets when the window passes. The only timestamp is the one
+    // from this request.
+    EXPECT_EQ(1, GetRecentLockCount());
+  }
+}
+
+// Verify that a steady cadence of requests that stays below the threshold
+// does not cause the rate limit blocking to trigger.
+TEST_F(PointerLockControllerTest, SteadyCadenceDoesNotBlockRequests) {
+  Element* target = GetTargetElement();
+  ScriptState* script_state = ToScriptStateForMainWorld(Window().GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  // Request `GetMaxLocksInWindow()`+1 locks in exactly
+  // `GetLockRateLimitWindow()`. When the last request arrives, the first
+  // timestamp should expire and the request should be successful.
+  const base::TimeDelta time_interval =
+      GetLockRateLimitWindow() / (GetMaxLocksInWindow() - 1);
+  for (size_t i = 0; i <= GetMaxLocksInWindow(); ++i) {
+    SimulateAcquireAndReleasePointerLock(script_state, target);
+    task_environment().FastForwardBy(time_interval);
+    if (i < GetMaxLocksInWindow() - 1) {
+      EXPECT_EQ(i + 1, GetRecentLockCount());
+    }
+  }
+  // First timestamp expired, and the last one made it into the queue.
+  EXPECT_EQ(static_cast<int>(GetMaxLocksInWindow()), GetRecentLockCount());
+  // Now, repeat requests at the exact interval and ensure that this cycle of
+  // expiring the oldest stamp and accepting the newest repeats.
+  // This emulates the scenario where a user may be working on a page that
+  // requires short, fine and repeated motions during a period of time longer
+  // than `kLockRateLimitWindow`.
+  for (size_t i = 0; i < 5; ++i) {
+    SimulateAcquireAndReleasePointerLock(script_state, target);
+    task_environment().FastForwardBy(time_interval);
+    EXPECT_EQ(static_cast<int>(GetMaxLocksInWindow()), GetRecentLockCount());
   }
 }
 

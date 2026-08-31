@@ -117,23 +117,26 @@ void PointerLockController::RequestPointerLock(
   // Rate limit pointer lock requests if the page has been unlocking too
   // frequently. This prevents abuse where a page rapidly locks/unlocks the
   // pointer to deny user input or bog down the browser process with too many
-  // inter-process messages. If the threshold is exceeded, reject all requests
-  // until the time window has passed.
+  // inter-process messages. Uses a sliding window over the timestamps of
+  // recent requests: if more than `kMaxLocksInWindow` requests have landed
+  // within the trailing `kLockRateLimitWindow`, reject this request until
+  // enough age out of the window.
   if (RuntimeEnabledFeatures::RateLimitPointerLockRequestsEnabled() &&
       element_ == nullptr && !lock_pending_) {
-    recent_lock_attempts_++;
-    if (last_successful_lock_timestamp_ + kLockRateLimitWindow >
-        base::TimeTicks::Now()) {
-      if (recent_lock_attempts_ > kMaxLocksInWindow) {
-        EnqueueEvent(event_type_names::kPointerlockerror, target);
-        resolver->RejectWithDOMException(
-            DOMExceptionCode::kNotAllowedError,
-            "Too many pointer lock requests in a short window of time.");
-        return;
-      }
-    } else if (!last_successful_lock_timestamp_.is_null()) {
-      recent_lock_attempts_ = 0;
+    const base::TimeTicks now = base::TimeTicks::Now();
+    while (!recent_lock_request_timestamps_.empty() &&
+           now - recent_lock_request_timestamps_.front() >=
+               kLockRateLimitWindow) {
+      recent_lock_request_timestamps_.pop_front();
     }
+    if (recent_lock_request_timestamps_.size() >= kMaxLocksInWindow) {
+      EnqueueEvent(event_type_names::kPointerlockerror, target);
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Too many pointer lock requests in a short window of time.");
+      return;
+    }
+    recent_lock_request_timestamps_.push_back(now);
   }
 
   bool unadjusted_movement_requested = options && options->unadjustedMovement();
@@ -233,7 +236,6 @@ void PointerLockController::ProcessResult(
     bool unadjusted_movement_requested,
     mojom::blink::PointerLockResult result) {
   if (result == mojom::blink::PointerLockResult::kSuccess) {
-    last_successful_lock_timestamp_ = base::TimeTicks::Now();
     current_unadjusted_movement_setting_ = unadjusted_movement_requested;
   }
   std::move(callback).Run(result);
