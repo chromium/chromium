@@ -134,6 +134,9 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
    private:
     void ChunkStepsBody(ScriptState* script_state,
                         v8::Global<v8::Value> value) const {
+      if (!script_state->ContextIsValid()) {
+        return;
+      }
       // This is called in a microtask, the ScriptState needs to be put back
       // in scope.
       ScriptState::Scope scope(script_state);

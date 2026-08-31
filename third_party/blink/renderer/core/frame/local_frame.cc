@@ -847,7 +847,14 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   not_restored_reasons_.reset();
   prescient_networking_.reset();
-  microtasks_pauser_.reset();
+
+  if (microtasks_pauser_) {
+    // TODO(caseq): consider clearing all tasks from the microtask queue
+    // associated with the Agent upon all frames of the Agent being detached.
+    static_cast<LocalWindowProxyManager*>(GetWindowProxyManager())
+        ->SetAbortScriptExecution(nullptr);
+    microtasks_pauser_.reset();
+  }
 
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();

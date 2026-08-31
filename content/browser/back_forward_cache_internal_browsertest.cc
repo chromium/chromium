@@ -714,6 +714,99 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     FROM_HERE);
 }
 
+class BackForwardCacheDisallowJavaScriptExecutionBrowserTest
+    : public BackForwardCacheBrowserTest {
+ public:
+  static constexpr int kMaxBufferedBytesPerProcess = 1000;
+
+  BackForwardCacheDisallowJavaScriptExecutionBrowserTest() {
+    EnableFeatureAndSetParams(
+        blink::features::kBackForwardCacheDWCOnJavaScriptExecution, "", "");
+    EnableFeatureAndSetParams(
+        blink::features::kAllowDatapipeDrainedAsBytesConsumerInBFCache, "", "");
+  }
+  ~BackForwardCacheDisallowJavaScriptExecutionBrowserTest() override = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kLoadingTasksUnfreezable,
+          {{"max_buffered_bytes_per_process",
+            base::NumberToString(kMaxBufferedBytesPerProcess)}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDisallowJavaScriptExecutionBrowserTest,
+                       EvictionWithPendingStreamMicrotask) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Start fetch and pipe to a WritableStream that attempts JS execution.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    window.fetchStarted = false;
+    window.chunkCount = 0;
+    fetch('/fetch').then(response => {
+      window.fetchStarted = true;
+      const dest = new WritableStream({
+        write(chunk) {
+          window.chunkCount++;
+          const script = document.createElement('script');
+          script.src = 'small_script.js';
+          document.body.appendChild(script);
+        }
+      });
+      response.body.pipeTo(dest);
+    });
+    true;
+  )"));
+
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "text/plain");
+  fetch_response.Send("start sending body");
+
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    new Promise(resolve => {
+      const check = () => {
+        if (window.fetchStarted && window.chunkCount >= 1) resolve();
+        else setTimeout(check, 10);
+      };
+      check();
+    });
+  )"));
+
+  // 2) Navigate to B. Page A is stored in BFCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Complete the response after navigating away with data exceeding the
+  // buffer limit.
+  std::string body(kMaxBufferedBytesPerProcess * 10, '*');
+  fetch_response.Send(body);
+  fetch_response.Done();
+
+  // The renderer should evict Page A due to exceeding buffer limit, detaching
+  // the frame and draining pending microtasks which attempt JS execution.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 4) Go back. Expect Page A was evicted and not restored.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
+}
+
 // Navigate from A(B)->C. Send postMessage from A to B upon pagehide, and make
 // sure that the message is deferred. Then go back and make sure the message
 // gets delivered when the cached page is restored.
