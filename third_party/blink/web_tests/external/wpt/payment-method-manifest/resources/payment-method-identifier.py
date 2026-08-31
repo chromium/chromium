@@ -7,10 +7,14 @@ Supports declarative query parameters:
   - `link`: Custom Link header value. If omitted, defaults to `<{default_manifest}>; rel="payment-method-manifest"`.
     Pass `link=none` to omit the Link header entirely.
     Multiple `link` query parameters can be passed to emit multiple Link header lines.
+  - `num_redirects`: Integer count for multi-hop redirect chains.
+  - `redirect_location`: Target URL for redirect.
+  - `redirect_status`: HTTP redirect status code (default 302).
 """
 
 import os
 import sys
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 resources_dir = os.path.dirname(__file__)
 if resources_dir not in sys.path:
@@ -44,6 +48,39 @@ def main(request, response):
         })
         stash.put(test_id, logs, path=STASH_PATH)
 
+    redirect_status = int(request.GET.get(b"redirect_status", b"302"))
+
+    # Handle multi-hop redirects
+    num_redirects_str = request.GET.get(b"num_redirects")
+    if num_redirects_str is not None:
+        num_redirects = int(num_redirects_str)
+        if num_redirects > 0:
+            parsed = urlparse(request.url)
+            params = parse_qs(parsed.query)
+            params["num_redirects"] = [str(num_redirects - 1)]
+            next_query = urlencode(params, doseq=True)
+            next_url = urlunparse((
+                parsed.scheme,
+                parsed.netloc,
+                parsed.path,
+                parsed.params,
+                next_query,
+                parsed.fragment,
+            ))
+            response.status = redirect_status
+            response.headers.set(b"Location", next_url.encode("utf-8"))
+            response.content = b"Redirecting..."
+            return
+
+    # Handle explicit redirect_location
+    redirect_location = request.GET.get(b"redirect_location")
+    if redirect_location:
+        response.status = redirect_status
+        response.headers.set(b"Location", redirect_location)
+        response.content = b"Redirecting..."
+        return
+
+    # Normal response
     response.status = 200
     response.headers.set(b"Content-Type", b"text/html")
 
