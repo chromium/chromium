@@ -345,6 +345,22 @@ void DisconnectWindowGtk::UpdateToggleButtonText() {
     gtk_button_set_label(
         GTK_BUTTON(toggle_button_.get()),
         (g_current_anchor == WindowAnchor::kBottom) ? "▲" : "▼");
+    int string_id = (g_current_anchor == WindowAnchor::kBottom)
+                        ? IDS_MOVE_TO_TOP_BUTTON
+                        : IDS_MOVE_TO_BOTTOM_BUTTON;
+    std::string text = l10n_util::GetStringUTF8(string_id);
+    gtk_widget_set_tooltip_text(toggle_button_.get(), text.c_str());
+
+#if GTK_CHECK_VERSION(3, 90, 0)
+    gtk_accessible_update_property(GTK_ACCESSIBLE(toggle_button_.get()),
+                                   GTK_ACCESSIBLE_PROPERTY_LABEL, text.c_str(),
+                                   -1);
+#else
+    AtkObject* atk_obj = gtk_widget_get_accessible(toggle_button_.get());
+    if (atk_obj) {
+      atk_object_set_name(atk_obj, text.c_str());
+    }
+#endif
   }
 }
 
