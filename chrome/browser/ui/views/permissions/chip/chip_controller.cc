@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -65,11 +66,7 @@ ChipController::~ChipController() {
   if (chip_) {
     chip_->SetBubbleOwner(nullptr);
   }
-  views::Widget* current = GetBubbleWidget();
-  if (current) {
-    current->RemoveObserver(this);
-    current->Close();
-  }
+  ResetPermissionPromptChip();
   if (active_chip_permission_request_manager_.has_value()) {
     active_chip_permission_request_manager_.value()->RemoveObserver(this);
   }
@@ -350,13 +347,11 @@ void ChipController::ShowPermissionUi(
   SyncChipWithModel();
 
   chip_->SetBubbleOwner(this);
-  chip_->SetPressedCallback(base::BindRepeating(
-      // base::Unretained() is safe here because the ChipController and the
-      // chip object are both owned by the LocationBarView (or similar UI
-      // container) which shares their lifecycles, and no ui events are
-      // fired during teardown.
-      [](ChipController* self, bool) { self->OnRequestChipButtonPressed(); },
-      base::Unretained(this)));
+  // Discard `is_pointer_interaction` (indicating pointer vs. keyboard event)
+  // as it is not needed when handling request chip presses.
+  chip_->SetPressedCallback(base::IgnoreArgs<bool>(
+      base::BindRepeating(&ChipController::OnRequestChipButtonPressed,
+                          weak_factory_.GetWeakPtr())));
   chip_->ResetAnimation(PermissionChipInterface::AnimationState::kCollapsed);
   ObservePromptBubble();
 
@@ -543,13 +538,10 @@ void ChipController::HandleConfirmation(
       AnimateExpand();
     }
 
-    chip_->SetPressedCallback(base::BindRepeating(
-        // base::Unretained() is safe here because the ChipController and the
-        // chip object are both owned by the LocationBarView (or similar UI
-        // container) which shares their lifecycles, and no ui events are
-        // fired during teardown.
-        [](ChipController* self, bool) { self->ShowPageInfoDialog(); },
-        base::Unretained(this)));
+    // Discard `is_pointer_interaction` (indicating pointer vs. keyboard event)
+    // as it is not needed when showing the page info dialog.
+    chip_->SetPressedCallback(base::IgnoreArgs<bool>(base::BindRepeating(
+        &ChipController::ShowPageInfoDialog, weak_factory_.GetWeakPtr())));
     AnnouncePermissionRequestForAccessibility(
         permission_prompt_model_->GetAccessibilityChipText());
 
@@ -625,6 +617,7 @@ void ChipController::HideChip() {
 void ChipController::OpenPermissionPromptBubble() {
   DCHECK(!IsBubbleShowing());
   if (!permission_prompt_model_ || !permission_prompt_model_->GetDelegate() ||
+      permission_prompt_model_->GetDelegate()->Requests().empty() ||
       !location_bar_->GetWebContents()) {
     return;
   }
