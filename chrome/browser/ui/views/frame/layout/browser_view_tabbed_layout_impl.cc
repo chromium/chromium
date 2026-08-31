@@ -846,7 +846,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     layout.AddChild(
         views().vertical_tab_strip_background_blur_backdrop,
         vertical_tab_strip_bounds,
-        in_glass_mode() &&
+        in_glass_mode() && features::kGlassExpandOnHoverEnabled.Get() &&
             layout_data_->vertical_tab_strip_animation.expand_on_hover_width >
                 0.0f);
   }
@@ -1512,9 +1512,13 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       // visible fade. This isn't perfect, but hopefully with glass
       // expand-on-hover it will improve.
       auto vertical_tabs_background_color = frame_color;
+      const double expand_on_hover_opacity =
+          features::kGlassExpandOnHoverEnabled.Get()
+              ? kGlassExpandOnHoverOpacity
+              : 1.0;
       vertical_tabs_background_color.opacity = static_cast<float>(
           (1.0 - animation.expand_on_hover_opacity) * frame_color.opacity +
-          animation.expand_on_hover_opacity * kGlassExpandOnHoverOpacity);
+          animation.expand_on_hover_opacity * expand_on_hover_opacity);
       vertical_tabs_background->SetPrimaryColor(vertical_tabs_background_color);
     } else {
       vertical_tabs_background->SetPrimaryColor(frame_color);

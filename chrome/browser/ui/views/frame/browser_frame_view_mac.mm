@@ -500,15 +500,14 @@ void BrowserFrameViewMac::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  const SkColor frame_color =
-      GetFrameColor(BrowserFrameActiveState::kUseCurrent);
-
   if (is_glass_frame_eligible_) {
     // In glass mode, painting to frame color happens in the opaque background
     // view instead.
     return;
   }
 
+  const SkColor frame_color =
+      GetFrameColor(BrowserFrameActiveState::kUseCurrent);
   canvas->DrawColor(frame_color);
 
   auto* theme_service = ThemeServiceFactory::GetForProfile(
