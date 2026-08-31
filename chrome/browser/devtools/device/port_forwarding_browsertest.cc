@@ -81,13 +81,7 @@ class PortForwardingTest: public InProcessBrowserTest {
   };
 };
 
-// TODO(crbug.com/551691454): Re-enable on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_LoadPageWithStyleAnsScript DISABLED_LoadPageWithStyleAnsScript
-#else
-#define MAYBE_LoadPageWithStyleAnsScript LoadPageWithStyleAnsScript
-#endif
-IN_PROC_BROWSER_TEST_F(PortForwardingTest, MAYBE_LoadPageWithStyleAnsScript) {
+IN_PROC_BROWSER_TEST_F(PortForwardingTest, LoadPageWithStyleAndScript) {
   Profile* profile = browser()->GetProfile();
   AndroidDeviceManager::DeviceProviders device_providers;
 
