@@ -711,6 +711,10 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-adapter-' + cls._use_webgpu_adapter)
     else:
       tags.append('webgpu-adapter-default')
+    if cls._enable_default_webgpu_features:
+      tags.append('unsafe-webgpu-disabled')
+    else:
+      tags.append('unsafe-webgpu-enabled')
 
     if host_information.IsWindows():
       if cls._use_fxc:
