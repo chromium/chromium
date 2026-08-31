@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".RefreshTokenBinding" summary="refresh token binding"/>
 </variants>
 
-<!-- LINT.ThenChange(//components/unexportable_keys/unexportable_key_task_manager.cc:BackgroundTaskOriginSuffixForHistograms) -->
+<!-- LINT.ThenChange(//components/unexportable_keys/background_task_origin.cc:BackgroundTaskOriginSuffixForHistograms) -->
 
 <!-- LINT.IfChange(UnexportableKeysBackgroundTaskType) -->
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_TASK_ORIGIN_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_BACKGROUND_TASK_ORIGIN_H_
 
+#include <string_view>
+
 namespace unexportable_keys {
 
 // An enum describing where the scheduling of a background task originates from.
@@ -14,6 +16,9 @@ enum class BackgroundTaskOrigin {
   kDeviceBoundSessionCredentialsPrototype = 2,
   kOrphanedKeyGarbageCollection = 3,
 };
+
+std::string_view GetBackgroundTaskOriginSuffixForHistograms(
+    BackgroundTaskOrigin origin);
 
 }  // namespace unexportable_keys
 
