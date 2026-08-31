@@ -18,8 +18,6 @@ component("fido") {
     "attested_credential_data.h",
     "authenticator_data.cc",
     "authenticator_data.h",
-    "cbor_extract.cc",
-    "cbor_extract.h",
     "cbor_util.cc",
     "cbor_util.h",
     "fido_user_verification_requirement.cc",
