@@ -16,11 +16,16 @@ class BlockBreakToken;
 // A utility class for grid lanes layout which given a list of grid lanes and a
 // break token will iterate through unfinished grid lanes items.
 //
-// `NextItem()` processes items in one lane at a time, with spanners being an
+// `NextItem()` processes items in one column at a time, with spanners being an
 // exception to the rule. When a spanner is hit, all items before it in each
-// lane it spans must be processed before the spanner itself. In all cases,
-// though child break tokens are processed first, in break token order. The
-// iterator then resumes unstarted items from those positions onward.
+// lane it spans must be processed before the spanner itself.
+//
+// In the case of rows, every item in a lane is started in the same (grid lanes)
+// container fragment, so once the break tokens of a row have been handled the
+// iterator moves on to the next row.
+//
+// In all cases, though child break tokens are processed first, in break token
+// order. The iterator then resumes unstarted items from those positions onward.
 //
 // This class does not handle modifications to its arguments after it has been
 // constructed.
@@ -41,6 +46,21 @@ class CORE_EXPORT GridLanesItemIterator {
   // state here for row containers.
   struct Entry;
   Entry NextItem();
+
+  bool HasMoreBreakTokens() const { return break_token_; }
+
+  // Move the iterator to the next lane, unless we are already at the start of a
+  // lane.
+  void NextLane();
+
+  // Returns true if the next item to be processed is in the same lane as
+  // `grid_lane_idx`.
+  bool HasNextItemInLane(wtf_size_t grid_lane_idx) const {
+    DCHECK_LT(grid_lane_idx, grid_lanes_.size());
+
+    // If there is no next item, then we are past the last lane with items.
+    return grid_lane_idx == grid_lane_idx_ && next_unstarted_item_;
+  }
 
  private:
   GridLanesItemData* FindNextItem(

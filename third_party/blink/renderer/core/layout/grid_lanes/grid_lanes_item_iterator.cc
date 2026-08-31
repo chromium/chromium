@@ -49,8 +49,6 @@ GridLanesItemIterator::GridLanesItemIterator(
 }
 
 GridLanesItemIterator::Entry GridLanesItemIterator::NextItem() {
-  DCHECK(is_column_);
-
   const BlockBreakToken* current_child_break_token = nullptr;
   GridLanesItemData* current_item = next_unstarted_item_;
   wtf_size_t current_item_idx = 0;
@@ -86,14 +84,22 @@ GridLanesItemIterator::Entry GridLanesItemIterator::NextItem() {
         // We reached the last child break token. Prepare for the next unstarted
         // sibling, and forget the parent break token.
         //
-        // TODO(almaher): Similar to flex, we'll need to handle special row
-        // logic here.
-        if (!break_token_->HasSeenAllChildren()) {
-          if (is_column_) {
-            // Re-iterate over the columns to find any unprocessed items.
-            grid_lane_idx_ = 0;
-            grid_lanes_item_idx_ = next_item_idx_for_lane_[grid_lane_idx_];
-          }
+        // TODO(almaher): Similar to flex, the iterator will need to stay in the
+        // current row here if the row itself broke before.
+        if (!is_column_) {
+          // All items in a row are started in the same (grid lanes) container
+          // fragment, so a sibling of the current item without a break token
+          // has already finished layout. Move on to the next row.
+          //
+          // Note: Rows don't produce a layout result, so if the row broke
+          // before, the first item in the row will have broken before.
+          break_token_ = nullptr;
+          NextLane();
+        } else if (!break_token_->HasSeenAllChildren()) {
+          // Re-iterate over the columns to find any unprocessed items.
+          grid_lane_idx_ = 0;
+          grid_lanes_item_idx_ = next_item_idx_for_lane_[grid_lane_idx_];
+
           next_unstarted_item_ = FindNextItem();
           break_token_ = nullptr;
         }
@@ -153,6 +159,18 @@ GridLanesItemData* GridLanesItemIterator::FindNextItem(
     return FindNextItem(item_break_token);
   }
   return nullptr;
+}
+
+void GridLanesItemIterator::NextLane() {
+  if (grid_lanes_item_idx_ == 0) {
+    return;
+  }
+
+  ++grid_lane_idx_;
+  AdjustItemIndexForNewLane();
+  if (!break_token_) {
+    next_unstarted_item_ = FindNextItem();
+  }
 }
 
 void GridLanesItemIterator::AdjustItemIndexForNewLane() {

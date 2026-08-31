@@ -149,7 +149,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridLanesGapGeometryState* out_gap_geometry_state = nullptr);
   void PlaceGridLanesItemsForFragmentation(
       const GridLanesDataVector& grid_lanes,
-      const GridLayoutSubtree& layout_subtree);
+      const GridLayoutSubtree& layout_subtree,
+      LayoutUnit total_intrinsic_block_size);
 
   // Iterates through and lays out each item in `grid_lanes_items`. If
   // `placement_phase` is kCalculateBaselines, this method measures items and
