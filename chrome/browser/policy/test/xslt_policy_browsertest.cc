@@ -172,6 +172,34 @@ IN_PROC_BROWSER_TEST_P(XSLTPolicyBrowserTest, PolicyIsFollowed) {
   EXPECT_TRUE(message_queue.WaitForMessage(&message));
   EXPECT_TRUE(message == "true" || message == "false");
   EXPECT_EQ(message == "true", expected_enabled);
+
+  if (expected_enabled) {
+    bool expected_banner =
+        (policy_val != Policy::kTrue) && !origin_trial_present;
+    content::DOMMessageQueue banner_queue(
+        chrome_test_utils::GetActiveWebContents(this));
+    content::ExecuteScriptAsync(chrome_test_utils::GetActiveWebContents(this),
+                                R"(
+          const xml = (new DOMParser()).parseFromString(
+              '<r><n>1</n></r>', 'text/xml');
+          const xsl = (new DOMParser()).parseFromString(`<?xml version="1.0"?>
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+              <xsl:template match="/">
+                <html><body>
+                  <p id="r"><xsl:value-of select="//n"/></p>
+                </body></html>
+              </xsl:template>
+            </xsl:stylesheet>`, 'text/xml');
+          const p = new XSLTProcessor();
+          p.importStylesheet(xsl);
+          const doc = p.transformToDocument(xml);
+          window.domAutomationController.send(
+              doc.documentElement.textContent.includes('This site uses XSLT'));
+        )");
+    std::string banner_message;
+    EXPECT_TRUE(banner_queue.WaitForMessage(&banner_message));
+    EXPECT_EQ(banner_message == "true", expected_banner);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
