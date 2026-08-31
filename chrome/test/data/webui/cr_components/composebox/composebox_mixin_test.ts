@@ -2525,6 +2525,37 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'observeSmartTabSharingActive preserves automaticActiveTab in' +
+          ' addedTabsIds when smartTabSharingVisible is true and active' +
+          ' becomes false',
+      async () => {
+        const dummyToken = {
+          high: 1n,
+          low: 1n,
+        } as unknown as UnguessableToken;
+        const autoTab = {
+          uuid: dummyToken,
+          tabId: 10,
+          name: 'Auto Tab',
+          type: 'tab',
+          inputType: InputType.kBrowserTab,
+        } as unknown as ComposeboxFile;
+
+        element.smartTabSharingVisible = true;
+        element.automaticActiveTab = autoTab;
+        element.addedTabsIds = new Map([[10, dummyToken]]);
+
+        searchboxCallbackRouterRemote.updateSmartTabSharingActive(false);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(element.smartTabSharingActive);
+        assertEquals(1, element.addedTabsIds.size);
+        assertTrue(element.addedTabsIds.has(10));
+        assertEquals(dummyToken, element.addedTabsIds.get(10));
+      });
+
+  test(
       'resetSession resets submitting, input, tool, and models', async () => {
         element.submitting = true;
         element.input = 'previous query';

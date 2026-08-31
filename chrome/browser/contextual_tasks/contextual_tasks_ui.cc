@@ -1454,6 +1454,13 @@ bool ContextualTasksUI::CanUpdateSuggestedTabContext(
   return true;
 }
 
+void ContextualTasksUI::SyncAutoSuggestedTabContext() {
+  if (composebox_handler_ && auto_suggestion_manager_) {
+    composebox_handler_->UpdateSuggestedTabContext(
+        auto_suggestion_manager_->GetCurrentSuggestion());
+  }
+}
+
 void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   if (contextual_tasks::GetIsProtectedPageErrorEnabled() && page_) {
     page_->HideErrorPage();

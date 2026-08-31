@@ -1255,6 +1255,76 @@ function disableAnimationsRecursively(element: Element) {
           });
 
           test(
+              're-suggesting the same tab URL after null update recreates ' +
+                  'the chip',
+              async () => {
+                await mountApp();
+                const {innerComposebox} = parts;
+
+                // Initial suggestion creates the chip.
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(1, innerComposebox.files.size);
+
+                // Null update deletes the chip.
+                await pushAutoTab(null);
+                await settle();
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(0, innerComposebox.files.size);
+
+                // Re-suggesting the exact same URL recreates the chip.
+                await expectAddTabContext(
+                    REPLACEMENT_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(1, innerComposebox.files.size);
+                assertTrue(hasFileWithTabId(1));
+              });
+
+          test(
+              're-suggesting the same tab URL after user deletion recreates ' +
+                  'the chip',
+              async () => {
+                await mountApp();
+                const {innerComposebox} = parts;
+
+                // Initial suggestion creates the chip.
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(1, innerComposebox.files.size);
+
+                // User deletes the chip.
+                const file = Array.from(innerComposebox.files.values())[0] as
+                    ComposeboxFile;
+                innerComposebox.deleteFile(file.uuid, /*fromUserAction=*/ true);
+                await settle();
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(0, innerComposebox.files.size);
+
+                // Re-suggesting the exact same URL recreates the chip.
+                await expectAddTabContext(
+                    REPLACEMENT_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(1, innerComposebox.files.size);
+                assertTrue(hasFileWithTabId(1));
+              });
+
+          test(
               'page action without ask-G in the side panel keeps the default ' +
                   'semantics',
               async () => {

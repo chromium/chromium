@@ -1064,6 +1064,52 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(0, innerComposebox.files.size);
   });
 
+  test('OpeningMultipleNewThreadsPreservesAutoSuggestedTab', async () => {
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+
+    const tabInfo = {
+      tabId: 1,
+      title: 'Auto Tab',
+      url: 'https://example.com',
+      lastActive: {internalValue: BigInt(100)},
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+    };
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals(1, innerComposebox.files.size);
+    assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+
+    // Calling `clearInputAndFocus()` (what `onNewThreadClick_()` calls)
+    // multiple times should preserve the auto-suggested tab.
+    contextualTasksApp.$.composebox.clearInputAndFocus();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals(1, innerComposebox.files.size);
+    assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+
+    contextualTasksApp.$.composebox.clearInputAndFocus();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals(1, innerComposebox.files.size);
+    assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+
+    // Explicitly clearing all inputs removes the auto-suggested tab.
+    innerComposebox.clearAllInputs(
+        /* querySubmitted= */ false,
+        /* shouldBlockAutoSuggestedTabs= */ true);
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals(0, innerComposebox.files.size);
+    assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
+  });
+
   test('SingleAutoTabFileDoesNotUpdatePlaceholder', async () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
     const defaultApiHint =

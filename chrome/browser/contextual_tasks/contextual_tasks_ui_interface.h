@@ -75,6 +75,9 @@ class ContextualTasksUIInterface : public TaskInfoDelegate,
   // be called even when active tab has not changed.
   virtual void OnActiveTabContextStatusChanged() = 0;
 
+  // Re-syncs the current auto-suggested tab context to the WebUI composebox.
+  virtual void SyncAutoSuggestedTabContext() = 0;
+
   // Notifies the UI that the Lens overlay state has changed.
   virtual void OnLensOverlayStateChanged(
       bool is_showing,

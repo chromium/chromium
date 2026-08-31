@@ -247,6 +247,9 @@ export const ComposeboxEmbedderMixin =
         accessor energyEffectAnimationEnabled: boolean = false;
 
         browserTabContextAdded: boolean = false;
+        pendingAutomaticActiveTabUrl: string = '';
+        pendingAutomaticActiveTabTitle: string = '';
+        automaticActiveTab: ComposeboxFile|null = null;
         pendingUploads: Set<UnguessableToken> = new Set();
         earlyCompletedUploads: Set<UnguessableToken> = new Set();
         dragAndDropEnabled: boolean =
@@ -404,7 +407,12 @@ export const ComposeboxEmbedderMixin =
                   (active: boolean) => {
                     this.smartTabSharingActive = active;
                     if (this.smartTabSharingVisible && !active) {
-                      this.addedTabsIds = new Map();
+                      this.addedTabsIds = this.automaticActiveTab?.tabId ?
+                          new Map([[
+                            this.automaticActiveTab.tabId,
+                            this.automaticActiveTab.uuid,
+                          ]]) :
+                          new Map();
                       this.resetRestoredTabs();
                     }
                   });
@@ -498,6 +506,12 @@ export const ComposeboxEmbedderMixin =
             } else {
               this.smartTabSharingActive = false;
             }
+          }
+          if (this.hasUpdated &&
+              changedPrivateProperties.has('smartTabSharingActive') &&
+              changedPrivateProperties.get('smartTabSharingActive') !==
+                  this.smartTabSharingActive) {
+            this.clearContextForSmartTabSharingActive();
           }
           // </if>
           // When the result initially gets set check if dropdown should show.
@@ -1260,7 +1274,30 @@ export const ComposeboxEmbedderMixin =
             this.addedTabsIds = new Map();
             this.resetRestoredTabs();
           }
+          this.clearContextForSmartTabSharingActive();
           // </if>
+        }
+
+        clearContextForSmartTabSharingActive() {
+          this.clearManualTabs();
+          if (this.automaticActiveTab) {
+            const uuid = this.automaticActiveTab.uuid;
+            this.automaticActiveTab = null;
+            this.pendingAutomaticActiveTabUrl = '';
+            this.pendingAutomaticActiveTabTitle = '';
+            this.deleteFile(uuid, /*fromUserAction=*/ false);
+          }
+        }
+
+        clearManualTabs() {
+          const fileMap = new Map(this.files);
+          for (const [uuid, file] of fileMap.entries()) {
+            if ((file.type === 'tab' || !!file.tabId) &&
+                (!this.automaticActiveTab ||
+                 file.uuid !== this.automaticActiveTab.uuid)) {
+              this.deleteFile(uuid, /*fromUserAction=*/ false);
+            }
+          }
         }
 
         onContextMenuContainerMousedown(e: FocusEvent) {
@@ -1803,6 +1840,23 @@ export const ComposeboxEmbedderMixin =
           this.activeQueryId = -1;
           this.lastQueriedInput = '';
           this.getDropdownElement().unselect();
+        }
+
+        clearInputsForNewThread() {
+          this.clearInput();
+          this.getInputElement().resetHeight();
+          this.resetModes();
+          this.resetSmartComposeStats();
+
+          // Delete all manually added files/tabs, keeping the auto-suggested
+          // tab.
+          const fileMap = new Map(this.files);
+          for (const [uuid, file] of fileMap.entries()) {
+            if (!this.automaticActiveTab ||
+                file.uuid !== this.automaticActiveTab.uuid) {
+              this.deleteFile(uuid, /*fromUserAction=*/ false);
+            }
+          }
         }
 
         clearAllInputs(
@@ -2970,6 +3024,11 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   energyEffectEnabled: boolean;
   energyEffectAnimationEnabled: boolean;
   updateComplete: Promise<boolean>;
+  pendingAutomaticActiveTabUrl: string;
+  pendingAutomaticActiveTabTitle: string;
+  automaticActiveTab: ComposeboxFile|null;
+  clearContextForSmartTabSharingActive(): void;
+  clearManualTabs(): void;
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;
@@ -3075,6 +3134,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   focusInput(): void;
   hasContent(ignoreAutoTab?: boolean): boolean;
   clearInput(): void;
+  clearInputsForNewThread(): void;
   clearAllInputs(
       querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean): void;
   handleProcessFilesError(error: ProcessFilesError): void;

@@ -293,6 +293,9 @@ void ContextualTasksPageHandler::OnCookieSyncCompleted() {
 }
 
 void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
+  // Re-sync active tab auto-suggestion down to the WebUI for the fresh thread.
+  web_ui_controller_->SyncAutoSuggestedTabContext();
+
   std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
   if (task_id.has_value()) {
     std::move(callback).Run(

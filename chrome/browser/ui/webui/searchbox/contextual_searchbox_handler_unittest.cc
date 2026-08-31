@@ -193,6 +193,7 @@ class FakeContextualTasksUIInterface
   void CloseSidePanel() override {}
   void OnSidePanelStateChanged() override {}
   void OnActiveTabContextStatusChanged() override {}
+  void SyncAutoSuggestedTabContext() override {}
   void OnLensOverlayStateChanged(
       bool is_showing,
       std::optional<lens::LensOverlayInvocationSource> invocation_source)

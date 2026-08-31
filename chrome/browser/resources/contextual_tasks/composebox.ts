@@ -527,9 +527,15 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     const hadContent = this.$.composebox.input.trim().length > 0 ||
         this.$.composebox.hasFiles();
 
-    // Clear text from composebox and focus.
-    this.$.composebox.clearAllInputs(
-        querySubmitted, /* shouldBlockAutoSuggestedTabs= */ false);
+    // When submitting a query, clear all inputs. When refocusing or starting a
+    // new thread, only clear typed text and manual attachments to keep the
+    // auto-suggested tab.
+    if (querySubmitted) {
+      this.$.composebox.clearAllInputs(
+          querySubmitted, /* shouldBlockAutoSuggestedTabs= */ false);
+    } else {
+      this.$.composebox.clearInputsForNewThread();
+    }
     this.$.composebox.focusInput();
 
     // Unconditionally clearing matches wipes out the zero state suggestions
