@@ -225,6 +225,7 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "//chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper_interactive_uitest.cc",
+    "tab_collection_animating_layout_manager_interactive_uitest.cc",
     "tab_collection_node_interactive_uitest.cc",
     "tab_drag_interactive_uitest.cc",
     "tab_strip_collection_controller_interactive_uitest.cc",

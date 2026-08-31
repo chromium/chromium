@@ -14,6 +14,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -324,14 +325,24 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
     // For horizontal layouts, top-level containers calculate target layouts
     // using the total space available to the tab strip (to allow tabs to expand
     // to their preferred width rather than being constrained to the host's
-    // mid-animation width). Nested containers (e.g. tab groups) that do not
-    // provide an explicit available space override fall back to their host view
-    // width.
+    // mid-animation width). Containers that do not provide an explicit
+    // available space override fall back to their host view width.
     views::SizeBound available_width;
     if (const auto space_override =
             delegate_->GetAvailableMainAxisSpaceOverride();
         space_override.has_value() && space_override->is_bounded()) {
       available_width = *space_override;
+    } else if (views::ScrollView* scroll_view =
+                   views::ScrollView::GetScrollViewForContents(host_view())) {
+      // If inside a ScrollView, fall back to the visible viewport width to
+      // prevent calculating target layouts against the total scrolled content
+      // width.
+      const int viewport_width = scroll_view->GetVisibleRect().width();
+      if (viewport_width > 0) {
+        available_width = views::SizeBound(viewport_width);
+      } else if (scroll_view->width() > 0) {
+        available_width = views::SizeBound(scroll_view->width());
+      }
     } else if (host_view()->width() > 0) {
       available_width = views::SizeBound(host_view()->width());
     }

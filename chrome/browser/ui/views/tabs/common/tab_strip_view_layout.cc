@@ -85,11 +85,11 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   const auto* unpinned_container = tab_strip_view->GetUnpinnedTabsContainer();
   const int pinned_preferred_width =
       pinned_tabs_scroll_view->GetPreferredSize(size_bounds).width();
-  // Use target preferred size so the layout accounts for the target bounds
-  // during animations. The unpinned container may not be set yet so fallback to
-  // 0 if it doesn't exist.
+  // Use unconstrained preferred size so the layout accounts for the total
+  // desired width of unpinned tabs and groups. The unpinned container may not
+  // be set yet so fallback to 0 if it doesn't exist.
   const int unpinned_preferred_width =
-      unpinned_container ? unpinned_container->GetTargetPreferredSize().width()
+      unpinned_container ? unpinned_container->GetUnconstrainedPreferredWidth()
                          : 0;
 
   const views::SizeBound available_width = size_bounds.width();
@@ -146,8 +146,6 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
     tab_strip_view->SetAvailableUnpinnedSpace(
         views::SizeBound(available_unpinned_width));
     unpinned_width = std::min(unpinned_width, available_unpinned_width);
-  } else {
-    tab_strip_view->SetAvailableUnpinnedSpace(views::SizeBound());
   }
   gfx::Rect unpinned_bounds(x, 0, unpinned_width, container_height);
   layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view,

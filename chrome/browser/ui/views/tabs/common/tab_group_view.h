@@ -74,6 +74,8 @@ class TabGroupView : public views::View,
   bool ShouldAnimateOpacityForAddAndRemove(
       const views::View& child_view) const override;
   bool ShouldSnapToTarget(const views::View& child_view) const override;
+  std::optional<views::SizeBound> GetAvailableMainAxisSpaceOverride()
+      const override;
   void OnAnimationEnded() override;
 
   bool IsCollapsed() const;
@@ -92,6 +94,16 @@ class TabGroupView : public views::View,
 
   TabGroupLineView* group_line() { return group_line_; }
   const TabGroupLineView* group_line() const { return group_line_; }
+
+  // Sets the main-axis space allocated for this group during unpinned tab
+  // container layout passes.
+  void SetAvailableSpace(views::SizeBound space);
+  views::SizeBound available_space() const { return available_space_; }
+
+  // Returns the minimum width for the group in horizontal orientation where all
+  // child tabs have the same size. Below this width, an active tab has a larger
+  // size than inactive tabs before the container scrolls.
+  int GetCrossoverWidth() const;
 
  private:
   friend class TabGroupViewLayout;
@@ -121,6 +133,9 @@ class TabGroupView : public views::View,
   tab_groups::TabGroupVisualData tab_group_visual_data_;
   const raw_ptr<TabGroupHeaderView> group_header_ = nullptr;
   const raw_ptr<TabGroupLineView> group_line_ = nullptr;
+
+  // The available main-axis space allocated by the parent unpinned container.
+  views::SizeBound available_space_;
 
   // Tracked separately for layout purposes so child/underline visibility
   // updates occur only when collapse/expand animations complete, rather than

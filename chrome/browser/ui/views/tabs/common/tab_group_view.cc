@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
@@ -234,6 +235,31 @@ bool TabGroupView::ShouldSnapToTarget(const views::View& child_view) const {
   return views::IsViewClass<SplitTabView>(&child_view);
 }
 
+void TabGroupView::SetAvailableSpace(views::SizeBound space) {
+  available_space_ = space;
+}
+
+int TabGroupView::GetCrossoverWidth() const {
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    return static_cast<TabGroupViewLayout*>(
+               layout_manager_->target_layout_manager())
+        ->CalculateHorizontalCrossoverWidth(this);
+  }
+  return GetMinimumSize().width();
+}
+
+std::optional<views::SizeBound>
+TabGroupView::GetAvailableMainAxisSpaceOverride() const {
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    if (available_space_.is_bounded()) {
+      return available_space_;
+    }
+  }
+  return std::nullopt;
+}
+
 void TabGroupView::OnAnimationEnded() {
   // For collapsed tab groups update child visibility only once animations have
   // completed. This allows tabs to remain visible as the group animates closed.
@@ -315,6 +341,9 @@ void TabGroupView::SetIsCollapsed(bool is_collapsed) {
     return;
   }
   is_collapsed_ = is_collapsed;
+  // Reset the cached available space so stale collapsed bounds (which only
+  // accommodated the header chip) do not constrain group tabs when expanding.
+  available_space_ = views::SizeBound();
   InvalidateLayout();
 }
 

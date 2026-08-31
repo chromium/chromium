@@ -25,6 +25,12 @@ class TabGroupViewLayout : public views::LayoutManagerBase {
       const views::SizeBounds& size_bounds) const override;
   gfx::Size GetMinimumSize(const views::View* host) const override;
 
+  // Returns the minimum width for the tab group in horizontal orientation where
+  // all child tabs have the same size. Below this width, an active tab has a
+  // larger size than inactive tabs before the container scrolls.
+  int CalculateHorizontalCrossoverWidth(
+      const TabGroupView* tab_group_view) const;
+
  private:
   views::ProposedLayout CalculateHorizontalLayout(
       const TabGroupView* tab_group_view,

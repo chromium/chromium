@@ -245,7 +245,8 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
 
     std::vector<int> allocated_widths = CalculateProportionalChildWidths(
         available_for_children_allocation, collection.preferred_widths,
-        collection.min_widths, collection.total_preferred_width,
+        collection.crossover_widths, collection.min_widths,
+        collection.total_preferred_width, collection.total_crossover_width,
         collection.total_min_width);
 
     for (size_t i = 0; i < collection.visible_children.size(); ++i) {
@@ -279,8 +280,51 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
   return layouts;
 }
 
+int TabGroupViewLayout::CalculateHorizontalCrossoverWidth(
+    const TabGroupView* tab_group_view) const {
+  if (!tab_group_view || !tab_group_view->collection_node_) {
+    return 0;
+  }
+  int crossover_width = 0;
+  size_t count = 0;
+  const bool has_header = tab_group_view->group_header_ &&
+                          tab_group_view->group_header_->GetVisible();
+  if (has_header) {
+    crossover_width +=
+        tab_group_view->group_header_->GetPreferredSize().width();
+  }
+  if (!tab_group_view->IsCollapsed()) {
+    for (const auto* child :
+         tab_group_view->collection_node_->GetDirectChildren()) {
+      if (!CanBeVisible(child)) {
+        continue;
+      }
+      auto drag_data = tab_group_view->GetVisualDataForDraggedView(*child);
+      if (drag_data && drag_data->should_hide) {
+        continue;
+      }
+      crossover_width += GetChildCrossoverWidth(child);
+      count++;
+    }
+  }
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
+  if (count > 0 && has_header) {
+    crossover_width =
+        std::max(0, crossover_width - header_overlap -
+                        static_cast<int>(count - 1) * tab_overlap);
+  } else if (count > 1) {
+    crossover_width = std::max(
+        0, crossover_width - static_cast<int>(count - 1) * tab_overlap);
+  }
+  return crossover_width;
+}
+
 gfx::Size TabGroupViewLayout::CalculateHorizontalMinimumSize(
     const TabGroupView* tab_group_view) const {
+  if (!tab_group_view || !tab_group_view->collection_node_) {
+    return gfx::Size();
+  }
   int min_width = 0;
   size_t count = 0;
   const bool has_header = tab_group_view->group_header_ &&
