@@ -155,6 +155,7 @@ class CONTENT_EXPORT VideoCaptureController
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback);
   void RequestRefreshFrame();
+  void InvalidateBuffers();
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
                                       base::OnceClosure done_cb);
   int serial_id() const { return serial_id_; }

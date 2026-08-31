@@ -434,8 +434,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
 
   // Invalidates all used buffers. Ensures that no more frames will be
   // put in the previously used shared buffers.
-  virtual void InvalidateBuffers() {}
-
+  virtual void InvalidateBuffers() = 0;
   // Gets the power line frequency, either from the params if specified by the
   // user or from the current system time zone.
   static PowerLineFrequency GetPowerLineFrequency(
