@@ -14,15 +14,20 @@
 #import "base/observer_list_types.h"
 #import "base/scoped_observation.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
 
+class ProfileIOS;
+
 namespace contextual_cueing {
+
+class ContextualCueingCapTrackerService;
 
 // Tab helper that orchestrates contextual cueing classification for a WebState.
 // It requests page classification from OnDevicePageClassificationService and
-// stores the result for downstream contextual cue evaluations.
+// evaluates page eligibility and category confidence against frequency limits.
 class ContextualCueingTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<ContextualCueingTabHelper> {
@@ -33,6 +38,7 @@ class ContextualCueingTabHelper
         web::WebState* web_state,
         const std::optional<std::vector<page_content_annotations::Category>>&
             categories) {}
+    virtual void OnContextualCueInvalidated(web::WebState* web_state) {}
   };
 
   ~ContextualCueingTabHelper() override;
@@ -49,12 +55,22 @@ class ContextualCueingTabHelper
   const std::optional<std::vector<page_content_annotations::Category>>&
   GetCategories() const;
 
+  // Records that a contextual cue was shown to the user.
+  void RecordCueShown();
+
+  // Records that a contextual cue was explicitly dismissed by the user.
+  void RecordCueDismissed();
+
+  // Records that a contextual cue was clicked by the user.
+  void RecordCueClicked();
+
   // web::WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+  void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
@@ -75,6 +91,15 @@ class ContextualCueingTabHelper
       const GURL& expected_url,
       const std::optional<std::vector<page_content_annotations::Category>>&
           categories);
+
+  // Checks if history sync is enabled.
+  bool IsHistorySyncEnabled(ProfileIOS* profile);
+
+  // Checks if the user is eligible for Gemini.
+  bool IsUserEligibleForGemini(ProfileIOS* profile);
+
+  // Returns the CapTrackerService for the associated profile, or nullptr.
+  ContextualCueingCapTrackerService* GetCapTrackerService() const;
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   GURL current_url_;

@@ -6,6 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "testing/platform_test.h"
@@ -439,4 +440,18 @@ TEST_F(GeminiMetricsTest, RecordGeminiGlicContextualCueDecision) {
   histogram_tester_.ExpectBucketCount(
       kGlicContextualCueDecisionHistogram,
       optimization_guide::OptimizationGuideDecision::kFalse, 1);
+}
+
+TEST_F(GeminiMetricsTest, RecordContextualCueingDecision) {
+  RecordContextualCueingDecision(
+      contextual_cueing::ContextualCueingDecision::kSuccess);
+  histogram_tester_.ExpectBucketCount(
+      kContextualCueingDecisionHistogram,
+      contextual_cueing::ContextualCueingDecision::kSuccess, 1);
+
+  RecordContextualCueingDecision(
+      contextual_cueing::ContextualCueingDecision::kHistorySyncOff);
+  histogram_tester_.ExpectBucketCount(
+      kContextualCueingDecisionHistogram,
+      contextual_cueing::ContextualCueingDecision::kHistorySyncOff, 1);
 }

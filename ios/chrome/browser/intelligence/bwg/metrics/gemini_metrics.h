@@ -14,6 +14,10 @@ class TimeDelta;
 class TimeTicks;
 }  // namespace base
 
+namespace contextual_cueing {
+enum class ContextualCueingDecision;
+}  // namespace contextual_cueing
+
 namespace optimization_guide {
 enum class OptimizationGuideDecision;
 }  // namespace optimization_guide
@@ -354,6 +358,9 @@ extern const char kEditMenuSelectedTextLengthHistogram[];
 
 // UMA histogram key for IOS.Gemini.GlicContextualCue.Decision.
 extern const char kGlicContextualCueDecisionHistogram[];
+
+// UMA histogram key for IOS.ContextualCueing.Decision.
+extern const char kContextualCueingDecisionHistogram[];
 
 // Represents the completed Gemini session types.
 enum class IOSGeminiSessionType {
@@ -718,6 +725,10 @@ void RecordGeminiEditMenuSelectedTextLength(int length);
 // Records the glic contextual cue decision for Gemini.
 void RecordGeminiGlicContextualCueDecision(
     optimization_guide::OptimizationGuideDecision decision);
+
+// Records the contextual cueing decision.
+void RecordContextualCueingDecision(
+    contextual_cueing::ContextualCueingDecision decision);
 
 // Records the dormant reason when Gemini Live transitions to dormant mode.
 void RecordGeminiLiveDormantReason(ios::provider::GeminiDormantReason reason);

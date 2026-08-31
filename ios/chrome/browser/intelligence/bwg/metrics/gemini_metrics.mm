@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
@@ -243,6 +244,9 @@ const char kEditMenuSelectedTextLengthHistogram[] =
 
 const char kGlicContextualCueDecisionHistogram[] =
     "IOS.Gemini.GlicContextualCue.Decision";
+
+const char kContextualCueingDecisionHistogram[] =
+    "IOS.ContextualCueing.Decision";
 
 void RecordFirstRunPromoAction(IOSGeminiFirstRunAction action) {
   switch (action) {
@@ -818,6 +822,11 @@ void RecordGeminiEditMenuSelectedTextLength(int length) {
 void RecordGeminiGlicContextualCueDecision(
     optimization_guide::OptimizationGuideDecision decision) {
   base::UmaHistogramEnumeration(kGlicContextualCueDecisionHistogram, decision);
+}
+
+void RecordContextualCueingDecision(
+    contextual_cueing::ContextualCueingDecision decision) {
+  base::UmaHistogramEnumeration(kContextualCueingDecisionHistogram, decision);
 }
 
 void RecordGeminiLiveDormantReason(ios::provider::GeminiDormantReason reason) {

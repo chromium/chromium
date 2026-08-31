@@ -4,6 +4,19 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/keyed_service/ios",
   "+components/page_content_annotations/core",
+  "+components/signin/public/identity_manager",
+  "+components/sync/service",
+  "+ios/chrome/browser/intelligence/bwg/metrics",
+  "+ios/chrome/browser/intelligence/bwg/model",
+  "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/intelligence/on_device_category_classifier",
   "+ios/chrome/browser/shared/model/profile",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
 ]
+
+specific_include_rules = {
+  ".*test\\.mm": [
+    "+ios/chrome/browser/shared/model/profile/test",
+  ],
+}
