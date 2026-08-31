@@ -208,27 +208,4 @@ actions. If not, please use a histogram to count these events instead.
 
 ## Cleaning up user action entries
 
-Do not delete actions from actions.xml. Instead, mark unused user actions as
-obsolete, annotating them with the associated date or milestone in the obsolete
-tag entry.
-
-If the user action is being replaced by a new version:
-
-* Note in the `<obsolete>` message the name of the replacement action.
-
-* Make sure the descriptions of the original and replacement user actions
-  are different. It's never appropriate for them to be identical. Either
-  the old description was wrong, and it should be revised to explain what
-  it actually measured, or the old user action was measuring something not
-  as useful as the replacement, in which case the new user action is
-  measuring something different and needs to have a new description.
-
-A changelist that marks a user action as obsolete should be reviewed by all
-current owners.
-
-Deleting user action entries would be bad if someone accidentally reused your
-old user action name. If this happened, new data would be corrupted by whatever
-old data was still coming in. It's also useful to keep obsolete user action
-descriptions in actions.xml. That way, someone searching for a user action to
-answer a particular question can learn if there was a user action at some point
-that did so—even if it isn't active now.
+When a user action is removed from the code, it should be removed from actions.xml. Avoid reusing old user action names to prevent data corruption.

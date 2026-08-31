@@ -267,11 +267,7 @@ def AddExtensionActions(actions):
   actions.add('FileBrowser.PhotoEditor.View')
   actions.add('FileBrowser.SuggestApps.ShowDialog')
 
-  # Actions sent by Google Now client.
-  actions.add('GoogleNow.MessageClicked')
-  actions.add('GoogleNow.ButtonClicked0')
-  actions.add('GoogleNow.ButtonClicked1')
-  actions.add('GoogleNow.Dismissed')
+
 
   # Actions sent by Chrome Connectivity Diagnostics.
   actions.add('ConnectivityDiagnostics.LaunchSource.OfflineChromeOS')
