@@ -40,6 +40,8 @@ suite('LineFocusMoveMode', () => {
     container.innerText =
         'I\'ve heard it said\nThat people come into our lives\nfor a reason.';
     container.style.whiteSpace = 'pre-line';
+    container.style.fontSize = '20px';
+    container.style.lineHeight = '2';
     document.body.appendChild(container);
     return container;
   }
