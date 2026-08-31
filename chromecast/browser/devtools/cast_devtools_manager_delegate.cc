@@ -37,7 +37,7 @@ content::DevToolsAgentHost::List
 CastDevToolsManagerDelegate::RemoteDebuggingTargets(
     content::DevToolsManagerDelegate::TargetType target_type) {
   content::DevToolsAgentHost::List enabled_hosts;
-  for (auto* web_contents : enabled_webcontents_) {
+  for (content::WebContents* web_contents : enabled_webcontents_) {
     enabled_hosts.push_back(
         target_type == content::DevToolsManagerDelegate::kTab
             ? content::DevToolsAgentHost::GetOrCreateForTab(web_contents)

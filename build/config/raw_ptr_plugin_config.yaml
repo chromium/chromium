@@ -3,3 +3,4 @@ check_raw_ptr_in_container:
   override_defaults: true
   included_types:
     - "std::stack"
+    - "std::unordered_set"

@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -43,7 +44,8 @@ class CastDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   bool AllowInspectingRenderFrameHost(content::RenderFrameHost* rfh) override;
 
  private:
-  std::unordered_set<content::WebContents*> enabled_webcontents_;
+  std::unordered_set<raw_ptr<content::WebContents, DanglingUntriaged>>
+      enabled_webcontents_;
 };
 
 }  // namespace shell
