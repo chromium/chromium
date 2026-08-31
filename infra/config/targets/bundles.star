@@ -4297,8 +4297,6 @@ targets.bundle(
         # Android/ARM only runs Ganesh tests since older devices that we
         # typically use for 32-bit testing do not have good Vulkan support
         # for Graphite.
-        "android_webview_pixel_skia_gold_test",
-        "gpu_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
@@ -4310,21 +4308,16 @@ targets.bundle(
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
+        "android_webview_pixel_skia_gold_test",
         "context_lost_passthrough_ganesh_tests",
+        "context_lost_passthrough_tests",
         "expected_color_pixel_passthrough_ganesh_test",
+        "expected_color_pixel_passthrough_test",
         "pixel_skia_gold_passthrough_ganesh_test",
+        "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_ganesh_tests",
+        "screenshot_sync_passthrough_tests",
     ],
-    per_test_modifications = {
-        "gpu_process_launch_tests": targets.remove(
-            reason = ("TODO(crbug.com/541312843): Remove this once the test bundles are updated to use the underlying tests. " +
-                      "Currently, both gpu_validating_telemetry_tests and gpu_passthrough_telemetry_tests include this."),
-        ),
-        "hardware_accelerated_feature_tests": targets.remove(
-            reason = ("TODO(crbug.com/541312843): Remove this once the test bundles are updated to use the underlying tests. " +
-                      "Currently, both gpu_validating_telemetry_tests and gpu_passthrough_telemetry_tests include this."),
-        ),
-    },
 )
 
 targets.bundle(
@@ -4360,11 +4353,20 @@ targets.bundle(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
         "gpu_webrtc_telemetry_test",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "context_lost_passthrough_tests",
+        "expected_color_pixel_passthrough_test",
+        "hardware_accelerated_feature_tests",
+        "gpu_process_launch_tests",
+        "pixel_skia_gold_passthrough_test",
+        "screenshot_sync_passthrough_tests",
     ],
 )
 
@@ -4599,8 +4601,17 @@ targets.bundle(
     name = "gpu_linux_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
         "gpu_webgl_conformance_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "context_lost_passthrough_tests",
+        "expected_color_pixel_passthrough_test",
+        "hardware_accelerated_feature_tests",
+        "gpu_process_launch_tests",
+        "pixel_skia_gold_passthrough_test",
+        "screenshot_sync_passthrough_tests",
     ],
 )
 
@@ -4849,8 +4860,17 @@ targets.bundle(
     name = "gpu_win_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "context_lost_passthrough_tests",
+        "expected_color_pixel_passthrough_test",
+        "hardware_accelerated_feature_tests",
+        "gpu_process_launch_tests",
+        "pixel_skia_gold_passthrough_test",
+        "screenshot_sync_passthrough_tests",
     ],
 )
 

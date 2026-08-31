@@ -942,6 +942,8 @@ targets.legacy_basic_suite(
     },
 )
 
+# TODO(crbug.com/541312843): Migrate non-GPU uses of this to include tests
+# directly and remove this.
 targets.legacy_basic_suite(
     name = "gpu_passthrough_telemetry_tests",
     tests = {
