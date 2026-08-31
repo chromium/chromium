@@ -154,13 +154,18 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
       for (const auto& pair : subgrid_map) {
         Vector<wtf_size_t> shifted_list;
         for (const auto& position : pair.value) {
-          if (position >= insertion_point) {
-            wtf_size_t expanded_position = position + auto_repeat_total_tracks;
-            // These have already been offset relative to index 0, so explicitly
-            // do not offset by `subgrid_span` like we do below.
-            if (subgrid_span.Contains(expanded_position)) {
-              shifted_list.push_back(expanded_position);
-            }
+          if (position < insertion_point) {
+            shifted_list.push_back(position);
+            continue;
+          }
+
+          const wtf_size_t expanded_position =
+              position + auto_repeat_total_tracks;
+
+          // These have already been offset relative to index 0, so explicitly
+          // do not offset by `subgrid_span` like we do below.
+          if (subgrid_span.Contains(expanded_position)) {
+            shifted_list.push_back(expanded_position);
           }
         }
         subgrid_map.Set(pair.key, shifted_list);
