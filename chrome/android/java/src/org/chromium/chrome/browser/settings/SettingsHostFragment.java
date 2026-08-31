@@ -415,8 +415,9 @@ public class SettingsHostFragment extends Fragment
         for (Fragment f : fragmentActivity.getSupportFragmentManager().getFragments()) {
             if (f instanceof SettingsHostFragment settingsHostFragment
                     && settingsHostFragment.isAttachedToActivity()) {
-                if (settingsHostFragment.getView() != null
-                        && settingsHostFragment.getView().isShown()) {
+                if (activity instanceof SettingsActivityInterface
+                        || (settingsHostFragment.getView() != null
+                                && settingsHostFragment.getView().isShown())) {
                     return settingsHostFragment;
                 }
             }
