@@ -416,7 +416,6 @@ source_set("unit_tests") {
     "chrome_password_change_service_unittest.cc",
     "chrome_password_manager_client_unittest.cc",
     "chrome_webauthn_credentials_delegate_unittest.cc",
-    "password_manager_critical_action_logger_unittest.cc",
   ]
 
   deps = [
@@ -503,6 +502,7 @@ source_set("unit_tests") {
       "password_change/password_change_from_checkup_delegate_unittest.cc",
       "password_change/script_password_change_actuator_unittest.cc",
       "password_change_delegate_impl_unittest.cc",
+      "password_manager_critical_action_logger_unittest.cc",
       "remote_actor/remote_actor_credential_sharing_impl_unittest.cc",
     ]
     deps += [

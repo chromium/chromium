@@ -514,6 +514,16 @@ bool HasManuallyFilledPassword(const PasswordForm& form) {
       });
 }
 
+bool HasActorFilledPassword(const PasswordForm& form) {
+  return std::ranges::any_of(
+      form.form_data.fields(),
+      [&](const autofill::FormFieldData& field_data) -> bool {
+        return field_data.IsPasswordInputElement() &&
+               (field_data.properties_mask() &
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin);
+      });
+}
+
 PasswordForm CreateFormForLeakCheck(const PasswordForm& pending_credentials,
                                     const PasswordForm& submitted_credentials) {
   PasswordForm form = pending_credentials;
@@ -1022,12 +1032,21 @@ void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
       manager && manager->GetSubmittedForm() &&
       HasManuallyFilledPassword(*(manager->GetSubmittedForm()));
 
+  const bool had_actor_filled_password_before =
+      manager && manager->GetSubmittedForm() &&
+      HasActorFilledPassword(*(manager->GetSubmittedForm()));
+
   manager = ProvisionallySaveForm(form_data, driver, true);
 
-  if (manager && !had_manually_filled_password_before) {
-    if (const PasswordForm* form = manager->GetSubmittedForm();
-        form && HasManuallyFilledPassword(*form)) {
-      manager->OnPasswordFilledManually();
+  if (manager) {
+    if (const PasswordForm* form = manager->GetSubmittedForm(); form) {
+      if (!had_manually_filled_password_before &&
+          HasManuallyFilledPassword(*form)) {
+        manager->OnPasswordFilledManually();
+      }
+      if (!had_actor_filled_password_before && HasActorFilledPassword(*form)) {
+        client_->OnPasswordFilled(driver, form->url);
+      }
     }
   }
 

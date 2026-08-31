@@ -259,7 +259,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(bool, IsActorTaskActive, (), (override));
   MOCK_METHOD(void,
               OnPasswordFilled,
-              (PasswordManagerDriver*, const GURL&, PasswordFillTrigger),
+              (PasswordManagerDriver*, const GURL&),
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
@@ -5567,20 +5567,6 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   auto predictions = CreatePredictions(observed_form_, {});
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
   form_manager_->ProcessServerPredictions(predictions);
-}
-
-// Tests that OnPasswordFilledManually notifies the client with kAgent trigger
-// when an actor task is active.
-TEST_P(PasswordFormManagerTest, OnPasswordFilledManually_AgentFill) {
-  CreateFormManager(observed_form_);
-
-  EXPECT_CALL(client_, IsActorTaskActive).WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      client_,
-      OnPasswordFilled(&driver_, observed_form_.url(),
-                       PasswordManagerClient::PasswordFillTrigger::kAgentTask));
-
-  form_manager_->OnPasswordFilledManually();
 }
 
 // Tests that username is not taken when a possible username is not valid.

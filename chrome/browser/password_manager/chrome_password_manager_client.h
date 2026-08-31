@@ -319,8 +319,7 @@ class ChromePasswordManagerClient
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
   void OnPasswordFilled(password_manager::PasswordManagerDriver* driver,
-                        const GURL& url,
-                        PasswordFillTrigger trigger_type) override;
+                        const GURL& url) override;
 
 #if BUILDFLAG(IS_ANDROID)
   void NavigateToManagePasskeysPage(
@@ -507,8 +506,6 @@ class ChromePasswordManagerClient
   gfx::RectF TransformToRootCoordinates(
       content::RenderFrameHost* frame_host,
       const gfx::RectF& bounds_in_frame_coordinates);
-
-  void LogCriticalAction(const critical_actions::CriticalActionEntry& entry);
 
 #if BUILDFLAG(IS_ANDROID)
   void ResetErrorMessageDelegate();

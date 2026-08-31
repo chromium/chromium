@@ -134,11 +134,6 @@ enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
 // main frame here are also referring to the primary main frame.
 class PasswordManagerClient {
  public:
-  enum class PasswordFillTrigger {
-    kPasswordManagerAutofill,
-    kAgentTask,
-  };
-
   using CredentialsCallback = base::OnceCallback<void(const PasswordForm*)>;
   using ReauthSucceeded = base::StrongAlias<class ReauthSucceededTag, bool>;
 
@@ -622,9 +617,7 @@ class PasswordManagerClient {
   virtual bool IsActorTaskActive();
 
   // Notifies the client that a password fill event occurred.
-  virtual void OnPasswordFilled(PasswordManagerDriver* driver,
-                                const GURL& url,
-                                PasswordFillTrigger trigger_type);
+  virtual void OnPasswordFilled(PasswordManagerDriver* driver, const GURL& url);
 };
 
 }  // namespace password_manager

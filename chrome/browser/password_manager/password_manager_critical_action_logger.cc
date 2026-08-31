@@ -4,9 +4,10 @@
 
 #include "chrome/browser/password_manager/password_manager_critical_action_logger.h"
 
-#include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
-#include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
@@ -28,8 +29,7 @@ PasswordManagerCriticalActionLogger::~PasswordManagerCriticalActionLogger() =
 
 void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
     PasswordManagerDriver* driver,
-    const GURL& url,
-    PasswordManagerClient::PasswordFillTrigger trigger_type) {
+    const GURL& url) {
   if (!base::FeatureList::IsEnabled(
           critical_actions::features::kCriticalActionHistory)) {
     return;
@@ -41,24 +41,31 @@ void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
     return;
   }
 
-  critical_actions::CriticalActionEntry entry;
-  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  entry.timestamp = base::Time::Now();
-  entry.action_type = critical_actions::ActionType::kFormFill;
-  entry.action_source = critical_actions::ActionSource::kPasswordManager;
-  entry.url = url;
-
-  std::string type =
-      trigger_type == PasswordManagerClient::PasswordFillTrigger::kAgentTask
-          ? "agent_task"
-          : "password_manager_autofill";
-
-  base::DictValue metadata_dict;
-  metadata_dict.Set("type", type);
-  std::string metadata_json;
-  if (base::JSONWriter::Write(metadata_dict, &metadata_json)) {
-    entry.metadata = std::move(metadata_json);
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  if (!actor_service || !web_contents()) {
+    return;
   }
+
+  const actor::ActorTask* task =
+      actor_service->GetActingActorTaskForWebContents(web_contents());
+  if (!task) {
+    return;
+  }
+
+  critical_actions::CriticalActionEntry entry =
+      critical_actions::CriticalActionEntry::Builder()
+          .SetCriticalActionId(
+              base::Uuid::GenerateRandomV4().AsLowercaseString())
+          .SetTimestamp(base::Time::Now())
+          .SetActionType(critical_actions::ActionType::kGooglePasswordManager)
+          .SetActionSource(critical_actions::ActionSource::kPasswordManager)
+          .SetUrl(url)
+          .SetConversationId(task->source_info().id.value_or(""))
+          .SetActorTaskId(task->id().is_null()
+                              ? ""
+                              : base::NumberToString(task->id().value()))
+          .Build();
 
   service->AddCriticalActionWithNavigationId(entry,
                                              GetNavigationIdForDriver(driver));

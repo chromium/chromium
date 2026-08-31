@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_CRITICAL_ACTION_LOGGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -14,6 +13,7 @@ class WebContents;
 }
 
 class Profile;
+class GURL;
 
 namespace password_manager {
 
@@ -35,11 +35,8 @@ class PasswordManagerCriticalActionLogger
 
   ~PasswordManagerCriticalActionLogger() override;
 
-  // Logs critical actions if the feature is enabled.
-  void MaybeLogCriticalAction(
-      PasswordManagerDriver* driver,
-      const GURL& url,
-      PasswordManagerClient::PasswordFillTrigger trigger_type);
+  // Logs critical action telemetry if the feature is enabled.
+  void MaybeLogCriticalAction(PasswordManagerDriver* driver, const GURL& url);
 
  private:
   // content::WebContentsObserver:
