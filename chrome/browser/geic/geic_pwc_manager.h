@@ -48,7 +48,8 @@ inline constexpr char kGeicGuestURLSwitch[] = "geic-guest-url";
 class GeicPwcManager : public base::SupportsUserData::Data,
                        public ProfileObserver {
  public:
-  // Returns the guest URL configured via --geic-guest-url switch.
+  // Returns the guest URL configured via --geic-guest-url switch or the
+  // kGeicGuestURL feature parameter.
   static GURL GetConfiguredGuestURL();
 
   static GeicPwcManager* GetOrCreateForProfile(Profile* profile,
@@ -122,10 +123,10 @@ class GeicPwcManager : public base::SupportsUserData::Data,
   const raw_ptr<Profile> profile_;
   // The URL loaded into the GEiC PrivilegedWebContents (the GE panel origin).
   // During development, this is set via the --geic-guest-url command-line
-  // switch; for production, this will be a compile-time constant. The origin is
-  // deliberately never derived from enterprise policy to prevent an
-  // administrator from pointing a capability-holding panel at an arbitrary
-  // site.
+  // switch or the kGeicGuestURL feature parameter; for production, this will be
+  // a compile-time constant or Finch-driven. The origin is deliberately never
+  // derived from enterprise policy to prevent an administrator from pointing a
+  // capability-holding panel at an arbitrary site.
   const GURL dev_url_;
   absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<TabEntry>> entries_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

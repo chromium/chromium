@@ -183,6 +183,10 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGeic);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGeicGuestURL;
+
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActor);
 
 // Enables comparison of AnnotatedPageContent. This is potentially expensive for

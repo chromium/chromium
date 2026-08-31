@@ -263,6 +263,11 @@ BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+BASE_FEATURE(kGeic, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
+                                                    ""};
+
 // Controls whether the actor component of Glic is enabled.
 BASE_FEATURE(kGlicActor, base::FEATURE_ENABLED_BY_DEFAULT);
 

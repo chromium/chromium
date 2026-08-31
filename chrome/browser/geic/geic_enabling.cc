@@ -20,7 +20,8 @@ bool IsGeicEnabled(Profile* profile) {
     return false;
   }
   const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kGeicEnabled)) {
+  if (!command_line->HasSwitch(switches::kGeicEnabled) &&
+      !base::FeatureList::IsEnabled(features::kGeic)) {
     return false;
   }
   const auto channel = chrome::GetChannel();

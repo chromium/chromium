@@ -17,6 +17,7 @@
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -39,6 +40,13 @@ GURL GeicPwcManager::GetConfiguredGuestURL() {
     GURL cmd_url(command_line->GetSwitchValueASCII(kGeicGuestURLSwitch));
     if (cmd_url.is_valid()) {
       return cmd_url;
+    }
+  }
+  std::string param_url_str = features::kGeicGuestURL.Get();
+  if (!param_url_str.empty()) {
+    GURL param_url(param_url_str);
+    if (param_url.is_valid()) {
+      return param_url;
     }
   }
   return GURL();

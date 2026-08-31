@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -145,6 +146,38 @@ TEST_F(GeicPwcManagerTest, DoesNotInitializeWhenNoUrlConfigured) {
 }
 
 TEST_F(GeicPwcManagerTest, ConfiguresGuestURLFromCommandLine) {
+  base::test::ScopedCommandLine scoped_command_line;
+  const std::string custom_url =
+      "https://custom.corp.google.com:10443/custom-panel";
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kGeicGuestURLSwitch, custom_url);
+
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(), GURL(custom_url));
+
+  GeicPwcManager manager(profile());
+  EXPECT_EQ(manager.guest_url(), GURL(custom_url));
+}
+
+TEST_F(GeicPwcManagerTest, ConfiguresGuestURLFromFeatureParam) {
+  base::test::ScopedFeatureList feature_list;
+  const std::string param_url =
+      "https://param.corp.google.com:10443/param-panel";
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGeic, {{features::kGeicGuestURL.name, param_url}});
+
+  EXPECT_EQ(GeicPwcManager::GetConfiguredGuestURL(), GURL(param_url));
+
+  GeicPwcManager manager(profile());
+  EXPECT_EQ(manager.guest_url(), GURL(param_url));
+}
+
+TEST_F(GeicPwcManagerTest, CommandLineOverridesFeatureParam) {
+  base::test::ScopedFeatureList feature_list;
+  const std::string param_url =
+      "https://param.corp.google.com:10443/param-panel";
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGeic, {{features::kGeicGuestURL.name, param_url}});
+
   base::test::ScopedCommandLine scoped_command_line;
   const std::string custom_url =
       "https://custom.corp.google.com:10443/custom-panel";
