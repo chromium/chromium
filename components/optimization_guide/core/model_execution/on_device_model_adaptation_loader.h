@@ -40,9 +40,6 @@ struct OnDeviceBaseModelSpec {
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED;
 };
 
-class OnDeviceModelFeatureAdapter;
-class OnDeviceModelMetadata;
-class OptimizationGuideModelProvider;
 
 // Detailed availability reason for histograms recording.
 enum class OnDeviceModelAdaptationAvailability {

@@ -18,7 +18,6 @@
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
-#include "services/on_device_model/public/cpp/model_assets.h"
 
 namespace optimization_guide {
 

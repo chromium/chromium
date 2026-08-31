@@ -5,15 +5,12 @@
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -26,9 +23,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/override_manifest_asset_manager_delegate.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
-#include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 
-#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

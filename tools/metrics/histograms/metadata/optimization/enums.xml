@@ -138,18 +138,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_model_names.h:OnDeviceBaseModelEnum) -->
 
-<!-- Use following code to get the hash from the model version.
-import struct
-import hashlib
-version='2025.5.5.2308'
-struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
--->
-
-<enum name="OnDeviceBaseModelVersion">
-  <summary>The versions for the foundational model</summary>
-  <int value="946907700" label="2025.5.5.2308"/>
-</enum>
-
 <enum name="OnDeviceModelAdaptationAvailability">
   <int value="0" label="Adaptation model was available"/>
   <int value="1" label="Base model was not available"/>
@@ -504,39 +492,6 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
 </enum>
 
 <!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_capability.h:OnDeviceModelEligibilityReason) -->
-
-<enum name="OptimizationGuideOnDeviceModelStatus">
-  <int value="0" label="Ready">The model is ready to use.</int>
-  <int value="1" label="Not eligible for installation">
-    The model is not eligible for installation.
-  </int>
-  <int value="2" label="Install not done">
-    The model installation has not been completed.
-  </int>
-  <int value="3" label="Model not registered">
-    The model installer was not registered, even though the client would be
-    eligible to install right now. This likely means the state of the system has
-    changed recently.
-  </int>
-  <int value="4" label="Installed too late">
-    The model is ready, but it wasn't ready early enough for
-    OnDeviceModelServiceController to use it.
-  </int>
-  <int value="5" label="Not ready for unknown reason">
-    The model is not ready, and the reason is unknown.
-  </int>
-  <int value="6" label="Insufficient disk space">
-    The client does not have enough space to install the model.
-  </int>
-  <int value="7" label="No on-device feature used">
-    The client is eligible for downloading and installing the model, but there
-    was no on-device feature used so the model is not installed yet.
-  </int>
-  <int value="8" label="Insufficient disk space to build caches">
-    The device does not have enough disk space to build caches for the on-device
-    model.
-  </int>
-</enum>
 
 <enum name="OptimizationGuideOptimizationFilterStatus">
   <int value="0" label="Found a server filter configuration">
