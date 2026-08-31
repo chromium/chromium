@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 
@@ -44,19 +43,8 @@ namespace blink {
 WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : recorder_for_external_draws_(
-          std::make_unique<MemoryManagedPaintRecorder>(shared_image->size(),
-                                                       /*client=*/nullptr)),
-      shared_image_(std::move(shared_image)),
+    : shared_image_(std::move(shared_image)),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
-  // Graphite can handle a large buffer size.
-  if (context_provider_wrapper_->ContextProvider()
-          .GetGpuFeatureInfo()
-          .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-      gpu::kGpuFeatureStatusEnabled) {
-    recorder_for_external_draws_->DisableLineDrawingAsPaths();
-  }
-
   CHECK(shared_image_);
   WaitSyncToken(shared_image_->creation_sync_token());
 }

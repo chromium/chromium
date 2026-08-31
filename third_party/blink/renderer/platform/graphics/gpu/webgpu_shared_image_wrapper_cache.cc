@@ -13,11 +13,14 @@
 #include "cc/paint/display_item_list.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_feature_type.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -37,7 +40,17 @@ bool IsGpuContextLost(
 WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     base::WeakPtr<WebGpuSharedImageWrapperCache> cache)
-    : shared_image_wrapper_(std::move(shared_image_wrapper)), cache_(cache) {
+    : shared_image_wrapper_(std::move(shared_image_wrapper)),
+      cache_(cache),
+      recorder_for_external_draws_(std::make_unique<MemoryManagedPaintRecorder>(
+          shared_image_wrapper_->Size(),
+          /*client=*/nullptr)) {
+  if (shared_image_wrapper_->context_provider_wrapper_->ContextProvider()
+          .GetGpuFeatureInfo()
+          .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+      gpu::kGpuFeatureStatusEnabled) {
+    recorder_for_external_draws_->DisableLineDrawingAsPaths();
+  }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
@@ -123,13 +136,10 @@ void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
     return;
   }
 
-  draw_callback(shared_image_wrapper_->recorder_for_external_draws_
-                    ->getRecordingCanvas());
-  if (shared_image_wrapper_->recorder_for_external_draws_
-          ->HasReleasableDrawOps()) {
+  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
+  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
     cc::PaintRecord last_recording =
-        shared_image_wrapper_->recorder_for_external_draws_
-            ->ReleaseMainRecording();
+        recorder_for_external_draws_->ReleaseMainRecording();
 
     auto access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
         RasterInterface(), shared_image_wrapper_->sync_token_,

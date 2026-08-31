@@ -34,6 +34,7 @@ class RasterInterface;
 
 namespace blink {
 
+class MemoryManagedPaintRecorder;
 class WebGpuSharedImageWrapper;
 class WebGpuSharedImageWrapperCache;
 class WebGraphicsContext3DProviderWrapper;
@@ -92,6 +93,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
   std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
   base::WeakPtr<WebGpuSharedImageWrapperCache> cache_;
   gpu::SyncToken completion_sync_token_;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 };
 
 class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
