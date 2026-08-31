@@ -466,7 +466,6 @@ static_library("non_code_constants") {
   sources = [
     "chrome_constants.cc",
     "chrome_constants.h",
-    "chrome_switches.cc",
     "chrome_switches.h",
     "env_vars.h",
   ]

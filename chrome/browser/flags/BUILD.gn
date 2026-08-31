@@ -148,7 +148,7 @@ static_library("flags_android_impl") {
 }
 
 java_cpp_strings("chrome_android_java_switches_srcjar") {
-  sources = [ "//chrome/common/chrome_switches.cc" ]
+  sources = [ "//chrome/common/chrome_switches.h" ]
   template = "android/java_templates/ChromeSwitches.java.tmpl"
 }
 
