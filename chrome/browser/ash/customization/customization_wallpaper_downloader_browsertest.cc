@@ -195,9 +195,9 @@ class CustomizationWallpaperDownloaderBrowserTest
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    ServicesCustomizationDocument* customization =
+    ServicesCustomizationDocument& customization =
         ServicesCustomizationDocument::GetInstance();
-    customization->wallpaper_downloader_for_testing()
+    customization.wallpaper_downloader_for_testing()
         ->set_retry_delay_for_testing(
             base::Milliseconds(kDownloadRetryIntervalMS));
 
@@ -205,7 +205,7 @@ class CustomizationWallpaperDownloaderBrowserTest
     if (attempts_.size() > 1) {
       const int retry = num_attempts() - 1;
       const base::TimeDelta current_delay =
-          customization->wallpaper_downloader_for_testing()
+          customization.wallpaper_downloader_for_testing()
               ->retry_current_delay_for_testing();
       const double base_interval =
           base::Milliseconds(kDownloadRetryIntervalMS).InSecondsF();
@@ -249,10 +249,9 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Start fetching the customized default wallpaper.
   GURL url = embedded_test_server()->GetURL(kOEMWallpaperRelativeURL);
-  ServicesCustomizationDocument* customization =
+  ServicesCustomizationDocument& customization =
       ServicesCustomizationDocument::GetInstance();
-  EXPECT_TRUE(
-      customization->LoadManifestFromString(ManifestForURL(url.spec())));
+  EXPECT_TRUE(customization.LoadManifestFromString(ManifestForURL(url.spec())));
   observer.WaitForWallpaperChanged();
   observer.Reset();
 
@@ -276,10 +275,9 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Start fetching the customized default wallpaper.
   GURL url = embedded_test_server()->GetURL(kOEMWallpaperRelativeURL);
-  ServicesCustomizationDocument* customization =
+  ServicesCustomizationDocument& customization =
       ServicesCustomizationDocument::GetInstance();
-  EXPECT_TRUE(
-      customization->LoadManifestFromString(ManifestForURL(url.spec())));
+  EXPECT_TRUE(customization.LoadManifestFromString(ManifestForURL(url.spec())));
   observer.WaitForWallpaperChanged();
   observer.Reset();
 

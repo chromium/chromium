@@ -30,12 +30,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "customization_document\\.cc": [
-    "+chrome/browser/browser_process.h",
-  ],
-
   "customization_document_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
+  ],
+  "customization_document_unittest\\.cc": [
     "+chrome/browser/global_features.h",
   ],
 }

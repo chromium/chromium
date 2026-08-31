@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,6 +29,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
@@ -220,9 +223,13 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    ServicesCustomizationDocument::InitializeForTesting(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &loader_factory_));
+    services_customization_document_ =
+        std::make_unique<ServicesCustomizationDocument>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
+            loader_factory_.GetSafeWeakWrapper());
     RunUntilIdle();
 
     const NetworkState* default_network =
@@ -237,8 +244,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
   void TearDown() override {
     loader_factory_.ClearResponses();
     interceptor_.reset();
-
-    ServicesCustomizationDocument::ShutdownForTesting();
+    services_customization_document_.reset();
   }
 
   void RunUntilIdle() {
@@ -291,8 +297,14 @@ class ServicesCustomizationDocumentTest : public testing::Test {
     return profile;
   }
 
+  ServicesCustomizationDocument& services_customization_document() {
+    return CHECK_DEREF(services_customization_document_.get());
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ServicesCustomizationDocument>
+      services_customization_document_;
   NetworkHandlerTestHelper network_handler_test_helper_;
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
@@ -304,19 +316,18 @@ TEST_F(ServicesCustomizationDocumentTest, Basic) {
   AddCustomizationIdToVp(kDummyCustomizationID);
   AddExpectedManifest(kDummyCustomizationID, GetGoodServicesManifest());
 
-  ServicesCustomizationDocument* doc =
-      ServicesCustomizationDocument::GetInstance();
-  EXPECT_FALSE(doc->IsReady());
+  ServicesCustomizationDocument& doc = services_customization_document();
+  EXPECT_FALSE(doc.IsReady());
 
-  doc->StartFetching();
+  doc.StartFetching();
   RunUntilIdle();
-  EXPECT_TRUE(doc->IsReady());
+  EXPECT_TRUE(doc.IsReady());
 
   GURL wallpaper_url;
-  EXPECT_FALSE(doc->GetDefaultWallpaperUrl(&wallpaper_url));
+  EXPECT_FALSE(doc.GetDefaultWallpaperUrl(&wallpaper_url));
   EXPECT_EQ("", wallpaper_url.spec());
 
-  auto default_apps = doc->GetDefaultApps();
+  auto default_apps = doc.GetDefaultApps();
   ASSERT_TRUE(default_apps);
   EXPECT_EQ(default_apps->size(), 2u);
 
@@ -339,18 +350,17 @@ TEST_F(ServicesCustomizationDocumentTest, Basic) {
           extensions::ExternalProviderImpl::kDoNotInstallForEnterprise) !=
       nullptr);
 
-  EXPECT_EQ("EN-US OEM Name", doc->GetOemAppsFolderName("en-US"));
-  EXPECT_EQ("EN OEM Name", doc->GetOemAppsFolderName("en"));
-  EXPECT_EQ("Default OEM Name", doc->GetOemAppsFolderName("ru"));
+  EXPECT_EQ("EN-US OEM Name", doc.GetOemAppsFolderName("en-US"));
+  EXPECT_EQ("EN OEM Name", doc.GetOemAppsFolderName("en"));
+  EXPECT_EQ("Default OEM Name", doc.GetOemAppsFolderName("ru"));
 }
 
 TEST_F(ServicesCustomizationDocumentTest, NoCustomizationIdInVpd) {
-  ServicesCustomizationDocument* doc =
-      ServicesCustomizationDocument::GetInstance();
-  EXPECT_FALSE(doc->IsReady());
+  ServicesCustomizationDocument& doc = services_customization_document();
+  EXPECT_FALSE(doc.IsReady());
 
   std::unique_ptr<TestingProfile> profile = CreateProfile();
-  extensions::ExternalLoader* loader = doc->CreateExternalLoader(profile.get());
+  extensions::ExternalLoader* loader = doc.CreateExternalLoader(profile.get());
   EXPECT_TRUE(loader);
 
   MockExternalProviderVisitor visitor;
@@ -373,19 +383,18 @@ TEST_F(ServicesCustomizationDocumentTest, NoCustomizationIdInVpd) {
 
   RunUntilIdle();
   // Empty customization is used when there is no customization ID in VPD.
-  EXPECT_TRUE(doc->IsReady());
+  EXPECT_TRUE(doc.IsReady());
 }
 
 TEST_F(ServicesCustomizationDocumentTest, DefaultApps) {
   AddCustomizationIdToVp(kDummyCustomizationID);
   AddExpectedManifest(kDummyCustomizationID, GetGoodServicesManifest());
 
-  ServicesCustomizationDocument* doc =
-      ServicesCustomizationDocument::GetInstance();
-  EXPECT_FALSE(doc->IsReady());
+  ServicesCustomizationDocument& doc = services_customization_document();
+  EXPECT_FALSE(doc.IsReady());
 
   std::unique_ptr<TestingProfile> profile = CreateProfile();
-  extensions::ExternalLoader* loader = doc->CreateExternalLoader(profile.get());
+  extensions::ExternalLoader* loader = doc.CreateExternalLoader(profile.get());
   EXPECT_TRUE(loader);
 
   app_list::AppListSyncableServiceFactory::GetInstance()
@@ -418,7 +427,7 @@ TEST_F(ServicesCustomizationDocumentTest, DefaultApps) {
   EXPECT_CALL(visitor, OnExternalProviderUpdateComplete(_, _, _, _)).Times(0);
 
   RunUntilIdle();
-  EXPECT_TRUE(doc->IsReady());
+  EXPECT_TRUE(doc.IsReady());
 
   app_list::AppListSyncableService* service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile.get());
@@ -430,12 +439,11 @@ TEST_F(ServicesCustomizationDocumentTest, CustomizationManifestNotFound) {
   AddCustomizationIdToVp(kDummyCustomizationID);
   AddManifestNotFound(kDummyCustomizationID);
 
-  ServicesCustomizationDocument* doc =
-      ServicesCustomizationDocument::GetInstance();
-  EXPECT_FALSE(doc->IsReady());
+  ServicesCustomizationDocument& doc = services_customization_document();
+  EXPECT_FALSE(doc.IsReady());
 
   std::unique_ptr<TestingProfile> profile = CreateProfile();
-  extensions::ExternalLoader* loader = doc->CreateExternalLoader(profile.get());
+  extensions::ExternalLoader* loader = doc.CreateExternalLoader(profile.get());
   EXPECT_TRUE(loader);
 
   MockExternalProviderVisitor visitor;
@@ -462,7 +470,7 @@ TEST_F(ServicesCustomizationDocumentTest, CustomizationManifestNotFound) {
   EXPECT_CALL(visitor, OnExternalProviderUpdateComplete(_, _, _, _)).Times(0);
 
   RunUntilIdle();
-  EXPECT_TRUE(doc->IsReady());
+  EXPECT_TRUE(doc.IsReady());
 }
 
 // When `kOemAppsMustUpdateFromWebstore` is enabled (default), the bad update
@@ -481,15 +489,20 @@ TEST(ServicesCustomizationDocumentDeathTest, ExternalUpdateUrl_Default) {
   ASSERT_TRUE(manifest_json->is_dict());
   const base::DictValue& manifest_dict = manifest_json->GetDict();
 
+  // Use empty global objects because TestingBrowserProcess is not
+  // initialized in the death test child process (crbug.com/332587367).
+  TestingPrefServiceSimple local_state;
+  ApplicationLocaleStorage locale_storage;
+  network::TestURLLoaderFactory loader_factory;
+  ServicesCustomizationDocument doc(&local_state, &locale_storage,
+                                    loader_factory.GetSafeWeakWrapper());
   // Provide the manifest directly to ServicesCustomizationDocument.
-  ServicesCustomizationDocument* doc =
-      ServicesCustomizationDocument::GetInstance();
-  doc->set_root_for_test(
+  doc.set_root_for_test(
       std::make_unique<base::DictValue>(manifest_dict.Clone()));
-  EXPECT_TRUE(doc->IsReady());
+  EXPECT_TRUE(doc.IsReady());
 
   // Requesting the list of apps triggers an assertion failure.
-  EXPECT_DEATH(doc->GetDefaultApps(), "");
+  EXPECT_DEATH(doc.GetDefaultApps(), "");
 }
 
 // When `kOemAppsMustUpdateFromWebstore` is disabled (kill switch), the bad
@@ -502,15 +515,14 @@ TEST_F(ServicesCustomizationDocumentTest, ExternalUpdateUrl_Legacy) {
   AddCustomizationIdToVp(kDummyCustomizationID);
   AddExpectedManifest(kDummyCustomizationID, kBadServicesManifest);
 
-  ServicesCustomizationDocument* doc =
-      ServicesCustomizationDocument::GetInstance();
-  EXPECT_FALSE(doc->IsReady());
+  ServicesCustomizationDocument& doc = services_customization_document();
+  EXPECT_FALSE(doc.IsReady());
 
-  doc->StartFetching();
+  doc.StartFetching();
   RunUntilIdle();
-  EXPECT_TRUE(doc->IsReady());
+  EXPECT_TRUE(doc.IsReady());
 
-  auto default_apps = doc->GetDefaultApps();
+  auto default_apps = doc.GetDefaultApps();
   ASSERT_TRUE(default_apps);
   const base::DictValue* app_entry =
       default_apps->FindDict("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");

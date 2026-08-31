@@ -40,11 +40,11 @@
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -130,14 +130,7 @@ constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
            "send/store any sensitive data."
         })");
 
-struct CustomizationDocumentTestOverride {
-  raw_ptr<ServicesCustomizationDocument, DanglingUntriaged>
-      customization_document = nullptr;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-};
-
-// Global overrider for ServicesCustomizationDocument for tests.
-CustomizationDocumentTestOverride* g_test_overrides = nullptr;
+ServicesCustomizationDocument* g_services_customization_document = nullptr;
 
 std::string GetLocaleSpecificStringImpl(const base::DictValue& root,
                                         const std::string& locale,
@@ -222,7 +215,7 @@ class ServicesCustomizationExternalLoader : public extensions::ExternalLoader {
   // Implementation of extensions::ExternalLoader:
   void StartLoading() override {
     if (!is_apps_set_) {
-      ServicesCustomizationDocument::GetInstance()->StartFetching();
+      ServicesCustomizationDocument::GetInstance().StartFetching();
       // In case of missing customization ID, SetCurrentApps will be called
       // synchronously from StartFetching and this function will be called
       // recursively so we need to return to avoid calling LoadFinished twice.
@@ -476,33 +469,32 @@ void ServicesCustomizationDocument::ApplyingTask::Finished(bool success) {
   }
 }
 
-ServicesCustomizationDocument::ServicesCustomizationDocument()
+ServicesCustomizationDocument::ServicesCustomizationDocument(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : CustomizationDocument(kAcceptedManifestVersion),
+      local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      url_loader_factory_(std::move(url_loader_factory)),
       num_retries_(0),
       load_started_(false),
       apply_tasks_started_(0),
       apply_tasks_finished_(0),
-      apply_tasks_success_(0) {}
-
-ServicesCustomizationDocument::ServicesCustomizationDocument(
-    const std::string& manifest)
-    : CustomizationDocument(kAcceptedManifestVersion),
-      apply_tasks_started_(0),
-      apply_tasks_finished_(0),
       apply_tasks_success_(0) {
-  LoadManifestFromString(manifest);
+  CHECK(url_loader_factory_);
+  CHECK(!g_services_customization_document);
+  g_services_customization_document = this;
 }
 
-ServicesCustomizationDocument::~ServicesCustomizationDocument() = default;
+ServicesCustomizationDocument::~ServicesCustomizationDocument() {
+  CHECK_EQ(g_services_customization_document, this);
+  g_services_customization_document = nullptr;
+}
 
 // static
-ServicesCustomizationDocument* ServicesCustomizationDocument::GetInstance() {
-  if (g_test_overrides)
-    return g_test_overrides->customization_document;
-
-  return base::Singleton<
-      ServicesCustomizationDocument,
-      base::DefaultSingletonTraits<ServicesCustomizationDocument>>::get();
+ServicesCustomizationDocument& ServicesCustomizationDocument::GetInstance() {
+  return CHECK_DEREF(g_services_customization_document);
 }
 
 // static
@@ -541,9 +533,7 @@ ServicesCustomizationDocument::GetCustomizedWallpaperDownloadedFileName() {
 }
 
 void ServicesCustomizationDocument::EnsureCustomizationApplied() {
-  // TODO(crbug.com/404131632): Avoid using g_browser_process.
-  if (WasOOBECustomizationApplied(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+  if (WasOOBECustomizationApplied(local_state_.get())) {
     return;
   }
 
@@ -603,16 +593,9 @@ void ServicesCustomizationDocument::OnManifestRead(
 }
 
 void ServicesCustomizationDocument::StartFileFetch() {
-  if (custom_network_delay_) {
-    DelayNetworkCallWithCustomDelay(
-        base::BindOnce(&ServicesCustomizationDocument::DoStartFileFetch,
-                       weak_ptr_factory_.GetWeakPtr()),
-        custom_network_delay_.value());
-  } else {
-    DelayNetworkCall(
-        base::BindOnce(&ServicesCustomizationDocument::DoStartFileFetch,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  DelayNetworkCall(
+      base::BindOnce(&ServicesCustomizationDocument::DoStartFileFetch,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ServicesCustomizationDocument::DoStartFileFetch() {
@@ -626,8 +609,7 @@ void ServicesCustomizationDocument::DoStartFileFetch() {
       std::move(request), kCustomizationDocumentNetworkTag);
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      g_test_overrides ? g_test_overrides->url_loader_factory.get()
-                       : g_browser_process->shared_url_loader_factory().get(),
+      url_loader_factory_.get(),
       base::BindOnce(&ServicesCustomizationDocument::OnSimpleLoaderComplete,
                      base::Unretained(this)));
 }
@@ -643,9 +625,7 @@ bool ServicesCustomizationDocument::LoadManifestFromString(
 }
 
 void ServicesCustomizationDocument::OnManifestLoaded() {
-  // TODO(crbug.com/404131632): Avoid using g_browser_process.
-  if (!WasOOBECustomizationApplied(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+  if (!WasOOBECustomizationApplied(local_state_.get())) {
     ApplyOOBECustomization();
   }
 
@@ -828,8 +808,8 @@ void ServicesCustomizationDocument::OnCustomizationNotFound() {
 void ServicesCustomizationDocument::SetOemFolderName(
     Profile* profile,
     const base::DictValue& root) {
-  std::string locale = g_browser_process->GetApplicationLocale();
-  std::string name = GetOemAppsFolderNameImpl(locale, root);
+  std::string name =
+      GetOemAppsFolderNameImpl(application_locale_storage_->Get(), root);
   if (name.empty())
     name = chromeos::default_app_order::GetOemAppsFolderName();
   if (!name.empty()) {
@@ -851,25 +831,6 @@ std::string ServicesCustomizationDocument::GetOemAppsFolderNameImpl(
                                      kDefaultAppsFolderName);
 }
 
-// static
-void ServicesCustomizationDocument::InitializeForTesting(
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  g_test_overrides = new CustomizationDocumentTestOverride;
-  g_test_overrides->customization_document = new ServicesCustomizationDocument;
-  // `base::TimeDelta()` means zero time delta - i.e. the request will be
-  // started immediately.
-  g_test_overrides->customization_document->custom_network_delay_ =
-      std::make_optional(base::TimeDelta());
-  g_test_overrides->url_loader_factory = std::move(factory);
-}
-
-// static
-void ServicesCustomizationDocument::ShutdownForTesting() {
-  delete g_test_overrides->customization_document;
-  delete g_test_overrides;
-  g_test_overrides = nullptr;
-}
-
 void ServicesCustomizationDocument::StartOEMWallpaperDownload(
     const GURL& wallpaper_url,
     std::unique_ptr<ServicesCustomizationDocument::ApplyingTask> applying) {
@@ -881,12 +842,8 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
     NOTREACHED();
   }
 
-  // TODO(crbug.com/404131632): Avoid g_browser_process usage.
-  auto shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
-
   wallpaper_downloader_ = std::make_unique<CustomizationWallpaperDownloader>(
-      shared_url_loader_factory, wallpaper_url, dir, file,
+      url_loader_factory_, wallpaper_url, dir, file,
       base::BindOnce(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(applying)));
 
@@ -903,9 +860,8 @@ void ServicesCustomizationDocument::CheckAndApplyWallpaper() {
 
   GURL wallpaper_url;
   if (!GetDefaultWallpaperUrl(&wallpaper_url)) {
-    PrefService* pref_service = g_browser_process->local_state();
     std::string current_url =
-        pref_service->GetString(ash::prefs::kCustomizationDefaultWallpaperURL);
+        local_state_->GetString(ash::prefs::kCustomizationDefaultWallpaperURL);
     if (!current_url.empty()) {
       VLOG(1) << "ServicesCustomizationDocument::CheckAndApplyWallpaper() : "
               << "No wallpaper URL attribute in customization document, "
@@ -956,10 +912,8 @@ void ServicesCustomizationDocument::ApplyWallpaper(
   GURL wallpaper_url;
   const bool wallpaper_url_present = GetDefaultWallpaperUrl(&wallpaper_url);
 
-  PrefService* pref_service = g_browser_process->local_state();
-
   std::string current_url =
-      pref_service->GetString(ash::prefs::kCustomizationDefaultWallpaperURL);
+      local_state_->GetString(ash::prefs::kCustomizationDefaultWallpaperURL);
   if (current_url != wallpaper_url.spec()) {
     if (wallpaper_url_present) {
       VLOG(1) << "ServicesCustomizationDocument::ApplyWallpaper() : "
@@ -1007,11 +961,9 @@ void ServicesCustomizationDocument::OnOEMWallpaperDownloaded(
             << GetCustomizedWallpaperDownloadedFileName().value() << "' ('"
             << wallpaper_url.spec() << "')";
 
-    // TODO(crbug.com/404131632): Avoid g_browser_process usage.
-    PrefService* local_state = g_browser_process->local_state();
-
     customization_wallpaper_util::StartSettingCustomizedDefaultWallpaper(
-        local_state, wallpaper_url, GetCustomizedWallpaperDownloadedFileName());
+        &local_state_.get(), wallpaper_url,
+        GetCustomizedWallpaperDownloadedFileName());
   }
   wallpaper_downloader_.reset();
   applying->Finished(success);
@@ -1031,8 +983,7 @@ void ServicesCustomizationDocument::ApplyingTaskFinished(bool success) {
     return;
 
   if (apply_tasks_success_ == apply_tasks_finished_) {
-    // TODO(crbug.com/404131632): Avoid using g_browser_process.
-    SetApplied(CHECK_DEREF(g_browser_process->local_state()), true);
+    SetApplied(local_state_.get(), true);
   }
 }
 

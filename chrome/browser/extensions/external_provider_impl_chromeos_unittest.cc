@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -37,6 +38,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -114,7 +117,21 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
   }
 
   // ExtensionServiceTestBase overrides:
-  void SetUp() override { ExtensionServiceTestBase::SetUp(); }
+  void SetUp() override {
+    ExtensionServiceTestBase::SetUp();
+
+    // ExternalProviderImpl::CreateExternalProviders on ChromeOS creates an OEM
+    // customization external provider via
+    // ash::ServicesCustomizationDocument::GetInstance(), which requires an
+    // active document instance.
+    services_customization_document_ =
+        std::make_unique<ash::ServicesCustomizationDocument>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
+            test_url_loader_factory_.GetSafeWeakWrapper());
+  }
 
   void TearDown() override {
     // If some extensions are being installed (on a background thread) and we
@@ -123,6 +140,8 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     // finish cleanly).
     // So ensure we let pending extension installations finish.
     WaitForPendingStandaloneExtensionsInstalled();
+
+    services_customization_document_.reset();
     ExtensionServiceTestBase::TearDown();
   }
 
@@ -161,6 +180,9 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<ash::ServicesCustomizationDocument>
+      services_customization_document_;
 };
 
 }  // namespace

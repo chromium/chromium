@@ -18,6 +18,7 @@ include_rules = [
   "+chrome/browser/ash/child_accounts/parent_access_code",
   "+chrome/browser/ash/chromebox_for_meetings",
   "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/customization",
   "+chrome/browser/ash/dbus",
   "+chrome/browser/ash/diagnostics",
   "+chrome/browser/ash/events",

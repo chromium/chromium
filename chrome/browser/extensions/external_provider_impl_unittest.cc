@@ -50,9 +50,12 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #else
 #include "chrome/browser/extensions/preinstalled_extensions.h"
 #endif
@@ -220,9 +223,21 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
     extension_test_util::SetGalleryUpdateURL(
         test_server_->GetURL(kInAppPaymentsApp.update_path));
+#if BUILDFLAG(IS_CHROMEOS)
+    services_customization_document_ =
+        std::make_unique<ash::ServicesCustomizationDocument>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
+            test_url_loader_factory_.GetSafeWeakWrapper());
+#endif
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    services_customization_document_.reset();
+#endif
     // Avoid dangling pointers.
     extension_updater()->SetExtensionCacheForTesting(nullptr);
     test_extension_cache_.reset();
@@ -280,6 +295,9 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   // chromeos::ServicesCustomizationExternalLoader is hooked up as an
   // ExternalLoader and depends on a functioning StatisticsProvider.
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<ash::ServicesCustomizationDocument>
+      services_customization_document_;
 #endif
 
 #if BUILDFLAG(IS_WIN)

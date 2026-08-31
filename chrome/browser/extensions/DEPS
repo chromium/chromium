@@ -21,6 +21,8 @@ include_rules = [
 ]
 specific_include_rules = {
   ".*test(_chromeos)?\\.(cc|h)$": [
+    "+chrome/browser/global_features.h",
+
     # For now, tests are allowed to depend on app_browsertest_util.h, since
     # that's where PlatformAppBrowserTest is defined. Ideally, we'd eventually
     # move all Platform App-specific tests to chrome/browser/apps/platform_apps.

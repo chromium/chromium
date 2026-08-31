@@ -93,6 +93,7 @@ class PowerMetricsReporter;
 class RendererFreezer;
 class ReportControllerInitializer;
 class ScreenLockerController;
+class ServicesCustomizationDocument;
 class SessionTerminationManager;
 class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
@@ -331,6 +332,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 #endif
 
   std::unique_ptr<ScreenLockerController> screen_locker_controller_;
+
+  std::unique_ptr<ServicesCustomizationDocument>
+      services_customization_document_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

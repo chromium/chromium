@@ -19,7 +19,6 @@ static_library("customization") {
   deps = [
     "//ash",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users/avatar",
@@ -29,6 +28,7 @@ static_library("customization") {
     "//chrome/browser/profiles",
     "//chrome/common",
     "//chromeos/ash/components/system",
+    "//components/application_locale_storage",
     "//components/pref_registry",
     "//content/public/browser",
   ]
@@ -71,6 +71,7 @@ source_set("unit_tests") {
   deps = [
     ":customization",
     "//chrome/browser",
+    "//chrome/browser:global_features",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/settings:test_support",
@@ -80,6 +81,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
+    "//components/application_locale_storage",
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/sync_preferences",

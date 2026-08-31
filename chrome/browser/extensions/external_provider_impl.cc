@@ -844,10 +844,10 @@ void ExternalProviderImpl::CreateExternalProviders(
     // OEM pre-installed apps.
     int oem_extension_creation_flags =
         bundled_extension_creation_flags | Extension::WAS_INSTALLED_BY_OEM;
-    ash::ServicesCustomizationDocument* customization =
+    ash::ServicesCustomizationDocument& customization =
         ash::ServicesCustomizationDocument::GetInstance();
     provider_list->push_back(std::make_unique<ExternalProviderImpl>(
-        service, customization->CreateExternalLoader(profile), profile,
+        service, customization.CreateExternalLoader(profile), profile,
         ManifestLocation::kExternalPref,
         ManifestLocation::kExternalPrefDownload, oem_extension_creation_flags));
   }

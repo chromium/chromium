@@ -2205,7 +2205,7 @@ void WizardController::SkipToLoginForTesting() {
 
   StartNetworkTimezoneResolve();
   DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
-                       ->EnsureCustomizationAppliedClosure());
+                       .EnsureCustomizationAppliedClosure());
   if (features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
     StartupUtils::MarkOobeCompleted(local_state_.get());
   }
@@ -3410,7 +3410,7 @@ void WizardController::StartTimezoneResolve() {
 void WizardController::PerformPostNetworkScreenActions() {
   StartNetworkTimezoneResolve();
   DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
-                       ->EnsureCustomizationAppliedClosure());
+                       .EnsureCustomizationAppliedClosure());
   GetAutoEnrollmentController()->Start();
 }
 

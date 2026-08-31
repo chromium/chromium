@@ -1299,7 +1299,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
 
   if (StartupUtils::IsEulaAccepted(local_state)) {
     DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
-                         ->EnsureCustomizationAppliedClosure());
+                         .EnsureCustomizationAppliedClosure());
 
     g_browser_process->platform_part()
         ->GetTimezoneResolverManager()
