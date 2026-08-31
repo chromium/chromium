@@ -6,6 +6,7 @@
 #define COMPONENTS_ACTIVITY_REPORTER_ACTIVITY_REPORTER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -47,6 +48,7 @@ std::unique_ptr<ActivityReporter> CreateActivityReporter(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
     base::RepeatingCallback<version_info::Channel()> channel_provider,
+    base::RepeatingCallback<std::string()> brand_provider,
     base::RepeatingClosure updater_active_callback,
     bool per_user_install);
 
