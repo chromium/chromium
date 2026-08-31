@@ -609,6 +609,7 @@ public abstract class ChromeFeatureList {
     public static final String IN_APP_WINDOW_MANAGER_DEPRECATION = "InAppWindowManagerDeprecation";
     public static final String KEYBOARD_ESC_BACK_NAVIGATION = "KeyboardEscBackNavigation";
     public static final String LAUNCH_CAUSE_SCREEN_OFF_FIX = "LaunchCauseScreenOffFix";
+    public static final String LENS_BYPASS_COMPRESSION_FOR_C2PA = "LensBypassCompressionForC2pa";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LENS_OVERLAY_ANDROID = "LensOverlayAndroid";
     public static final String LENS_SEND_RAW_FILE_MEDIA_TYPES = "LensSendRawFileMediaTypes";
@@ -1226,6 +1227,11 @@ public abstract class ChromeFeatureList {
                     LAUNCH_CAUSE_SCREEN_OFF_FIX,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sLensBypassCompressionForC2pa =
+            newCachedFlag(
+                    LENS_BYPASS_COMPRESSION_FOR_C2PA,
+                    /* defaultValue= */ true,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sLensSendRawFileMediaTypes =
             newCachedFlag(
                     LENS_SEND_RAW_FILE_MEDIA_TYPES,
@@ -1576,6 +1582,7 @@ public abstract class ChromeFeatureList {
                     sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,
                     sLaunchCauseScreenOffFix,
+                    sLensBypassCompressionForC2pa,
                     sLensSendRawFileMediaTypes,
                     sLoadAllTabsAtStartup,
                     sLockTopControlsOnLargeTabletsV2,

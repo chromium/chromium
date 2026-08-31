@@ -406,6 +406,9 @@ bool ComposeboxQueryController::HasC2paMetadata(
     base::span<const uint8_t> bytes) {
   std::string_view bytes_to_search(reinterpret_cast<const char*>(bytes.data()),
                                    std::min(bytes.size(), kMaxC2paSearchBytes));
+  // TODO(crbug.com/555150321): Improve c2pa detection heuristic.
+  // TODO(crbug.com/555163171): Add UMA logs measuring c2pa header detection
+  // rate in images.
   return bytes_to_search.find(kC2paMarker) != std::string_view::npos;
 }
 
@@ -414,6 +417,8 @@ ComposeboxQueryController::MaybeCreateC2paBypassImageData(
     base::span<const uint8_t> original_image_bytes,
     int width,
     int height) {
+  // TODO(crbug.com/555150730): Pass the c2pa header detection bit from Java to
+  // c++ so that c2pa header detection can be skipped in the c++ layer.
   if (original_image_bytes.empty() ||
       !base::FeatureList::IsEnabled(
           lens::features::kLensBypassCompressionForC2pa) ||

@@ -49,6 +49,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -56,6 +57,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /** Unit tests for {@link FuseboxAttachmentDetailsFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -144,7 +146,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         try {
             lenient()
                     .when(mContentResolver.openInputStream(attachmentUri))
-                    .thenReturn(data == null ? null : new ByteArrayInputStream(data));
+                    .thenAnswer(inv -> data == null ? null : new ByteArrayInputStream(data));
             if (thumbnail != null) {
                 when(mContentResolver.loadThumbnail(any(), any(), any())).thenReturn(thumbnail);
             } else {
@@ -642,6 +644,101 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
         verifyOomHistogram();
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING,
+        ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA
+    })
+    public void testFetchAttachmentDetails_c2paImage_bypassesDownscaling() {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] c2paData =
+                "sample_prefix urn:c2pa: sample_suffix".getBytes(StandardCharsets.US_ASCII);
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, c2paData, thumbnail, buttonType);
+        // If downscaling were triggered, this mock would throw an IOException, but C2PA should
+        // bypass it.
+        setupMockImageDecoder(/* throwOom= */ false, /* throwIoException= */ true);
+        FuseboxAttachmentDetailsFetcher.setFileStreamReaderForTesting((inputStream) -> c2paData);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                c2paData,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                buttonType);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING)
+    @DisableFeatures(ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA)
+    public void testFetchAttachmentDetails_c2paImage_featureDisabled_downscalesImage() {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] c2paData =
+                "sample_prefix urn:c2pa: sample_suffix".getBytes(StandardCharsets.US_ASCII);
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, c2paData, thumbnail, buttonType);
+        // When flag is disabled, downscaling should be attempted. Mock decoder returning a
+        // downscaled image.
+        setupMockImageDecoder(/* throwOom= */ false, /* throwIoException= */ false);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(mAttachmentCaptor.capture());
+        FuseboxAttachment attachment = mAttachmentCaptor.getValue();
+
+        assertNotNull(attachment);
+        assertEquals(title, attachment.title);
+        assertEquals(mimeType, attachment.mimeType);
+        assertThat(attachment.data).isNotEqualTo(c2paData);
+        assertEquals(thumbnail, getThumbnailFromAttachment(attachment));
+        assertEquals(FuseboxAttachmentType.ATTACHMENT_IMAGE, attachment.type);
+        assertEquals(buttonType, attachment.buttonType);
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING,
+        ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA
+    })
+    public void testFetchAttachmentDetails_c2paImageAcrossChunkBoundary_bypassesDownscaling() {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        // Position "urn:c2pa:" across the 8192-byte chunk boundary (starts at byte 8190).
+        byte[] prefix = new byte[8190];
+        byte[] marker = "urn:c2pa:".getBytes(StandardCharsets.US_ASCII);
+        byte[] suffix = new byte[100];
+        byte[] c2paData = new byte[prefix.length + marker.length + suffix.length];
+        System.arraycopy(prefix, 0, c2paData, 0, prefix.length);
+        System.arraycopy(marker, 0, c2paData, prefix.length, marker.length);
+        System.arraycopy(suffix, 0, c2paData, prefix.length + marker.length, suffix.length);
+
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, c2paData, thumbnail, buttonType);
+        setupMockImageDecoder(/* throwOom= */ false, /* throwIoException= */ true);
+        FuseboxAttachmentDetailsFetcher.setFileStreamReaderForTesting((inputStream) -> c2paData);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                c2paData,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                buttonType);
     }
 
     @Test

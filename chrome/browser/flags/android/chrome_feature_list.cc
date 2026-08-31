@@ -536,6 +536,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
     &language::kGmsCoreUlp,
+    &lens::features::kLensBypassCompressionForC2pa,
     &lens::features::kLensOverlayAndroid,
     &lens::features::kLensSendRawFileMediaTypes,
     &media::kAutoDocPiPPermissionPromptAndroid,
