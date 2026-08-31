@@ -12,6 +12,8 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/universal_optout/features.h"
+#include "components/universal_optout/prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
@@ -140,4 +142,20 @@ TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryTriggerString) {
   } else {
     EXPECT_EQ(renderer_preferences.autofill_trigger_string, u"@@");
   }
+}
+
+TEST_F(RendererPreferencesUtilTest, GlobalPrivacyControlSettingEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {universal_optout::features::kUniversalOptOut,
+       universal_optout::features::kUniversalOptOutSettings},
+      {});
+
+  pref_service_->SetBoolean(universal_optout::prefs::kUniversalOptOutEnabled,
+                            true);
+  blink::RendererPreferences renderer_preferences;
+  renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
+                                                      &profile_);
+  EXPECT_EQ(renderer_preferences.is_global_privacy_control_setting_enabled,
+            true);
 }

@@ -26,6 +26,8 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/universal_optout/features.h"
+#include "components/universal_optout/prefs.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
@@ -153,6 +155,15 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
   prefs->enable_do_not_track =
       pref_service->GetBoolean(prefs::kEnableDoNotTrack);
+  // TODO(crbug.com/40745270): Clean up kGlobalPrivacyControlForce &
+  // kGlobalPrivacyControlDevToolsOverridest.
+  if (base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOut) &&
+      base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOutSettings)) {
+    prefs->is_global_privacy_control_setting_enabled = pref_service->GetBoolean(
+        universal_optout::prefs::kUniversalOptOutEnabled);
+  }
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
 

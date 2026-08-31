@@ -24,6 +24,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/universal_optout/prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -153,6 +154,8 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kEnableDoNotTrack,
                                      renderer_callback);
+  profile_pref_change_registrar_.Add(
+      universal_optout::prefs::kUniversalOptOutEnabled, renderer_callback);
   profile_pref_change_registrar_.Add(
       autofill::prefs::kAutofillAtMemoryTriggerInfo, renderer_callback);
 

@@ -50,6 +50,7 @@ source_set("impl") {
     "//components/live_caption:constants",
     "//components/pref_registry",
     "//components/proxy_config",
+    "//components/universal_optout",
   ]
 
   if (is_android) {

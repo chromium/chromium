@@ -17,9 +17,9 @@ void UpdateRendererPreferencesForWorkerHelper(
   CHECK(preferences);
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
       context, preferences);
-  // TODO(crbug.com/40745270): This will need to be re-worked once we have a
-  // real user setting coming down from ChromeContentBrowserClient.
-  preferences->is_global_privacy_control_setting_enabled =
+  // TODO(crbug.com/40745270): Rename IsGlobalPrivacyControlSettingEnabled to
+  // IsGlobalPrivacyControlDevToolsOverrideEnabled
+  preferences->is_global_privacy_control_setting_enabled |=
       IsGlobalPrivacyControlSettingEnabled();
 }
 
