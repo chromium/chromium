@@ -868,11 +868,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
           .CreateInstance<IncognitoClearBrowsingDataDialogCoordinator>(
               *browser, profile, browser->GetUnownedUserDataHost());
 
-  live_tab_context_ = std::make_unique<BrowserLiveTabContext>(
-      browser, browser->GetTabStripModel(), profile, browser->GetWindow(),
-      browser->GetType(),
-      BrowserInitState::From(browser)->create_params().app_name,
-      browser->GetSessionID());
+  live_tab_context_ =
+      GetUserDataFactory().CreateInstance<BrowserLiveTabContext>(
+          *browser, browser, browser->GetTabStripModel(), profile,
+          browser->GetWindow(), browser->GetType(),
+          BrowserInitState::From(browser)->create_params().app_name,
+          browser->GetSessionID());
 
   if (browser_view) {
     if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {

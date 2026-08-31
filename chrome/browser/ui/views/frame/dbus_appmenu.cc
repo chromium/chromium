@@ -639,7 +639,7 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
     sessions::TabRestoreService* service =
         TabRestoreServiceFactory::GetForProfile(profile_);
     if (item->session_id.is_valid() && service) {
-      service->RestoreEntryById(browser_->GetFeatures().live_tab_context(),
+      service->RestoreEntryById(BrowserLiveTabContext::From(browser_),
                                 item->session_id,
                                 WindowOpenDisposition::UNKNOWN);
     } else {

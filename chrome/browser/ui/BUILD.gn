@@ -86,6 +86,20 @@ source_set("tab_modal_confirm_dialog") {
   }
 }
 
+source_set("browser_live_tab_context") {
+  public = [ "browser_live_tab_context.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//components/sessions",
+    "//components/split_tabs",
+    "//components/tab_groups",
+    "//ui/base:types",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
 if (!is_android) {
   source_set("chrome_web_modal_dialog_manager_delegate") {
     public = [ "chrome_web_modal_dialog_manager_delegate.h" ]
@@ -608,6 +622,7 @@ static_library("ui") {
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
     ":accelerator_utils_headers",
+    ":browser_live_tab_context",
     ":crypto_module_password_dialog",
     ":enterprise_startup_dialog",
     ":screen_capture_notification_ui",
@@ -1307,7 +1322,6 @@ static_library("ui") {
       "browser_content_setting_bubble_model_delegate.cc",
       "browser_content_setting_bubble_model_delegate.h",
       "browser_live_tab_context.cc",
-      "browser_live_tab_context.h",
       "browser_manager_service.cc",
       "browser_manager_service.h",
       "browser_manager_service_factory.cc",

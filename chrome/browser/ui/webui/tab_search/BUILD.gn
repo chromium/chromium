@@ -34,7 +34,10 @@ source_set("tab_search") {
     "tab_search_sync_handler.h",
     "tab_search_ui.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_live_tab_context",
+  ]
   deps = [
     ":mojo_bindings",
     "//base",

@@ -74,6 +74,7 @@ source_set("impl") {
   public_deps = [
     ":sessions",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_live_tab_context",
   ]
 
   deps = [
@@ -294,6 +295,7 @@ if (!is_android) {
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui:browser_live_tab_context",
       "//chrome/browser/ui:browser_window_state",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_web_contents_delegate",

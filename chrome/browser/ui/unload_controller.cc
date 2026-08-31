@@ -174,8 +174,7 @@ void UnloadController::OnWindowClosing() {
 #endif
 
   if (tab_restore_service && notify_restore_service) {
-    tab_restore_service->BrowserClosing(
-        browser_->GetFeatures().live_tab_context());
+    tab_restore_service->BrowserClosing(BrowserLiveTabContext::From(browser_));
   }
 
   if (!browser_->GetTabStripModel()->empty()) {

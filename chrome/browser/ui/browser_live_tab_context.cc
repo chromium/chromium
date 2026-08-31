@@ -89,11 +89,19 @@ bool ShouldCreateAppWindowForAppName(Profile* profile,
 
 sessions::LiveTabContext* GetLiveTabContext(BrowserWindowInterface* browser) {
   return browser && !browser->IsDeleteScheduled()
-             ? browser->GetFeatures().live_tab_context()
+             ? BrowserLiveTabContext::From(browser)
              : nullptr;
 }
 
 }  // namespace
+
+DEFINE_USER_DATA(BrowserLiveTabContext);
+
+// static
+BrowserLiveTabContext* BrowserLiveTabContext::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
 
 BrowserLiveTabContext::BrowserLiveTabContext(BrowserWindowInterface* browser,
                                              TabStripModel* tab_strip_model,
@@ -102,7 +110,8 @@ BrowserLiveTabContext::BrowserLiveTabContext(BrowserWindowInterface* browser,
                                              BrowserWindowInterface::Type type,
                                              const std::string& app_name,
                                              SessionID session_id)
-    : browser_(CHECK_DEREF(browser)),
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
+      browser_(CHECK_DEREF(browser)),
       tab_strip_model_(CHECK_DEREF(tab_strip_model)),
       profile_(CHECK_DEREF(profile)),
       base_window_(CHECK_DEREF(base_window)),
@@ -350,7 +359,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       // It's possible a tab's group was deleted or was unsaved before this tab
       // was restored. In that case, if the local group didn't become saved add
       // the visual metadata and save it manually.
-      browser->GetFeatures().live_tab_context()->SetVisualDataForGroup(
+      BrowserLiveTabContext::From(browser)->SetVisualDataForGroup(
           group_id.value(), tab.group_visual_data.value());
       tab_group_service->SaveGroup(
           tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
@@ -521,7 +530,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   BrowserWindowInterface* browser =
       CreateBrowserWindow(std::move(*create_params));
 
-  return browser->GetFeatures().live_tab_context();
+  return BrowserLiveTabContext::From(browser);
 }
 
 // static

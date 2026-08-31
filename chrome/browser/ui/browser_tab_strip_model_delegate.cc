@@ -264,7 +264,7 @@ void BrowserTabStripModelDelegate::CreateHistoricalSplit(
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
   if (service) {
-    service->CreateHistoricalSplit(browser_->GetFeatures().live_tab_context(),
+    service->CreateHistoricalSplit(BrowserLiveTabContext::From(browser_),
                                    split_id);
   }
 }

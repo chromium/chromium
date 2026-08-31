@@ -336,9 +336,9 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
         }
       }
       if (target_id.is_valid()) {
-        service->RestoreEntryById(
-            target_browser->GetFeatures().live_tab_context(), target_id,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+        service->RestoreEntryById(BrowserLiveTabContext::From(target_browser),
+                                  target_id,
+                                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
       } else {
         chrome::RestoreTab(target_browser);
       }
@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_P(TabRestoreWithEncryptionTest, LargeSessionRestore) {
   ui_test_utils::BrowserCreatedObserver observer;
   TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser2->GetProfile());
-  service->RestoreMostRecentEntry(browser2->GetFeatures().live_tab_context());
+  service->RestoreMostRecentEntry(BrowserLiveTabContext::From(browser2));
   BrowserWindowInterface* restored_browser = observer.Wait();
 
   EXPECT_EQ(starting_tab_count, restored_browser->GetTabStripModel()->count());

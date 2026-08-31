@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowBounds) {
   // Restore the window. Ensure that a second window is created, that is has 2
   // tabs, and that it has the expected bounds.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  service->RestoreMostRecentEntry(browser->GetFeatures().live_tab_context());
+  service->RestoreMostRecentEntry(BrowserLiveTabContext::From(browser));
   BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(2, new_browser->GetTabStripModel()->count());
@@ -679,13 +679,13 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   SessionID tab_2_id = window->tabs[1]->id;
 
   // Restoring the first tab from the window should keep the window entry.
-  service->RestoreEntryById(browser()->GetFeatures().live_tab_context(),
-                            tab_1_id, WindowOpenDisposition::NEW_WINDOW);
+  service->RestoreEntryById(BrowserLiveTabContext::From(browser()), tab_1_id,
+                            WindowOpenDisposition::NEW_WINDOW);
   EXPECT_EQ(1u, service->entries().size());
 
   // Restoring the last tab from the window should remove the window entry.
-  service->RestoreEntryById(browser()->GetFeatures().live_tab_context(),
-                            tab_2_id, WindowOpenDisposition::NEW_WINDOW);
+  service->RestoreEntryById(BrowserLiveTabContext::From(browser()), tab_2_id,
+                            WindowOpenDisposition::NEW_WINDOW);
   EXPECT_EQ(0u, service->entries().size());
 }
 
@@ -712,13 +712,13 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   SessionID tab_2_id = tab_group->tabs[1]->id;
 
   // Restoring the first tab from the group should keep the group entry.
-  service->RestoreEntryById(browser()->GetFeatures().live_tab_context(),
-                            tab_1_id, WindowOpenDisposition::CURRENT_TAB);
+  service->RestoreEntryById(BrowserLiveTabContext::From(browser()), tab_1_id,
+                            WindowOpenDisposition::CURRENT_TAB);
   EXPECT_EQ(1u, service->entries().size());
 
   // Restoring the last tab from the group should remove the group entry.
-  service->RestoreEntryById(browser()->GetFeatures().live_tab_context(),
-                            tab_2_id, WindowOpenDisposition::CURRENT_TAB);
+  service->RestoreEntryById(BrowserLiveTabContext::From(browser()), tab_2_id,
+                            WindowOpenDisposition::CURRENT_TAB);
   EXPECT_EQ(0u, service->entries().size());
 }
 
@@ -757,8 +757,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(1u, service->entries().size());
   EXPECT_EQ(0, app_browser->tab_strip_model()->count());
 
-  service->RestoreMostRecentEntry(
-      app_browser->GetFeatures().live_tab_context());
+  service->RestoreMostRecentEntry(BrowserLiveTabContext::From(app_browser));
 
   EXPECT_EQ(0u, service->entries().size());
   EXPECT_EQ(1, app_browser->tab_strip_model()->count());
@@ -1121,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabFromClosedWindowByID) {
   // Restore the tab into the new window.
   EXPECT_EQ(1, new_browser->GetTabStripModel()->count());
   ui_test_utils::TabAddedWaiter tab_added_waiter(new_browser);
-  service->RestoreEntryById(new_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(new_browser),
                             tab_id_to_restore,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   auto* new_tab = tab_added_waiter.Wait();
@@ -2367,9 +2366,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   // Restore the window.
   browser_created_observer.emplace();
   std::vector<sessions::LiveTab*> restored_window_tabs =
-      service->RestoreEntryById(
-          second_browser->GetFeatures().live_tab_context(), entries.front()->id,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
+                                entries.front()->id,
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB);
   BrowserWindowInterface* const third_browser =
       browser_created_observer->Wait();
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -2428,14 +2427,14 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
   ASSERT_TRUE(window_entry->tab_groups.contains(double_entry_group));
 
   // Restore the first and only tab in the single entry group.
-  service->RestoreEntryById(second_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                             window_entry->tabs[3]->id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   // The window should no longer track the single entry group.
   ASSERT_FALSE(window_entry->tab_groups.contains(single_entry_group));
 
   // Restore one of the tabs in the double entry group.
-  service->RestoreEntryById(second_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                             window_entry->tabs[2]->id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   // The window should still track the double entry group.
@@ -2444,7 +2443,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
   ASSERT_TRUE(window_entry->tab_groups.contains(double_entry_group));
 
   // Restore the remaining tab in the double entry group.
-  service->RestoreEntryById(second_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                             window_entry->tabs[1]->id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   // The window should no longer track the double entry group.
@@ -2492,7 +2491,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreEntireGroupInWindow) {
   // Restore the double entry group.
   const auto& double_entry_group =
       *window_entry->tab_groups.at(double_entry_group_id).get();
-  service->RestoreEntryById(second_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                             double_entry_group.id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
@@ -2502,7 +2501,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreEntireGroupInWindow) {
   // Restore one of the tabs in the double entry group.
   const auto& single_entry_group =
       *window_entry->tab_groups.at(single_entry_group_id).get();
-  service->RestoreEntryById(second_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                             single_entry_group.id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
@@ -2567,8 +2566,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabGroupFromClosedWindow) {
       browser_b, saved_guid_1, tab_groups::OpeningSource::kOpenedFromRevisitUi);
 
   // 4. In window C restore group 2
-  service->RestoreEntryById(browser_c->GetFeatures().live_tab_context(),
-                            group_2_sid,
+  service->RestoreEntryById(BrowserLiveTabContext::From(browser_c), group_2_sid,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
   // Checks:
@@ -2749,7 +2747,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithSplit) {
 
   // Restore the window using the second browser's context.
   ui_test_utils::BrowserCreatedObserver restored_browser_observer;
-  service->RestoreEntryById(second_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                             entries.front()->id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   BrowserWindowInterface* const restored_window =
@@ -2806,7 +2804,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupAndSplit) {
 
   // Restore the window using the second browser's context.
   ui_test_utils::BrowserCreatedObserver restored_browser_observer;
-  service->RestoreEntryById(second_browser->GetFeatures().live_tab_context(),
+  service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                             entries.front()->id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   BrowserWindowInterface* const restored_window =
@@ -3601,7 +3599,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   sessions::TabRestoreService* trs_service =
       TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(2u, trs_service->entries().size());
-  trs_service->RestoreEntryById(browser()->GetFeatures().live_tab_context(),
+  trs_service->RestoreEntryById(BrowserLiveTabContext::From(browser()),
                                 trs_service->entries().back()->id,
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB);
   EXPECT_EQ(3, browser()->tab_strip_model()->count());

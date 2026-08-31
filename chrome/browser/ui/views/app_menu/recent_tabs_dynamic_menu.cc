@@ -15,6 +15,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -87,7 +88,7 @@ void RecentTabsDynamicMenu::ExecuteRestoreEntry(
     return;
   }
   sessions::LiveTabContext* live_context =
-      browser_window_interface_->GetFeatures().live_tab_context();
+      BrowserLiveTabContext::From(browser_window_interface_);
   if (!live_context) {
     return;
   }

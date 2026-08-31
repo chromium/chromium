@@ -87,7 +87,7 @@ class ViewExtensionSourceTest : public ExtensionBrowserTest {
     sessions::LiveTabContext* context = tab_model->GetLiveTabContext();
 #else
     sessions::LiveTabContext* context =
-        GetBrowserWindowInterface()->GetFeatures().live_tab_context();
+        BrowserLiveTabContext::From(GetBrowserWindowInterface());
 #endif
     CHECK(context);
     service->RestoreMostRecentEntry(context);
