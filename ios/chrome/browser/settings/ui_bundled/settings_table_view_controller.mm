@@ -1690,6 +1690,9 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
   [self removeDefaultPassiveCardSection];
 
+  id<PictureInPictureCommands> pipHandler = HandlerForProtocol(
+      _browser->GetCommandDispatcher(), PictureInPictureCommands);
+
   if (IsDefaultBrowserPictureInPictureEnabled()) {
     [self.sceneHandler closePresentedViews];
   }
@@ -1699,11 +1702,8 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
           ? IsDefaultAppsPictureInPictureVariant()
           : (IsDefaultAppsDestinationAvailable() &&
              IsUseDefaultAppsDestinationForPromosEnabled());
-  OpenIOSDefaultBrowserSettingsPage(
-      useDefaultAppsDestination,
-      /*ui_application_to_use=*/nil,
-      HandlerForProtocol(_browser->GetCommandDispatcher(),
-                         PictureInPictureCommands));
+  OpenIOSDefaultBrowserSettingsPage(useDefaultAppsDestination,
+                                    /*ui_application_to_use=*/nil, pipHandler);
 }
 
 #pragma mark - Actions
