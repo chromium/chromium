@@ -31,6 +31,28 @@ const PLATFORM: AuthenticatorAttachment = 'platform';
 // The supported PublicKeyCredentialType is 'public-key'.
 const PUBLIC_KEY: PublicKeyCredentialType = 'public-key';
 
+// Checks whether the provided pubKeyCredParams contains at least one algorithm
+// supported by the browser passkey provider.
+function hasSupportedAlgorithm(
+    pubKeyCredParams?: PublicKeyCredentialParameters[]): boolean {
+  // If pubKeyCredParams is not present or empty, the default is ES256 (-7)
+  // and RS256 (-257) (https://w3c.github.io/webauthn/#sctn-createCredential).
+  // Since ES256 is supported by the browser, return true.
+  if (!pubKeyCredParams ||
+      (Array.isArray(pubKeyCredParams) && pubKeyCredParams.length === 0)) {
+    return true;
+  }
+
+  // If pubKeyCredParams is not an Array (e.g. a non-array iterable like a Set,
+  // or malformed data), defer to WebKit to handle WebIDL sequence conversion.
+  if (!Array.isArray(pubKeyCredParams)) {
+    return false;
+  }
+
+  return pubKeyCredParams.some(
+      param => param && param.type === PUBLIC_KEY && param.alg === ES256);
+}
+
 // Checks whether provided aaguid is equal to Google Password Manager's aaguid.
 function isGpmAaguid(aaguid: Uint8Array): boolean {
   if (aaguid.byteLength !== GPM_AAGUID.byteLength) {
@@ -1260,7 +1282,8 @@ const credentialsContainer: CredentialsContainer = {
     let promise: Promise<Credential|null>;
     if (shouldHandlePasskeyRequests(isConditional) &&
         options.publicKey.challenge && options.publicKey.user &&
-        options.publicKey.user.id) {
+        options.publicKey.user.id &&
+        hasSupportedAlgorithm(options.publicKey.pubKeyCredParams)) {
       const browserRegistrationRequest = createRegistrationRequest(
           options.publicKey, isConditional, options.signal);
       promise = browserRegistrationRequest.promise.then(result => {

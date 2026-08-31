@@ -44,6 +44,10 @@ const char kNavigatorCredentialsConditionalGetUrl[] =
     "/credentialsConditionalGet";
 const char kNavigatorCredentialsCreateMissingRpIdUrl[] =
     "/credentialsCreateMissingRpId";
+const char kNavigatorCredentialsCreateUnsupportedAlgorithmUrl[] =
+    "/credentialsCreateUnsupportedAlgorithm";
+const char kNavigatorCredentialsCreateMultipleAlgorithmsUrl[] =
+    "/credentialsCreateMultipleAlgorithms";
 const char kNavigatorCredentialsGetWithUserHandleUrl[] =
     "/credentialsGetWithUserHandle";
 const char kNavigatorCredentialsCreateWithResultUrl[] =
@@ -77,6 +81,23 @@ const char kNavigatorCredentialsCreateMissingRpIdPageHtml[] =
     "challenge: new ArrayBuffer(0), "
     "rp: { name: 'My Website' },"
     "user: { id: new ArrayBuffer(0), name: '', displayName: '' } } });"
+    "</script></body></html>";
+const char kNavigatorCredentialsCreateUnsupportedAlgorithmPageHtml[] =
+    "<html><body><script>"
+    "navigator.credentials.create({ publicKey: { "
+    "challenge: new ArrayBuffer(0), "
+    "rp: { id: '127.0.0.1', name: '' },"
+    "user: { id: new ArrayBuffer(0), name: '', displayName: '' },"
+    "pubKeyCredParams: [{ type: 'public-key', alg: -257 }] } });"
+    "</script></body></html>";
+const char kNavigatorCredentialsCreateMultipleAlgorithmsPageHtml[] =
+    "<html><body><script>"
+    "navigator.credentials.create({ publicKey: { "
+    "challenge: new ArrayBuffer(0), "
+    "rp: { id: new ArrayBuffer(0), name: '' },"
+    "user: { id: new ArrayBuffer(0), name: '', displayName: '' },"
+    "pubKeyCredParams: [{ type: 'public-key', alg: -257 }, "
+    "{ type: 'public-key', alg: -7 }] } });"
     "</script></body></html>";
 const char kNavigatorCredentialsGetWithUserHandlePageHtml[] =
     "<html><body><script>"
@@ -324,6 +345,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   } else if (request.relative_url ==
              kNavigatorCredentialsCreateMissingRpIdUrl) {
     http_response->set_content(kNavigatorCredentialsCreateMissingRpIdPageHtml);
+  } else if (request.relative_url ==
+             kNavigatorCredentialsCreateUnsupportedAlgorithmUrl) {
+    http_response->set_content(
+        kNavigatorCredentialsCreateUnsupportedAlgorithmPageHtml);
+  } else if (request.relative_url ==
+             kNavigatorCredentialsCreateMultipleAlgorithmsUrl) {
+    http_response->set_content(
+        kNavigatorCredentialsCreateMultipleAlgorithmsPageHtml);
   } else if (request.relative_url == kNavigatorCredentialsGetUrl) {
     http_response->set_content(kNavigatorCredentialsGetPageHtml);
   } else if (request.relative_url == kNavigatorCredentialsConditionalGetUrl) {
@@ -516,6 +545,58 @@ TEST_F(PasskeyControllerJavaScriptTest,
   NSDictionary* rpEntity = body[kRpEntityKey];
   EXPECT_TRUE(rpEntity != nil);
   EXPECT_NSEQ(@"127.0.0.1", rpEntity[kIdKey]);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalCreateUnsupportedAlgorithmPassthrough) {
+  GURL URL =
+      server().GetURL(kNavigatorCredentialsCreateUnsupportedAlgorithmUrl);
+  ASSERT_TRUE(LoadUrl(URL));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        if (message_handler().lastReceivedMessage == nil) {
+          return NO;
+        }
+        NSDictionary* body = message_handler().lastReceivedMessage.body;
+        return [body[kEventKey] isEqualToString:kLogCreateRequestEvent];
+      }));
+
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  NSArray* allKeys = body.allKeys;
+  EXPECT_EQ(allKeys.count, 1ul);
+  EXPECT_TRUE([allKeys containsObject:kEventKey]);
+
+  EXPECT_NSEQ(kLogCreateRequestEvent, body[kEventKey]);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalCreateMultipleAlgorithmsSupported) {
+  GURL URL = server().GetURL(kNavigatorCredentialsCreateMultipleAlgorithmsUrl);
+  ASSERT_TRUE(LoadUrl(URL));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        if (message_handler().lastReceivedMessage == nil) {
+          return NO;
+        }
+        NSDictionary* body = message_handler().lastReceivedMessage.body;
+        return [body[kEventKey] isEqualToString:kHandleCreateRequestEvent];
+      }));
+
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  NSArray* allKeys = body.allKeys;
+  EXPECT_EQ(allKeys.count, 8ul);
+  EXPECT_TRUE([allKeys containsObject:kEventKey]);
+  EXPECT_TRUE([allKeys containsObject:kFrameIdKey]);
+  EXPECT_TRUE([allKeys containsObject:kRequestIdKey]);
+  EXPECT_TRUE([allKeys containsObject:kRequestKey]);
+  EXPECT_TRUE([allKeys containsObject:kRpEntityKey]);
+  EXPECT_TRUE([allKeys containsObject:kUserEntityKey]);
+  EXPECT_TRUE([allKeys containsObject:kExcludeCredentialsKey]);
+  EXPECT_TRUE([allKeys containsObject:kExtensionsKey]);
+
+  EXPECT_NSEQ(kHandleCreateRequestEvent, body[kEventKey]);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
