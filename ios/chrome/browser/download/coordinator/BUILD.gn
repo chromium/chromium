@@ -6,6 +6,9 @@ source_set("coordinator") {
   sources = [
     "ar_quick_look_coordinator.h",
     "ar_quick_look_coordinator.mm",
+    "ar_quick_look_mediator.h",
+    "ar_quick_look_mediator.mm",
+    "ar_quick_look_mediator_delegate.h",
     "download_file_preview_coordinator.h",
     "download_file_preview_coordinator.mm",
     "download_list_coordinator.h",
@@ -75,6 +78,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ar_quick_look_coordinator_unittest.mm",
+    "ar_quick_look_mediator_unittest.mm",
     "download_file_preview_coordinator_unittest.mm",
     "download_list_coordinator_unittest.mm",
     "download_list_mediator_unittest.mm",
@@ -107,6 +111,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",

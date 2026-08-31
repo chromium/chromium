@@ -89,6 +89,8 @@ class ARQuickLookTabHelper
   void WasShown(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
 
   // Previews the downloaded USDZ file or confirms the download if download has
   // not started.

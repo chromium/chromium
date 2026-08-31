@@ -577,8 +577,8 @@ TEST_F(ARQuickLookTabHelperTest, DeferARPreviewWhenHidden) {
 }
 
 // Tests that an AR model preview deferred while the WebState was hidden is
-// dropped upon observing a cross-document navigation.
-TEST_F(ARQuickLookTabHelperTest, DeferredARDroppedOnNavigation) {
+// dropped upon observing a cross-document navigation start.
+TEST_F(ARQuickLookTabHelperTest, DeferredARDroppedOnNavigationStart) {
   web_state_.WasHidden();
 
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
@@ -597,6 +597,35 @@ TEST_F(ARQuickLookTabHelperTest, DeferredARDroppedOnNavigation) {
   web::FakeNavigationContext context;
   context.SetIsSameDocument(false);
   web_state_.OnNavigationStarted(&context);
+
+  web_state_.WasShown();
+  EXPECT_EQ(0U, delegate().fileURLs.count);
+}
+
+// Tests that an AR model preview deferred during provisional navigation is
+// dropped upon observing a committed cross-document navigation finish.
+TEST_F(ARQuickLookTabHelperTest, DeferredARDroppedOnNavigationFinish) {
+  web_state_.WasHidden();
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationStarted(&context);
+
+  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
+  task->SetGeneratedFileName(base::FilePath(kTestUsdzFileName));
+  web::FakeDownloadTask* task_ptr = task.get();
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
+  task_ptr->SetDone(true);
+  EXPECT_EQ(0U, delegate().fileURLs.count);
+
+  web_state_.OnNavigationFinished(&context);
 
   web_state_.WasShown();
   EXPECT_EQ(0U, delegate().fileURLs.count);

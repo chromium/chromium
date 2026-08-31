@@ -94,6 +94,25 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
                       grey_accessibilityID(@"QLPreviewControllerView")];
 }
 
+// Tests that QLPreviewController is dismissed when web state navigation occurs.
+- (void)testDismissUsdzOnNavigation {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Good"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"good"];
+
+  // Verify QLPreviewControllerView is presented.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(@"QLPreviewControllerView")];
+
+  // Navigate to another page in the same tab.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  // Verify QLPreviewControllerView is dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"QLPreviewControllerView")]
+      assertWithMatcher:grey_nil()];
+}
+
 - (void)testDownloadUnauthorized {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Unauthorized"];
