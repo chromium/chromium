@@ -55,6 +55,7 @@ static_library("browser") {
     "in_memory_database.h",
     "in_memory_history_backend.cc",
     "in_memory_history_backend.h",
+    "journeys/history_backend_for_journeys_sync.h",
     "journeys/journey_row.cc",
     "journeys/journey_row.h",
     "journeys/journeys_database.cc",
