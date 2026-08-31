@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/browsing_data",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/ash/settings/pages/storage",

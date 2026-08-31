@@ -24,8 +24,8 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -421,7 +421,7 @@ void AppsSizeCalculator::UpdateBorealisAppsSize() {
   }
   vm_tools::concierge::ListVmDisksRequest request;
   request.set_cryptohome_id(
-      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile_));
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_vm_name("borealis");
   ash::ConciergeClient::Get()->ListVmDisks(
@@ -480,7 +480,7 @@ void CrostiniSizeCalculator::PerformCalculation() {
 
   vm_tools::concierge::ListVmDisksRequest request;
   request.set_cryptohome_id(
-      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile_));
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   ash::ConciergeClient::Get()->ListVmDisks(
       std::move(request),
