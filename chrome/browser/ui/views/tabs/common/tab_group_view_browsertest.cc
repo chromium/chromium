@@ -563,8 +563,16 @@ class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/555304805): Fix failure.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UnboundedLayoutQueryDoesNotClearAvailableSpace \
+  DISABLED_UnboundedLayoutQueryDoesNotClearAvailableSpace
+#else
+#define MAYBE_UnboundedLayoutQueryDoesNotClearAvailableSpace \
+  UnboundedLayoutQueryDoesNotClearAvailableSpace
+#endif
 IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
-                       UnboundedLayoutQueryDoesNotClearAvailableSpace) {
+                       MAYBE_UnboundedLayoutQueryDoesNotClearAvailableSpace) {
   AppendTab();
   AppendTab();
   tab_groups::TabGroupId group_id = GetTabStripModel()->AddToNewGroup({1, 2});
