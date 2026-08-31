@@ -518,6 +518,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ash/login:test_support",
         "//chrome/browser/ash/net",
+        "//chromeos/ash/components/browser_context_helper",
         "//chromeos/dbus/regmon",
       ]
     }
