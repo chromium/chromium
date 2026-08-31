@@ -624,6 +624,12 @@ export class SettingsAppearancePageElement extends
     return !this.showOrganizerPanelEnabled_ && this.showEverythingMenuEnabled_;
   }
 
+  protected onTabScrollAutoShowOnOverflowChange_(event: CustomEvent<boolean>) {
+    this.metricsBrowserProxy_.recordAction(
+        event.detail ? 'Settings_Appearance_TabScrollButtons_Pinned' :
+                       'Settings_Appearance_TabScrollButtons_Unpinned');
+  }
+
   protected onShowTabSearchButtonChange_(event: CustomEvent<boolean>) {
     this.metricsBrowserProxy_.recordAction(
         event.detail ? 'TabStripComboButton.TabSearch.Pinned' :

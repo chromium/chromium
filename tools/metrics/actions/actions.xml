@@ -32923,6 +32923,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings_Appearance_TabScrollButtons_Pinned">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user pinned the horizontal tab scroll buttons in the appearance settings
+    page so they automatically show when tabs overflow and become scrollable.
+  </description>
+</action>
+
+<action name="Settings_Appearance_TabScrollButtons_Unpinned">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user unpinned the horizontal tab scroll buttons in the appearance
+    settings page so they won't automatically show when tabs overflow and become
+    scrollable.
+  </description>
+</action>
+
 <action name="Settings_BookmarkBar_AlwaysHide">
   <owner>jennserrano@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

@@ -203,7 +203,8 @@ export function getHtml(this: SettingsAppearancePageElement) {
           ?hidden="${!!this.verticalTabsEnabledPref_?.value}">
         <settings-toggle-button id="tabScrollAutoShowOnOverflow"
             pref-key="tab_scroll_buttons.pinned_to_tabstrip"
-            label="$i18n{tabScrollAutoShowOnOverflow}">
+            label="$i18n{tabScrollAutoShowOnOverflow}"
+            @change="${this.onTabScrollAutoShowOnOverflowChange_}">
         </settings-toggle-button>
       </div>
     ` : ''}
