@@ -3226,6 +3226,13 @@ if (!is_android) {
         "//chrome/browser/ui/views/profiles:profile_picker_web_contents_host",
         "//chrome/browser/ui/webui:profile_helper",
       ]
+      if (enable_dice_support) {
+        deps += [
+          "//chrome/browser/ui/views/profiles:profile_management_step_controller",
+          "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider",
+          "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
+        ]
+      }
     }
 
     if (is_chrome_for_testing) {
@@ -8412,6 +8419,7 @@ if (!is_android) {
       public_deps += [ "//chrome/browser/ui/profiles" ]
       deps += [
         "//chrome/browser/ui/profiles:test_support",
+        "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
         "//chrome/browser/ui/views/profiles:profile_picker_view_test_utils",
       ]
     }
@@ -8985,6 +8993,7 @@ if (!is_android && !is_chromeos_device) {
     if (enable_dice_support && (is_mac || is_linux || is_win)) {
       deps += [
         "//chrome/browser/ui/signin",
+        "//chrome/browser/ui/views/profiles:profile_management_flow_controller",
         "//chrome/browser/ui/webui/signin/signout_confirmation",
       ]
     }

@@ -252,6 +252,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     public_deps = [
+      ":profile_management_flow_controller",
       ":profile_picker_web_contents_host",
       "//base",
       "//chrome/browser/ui",
@@ -263,6 +264,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     deps = [
+      ":profile_management_step_controller",
       ":profile_management_types",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_test_util",
@@ -369,4 +371,70 @@ source_set("batch_upload_dialog_view") {
     "//ui/gfx",
     "//ui/views/controls/webview",
   ]
+}
+
+source_set("profile_picker_feature_promo_controller") {
+  public = [ "profile_picker_feature_promo_controller.h" ]
+  public_deps = [
+    "//base",
+    "//components/user_education/common",
+  ]
+}
+
+if (enable_dice_support) {
+  source_set("profile_picker_sign_in_provider") {
+    public = [ "profile_picker_sign_in_provider.h" ]
+    public_deps = [
+      ":profile_management_types",
+      ":profile_picker_web_contents_host",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+      "//components/signin/public/base",
+      "//content/public/browser",
+    ]
+  }
+
+  source_set("profile_picker_reauth_provider") {
+    public = [ "profile_picker_reauth_provider.h" ]
+    public_deps = [
+      ":profile_management_types",
+      ":profile_picker_web_contents_host",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//components/signin/public/identity_manager",
+      "//content/public/browser",
+      "//google_apis",
+    ]
+  }
+
+  source_set("profile_management_step_controller") {
+    public = [ "profile_management_step_controller.h" ]
+    public_deps = [
+      ":profile_management_types",
+      ":profile_picker_sign_in_provider",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engine_choice",
+      "//components/signin/public/base:signin_buildflags",
+      "//url",
+    ]
+  }
+
+  source_set("profile_management_flow_controller") {
+    public = [ "profile_management_flow_controller.h" ]
+    public_deps = [
+      ":profile_management_types",
+      ":profile_picker_toolbar",
+      ":profile_picker_web_contents_host",
+      "//base",
+      "//chrome/browser/ui/profiles",
+      "//components/web_modal",
+      "//content/public/browser",
+    ]
+  }
 }
