@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -469,11 +468,9 @@ void CorsURLLoader::FollowRedirect(
                                       &forbidden_header)) {
     SCOPED_CRASH_KEY_STRING32("network", "forbidden_sec_header",
                               forbidden_header);
-    if (features::kRestrictForbiddenSecurityHeadersDump.Get()) {
-      mojo::ReportBadMessage(
-          "CorsURLLoader: Forbidden Sec- header from renderer in "
-          "FollowRedirect");
-    }
+    mojo::ReportBadMessage(
+        "CorsURLLoader: Forbidden Sec- header from renderer in "
+        "FollowRedirect");
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;
   }

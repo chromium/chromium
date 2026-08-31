@@ -2370,6 +2370,39 @@ TEST_F(CorsURLLoaderTest, SetProxyAuthorizationHeaderOnRedirectFails) {
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
 }
 
+TEST_F(CorsURLLoaderTest, ForbiddenSecHeaderOnRedirectFails) {
+  CreateLoaderAndStart(GURL("https://example.com/"),
+                       GURL("https://example.com/path"),
+                       mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", GURL("https://redirect.test/")));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_FALSE(client().has_received_completion());
+
+  ClearHasReceivedRedirect();
+  BadMessageTestHelper bad_message_helper;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader("Sec-Invalid", "attack");
+  FollowRedirect(std::move(headers_update_params));
+
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ElementsAre("CorsURLLoader: Forbidden Sec- header from renderer in "
+                  "FollowRedirect"));
+}
+
 TEST_F(CorsURLLoaderTest, SameOriginCredentialsModeWithoutInitiator) {
   // This test needs to simulate a factory used from the browser process,
   // because only the browser process may start requests with no

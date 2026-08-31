@@ -905,10 +905,8 @@ bool CorsURLLoaderFactory::IsValidRequest(
       ContainsForbiddenSecurityHeader(request.headers, &forbidden_header)) {
     SCOPED_CRASH_KEY_STRING32("network", "forbidden_sec_header",
                               forbidden_header);
-    if (features::kRestrictForbiddenSecurityHeadersDump.Get()) {
-      mojo::ReportBadMessage(
-          "CorsURLLoaderFactory: Forbidden Sec- header from renderer");
-    }
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: Forbidden Sec- header from renderer");
     return false;
   }
 

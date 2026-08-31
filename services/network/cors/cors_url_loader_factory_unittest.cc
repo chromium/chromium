@@ -557,32 +557,7 @@ TEST_F(NetworkBoundCorsURLLoaderFactoryTest, CorsPreflightRequestAreAllowed) {
   }
 }
 
-TEST_F(CorsURLLoaderFactoryTest, ForbiddenSecHeader_NoDump) {
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.method = net::HttpRequestHeaders::kGetMethod;
-  request.url = test_server()->GetURL("/echoall");
-  request.request_initiator = url::Origin::Create(request.url);
-  request.headers.SetHeader("Sec-Invalid", "value");
-
-  CreateLoaderAndStart(request);
-
-  test_cors_loader_clients().back()->RunUntilComplete();
-  EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
-            test_cors_loader_clients().back()->completion_status().error_code);
-
-  FlushFactoryForTesting();
-  EXPECT_TRUE(IsFactoryConnected());
-}
-
-TEST_F(CorsURLLoaderFactoryTest, ForbiddenSecHeader_Dump) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      network::features::kRestrictForbiddenSecurityHeaders,
-      {{network::features::kRestrictForbiddenSecurityHeadersDump.name,
-        "true"}});
-
+TEST_F(CorsURLLoaderFactoryTest, ForbiddenSecHeader) {
   ResourceRequest request;
   request.mode = mojom::RequestMode::kCors;
   request.credentials_mode = mojom::CredentialsMode::kOmit;

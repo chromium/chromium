@@ -6,10 +6,7 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
-#include "base/containers/fixed_flat_map.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -20,7 +17,6 @@
 #include "net/http/http_util.h"
 #include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -144,12 +140,6 @@ bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers) {
 
 bool ContainsForbiddenSecurityHeader(net::HttpRequestHeaders& headers,
                                      std::string* out_forbidden_header_name) {
-  static const bool enabled =
-      base::FeatureList::IsEnabled(features::kRestrictForbiddenSecurityHeaders);
-  if (!enabled) {
-    return false;
-  }
-
   std::map<std::string, std::string> headers_to_truncate;
 
   auto sanitize_and_check_security_header = [&](std::string_view name,

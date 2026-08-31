@@ -16961,25 +16961,6 @@
             ]
         }
     ],
-    "RestrictForbiddenSecurityHeaders": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260629",
-                    "enable_features": [
-                        "RestrictForbiddenSecurityHeaders"
-                    ]
-                }
-            ]
-        }
-    ],
     "RestrictPendingInputEventTypeToBlockMainThread": [
         {
             "platforms": [

@@ -358,11 +358,6 @@ BASE_DECLARE_FEATURE(kDelayInitialDohProbeTimeout);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kDelayInitialDohProbeTimeoutParam);
 
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kRestrictForbiddenSecurityHeaders);
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE_PARAM(bool, kRestrictForbiddenSecurityHeadersDump);
-
 // When enabled, sending to a multicast address via Direct Sockets requires the
 // 'direct-sockets-multicast' Permissions Policy.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
