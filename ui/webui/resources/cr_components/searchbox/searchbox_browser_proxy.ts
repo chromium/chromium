@@ -43,7 +43,7 @@ export function createAutocompleteMatch(
     isNoncannedAimSuggestion: false,
     removeButtonA11yLabel: '',
     type: '',
-    isRichSuggestion: false,
+    isTwoRowSuggestion: false,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,

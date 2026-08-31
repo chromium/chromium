@@ -397,10 +397,10 @@ export class SearchboxIconElement extends CrLitElement {
       return `url(${this.defaultIcon})`;
     }
     // Enterprise search aggregator people, starter pack/featured enterprise
-    // search suggestions, top-chrome searchbox (WebUI Omnibox), and non-rich
+    // search suggestions, top-chrome searchbox (WebUI Omnibox), and non-two-row
     // suggestions should show icon even in searchbox.
     if (this.match &&
-        (!this.match.isRichSuggestion || this.match.type === STARTER_PACK ||
+        (!this.match.isTwoRowSuggestion || this.match.type === STARTER_PACK ||
          this.match.type === FEATURED_ENTERPRISE_SEARCH ||
          this.match.isEnterpriseSearchAggregatorPeopleType ||
          this.isTopChromeSearchbox_ || !this.inSearchbox)) {

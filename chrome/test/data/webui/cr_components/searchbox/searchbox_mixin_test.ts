@@ -975,7 +975,6 @@ suite('SearchboxMixinTest', () => {
     assertTrue(matchEls[0]!.hasAttribute('selected'));
   });
 
-
   test('autocomplete response', async () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, '      hello world');
@@ -1332,7 +1331,7 @@ suite('SearchboxMixinTest', () => {
 
   test('match calculator answer type', async () => {
     const mockInput = element.getInputElement();
-    const matches = [createCalculatorMatch({isRichSuggestion: true})];
+    const matches = [createCalculatorMatch({isTwoRowSuggestion: true})];
 
     await simulateUserTextInput(mockInput, '2 + 3');
 

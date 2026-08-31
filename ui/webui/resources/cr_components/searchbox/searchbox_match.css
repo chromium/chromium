@@ -219,22 +219,22 @@
   padding-inline-end: 4px;
 }
 
-:host([is-rich-suggestion]) #text-container {
+:host([is-two-row-suggestion]) #text-container {
   align-items: flex-start;
   flex-direction: column;
 }
 
-:host([is-rich-suggestion]) #separator {
+:host([is-two-row-suggestion]) #separator {
   display: none;
 }
 
-:host([is-rich-suggestion]) #contents,
-:host([is-rich-suggestion]) #description {
+:host([is-two-row-suggestion]) #contents,
+:host([is-two-row-suggestion]) #description {
   width: 100%;
 }
 
-/* Deemphasizes description for rich suggestions. */
-:host([is-rich-suggestion]) #description {
+/* Deemphasizes description for two-row suggestions. */
+:host([is-two-row-suggestion]) #description {
   font-size: .875em;
 }
 

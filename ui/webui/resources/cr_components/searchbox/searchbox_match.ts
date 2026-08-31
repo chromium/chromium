@@ -122,7 +122,7 @@ export class SearchboxMatchElement extends CrLitElement {
        * Whether the match should be rendered in a two-row layout. Currently
        * limited to matches that feature an image, calculator, and answers.
        */
-      isRichSuggestion: {
+      isTwoRowSuggestion: {
         type: Boolean,
         reflect: true,
       },
@@ -198,7 +198,7 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor hasImage: boolean = false;
   accessor hasKeywordChip: boolean = false;
   accessor isEntitySuggestion: boolean = false;
-  accessor isRichSuggestion: boolean = false;
+  accessor isTwoRowSuggestion: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
   accessor selection: OmniboxPopupSelection = kDefaultSelection;
   accessor matchIndex: number = -1;
@@ -244,7 +244,7 @@ export class SearchboxMatchElement extends CrLitElement {
       this.hasImage = this.computeHasImage_();
       this.isContextualSuggestion_ = this.computeIsContextualSuggestion_();
       this.isEntitySuggestion = this.computeIsEntitySuggestion_();
-      this.isRichSuggestion = this.computeIsRichSuggestion_();
+      this.isTwoRowSuggestion = this.computeIsTwoRowSuggestion_();
       this.removeButtonAriaLabel_ = this.computeRemoveButtonAriaLabel_();
       this.separatorText_ = this.computeSeparatorText_();
       this.tailSuggestPrefix_ = this.computeTailSuggestPrefix_();
@@ -455,11 +455,11 @@ export class SearchboxMatchElement extends CrLitElement {
     return this.match && this.match.type === ENTITY_MATCH_TYPE;
   }
 
-  private computeIsRichSuggestion_(): boolean {
+  private computeIsTwoRowSuggestion_(): boolean {
     // When the searchbox is embedded in the top-chrome (i.e. Omnibox), all
     // suggestions should be rendered using a one-line layout.
     return !this.isTopChromeSearchbox_ && this.match &&
-        this.match.isRichSuggestion;
+        this.match.isTwoRowSuggestion;
   }
 
   private computeRemoveButtonAriaLabel_(): string {

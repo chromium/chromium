@@ -988,7 +988,7 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->show_contextual_description = false;
   mojom_match->type = AutocompleteMatchType::ToString(match.type);
   mojom_match->supports_deletion = match.SupportsDeletion();
-  mojom_match->is_rich_suggestion =
+  mojom_match->is_two_row_suggestion =
       !mojom_match->image_url.empty() ||
       match.type == AutocompleteMatchType::CALCULATOR ||
       match.enterprise_search_aggregator_type ==

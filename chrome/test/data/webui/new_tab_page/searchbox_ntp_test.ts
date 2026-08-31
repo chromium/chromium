@@ -607,7 +607,7 @@ suite('SearchboxTest', () => {
             iconPath: 'clock.svg',
             imageUrl: 'https://gstatic.com/',
             imageDominantColor: '#757575',
-            isRichSuggestion: true,
+            isTwoRowSuggestion: true,
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(
@@ -766,7 +766,7 @@ suite('SearchboxTest', () => {
             iconPath: 'clock.svg',
             imageUrl: 'https://gstatic.com/',
             imageDominantColor: '#757575',
-            isRichSuggestion: true,
+            isTwoRowSuggestion: true,
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(

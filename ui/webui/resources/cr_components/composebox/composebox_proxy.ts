@@ -35,7 +35,7 @@ export function createAutocompleteMatch(
     removeButtonA11yLabel: '',
     type: '',
     isContextualSuggestion: false,
-    isRichSuggestion: false,
+    isTwoRowSuggestion: false,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,
