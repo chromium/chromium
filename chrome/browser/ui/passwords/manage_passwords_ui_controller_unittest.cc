@@ -154,8 +154,17 @@ class TestPasswordManagerClient
               (override));
 #endif
 
+  void SetAccountPasswordStore(
+      scoped_refptr<MockPasswordStoreInterface> store) {
+    mock_account_store_ = std::move(store);
+  }
+
   MockPasswordStoreInterface* GetProfilePasswordStore() const override {
     return mock_profile_store_.get();
+  }
+
+  MockPasswordStoreInterface* GetAccountPasswordStore() const override {
+    return mock_account_store_.get();
   }
 
   const syncer::SyncService* GetSyncService() const override {
@@ -165,6 +174,7 @@ class TestPasswordManagerClient
  private:
   syncer::TestSyncService sync_service_;
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_account_store_;
 };
 
 // This subclass is used to disable some code paths which are not essential for
@@ -597,7 +607,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedAfterErrorResolution) {
   // error state didn't change. In this case the password should remain in the
   // pending state.
   controller()->OnErrorStateChanged(
-      /*unused source store:*/ nullptr,
+      client().GetProfilePasswordStore(),
       password_manager::ActionableError::kTrustedVaultKeyNeeded);
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
@@ -608,7 +618,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedAfterErrorResolution) {
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
       .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
   controller()->OnErrorStateChanged(
-      /*unused source store:*/ nullptr,
+      client().GetProfilePasswordStore(),
       password_manager::ActionableError::kNoError);
   WaitForPasswordStore();
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
@@ -654,12 +664,49 @@ TEST_F(ManagePasswordsUIControllerTest,
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
       .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
   controller()->OnErrorStateChanged(
-      /*unused source store:*/ nullptr,
+      client().GetProfilePasswordStore(),
       password_manager::ActionableError::kNoError);
 
   // We expect the pending state in this case.
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       OnErrorStateChangedIgnoresNonRelevantStore) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+
+  std::vector<PasswordForm> best_matches;
+  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
+      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  EXPECT_CALL(*test_form_manager,
+              GetPasswordStoreForSaving(Eq(submitted_form())))
+      .WillRepeatedly(
+          Return(password_manager::PasswordForm::Store::kProfileStore));
+
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+
+  auto account_store = base::MakeRefCounted<MockPasswordStoreInterface>();
+  client().SetAccountPasswordStore(account_store);
+
+  // Error state changes from non-relevant store (account store when saving to
+  // profile store) should be ignored and the bubble must remain open.
+  controller()->OnErrorStateChanged(
+      account_store.get(),
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+
+  // Error state changes from the relevant store (profile store) should cause
+  // the bubble to be hidden to avoid showing stale UI.
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {

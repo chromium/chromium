@@ -79,6 +79,7 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -119,6 +120,7 @@ int ManagePasswordsUIController::save_fallback_timeout_in_seconds_ = 90;
 namespace {
 
 using Logger = autofill::SavePasswordProgressLogger;
+using enum password_manager::PasswordForm::Store;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Should be kept in sync with constant declared in
@@ -1614,11 +1616,16 @@ bool ManagePasswordsUIController::IsSavingBlockedByTrustedVaultError() const {
   }
   return false;
 }
+
 void ManagePasswordsUIController::OnErrorStateChanged(
-    password_manager::PasswordStoreInterface* /*store*/,
+    password_manager::PasswordStoreInterface* store,
     password_manager::ActionableError new_state) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSaveInContextErrorResolution)) {
+    if (!IsStoreUsedForSavingPendingCredentials(store)) {
+      return;
+    }
+
     if (save_password_after_trusted_vault_error_resolution_ &&
         new_state == password_manager::ActionableError::kNoError) {
       SavePasswordAfterTrustedVaultErrorResolution();
@@ -1634,6 +1641,28 @@ void ManagePasswordsUIController::OnErrorStateChanged(
       }
     }
   }
+}
+
+bool ManagePasswordsUIController::IsStoreUsedForSavingPendingCredentials(
+    password_manager::PasswordStoreInterface* store) const {
+  password_manager::PasswordFormManagerForUI* form_manager =
+      passwords_data_.form_manager();
+  if (!form_manager || !store) {
+    return false;
+  }
+  // It might be that the credential is updated in both stores. In this case
+  // `store_for_saving` will be the enum value with both bits set (the account
+  // and the profile store bits).
+  password_manager::PasswordForm::Store store_for_saving =
+      form_manager->GetPasswordStoreForSaving(
+          form_manager->GetPendingCredentials());
+  if (store == passwords_data_.client()->GetProfilePasswordStore()) {
+    return (store_for_saving & kProfileStore) == kProfileStore;
+  }
+  if (store == passwords_data_.client()->GetAccountPasswordStore()) {
+    return (store_for_saving & kAccountStore) == kAccountStore;
+  }
+  return false;
 }
 
 void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {

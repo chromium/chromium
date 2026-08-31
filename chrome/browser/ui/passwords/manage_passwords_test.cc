@@ -303,6 +303,9 @@ ManagePasswordsTest::GetAccountPasswordStore() {
 std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
     password_manager::PasswordStoreInterface* profile_store,
     password_manager::PasswordStoreInterface* account_store) {
+  ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageActive)
+      .WillByDefault(Return(account_store != nullptr));
+
   autofill::FormData observed_form;
   observed_form.set_url(password_form_.url);
   autofill::FormFieldData field;

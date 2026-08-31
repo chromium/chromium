@@ -345,6 +345,11 @@ class ManagePasswordsUIController
   // Returns whether the current site is explicitly blocklisted.
   bool IsExplicitlyBlocklisted() const;
 
+  // Returns whether the specified store is used for saving the pending
+  // credentials.
+  bool IsStoreUsedForSavingPendingCredentials(
+      password_manager::PasswordStoreInterface* store) const;
+
   // Returns the timeout for the manual save fallback.
   static base::TimeDelta GetTimeoutForSaveFallback();
 
