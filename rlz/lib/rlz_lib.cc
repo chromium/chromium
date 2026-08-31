@@ -100,6 +100,8 @@ bool IsGoodRlzChar(const char ch) {
 // This function will remove bad rlz chars and also limit the max rlz to some
 // reasonable size.  It also assumes that normalized_rlz is at least
 // kMaxRlzLength+1 long.
+// TODO(crbug.com/351564777): Modernize NormalizeRlz to accept std::string_view
+// and return std::string.
 void NormalizeRlz(const char* raw_rlz, char* normalized_rlz) {
   size_t index = 0;
   for (; raw_rlz[index] != 0 && index < rlz_lib::kMaxRlzLength; ++index) {
@@ -550,6 +552,8 @@ bool ParsePingResponse(Product product, const char* response) {
   return true;
 }
 
+// TODO(crbug.com/351564777): Modernize GetPingParams to return
+// std::optional<std::string> instead of writing to a raw char buffer.
 bool GetPingParams(Product product, const AccessPoint* access_points,
                    char* cgi, size_t cgi_size) {
   if (!cgi || cgi_size <= 0) {
@@ -593,11 +597,10 @@ bool GetPingParams(Product product, const AccessPoint* access_points,
     }
 
 #if BUILDFLAG(IS_WIN)
-    // Report the DCC too if not empty. DCCs are windows-only.
-    char dcc[kMaxDccLength + 1];
-    dcc[0] = 0;
-    if (GetMachineDealCode(dcc, std::size(dcc)) && dcc[0])
-      base::StringAppendF(&cgi_string, "&%s=%s", kDccCgiVariable, dcc);
+    // Report the DCC too if present. DCCs are windows-only.
+    if (std::optional<std::string> dcc = GetMachineDealCode()) {
+      base::StringAppendF(&cgi_string, "&%s=%s", kDccCgiVariable, dcc->c_str());
+    }
 #endif
   }
 

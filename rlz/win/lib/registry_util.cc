@@ -9,7 +9,6 @@
 
 #include <windows.h>
 
-#include "base/compiler_specific.h"
 #include "base/process/process_info.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -19,29 +18,20 @@
 
 namespace rlz_lib {
 
-bool RegKeyReadValue(const base::win::RegKey& key, const wchar_t* name,
-                     char* value, size_t* value_size) {
-  value[0] = 0;
-
+std::optional<std::string> RegKeyReadValue(const base::win::RegKey& key,
+                                           const wchar_t* name) {
   std::wstring value_string;
   if (key.ReadValue(name, &value_string) != ERROR_SUCCESS) {
-    return false;
-  }
-
-  if (value_string.length() > *value_size) {
-    *value_size = value_string.length();
-    return false;
+    return std::nullopt;
   }
 
   // Note that RLZ string are always ASCII by design.
-  UNSAFE_TODO(
-      strncpy(value, base::WideToUTF8(value_string).c_str(), *value_size));
-  UNSAFE_TODO(value[*value_size - 1]) = 0;
-  return true;
+  return base::WideToUTF8(value_string);
 }
 
-bool RegKeyWriteValue(base::win::RegKey* key, const wchar_t* name,
-                      const char* value) {
+bool RegKeyWriteValue(base::win::RegKey* key,
+                      const wchar_t* name,
+                      std::string_view value) {
   std::wstring value_string(base::ASCIIToWide(value));
   return key->WriteValue(name, value_string.c_str()) == ERROR_SUCCESS;
 }

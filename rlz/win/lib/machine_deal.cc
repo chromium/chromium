@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -33,8 +33,9 @@ const wchar_t kDccValueName[]             = L"DCC";
 // We will be more liberal and allow some additional chars, but not url meta
 // chars.
 bool IsGoodDccChar(char ch) {
-  if (base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch))
+  if (base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch)) {
     return true;
+  }
 
   switch (ch) {
     case '_':
@@ -58,64 +59,63 @@ bool IsGoodDccChar(char ch) {
 }
 
 // This function will remove bad rlz chars and also limit the max rlz to some
-// reasonable size. It also assumes that normalized_dcc is at least
-// kMaxDccLength+1 long.
-void NormalizeDcc(const char* raw_dcc, char* normalized_dcc) {
-  size_t index = 0;
-  for (; UNSAFE_TODO(raw_dcc[index]) != 0 && index < rlz_lib::kMaxDccLength;
-       ++index) {
-    char current = UNSAFE_TODO(raw_dcc[index]);
-    if (IsGoodDccChar(current)) {
-      UNSAFE_TODO(normalized_dcc[index]) = current;
-    } else {
-      UNSAFE_TODO(normalized_dcc[index]) = '.';
-    }
+// reasonable size.
+std::string NormalizeDcc(std::string_view raw_dcc) {
+  std::string_view truncated = raw_dcc.substr(0, rlz_lib::kMaxDccLength);
+  std::string normalized;
+  normalized.reserve(truncated.size());
+  for (char ch : truncated) {
+    normalized.push_back(IsGoodDccChar(ch) ? ch : '.');
   }
-
-  UNSAFE_TODO(normalized_dcc[index]) = 0;
+  return normalized;
 }
 
-bool GetResponseLine(const char* response_text, int response_length,
-                     int* search_index, std::string* response_line) {
-  if (!response_line || !search_index || *search_index > response_length)
+// TODO(crbug.com/351564777): Refactor GetResponseLine and GetResponseValue to
+// return std::string_view slices and avoid intermediate string allocations.
+bool GetResponseLine(std::string_view response_text,
+                     size_t* search_index,
+                     std::string* response_line) {
+  if (!response_line || !search_index ||
+      *search_index >= response_text.size()) {
     return false;
+  }
 
   response_line->clear();
 
-  if (*search_index < 0)
-    return false;
-
-  int line_begin = *search_index;
-  const char* line_end = UNSAFE_TODO(strchr(response_text + line_begin, '\n'));
-
-  if (line_end == NULL || line_end - response_text > response_length) {
-    line_end = UNSAFE_TODO(response_text + response_length);
-    *search_index = -1;
-  } else {
-    *search_index = line_end - response_text + 1;
+  size_t line_begin = *search_index;
+  size_t line_end = response_text.find('\n', line_begin);
+  std::string_view line =
+      (line_end == std::string_view::npos)
+          ? response_text.substr(line_begin)
+          : response_text.substr(line_begin, line_end - line_begin);
+  if (!line.empty() && line.back() == '\r') {
+    line.remove_suffix(1);
   }
-
-  response_line->assign(UNSAFE_TODO(response_text + line_begin),
-                        line_end - response_text - line_begin);
+  *response_line = std::string(line);
+  *search_index = (line_end == std::string_view::npos) ? response_text.size()
+                                                       : line_end + 1;
   return true;
 }
 
 bool GetResponseValue(const std::string& response_line,
                       const std::string& response_key,
                       std::string* value) {
-  if (!value)
+  if (!value) {
     return false;
+  }
 
   value->clear();
 
   if (!base::StartsWith(response_line, response_key,
-                        base::CompareCase::SENSITIVE))
+                        base::CompareCase::SENSITIVE)) {
     return false;
+  }
 
   std::vector<std::string> tokens = base::SplitString(
       response_line, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (tokens.size() != 2)
+  if (tokens.size() != 2) {
     return false;
+  }
 
   // The first token is the key, the second is the value.  The value is already
   // trimmed for whitespace.
@@ -127,17 +127,15 @@ bool GetResponseValue(const std::string& response_line,
 
 namespace rlz_lib {
 
-bool MachineDealCode::Set(const char* dcc) {
+bool MachineDealCode::Set(std::string_view dcc) {
   LibMutex lock;
-  if (lock.failed())
+  if (lock.failed()) {
     return false;
-
-  // TODO: if (!ProcessInfo::CanWriteMachineKey()) return false;
+  }
 
   // Validate the new dcc value.
-  size_t length = strlen(dcc);
-  if (length >  kMaxDccLength) {
-    ASSERT_STRING("MachineDealCode::Set: DCC length is exceeds max allowed.");
+  if (dcc.size() > kMaxDccLength) {
+    ASSERT_STRING("MachineDealCode::Set: DCC length exceeds max allowed.");
     return false;
   }
 
@@ -150,12 +148,9 @@ bool MachineDealCode::Set(const char* dcc) {
     return false;
   }
 
-  char normalized_dcc[kMaxDccLength + 1];
-  NormalizeDcc(dcc, normalized_dcc);
-  VERIFY(length == strlen(normalized_dcc));
+  std::string normalized_dcc = NormalizeDcc(dcc);
 
-  // Write the DCC to HKLM.  Note that we need to include the null character
-  // when writing the string.
+  // Write the DCC to HKLM.
   if (!RegKeyWriteValue(&hklm_key, kDccValueName, normalized_dcc)) {
     ASSERT_STRING("MachineDealCode::Set: Could not write the DCC value");
     return false;
@@ -164,138 +159,122 @@ bool MachineDealCode::Set(const char* dcc) {
   return true;
 }
 
-bool MachineDealCode::GetNewCodeFromPingResponse(const char* response,
-    bool* has_new_dcc, char* new_dcc, int new_dcc_size) {
-  if (!has_new_dcc || !new_dcc || !new_dcc_size)
+bool MachineDealCode::GetNewCodeFromPingResponse(std::string_view response,
+                                                 bool* has_new_dcc,
+                                                 std::string* new_dcc) {
+  if (!has_new_dcc || !new_dcc) {
     return false;
+  }
 
   *has_new_dcc = false;
-  new_dcc[0] = 0;
+  new_dcc->clear();
 
   int response_length = -1;
-  if (!IsPingResponseValid(response, &response_length))
+  // TODO(crbug.com/351564777): Modernize IsPingResponseValid to accept
+  // std::string_view.
+  if (!IsPingResponseValid(std::string(response).c_str(), &response_length) ||
+      response_length < 0) {
     return false;
+  }
 
-  // Get the current DCC value to compare to later)
-  char stored_dcc[kMaxDccLength + 1];
-  if (!Get(stored_dcc, std::size(stored_dcc)))
-    stored_dcc[0] = 0;
+  // Get the current DCC value to compare to later.
+  std::optional<std::string> stored_dcc = Get();
 
-  int search_index = 0;
+  size_t search_index = 0;
+  std::string_view response_sub =
+      response.substr(0, static_cast<size_t>(response_length));
   std::string response_line;
   std::string new_dcc_value;
   bool old_dcc_confirmed = false;
   const std::string dcc_cgi(kDccCgiVariable);
   const std::string dcc_cgi_response(kSetDccResponseVariable);
-  while (GetResponseLine(response, response_length, &search_index,
-                         &response_line)) {
+  while (GetResponseLine(response_sub, &search_index, &response_line)) {
     std::string value;
 
     if (!old_dcc_confirmed &&
         GetResponseValue(response_line, dcc_cgi, &value)) {
       // This is the old DCC confirmation - should match value in registry.
-      if (value != stored_dcc)
+      if (value != stored_dcc.value_or("")) {
         return false;  // Corrupted DCC - ignore this response.
-      else
+      } else {
         old_dcc_confirmed = true;
+      }
       continue;
     }
 
     if (!(*has_new_dcc) &&
         GetResponseValue(response_line, dcc_cgi_response, &value)) {
       // This is the new DCC.
-      if (value.size() > kMaxDccLength) continue;  // Too long
+      if (value.size() > kMaxDccLength) {
+        continue;  // Too long
+      }
       *has_new_dcc = true;
       new_dcc_value = value;
     }
   }
 
-  old_dcc_confirmed |= (NULL == stored_dcc[0]);
+  old_dcc_confirmed |= !stored_dcc;
 
-  base::strlcpy(new_dcc, new_dcc_value.c_str(), new_dcc_size);
+  *new_dcc = new_dcc_value;
   return old_dcc_confirmed;
 }
 
-bool MachineDealCode::SetFromPingResponse(const char* response) {
+bool MachineDealCode::SetFromPingResponse(std::string_view response) {
   bool has_new_dcc = false;
-  char new_dcc[kMaxDccLength + 1];
+  std::string new_dcc;
 
-  bool response_valid = GetNewCodeFromPingResponse(response, &has_new_dcc,
-                                                   new_dcc, std::size(new_dcc));
+  bool response_valid =
+      GetNewCodeFromPingResponse(response, &has_new_dcc, &new_dcc);
 
-  if (response_valid && has_new_dcc)
+  if (response_valid && has_new_dcc) {
     return Set(new_dcc);
+  }
 
   return response_valid;
 }
 
-bool MachineDealCode::GetAsCgi(char* cgi, int cgi_size) {
-  if (!cgi || cgi_size <= 0) {
-    ASSERT_STRING("MachineDealCode::GetAsCgi: Invalid buffer");
-    return false;
+std::optional<std::string> MachineDealCode::GetAsCgi() {
+  std::optional<std::string> dcc = Get();
+  if (!dcc) {
+    return std::nullopt;
   }
-
-  cgi[0] = 0;
-
-  std::string cgi_arg;
-  base::StringAppendF(&cgi_arg, "%s=", kDccCgiVariable);
-  int cgi_arg_length = cgi_arg.size();
-
-  if (cgi_arg_length >= cgi_size) {
-    ASSERT_STRING("MachineDealCode::GetAsCgi: Insufficient buffer size");
-    return false;
-  }
-
-  base::strlcpy(cgi, cgi_arg.c_str(), cgi_size);
-
-  if (!Get(UNSAFE_TODO(cgi + cgi_arg_length), cgi_size - cgi_arg_length)) {
-    cgi[0] = 0;
-    return false;
-  }
-  return true;
+  return base::StrCat({kDccCgiVariable, "=", *dcc});
 }
 
-bool MachineDealCode::Get(char* dcc, int dcc_size) {
+std::optional<std::string> MachineDealCode::Get() {
   LibMutex lock;
-  if (lock.failed())
-    return false;
-
-  if (!dcc || dcc_size <= 0) {
-    ASSERT_STRING("MachineDealCode::Get: Invalid buffer");
-    return false;
+  if (lock.failed()) {
+    return std::nullopt;
   }
-
-  dcc[0] = 0;
 
   base::win::RegKey dcc_key(HKEY_LOCAL_MACHINE,
                             RlzValueStoreRegistry::GetWideLibKeyName().c_str(),
                             KEY_READ | KEY_WOW64_32KEY);
-  if (!dcc_key.Valid())
-    return false;  // no DCC key.
-
-  size_t size = dcc_size;
-  if (!RegKeyReadValue(dcc_key, kDccValueName, dcc, &size)) {
-    ASSERT_STRING("MachineDealCode::Get: Insufficient buffer size");
-    dcc[0] = 0;
-    return false;
+  if (!dcc_key.Valid()) {
+    return std::nullopt;  // no DCC key.
   }
 
-  return true;
+  std::optional<std::string> dcc = RegKeyReadValue(dcc_key, kDccValueName);
+  if (!dcc || dcc->empty()) {
+    return std::nullopt;
+  }
+
+  return dcc;
 }
 
 bool MachineDealCode::Clear() {
   base::win::RegKey dcc_key(HKEY_LOCAL_MACHINE,
                             RlzValueStoreRegistry::GetWideLibKeyName().c_str(),
                             KEY_READ | KEY_WRITE | KEY_WOW64_32KEY);
-  if (!dcc_key.Valid())
+  if (!dcc_key.Valid()) {
     return false;  // no DCC key.
+  }
 
   dcc_key.DeleteValue(kDccValueName);
 
   // Verify deletion.
-  wchar_t dcc[kMaxDccLength + 1];
-  DWORD dcc_size = std::size(dcc);
-  if (dcc_key.ReadValue(kDccValueName, dcc, &dcc_size, NULL) == ERROR_SUCCESS) {
+  std::wstring dcc;
+  if (dcc_key.ReadValue(kDccValueName, &dcc) == ERROR_SUCCESS) {
     ASSERT_STRING("MachineDealCode::Clear: Could not delete the DCC value.");
     return false;
   }

@@ -5,6 +5,7 @@
 #include "rlz/win/lib/rlz_value_store_registry.h"
 
 #include "base/compiler_specific.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -211,24 +212,33 @@ bool RlzValueStoreRegistry::WriteAccessPointRlz(AccessPoint access_point,
   return true;
 }
 
+// TODO(crbug.com/351564777): Modernize ReadAccessPointRlz to return
+// std::optional<std::string> instead of writing to a raw buffer.
 bool RlzValueStoreRegistry::ReadAccessPointRlz(AccessPoint access_point,
                                                char* rlz,
                                                size_t rlz_size) {
+  if (!rlz || rlz_size == 0) {
+    return false;
+  }
+
   const char* access_point_name = GetAccessPointName(access_point);
   if (!access_point_name)
     return false;
 
-  size_t size = rlz_size;
   base::win::RegKey key;
   GetAccessPointRlzsRegKey(KEY_READ, &key);
   std::wstring access_point_namew = base::ASCIIToWide(access_point_name);
-  if (!RegKeyReadValue(key, access_point_namew.c_str(), rlz, &size)) {
+  std::optional<std::string> rlz_str =
+      RegKeyReadValue(key, access_point_namew.c_str());
+  if (!rlz_str) {
     rlz[0] = 0;
-    if (size > rlz_size) {
-      ASSERT_STRING("GetAccessPointRlz: Insufficient buffer size");
-      return false;
-    }
+    return true;
   }
+  if (rlz_str->size() >= rlz_size) {
+    ASSERT_STRING("GetAccessPointRlz: Insufficient buffer size");
+    return false;
+  }
+  base::strlcpy(rlz, rlz_str->c_str(), rlz_size);
   return true;
 }
 
@@ -257,6 +267,8 @@ bool RlzValueStoreRegistry::UpdateExistingAccessPointRlz(
   return false;
 }
 
+// TODO(crbug.com/351564777): Modernize AddProductEvent to take
+// std::string_view instead of const char*.
 bool RlzValueStoreRegistry::AddProductEvent(Product product,
                                             const char* event_rlz) {
   std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
@@ -270,6 +282,8 @@ bool RlzValueStoreRegistry::AddProductEvent(Product product,
   return true;
 }
 
+// TODO(crbug.com/351564777): Modernize ReadProductEvents to return
+// std::vector<std::string> instead of taking an out-parameter.
 bool RlzValueStoreRegistry::ReadProductEvents(Product product,
                                              std::vector<std::string>* events) {
   // Open the events key.

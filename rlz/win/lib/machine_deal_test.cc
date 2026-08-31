@@ -36,39 +36,36 @@ TEST_F(MachineDealCodeTest, CreateMachineState) {
 
 TEST_F(MachineDealCodeTest, Set) {
   MachineDealCodeHelper::Clear();
-  char dcc_50[50];
-  dcc_50[0] = 0;
 
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
-
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("dcc_value", dcc_50);
+  EXPECT_EQ("dcc_value", rlz_lib::MachineDealCode::Get());
 
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value_2"));
+  EXPECT_EQ("dcc_value_2", rlz_lib::MachineDealCode::Get());
 
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("dcc_value_2", dcc_50);
+  // Overly long deal code should fail validation.
+  std::string too_long_dcc(rlz_lib::kMaxDccLength + 1, 'a');
+  EXPECT_FALSE(rlz_lib::MachineDealCode::Set(too_long_dcc));
+
+  // Invalid characters should be normalized to '.'.
+  EXPECT_TRUE(rlz_lib::MachineDealCode::Set("bad deal code!"));
+  EXPECT_EQ("bad.deal.code.", rlz_lib::MachineDealCode::Get());
 }
 
 TEST_F(MachineDealCodeTest, Get) {
   MachineDealCodeHelper::Clear();
-  char dcc_50[50], dcc_2[2];
-  dcc_50[0] = 0;
-  dcc_2[0] = 0;
 
-  EXPECT_FALSE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
+  EXPECT_EQ(std::nullopt, rlz_lib::MachineDealCode::Get());
 
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
+  EXPECT_EQ("dcc_value", rlz_lib::MachineDealCode::Get());
 
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("dcc_value", dcc_50);
-
-  EXPECT_FALSE(rlz_lib::MachineDealCode::Get(dcc_2, 2));
+  EXPECT_TRUE(rlz_lib::MachineDealCode::Set(""));
+  EXPECT_EQ(std::nullopt, rlz_lib::MachineDealCode::Get());
 }
 
 TEST_F(MachineDealCodeTest, SetFromPingResponse) {
   rlz_lib::MachineDealCode::Set("MyDCCode");
-  char dcc_50[50];
 
   // Bad responses
 
@@ -78,8 +75,7 @@ TEST_F(MachineDealCodeTest, SetFromPingResponse) {
     "crc32: 1B4D6BB3";
   EXPECT_FALSE(rlz_lib::MachineDealCode::SetFromPingResponse(
       kBadDccResponse));
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("MyDCCode", dcc_50);
+  EXPECT_EQ("MyDCCode", rlz_lib::MachineDealCode::Get());
 
   const char kBadCrcResponse[] =
     "dcc: MyDCCode \r\n"
@@ -87,8 +83,7 @@ TEST_F(MachineDealCodeTest, SetFromPingResponse) {
     "crc32: 90707106";
   EXPECT_FALSE(rlz_lib::MachineDealCode::SetFromPingResponse(
       kBadCrcResponse));
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("MyDCCode", dcc_50);
+  EXPECT_EQ("MyDCCode", rlz_lib::MachineDealCode::Get());
 
   // Good responses
 
@@ -97,8 +92,7 @@ TEST_F(MachineDealCodeTest, SetFromPingResponse) {
     "crc32: 35F2E717";
   EXPECT_TRUE(rlz_lib::MachineDealCode::SetFromPingResponse(
       kMissingSetResponse));
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("MyDCCode", dcc_50);
+  EXPECT_EQ("MyDCCode", rlz_lib::MachineDealCode::Get());
 
   const char kGoodResponse[] =
     "dcc: MyDCCode \r\n"
@@ -106,8 +100,7 @@ TEST_F(MachineDealCodeTest, SetFromPingResponse) {
     "crc32: C8540E02";
   EXPECT_TRUE(rlz_lib::MachineDealCode::SetFromPingResponse(
       kGoodResponse));
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("NewDCCode", dcc_50);
+  EXPECT_EQ("NewDCCode", rlz_lib::MachineDealCode::Get());
 
   const char kGoodResponse2[] =
     "set_dcc: NewDCCode2  \r\n"
@@ -115,8 +108,7 @@ TEST_F(MachineDealCodeTest, SetFromPingResponse) {
     "crc32: 60B6409A";
   EXPECT_TRUE(rlz_lib::MachineDealCode::SetFromPingResponse(
       kGoodResponse2));
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("NewDCCode2", dcc_50);
+  EXPECT_EQ("NewDCCode2", rlz_lib::MachineDealCode::Get());
 
   MachineDealCodeHelper::Clear();
   const char kGoodResponse3[] =
@@ -124,8 +116,7 @@ TEST_F(MachineDealCodeTest, SetFromPingResponse) {
     "crc32: 374C1C47";
   EXPECT_TRUE(rlz_lib::MachineDealCode::SetFromPingResponse(
       kGoodResponse3));
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("NewDCCode", dcc_50);
+  EXPECT_EQ("NewDCCode", rlz_lib::MachineDealCode::Get());
 
   MachineDealCodeHelper::Clear();
   const char kGoodResponse4[] =
@@ -134,23 +125,14 @@ TEST_F(MachineDealCodeTest, SetFromPingResponse) {
     "crc32: 0AB1FB39";
   EXPECT_TRUE(rlz_lib::MachineDealCode::SetFromPingResponse(
       kGoodResponse4));
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Get(dcc_50, 50));
-  EXPECT_STREQ("NewDCCode", dcc_50);
+  EXPECT_EQ("NewDCCode", rlz_lib::MachineDealCode::Get());
 }
 
 TEST_F(MachineDealCodeTest, GetAsCgi) {
   MachineDealCodeHelper::Clear();
-  char cgi_50[50], cgi_2[2];
-  cgi_50[0] = 0;
-  cgi_2[0] = 0;
 
-  EXPECT_FALSE(rlz_lib::MachineDealCode::GetAsCgi(cgi_50, 50));
-  EXPECT_STREQ("", cgi_50);
+  EXPECT_EQ(std::nullopt, rlz_lib::MachineDealCode::GetAsCgi());
 
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
-
-  EXPECT_TRUE(rlz_lib::MachineDealCode::GetAsCgi(cgi_50, 50));
-  EXPECT_STREQ("dcc=dcc_value", cgi_50);
-
-  EXPECT_FALSE(rlz_lib::MachineDealCode::GetAsCgi(cgi_2, 2));
+  EXPECT_EQ("dcc=dcc_value", rlz_lib::MachineDealCode::GetAsCgi());
 }

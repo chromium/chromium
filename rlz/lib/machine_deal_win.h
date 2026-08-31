@@ -7,6 +7,10 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "rlz/lib/rlz_api.h"
 
 // OEM Deal confirmation storage functions.
@@ -26,26 +30,28 @@ bool RLZ_LIB_API CreateMachineState(void);
 // initialization.
 // Access: HKLM write, or
 // HKCU read if rlz_lib::CreateMachineState() has been successfully called.
-bool RLZ_LIB_API SetMachineDealCode(const char* dcc);
+bool RLZ_LIB_API SetMachineDealCode(std::string_view dcc);
 
-// Get the DCC cgi argument string to append to a daily ping.
+// Get the DCC cgi argument string to append to a daily ping. Returns
+// std::nullopt if the DCC is missing or empty.
 // Should be used only by OEM deal trackers. Applications should use the
 // GetMachineDealCode method which has an AccessPoint parameter.
 // Access: HKLM read.
-bool RLZ_LIB_API GetMachineDealCodeAsCgi(char* cgi, size_t cgi_size);
+std::optional<std::string> RLZ_LIB_API GetMachineDealCodeAsCgi();
 
-// Get the DCC value stored in registry.
+// Get the DCC value stored in registry. Returns std::nullopt if the value is
+// missing or empty.
 // Should be used only by OEM deal trackers. Applications should use the
 // GetMachineDealCode method which has an AccessPoint parameter.
 // Access: HKLM read.
-bool RLZ_LIB_API GetMachineDealCode(char* dcc, size_t dcc_size);
+std::optional<std::string> RLZ_LIB_API GetMachineDealCode();
 
 // Parses a ping response, checks if it is valid and sets the machine DCC
 // from the response. The ping must also contain the current DCC value in
 // order to be considered valid.
 // Access: HKLM write;
 //         HKCU write if CreateMachineState() has been successfully called.
-bool RLZ_LIB_API SetMachineDealCodeFromPingResponse(const char* response);
+bool RLZ_LIB_API SetMachineDealCodeFromPingResponse(std::string_view response);
 
 }  // namespace rlz_lib
 
