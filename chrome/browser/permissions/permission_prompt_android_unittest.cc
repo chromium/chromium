@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -62,7 +64,7 @@ TEST_F(PermissionPromptAndroidTest, TabCloseMiniInfoBarClosesCleanly) {
 
   // At this point close the permission prompt (after the infobar has been
   // removed already).
-  permission_request_manager()->Deny();
+  permission_request_manager()->Deny(/*prompt_options=*/std::monostate());
 
   // If no DCHECK has been hit, and the infobar has been closed, the test
   // passes.

@@ -292,9 +292,11 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "permission_blocked_message_delegate_android_unittest.cc",
+      "permission_prompt_android_unittest.cc",
       "permission_update_message_controller_android_unittest.cc",
     ]
     deps += [
+      "//components/infobars/content",
       "//components/messages/android:test_support",
       "//components/ukm:test_support",
     ]
