@@ -3721,8 +3721,10 @@ if (!is_android) {
         "//chrome/browser/ui/views:content_setting_bubble_contents",
         "//chrome/browser/ui/views:external_protocol_dialog_test_support",
         "//chrome/browser/ui/views:hung_renderer_view",
+        "//chrome/browser/ui/views:incognito_clear_browsing_data_dialog",
         "//chrome/browser/ui/views:javascript_tab_modal_dialog_view_views",
         "//chrome/browser/ui/views:media_picker_utils",
+        "//chrome/browser/ui/views:upgrade_notification_controller",
         "//chrome/browser/ui/views/autofill/autofill_ai",
         "//chrome/browser/ui/views/autofill/payments:autofill_error_dialog_view_native_views",
         "//chrome/browser/ui/views/autofill/payments:bnpl_tos_view_desktop",
@@ -3844,6 +3846,7 @@ if (!is_android) {
           # TaskManagerView is not used or built on Mac.
           "../browser/ui/views/task_manager_view_browsertest.cc",
         ]
+        deps += [ "//chrome/browser/ui/views:task_manager_view" ]
       }
       if (is_win || is_mac || is_linux) {
         sources += [
