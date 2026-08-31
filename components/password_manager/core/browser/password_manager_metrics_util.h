@@ -731,7 +731,7 @@ void LogSaveUIDismissalReason(
     UIDismissalReason reason,
     std::optional<features_util::PasswordAccountStorageUserState> user_state,
     bool log_adoption_metric,
-    std::optional<ActionableError> saving_blocked_error = std::nullopt);
+    std::optional<ActionableError> saving_blocked_error);
 
 // Log the outcome of saving a password when saving is blocked by a trusted
 // vault error (logged on Android only).
