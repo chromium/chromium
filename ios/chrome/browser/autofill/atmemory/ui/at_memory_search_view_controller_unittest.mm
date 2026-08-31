@@ -309,6 +309,88 @@ TEST_F(AtMemorySearchViewControllerTest, TestTapsFooterLink) {
   EXPECT_OCMOCK_VERIFY(atMemoryHandler);
 }
 
+// Tests that search results remain visible when
+// updateSearchResultsForSearchController is called with an unchanged search
+// query (e.g. returning from granular fill with notice).
+TEST_F(AtMemorySearchViewControllerTest,
+       TestSearchResultsPreservedWhenUpdatingSearchControllerWithSameQuery) {
+  UISearchController* search_controller =
+      view_controller_.navigationItem.searchController;
+  search_controller.searchBar.text = kSearchQuery;
+
+  autofill::MemorySearchResult mock_result(
+      autofill::MemoryDataType::kPassportNumber,
+      base::SysNSStringToUTF16(kPassportTypeName),
+      base::SysNSStringToUTF16(kPassportValue));
+
+  AtMemorySearchItem* item =
+      [[AtMemorySearchItem alloc] initWithMemorySearchResult:mock_result
+                                                       index:0];
+  [view_controller_ setSearchResults:@[ item ]];
+  [view_controller_ setNoticeVisible:YES];
+
+  ASSERT_EQ(view_controller_.tableView.numberOfSections, 2);
+  ASSERT_EQ([view_controller_.tableView numberOfRowsInSection:1], 1);
+
+  // Trigger search results updater with the same query.
+  [(id<UISearchResultsUpdating>)view_controller_
+      updateSearchResultsForSearchController:search_controller];
+
+  // Search results should still be present in section 1 and notice in section
+  // 0.
+  ASSERT_EQ(view_controller_.tableView.numberOfSections, 2);
+  ASSERT_EQ([view_controller_.tableView numberOfRowsInSection:1], 1);
+
+  UITableViewCell* cell = [view_controller_.tableView.dataSource
+                  tableView:view_controller_.tableView
+      cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+  TableViewCellContentConfiguration* config =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_NSEQ(config.title, kPassportValue);
+  EXPECT_NSEQ(config.subtitle, kPassportTypeName);
+}
+
+// Tests that search results are reset to the search typing state when the query
+// changes.
+TEST_F(AtMemorySearchViewControllerTest,
+       TestSearchResultsResetWhenQueryChanges) {
+  UISearchController* search_controller =
+      view_controller_.navigationItem.searchController;
+  search_controller.searchBar.text = kSearchQuery;
+
+  autofill::MemorySearchResult mock_result(
+      autofill::MemoryDataType::kPassportNumber,
+      base::SysNSStringToUTF16(kPassportTypeName),
+      base::SysNSStringToUTF16(kPassportValue));
+
+  AtMemorySearchItem* item =
+      [[AtMemorySearchItem alloc] initWithMemorySearchResult:mock_result
+                                                       index:0];
+  [view_controller_ setSearchResults:@[ item ]];
+
+  ASSERT_EQ(view_controller_.tableView.numberOfSections, 1);
+  ASSERT_EQ([view_controller_.tableView numberOfRowsInSection:0], 1);
+
+  // Change search query.
+  search_controller.searchBar.text = @"new query";
+  [(id<UISearchResultsUpdating>)view_controller_
+      updateSearchResultsForSearchController:search_controller];
+
+  // Table view should transition to search typing state (search section +
+  // footer).
+  ASSERT_EQ(view_controller_.tableView.numberOfSections, 2);
+  ASSERT_EQ([view_controller_.tableView numberOfRowsInSection:0], 1);
+
+  UITableViewCell* cell = [view_controller_.tableView.dataSource
+                  tableView:view_controller_.tableView
+      cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_NSEQ(configuration.title, @"new query");
+}
+
 // Parameters for AtMemorySearchViewControllerErrorTest.
 struct AtMemoryErrorTestParam {
   const char* test_name;
