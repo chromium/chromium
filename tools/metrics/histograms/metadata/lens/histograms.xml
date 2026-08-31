@@ -127,6 +127,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Composebox.ImageUpload.Java.C2paDetected" enum="Boolean"
+    expires_after="2027-02-07">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Records whether C2PA metadata was detected in an image attachment during
+    Java-side attachment processing before downscaling and compression.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.ImageUpload.{UploadType}.C2paDetected"
+    enum="Boolean" expires_after="2027-02-07">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when an image is processed for {UploadType}. Logs whether C2PA
+    metadata was detected in the original image bytes in C++.
+  </summary>
+  <token key="UploadType" variants="ComposeboxImageUploadType"/>
+</histogram>
+
 <histogram
     name="Lens.Composebox.ImageUpload.{UploadType}.DownscaleAndEncodeFailed"
     enum="Boolean" expires_after="2027-02-07">

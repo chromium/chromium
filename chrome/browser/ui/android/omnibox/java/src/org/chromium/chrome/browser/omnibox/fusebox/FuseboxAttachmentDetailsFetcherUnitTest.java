@@ -437,6 +437,37 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING)
+    @EnableFeatures(ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA)
+    public void testFetchAttachmentDetails_downscalingDisabled_doesNotRecordC2paHistogram() {
+        var c2paWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_C2PA_DETECTED_HISTOGRAM)
+                        .build();
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] c2paData =
+                "sample_prefix urn:c2pa: sample_suffix".getBytes(StandardCharsets.US_ASCII);
+        Bitmap thumbnail = SAMPLE_SMALL_BITMAP;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, c2paData, thumbnail, buttonType);
+        setupMockImageDecoder(/* throwOom= */ false, /* throwIoException= */ true);
+        FuseboxAttachmentDetailsFetcher.setFileStreamReaderForTesting((inputStream) -> c2paData);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                c2paData,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                buttonType);
+        c2paWatcher.assertExpected();
+    }
+
+    @Test
     public void testFetchAttachmentDetails_imageLargeOnMeteredNetwork_passes() {
         setIsNetworkMetered(true);
         String title = "large_image.png";
@@ -652,6 +683,9 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA
     })
     public void testFetchAttachmentDetails_c2paImage_bypassesDownscaling() {
+        var c2paWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.ATTACHMENT_C2PA_DETECTED_HISTOGRAM, true);
         String title = SAMPLE_PNG_TITLE;
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
         byte[] c2paData =
@@ -674,12 +708,16 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 thumbnail,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
+        c2paWatcher.assertExpected();
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING)
     @DisableFeatures(ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA)
     public void testFetchAttachmentDetails_c2paImage_featureDisabled_downscalesImage() {
+        var c2paWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.ATTACHMENT_C2PA_DETECTED_HISTOGRAM, false);
         String title = SAMPLE_PNG_TITLE;
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
         byte[] c2paData =
@@ -704,6 +742,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         assertEquals(thumbnail, getThumbnailFromAttachment(attachment));
         assertEquals(FuseboxAttachmentType.ATTACHMENT_IMAGE, attachment.type);
         assertEquals(buttonType, attachment.buttonType);
+        c2paWatcher.assertExpected();
     }
 
     @Test
@@ -712,6 +751,9 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         ChromeFeatureList.LENS_BYPASS_COMPRESSION_FOR_C2PA
     })
     public void testFetchAttachmentDetails_c2paImageAcrossChunkBoundary_bypassesDownscaling() {
+        var c2paWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.ATTACHMENT_C2PA_DETECTED_HISTOGRAM, true);
         String title = SAMPLE_PNG_TITLE;
         String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
         // Position "urn:c2pa:" across the 8192-byte chunk boundary (starts at byte 8190).
@@ -739,6 +781,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 thumbnail,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
+        c2paWatcher.assertExpected();
     }
 
     @Test

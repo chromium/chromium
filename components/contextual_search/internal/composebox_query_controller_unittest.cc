@@ -1558,6 +1558,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
 
 TEST_F(ComposeboxQueryControllerTest,
        UploadImageFileRequestSuccessWithFileName) {
+  base::HistogramTester histogram_tester;
   // Act: Start the session.
   controller().InitializeIfNeeded();
 
@@ -1599,10 +1600,13 @@ TEST_F(ComposeboxQueryControllerTest,
                 .image_metadata()
                 .file_name(),
             "test_image.jpg");
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ImageUpload.File.C2paDetected", false, 1);
 }
 
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paBypass) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndEnableFeature(
       lens::features::kLensBypassCompressionForC2pa);
@@ -1646,9 +1650,12 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paBypass) {
                                   .payload()
                                   .image_bytes();
   EXPECT_EQ(payload_bytes.size(), image_bytes.size());
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ImageUpload.File.C2paDetected", true, 1);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paFlagDisabled) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(
       lens::features::kLensBypassCompressionForC2pa);
@@ -1692,6 +1699,8 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paFlagDisabled) {
                                   .payload()
                                   .image_bytes();
   EXPECT_NE(payload_bytes.size(), image_bytes.size());
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ImageUpload.File.C2paDetected", true, 1);
 }
 #endif
 
