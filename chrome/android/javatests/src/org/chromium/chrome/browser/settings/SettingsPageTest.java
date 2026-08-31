@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -517,45 +514,6 @@ public class SettingsPageTest {
         onViewWaiting(allOf(withText(R.string.search_engine_settings), isDisplayed()))
                 .check(matches(isDisplayed()));
         onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
-    public void testSearchQueryInMultiColumnThenExitSearchDoesNotShowSearchResultsBehindDetail() {
-        mActivityTestRule.loadUrl("chrome-native://settings/");
-
-        // Wait for settings page to load.
-        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
-
-        // Ensure landscape (two-column mode).
-        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
-        ensureTwoColumnMode();
-
-        // Wait for settings page in landscape (two-column mode with detail pane).
-        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
-
-        // Click search box to enter search state in multi-column mode.
-        onViewWaiting(withId(R.id.search_box)).perform(click());
-        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
-
-        // Type search query "Theme".
-        onViewWaiting(withId(R.id.search_query)).perform(replaceText("Theme"), closeSoftKeyboard());
-
-        // Wait for search results to appear.
-        onViewWaiting(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
-                .check(matches(isDisplayed()));
-
-        // Tap on back arrow in search query box to exit search.
-        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
-
-        // Verify that the search box is visible and Google Services detail pane is displayed.
-        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
-        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
-
-        // Verify that the search result is not visible/shown behind the detail pane.
-        onView(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
-                .check(doesNotExist());
     }
 
     private void ensureActivityOrientation(int orientation) {

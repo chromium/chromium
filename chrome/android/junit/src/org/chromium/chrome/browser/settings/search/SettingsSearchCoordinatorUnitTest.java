@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.settings.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -15,11 +16,13 @@ import static org.mockito.Mockito.when;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
@@ -47,6 +50,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -118,6 +122,7 @@ public class SettingsSearchCoordinatorUnitTest {
 
     @After
     public void tearDown() {
+        SettingsIndexData.reset();
         // Avoid runnable pollution between tests.
         ShadowLooper.idleMainLooper();
     }
@@ -128,7 +133,7 @@ public class SettingsSearchCoordinatorUnitTest {
      * and width calculations can execute properly.
      */
     private void setUpMultiColumnSettings() {
-        FragmentManager childFragmentManager = mock(FragmentManager.class);
+        FragmentManager childFragmentManager = mActivity.getSupportFragmentManager();
         when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(childFragmentManager);
 
         SlidingPaneLayout slidingPaneLayout = new SlidingPaneLayout(mActivity);
@@ -444,5 +449,94 @@ public class SettingsSearchCoordinatorUnitTest {
         mCoordinator.exitSearchState();
         assertEquals(View.VISIBLE, searchBox.getVisibility());
         assertTrue(searchBox.isFocused());
+    }
+
+    /**
+     * Subclass of Fragment to represent the initial detail pane fragment (e.g. Google services).
+     */
+    public static class TestDetailFragment extends Fragment {
+        public TestDetailFragment() {}
+    }
+
+    @Test
+    public void testSearchInMultiColumnThenExitSearchRestoresDetailFragment() {
+        // Initialize an empty SettingsIndexData and mark it as indexed to prevent
+        // enterSearchState() from attempting to build the real search index across all
+        // registered settings fragments in SearchIndexProviderRegistry (which requires
+        // native/feature flag configuration in unit tests).
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+
+        // Add initial detail fragment representing Google services in the detail pane.
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        TestDetailFragment initialDetailFragment = new TestDetailFragment();
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.preferences_detail, initialDetailFragment)
+                .commitNow();
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        // Verify initial UI state in multi-column mode.
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        assertNotNull(searchBox);
+        assertNotNull(queryContainer);
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        assertEquals(View.GONE, queryContainer.getVisibility());
+        assertNotNull(SettingsIndexData.getInstance());
+        assertFalse(SettingsIndexData.getInstance().needsIndexing());
+
+        // 1. Click search box to enter search state in multi-column mode.
+        searchBox.performClick();
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, searchBox.getVisibility());
+        assertEquals(View.VISIBLE, queryContainer.getVisibility());
+
+        // 2. Enter search query and simulate search results appearing.
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+        assertNotNull(queryEdit);
+        queryEdit.setText("Theme");
+
+        var entry =
+                new SettingsIndexData.Entry.Builder(
+                                "theme_id", "theme_key", "Theme", "MainSettings")
+                        .build();
+        var results = new SettingsIndexData.SearchResults();
+        results.addItem(entry, 100);
+        mCoordinator.displayResultsFragment(results);
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        // Verify search results fragment is displayed in the detail container.
+        Fragment resultFragment =
+                fragmentManager.findFragmentByTag(SettingsSearchCoordinator.RESULT_FRAGMENT);
+        assertNotNull(resultFragment);
+        assertTrue(resultFragment instanceof SearchResultsPreferenceFragment);
+        assertEquals(resultFragment, fragmentManager.findFragmentById(R.id.preferences_detail));
+
+        // 3. Click back arrow icon to exit search.
+        View backArrow = mActivity.findViewById(R.id.back_arrow_icon);
+        assertNotNull(backArrow);
+        backArrow.performClick();
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        // 4. Verify search box is restored and search query container is hidden.
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        assertEquals(View.GONE, queryContainer.getVisibility());
+
+        // 5. Verify search results fragment is removed.
+        assertNull(fragmentManager.findFragmentByTag(SettingsSearchCoordinator.RESULT_FRAGMENT));
+
+        // 6. Verify initial detail fragment is restored in the detail pane.
+        Fragment currentDetail = fragmentManager.findFragmentById(R.id.preferences_detail);
+        assertNotNull(currentDetail);
+        assertEquals(initialDetailFragment, currentDetail);
     }
 }
