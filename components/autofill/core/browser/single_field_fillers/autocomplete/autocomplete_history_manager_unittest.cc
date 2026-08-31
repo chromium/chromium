@@ -159,18 +159,23 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   form.set_url(GURL("http://myform.com/form.html"));
   form.set_action(GURL("http://myform.com/submit.html"));
 
-  // Valid Visa credit card number pulled from the paypal help site.
-  FormFieldData valid_cc;
-  valid_cc.set_label(u"Credit Card");
-  valid_cc.set_name(u"ccnum");
-  valid_cc.set_value(u"4012888888881881");
-  valid_cc.set_properties_mask(valid_cc.properties_mask() | kUserTyped);
-  valid_cc.set_form_control_type(FormControlType::kInputText);
-  form.set_fields({valid_cc});
+  // Valid Visa credit card numbers formatted with various separators (spaces,
+  // hyphens, dots, and Unicode whitespace).
+  for (std::u16string_view cc_val :
+       {u"4012888888881881", u"4012 8888 8888 1881", u"4012-8888-8888-1881",
+        u"4012.8888.8888.1881", u"4012\u00A08888\u202F8888\u00A01881"}) {
+    FormFieldData valid_cc;
+    valid_cc.set_label(u"Credit Card");
+    valid_cc.set_name(u"ccnum");
+    valid_cc.set_value(std::u16string(cc_val));
+    valid_cc.set_properties_mask(valid_cc.properties_mask() | kUserTyped);
+    valid_cc.set_form_control_type(FormControlType::kInputText);
+    form.set_fields({valid_cc});
 
-  EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
-                                                    /*form=*/nullptr);
+    EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
+    autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                      /*form=*/nullptr);
+  }
 }
 
 // Contrary test to AutocompleteHistoryManagerTest.CreditCardNumberValue.  The
@@ -203,17 +208,22 @@ TEST_F(AutocompleteHistoryManagerTest, IbanValue) {
   form.set_url(GURL("http://myform.com/form.html"));
   form.set_action(GURL("http://myform.com/submit.html"));
 
-  FormFieldData iban;
-  iban.set_label(u"International Bank Account Number");
-  iban.set_name(u"iban");
-  iban.set_value(u"DE75512108001245126199");
-  iban.set_properties_mask(iban.properties_mask() | kUserTyped);
-  iban.set_form_control_type(FormControlType::kInputText);
-  form.set_fields({iban});
+  // Valid IBANs formatted with spaces, hyphens, and dots.
+  for (std::u16string_view iban_val :
+       {u"DE75512108001245126199", u"DE75 5121 0800 1245 1261 99",
+        u"DE75-5121-0800-1245-1261-99", u"DE75.5121.0800.1245.1261.99"}) {
+    FormFieldData iban;
+    iban.set_label(u"International Bank Account Number");
+    iban.set_name(u"iban");
+    iban.set_value(std::u16string(iban_val));
+    iban.set_properties_mask(iban.properties_mask() | kUserTyped);
+    iban.set_form_control_type(FormControlType::kInputText);
+    form.set_fields({iban});
 
-  EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
-                                                    /*form=*/nullptr);
+    EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
+    autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                      /*form=*/nullptr);
+  }
 }
 
 // Tests that SSNs are not sent to the WebDatabase to be saved.
@@ -223,17 +233,22 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   form.set_url(GURL("http://myform.com/form.html"));
   form.set_action(GURL("http://myform.com/submit.html"));
 
-  FormFieldData ssn;
-  ssn.set_label(u"Social Security Number");
-  ssn.set_name(u"ssn");
-  ssn.set_value(u"078-05-1120");
-  ssn.set_properties_mask(ssn.properties_mask() | kUserTyped);
-  ssn.set_form_control_type(FormControlType::kInputText);
-  form.set_fields({ssn});
+  // Valid SSNs formatted with hyphens, spaces, dots, and Unicode whitespace.
+  for (std::u16string_view ssn_val :
+       {u"078051120", u"078-05-1120", u"078 05 1120", u"078.05.1120",
+        u"078\u00A005\u202F1120"}) {
+    FormFieldData ssn;
+    ssn.set_label(u"Social Security Number");
+    ssn.set_name(u"ssn");
+    ssn.set_value(std::u16string(ssn_val));
+    ssn.set_properties_mask(ssn.properties_mask() | kUserTyped);
+    ssn.set_form_control_type(FormControlType::kInputText);
+    form.set_fields({ssn});
 
-  EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
-                                                    /*form=*/nullptr);
+    EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
+    autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                      /*form=*/nullptr);
+  }
 }
 
 // Verify that autocomplete text is saved for search fields.

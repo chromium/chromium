@@ -19,6 +19,7 @@
 #include "base/containers/map_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -90,7 +91,8 @@ int GetRemainderOfIbanValue(const std::u16string& stripped_value) {
 
 std::u16string RemoveIbanSeparators(std::u16string_view value) {
   std::u16string stripped_value;
-  base::RemoveChars(value, base::kWhitespaceUTF16, &stripped_value);
+  base::RemoveChars(value, base::StrCat({u"-.", base::kWhitespaceUTF16}),
+                    &stripped_value);
   return stripped_value;
 }
 

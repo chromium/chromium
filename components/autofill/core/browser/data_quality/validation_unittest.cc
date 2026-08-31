@@ -316,6 +316,36 @@ TEST_P(AutofillIsValidZipTest, IsValidZip) {
       test_case.is_valid);
 }
 
+TEST(AutofillValidation, IsSSN) {
+  const char16_t* const kValidSSNs[] = {
+      u"078-05-1120",           u"078051120",
+      u"078 05 1120",           u"078.05.1120",
+      u"078\u00A005\u202F1120", u"078\u300005\u20021120",
+  };
+  for (const char16_t* ssn : kValidSSNs) {
+    SCOPED_TRACE(base::UTF16ToUTF8(ssn));
+    EXPECT_TRUE(IsSSN(ssn));
+  }
+
+  const char16_t* const kInvalidSSNs[] = {
+      u"",
+      u"000-05-1120",
+      u"666-05-1120",
+      u"900.05.1120",
+      u"999-05-1120",
+      u"078-00-1120",
+      u"078.05.0000",
+      u"078-05-112",
+      u"078-05-11201",
+      u"078-05-112a",
+      u"078-05-1120*",
+  };
+  for (const char16_t* ssn : kInvalidSSNs) {
+    SCOPED_TRACE(base::UTF16ToUTF8(ssn));
+    EXPECT_FALSE(IsSSN(ssn));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(ValidZip,
                          AutofillIsValidZipTest,
                          testing::Values(

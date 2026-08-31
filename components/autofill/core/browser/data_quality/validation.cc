@@ -12,6 +12,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -137,7 +138,8 @@ bool IsValidZip(std::u16string_view text,
 
 bool IsSSN(std::u16string_view text) {
   std::u16string number_string;
-  base::RemoveChars(text, u"- ", &number_string);
+  base::RemoveChars(text, base::StrCat({u"-.", base::kWhitespaceUTF16}),
+                    &number_string);
 
   // A SSN is of the form AAA-GG-SSSS (A = area number, G = group number, S =
   // serial number). The validation we do here is simply checking if the area,

@@ -156,6 +156,14 @@ TEST(IbanTest, SetValue) {
   // Verify trailing whitespaces were removed.
   iban.set_value(u"DE91100000000123 4567 89   ");
   EXPECT_EQ(iban.value(), u"DE91100000000123456789");
+
+  // Verify hyphens were removed.
+  iban.set_value(u"DE91-1000-0000-0123-4567-89");
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
+
+  // Verify dots were removed.
+  iban.set_value(u"DE91.1000.0000.0123.4567.89");
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
 }
 
 TEST(IbanTest, ValuePrefixAndSuffix) {
@@ -320,8 +328,13 @@ TEST(IbanTest, ValidateIbanValue_ValueWithCharacter) {
   // Valid Kuwait IBAN with invalid special character.
   EXPECT_FALSE(Iban::IsValid(u"KW81CBKU000000#0000001234560101"));
 
-  // Valid Kuwait IBAN with invalid special character.
-  EXPECT_FALSE(Iban::IsValid(u"KW81CBKU000-0000000001234560101"));
+  // Valid Kuwait IBAN with hyphen and dot separators.
+  EXPECT_TRUE(Iban::IsValid(u"KW81CBKU000-0000000001234560101"));
+  EXPECT_TRUE(Iban::IsValid(u"KW81.CBKU.0000.0000.0000.1234.5601.01"));
+
+  // Valid Germany IBAN with hyphens and dots.
+  EXPECT_TRUE(Iban::IsValid(u"DE91-1000-0000-0123-4567-89"));
+  EXPECT_TRUE(Iban::IsValid(u"DE91.1000.0000.0123.4567.89"));
 }
 
 TEST(IbanTest, ValidateIbanValue_ValidateOnRegexAndCountry) {
