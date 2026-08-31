@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 
+#include <memory>
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/emulation.h"

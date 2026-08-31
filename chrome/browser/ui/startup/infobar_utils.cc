@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/startup/infobar_utils.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -44,13 +47,10 @@
 #endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
-#include "chrome/browser/infobars/browser_infobar_manager.h"
-#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "base/feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
