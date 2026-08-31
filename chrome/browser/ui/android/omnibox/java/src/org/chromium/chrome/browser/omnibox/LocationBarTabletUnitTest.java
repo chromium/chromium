@@ -18,6 +18,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
@@ -340,6 +341,48 @@ public class LocationBarTabletUnitTest {
 
         assertEquals(toPx(-leftPositionDp), layoutParams.leftMargin);
         assertEquals(toPx(expectedRightMarginDp), layoutParams.rightMargin);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @Config(qualifiers = "w800dp-xhdpi")
+    public void testFuseboxStateChange_topMarginClamping() {
+        int containerWidth = toPx(800);
+        int prefocusWidth = toPx(400);
+        FrameLayout container = new FrameLayout(mActivity);
+        container.measure(
+                MeasureSpec.makeMeasureSpec(containerWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(toPx(200), MeasureSpec.EXACTLY));
+        container.layout(0, 0, containerWidth, toPx(200));
+
+        ((ViewGroup) mHolderView.getParent()).removeView(mHolderView);
+        LinearLayout toolbar = new LinearLayout(mActivity);
+        toolbar.addView(
+                mHolderView,
+                new LinearLayout.LayoutParams(
+                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        container.addView(toolbar);
+
+        int expansionPx =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+
+        // Vertical Tabs: Toolbar is flush at the top of the container (y = 0).
+        toolbar.layout(0, 0, containerWidth, toPx(56));
+        mLocationBarTablet.setHolderAndContainer(mHolderView, container);
+        measureHolder(prefocusWidth);
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
+        assertEquals(0, layoutParams.topMargin);
+
+        // Horizontal Tabs: Toolbar starts below tab strip (e.g. y = 40dp).
+        toolbar.layout(0, toPx(40), containerWidth, toPx(96));
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        layoutParams = (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
+        assertEquals(-expansionPx, layoutParams.topMargin);
     }
 
     @Test

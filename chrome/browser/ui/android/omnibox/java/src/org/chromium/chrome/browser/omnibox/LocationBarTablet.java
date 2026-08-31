@@ -695,7 +695,14 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             int expansionPx = isPopoverMode ? 0 : mLocationBarTabletFuseboxPopupInset;
             int additionalWidth =
                     isPopoverMode ? mPopoverAdditionalWidth : mLocationBarTabletFuseboxPopupInset;
-            parentParams.topMargin = mIsReparentedToPopover ? 0 : -expansionPx;
+            // Determine available headroom above toolbar (stored in mPositionArray[1]).
+            int availableTopHeadroomPx = expansionPx;
+            if (mContainerView != null && mHolder.getParent() instanceof View holderParent) {
+                ViewUtils.getRelativeLayoutPosition(mContainerView, holderParent, mPositionArray);
+                availableTopHeadroomPx = Math.max(0, mPositionArray[1]);
+            }
+            int topMarginExpansion = Math.min(expansionPx, availableTopHeadroomPx);
+            parentParams.topMargin = mIsReparentedToPopover ? 0 : -topMarginExpansion;
             setMarginsForAvailableWidth(parentParams, additionalWidth, isPopoverMode);
             parentParams.gravity = Gravity.TOP;
             int topExpansionPx =
