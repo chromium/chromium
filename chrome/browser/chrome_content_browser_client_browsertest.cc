@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -689,9 +688,7 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
     if (!UsesCustomTheme()) {
       return !root_scrollbar_pref.has_value();
     }
-    if (!root_scrollbar_pref.has_value()) {
-      return false;
-    }
+    EXPECT_TRUE(root_scrollbar_pref.has_value());
     const SkColor root_scrollbar_color = root_scrollbar_pref.value();
     // `root_scrollbar_theme_color` is set based off the toolbar color, which is
     // generated using the theme's color. Because of this, we can't directly
@@ -727,10 +724,9 @@ IN_PROC_BROWSER_TEST_P(PreferredRootScrollbarColorSchemeChromeClientTest,
                        ScrollbarFollowsPreferredColorScheme) {
   auto* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return web_contents->GetOrCreateWebPreferences()
-               .preferred_root_scrollbar_color_scheme == ExpectedColorScheme();
-  }));
+  EXPECT_EQ(web_contents->GetOrCreateWebPreferences()
+                .preferred_root_scrollbar_color_scheme,
+            ExpectedColorScheme());
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -738,7 +734,7 @@ IN_PROC_BROWSER_TEST_P(PreferredRootScrollbarColorSchemeChromeClientTest,
 // when using a custom theme.
 IN_PROC_BROWSER_TEST_P(PreferredRootScrollbarColorSchemeChromeClientTest,
                        VerifyRootScrollbarColorTheme) {
-  ASSERT_TRUE(base::test::RunUntil([&]() { return ThemeColorMatches(); }));
+  EXPECT_TRUE(ThemeColorMatches());
 }
 #endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
