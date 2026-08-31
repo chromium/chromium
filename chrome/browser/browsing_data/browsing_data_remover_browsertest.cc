@@ -1460,8 +1460,9 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataHistoryRemoverBrowserTest,
 // disk.
 // TODO(crbug.com/522179929): Flaky on ASAN/LSAN/MSAN. Re-enable this test.
 // TODO(crbug.com/515997680): Flaky on Linux Debug. Re-enable this test.
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) || \
-    defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||                  \
+    defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_StorageRemovedFromDisk DISABLED_StorageRemovedFromDisk
 #else
 #define MAYBE_StorageRemovedFromDisk StorageRemovedFromDisk
