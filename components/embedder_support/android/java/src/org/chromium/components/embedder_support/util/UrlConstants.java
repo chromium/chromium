@@ -21,7 +21,6 @@ public class UrlConstants {
     public static final String CHROME_EXTENSION_SCHEME = "chrome-extension";
     public static final String CHROME_NATIVE_SCHEME = "chrome-native";
     public static final String CONTENT_SCHEME = "content";
-    public static final String CUSTOM_TAB_SCHEME = "customtab";
     public static final String DATA_SCHEME = "data";
     public static final String DEVTOOLS_SCHEME = "devtools";
     public static final String DISTILLER_SCHEME = "chrome-distiller";
