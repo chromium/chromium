@@ -960,9 +960,20 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   if (line_clamp_ellipsis_width_ && !CanFitOnLine()) {
     Rewind(0, line_info);
     line_info->SetIsLastLine(false);
-    // Overflow disables score and bisect line breaking, but since we
-    // replaced the whole line, we enable bisect.
-    disable_bisect_line_break_ = false;
+
+    // We only mark the line as overflowing (which matters for determining if
+    // it gets pushed down by floats) if the ellipsis itself wouldn't fit.
+    // We can't rely on AvailableWidth() here, since it gets clamped to be
+    // non-negative after the ellipsis width gets subtracted, so we need to
+    // check the line opportunity as well.
+    bool has_overflow = !AvailableWidth() &&
+                        line_opportunity_.AvailableInlineSize().AddEpsilon() <
+                            line_clamp_ellipsis_width_;
+    line_info->SetHasOverflow(has_overflow);
+
+    // Overflow disables score and bisect line breaking, but if we fixed the
+    // overflow by replacing the whole line, then we can reenable bisect.
+    disable_bisect_line_break_ = has_overflow;
   }
 
   if (!should_create_line_box) {
