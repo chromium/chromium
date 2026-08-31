@@ -2040,13 +2040,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)activateGridContainerConstraints {
   [_viewController.incognitoGridContainerViewController activateConstraints];
-  [_viewController.incognitoGridContainerViewController activateConstraints];
+  [_viewController.regularGridContainerViewController activateConstraints];
   [_viewController.tabGroupsGridContainerViewController activateConstraints];
 }
 
 - (void)deactivateGridContainerConstraints {
   [_viewController.incognitoGridContainerViewController deactivateConstraints];
-  [_viewController.incognitoGridContainerViewController deactivateConstraints];
+  [_viewController.regularGridContainerViewController deactivateConstraints];
   [_viewController.tabGroupsGridContainerViewController deactivateConstraints];
 }
 
