@@ -38,6 +38,16 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 
 ## Coding
 
+### Model Properties (`*Properties.java`) & ViewBinders
+
+- **Alphabetical Sorting**: Properties listed in `*Properties.java` files must be sorted alphabetically for easier lookup (both within field declarations and in `ALL_KEYS` / `ALL_UNIQUE_KEYS` arrays).
+- **Semantic Grouping & Naming**: Properties listed in `*Properties.java` files must be grouped semantically by prefix (e.g. `BTN_ADD_VISIBLE`, `BTN_ADD_ENABLED`, `BTN_ADD_CALLBACK`) so alphabetical sorting naturally groups related properties together.
+- **ViewBinder Order Consistency**: `ViewBinder` binding logic (`bind(...)` method's `if/else if` chain or dispatch logic) must follow the exact same order as `*Properties.java` for all new code.
+- **`@IntDef` Properties**: Properties representing an `@IntDef` **MUST** use `WritableIntDefPropertyKey<T>` or `ReadableIntDefPropertyKey<T>` (typed with the `@IntDef` annotation interface) rather than generic `WritableIntPropertyKey` / `ReadableIntPropertyKey` for clarity, documentation, and compile-time safety.
+- **Prefer `ReadablePropertyKey`s**: Where applicable (such as fixed callbacks, listeners, immutable values, or delegates set only during model instantiation and never mutated afterward), `ReadablePropertyKey`s (`ReadableObjectPropertyKey`, `ReadableIntDefPropertyKey`, `ReadableBooleanPropertyKey`, etc.) should be preferred over `WritablePropertyKey`s.
+
+### General Guidelines
+
 - **Listener Cleanup**: Always remove listeners and observers in the component's `destroy()` method to prevent memory leaks.
 - **Destruction Propagation**: A parent component `X` **must** implement a `destroy()` method if any of the subcomponents it owns implements a `destroy()` method. The parent's `destroy()` method must clean up and invoke `destroy()` on all its children.
 - **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
