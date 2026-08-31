@@ -61,7 +61,7 @@ gpu::SyncToken WebGpuSharedImageWrapperLease::GetSyncToken() const {
   if (IsGpuContextLost()) {
     return gpu::SyncToken();
   }
-  return shared_image_wrapper_->release_sync_token_;
+  return shared_image_wrapper_->sync_token_;
 }
 
 gpu::raster::RasterInterface* WebGpuSharedImageWrapperLease::RasterInterface()
@@ -101,7 +101,7 @@ bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
   }
 
   auto access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
-      RasterInterface(), shared_image_wrapper_->acquire_sync_token_,
+      RasterInterface(), shared_image_wrapper_->sync_token_,
       /*readonly=*/false);
 
   RasterInterface()->WritePixels(
@@ -109,7 +109,7 @@ bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
       /*dst_y_offset=*/0,
       shared_image_wrapper_->shared_image_->GetTextureTarget(), subset);
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  shared_image_wrapper_->release_sync_token_ = sync_token;
+  shared_image_wrapper_->sync_token_ = sync_token;
   shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(sync_token);
 
   shared_image_wrapper_->is_cleared_ = true;
@@ -132,7 +132,7 @@ void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
             ->ReleaseMainRecording();
 
     auto access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
-        RasterInterface(), shared_image_wrapper_->acquire_sync_token_,
+        RasterInterface(), shared_image_wrapper_->sync_token_,
         /*readonly=*/false);
 
     const bool needs_clear = !shared_image_wrapper_->is_cleared_;
@@ -199,23 +199,13 @@ void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
 
     ri->EndRasterCHROMIUM();
     auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-    shared_image_wrapper_->release_sync_token_ = sync_token;
+    shared_image_wrapper_->sync_token_ = sync_token;
     shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(
         sync_token);
 
     image_provider.ReleaseLockedImages();
     image_provider.UnbindTextureBackedImages();
   }
-}
-
-const gpu::SyncToken& WebGpuSharedImageWrapperLease::acquire_sync_token()
-    const {
-  return shared_image_wrapper_->acquire_sync_token_;
-}
-
-void WebGpuSharedImageWrapperLease::set_release_sync_token(
-    const gpu::SyncToken& token) {
-  shared_image_wrapper_->release_sync_token_ = token;
 }
 
 void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
@@ -229,15 +219,14 @@ void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
   // NOTE: Invoking BeginRasterAccess() ensures that this invocation of
   // EndAccess() will generate a new sync token.
   auto access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
-      RasterInterface(), shared_image_wrapper_->acquire_sync_token_,
+      RasterInterface(), shared_image_wrapper_->sync_token_,
       /*readonly=*/false);
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  shared_image_wrapper_->release_sync_token_ = sync_token;
+  shared_image_wrapper_->sync_token_ = sync_token;
   shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(sync_token);
 
-  gpu::SyncToken external_write_sync_token =
-      overwrite_callback(shared_image_wrapper_->shared_image_,
-                         shared_image_wrapper_->release_sync_token_);
+  gpu::SyncToken external_write_sync_token = overwrite_callback(
+      shared_image_wrapper_->shared_image_, shared_image_wrapper_->sync_token_);
 
   if (IsGpuContextLost()) {
     return;
@@ -252,10 +241,10 @@ void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
   // internal interface. This new sync token will be chained after
   // `external_write_sync_token` thanks to the wait above.
   access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
-      RasterInterface(), shared_image_wrapper_->acquire_sync_token_,
+      RasterInterface(), shared_image_wrapper_->sync_token_,
       /*readonly=*/true);
   sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  shared_image_wrapper_->release_sync_token_ = sync_token;
+  shared_image_wrapper_->sync_token_ = sync_token;
   shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(sync_token);
 }
 
@@ -278,7 +267,7 @@ bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
                       shared_image_wrapper_->Size().height());
 
   auto dst_access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
-      raster, shared_image_wrapper_->acquire_sync_token_,
+      raster, shared_image_wrapper_->sync_token_,
       /*readonly=*/false);
 
   std::unique_ptr<gpu::RasterScopedAccess> src_access =
@@ -292,7 +281,7 @@ bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
   completion_sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(src_access));
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
-  shared_image_wrapper_->release_sync_token_ = sync_token;
+  shared_image_wrapper_->sync_token_ = sync_token;
   shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(sync_token);
   shared_image_wrapper_->is_cleared_ = true;
   return true;

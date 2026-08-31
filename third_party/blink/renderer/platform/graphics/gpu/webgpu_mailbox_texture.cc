@@ -84,17 +84,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     return nullptr;
   }
 
-  if (is_dummy_mailbox_texture) {
-    // Since we skip the copy, we must ensure WebGPU still waits for the
-    // previous usage of this recycled resource to finish. We do this by
-    // setting the release sync token (which WebGPU will wait on via
-    // GetSyncToken()) to the acquire sync token (which represents the
-    // completion of the previous usage).
-    if (wrapper_lease->GetSharedImage()) {
-      wrapper_lease->set_release_sync_token(
-          wrapper_lease->acquire_sync_token());
-    }
-  } else {
+  if (!is_dummy_mailbox_texture) {
     bool copy_success = false;
     if (image->IsTextureBacked()) {
       if (auto shared_image = image->GetSharedImage()) {

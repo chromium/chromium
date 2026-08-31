@@ -59,15 +59,14 @@ WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
 
   CHECK(shared_image_);
   WaitSyncToken(shared_image_->creation_sync_token());
-  release_sync_token_ = shared_image_->creation_sync_token();
 }
 
 WebGpuSharedImageWrapper::~WebGpuSharedImageWrapper() = default;
 
 void WebGpuSharedImageWrapper::WaitSyncToken(const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
-    acquire_sync_token_ = sync_token;
-    shared_image_->UpdateDestructionSyncToken(acquire_sync_token_);
+    sync_token_ = sync_token;
+    shared_image_->UpdateDestructionSyncToken(sync_token_);
   }
 }
 

@@ -58,8 +58,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
   // Temporarily public for WebGpuSharedImageWrapperLease migration.
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
   const scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  gpu::SyncToken acquire_sync_token_;
-  gpu::SyncToken release_sync_token_;
+  gpu::SyncToken sync_token_;
   bool is_cleared_ = false;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 };
