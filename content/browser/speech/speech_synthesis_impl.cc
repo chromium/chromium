@@ -6,6 +6,7 @@
 
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/speech/tts_utterance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
@@ -148,7 +149,14 @@ void SpeechSynthesisImpl::AddVoiceListObserver(
 
   std::vector<VoiceData> voices;
   TtsController::GetInstance()->GetVoices(browser_context_, GURL(), &voices);
-  SendVoiceListToObserver(observer.get(), voices);
+  // While the platform voices are still loading the list is not known yet, so
+  // do not report an empty one: the page would see a voiceschanged event for
+  // it and could take that as the answer. OnVoicesChanged() sends the list to
+  // every observer as soon as loading completes.
+  if (!voices.empty() ||
+      !TtsControllerImpl::GetInstance()->TtsPlatformLoading()) {
+    SendVoiceListToObserver(observer.get(), voices);
+  }
 
   observer_set_.Add(std::move(observer));
 }

@@ -110,6 +110,10 @@ class CONTENT_EXPORT TtsControllerImpl
       const std::string& utterance,
       base::OnceCallback<void(const std::string&)> callback) override;
 
+  // Whether the platform implementation is supported, but still being
+  // initialized. VoicesChanged() is called once it is.
+  bool TtsPlatformLoading();
+
  protected:
   TtsControllerImpl();
   ~TtsControllerImpl() override;
@@ -127,10 +131,6 @@ class CONTENT_EXPORT TtsControllerImpl
   // Whether the platform implementation is supported and completed its
   // initialization.
   bool TtsPlatformReady();
-
-  // Whether the platform implementation is supported, but still being
-  // initialized.
-  bool TtsPlatformLoading();
 
   // Start speaking the given utterance. Will either take ownership of
   // |utterance| or delete it if there's an error. Returns true on success.

@@ -7,20 +7,16 @@
 
 #import <AVFAudio/AVFAudio.h>
 
+#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/speech/tts_platform_impl.h"
-
-namespace content {
-FORWARD_DECLARE_TEST(TtsMacTest, CachedVoiceData);
-}  // namespace content
 
 class TtsPlatformImplMac;
 
@@ -33,7 +29,25 @@ class CONTENT_EXPORT TtsPlatformImplMacBackgroundWorker {
       const TtsPlatformImplMacBackgroundWorker&) = delete;
   ~TtsPlatformImplMacBackgroundWorker() = default;
 
+  // The installed voices as content::VoiceData, with the system default voice
+  // first, plus that voice's identifier (empty if there is none).
+  struct Voices {
+    Voices();
+    Voices(Voices&&);
+    Voices& operator=(Voices&&);
+    ~Voices();
+
+    std::vector<content::VoiceData> voices;
+    std::string default_voice_identifier;
+  };
+
   AVSpeechSynthesisVoice* GetSystemDefaultVoice();
+  std::string GetSystemDefaultVoiceIdentifier();
+
+  // Enumerates the installed voices. AVSpeechSynthesisVoice.speechVoices can
+  // take hundreds of milliseconds the first time it is called in a process, so
+  // this must not run on the UI thread.
+  Voices LoadVoices();
 };
 
 @interface ChromeTtsDelegate : NSObject <AVSpeechSynthesizerDelegate>
@@ -89,7 +103,6 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
 
  private:
   friend base::NoDestructor<TtsPlatformImplMac>;
-  FRIEND_TEST_ALL_PREFIXES(content::TtsMacTest, CachedVoiceData);
   TtsPlatformImplMac();
 
   void ProcessSpeech(int utterance_id,
@@ -99,9 +112,15 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
                      base::OnceCallback<void(bool)> on_speak_finished,
                      const std::string& parsed_utterance);
 
+  // Starts (re)loading the voice list on the background worker. Requests made
+  // while a load is in flight are coalesced into one more load after it.
+  void LoadVoices();
+  void OnVoicesLoaded(TtsPlatformImplMacBackgroundWorker::Voices voices);
+
+  // Checks whether the system default voice changed (the user may have picked
+  // another one in System Settings while away) and reloads the list if so.
   void UpdateSystemDefaultVoice();
-  void OnGotDefaultVoice(AVSpeechSynthesisVoice* default_voice);
-  const std::vector<content::VoiceData>& Voices();
+  void OnGotDefaultVoiceIdentifier(std::string default_voice_identifier);
   void OnApplicationWillBecomeActive();
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -114,12 +133,15 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
   int last_char_index_ = 0;
   bool paused_ = false;
 
+  // Empty until the first LoadVoices() completes; PlatformImplInitialized()
+  // is false until then, so TtsController queues utterances and reports no
+  // platform voices in the meantime.
   std::vector<content::VoiceData> voices_ GUARDED_BY_CONTEXT(sequence_checker_);
-  AVSpeechSynthesisVoice* __strong default_voice_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nil;
+  std::string default_voice_identifier_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool voices_loaded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_loading_voices_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool needs_reload_voices_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_updating_default_voice_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  bool needs_reupdate_default_voice_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      false;
   bool received_voices_request_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 

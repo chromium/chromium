@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SpeechRecognitionErrorEvent interface object length
   assert_equals: wrong value for SpeechRecognitionErrorEvent.length expected 2 but got 1
 [FAIL] SpeechRecognitionAlternative interface: existence and properties of interface object
@@ -62,5 +62,19 @@ Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "addFromURI" not found in prototype chain
 [FAIL] SpeechGrammarList interface: calling addFromURI(DOMString, optional float) on new SpeechGrammarList() with too few arguments must throw TypeError
   assert_inherits: property "addFromURI" not found in prototype chain
+[FAIL] SpeechSynthesisVoice must be primary interface of voice
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of voice
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] SpeechSynthesisVoice interface: voice must inherit property "voiceURI" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] SpeechSynthesisVoice interface: voice must inherit property "name" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] SpeechSynthesisVoice interface: voice must inherit property "lang" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] SpeechSynthesisVoice interface: voice must inherit property "localService" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] SpeechSynthesisVoice interface: voice must inherit property "default" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
 Harness: the test ran to completion.
 
