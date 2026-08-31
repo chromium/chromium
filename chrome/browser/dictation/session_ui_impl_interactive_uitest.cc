@@ -10,7 +10,6 @@
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -37,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
   BrowserWindowInterface* second_browser =
       CreateBrowser(browser()->GetProfile());
   content::WebContents* window2_contents =
-      second_browser->tab_strip_model()->GetActiveWebContents();
+      second_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(window2_contents, nullptr);
 
   // Navigate Window 2 to test page and wait for paint.

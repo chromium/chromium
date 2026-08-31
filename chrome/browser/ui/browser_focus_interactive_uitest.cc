@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_TRUE(browser()->GetWindow()->IsActive());
   ASSERT_TRUE(content::ExecJs(
-      background_browser->tab_strip_model()->GetActiveWebContents(),
+      background_browser->GetTabStripModel()->GetActiveWebContents(),
       "stealFocus();"));
 
   // Try flushing tasks. Note that on Mac and Desktop Linux, window activation
