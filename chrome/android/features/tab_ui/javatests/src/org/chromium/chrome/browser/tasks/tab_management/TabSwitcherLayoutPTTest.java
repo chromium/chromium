@@ -21,6 +21,7 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -751,14 +752,20 @@ public class TabSwitcherLayoutPTTest {
 
         // TODO(crbug.com/324919909): Migrate this to a HubTabSwitcherCardFacility with a tab
         // thumbnail as a view element.
-        ThreadUtils.runOnUiThreadBlocking(
+        CriteriaHelper.pollUiThread(
                 () -> {
                     ImageView view =
                             (ImageView) mCtaTestRule.getActivity().findViewById(R.id.tab_thumbnail);
-                    mBitmap =
-                            new WeakReference<>(((BitmapDrawable) view.getDrawable()).getBitmap());
-                    assertNotNull(mBitmap.get());
-                });
+                    if (view == null) return false;
+                    Drawable drawable = view.getDrawable();
+                    if (!(drawable instanceof BitmapDrawable bitmapDrawable)) return false;
+                    Bitmap bitmap = bitmapDrawable.getBitmap();
+                    if (bitmap == null) return false;
+                    mBitmap = new WeakReference<>(bitmap);
+                    return true;
+                },
+                "Tab thumbnail failed to load as a BitmapDrawable");
+        assertNotNull(mBitmap.get());
 
         page = tabSwitcher.leaveHubToPreviousTabViaBack(destinationBuiderFactory.get());
 
