@@ -375,9 +375,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // Enables detecting JavaScript frameworks on worker load.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDetectJSFrameworksOnWorker);
 
-// Enables detecting Chinese language variants in LanguageDetector.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDetectZhVariants);
-
 // Improves the signal-to-noise ratio of network error related messages in the
 // DevTools Console.
 // See http://crbug.com/40788570.

@@ -551,8 +551,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 BASE_FEATURE(kDetectJSFrameworksOnWorker, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDetectZhVariants, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Improves the signal-to-noise ratio of network error related messages in the
 // DevTools Console.
 // See http://crbug.com/124534.
