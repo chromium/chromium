@@ -92,6 +92,6 @@ class TabGroupListBottomSheetRowMediator {
             return;
         }
         TabGroupUiUtils.addTabsToGroup(
-                mTabModel, tabs, mGroupInfo.localId, mTabMovedCallback, /* bringToFront= */ false);
+                mTabModel, tabs, mGroupInfo, mTabMovedCallback, /* bringToFront= */ false);
     }
 }

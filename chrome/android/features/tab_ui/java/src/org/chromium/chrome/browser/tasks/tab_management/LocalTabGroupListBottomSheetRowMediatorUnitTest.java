@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
@@ -73,6 +74,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
 
         mMediator =
                 new LocalTabGroupListBottomSheetRowMediator(
+                        ContextUtils.getApplicationContext(),
                         mGroupId,
                         mTabModel,
                         mFaviconResolver,
@@ -102,6 +104,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         List<Tab> tabList = List.of(mTab2);
         mMediator =
                 new LocalTabGroupListBottomSheetRowMediator(
+                        ContextUtils.getApplicationContext(),
                         mGroupId,
                         mTabModel,
                         mFaviconResolver,

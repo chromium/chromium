@@ -44,8 +44,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabGroupUiUtils}. */
@@ -57,9 +59,25 @@ public class TabGroupUiUtilsUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabWindowManager mTabWindowManager;
 
+    private Context mContext;
+
     @Before
     public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+    }
+
+    private GroupWindowInfo createGroupWindowInfo(
+            Token groupId, @GroupWindowState int windowState) {
+        return new GroupWindowInfo(
+                groupId,
+                /* syncId= */ null,
+                "Title",
+                TabGroupColorId.GREY,
+                1,
+                Collections.emptyList(),
+                windowState,
+                0L);
     }
 
     @Test
@@ -164,7 +182,11 @@ public class TabGroupUiUtilsUnitTest {
     public void testAddTabsToGroup_emptyTabs() {
         TabModel model = mock(TabModel.class);
         TabGroupUiUtils.addTabsToGroup(
-                model, List.of(), Token.createRandom(), /* tabMovedCallback= */ null, false);
+                model,
+                List.of(),
+                createGroupWindowInfo(Token.createRandom(), GroupWindowState.IN_CURRENT),
+                /* tabMovedCallback= */ null,
+                false);
         verify(model, never()).tabGroupExists(any());
     }
 
@@ -175,7 +197,12 @@ public class TabGroupUiUtilsUnitTest {
         when(tab.getTabGroupId()).thenReturn(groupId);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
-        TabGroupUiUtils.addTabsToGroup(mTabModel, List.of(tab), groupId, callback, false);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_CURRENT),
+                callback,
+                false);
 
         verify(mTabModel, never()).tabGroupExists(any());
         verify(callback, never()).onTabMoved();
@@ -195,7 +222,12 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabModel.getTabById(100)).thenReturn(destTab);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
-        TabGroupUiUtils.addTabsToGroup(mTabModel, List.of(tab), groupId, callback, false);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_CURRENT),
+                callback,
+                false);
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
@@ -229,7 +261,12 @@ public class TabGroupUiUtilsUnitTest {
         when(destTabModel.getGroupLastShownTabId(groupId)).thenReturn(200);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
-        TabGroupUiUtils.addTabsToGroup(mTabModel, List.of(tab), groupId, callback, true);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_ANOTHER),
+                callback,
+                true);
 
         verify(ungrouper).ungroupTabs(eq(List.of(tab)), eq(true), eq(false));
         verify(orchestrator)

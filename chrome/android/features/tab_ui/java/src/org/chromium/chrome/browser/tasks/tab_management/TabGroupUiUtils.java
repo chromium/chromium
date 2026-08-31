@@ -103,17 +103,20 @@ public class TabGroupUiUtils {
      *
      * @param sourceTabModel The source {@link TabModel}.
      * @param tabs The list of {@link Tab}s to add to the group.
-     * @param destinationGroupId The ID of the target tab group.
+     * @param destinationGroup The {@link GroupWindowInfo} representing the target tab group.
      * @param tabMovedCallback Optional callback invoked when tabs are moved.
      * @param bringToFront Whether to bring the destination window to the front if cross-window.
      */
     public static void addTabsToGroup(
             TabModel sourceTabModel,
             List<Tab> tabs,
-            Token destinationGroupId,
+            GroupWindowInfo destinationGroup,
             @Nullable TabMovedCallback tabMovedCallback,
             boolean bringToFront) {
-        if (tabs.isEmpty() || areTabsAlreadyInGroup(tabs, destinationGroupId)) {
+        Token destinationGroupId = destinationGroup.localId;
+        if (destinationGroupId == null
+                || tabs.isEmpty()
+                || areTabsAlreadyInGroup(tabs, destinationGroupId)) {
             return;
         }
 

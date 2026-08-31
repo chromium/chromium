@@ -1149,7 +1149,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         TabGroupUiUtils.addTabsToGroup(
                                 getTabModel(),
                                 tabs,
-                                groupId,
+                                tabGroup,
                                 /* tabMovedCallback= */ null,
                                 /* bringToFront= */ true);
                     };
@@ -1189,7 +1189,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         TabGroupUiUtils.addTabsToGroup(
                                 getTabModel(),
                                 tabs,
-                                groupId,
+                                GroupWindowInfo.forLocalGroup(mActivity, getTabModel(), groupId),
                                 /* tabMovedCallback= */ null,
                                 /* bringToFront= */ true);
                     };

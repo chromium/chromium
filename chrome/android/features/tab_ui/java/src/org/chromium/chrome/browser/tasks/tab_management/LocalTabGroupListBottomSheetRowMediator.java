@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
@@ -25,12 +27,14 @@ import java.util.List;
  */
 @NullMarked
 class LocalTabGroupListBottomSheetRowMediator {
+    private final Context mContext;
     private final Token mGroupId;
     private final TabModel mTabModel;
     private final @Nullable TabMovedCallback mTabMovedCallback;
     private final PropertyModel mPropertyModel;
 
     /**
+     * @param context The {@link Context} to use.
      * @param groupId The id of the tab group to be represented by this row.
      * @param tabModel Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
@@ -39,12 +43,14 @@ class LocalTabGroupListBottomSheetRowMediator {
      * @param tabs The tabs to be added to a tab group.
      */
     public LocalTabGroupListBottomSheetRowMediator(
+            Context context,
             Token groupId,
             TabModel tabModel,
             FaviconResolver faviconResolver,
             Runnable onClickRunnable,
             @Nullable TabMovedCallback tabMovedCallback,
             List<Tab> tabs) {
+        mContext = context;
         mGroupId = groupId;
         mTabModel = tabModel;
         mTabMovedCallback = tabMovedCallback;
@@ -81,7 +87,8 @@ class LocalTabGroupListBottomSheetRowMediator {
         RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.ExistingGroup");
 
         assert !tabs.isEmpty();
+        GroupWindowInfo groupInfo = GroupWindowInfo.forLocalGroup(mContext, mTabModel, mGroupId);
         TabGroupUiUtils.addTabsToGroup(
-                mTabModel, tabs, mGroupId, mTabMovedCallback, /* bringToFront= */ false);
+                mTabModel, tabs, groupInfo, mTabMovedCallback, /* bringToFront= */ false);
     }
 }

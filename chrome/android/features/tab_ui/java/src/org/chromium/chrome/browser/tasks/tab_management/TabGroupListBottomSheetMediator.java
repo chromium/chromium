@@ -175,6 +175,7 @@ public class TabGroupListBottomSheetMediator {
 
             LocalTabGroupListBottomSheetRowMediator rowMediator =
                     new LocalTabGroupListBottomSheetRowMediator(
+                            mContext,
                             groupId,
                             mTabModel,
                             mFaviconResolver,
