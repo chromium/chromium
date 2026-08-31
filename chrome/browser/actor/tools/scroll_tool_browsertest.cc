@@ -53,8 +53,8 @@ class ActorScrollToolToctouBrowserTest : public ActorScrollToolBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
                        ScrollTool_FailOnInvalidNodeID) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Use a random node id that doesn't exist.
@@ -73,8 +73,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
 // Test scrolling the viewport vertically.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
                        ScrollTool_ScrollPageVertical) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   int scroll_offset_y = 50;
@@ -104,8 +104,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
 // Test scrolling the viewport horizontally.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
                        ScrollTool_ScrollPageHorizontal) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   int scroll_offset_x = 50;
@@ -136,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
 
 // Test scrolling in a sub-scroller on the page.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_ScrollElement) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   int scroll_offset_x = 50;
@@ -173,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_ScrollElement) {
 IN_PROC_BROWSER_TEST_F(ActorScrollToolToctouBrowserTest,
                        ScrollTool_RequiresTargetInLastApc) {
   // Element scrolling rejects a target added after APC was saved.
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Save APC before adding the scroll target.
@@ -206,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolToctouBrowserTest,
 
 // Test scrolling over a non-scrollable element returns failure.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_NonScrollable) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   int scroll_offset_y = 80;
@@ -232,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_NonScrollable) {
 // scrolled into view then scroll applied.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
                        ScrollTool_OffscreenScrollable) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Page starts unscrolled
@@ -260,8 +260,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
 // Test that a scrolling over a scroller with overflow in one axis only works
 // correctly.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_OneAxisScroller) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   int scroll_offset = 80;
@@ -305,8 +305,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_BrowserZoom) {
   double level = blink::ZoomFactorToZoomLevel(1.5);
   browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
 
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // 60 DIPs translates to 40 CSS pixels when the zoom factor is 1.5
@@ -331,8 +331,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_BrowserZoom) {
 // Ensure scroll distances are correctly scaled when applied to a CSS zoomed
 // scroller.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest, ScrollTool_CSSZoom) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // 60 DIPs translates to 120 CSS pixels since the scroller is
@@ -371,8 +371,8 @@ class ActorToolsTestDSF2 : public ActorScrollToolBrowserTest {
 // Ensure scroll distances are correctly scaled when using a non-1 device scale
 // factor
 IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_ScrollDSF) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // 40 dips translates to 40 CSS pixels
@@ -399,8 +399,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_BrowserZoom) {
   double level = blink::ZoomFactorToZoomLevel(1.5);
   browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
 
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // 60 DIPs translates to 40 CSS pixels when the zoom factor is 1.5
@@ -425,8 +425,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_BrowserZoom) {
 // Ensure scroll distances are correctly scaled when applied to a CSS zoomed
 // scroller.
 IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_CSSZoom) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // 60 DIPs translates to 120 CSS pixels since the scroller is
@@ -450,8 +450,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_CSSZoom) {
 
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
                        ScrollTool_ZeroIdTargetsViewport) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // DOMNodeIDs start at 1 so 0 should be interpreted as viewport.
@@ -475,8 +475,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorScrollToolToctouBrowserTest,
                        ScrollTool_ZeroIdBypassesLastApcValidation) {
   // Viewport scrolling with node id 0 does not require an APC node.
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   float scroll_offset_y = 50;
@@ -498,8 +498,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolToctouBrowserTest,
 // an animation was started, even though it may not have instantly scrolled.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
                        ScrollTool_SmoothScrollSucceeds) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   float scroll_offset_y = 300;
@@ -517,8 +517,8 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
 // trying to scroll in a direction with no scrollable extent.
 IN_PROC_BROWSER_TEST_F(ActorScrollToolBrowserTest,
                        ScrollTool_SmoothScrollAtExtent) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Scroll to the scroller's full extent.

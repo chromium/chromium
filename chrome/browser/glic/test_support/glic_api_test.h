@@ -295,11 +295,15 @@ class GlicApiBrowserTestMixin : public T {
         FindGlicGuestMainFrame(options.instance);
     ASSERT_TRUE(glic_guest_frame);
     std::string param_json = base::WriteJson(options.params).value_or("");
-    std::string test_init_data =
-        base::WriteJson(base::DictValue().Set(
-                            "embeddedTestServerUrl",
-                            Base::embedded_test_server()->GetURL("/").spec()))
-            .value_or("");
+    base::DictValue init_dict;
+    init_dict.Set("embeddedTestServerUrl",
+                  Base::embedded_test_server()->GetURL("/").spec());
+    if (Base::embedded_https_test_server().Started()) {
+      init_dict.Set(
+          "embeddedHttpsTestServerUrl",
+          Base::embedded_https_test_server().GetURL("example.com", "/").spec());
+    }
+    std::string test_init_data = base::WriteJson(init_dict).value_or("");
     // Store `frame_id` early to avoid evaluation-order use-after-free if
     // `EvalJs` yields and the frame is destroyed.
     content::GlobalRenderFrameHostId frame_id = glic_guest_frame->GetGlobalId();

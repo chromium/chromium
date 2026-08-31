@@ -40,9 +40,8 @@ namespace actor {
 
 namespace {
 
-// The site policy check bypasses localhost, so use a fake hostname to
-// ensure the check is exercised.
-constexpr char kDomainA[] = "a.test";
+// Use a non-localhost hostname to ensure tests use valid HTTPS URLs.
+constexpr char kDomainA[] = "example.com";
 
 class ActorHistoryToolBrowserTest : public ActorToolsTest {
  public:
@@ -69,9 +68,9 @@ class ActorHistoryToolBrowserTest : public ActorToolsTest {
 // Basic test of the HistoryTool going back.
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Back) {
   const GURL url_first =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
   const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -86,9 +85,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Back) {
 // Basic test of the HistoryTool going forward
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Forward) {
   const GURL url_first =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
   const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -112,9 +111,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackNoBFCache) {
                           TEST_REQUIRES_NO_CACHING);
 
   const GURL url_first =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
   const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -131,9 +130,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackNoBFCache) {
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_FailNoSessionHistory) {
   const GURL url_first =
-      embedded_test_server()->GetURL("/actor/blank.html?first");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?first");
   const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html?second");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?second");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -167,9 +166,10 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 // Test history tool across same document navigations
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_BackSameDocument) {
-  const GURL url_first = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL url_first =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html");
   const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html#foo");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html#foo");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -194,12 +194,12 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 // Test history tool across same document navigations
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_BasicIframeBack) {
-  const GURL main_frame_url =
-      embedded_test_server()->GetURL("/actor/simple_iframe.html");
+  const GURL main_frame_url = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/simple_iframe.html");
   const GURL child_frame_url_1 =
-      embedded_test_server()->GetURL("/actor/blank.html");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html");
   const GURL child_frame_url_2 =
-      embedded_test_server()->GetURL("/actor/blank.html?next");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?next");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -230,9 +230,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_SlowBack) {
                           TEST_REQUIRES_NO_CACHING);
 
   const GURL url_first =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
   const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -255,16 +255,16 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_SlowBack) {
 // Test a case where history back causes navigation in two frames.
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_ConcurrentNavigations) {
-  const GURL main_frame_url =
-      embedded_test_server()->GetURL("/actor/concurrent_navigations.html");
+  const GURL main_frame_url = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/concurrent_navigations.html");
   const GURL child_frame_1_start_url =
-      embedded_test_server()->GetURL("/actor/blank.html?A1");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?A1");
   const GURL child_frame_1_target_url =
-      embedded_test_server()->GetURL("/actor/blank.html?A2");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?A2");
   const GURL child_frame_2_start_url =
-      embedded_test_server()->GetURL("/actor/blank.html?B1");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?B1");
   const GURL child_frame_2_target_url =
-      embedded_test_server()->GetURL("/actor/blank.html?B2");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?B2");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -317,9 +317,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_HasBeforeUnload) {
   const GURL url_first =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
   const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -344,12 +344,12 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackFromPOST) {
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
-  const GURL url_a =
-      embedded_test_server()->GetURL(kDomainA, "/actor/history_post_form.html");
-  const GURL url_b = embedded_test_server()->GetURL(
+  const GURL url_a = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/history_post_form.html");
+  const GURL url_b = embedded_https_test_server().GetURL(
       kDomainA, "/actor/history_post_page_b.html");
   const GURL url_c =
-      embedded_test_server()->GetURL(kDomainA, "/actor/blank.html?page_c");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?page_c");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a));
   ASSERT_EQ(web_contents()->GetURL(), url_a);
@@ -413,12 +413,12 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
-  const GURL url_a =
-      embedded_test_server()->GetURL(kDomainA, "/actor/history_post_form.html");
-  const GURL url_b = embedded_test_server()->GetURL(
+  const GURL url_a = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/history_post_form.html");
+  const GURL url_b = embedded_https_test_server().GetURL(
       kDomainA, "/actor/history_post_page_b.html");
   const GURL url_c =
-      embedded_test_server()->GetURL(kDomainA, "/actor/blank.html?page_c");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?page_c");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a));
   ASSERT_EQ(web_contents()->GetURL(), url_a);
@@ -483,14 +483,14 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
-  const GURL url_a =
-      embedded_test_server()->GetURL(kDomainA, "/actor/history_post_form.html");
-  const GURL url_b = embedded_test_server()->GetURL(
+  const GURL url_a = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/history_post_form.html");
+  const GURL url_b = embedded_https_test_server().GetURL(
       kDomainA, "/actor/history_post_page_b.html");
   const GURL url_c =
-      embedded_test_server()->GetURL(kDomainA, "/actor/blank.html?page_c");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?page_c");
   const GURL url_d =
-      embedded_test_server()->GetURL(kDomainA, "/actor/blank.html?page_d");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?page_d");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a));
   ASSERT_EQ(web_contents()->GetURL(), url_a);
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
     EXPECT_FALSE(web_contents()->GetController().GetPendingEntry());
   }
 
-  // Navigate to page D.
+  // Navigate directly to page D.
   ActResultFuture fut;
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(*active_tab(), url_d.spec());
@@ -557,10 +557,10 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
 
-  const GURL url_first =
-      embedded_test_server()->GetURL("/actor/simple_iframe.html?start");
-  const GURL url_second =
-      embedded_test_server()->GetURL("/actor/simple_iframe.html?target");
+  const GURL url_first = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/simple_iframe.html?start");
+  const GURL url_second = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/simple_iframe.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   const GURL url_subframe =
       ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
@@ -601,7 +601,8 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_RecordActingOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
-  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL url =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
@@ -619,11 +620,11 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_BackToBlockedUrlFailsValidation) {
   // Use a non-localhost hostname to ensure the site policy check is exercised.
   const GURL url_a =
-      embedded_test_server()->GetURL(kDomainA, "/actor/blank.html?a");
-  const GURL url_blocked = embedded_test_server()->GetURL(
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?a");
+  const GURL url_blocked = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html?blocked");
   const GURL url_c =
-      embedded_test_server()->GetURL(kDomainA, "/actor/blank.html?c");
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?c");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_blocked));

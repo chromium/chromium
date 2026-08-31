@@ -47,10 +47,10 @@ class ActorNavigateToolBrowserTest : public ActorToolsTest {
 
 // Basic test of the NavigateTool.
 IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest, NavigateTool) {
-  const GURL url_start =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
-  const GURL url_target =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+  const GURL url_start = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
 
   std::unique_ptr<ToolRequest> action =
@@ -66,10 +66,10 @@ IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest, NavigateTool) {
 // completion until the new page has fired the load event.
 IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
                        NavigateTool_DelaysUntilLoad) {
-  const GURL url_first =
-      embedded_test_server()->GetURL("/actor/simple_iframe.html?start");
-  const GURL url_second =
-      embedded_test_server()->GetURL("/actor/simple_iframe.html?target");
+  const GURL url_first = embedded_https_test_server().GetURL(
+      "example.com", "/actor/simple_iframe.html?start");
+  const GURL url_second = embedded_https_test_server().GetURL(
+      "example.com", "/actor/simple_iframe.html?target");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   const GURL url_subframe =
@@ -127,8 +127,8 @@ IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
                        NavigateTool_RecordActingOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
-  const GURL url_target =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?target");
 
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(*active_tab(), url_target.spec());

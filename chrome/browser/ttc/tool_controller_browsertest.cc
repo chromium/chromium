@@ -27,7 +27,7 @@ class ToolControllerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 };
 
@@ -41,7 +41,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlCurrentTab) {
   ToolController controller(browser()->GetProfile());
   base::test::TestFuture<OpenUrlResult> future;
 
-  const GURL& url = embedded_test_server()->GetURL("/title1.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
   controller.OpenUrl(browser(), url.spec(), /*new_tab=*/false,
                      future.GetCallback());
 

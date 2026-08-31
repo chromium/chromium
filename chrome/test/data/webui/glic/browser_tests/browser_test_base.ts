@@ -18,6 +18,7 @@ export const longWaitTimeMs = 120000;
 
 export interface TestInitData {
   embeddedTestServerUrl: string;
+  embeddedHttpsTestServerUrl?: string;
 }
 
 export function getTestName(): string|null {
@@ -402,6 +403,12 @@ export class ApiTestFixtureBase {
 
   getUrl(path: string): string {
     return new URL(path, this.initData!.embeddedTestServerUrl).href;
+  }
+
+  getHttpsUrl(path: string): string {
+    const baseUrl = this.initData?.embeddedHttpsTestServerUrl ??
+        this.initData!.embeddedTestServerUrl;
+    return new URL(path, baseUrl).href;
   }
 
   getTestUrl(path: string): string {

@@ -28,13 +28,15 @@ class ActorWaitToolBrowserTest : public ActorToolsTest {
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 };
 
 IN_PROC_BROWSER_TEST_F(ActorWaitToolBrowserTest, WaitTool) {
   WaitTool::SetNoDelayForTesting();
 
-  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::unique_ptr<ToolRequest> action = MakeWaitRequest();

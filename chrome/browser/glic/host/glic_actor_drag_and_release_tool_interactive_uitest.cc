@@ -21,7 +21,8 @@ using apc::Actions;
 
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Range) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/drag.html");
+  const GURL task_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/drag.html");
 
   gfx::Rect range_rect;
   auto drag_provider = base::BindLambdaForTesting([this, &range_rect]() {
@@ -65,7 +66,8 @@ class GlicActorDragDSFTest : public GlicActorUiTest,
 // Ensure the drag tool sends the expected mouse down, move and up events.
 IN_PROC_BROWSER_TEST_P(GlicActorDragDSFTest, Events) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/drag.html");
+  const GURL task_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/drag.html");
 
   // The values are provided in DIPs. Since there is no browser zoom, this is
   // equivalent to CSS pixels so should be the same values provided to web APIs,
@@ -111,7 +113,8 @@ INSTANTIATE_TEST_SUITE_P(,
 // Ensure coordinates outside of the viewport are rejected.
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Offscreen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/drag.html");
+  const GURL task_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/drag.html");
 
   gfx::Rect range_rect;
   auto drag_provider = base::BindLambdaForTesting([this, &range_rect]() {
@@ -152,8 +155,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Offscreen) {
 
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_DOMNodeId) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/drag_dom_node_id.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/drag_dom_node_id.html");
 
   auto drag_provider = base::BindLambdaForTesting([this]() {
     int32_t from_node_id = SearchAnnotatedPageContent("fromTarget");

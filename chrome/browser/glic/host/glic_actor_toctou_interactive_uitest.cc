@@ -58,9 +58,9 @@ MultiStep GlicActorToctouUiTest::NavigateFrame(
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailWhenCrossOriginTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/two_iframes.html");
-  const GURL cross_origin_iframe_url = embedded_test_server()->GetURL(
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/two_iframes.html");
+  const GURL cross_origin_iframe_url = embedded_https_test_server().GetURL(
       "foo.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(
@@ -95,10 +95,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailWhenSameSiteTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/two_iframes.html");
-  const GURL samesite_iframe_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/two_iframes.html");
+  const GURL samesite_iframe_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(
       // clang-format off
@@ -131,8 +131,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, ToctouCheckFailWhenNodeRemoved) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
   RunTestSequence(
@@ -152,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, ToctouCheckFailWhenNodeRemoved) {
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailForCoordinateTargetWhenNodeMoved) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(
       // clang-format off
@@ -177,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailsWhenNodeInteractionPointObscured) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_obscured_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_obscured_element.html");
   constexpr std::string_view kClickableButtonLabel = "target";
 
   RunTestSequence(
@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnTextNode) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   gfx::Rect checkbox_label_bounds;
   auto click_provider =
@@ -242,8 +242,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnShadowDom) {
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
   // Load the new page that contains the element with a shadow DOM.
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_shadow_dom.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_shadow_dom.html");
 
   RunTestSequence(
       // clang-format off
@@ -266,8 +266,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnMultilineAnchor) {
   constexpr std::string_view kAnchorLabel = "anchor";
 
   // Load the new page that contains the multi-line anchor element.
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/multi_line_anchor_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/multi_line_anchor_element.html");
 
   RunTestSequence(
       // clang-format off
@@ -301,8 +301,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouInteractionPointDiscoveryUiTest,
   constexpr std::string_view kBottomElement = "behind";
 
   // Load the new page that contains the element with a shadow DOM.
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/partially_obscured.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/partially_obscured.html");
 
   RunTestSequence(
       // clang-format off

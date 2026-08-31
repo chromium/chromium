@@ -76,7 +76,8 @@ class ActorClickToolPDFBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, Click) {
-  const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/pdf/test.pdf");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(base::test::RunUntil([this]() {

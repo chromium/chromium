@@ -27,8 +27,8 @@ constexpr std::string_view kClickableButtonLabel = "clickable";
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
@@ -41,8 +41,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionSucceeds) {
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionWithCoordinatesSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonSelector = "clickable";
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   gfx::Rect clickable_button_bounds;
 
   auto click_provider =
@@ -73,8 +73,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionWithCoordinatesSucceeds) {
 #endif
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, MAYBE_ClickActionInWebComponent) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL(
-      "/actor/page_with_web_component_button.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_web_component_button.html");
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, MAYBE_ClickActionInWebComponent) {
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
@@ -102,8 +102,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblClickActionSucceeds) {
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, RightClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
@@ -116,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, RightClickActionSucceeds) {
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblRightClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),

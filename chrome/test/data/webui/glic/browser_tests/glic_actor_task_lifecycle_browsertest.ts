@@ -118,7 +118,7 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
     await this.advanceToNextStep({taskId});
 
     // Performing an action on a paused task should fail.
-    const targetUrl = this.getUrl('/actor/blank.html?target');
+    const targetUrl = this.getHttpsUrl('/actor/blank.html?target');
     const navBuffer = await this.browser.makeNavigateAction(taskId, targetUrl);
     const performResult1 = await this.host.performActions(navBuffer);
     const resultCode1 = await this.browser.parseActionsResult(performResult1);
@@ -221,7 +221,7 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
     // Use a long wait to ensure we can pause before it completes.
     const waitBuffer =
         await this.browser.makeWaitAction(taskId, longWaitTimeMs);
-    const targetUrl = this.getUrl('/actor/blank.html?target');
+    const targetUrl = this.getHttpsUrl('/actor/blank.html?target');
 
     const focusedTabId = await this.getFocusedTabId();
 
@@ -295,7 +295,7 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
 
     await this.advanceToNextStep({taskId});
 
-    const targetUrl = this.getUrl('/actor/blank.html?target');
+    const targetUrl = this.getHttpsUrl('/actor/blank.html?target');
     const navBuffer = await this.browser.makeNavigateAction(taskId, targetUrl);
     const navResult = await this.host.performActions(navBuffer);
     const resultCode = await this.browser.parseActionsResult(navResult);
@@ -350,7 +350,7 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
     assertEquals('kActionsCancelled', resultCode1);
 
     // Ensure the task can still perform actions after being uninterrupted.
-    const targetUrl = this.getUrl('/actor/blank.html?target');
+    const targetUrl = this.getHttpsUrl('/actor/blank.html?target');
     const navBuffer = await this.browser.makeNavigateAction(taskId, targetUrl);
     const navResult = await this.host.performActions(navBuffer);
     const resultCode2 = await this.browser.parseActionsResult(navResult);
@@ -426,7 +426,7 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
     // Let the test create a second tab.
     await this.advanceToNextStep();
 
-    const targetUrl = this.getUrl('/actor/blank.html?target');
+    const targetUrl = this.getHttpsUrl('/actor/blank.html?target');
     const navBuffer =
         await this.browser.makeNavigateAction(taskId, targetUrl, firstTabId);
     const navResult = await this.host.performActions(navBuffer);
@@ -519,7 +519,7 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
 
     // Perform a navigate action first to associate the active tab with the
     // actor task. This ensures has_visible_tab is computed as true.
-    const targetUrl = this.getUrl('/actor/blank.html?target');
+    const targetUrl = this.getHttpsUrl('/actor/blank.html?target');
     const navBuffer = await this.browser.makeNavigateAction(taskId, targetUrl);
     const navResult = await this.host.performActions(navBuffer);
     const resultCode = await this.browser.parseActionsResult(navResult);

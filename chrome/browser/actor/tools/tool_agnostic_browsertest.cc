@@ -102,10 +102,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
     GTEST_SKIP();
   }
 
-  const GURL url_first =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
-  const GURL url_second =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+  const GURL url_first = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?start");
+  const GURL url_second = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
 
   content::WeakDocumentPtr first_rfh = main_frame()->GetWeakDocumentPtr();
@@ -143,9 +143,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        MAYBE_EnsureFocusSimulatedWhenActing) {
   const GURL url_background =
-      embedded_test_server()->GetURL("/actor/focus.html");
+      embedded_https_test_server().GetURL("example.com", "/actor/focus.html");
   const GURL url_foreground =
-      embedded_test_server()->GetURL("/actor/blank.html");
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_background));
 
@@ -221,12 +221,12 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 // works.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        InvokeToolSameSiteSubframe) {
-  const GURL url =
-      embedded_https_test_server().GetURL("/actor/positioned_iframe.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/positioned_iframe.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const GURL subframe_url = embedded_https_test_server().GetURL(
-      "/actor/page_with_clickable_element.html");
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(NavigateIframeToURL(web_contents(), "iframe", subframe_url));
 
   content::RenderFrameHost* subframe =
@@ -254,11 +254,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        InvokeToolCrossSiteSubframeWithCoordinateTarget) {
   const GURL url = embedded_https_test_server().GetURL(
-      "/actor/positioned_iframe_no_scroll.html");
+      "a.com", "/actor/positioned_iframe_no_scroll.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const GURL cross_origin_iframe_url = embedded_https_test_server().GetURL(
-      "foo.com", "/actor/page_with_clickable_element.html");
+      "b.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(
       NavigateIframeToURL(web_contents(), "iframe", cross_origin_iframe_url));
 
@@ -288,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 // Sending an action to an offscreen element on a page should succeed by
 // scrolling it into view first.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenElement) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), false);
@@ -309,8 +309,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenElement) {
 // Same as above but the element is an inline element. (i.e. doesn't have a
 // LayoutBox).
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenElementInline) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_EQ(EvalJs(web_contents(), "offscreen_inline_clicked"), false);
@@ -329,8 +329,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenElementInline) {
 
 // Sending an action to an offscreen coordinate should fail.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenCoordinate) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   {
@@ -352,8 +352,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenCoordinate) {
 // Sending an action to a coordinate that's outside the document bounds (i.e.
 // cannot be scrolled to) should fail.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, InvalidCoordinate) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   {
@@ -385,8 +385,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, InvalidCoordinate) {
 // should fail.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        OffscreenElementNonScrollablePage) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(ExecJs(web_contents(),
                      "document.documentElement.style.overflow = 'hidden';"));
@@ -409,8 +409,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
 // Sending an action to an offscreen fixed position element should fail.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenFixedElement) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Page starts unscrolled
@@ -431,8 +431,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenFixedElement) {
 
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        ToolFailsWhenNodeInteractionPointObscured) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_obscured_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_obscured_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_EQ(EvalJs(web_contents(), "target_button_clicked"), false);
   ASSERT_EQ(EvalJs(web_contents(), "obstruction_button_clicked"), false);
@@ -456,8 +456,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        ToolFailingValidationAddsTab) {
-  const GURL url_start =
-      embedded_https_test_server().GetURL("/actor/blank.html?start");
+  const GURL url_start = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?start");
   const GURL url_target = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
@@ -482,7 +482,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 // performed.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        ScrollIntoViewForcesPageStabilization) {
-  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string_view selector = "#offscreen-disabled-input";
@@ -556,8 +557,8 @@ class ActorEarlyAddTaskTabsBrowserTest : public ActorToolAgnosticBrowserTest {
 // immediately after calling Act.
 IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
                        TabScopedToolRequestAddsTabImmediately) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =
@@ -598,8 +599,8 @@ IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
                        NewlyAddedTabsVisibleFromStateChangeCallback) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =
@@ -633,8 +634,8 @@ IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
 // Ensure ActorKeyedService removes a task from its tracked task set when the
 // task is stopped.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, ActorTaskRemovedOnStop) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   TaskId task_id = actor_task().id();
@@ -649,8 +650,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, ActorTaskRemovedOnStop) {
 
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        ActorTaskNoLongerAvailableInStopStateCallback) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_EQ(actor_task().GetState(), ActorTask::State::kCreated);
@@ -690,10 +691,11 @@ class ActorToolAgnosticBrowserTestWithDeferWhileInterrupted
 
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithDeferWhileInterrupted,
                        ActCallbackDeferredWhileInterrupted) {
-  const GURL next_url = embedded_test_server()->GetURL("/actor/blank.html");
-  const GURL start_url = embedded_test_server()->GetURL(
-      base::StrCat({"/actor/link_full_page.html?href=",
-                    url::EncodeUriComponent(next_url.spec())}));
+  const GURL next_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", base::StrCat({"/actor/link_full_page.html?href=",
+                                   url::EncodeUriComponent(next_url.spec())}));
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
 
@@ -779,8 +781,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
   // Use a new tab so closing it later won't trigger destruction of browser
   // (needed for proper test teardown).
   AddBlankTabAndShow(browser());
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =
@@ -835,8 +837,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
 
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
                        RendererCrashesBeforeToolFinishes) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =

@@ -262,8 +262,8 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
 // while acting on a tab, we override attempts by the page to create new
 // tabs, and instead navigate the existing tab.
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, ForceSameTabNavigation) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/target_blank_links.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/target_blank_links.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Check specifically that it's the existing frame that navigates.
@@ -274,8 +274,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, ForceSameTabNavigation) {
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
                        ForceSameTabNavigationByScript) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/target_blank_links.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/target_blank_links.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Check specifically that it's the existing frame that navigates.
@@ -285,7 +285,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
-  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Check initial background color is red
@@ -314,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
-  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Check initial background color is red
@@ -590,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEnginePixelBrowserTest,
   // Render an HTML <select> element whose second item appears red.
   // The second item should appear when the element is clicked.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/actor/red_dropdown.html")));
+      browser(), embedded_https_test_server().GetURL(
+                     "example.com", "/actor/red_dropdown.html")));
   EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetPrimaryMainFrame()));
   content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
@@ -874,8 +877,8 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineFileSystemAccessApiBrowserTest,
       std::make_unique<SelectPredeterminedFileDialogFactory>(
           std::vector<base::FilePath>{test_file}));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/actor/file_system_access.html")));
+      browser(), embedded_https_test_server().GetURL(
+                     "example.com", "/actor/file_system_access.html")));
 
   EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
@@ -991,8 +994,8 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSkipBeforeUnloadBrowserTest,
     actor_keyed_service()->ResetForTesting();
   }
 
-  const GURL beforeunload_url =
-      embedded_test_server()->GetURL("/actor/beforeunload.html");
+  const GURL beforeunload_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/beforeunload.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), beforeunload_url));
 
   content::WebContents* web_contents =
@@ -1000,7 +1003,8 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSkipBeforeUnloadBrowserTest,
   content::PrepContentsForBeforeUnloadTest(web_contents);
   ASSERT_EQ(beforeunload_url, web_contents->GetLastCommittedURL());
 
-  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
 
   bool should_skip_dialog = IsActorActive() && IsSkipFeatureEnabled();
 
@@ -1094,7 +1098,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineDownloadBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsToolVotes) {
-  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button1_id =
@@ -1121,7 +1126,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsToolVotes) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsMultipleToolVotes) {
-  const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   base::test::TestFuture<ToolCallback> on_invoke_future1;

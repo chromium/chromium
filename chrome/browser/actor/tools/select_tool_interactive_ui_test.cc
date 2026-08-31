@@ -41,7 +41,8 @@ class ActorSelectToolBrowserTest : public ActorToolsTest {
 // that's not blocking.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectToolCloseDropDownMenu) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   content::ShowPopupWidgetWaiter new_popup_waiter(
       web_contents(), web_contents()->GetPrimaryMainFrame());

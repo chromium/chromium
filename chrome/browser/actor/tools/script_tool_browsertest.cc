@@ -149,7 +149,8 @@ class ActorToolsTestScriptToolWithStability : public ActorToolsTestScriptTool {
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolWithStability,
                        PageStabilityDelay) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments = R"JSON({"text": "test"})JSON";
@@ -166,7 +167,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolWithStability,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments =
@@ -189,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/declarative_script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string declarative_input =
@@ -210,8 +212,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/script_tool_navigate_after_response.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_navigate_after_response.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments =
@@ -224,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string declarative_input =
@@ -288,8 +290,8 @@ class ActorToolsTestScriptToolNoTimeout : public ActorToolsTest {
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolNoTimeout,
                        DeclarativeToolNoTimeout) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_pause.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_pause.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string declarative_input =
@@ -361,7 +363,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolNoTimeout,
 }
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Histograms) {
   base::HistogramTester histogram_tester;
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string valid_input_arguments = R"JSON({"text": "test"})JSON";
@@ -396,7 +399,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Histograms) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, HasTransientUserActivation) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(content::ExecJs(web_contents(), R"(
@@ -418,7 +422,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, HasTransientUserActivation) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenTopLevelNavigate) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(content::ExecJs(web_contents(),
@@ -451,7 +456,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenTopLevelNavigate) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenSucceeds) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(content::ExecJs(web_contents(), R"(
@@ -511,7 +517,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenSucceeds) {
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                        WindowOpenSecondAttemptBlocked) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(content::ExecJs(web_contents(), R"(
@@ -545,8 +552,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailed) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Insert a throttle to cancel the navigation.
@@ -568,13 +575,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailed) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationCommittedErrorPage) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Change form action to a non-existent path on the same server, which should
   // result in an error page (404).
-  const GURL error_url = embedded_test_server()->GetURL("/non-existent");
+  const GURL error_url =
+      embedded_https_test_server().GetURL("example.com", "/non-existent");
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
       content::JsReplace("document.querySelector('form').action = $1",
@@ -585,12 +593,12 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationCommittedErrorPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailedLoad) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  const GURL fail_url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document_fail.html");
+  const GURL fail_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_cross_document_fail.html");
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
       content::JsReplace("document.querySelector('form').action = $1",
@@ -601,8 +609,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailedLoad) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationBlockedByCSP) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Inject a CSP meta tag to block form submission.
@@ -618,8 +626,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationBlockedByCSP) {
 }
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                        OtherFrameNavigationDoesNotCancelTool) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_slow.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(content::ExecJs(web_contents(),
                               "let f = document.createElement('iframe'); "
@@ -641,8 +649,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                        SameDocumentNavigationDoesNotCancelTool) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_slow.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
@@ -661,8 +669,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                        UnrelatedNavigationCancelsTool) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_slow.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
@@ -675,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   // Trigger a browser-initiated navigation.
   content::TestNavigationObserver nav_observer(web_contents());
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_test_server()->GetURL("/title1.html")));
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
 
@@ -688,8 +697,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 IN_PROC_BROWSER_TEST_F(
     ActorToolsTestScriptTool,
     DISABLED_TabClosedWhileWaitingForNavigationDoesNotCrash) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_slow.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(content::ExecJs(web_contents(), R"(
@@ -707,7 +716,8 @@ IN_PROC_BROWSER_TEST_F(
   auto action = MakeScriptToolRequest(*main_frame(), "navigate_and_hang", "{}");
   ActResultFuture result;
   content::TestNavigationManager nav_manager(
-      web_contents(), embedded_test_server()->GetURL("/title1.html"));
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html"));
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ASSERT_TRUE(nav_manager.WaitForRequestStart());
 
@@ -720,9 +730,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                        BrowserInitiatedBackNavigationFailsTool) {
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_test_server()->GetURL("/title1.html")));
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_slow.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
@@ -740,8 +751,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ToolSelfNavigates) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_self_navigate.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_self_navigate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   RunNavigatingScriptTool(*main_frame(), "navigate",
@@ -749,8 +760,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ToolSelfNavigates) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ToolNavigatesAsyncTask) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/script_tool_self_navigate_delayed.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_self_navigate_delayed.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   RunNavigatingScriptTool(*main_frame(), "navigate_delayed",
@@ -758,9 +769,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ToolNavigatesAsyncTask) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, SameOriginSubframeInDocument) {
-  content::RenderFrameHost& subframe = NavigateSubframe(
-      embedded_test_server()->GetURL("/actor/simple_iframe.html"),
-      embedded_test_server()->GetURL("/actor/script_tool.html"));
+  content::RenderFrameHost& subframe =
+      NavigateSubframe(embedded_https_test_server().GetURL(
+                           "example.com", "/actor/simple_iframe.html"),
+                       embedded_https_test_server().GetURL(
+                           "example.com", "/actor/script_tool.html"));
   ASSERT_FALSE(subframe.IsCrossProcessSubframe());
 
   const std::string input_arguments =
@@ -772,8 +785,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, SameOriginSubframeInDocument) {
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, SameOriginSubframeNavigates) {
   content::RenderFrameHost& subframe = NavigateSubframe(
-      embedded_test_server()->GetURL("/actor/simple_iframe.html"),
-      embedded_test_server()->GetURL("/actor/script_tool_self_navigate.html"));
+      embedded_https_test_server().GetURL("example.com",
+                                          "/actor/simple_iframe.html"),
+      embedded_https_test_server().GetURL(
+          "example.com", "/actor/script_tool_self_navigate.html"));
   ASSERT_FALSE(subframe.IsCrossProcessSubframe());
 
   RunNavigatingScriptTool(subframe, "navigate",
@@ -809,11 +824,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, CrossOriginSubframeNavigates) {
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                        OpaqueOriginSubframeInDocument) {
-  content::RenderFrameHost& subframe = NavigateSubframe(
-      embedded_test_server()->GetURL("/actor/simple_iframe.html"),
-      embedded_test_server()->GetURL("/actor/script_tool.html"),
-      /*allow=*/"tools",
-      /*sandbox=*/"allow-scripts");
+  content::RenderFrameHost& subframe =
+      NavigateSubframe(embedded_https_test_server().GetURL(
+                           "example.com", "/actor/simple_iframe.html"),
+                       embedded_https_test_server().GetURL(
+                           "example.com", "/actor/script_tool.html"),
+                       /*allow=*/"tools",
+                       /*sandbox=*/"allow-scripts");
   EXPECT_TRUE(subframe.GetLastCommittedOrigin().opaque());
 
   const std::string input_arguments =
@@ -824,8 +841,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ToolReentrantExecution) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_slow.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
@@ -852,9 +869,10 @@ IN_PROC_BROWSER_TEST_F(
     ActorToolsTestScriptTool,
     BrowserInitiatedBackNavigationWhileWaitingForUserFailsTool) {
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_test_server()->GetURL("/title1.html")));
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_pause.html");
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_pause.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string declarative_input =
@@ -881,7 +899,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DefaultVoting) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments = R"JSON({"text": "test"})JSON";
@@ -911,7 +930,8 @@ class ActorToolsTestScriptToolSkipVoting : public ActorToolsTestScriptTool {
 };
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolSkipVoting, SkipVoting) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string input_arguments = R"JSON({"text": "test"})JSON";

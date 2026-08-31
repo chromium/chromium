@@ -38,7 +38,8 @@ class ActorMouseMoveToolBrowserTest : public ActorToolsTest {
 // Test the MouseMove tool fails on a non-existent content node.
 IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MouseMoveTool_NonExistentNode) {
-  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
@@ -55,7 +56,8 @@ IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
 
 // Test basic movements using MouseMove tool generates the expected events.
 IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest, MouseMoveTool_Events) {
-  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
@@ -95,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest, MouseMoveTool_Events) {
 // Test mouse move causes scrolling if the target is offscreen.
 IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MouseMoveTool_TargetOutsideViewport) {
-  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
@@ -123,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
 // Ensure mouse can be moved to a coordinate onscreen.
 IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MouseMoveTool_MoveToCoordinate) {
-  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
@@ -154,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MAYBE_MouseMoveTool_MoveToCoordinateOffScreen) {
-  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.

@@ -1164,15 +1164,15 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
   }
 
   GURL GetActorInitialUrl() {
-    return embedded_https_test_server().GetURL("/empty.html");
+    return embedded_https_test_server().GetURL("example.com", "/empty.html");
   }
 
   GURL GetActorUrl1() {
-    return embedded_https_test_server().GetURL("/title1.html");
+    return embedded_https_test_server().GetURL("example.com", "/title1.html");
   }
 
   GURL GetActorUrl2() {
-    return embedded_https_test_server().GetURL("/title2.html");
+    return embedded_https_test_server().GetURL("example.com", "/title2.html");
   }
 
   actor::ActorKeyedService* actor_service() {

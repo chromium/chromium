@@ -32,7 +32,7 @@ class ActorFindAndHighlightToolBrowserTest : public ActorToolsTest {
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
  private:
@@ -40,7 +40,8 @@ class ActorFindAndHighlightToolBrowserTest : public ActorToolsTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest, FindAndHighlight) {
-  const GURL url = embedded_test_server()->GetURL("/actor/simple.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ActResultFuture result;
@@ -57,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest, FindAndHighlight) {
 
 IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
                        FindAndHighlight_TextNotFound) {
-  const GURL url = embedded_test_server()->GetURL("/actor/simple.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ActResultFuture result;
@@ -75,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
                        FindAndHighlight_EmptyQuery) {
-  const GURL url = embedded_test_server()->GetURL("/actor/simple.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ActResultFuture result;
@@ -97,8 +100,8 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
                        FindAndHighlight_ScrollsIntoView) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   EXPECT_EQ(0, content::EvalJs(web_contents(), "window.scrollY"));
 
@@ -121,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
                        FindAndHighlight_ReplaceActiveHighlight) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   EXPECT_EQ(0, content::EvalJs(web_contents(), "window.scrollY"));
 
@@ -163,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
                        FindAndHighlight_RecordActingOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
-  const GURL url = embedded_test_server()->GetURL("/actor/simple.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ActResultFuture result;
@@ -178,7 +182,8 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
                        FindAndHighlight_TabNavigatesDuringRequest) {
-  const GURL url1 = embedded_test_server()->GetURL("/actor/simple.html");
+  const GURL url1 =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url1));
 
   ActResultFuture result;
@@ -186,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
       MakeFindAndHighlightRequest(*active_tab(), "simple");
   actor_task().Act(ToRequestList(request), result.GetCallback());
 
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url2));
 
   ExpectErrorResult(result,

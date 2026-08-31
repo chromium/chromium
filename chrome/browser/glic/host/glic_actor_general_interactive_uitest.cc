@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateTaskAndNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   base::HistogramTester histogram_tester;
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
@@ -309,8 +309,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
                        CachesLastObservedPageContentAfterActionFinish) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
@@ -328,8 +328,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, ActionProtoInvalid) {
 
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, ActionTargetNotFound) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   auto click_provider = base::BindLambdaForTesting([this]() {
     content::RenderFrameHost* frame =
@@ -353,8 +353,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, GetPageContextWithoutFocus) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -373,8 +373,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, GetPageContextWithoutFocus) {
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, StartTaskWithDevtoolsOpen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   // Ensure a new tab can be created without crashing when the most recently
   // focused browser window is not a normal tabbed browser (e.g. a DevTools
@@ -448,8 +448,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
 
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(
       // clang-format off
@@ -480,8 +480,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
 
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   // clang-format off
   RunTestSequence(
@@ -541,8 +541,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab1Id);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2Id);
 
-  const GURL url1 = embedded_test_server()->GetURL("/actor/simple.html?tab1");
-  const GURL url2 = embedded_test_server()->GetURL("/actor/simple.html?tab2");
+  const GURL url1 = embedded_https_test_server().GetURL(
+      "example.com", "/actor/simple.html?tab1");
+  const GURL url2 = embedded_https_test_server().GetURL(
+      "example.com", "/actor/simple.html?tab2");
 
   tabs::TabHandle tab1;
   tabs::TabHandle tab2;
@@ -678,8 +680,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestWithoutPolicyExemption,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabForeground) {
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   int created_tab_id = -1;
 
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -710,8 +712,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabForeground) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabBackground) {
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
   int existing_tab_id = -1;
   int created_tab_id = -1;
 
@@ -1175,8 +1177,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
 
   constexpr std::string_view kOffscreenButton = "offscreen";
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   gfx::Rect button_bounds;
 
@@ -1211,8 +1213,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
                        CoordinatesApplyDeviceScaleFactor_TinyTarget) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url = embedded_test_server()->GetURL(
-      "/actor/page_with_tiny_iframe_target.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_tiny_iframe_target.html");
 
   gfx::Rect button_bounds;
   gfx::Point target_blink_pixels;
@@ -1271,8 +1273,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CloseFloatyShowsToast) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
                                       kToastState);
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   TrackFloatingGlicInstance();
   RunTestSequence(
@@ -1290,8 +1292,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CloseSidePanelShowsToast) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
                                       kToastState);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -1351,7 +1353,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInMinimizedWindow) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kIsMinimizedState);
 
-  const GURL task_url = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL task_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   RunTestSequence(
       // clang-format off
     InitializeWithOpenGlicWindow(),
@@ -1396,7 +1399,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInInitiallyMinimizedWindow) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kIsMinimizedState);
 
-  const GURL task_url = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL task_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   RunTestSequence(
       // clang-format off
     SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
@@ -1440,8 +1444,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInMinimizedWindowWithFloaty) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kIsMinimizedState);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
 
   // Ensure a new tab can be created without crashing when the most recently
   // focused browser window is not a normal tabbed browser (e.g. a DevTools

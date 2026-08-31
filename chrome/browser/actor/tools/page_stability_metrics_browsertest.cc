@@ -370,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
   EXPECT_FALSE(result.IsReady());
 
   // Navigate away and finish the navigation.
-  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   content::TestNavigationManager manager(web_contents(), url);
   ASSERT_TRUE(
       ExecJs(web_contents(), content::JsReplace("window.location = $1", url)));

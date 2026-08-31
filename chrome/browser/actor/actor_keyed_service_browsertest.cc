@@ -167,7 +167,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   EXPECT_FALSE(first_task_id.is_null());
 
   PerformActionsFuture result_future;
-  const GURL url = embedded_https_test_server().GetURL("/actor/blank.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   std::unique_ptr<ToolRequest> action_request =
       std::make_unique<NavigateToolRequest>(active_tab()->GetHandle(), url);
   actor_keyed_service()->PerformActions(
@@ -236,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        MAYBE_RequestTabObservation_HasScreenshotInfo) {
-  const GURL url =
-      embedded_https_test_server().GetURL("/actor/simple_iframe.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/simple_iframe.html");
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
 
   content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
@@ -283,8 +284,9 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   const auto& screenshot_info = observation.screenshot_info();
   ASSERT_EQ(screenshot_info.iframe_info_size(), 1);
   const auto& iframe_info = screenshot_info.iframe_info(0);
-  EXPECT_EQ(iframe_info.url(),
-            embedded_https_test_server().GetURL("/actor/blank.html").spec());
+  EXPECT_EQ(iframe_info.url(), embedded_https_test_server()
+                                   .GetURL("example.com", "/actor/blank.html")
+                                   .spec());
   EXPECT_TRUE(iframe_info.has_bounding_box());
   EXPECT_GE(iframe_info.bounding_box().x(), 0);
   EXPECT_GE(iframe_info.bounding_box().y(), 0);
@@ -326,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       web_contents(),
-      embedded_https_test_server().GetURL("/actor/blank.html")));
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html")));
 
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
   actor::AddTabToTask(*active_tab(), *task);
@@ -345,7 +347,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   // Make sure we can run actions on this new tab (this also ensures all new tab
   // animations are completed).
   PerformActionsFuture result_future;
-  const GURL url = embedded_https_test_server().GetURL("/actor/simple.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
   std::unique_ptr<ToolRequest> action_request =
       std::make_unique<NavigateToolRequest>(new_tab->GetHandle(), url);
   actor_keyed_service()->PerformActions(task_id, ToRequestList(action_request),
@@ -365,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   // Navigate the active tab to a new page.
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       web_contents(),
-      embedded_https_test_server().GetURL("/actor/blank.html")));
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html")));
 
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
   actor::AddTabToTask(*active_tab(), *task);

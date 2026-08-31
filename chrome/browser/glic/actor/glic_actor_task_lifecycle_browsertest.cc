@@ -242,6 +242,14 @@ class GlicActorTaskLifecycleFunctionalBrowserTest
   }
   ~GlicActorTaskLifecycleFunctionalBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "components/test/data");
+    GlicActorFunctionalBrowserTestBase::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -276,11 +284,7 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "components/test/data");
     GlicActorTaskLifecycleFunctionalBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_https_test_server().Start());
 
     autofill::prefs::SetAutofillGmailOtpFillingEnabled(GetProfile()->GetPrefs(),
                                                        true);
@@ -413,9 +417,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
                        MAYBE_testPauseAndResumeCreatedTaskWithIframe) {
-  ASSERT_TRUE(content::NavigateToURL(
-      active_tab()->GetContents(),
-      embedded_test_server()->GetURL("/actor/simple_iframe.html")));
+  ASSERT_TRUE(
+      content::NavigateToURL(active_tab()->GetContents(),
+                             embedded_https_test_server().GetURL(
+                                 "example.com", "/actor/simple_iframe.html")));
 
   content::RenderFrameHost* main_frame =
       active_tab()->GetContents()->GetPrimaryMainFrame();

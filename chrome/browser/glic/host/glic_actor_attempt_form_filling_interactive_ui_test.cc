@@ -116,7 +116,9 @@ class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
 
   void SetUpOnMainThread() override {
     GlicActorUiTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_https_test_server().Start());
+    if (!embedded_https_test_server().Started()) {
+      ASSERT_TRUE(embedded_https_test_server().Start());
+    }
   }
 
  protected:

@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
                        TabManagementTool_CreateForegroundTab) {
   // Navigate the starting tab so it can be differentiated from the new tab.
   const GURL start_tab_url =
-      embedded_test_server()->GetURL("/actor/blank.html");
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   const int initial_tab_count = browser()->tab_strip_model()->count();
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
                        TabManagementTool_CreateBackgroundTab) {
   // Navigate the starting tab so it can be differentiated from the new tab.
   const GURL start_tab_url =
-      embedded_test_server()->GetURL("/actor/blank.html");
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   const int initial_tab_count = browser()->tab_strip_model()->count();
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(
     ActorTabManagementToolBrowserTest,
     TabManagementTool_CreateForegroundTabAndEnsureScreenshotIsTaken) {
   const GURL start_tab_url =
-      embedded_test_server()->GetURL("/actor/blank.html");
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   std::unique_ptr<ToolRequest> action =
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, ActivateTab) {
   // Navigate the first tab.
   const GURL start_tab_url =
-      embedded_test_server()->GetURL("/actor/blank.html");
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   // Create a second tab in the foreground.
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, ActivateTab) {
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, CloseTab) {
   // Navigate the first tab.
   const GURL start_tab_url =
-      embedded_test_server()->GetURL("/actor/blank.html");
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   // Create a second tab in the foreground.

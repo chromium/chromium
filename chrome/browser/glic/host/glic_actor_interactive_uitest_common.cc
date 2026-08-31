@@ -110,6 +110,9 @@ void GlicActorUiTest::SetUpOnMainThread() {
   // Add rule for resolving cross origin host names.
   InteractiveGlicTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
+  if (!embedded_https_test_server().Started()) {
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
 }
 
 const actor::ActorTask* GlicActorUiTest::GetActorTask() {
@@ -631,8 +634,8 @@ MultiStep GlicActorUiTest::InitializeWithOpenGlicWindow() {
 
   // Navigate to ensure the initial tab has some valid content loaded that the
   // Glic window can observe.
-  const GURL start_url =
-      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?start");
 
   return Steps(InstrumentTab(kCurrentActiveTabId),
                NavigateWebContents(kCurrentActiveTabId, start_url),

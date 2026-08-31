@@ -97,7 +97,8 @@ class GlicActorScrollToToolValidationDisabledUiTest
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
                        FailsOnInvalidNodeID) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scroll_to.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
@@ -113,7 +114,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
 // enabled.
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, ScrollsToValidApcNodeID) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scroll_to.html");
 
   const std::string kInViewportLabel = "in-viewport";
 
@@ -144,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, ScrollsToValidApcNodeID) {
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
                        MAYBE_ScrollsToValidNonApcNodeID) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scroll_to.html");
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -166,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
                        PositionFixedDoesNotScroll) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scroll_to.html");
   const std::string kFixedElementLabel = "fixed";
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
@@ -180,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
                        DisplayNoneDoesNotScroll) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scroll_to.html");
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -195,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolValidationDisabledUiTest,
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
                        OffScreenPositionFixedDoesNotScroll) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  const GURL task_url = embedded_test_server()->GetURL("/actor/scroll_to.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/scroll_to.html");
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),

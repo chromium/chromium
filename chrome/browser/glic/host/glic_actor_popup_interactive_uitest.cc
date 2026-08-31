@@ -111,8 +111,8 @@ class GlicActorPopupUiTest : public GlicActorUiTest,
 IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithId) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
 
   constexpr std::string_view kPlainSelect = "plainSelect";
   constexpr std::string_view kSelectLabel = "plain-select";
@@ -154,8 +154,8 @@ IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithId) {
 IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithCoords) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
 
   constexpr std::string_view kPlainSelect = "plainSelect";
   constexpr std::string_view kSelectLabel = "plain-select";
@@ -203,8 +203,8 @@ IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithCoords) {
 IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithSelectTool) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
-  const GURL task_url =
-      embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL task_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
 
   constexpr std::string_view kPlainSelect = "plainSelect";
   constexpr std::string_view kSelectLabel = "plain-select";

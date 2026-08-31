@@ -45,10 +45,13 @@ class ActorTranslatePageToolBrowserTest : public ActorToolsTest {
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "chrome/test/data");
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&ActorTranslatePageToolBrowserTest::HandleRequest,
                             base::Unretained(this)));
     embedded_test_server()->StartAcceptingConnections();
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -90,7 +93,8 @@ class ActorTranslatePageToolBrowserTest : public ActorToolsTest {
 IN_PROC_BROWSER_TEST_F(ActorTranslatePageToolBrowserTest,
                        TranslateDefaultLanguage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html")));
 
   ActResultFuture result;
   std::unique_ptr<ToolRequest> request =
@@ -114,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(ActorTranslatePageToolBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorTranslatePageToolBrowserTest,
                        TranslateSpecificTargetLanguage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html")));
 
   ActResultFuture result;
   std::unique_ptr<ToolRequest> request =
@@ -131,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(ActorTranslatePageToolBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorTranslatePageToolBrowserTest,
                        TranslateUnsupportedLanguage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html")));
 
   ActResultFuture result;
   std::unique_ptr<ToolRequest> request =

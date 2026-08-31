@@ -39,8 +39,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
       CreateTaskCompletionSubscription(task_id, task_completion_state);
 
   // Construct the Actions proto.
-  const GURL target_url =
-      embedded_test_server()->GetURL("/actor/blank.html?target");
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?target");
   Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                          target_url.spec(), task_id);
 
@@ -61,8 +61,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                        PerformClickAction) {
   // Set up the initial page with a link to the target page.
-  const GURL initial_url = embedded_test_server()->GetURL("/actor/link.html");
-  const GURL target_url = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL initial_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", target_url)));
@@ -161,8 +163,10 @@ class GlicActorClickActionExecutionErrorBrowserTest
 IN_PROC_BROWSER_TEST_P(GlicActorClickActionExecutionErrorBrowserTest,
                        PerformClickActionErrors) {
   // Set up the initial page with a link to the target page.
-  const GURL initial_url = embedded_test_server()->GetURL("/actor/link.html");
-  const GURL target_url = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL initial_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", target_url)));
@@ -367,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   ASSERT_NE(task_id, TaskId());
-  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
   content::TestNavigationManager navigation_manager(web_contents(), target_url);
 
   Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),

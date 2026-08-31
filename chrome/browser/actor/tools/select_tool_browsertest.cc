@@ -39,8 +39,6 @@ class ActorSelectToolBrowserTest : public ActorToolsTest {
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
-    embedded_https_test_server().SetSSLConfig(
-        net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
 };
@@ -59,7 +57,8 @@ class ActorSelectToolToctouBrowserTest : public ActorSelectToolBrowserTest {
 // Test that the SelectTool can select an ordinary <option> in a <select>
 // element.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_OptionSelected) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -108,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_OptionSelected) {
 
 // Test that attempting to select in an offscreen <select> succeeds.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Offscreen) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Page starts unscrolled.
@@ -137,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Offscreen) {
 // Test that the SelectTool causes the change and input events to fire on the
 // <select> element.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Events) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -163,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Events) {
 // list fails and does not change the current selection.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_NonExistentValueFails) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -187,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorSelectToolToctouBrowserTest,
                        SelectTool_RequiresTargetInLastApc) {
   // Select rejects a target added after APC was saved.
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Save APC before adding the select.
@@ -223,7 +226,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolToctouBrowserTest,
 // element fails. The select tool should only target valid options.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_NonOptionNodeValueFails) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string non_options_select_id = "#nonOptionsSelect";
@@ -280,7 +284,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 // Test that matching option values is case-sensitive.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_ValueIsCaseSensitive) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -307,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 // Test that attempting to select a disabled <option> fails.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_DisabledOptionFails) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -332,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 // Test that attempting to select a <option> in a disabled <optgroup> fails.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_DisabledOptGroupFails) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string group_select_id = "#groupedSelect";
@@ -359,7 +366,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 // fails.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_DisabledSelectFails) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string disabled_select_id = "#disabledSelect";
@@ -384,7 +392,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 // Test that options within <optgroup> elements can be selected.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_GroupedOptionSelected) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string grouped_select_id = "#groupedSelect";
@@ -423,7 +432,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 // listbox (size attribute > 1).
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_ListboxOptionSelected) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string listbox_select_id = "#listboxSelect";
