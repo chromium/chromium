@@ -3736,7 +3736,7 @@ bool ContainerStyleChangesAllowed(Element& container,
   // the highlight styles hangs off the originating element's ComputedStyle.
   const ComputedStyle* new_element_style = container.GetComputedStyle();
   const ComputedStyle* new_layout_style =
-      container.GetLayoutObject() ? container.GetLayoutObject()->Style()
+      container.GetLayoutObject() ? &container.GetLayoutObject()->StyleRef()
                                   : nullptr;
 
   if (!new_element_style || !old_element_style) {
@@ -3780,7 +3780,7 @@ void StyleEngine::RecalcStyleForSizeContainer(Element& container,
 #if DCHECK_IS_ON()
   const ComputedStyle* old_element_style = container.GetComputedStyle();
   const ComputedStyle* old_layout_style =
-      container.GetLayoutObject() ? container.GetLayoutObject()->Style()
+      container.GetLayoutObject() ? &container.GetLayoutObject()->StyleRef()
                                   : nullptr;
 #endif  // DCHECK_IS_ON()
 
@@ -4736,7 +4736,7 @@ void StyleEngine::UpdateViewportStyle() {
 
   const ComputedStyle* viewport_style = resolver_->StyleForViewport();
   if (ComputedStyle::ComputeDifference(
-          viewport_style, GetDocument().GetLayoutView()->Style()) !=
+          viewport_style, &GetDocument().GetLayoutView()->StyleRef()) !=
       ComputedStyle::Difference::kEqual) {
     GetDocument().GetLayoutView()->SetStyle(viewport_style);
   }
