@@ -312,7 +312,6 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
     switch (_browserAgent->settled_state()) {
       case FullscreenState::kUIExpanded:
         if (progress <= kEnterFullscreenProgressThreshold) {
-          TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleSoft);
           _browserAgent->EnterFullscreen(
               PassKey(),
               FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
@@ -321,7 +320,6 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
         break;
       case FullscreenState::kUICollapsed:
         if (progress >= kExitFullscreenProgressThreshold) {
-          TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleSoft);
           _browserAgent->ExitFullscreen(
               PassKey(),
               FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
