@@ -1643,7 +1643,8 @@ class ComputedStyle final : public ComputedStyleBase {
       EContentVisibility content_visibility,
       bool skips_contents,
       bool has_size_containment_for_vt_scope,
-      EOverscrollContainerType overscroll_container_type) {
+      EOverscrollContainerType overscroll_container_type,
+      bool has_layout_containment_for_vt_scope) {
     unsigned effective = contain;
 
     if (container_type & kContainerTypeInlineSize) {
@@ -1677,6 +1678,10 @@ class ComputedStyle final : public ComputedStyleBase {
       effective |= kContainsLayout;
     }
 
+    if (has_layout_containment_for_vt_scope) {
+      effective |= kContainsLayout;
+    }
+
     return effective;
   }
 
@@ -1686,7 +1691,8 @@ class ComputedStyle final : public ComputedStyleBase {
         HasSizeContainmentForViewTransitionScope() &&
             RuntimeEnabledFeatures::
                 ScopedViewTransitionSizeContainmentEnabled(),
-        EffectiveOverscrollContainerType());
+        EffectiveOverscrollContainerType(),
+        HasLayoutContainmentForViewTransitionScope());
   }
 
   bool ContainsStyle() const { return EffectiveContainment() & kContainsStyle; }
@@ -3203,7 +3209,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
         HasSizeContainmentForViewTransitionScope() &&
             RuntimeEnabledFeatures::
                 ScopedViewTransitionSizeContainmentEnabled(),
-        EffectiveOverscrollContainerType());
+        EffectiveOverscrollContainerType(),
+        HasLayoutContainmentForViewTransitionScope());
     return ComputedStyle::ShouldApplyAnyContainment(element, GetDisplayStyle(),
                                                     effective_containment);
   }

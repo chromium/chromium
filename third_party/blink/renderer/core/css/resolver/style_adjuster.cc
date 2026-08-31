@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1401,7 +1402,7 @@ void StyleAdjuster::RunUncacheableStyleAdjustment(
       bool is_document_element =
           element.GetDocument().documentElement() == element;
       if (!is_document_element) {
-        builder.SetContain(builder.Contain() | kContainsLayout);
+        builder.SetHasLayoutContainmentForViewTransitionScope(true);
         if (view_transition->NeedsContainmentForDurationOfCapture() &&
             RuntimeEnabledFeatures::
                 ScopedViewTransitionSizeContainmentEnabled()) {

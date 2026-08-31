@@ -176,6 +176,76 @@ TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
 }
 
+TEST_F(ComputedStyleTest, ViewTransitionScopeUsedContainment) {
+  const ComputedStyle* initial_style = InitialComputedStyle();
+  EXPECT_EQ(initial_style->Contain(), kContainsNone);
+  EXPECT_FALSE(initial_style->ContainsLayout());
+  EXPECT_FALSE(initial_style->ContainsSize());
+  EXPECT_FALSE(initial_style->ContainsInlineSize());
+  EXPECT_FALSE(initial_style->ContainsBlockSize());
+  EXPECT_FALSE(initial_style->ContainsAnySize());
+  EXPECT_FALSE(initial_style->EffectiveContainIntrinsicWidth().HasAuto());
+  EXPECT_FALSE(initial_style->EffectiveContainIntrinsicHeight().HasAuto());
+  EXPECT_FALSE(initial_style->EffectiveContainIntrinsicInlineSize().HasAuto());
+  EXPECT_FALSE(initial_style->EffectiveContainIntrinsicBlockSize().HasAuto());
+
+  {
+    ComputedStyleBuilder builder(*initial_style);
+    builder.SetHasLayoutContainmentForViewTransitionScope(true);
+    const ComputedStyle* vt_style = builder.TakeStyle();
+
+    // Computed `Contain()` must remain unaffected (used style only).
+    EXPECT_EQ(vt_style->Contain(), kContainsNone);
+    // Effective containment and query functions must reflect layout
+    // containment.
+    EXPECT_TRUE(vt_style->ContainsLayout());
+    EXPECT_FALSE(vt_style->ContainsSize());
+    EXPECT_FALSE(vt_style->ContainsInlineSize());
+    EXPECT_FALSE(vt_style->ContainsBlockSize());
+    EXPECT_FALSE(vt_style->ContainsAnySize());
+    EXPECT_FALSE(vt_style->EffectiveContainIntrinsicWidth().HasAuto());
+    EXPECT_FALSE(vt_style->EffectiveContainIntrinsicHeight().HasAuto());
+  }
+
+  {
+    ComputedStyleBuilder builder(*initial_style);
+    builder.SetHasSizeContainmentForViewTransitionScope(true);
+    const ComputedStyle* vt_style = builder.TakeStyle();
+
+    // Computed `Contain()` must remain unaffected (used style only).
+    EXPECT_EQ(vt_style->Contain(), kContainsNone);
+    // Effective containment and query functions must reflect size containment.
+    EXPECT_FALSE(vt_style->ContainsLayout());
+    EXPECT_TRUE(vt_style->ContainsSize());
+    EXPECT_TRUE(vt_style->ContainsInlineSize());
+    EXPECT_TRUE(vt_style->ContainsBlockSize());
+    EXPECT_TRUE(vt_style->ContainsAnySize());
+    EXPECT_FALSE(vt_style->ContainIntrinsicWidth().HasAuto());
+    EXPECT_FALSE(vt_style->ContainIntrinsicHeight().HasAuto());
+    EXPECT_TRUE(vt_style->EffectiveContainIntrinsicWidth().HasAuto());
+    EXPECT_TRUE(vt_style->EffectiveContainIntrinsicHeight().HasAuto());
+    EXPECT_TRUE(vt_style->EffectiveContainIntrinsicInlineSize().HasAuto());
+    EXPECT_TRUE(vt_style->EffectiveContainIntrinsicBlockSize().HasAuto());
+  }
+
+  {
+    ComputedStyleBuilder builder(*initial_style);
+    builder.SetHasLayoutContainmentForViewTransitionScope(true);
+    builder.SetHasSizeContainmentForViewTransitionScope(true);
+    const ComputedStyle* vt_style = builder.TakeStyle();
+
+    // Both flags active simultaneously.
+    EXPECT_EQ(vt_style->Contain(), kContainsNone);
+    EXPECT_TRUE(vt_style->ContainsLayout());
+    EXPECT_TRUE(vt_style->ContainsSize());
+    EXPECT_TRUE(vt_style->ContainsInlineSize());
+    EXPECT_TRUE(vt_style->ContainsBlockSize());
+    EXPECT_TRUE(vt_style->ContainsAnySize());
+    EXPECT_TRUE(vt_style->EffectiveContainIntrinsicWidth().HasAuto());
+    EXPECT_TRUE(vt_style->EffectiveContainIntrinsicHeight().HasAuto());
+  }
+}
+
 TEST_F(ComputedStyleTest, IsStackingContextWithoutContainmentAfterClone) {
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   builder1.SetForcesStackingContext(true);

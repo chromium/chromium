@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -783,7 +784,9 @@ void ViewTransition::ProcessCurrentState() {
 
         // Lifecycle update can cause the transition to abort (e.g. if the
         // snapshot root changed size during layout).
-        if (IsTerminalState(state_)) {
+        if (IsTerminalState(state_) || UnsupportedCapture()) {
+          SkipTransition(PromiseResponse::kRejectInvalidState,
+                         ViewTransitionSkipReason::kUnsupportedCapture);
           break;
         }
 
@@ -1328,24 +1331,33 @@ bool ViewTransition::HasActiveAnimations() const {
 }
 
 bool ViewTransition::HasIncompatibleStyle() const {
-  // Display: contents is not supported on the view-transition scope element.
-  // Not only does it produce no layout box, but it changes the layout
-  // hierarchy.
-  // Note that we can have a valid view-transition from or to display: none.
-  // These correspond to a fade in or fade out transition.
   const Element* source = Scope();
   if (!source) {
     return false;
   }
 
-  if (const ComputedStyle* style = source->GetComputedStyle()) {
-    if (style && style->Display() == EDisplay::kContents) {
+  const ComputedStyle* style = source->GetComputedStyle();
+  if (!style) {
+    return false;
+  }
+
+  if (style->Display() == EDisplay::kContents) {
+    return true;
+  }
+
+  bool is_element_scoped = scope_ && scope_ != document_->documentElement();
+  if (is_element_scoped) {
+    if (style->Display() == EDisplay::kNone) {
       return true;
+    }
+
+    if (const LayoutObject* layout_object = source->GetLayoutObject()) {
+      if (!layout_object->ShouldApplyLayoutContainment(*style)) {
+        return true;
+      }
     }
   }
 
-  // Further pruning based on the type of layout object can be found in
-  // ViewTransitionStyleTracker::RunPostPrePaintSteps().
   return false;
 }
 
@@ -1393,34 +1405,22 @@ void ViewTransition::OnRenderingPausedTimeout() {
 
 bool ViewTransition::UnsupportedCapture() {
   CHECK(!scope_ || scope_ != scope_->GetDocument().documentElement());
-  if (scope_ && scope_->GetComputedStyle()) {
-    // TODO(crbug.com/429763389): image masks are not currently supported on the
-    // scoped element. This restriction may be resolved by making the
-    // view-transition's layout object a sibling of the scoped element's
-    // layout object.For now, skip the transition.
+  if (scope_) {
+    const LayoutObject* layout_object = scope_->GetLayoutObject();
+    if (!layout_object || !layout_object->ShouldApplyLayoutContainment()) {
+      LogMessageToConsole(
+          "Scoped view-transitions require layout containment.");
+      return true;
+    }
     const ComputedStyle* style = scope_->GetComputedStyle();
-    if (style->HasMask()) {
+    if (style && style->HasMask()) {
+      // TODO(crbug.com/429763389): image masks are not currently supported on
+      // the scoped element. This restriction may be resolved by making the
+      // view-transition's layout object a sibling of the scoped element's
+      // layout object. For now, skip the transition.
       LogMessageToConsole(
           "Scoped view-transitions do not currently support mask-image.");
       return true;
-    }
-    // TODO(crbug.com/434891109): Various inline display types are not supported
-    // for scoped view transitions. The display type inline-block is an
-    // exception since having block characteristics in addition to inline.
-    // Depending on spec resolution, we may need to revisit the handling of
-    // inline elements.
-    if (style->IsDisplayInlineType() && !style->IsDisplayBlockContainer()) {
-      LogMessageToConsole(
-          "Scoped view-transitions do not currently support inline display "
-          "types.");
-      return true;
-    }
-
-    // TODO(crbug.com/436804019): These elements do not create a layout box.
-    if (style->InlinifiesChildren()) {
-      LogMessageToConsole(
-          "Scoped view-transitions do not currently support elements that "
-          "inline their children.");
     }
   }
 
