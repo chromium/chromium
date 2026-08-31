@@ -12168,6 +12168,31 @@
             ]
         }
     ],
+    "InstantHandoffPhase1FastFollows": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_SendTabToSelfOmnibox",
+                        "SendTabToSelfDynamicShortcuts",
+                        "SendTabToSelfEnhancedDesktopUIv2",
+                        "SendTabToSelfOpenNativeApp",
+                        "SendTabToSelfSupportAutoOpenInTabGrid",
+                        "SyncDisambiguateDeviceNamesWithChannel"
+                    ]
+                }
+            ]
+        }
+    ],
     "JavaScriptImportText": [
         {
             "platforms": [
