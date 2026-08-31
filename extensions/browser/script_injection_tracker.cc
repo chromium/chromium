@@ -94,8 +94,7 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
 
   // base::SupportsUserData::Data override:
   ~RenderProcessHostUserData() override {
-    TRACE_EVENT_END("extensions", perfetto::Track::FromPointer(this),
-                    ChromeTrackEvent::kRenderProcessHost, *process_);
+    TRACE_EVENT_END("extensions", perfetto::Track::FromPointer(this));
   }
 
   bool HasScript(ScriptInjectionTracker::ScriptType script_type,
