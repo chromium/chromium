@@ -39,6 +39,7 @@
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
@@ -123,6 +124,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/payments/core/features.h"
 #include "components/skills/features.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -711,6 +713,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       indigo::IndigoCueTarget::Register(tab);
     }
   }
+
+  if (base::FeatureList::IsEnabled(
+          payments::features::kThreeDSecureTelemetry)) {
+    web_payments_observer_ =
+        std::make_unique<payments::WebPaymentsObserver>(tab.GetContents());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -906,6 +914,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         GetUserDataFactory()
             .CreateInstance<autofill::WalletReminderNoticeBubbleController>(
                 *tab, *tab, new_contents);
+  }
+
+  if (web_payments_observer_) {
+    web_payments_observer_ =
+        std::make_unique<payments::WebPaymentsObserver>(new_contents);
   }
 }
 

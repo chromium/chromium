@@ -111,6 +111,9 @@ BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccessUx);
 // Used to control whether SPC supports validating locale.
 BASE_DECLARE_FEATURE(kSPCLocaleValidation);
 
+// Used to control whether 3D-Secure telemetry is collected.
+BASE_DECLARE_FEATURE(kThreeDSecureTelemetry);
+
 }  // namespace features
 }  // namespace payments
 

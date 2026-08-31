@@ -19323,6 +19323,35 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Payments.ThreeDSecure.ChallengeRequest">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records when a 3D-Secure challenge request (cReq) is detected in the form
+    data of an HTTP POST navigation.
+  </summary>
+  <metric name="ChallengeRequest" enum="Boolean">
+    <summary>
+      Set to true when a 3D-Secure challenge request is detected in the form
+      data of an HTTP POST navigation.
+    </summary>
+  </metric>
+</event>
+
+<event name="Payments.ThreeDSecure.ChallengeResponse">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the outcome of a 3D-Secure challenge response (cRes) detected in the
+    form data of an HTTP POST navigation.
+  </summary>
+  <metric name="ChallengeResponse" enum="ThreeDSecureTransactionStatus">
+    <summary>
+      The outcome of the 3D-Secure challenge response.
+    </summary>
+  </metric>
+</event>
+
 <event name="Pepper.Broker" singular="True">
   <owner>raymes@chromium.org</owner>
   <summary>

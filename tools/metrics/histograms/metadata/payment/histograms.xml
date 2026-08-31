@@ -630,6 +630,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Payments.ThreeDSecure.ChallengeRequest" enum="Boolean"
+    expires_after="2027-08-21">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records attempts to trigger 3D-Secure challenge requests (cReq).
+
+    This metric is recorded when a 3D-Secure challenge request is detected in
+    the form data of an HTTP POST navigation.
+  </summary>
+</histogram>
+
+<histogram name="Payments.ThreeDSecure.ChallengeResponse"
+    enum="ThreeDSecureTransactionStatus" expires_after="2027-08-21">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the outcome of a 3D-Secure challenge response (cRes) detected in the
+    form data of an HTTP POST navigation.
+
+    The `transStatus` field is parsed to determine the outcome. If `transStatus`
+    is not a single character or is not one of the expected values, it is
+    considered an unknown outcome. If the cRes value is formatted as JSON Web
+    Encryption (detected by period characters) it is recorded as JSON encrypted.
+  </summary>
+</histogram>
+
 <histogram name="SecurePaymentRequest.Fallback.Outcome"
     enum="SecurePaymentRequestOutcome" expires_after="2026-11-01">
   <owner>darwinyang@google.com</owner>

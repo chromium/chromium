@@ -57,6 +57,10 @@ namespace lens {
 class TabContextualizationController;
 }  // namespace lens
 
+namespace payments {
+class WebPaymentsObserver;
+}  // namespace payments
+
 class ConnectionHelpTabHelper;
 class HttpAuthCacheStatus;
 class SecurityStateEventObserver;
@@ -143,6 +147,8 @@ class TabFeatures {
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
   std::unique_ptr<actor::ui::ActorUiTabControllerInterface>
       actor_ui_tab_controller_;
+
+  std::unique_ptr<payments::WebPaymentsObserver> web_payments_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

@@ -8036,6 +8036,8 @@ test("unit_tests") {
   fuzztests = [
     "ActorProtoConversionFuzzTest.CanConvertAnyProto",
     "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash",
+    "WebPaymentsObserverFuzzTest.ThreeDSecureTelemetryChallengePostData",
+    "WebPaymentsObserverFuzzTest.ThreeDSecureTelemetryChallengeResponseValue",
   ]
 
   if (!is_android) {

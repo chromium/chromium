@@ -154,6 +154,27 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//components/payments/content/android/spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationController.java:SecurePaymentRequestOutcome, //components/payments/content/secure_payment_confirmation_controller.h:SecurePaymentRequestOutcome) -->
 
+<!-- LINT.IfChange(ThreeDSecureTransactionStatus) -->
+
+<enum name="ThreeDSecureTransactionStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="JSON Encrypted"/>
+  <int value="2" label="Authentication / Account verification successful (Y)"/>
+  <int value="3"
+      label="Not Authenticated / Account Not Verified; Transaction denied (N)"/>
+  <int value="4"
+      label="Authentication / Account Verification Could Not Be Performed (U)"/>
+  <int value="5" label="Attempts Processing Performed (A)"/>
+  <int value="6" label="Challenge Required (C)"/>
+  <int value="7"
+      label="Challenge Required; Decoupled Authentication confirmed (D)"/>
+  <int value="8" label="Authentication / Account Verification Rejected (R)"/>
+  <int value="9" label="Informational Only (I)"/>
+  <int value="10" label="Challenge using SPC (S)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/payments/web_payments_observer.h:ThreeDSecureTransactionStatus) -->
+
 </enums>
 
 </histogram-configuration>

@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
+#include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
@@ -45,6 +46,7 @@
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/data_protection/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/payments/core/features.h"
 #include "components/search/ntp_features.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -176,6 +178,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     saas_usage_navigation_observer_ =
         std::make_unique<enterprise_reporting::SaasUsageNavigationObserver>(
             web_contents);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          payments::features::kThreeDSecureTelemetry)) {
+    web_payments_observer_ =
+        std::make_unique<payments::WebPaymentsObserver>(web_contents);
   }
 }
 

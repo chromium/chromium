@@ -184,6 +184,10 @@ namespace page_actions {
 class PageActionController;
 }  // namespace page_actions
 
+namespace payments {
+class WebPaymentsObserver;
+}  // namespace payments
+
 namespace tab_groups {
 class CollaborationMessagingTabData;
 }  // namespace tab_groups
@@ -713,6 +717,9 @@ class TabFeatures {
   // Maintains the thumbnail shown in e.g. tab hover cards. Null when no
   // feature that needs thumbnails is enabled.
   std::unique_ptr<ThumbnailTabHelper> thumbnail_tab_helper_;
+
+  // Observes changes in web contents for web payments.
+  std::unique_ptr<payments::WebPaymentsObserver> web_payments_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

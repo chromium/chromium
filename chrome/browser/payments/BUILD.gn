@@ -7,6 +7,7 @@ source_set("payments") {
     "chrome_payment_request_delegate.h",
     "payment_request_display_manager_factory.h",
     "payment_request_factory.h",
+    "web_payments_observer.h",
     "webapps/twa_package_helper.h",
   ]
 
@@ -18,17 +19,29 @@ source_set("payments") {
 }
 
 source_set("impl") {
+  sources = [ "web_payments_observer.cc" ]
+
+  public_deps = [ ":payments" ]
+
+  deps = [
+    "//base",
+    "//components/payments/core",
+    "//content/public/browser",
+    "//net",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
   if (!is_android) {
-    sources = [
+    sources += [
       "chrome_payment_request_delegate.cc",
       "payment_request_display_manager_factory.cc",
       "payment_request_factory.cc",
       "webapps/twa_package_helper.cc",
     ]
 
-    public_deps = [ ":payments" ]
-
-    deps = [
+    deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/profiles:profile",
@@ -42,14 +55,13 @@ source_set("impl") {
       "//components/payments/content:utils",
       "//components/webauthn/content/browser",
       "//components/webdata_services",
-      "//content/public/browser",
     ]
 
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/apps" ]
     }
   } else {
-    deps = [
+    deps += [
       "//chrome/browser/payments/android:service_worker_payment_app_bridge",
     ]
   }
@@ -94,11 +106,13 @@ source_set("browser_tests") {
     "secure_payment_confirmation_browsertest.h",
     "secure_payment_confirmation_opt_out_browsertest.cc",
     "two_payment_requests_browsertest.cc",
+    "web_payments_observer_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":payments",
     "//base/test:test_support",
     "//chrome/browser/payments/browser_binding:browsertests",
     "//chrome/test:test_support",
@@ -112,6 +126,7 @@ source_set("browser_tests") {
     "//components/webdata_services",
     "//crypto:test_support",
     "//device/fido:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 
   if (is_android) {
@@ -149,16 +164,29 @@ source_set("browser_tests") {
 source_set("unittests") {
   testonly = true
 
-  sources = [ "payment_handler_permission_context_unittest.cc" ]
+  sources = [
+    "payment_handler_permission_context_unittest.cc",
+    "web_payments_observer_unittest.cc",
+  ]
 
   deps = [
+    ":payments",
+    "//base/test:test_support",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/payments/browser_binding:unittests",
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/infobars/content",
+    "//components/payments/core",
     "//components/permissions",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fuzztest",
   ]
 
   if (is_android) {
