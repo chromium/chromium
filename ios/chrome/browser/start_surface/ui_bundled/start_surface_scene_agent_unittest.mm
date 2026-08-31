@@ -455,14 +455,14 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
 
   ASSERT_FALSE(fake_system_identity_manager()
                    ->GetVisibleCapabilities(identity)
-                   .AreAllCapabilitiesKnown());
+                   .AreAnyCapabilitiesKnown());
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_system_identity_manager()
                   ->GetVisibleCapabilities(identity)
-                  .AreAllCapabilitiesKnown());
+                  .AreAnyCapabilitiesKnown());
 }
 
 // Tests that the tab group in grid view is opened if Chrome is activated in the

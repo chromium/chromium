@@ -111,7 +111,8 @@ void GeminiStepEligibilityChecker::CheckAccountInfo() {
 
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfo(primary_account);
-  if (account_info.GetAccountCapabilities().AreAllCapabilitiesKnown()) {
+  if (account_info.GetAccountCapabilities()
+          .can_use_model_execution_features() != signin::Tribool::kUnknown) {
     account_info_ = account_info;
     identity_manager_observation_.Reset();
     MaybeResolveEligibility();

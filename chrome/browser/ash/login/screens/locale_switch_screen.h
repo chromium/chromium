@@ -121,6 +121,12 @@ class LocaleSwitchScreen : public BaseScreen,
   base::OneShotTimer timeout_waiter_;
 
   bool refresh_token_loaded_ = false;
+
+  // Whether the required Account Capabilities have been loaded from the server.
+  //
+  // The only relevant downstream consumer of account capabilities is
+  // SyncConsentScreen, which provides AreCapabilitiesLoaded() to check if the
+  // required capabilities are available.
   bool account_capabilities_loaded_ = false;
 
   base::WeakPtrFactory<LocaleSwitchScreen> weak_factory_{this};

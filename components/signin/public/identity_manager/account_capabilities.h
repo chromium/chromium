@@ -25,6 +25,10 @@ namespace ios {
 class AccountCapabilitiesFetcherIOS;
 }  // namespace ios
 
+namespace signin::test {
+class AccountCapabilitiesObserver;
+}  // namespace signin::test
+
 namespace supervised_user {
 class FamilyLinkUserCapabilitiesObserver;
 }  // namespace supervised_user
@@ -195,9 +199,6 @@ class AccountCapabilities {
   // `signin::Tribool::kUnknown`.
   bool AreAnyCapabilitiesKnown() const;
 
-  // Whether none of the capabilities has `signin::Tribool::kUnknown`.
-  bool AreAllCapabilitiesKnown() const;
-
   // Updates the capability state value for keys in `other`. If a value is
   // `signin::Tribool::kUnknown` in `other` the corresponding key will not
   // be updated in order to avoid overriding known values.
@@ -210,6 +211,9 @@ class AccountCapabilities {
   // override.
   void SetCapabilityOverride(std::string_view name,
                              std::optional<signin::Tribool> value);
+
+  // Whether none of the capabilities has `signin::Tribool::kUnknown`.
+  bool AreAllCapabilitiesKnown() const;
 
   // Returns the list of account capability service names supported in Chrome.
   static base::span<const std::string_view>
@@ -245,22 +249,37 @@ class AccountCapabilities {
       const base::DictValue& overrides_dict);
   friend class AboutSigninInternals;
   friend class AccountCapabilitiesFetcherGaia;
+  friend class signin::test::AccountCapabilitiesObserver;
+  friend class AccountFetcherService;
 #if BUILDFLAG(IS_IOS)
   friend base::span<const std::string_view>
   GetAccountCapabilityNamesForPrefetch();
   friend class ios::AccountCapabilitiesFetcherIOS;
 #endif
+  // keep-sorted start
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           AreAllCapabilitiesKnown_Empty);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           AreAllCapabilitiesKnown_Filled);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           AreAllCapabilitiesKnown_PartiallyFilled);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           CapabilityOverrides);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           ConversionWithJNI_FlagGuardDisabled_CppToJava);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           ConversionWithJNI_FlagGuardDisabled_JavaToCpp);
   FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
                            GetSupportedAccountCapabilityNames);
-  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest, CapabilityOverrides);
   FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
                            GetSupportedAccountCapabilityNames_FlagDisabled);
   FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
                            GetSupportedAccountCapabilityNames_FlagEnabled);
-  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
-                           ConversionWithJNI_FlagGuardDisabled_JavaToCpp);
-  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
-                           ConversionWithJNI_FlagGuardDisabled_CppToJava);
+  FRIEND_TEST_ALL_PREFIXES(AccountTrackerServiceTest,
+                           TokenAvailable_AccountCapabilitiesCancelled);
+  FRIEND_TEST_ALL_PREFIXES(AccountTrackerServiceTest,
+                           TokenAvailable_AccountCapabilitiesFailed);
+  // keep-sorted end
   friend class AccountCapabilitiesTestMutator;
   friend class AccountTrackerService;
   friend class supervised_user::FamilyLinkUserCapabilitiesObserver;

@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/login/screens/locale_switch_notification.h"
+#include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -259,7 +260,8 @@ void LocaleSwitchScreen::ShowImpl() {
       identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_);
   account_capabilities_loaded_ =
       refresh_token_loaded_ &&
-      account_info.GetAccountCapabilities().AreAllCapabilitiesKnown();
+      SyncConsentScreen::AreCapabilitiesLoaded(
+          account_info.GetAccountCapabilities());
   if (!account_capabilities_loaded_) {
     identity_manager_observer_.Observe(identity_manager_.get());
   }
@@ -295,7 +297,8 @@ void LocaleSwitchScreen::OnExtendedAccountInfoUpdated(
   }
   account_capabilities_loaded_ =
       refresh_token_loaded_ &&
-      account_info.GetAccountCapabilities().AreAllCapabilitiesKnown();
+      SyncConsentScreen::AreCapabilitiesLoaded(
+          account_info.GetAccountCapabilities());
   if (!account_capabilities_loaded_) {
     return;
   }

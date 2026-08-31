@@ -114,14 +114,14 @@ TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetch) {
   mutator->SetAllSupportedCapabilities(true);
   ASSERT_FALSE(fake_system_identity_manager()
                    ->GetVisibleCapabilities(identity)
-                   .AreAllCapabilitiesKnown());
+                   .AreAnyCapabilitiesKnown());
 
   RunSystemCapabilitiesPrefetch(account_manager_service_->GetAllIdentities());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_system_identity_manager()
                   ->GetVisibleCapabilities(identity)
-                  .AreAllCapabilitiesKnown());
+                  .AreAnyCapabilitiesKnown());
 }
 
 TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetchMultipleIdentities) {
@@ -135,24 +135,24 @@ TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetchMultipleIdentities) {
   mutator1->SetAllSupportedCapabilities(true);
   ASSERT_FALSE(fake_system_identity_manager()
                    ->GetVisibleCapabilities(identity1)
-                   .AreAllCapabilitiesKnown());
+                   .AreAnyCapabilitiesKnown());
 
   AccountCapabilitiesTestMutator* mutator2 =
       fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity2);
   mutator2->SetAllSupportedCapabilities(true);
   ASSERT_FALSE(fake_system_identity_manager()
                    ->GetVisibleCapabilities(identity2)
-                   .AreAllCapabilitiesKnown());
+                   .AreAnyCapabilitiesKnown());
 
   RunSystemCapabilitiesPrefetch(account_manager_service_->GetAllIdentities());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_system_identity_manager()
                   ->GetVisibleCapabilities(identity1)
-                  .AreAllCapabilitiesKnown());
+                  .AreAnyCapabilitiesKnown());
   EXPECT_TRUE(fake_system_identity_manager()
                   ->GetVisibleCapabilities(identity2)
-                  .AreAllCapabilitiesKnown());
+                  .AreAnyCapabilitiesKnown());
 }
 
 TEST_F(SigninUtilTest, GetSizeForIdentityAvatarSize) {
