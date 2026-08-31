@@ -412,8 +412,10 @@ bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
     std::u16string_view given_name_2 =
         base::RemovePrefix(full_name_2, name_1_parts.family)
             .value_or(full_name_2);
-    return IsSubsequence(TokenizeNormalizedCjkName(name_1_parts.given),
-                         TokenizeNormalizedCjkName(given_name_2));
+    if (IsSubsequence(TokenizeNormalizedCjkName(name_1_parts.given),
+                      TokenizeNormalizedCjkName(given_name_2))) {
+      return true;
+    }
   }
 
   auto tokenize = [](std::u16string_view str) {

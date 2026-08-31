@@ -1085,6 +1085,7 @@ INSTANTIATE_TEST_SUITE_P(
              .are_variant = false},
             {.full_name = u"Петров Иван Николаевич",
              .other_full_name = u"Петров И."},
+            {.full_name = u"Jane 이", .other_full_name = u"J 이"},
             {.full_name = u"Mary Jane Watson", .other_full_name = u""},
             {.full_name = u"",
              .other_full_name = u"Mary Jane Watson",
