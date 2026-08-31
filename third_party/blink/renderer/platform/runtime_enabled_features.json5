@@ -5888,7 +5888,7 @@
     },
     {
       name: "SpellCheckChunking",
-      status: {"Android": "experimental"},
+      status: {"Android": "stable"},
     },
     {
       // API for accessing the Custom Dictionary for spell checking purpose.
