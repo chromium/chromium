@@ -413,7 +413,7 @@ bool ExtensionManagement::IsGreylistedForceInstalledInLowTrustEnvironment(
     return false;
   }
 
-  return GetHigherManagementAuthorityTrustworthiness(profile_) <
+  return GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile_) <
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;
@@ -431,7 +431,7 @@ bool ExtensionManagement::IsForceInstalledInLowTrustEnvironment(
     return false;
   }
 
-  return GetHigherManagementAuthorityTrustworthiness(profile_) <
+  return GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile_) <
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;
@@ -455,7 +455,7 @@ bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
     return false;
   }
 
-  return GetHigherManagementAuthorityTrustworthiness(profile_) <
+  return GetHigherManagementAuthorityTrustworthinessForPolicyLoading(profile_) <
          policy::ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;

@@ -19,6 +19,11 @@ namespace extensions {
 policy::ManagementAuthorityTrustworthiness
 GetHigherManagementAuthorityTrustworthiness(Profile* profile);
 
+// Returns the higher of two values - trust level for the machine for policy
+// loading or that of the user profile, with more strict Entra AD level.
+policy::ManagementAuthorityTrustworthiness
+GetHigherManagementAuthorityTrustworthinessForPolicyLoading(Profile* profile);
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_MANAGEMENT_MANAGEMENT_UTIL_H_
