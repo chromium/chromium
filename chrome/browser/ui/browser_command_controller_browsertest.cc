@@ -135,7 +135,6 @@ struct FullscreenCommandExpectation {
 };
 
 // TODO(crbug.com/549506876): Fix test on MacOS.
-#if !BUILDFLAG(IS_MAC)
 void VerifyFullscreenCommandStates(BrowserWindowInterface* browser) {
   const bool is_guest = browser->GetProfile()->IsGuestSession();
   const auto commands = std::to_array<FullscreenCommandExpectation>({
@@ -229,7 +228,6 @@ void VerifyFullscreenCommandStates(BrowserWindowInterface* browser) {
         command.reserved_in_tab);
   }
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -649,10 +647,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/549506876): Fix test on MacOS.
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UpdateCommandsForFullscreenMode \
+  DISABLED_UpdateCommandsForFullscreenMode
+#else
+#define MAYBE_UpdateCommandsForFullscreenMode UpdateCommandsForFullscreenMode
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
-                       UpdateCommandsForFullscreenMode) {
+                       MAYBE_UpdateCommandsForFullscreenMode) {
   VerifyFullscreenCommandStates(browser());
 
   // Guest Profiles disallow some options.
@@ -662,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_TRUE(chrome::IsCommandEnabled(guest_browser, IDC_OPTIONS));
   EXPECT_FALSE(chrome::IsCommandEnabled(guest_browser, IDC_IMPORT_SETTINGS));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        SavePageDisabledByDownloadRestrictionsPolicy) {
