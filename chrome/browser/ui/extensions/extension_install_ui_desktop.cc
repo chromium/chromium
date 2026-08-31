@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
