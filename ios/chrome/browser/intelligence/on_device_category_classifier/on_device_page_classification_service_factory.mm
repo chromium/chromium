@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -15,7 +16,7 @@ std::unique_ptr<KeyedService> BuildOnDevicePageClassificationService(
     ProfileIOS* profile) {
   CHECK(!profile->IsOffTheRecord());
   InProcessCategoryClassificationService* in_process_service =
-      InProcessCategoryClassificationService::GetForProfile(profile);
+      InProcessCategoryClassificationServiceFactory::GetForProfile(profile);
   if (!in_process_service) {
     return nullptr;
   }
@@ -50,7 +51,7 @@ OnDevicePageClassificationServiceFactory::GetDefaultFactory() {
 OnDevicePageClassificationServiceFactory::
     OnDevicePageClassificationServiceFactory()
     : ProfileKeyedServiceFactoryIOS("OnDevicePageClassificationService") {
-  DependsOn(InProcessCategoryClassificationService::GetFactory());
+  DependsOn(InProcessCategoryClassificationServiceFactory::GetInstance());
 }
 
 OnDevicePageClassificationServiceFactory::

@@ -10,8 +10,6 @@
 #import "base/check_op.h"
 #import "base/files/file.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback.h"
-#import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
@@ -19,93 +17,12 @@
 #import "components/page_content_annotations/core/page_embeddings_common.h"
 #import "components/page_content_annotations/core/simple_page_content_verbalization.h"
 #import "components/passage_embeddings/core/passage_embeddings_features.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace {
 
 constexpr size_t kDefaultCacheCapacity = 50;
 
-std::unique_ptr<KeyedService> BuildInProcessCategoryClassificationService(
-    ProfileIOS* profile) {
-  if (profile->IsOffTheRecord()) {
-    return nullptr;
-  }
-  OptimizationGuideService* opt_guide =
-      OptimizationGuideServiceFactory::GetForProfile(profile);
-  if (!opt_guide) {
-    return nullptr;
-  }
-
-  return std::make_unique<InProcessCategoryClassificationService>(opt_guide);
-}
-
-class InProcessCategoryClassificationServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
- public:
-  static InProcessCategoryClassificationService* GetForProfile(
-      ProfileIOS* profile) {
-    return GetInstance()
-        ->GetServiceForProfileAs<InProcessCategoryClassificationService>(
-            profile, /*create=*/true);
-  }
-
-  static InProcessCategoryClassificationServiceFactory* GetInstance() {
-    static base::NoDestructor<InProcessCategoryClassificationServiceFactory>
-        instance;
-    return instance.get();
-  }
-
-  static TestingFactory GetDefaultFactory() {
-    return base::BindRepeating(&BuildInProcessCategoryClassificationService);
-  }
-
- private:
-  friend class base::NoDestructor<
-      InProcessCategoryClassificationServiceFactory>;
-
-  InProcessCategoryClassificationServiceFactory()
-      : ProfileKeyedServiceFactoryIOS("InProcessCategoryClassificationService",
-                                      ProfileSelection::kOwnInstanceInIncognito,
-                                      ServiceCreation::kCreateWithProfile,
-                                      TestingCreation::kNoServiceForTests) {
-    DependsOn(OptimizationGuideServiceFactory::GetInstance());
-  }
-
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override {
-    return BuildInProcessCategoryClassificationService(profile);
-  }
-};
-
 }  // namespace
-
-#pragma mark - Service Implementation
-
-// static
-InProcessCategoryClassificationService*
-InProcessCategoryClassificationService::GetForProfile(ProfileIOS* profile) {
-  return InProcessCategoryClassificationServiceFactory::GetForProfile(profile);
-}
-
-// static
-void InProcessCategoryClassificationService::EnsureFactoryBuilt() {
-  InProcessCategoryClassificationServiceFactory::GetInstance();
-}
-
-// static
-ProfileKeyedServiceFactoryIOS*
-InProcessCategoryClassificationService::GetFactory() {
-  return InProcessCategoryClassificationServiceFactory::GetInstance();
-}
-
-// static
-ProfileKeyedServiceFactoryIOS::TestingFactory
-InProcessCategoryClassificationService::GetDefaultFactory() {
-  return InProcessCategoryClassificationServiceFactory::GetDefaultFactory();
-}
 
 InProcessCategoryClassificationService::InProcessCategoryClassificationService(
     optimization_guide::OptimizationGuideModelProvider* model_provider)

@@ -103,7 +103,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
-#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service_factory.h"
 #import "ios/chrome/browser/invalidation/model/ios_chrome_profile_invalidation_provider_factory.h"
@@ -357,6 +357,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ImageFetcherServiceFactory::GetInstance();
   ImpressionLimitServiceFactory::GetInstance();
   InactiveTabsServiceFactory::GetInstance();
+  InProcessCategoryClassificationServiceFactory::GetInstance();
   IOSAccountSettingServiceFactory::GetInstance();
   IOSAtMemoryQueryServiceFactory::GetInstance();
   IOSAutofillAiModelCacheFactory::GetInstance();
@@ -468,7 +469,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   // Call other "Ensure...FactoriesBuilt" functions as necessary.
   EnsureSessionProtoDBFactoriesBuilt();
 
-  InProcessCategoryClassificationService::EnsureFactoryBuilt();
   if (web::features::IsCobaltEnabled()) {
     ios::provider::EnsureCobaltProfileKeyedServiceFactoriesBuilt();
   }

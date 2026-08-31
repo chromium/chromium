@@ -8,6 +8,8 @@ source_set("on_device_category_classifier") {
     "classification_request_tracker.mm",
     "in_process_category_classification_service.h",
     "in_process_category_classification_service.mm",
+    "in_process_category_classification_service_factory.h",
+    "in_process_category_classification_service_factory.mm",
     "in_process_passage_embedder_wrapper.h",
     "in_process_passage_embedder_wrapper.mm",
     "on_device_page_classification_service.h",
@@ -46,6 +48,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "classification_request_tracker_unittest.mm",
+    "in_process_category_classification_service_factory_unittest.mm",
     "in_process_category_classification_service_unittest.mm",
     "on_device_page_classification_service_factory_unittest.mm",
     "on_device_page_classification_service_unittest.mm",

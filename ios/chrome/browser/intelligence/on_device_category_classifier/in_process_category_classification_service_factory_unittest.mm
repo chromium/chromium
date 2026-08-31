@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
 
 #import <memory>
 #import <utility>
@@ -11,8 +11,6 @@
 #import "base/no_destructor.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
-#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
-#import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +27,7 @@ std::unique_ptr<KeyedService> BuildTestInProcessClassificationService(
       test_model_provider.get());
 }
 
-class OnDevicePageClassificationServiceFactoryTest : public PlatformTest {
+class InProcessCategoryClassificationServiceFactoryTest : public PlatformTest {
  protected:
   std::unique_ptr<TestProfileIOS> CreateProfile() {
     TestProfileIOS::Builder builder;
@@ -43,22 +41,23 @@ class OnDevicePageClassificationServiceFactoryTest : public PlatformTest {
 };
 
 // Tests that the factory creates a service instance for a regular profile.
-TEST_F(OnDevicePageClassificationServiceFactoryTest, CreateServiceForProfile) {
+TEST_F(InProcessCategoryClassificationServiceFactoryTest,
+       CreateServiceForProfile) {
   auto profile = CreateProfile();
-  EXPECT_NE(
-      OnDevicePageClassificationServiceFactory::GetForProfile(profile.get()),
-      nullptr);
+  EXPECT_NE(InProcessCategoryClassificationServiceFactory::GetForProfile(
+                profile.get()),
+            nullptr);
 }
 
 // Tests that the factory does not create a service for an off-the-record
 // profile.
-TEST_F(OnDevicePageClassificationServiceFactoryTest,
+TEST_F(InProcessCategoryClassificationServiceFactoryTest,
        DoNotCreateServiceForOffTheRecordProfile) {
   auto profile = CreateProfile();
   ProfileIOS* otr_profile =
       profile->CreateOffTheRecordProfileWithTestingFactories();
   EXPECT_EQ(
-      OnDevicePageClassificationServiceFactory::GetForProfile(otr_profile),
+      InProcessCategoryClassificationServiceFactory::GetForProfile(otr_profile),
       nullptr);
 }
 

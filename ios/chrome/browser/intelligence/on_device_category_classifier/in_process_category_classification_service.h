@@ -25,12 +25,9 @@
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/classification_request_tracker.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_passage_embedder_wrapper.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/passage_embedder_model_loader.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 #import "url/gurl.h"
-
-class ProfileIOS;
 
 // In-process service that manages passage embedding generation and on-device
 // category classification.
@@ -46,12 +43,6 @@ class InProcessCategoryClassificationService
     std::optional<passage_embeddings::Embedding> title_url_embedding;
     std::vector<passage_embeddings::Embedding> passage_embeddings;
   };
-
-  static InProcessCategoryClassificationService* GetForProfile(
-      ProfileIOS* profile);
-  static void EnsureFactoryBuilt();
-  static ProfileKeyedServiceFactoryIOS* GetFactory();
-  static ProfileKeyedServiceFactoryIOS::TestingFactory GetDefaultFactory();
 
   explicit InProcessCategoryClassificationService(
       optimization_guide::OptimizationGuideModelProvider* model_provider);

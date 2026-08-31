@@ -15,6 +15,7 @@
 #import "components/passage_embeddings/core/passage_embeddings_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -43,12 +44,13 @@ class OnDevicePageClassificationServiceTest : public PlatformTest {
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
-        InProcessCategoryClassificationService::GetFactory(),
+        InProcessCategoryClassificationServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestInProcessClassificationService));
     profile_ = std::move(builder).Build();
 
     in_process_service_ =
-        InProcessCategoryClassificationService::GetForProfile(profile_.get());
+        InProcessCategoryClassificationServiceFactory::GetForProfile(
+            profile_.get());
     service_ = std::make_unique<OnDevicePageClassificationService>(
         in_process_service_);
   }
