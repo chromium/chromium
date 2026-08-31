@@ -18,6 +18,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
+import static org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.MAX_HEIGHT_RATIO;
+
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -133,6 +135,7 @@ public class BottomSheetUnitTest {
         ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(0, 0);
         doReturn(params).when(mShadowLayerView).getLayoutParams();
         mBottomSheet.setShadowLayerForTesting(mShadowLayerView);
+        when(mSheetContent.getMaxResizeContentHeightRatio()).thenReturn(MAX_HEIGHT_RATIO);
     }
 
     @After
@@ -143,6 +146,7 @@ public class BottomSheetUnitTest {
     private void setupBottomSheetForKeyboardTest() {
         BottomSheet.setSmallScreenForTesting(false);
         when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        when(mSheetContent.getMaxResizeContentHeightRatio()).thenReturn(MAX_HEIGHT_RATIO);
         when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
         when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
@@ -329,25 +333,95 @@ public class BottomSheetUnitTest {
 
     @Test
     public void testGetFullRatio_ResizeContent() {
-        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        BottomSheet.setSmallScreenForTesting(false);
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
         mBottomSheet.showContent(mSheetContent);
 
         assertEquals(
                 "Full ratio for RESIZE_CONTENT should be MAX_HEIGHT_RATIO.",
-                1.0f,
+                MAX_HEIGHT_RATIO,
                 mBottomSheet.getFullRatio(),
                 0.0f);
     }
 
     @Test
+    public void testGetFullRatio_ResizeContent_CustomMaxRatioCap() {
+        BottomSheet.setSmallScreenForTesting(false);
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        when(mSheetContent.getMaxResizeContentHeightRatio()).thenReturn(0.80f);
+        mBottomSheet.showContent(mSheetContent);
+
+        assertEquals(
+                "Full ratio for RESIZE_CONTENT with custom max ratio cap should be 0.80f.",
+                0.80f,
+                mBottomSheet.getFullRatio(),
+                0.0f);
+    }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_ResizeContent_CustomMaxRatioCap() {
+        BottomSheet.setSmallScreenForTesting(false);
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        when(mSheetContent.getMaxResizeContentHeightRatio()).thenReturn(0.80f);
+        // Return 0.5 for half height to make the min height 100 (container height is 200).
+        // Max full height is 0.80 * 200 = 160.
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        setupBottomSheetStrings(
+                R.string.bottom_sheet_accessibility_description,
+                R.string.bottom_sheet_accessibility_description);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        mBottomSheet.showContent(mSheetContent);
+
+        mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
+
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+
+        mBottomSheet.setSheetOffsetFromBottom(120.0f, BottomSheetController.StateChangeReason.NONE);
+        // Container height should be clamp(120, 100, 160) = 120.
+        assertEquals(120, contentContainer.getLayoutParams().height);
+
+        mBottomSheet.setSheetOffsetFromBottom(50.0f, BottomSheetController.StateChangeReason.NONE);
+        // Container height should be clamp(50, 100, 160) = 100.
+        assertEquals(100, contentContainer.getLayoutParams().height);
+
+        mBottomSheet.setSheetOffsetFromBottom(180.0f, BottomSheetController.StateChangeReason.NONE);
+        // Container height should be clamp(180, 100, 160) = 160.
+        assertEquals(160, contentContainer.getLayoutParams().height);
+    }
+
+    @Test
+    public void testSetSheetState_Full_ResizeContent_CustomMaxRatioCap() {
+        BottomSheet.setSmallScreenForTesting(false);
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        when(mSheetContent.getMaxResizeContentHeightRatio()).thenReturn(0.80f);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        setupBottomSheetStrings(
+                R.string.bottom_sheet_accessibility_description,
+                R.string.bottom_sheet_accessibility_description);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        mBottomSheet.showContent(mSheetContent);
+
+        mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
+
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        // Max sheet height is 200, so 0.80 * 200 = 160.
+        assertEquals(160.0f, mBottomSheet.getCurrentOffsetPx(), 0.0f);
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        assertEquals(160, contentContainer.getLayoutParams().height);
+    }
+
+    @Test
     public void testGetFullRatio_ResizeContent_HalfStateDisabled() {
-        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
-        doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
         mBottomSheet.showContent(mSheetContent);
 
         assertEquals(
                 "Full ratio for RESIZE_CONTENT with half state disabled should be 1.0f.",
-                1.0f,
+                MAX_HEIGHT_RATIO,
                 mBottomSheet.getFullRatio(),
                 0.0f);
     }
@@ -944,11 +1018,11 @@ public class BottomSheetUnitTest {
         assertEquals(0f, mBottomSheet.getTranslationY(), 0.0f);
 
         // Now set offset to 250. translationY should still be 0 (capped).
-        // Without the fix, this would early return and NOT update the height.
+        // Height should remain clamped to FULL height (200).
         mBottomSheet.setSheetOffsetFromBottom(250, StateChangeReason.NONE);
 
-        // Height should be updated to 250 (since viewport is 1000).
-        assertEquals(250, contentContainer.getLayoutParams().height);
+        // Height should remain clamped to FULL height (200).
+        assertEquals(200, contentContainer.getLayoutParams().height);
         assertEquals(0f, mBottomSheet.getTranslationY(), 0.0f);
     }
 

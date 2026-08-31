@@ -55,6 +55,9 @@ public class TestBottomSheetContent implements BottomSheetContent {
     /** The full height of this content. */
     private float mFullHeight;
 
+    /** The max resize content height ratio of this content. */
+    private float mMaxResizeContentHeightRatio = MAX_HEIGHT_RATIO;
+
     /** If set to true, the half state will be skipped when scrolling down the FULL sheet. */
     private boolean mSkipHalfStateScrollingDown;
 
@@ -183,6 +186,20 @@ public class TestBottomSheetContent implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         return mFullHeight;
+    }
+
+    /**
+     * Sets the maximum full-height ratio cap for this test content.
+     *
+     * @param ratio The maximum full-height ratio cap.
+     */
+    public void setMaxResizeContentHeightRatio(float ratio) {
+        mMaxResizeContentHeightRatio = ratio;
+    }
+
+    @Override
+    public float getMaxResizeContentHeightRatio() {
+        return mMaxResizeContentHeightRatio;
     }
 
     public void setHasCustomScrimLifecycle(boolean hasCustomScrimLifecycle) {

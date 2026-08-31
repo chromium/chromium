@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.MAX_HEIGHT_RATIO;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -99,9 +100,6 @@ class BottomSheet extends BottomSheetView
 
     /** The height ratio for the sheet in the SheetState.HALF state. */
     private static final float HALF_HEIGHT_RATIO = 0.75f;
-
-    /** The maximum height ratio for the sheet. */
-    private static final float MAX_HEIGHT_RATIO = 1.0f;
 
     /** The desired height of a content that has just been shown or whose height was invalidated. */
     private static final float HEIGHT_UNSPECIFIED = -1.0f;
@@ -892,9 +890,7 @@ class BottomSheet extends BottomSheetView
         boolean translationChanged = !MathUtils.areFloatsEqual(translationY, getTranslationY());
         boolean heightNeedsUpdate = false;
         if (isFullHeightResizeContent()) {
-            @Px float minContentHeight = getSheetHeightForState(SheetState.HALF);
-            @Px int newHeight = (int) Math.max(minContentHeight, mCurrentOffsetPx);
-            newHeight = Math.min(mVisibleViewportRect.height(), newHeight);
+            @Px int newHeight = getResizingContentContainerHeight();
             var params = mBottomSheetContentContainer.getLayoutParams();
             if (params != null && params.height != newHeight) {
                 heightNeedsUpdate = true;
@@ -989,6 +985,14 @@ class BottomSheet extends BottomSheetView
         return mSheetContent != null
                 && isHalfStateEnabled()
                 && mSheetContent.getFullHeightRatio() == HeightMode.RESIZE_CONTENT;
+    }
+
+    private @Px int getResizingContentContainerHeight() {
+        float minContentHeight = getSheetHeightForState(SheetState.HALF);
+        float maxContentHeight = getSheetHeightForState(SheetState.FULL);
+        @Px
+        int newHeight = (int) MathUtils.clamp(mCurrentOffsetPx, minContentHeight, maxContentHeight);
+        return Math.min(mVisibleViewportRect.height(), newHeight);
     }
 
     /** Returns the resolved PEEK height in pixels for the current content. */
@@ -1086,13 +1090,17 @@ class BottomSheet extends BottomSheetView
             ensureContentDesiredHeightIsComputed();
             return Math.min(getMaxSheetHeight(), mContentDesiredHeight) / getMaxSheetHeight();
         } else if (isFullHeightResizeContent()) {
-            return MAX_HEIGHT_RATIO;
+            float maxRatioCap = mSheetContent.getMaxResizeContentHeightRatio();
+            if (maxRatioCap <= 0.0f || maxRatioCap > MAX_HEIGHT_RATIO) {
+                return MAX_HEIGHT_RATIO;
+            }
+            return maxRatioCap;
         }
 
         // If the customFullRatio is RESIZE_CONTENT, but half height is not enabled, set the full
         // ratio to 1.0f.
         return customFullRatio == HeightMode.DEFAULT || customFullRatio == HeightMode.RESIZE_CONTENT
-                ? 1
+                ? MAX_HEIGHT_RATIO
                 : customFullRatio;
     }
 
@@ -1715,9 +1723,7 @@ class BottomSheet extends BottomSheetView
         }
 
         if (isFullHeightResizeContent()) {
-            @Px float minContentHeight = getSheetHeightForState(SheetState.HALF);
-            @Px int newHeight = (int) Math.max(minContentHeight, mCurrentOffsetPx);
-            newHeight = Math.min(mVisibleViewportRect.height(), newHeight);
+            @Px int newHeight = getResizingContentContainerHeight();
             mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, newHeight);
         } else {
             int targetHeight;
