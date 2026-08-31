@@ -513,6 +513,11 @@ BASE_FEATURE_PARAM(std::string,
                    &kAiOverlayDialog,
                    "mock_json_path",
                    "");
+BASE_FEATURE_PARAM(bool,
+                   kAiOverlayDialogUsesActor,
+                   &kAiOverlayDialog,
+                   "ai_overlay_dialog_uses_actor",
+                   false);
 BASE_FEATURE(kAiOverlayDisableNavigationContext,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

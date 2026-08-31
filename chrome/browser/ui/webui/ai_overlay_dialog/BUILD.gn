@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/translate",
+    "//chrome/browser/ttc",
     "//chrome/browser/ttc/resources",
     "//chrome/browser/ttc/resources:generate_tool_definitions",
     "//chrome/browser/ui",

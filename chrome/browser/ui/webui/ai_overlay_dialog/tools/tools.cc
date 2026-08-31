@@ -33,7 +33,9 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ttc/resources/generated_tool_definitions.h"
+#include "chrome/browser/ttc/tool_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -127,7 +129,11 @@ AiOverlayTools::AiOverlayTools(
     PageContextMonitor* page_context_monitor)
     : receiver_(this, std::move(receiver)),
       browser_(browser),
-      page_context_monitor_(page_context_monitor) {}
+      page_context_monitor_(page_context_monitor) {
+  if (features::kAiOverlayDialogUsesActor.Get()) {
+    tool_controller_ = std::make_unique<ToolController>(browser_->GetProfile());
+  }
+}
 
 AiOverlayTools::~AiOverlayTools() = default;
 
@@ -141,6 +147,12 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
                              bool new_tab,
                              OpenUrlCallback callback) {
   RecordToolCallInvoked("OpenUrl");
+  if (tool_controller_) {
+    tool_controller_->OpenUrl(browser_, url_string, new_tab,
+                              std::move(callback));
+    return;
+  }
+
   GURL url(url_string);
   if (!url.is_valid()) {
     std::move(callback).Run(base::unexpected("Invalid URL"));
