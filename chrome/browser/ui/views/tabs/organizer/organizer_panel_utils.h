@@ -10,9 +10,14 @@
 namespace organizer_panel {
 
 BASE_DECLARE_FEATURE(kOrganizerPanel);
+BASE_DECLARE_FEATURE(kShowExtensionsSidePanelUiInOrganizerPanel);
 
 // Returns whether the Organizer Panel feature is enabled.
 bool IsOrganizerPanelFeatureEnabled();
+
+// Returns whether the Show Extensions Side Panel UI In Organizer Panel feature
+// is enabled.
+bool IsShowExtensionsSidePanelUiInOrganizerPanelEnabled();
 
 }  // namespace organizer_panel
 

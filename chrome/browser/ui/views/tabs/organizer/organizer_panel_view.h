@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_controls_view.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -18,6 +21,10 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_id.h"
+#endif
 
 namespace gfx {
 class Point;
@@ -28,6 +35,14 @@ class ActionViewController;
 class EventMonitor;
 class ViewShadow;
 }  // namespace views
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class ExtensionViewViews;
+namespace extensions {
+class ExtensionHost;
+class ExtensionViewHost;
+}  // namespace extensions
+#endif
 
 class BrowserWindowInterface;
 class OrganizerPanelStateController;
@@ -94,6 +109,11 @@ class OrganizerPanelView : public views::View,
     return controls_view_;
   }
   views::View* web_view_for_testing();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  bool has_extension_observer_helper_for_testing() const {
+    return extension_observer_helper_ != nullptr;
+  }
+#endif
 
   void set_on_close_animation_ended_callback_for_testing(
       base::OnceClosure on_close_animation_ended_callback) {
@@ -163,6 +183,23 @@ class OrganizerPanelView : public views::View,
   // Tracks the last focused view before opening the panel, so focus can be
   // restored when the panel is closed.
   views::ViewTracker last_focused_view_before_opening_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  class ExtensionObserverHelper;
+
+  void OnViewDestroying();
+  void OnExtensionHostDestroyed(extensions::ExtensionHost* host);
+
+  void HandleCloseExtensionHost(extensions::ExtensionHost* host);
+  void UpdateExtensionContent(const extensions::ExtensionId& extension_id);
+  void UpdateDefaultExtensionContent();
+  void ResetExtensionContent();
+
+  std::unique_ptr<extensions::ExtensionViewHost> extension_host_;
+  raw_ptr<ExtensionViewViews> extension_view_ = nullptr;
+  std::optional<extensions::ExtensionId> current_extension_id_;
+  std::unique_ptr<ExtensionObserverHelper> extension_observer_helper_;
+#endif
 
   base::WeakPtrFactory<OrganizerPanelView> weak_ptr_factory_{this};
 };

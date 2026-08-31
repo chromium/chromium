@@ -10,11 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -251,4 +253,53 @@ TEST_F(OrganizerPanelViewTest, WebViewExtendsToEdges) {
   EXPECT_EQ(web_view->bounds().x(), 0);
   EXPECT_EQ(web_view->bounds().width(), container->bounds().width());
   EXPECT_EQ(web_view->bounds().bottom(), container->bounds().height());
+}
+
+TEST_F(OrganizerPanelViewTest, NoWebViewWhenExtensionSidePanelFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
+
+  CreateView();
+  EXPECT_EQ(organizer_panel_view()->web_view_for_testing(), nullptr);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_TRUE(
+      organizer_panel_view()->has_extension_observer_helper_for_testing());
+#endif
+}
+
+TEST_F(OrganizerPanelViewTest, DefaultWebViewCreatedWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
+
+  CreateView();
+  EXPECT_NE(organizer_panel_view()->web_view_for_testing(), nullptr);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_FALSE(
+      organizer_panel_view()->has_extension_observer_helper_for_testing());
+#endif
+}
+
+TEST_F(OrganizerPanelViewTest, ExtensionStateControllerToggleLifecycle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
+
+  CreateView();
+  OrganizerPanelView::disable_animations_for_testing();
+
+  EXPECT_FALSE(organizer_panel_view()->GetVisible());
+  EXPECT_EQ(organizer_panel_view()->web_view_for_testing(), nullptr);
+
+  // Toggle open
+  state_controller()->SetOrganizerVisible(true);
+  organizer_panel_view()->OnOrganizerPanelStateChanged(state_controller());
+  EXPECT_TRUE(organizer_panel_view()->GetVisible());
+
+  // Toggle close
+  state_controller()->SetOrganizerVisible(false);
+  organizer_panel_view()->OnOrganizerPanelStateChanged(state_controller());
+  EXPECT_FALSE(organizer_panel_view()->GetVisible());
+  EXPECT_EQ(organizer_panel_view()->web_view_for_testing(), nullptr);
 }

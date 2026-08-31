@@ -5,10 +5,17 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_STATE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_STATE_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_id.h"
+#endif
 
 class BrowserWindowInterface;
 
@@ -34,6 +41,16 @@ class OrganizerPanelStateController {
 
   void SetOrganizerVisible(bool visible);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  void OpenForExtension(const extensions::ExtensionId& extension_id);
+  void ToggleForExtension(const extensions::ExtensionId& extension_id);
+  void CloseForExtension(const extensions::ExtensionId& extension_id);
+
+  const std::optional<extensions::ExtensionId>& active_extension_id() const {
+    return active_extension_id_;
+  }
+#endif
+
   using StateChangedCallback =
       base::RepeatingCallback<void(OrganizerPanelStateController*)>;
   base::CallbackListSubscription RegisterOnStateChanged(
@@ -50,6 +67,10 @@ class OrganizerPanelStateController {
 
   // Controls whether the OrganizerPanelView is visible.
   bool is_visible_ = false;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::optional<extensions::ExtensionId> active_extension_id_;
+#endif
 
   const raw_ptr<actions::ActionItem> root_action_item_;
 

@@ -290,6 +290,8 @@ source_set("impl") {
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/tabs/organizer",
+      "//chrome/browser/ui/views/tabs/organizer",
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications",

@@ -75,3 +75,52 @@ TEST_F(OrganizerPanelStateControllerTest, Subscription) {
   controller()->SetOrganizerVisible(true);
   EXPECT_EQ(1, call_count);
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(OrganizerPanelStateControllerTest, ExtensionOpenToggleClose) {
+  const extensions::ExtensionId kExt1 = "abcdefghijklmnopabcdefghijklmnop";
+  const extensions::ExtensionId kExt2 = "ponmlkjihgfedcbaponmlkjihgfedcba";
+
+  int call_count = 0;
+  auto subscription = controller()->RegisterOnStateChanged(base::BindRepeating(
+      [](int* call_count, OrganizerPanelStateController* controller) {
+        (*call_count)++;
+      },
+      &call_count));
+
+  // Opening for extension opens panel and sets active extension ID.
+  controller()->OpenForExtension(kExt1);
+  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
+  EXPECT_EQ(controller()->active_extension_id(), kExt1);
+  EXPECT_EQ(1, call_count);
+
+  // Calling OpenForExtension with the same extension when already open
+  // should not notify again.
+  controller()->OpenForExtension(kExt1);
+  EXPECT_EQ(1, call_count);
+
+  // Opening for another extension keeps it open and updates active extension.
+  controller()->OpenForExtension(kExt2);
+  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
+  EXPECT_EQ(controller()->active_extension_id(), kExt2);
+  EXPECT_EQ(2, call_count);
+
+  // Toggling same extension closes the panel.
+  controller()->ToggleForExtension(kExt2);
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
+  EXPECT_FALSE(controller()->active_extension_id().has_value());
+  EXPECT_EQ(3, call_count);
+
+  // Toggling while closed opens it.
+  controller()->ToggleForExtension(kExt1);
+  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
+  EXPECT_EQ(controller()->active_extension_id(), kExt1);
+  EXPECT_EQ(4, call_count);
+
+  // Closing matching extension closes the panel.
+  controller()->CloseForExtension(kExt1);
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
+  EXPECT_FALSE(controller()->active_extension_id().has_value());
+  EXPECT_EQ(5, call_count);
+}
+#endif
