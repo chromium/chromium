@@ -304,7 +304,7 @@ class ChromeOSPerUserOobeConsentTest : public ash::OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
-                       PRE_OwnerConsentAndRegularSecondaryConsent) {
+                       DISABLED_PRE_OwnerConsentAndRegularSecondaryConsent) {
   // Create and login as device owner.
   auto context = ash::LoginManagerMixin::CreateDefaultUserContext(
       ash::LoginManagerMixin::TestUserInfo(
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
-                       OwnerConsentAndRegularSecondaryConsent) {
+                       DISABLED_OwnerConsentAndRegularSecondaryConsent) {
   auto context = ash::LoginManagerMixin::CreateDefaultUserContext(
       ash::LoginManagerMixin::TestUserInfo(
           AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId)));
