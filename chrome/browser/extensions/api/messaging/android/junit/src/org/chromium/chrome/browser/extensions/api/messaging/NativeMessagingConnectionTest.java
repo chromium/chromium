@@ -32,6 +32,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 
+import java.util.concurrent.TimeUnit;
+
 /** Unit tests for {@link NativeMessagingConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -75,9 +77,27 @@ public class NativeMessagingConnectionTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws RemoteException {
         mTestContext = new TestContext(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mTestContext);
+
+        IExtensionNativeMessagePort mockPort = Mockito.mock(IExtensionNativeMessagePort.class);
+        Mockito.doAnswer(
+                        invocation -> {
+                            IConnectPortCallback callback = invocation.getArgument(1);
+                            callback.onSuccess(mockPort);
+                            return null;
+                        })
+                .when(mMockExtensionService1)
+                .connectPort(Mockito.any(), Mockito.any());
+        Mockito.doAnswer(
+                        invocation -> {
+                            IConnectPortCallback callback = invocation.getArgument(1);
+                            callback.onSuccess(mockPort);
+                            return null;
+                        })
+                .when(mMockExtensionService2)
+                .connectPort(Mockito.any(), Mockito.any());
 
         mFakeBrowserService =
                 new IBrowserNativeMessageService.Stub() {
@@ -423,5 +443,303 @@ public class NativeMessagingConnectionTest {
         // It should no-op: mService remains null and connection remains unbound.
         Assert.assertNull(connection.getServiceForTesting());
         Assert.assertFalse(connection.isBound());
+    }
+
+    // Test that when the last open port is destroyed, the extension session
+    // disconnects after IDLE_DISCONNECT_TIMEOUT_MS and unbinds from the app.
+    @Test
+    public void testIdleDisconnectAfterTimeout() throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+
+        NativeMessageAndroidPort port = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var session = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(session);
+        Assert.assertEquals(mMockExtensionService1, session.getServiceForTesting());
+
+        // Close the only open port.
+        session.onPortDestroying(port);
+
+        // Advance half of the timeout (30s). Session should still be connected.
+        ShadowLooper.idleMainLooper(30, TimeUnit.SECONDS);
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1, Mockito.never()).closeConnection();
+        Assert.assertTrue(connection.isBound());
+
+        // Advance remaining 30 seconds.
+        ShadowLooper.idleMainLooper(30, TimeUnit.SECONDS);
+
+        // Session should be disconnected, closeConnection called, and connection unbound.
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1).closeConnection();
+        Assert.assertFalse(connection.isBound());
+        Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+    }
+
+    // Test that if a new port is added while the idle countdown is ticking,
+    // the idle disconnect is canceled.
+    @Test
+    public void testIdleDisconnectCanceledWhenPortAdded() throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+
+        NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port1));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var session = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(session);
+
+        // Close the only open port.
+        session.onPortDestroying(port1);
+
+        // Advance 20 seconds.
+        ShadowLooper.idleMainLooper(20, TimeUnit.SECONDS);
+
+        // Add a new port before timeout expires.
+        NativeMessageAndroidPort port2 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port2));
+
+        // Advance past the original 60-second mark (another 45s -> t = 65s).
+        ShadowLooper.idleMainLooper(45, TimeUnit.SECONDS);
+
+        // Session must still be connected because port2 is open.
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1, Mockito.never()).closeConnection();
+        Assert.assertTrue(connection.isBound());
+    }
+
+    // Test the 1 -> 0 -> 1 -> 0 edge case:
+    // Port1 closed at t=0s.
+    // Port2 added at t=20s.
+    // Port2 closed at t=25s.
+    // At t=60s (original timeout), only 35s have passed since port2 closed, so it
+    // must NOT disconnect until t=85s (60s after port2 closed).
+    @Test
+    public void testIdleDisconnectResetWhenPortAddedAndRemovedAgain() throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+
+        NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port1));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var session = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(session);
+
+        // t = 0: Close port1.
+        session.onPortDestroying(port1);
+
+        // t = 20s: Add port2.
+        ShadowLooper.idleMainLooper(20, TimeUnit.SECONDS);
+        NativeMessageAndroidPort port2 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port2));
+
+        // t = 25s: Close port2.
+        ShadowLooper.idleMainLooper(5, TimeUnit.SECONDS);
+        session.onPortDestroying(port2);
+
+        // t = 60s (original timeout): only 35s since port2 closed. Must NOT disconnect!
+        ShadowLooper.idleMainLooper(35, TimeUnit.SECONDS);
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1, Mockito.never()).closeConnection();
+        Assert.assertTrue(connection.isBound());
+
+        // t = 85s (60s since port2 closed): Must disconnect now!
+        ShadowLooper.idleMainLooper(25, TimeUnit.SECONDS);
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1).closeConnection();
+        Assert.assertFalse(connection.isBound());
+    }
+
+    // Test that if a pending port is destroyed before authentication finishes,
+    // when authentication succeeds with 0 ports, the idle disconnect countdown starts.
+    @Test
+    public void testPendingPortDestroyedBeforeAuthSuccessStartsIdleTimeout()
+            throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        NativeMessageAndroidPort port = new NativeMessageAndroidPort();
+
+        // Add port before service connects (port is pending).
+        Assert.assertNull(connection.addPort(EXT_1, true, port));
+        var session = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(session);
+
+        // Port is destroyed while connection is pending.
+        session.onPortDestroying(port);
+
+        // Service connects and auth succeeds, but there are 0 ports.
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1, Mockito.never()).closeConnection();
+
+        // Advance 60s idle timeout.
+        ShadowLooper.idleMainLooper(60, TimeUnit.SECONDS);
+
+        // Session should be disconnected.
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1).closeConnection();
+        Assert.assertFalse(connection.isBound());
+    }
+
+    // Test that closing one port out of multiple does not trigger idle disconnect.
+    @Test
+    public void testMultiplePortsClosingDoesNotTriggerUntilLastPort() throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+
+        NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
+        NativeMessageAndroidPort port2 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port1));
+        Assert.assertNull(connection.addPort(EXT_1, true, port2));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var session = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(session);
+
+        // Close port1, but port2 is still active.
+        session.onPortDestroying(port1);
+
+        // Advance 100 seconds. Session should NOT disconnect because port2 is open.
+        ShadowLooper.idleMainLooper(100, TimeUnit.SECONDS);
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1, Mockito.never()).closeConnection();
+
+        // Close port2.
+        session.onPortDestroying(port2);
+
+        // Advance 60 seconds.
+        ShadowLooper.idleMainLooper(60, TimeUnit.SECONDS);
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1).closeConnection();
+    }
+
+    // Test that idle disconnect for one extension does not affect other active extensions.
+    @Test
+    public void testMultiExtensionIdleDisconnectIsolation() throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+
+        NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
+        NativeMessageAndroidPort port2 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port1));
+        Assert.assertNull(connection.addPort(EXT_2, false, port2));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var session1 = connection.getSessionForTesting(EXT_1);
+        var session2 = connection.getSessionForTesting(EXT_2);
+        Assert.assertNotNull(session1);
+        Assert.assertNotNull(session2);
+
+        // Close EXT_1's port.
+        session1.onPortDestroying(port1);
+
+        // Advance 60 seconds.
+        ShadowLooper.idleMainLooper(60, TimeUnit.SECONDS);
+
+        // EXT_1 should be disconnected and its service closed.
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1).closeConnection();
+
+        // EXT_2 should remain connected, and connection remains bound!
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_2));
+        Mockito.verify(mMockExtensionService2, Mockito.never()).closeConnection();
+        Assert.assertTrue(connection.isBound());
+        Mockito.verify(mObserver, Mockito.never()).onUnbound(Mockito.any());
+    }
+
+    // Test that an extension can reconnect after its session was disconnected due to idle timeout.
+    @Test
+    public void testReconnectAfterIdleDisconnect() throws RemoteException {
+        IExtensionNativeMessageService mockExtensionService1Reconnected =
+                Mockito.mock(IExtensionNativeMessageService.class);
+        Mockito.doAnswer(
+                        invocation -> {
+                            IConnectPortCallback callback = invocation.getArgument(1);
+                            callback.onSuccess(Mockito.mock(IExtensionNativeMessagePort.class));
+                            return null;
+                        })
+                .when(mockExtensionService1Reconnected)
+                .connectPort(Mockito.any(), Mockito.any());
+        IBrowserNativeMessageService fakeBrowserService =
+                new IBrowserNativeMessageService.Stub() {
+                    private int mExt1ConnectCount;
+
+                    @Override
+                    public void connectExtension(
+                            String extensionId, Bundle info, IConnectExtensionCallback callback)
+                            throws RemoteException {
+                        if (EXT_1.equals(extensionId)) {
+                            mExt1ConnectCount++;
+                            if (mExt1ConnectCount == 1) {
+                                callback.onSuccess(mMockExtensionService1);
+                            } else {
+                                callback.onSuccess(mockExtensionService1Reconnected);
+                            }
+                            return;
+                        }
+                        if (EXT_2.equals(extensionId)) {
+                            callback.onSuccess(mMockExtensionService2);
+                            return;
+                        }
+                        callback.onError("Failed to connect extension");
+                    }
+                };
+
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(fakeBrowserService.asBinder());
+
+        NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
+        NativeMessageAndroidPort port2 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port1));
+        Assert.assertNull(connection.addPort(EXT_2, false, port2));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var session1 = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(session1);
+        Assert.assertEquals(mMockExtensionService1, session1.getServiceForTesting());
+
+        // EXT_1 closes port1 and reaches idle timeout.
+        session1.onPortDestroying(port1);
+        ShadowLooper.idleMainLooper(60, TimeUnit.SECONDS);
+
+        // EXT_1 is disconnected, service closed, but connection stays bound because EXT_2 is
+        // active.
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mMockExtensionService1).closeConnection();
+        Assert.assertTrue(connection.isBound());
+
+        // EXT_1 reconnects with a new port.
+        NativeMessageAndroidPort port3 = new NativeMessageAndroidPort();
+        Assert.assertNull(connection.addPort(EXT_1, true, port3));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify a new session was created and connected with the new service stub.
+        var reconnectedSession1 = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(reconnectedSession1);
+        Assert.assertEquals(
+                mockExtensionService1Reconnected, reconnectedSession1.getServiceForTesting());
+        Assert.assertNotSame(session1, reconnectedSession1);
+        Mockito.verify(mockExtensionService1Reconnected, Mockito.never()).closeConnection();
+
+        // Now close the reconnected port and verify the new session has its own functional idle
+        // timer.
+        reconnectedSession1.onPortDestroying(port3);
+        ShadowLooper.idleMainLooper(60, TimeUnit.SECONDS);
+
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Mockito.verify(mockExtensionService1Reconnected).closeConnection();
     }
 }

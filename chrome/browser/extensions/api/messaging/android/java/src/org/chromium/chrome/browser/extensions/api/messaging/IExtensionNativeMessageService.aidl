@@ -8,8 +8,10 @@ import org.chromium.chrome.browser.extensions.api.messaging.IConnectPortCallback
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessageCallback;
 
 oneway interface IExtensionNativeMessageService {
-  // Called by the browser when the extension is no longer enabled (i.e. it is
-  // disabled or uninstalled).
+  // Called by the browser when the extension disconnects itself from the
+  // external Android app. This happens when it is no longer enabled (i.e. it is
+  // disabled or uninstalled) or when it was idle for too long (i.e. there are
+  // no connected ports).
   void closeConnection();
 
   // Connects a message port to the external Android app. Any messages that the

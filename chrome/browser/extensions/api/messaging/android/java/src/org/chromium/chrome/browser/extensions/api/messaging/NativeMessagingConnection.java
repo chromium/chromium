@@ -41,6 +41,10 @@ public class NativeMessagingConnection implements ServiceConnection {
 
     @VisibleForTesting public static final long CONNECT_TIMEOUT_MS = 30 * 1000;
 
+    // Time to wait before disconnecting a session that remains connected to the
+    // external app but has become idle (zero active or pending ports).
+    @VisibleForTesting static final long IDLE_DISCONNECT_TIMEOUT_MS = 60_000L;
+
     public interface Observer {
         void onUnbound(String packageName);
     }
@@ -184,9 +188,6 @@ public class NativeMessagingConnection implements ServiceConnection {
 
     public void onSessionDisconnected(String extensionId) {
         mSessions.remove(extensionId);
-
-        // TODO(crbug.com/515159909): Only unbind if a bit of time passes and
-        // there has been no more new connections.
         if (mSessions.isEmpty()) {
             unbind();
         }
@@ -229,6 +230,9 @@ public class NativeMessagingConnection implements ServiceConnection {
         private final boolean mIsVerifiedExtension;
         private @Nullable IExtensionNativeMessageService mExtensionService;
         private @ConnectionState int mState = ConnectionState.DISCONNECTED;
+        // Generation counter for idle disconnect tasks. Incremented whenever a port
+        // is added or the session disconnects to invalidate earlier scheduled tasks.
+        private int mIdleSequenceNumber;
 
         // Ports waiting for the service to bind and authenticate.
         private final Set<NativeMessageAndroidPort> mPendingPorts = new LinkedHashSet<>();
@@ -249,8 +253,13 @@ public class NativeMessagingConnection implements ServiceConnection {
 
         @Override
         public void onPortDestroying(NativeMessageAndroidPort port) {
-            mPendingPorts.remove(port);
-            mActivePorts.remove(port);
+            boolean removedFromPending = mPendingPorts.remove(port);
+            boolean removedFromActive = mActivePorts.remove(port);
+            if ((removedFromPending || removedFromActive)
+                    && mPendingPorts.isEmpty()
+                    && mActivePorts.isEmpty()) {
+                maybeScheduleIdleDisconnect();
+            }
         }
 
         public boolean isSessionConnected() {
@@ -259,6 +268,8 @@ public class NativeMessagingConnection implements ServiceConnection {
 
         public void addPort(NativeMessageAndroidPort port) {
             port.setObserver(this);
+            // Invalidate any in-flight idle timeout since a new port was added.
+            mIdleSequenceNumber++;
 
             if (isSessionConnected()) {
                 connectPort(port);
@@ -303,13 +314,7 @@ public class NativeMessagingConnection implements ServiceConnection {
                 // IBrowserNativeMessageService.connectExtension was called but before the external
                 // app returned with the result. In this case, call closeConnection() right when the
                 // connectExtension call finishes.
-                if (service != null) {
-                    try {
-                        service.closeConnection();
-                    } catch (RemoteException e) {
-                        Log.w(TAG, "Failed to call closeConnection() for " + mExtensionId, e);
-                    }
-                }
+                safeCloseConnection(service);
                 return;
             }
 
@@ -324,6 +329,12 @@ public class NativeMessagingConnection implements ServiceConnection {
                 connectPort(port);
             }
             assert mPendingPorts.isEmpty();
+            // This is expected to be rare: it only happens if all pending ports were destroyed
+            // from the browser or extension while authentication was in flight. Since the session
+            // is now connected with zero ports, start the idle disconnect countdown.
+            if (mActivePorts.isEmpty()) {
+                maybeScheduleIdleDisconnect();
+            }
         }
 
         private void onConnectExtensionError(String error) {
@@ -391,6 +402,9 @@ public class NativeMessagingConnection implements ServiceConnection {
             // the connection attempt was in flight.
             if (mActivePorts.remove(port)) {
                 port.closeChannel("Could not connect port to " + mConnection.mPackageName + ".");
+                if (mPendingPorts.isEmpty() && mActivePorts.isEmpty()) {
+                    maybeScheduleIdleDisconnect();
+                }
             }
 
             // If the app returns a valid `IExtensionNativeMessagePort` but the
@@ -409,10 +423,53 @@ public class NativeMessagingConnection implements ServiceConnection {
             if (mActivePorts.remove(port)) {
                 Log.w(TAG, "Failed to connect port for " + mExtensionId + ": " + error);
                 port.closeChannel("Could not connect port to " + mConnection.mPackageName + ".");
+                if (mPendingPorts.isEmpty() && mActivePorts.isEmpty()) {
+                    maybeScheduleIdleDisconnect();
+                }
+            }
+        }
+
+        private void maybeScheduleIdleDisconnect() {
+            if (!isSessionConnected() || !mActivePorts.isEmpty() || !mPendingPorts.isEmpty()) {
+                return;
+            }
+
+            // Capture current generation; only addPort() or disconnect() advance it.
+            final int sequenceNumber = mIdleSequenceNumber;
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        // Abort if a new port was added (e.g. ports went 1 -> 0 -> 1).
+                        if (sequenceNumber != mIdleSequenceNumber) {
+                            return;
+                        }
+                        if (!mActivePorts.isEmpty() || !mPendingPorts.isEmpty()) {
+                            return;
+                        }
+                        if (!isSessionConnected()) {
+                            return;
+                        }
+
+                        safeCloseConnection(mExtensionService);
+                        disconnect(null);
+                    },
+                    IDLE_DISCONNECT_TIMEOUT_MS);
+        }
+
+        private void safeCloseConnection(@Nullable IExtensionNativeMessageService service) {
+            if (service != null) {
+                try {
+                    service.closeConnection();
+                } catch (RemoteException e) {
+                    Log.w(TAG, "Failed to call closeConnection() for " + mExtensionId, e);
+                }
             }
         }
 
         private void disconnect(@Nullable String errorMessage) {
+            // Invalidate any in-flight idle timeout tasks since the session is already
+            // being torn down.
+            mIdleSequenceNumber++;
             // Only log if we were connected and unexpectedly getting torn down (e.g.
             // OnServiceDisconnected). Rejected connection errors are already logged in
             // onConnectExtensionError.
@@ -439,14 +496,7 @@ public class NativeMessagingConnection implements ServiceConnection {
         }
 
         public void onExtensionUnloaded() {
-            if (mExtensionService != null) {
-                try {
-                    mExtensionService.closeConnection();
-                } catch (RemoteException e) {
-                    Log.w(TAG, "Failed to call closeConnection() for " + mExtensionId, e);
-                }
-            }
-
+            safeCloseConnection(mExtensionService);
             disconnect(null);
         }
 
@@ -465,10 +515,7 @@ public class NativeMessagingConnection implements ServiceConnection {
                 } else if (service != null) {
                     // Multiple onSuccess calls should be rare. Try to close the
                     // duplicate `service` if this happens.
-                    try {
-                        service.closeConnection();
-                    } catch (RemoteException e) {
-                    }
+                    safeCloseConnection(service);
                 }
             }
 
