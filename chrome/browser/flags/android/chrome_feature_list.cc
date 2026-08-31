@@ -742,7 +742,7 @@ BASE_FEATURE(kCCTTabSwitcherEnabledForChromeExperiment, base::FEATURE_DISABLED_B
 BASE_FEATURE(kCCTTabSwitcherEnabledForEmbedderExperiment, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheDeprecatedSystemLocationSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 // Used in downstream code.
-BASE_FEATURE(kCacheIsGoogleSigned, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCacheIsGoogleSigned, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheIsMultiInstanceApi31Enabled, base::FEATURE_ENABLED_BY_DEFAULT);
 // Used in downstream code.
 BASE_FEATURE(kCastDeviceFilter, base::FEATURE_DISABLED_BY_DEFAULT);
