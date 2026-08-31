@@ -7805,7 +7805,10 @@ crbug.com/519462980 [ Mac26-arm64 ] virtual/webnn-service-with-gpu/external/wpt/
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/invalid.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/browsing_context/create/background.py [ Failure Pass ]
-external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass Timeout ]
+[ Fuchsia ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass Timeout ]
+[ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass Timeout ]
+[ Mac ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass Timeout ]
+[ Win ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass Timeout ]
 # WebDriver BiDi WPT network interception tests are not stable yet.
 # https://github.com/GoogleChromeLabs/chromium-bidi/issues/2045.
 [ Linux ] external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure Pass Timeout ]

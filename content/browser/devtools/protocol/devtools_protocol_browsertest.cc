@@ -3405,6 +3405,15 @@ class DevToolsProtocolDeviceEmulationTest : public DevToolsProtocolTest {
     SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
   }
 
+  void EmulateDeviceScaleFactor(float device_scale_factor) {
+    base::DictValue params;
+    params.Set("width", 0);
+    params.Set("height", 0);
+    params.Set("deviceScaleFactor", device_scale_factor);
+    params.Set("mobile", false);
+    SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
+  }
+
   gfx::Size GetViewSize() {
     return shell()
         ->web_contents()
@@ -3413,7 +3422,47 @@ class DevToolsProtocolDeviceEmulationTest : public DevToolsProtocolTest {
         ->GetViewBounds()
         .size();
   }
+
+  gfx::Size GetLayoutViewportSize() {
+    return gfx::Size(
+        EvalJs(shell()->web_contents(), "window.innerWidth").ExtractInt(),
+        EvalJs(shell()->web_contents(), "window.innerHeight").ExtractInt());
+  }
 };
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationTest,
+                       AndroidLayoutViewportUsesDeviceSize) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), GURL("data:text/html,<!doctype html><body></body>"), 1);
+  Attach();
+
+  const gfx::Size original_size = GetLayoutViewportSize();
+  const gfx::Size first_size(250, 300);
+  const gfx::Size second_size(320, 480);
+
+  EmulateDeviceSize(first_size);
+  EXPECT_EQ(first_size, GetLayoutViewportSize());
+
+  EmulateDeviceScaleFactor(2.0f);
+  EXPECT_NEAR(2.0,
+              EvalJs(shell()->web_contents(), "window.devicePixelRatio")
+                  .ExtractDouble(),
+              0.000001);
+  // With no explicit width or height, changing only the DPR must restore the
+  // native Android layout viewport rather than retaining the previous size.
+  EXPECT_EQ(original_size.width(), GetLayoutViewportSize().width());
+
+  EmulateDeviceSize(second_size);
+  EXPECT_EQ(second_size, GetLayoutViewportSize());
+
+  SendCommandSync("Emulation.clearDeviceMetricsOverride");
+  // Android browser controls can change the available height while this test
+  // runs. The layout viewport width is stable and verifies that the native
+  // mobile viewport behavior was restored.
+  EXPECT_EQ(original_size.width(), GetLayoutViewportSize().width());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Setting frame size (through RWHV) is not supported on Android.
 #if BUILDFLAG(IS_ANDROID)

@@ -768,17 +768,25 @@ TEST_F(WebViewTest, PlatformColorsChangedOnDeviceEmulation) {
   EXPECT_NE(custom_color, original);
   web_view_impl->EnableDeviceEmulation(params);
 
-  // All <span>s should have the custom outline color, and not (for example)
-  // the original color fetched from cache.
+  // Enabling the mobile profile must synchronously process the platform-color
+  // invalidation rather than leave the original color in computed style.
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
+  EXPECT_EQ(custom_color, OutlineColor(span1));
+
+  // Elements attached after the transition should use the mobile theme too.
   auto* span2 = MakeGarbageCollected<HTMLSpanElement>(document);
   document.body()->AppendChild(span2);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(custom_color, OutlineColor(span1));
   EXPECT_EQ(custom_color, OutlineColor(span2));
 
-  // Disable mobile emulation. All <span>s should once again have the
-  // original outline color.
+  // Disabling the mobile profile must synchronously restore the embedder
+  // theme's computed color as well.
   web_view_impl->DisableDeviceEmulation();
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
+  EXPECT_EQ(original, OutlineColor(span1));
+  EXPECT_EQ(original, OutlineColor(span2));
+
   auto* span3 = MakeGarbageCollected<HTMLSpanElement>(document);
   document.body()->AppendChild(span3);
   UpdateAllLifecyclePhases();

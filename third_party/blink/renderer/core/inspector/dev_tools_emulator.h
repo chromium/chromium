@@ -96,8 +96,21 @@ class CORE_EXPORT DevToolsEmulator final
  private:
   class ScopedGlobalOverrides;
 
+  enum class ViewportEmulationMode {
+    kEmbedder,
+    kDesktopViewport,
+    kMobile,
+  };
+
+  ViewportEmulationMode GetViewportEmulationMode() const;
+  bool ApplyViewportStyleForMode(ViewportEmulationMode mode);
+  bool ApplyPageScaleLimitsForMode(ViewportEmulationMode mode);
+  // Returns whether the device-emulation caller should synchronously update
+  // lifecycle after applying the profile.
+  bool ApplyViewportEmulationMode(ViewportEmulationMode previous_mode);
   void EnableMobileEmulation();
   void DisableMobileEmulation();
+  void UpdateLifecycleAfterEmulationProfileChange();
   void SetForceAndroidOverlayScrollbar(bool);
 
   // Enables viewport override and returns the emulation transform to be used.
