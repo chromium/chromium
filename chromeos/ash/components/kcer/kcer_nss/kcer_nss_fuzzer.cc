@@ -1533,6 +1533,10 @@ void KcerFuzzer::RunSetCertProvisioningProfileId() {
 
   EXPECT_TRUE(set_cert_prov_id_waiter.Get().has_value());
   expected_key->cert_provisioning_profile_id = cert_prov_id;
+  // Tests share the attribute id for `cert_provisioning_profile_id` and
+  // `browser_enterprise_client_cert_tag` custom attributes, so their values are
+  // unfortunately populated together.
+  expected_key->browser_enterprise_client_cert_tag = true;
 }
 
 void KcerFuzzer::RunSetBrowserEnterpriseClientCertTag() {
@@ -1557,6 +1561,10 @@ void KcerFuzzer::RunSetBrowserEnterpriseClientCertTag() {
 
   EXPECT_TRUE(set_tag_waiter.Get().has_value());
   expected_key->browser_enterprise_client_cert_tag = true;
+  // Tests share the attribute id for `cert_provisioning_profile_id` and
+  // `browser_enterprise_client_cert_tag` custom attributes, so their values are
+  // unfortunately populated together.
+  expected_key->cert_provisioning_profile_id = "\x01";
 }
 
 base::flat_set<Token> KcerFuzzer::SelectTokens() {

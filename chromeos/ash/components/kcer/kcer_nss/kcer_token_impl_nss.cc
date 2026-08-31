@@ -1775,6 +1775,8 @@ CertProvisioningIdAttributeId
 KcerTokenImplNss::GetCertProvisioningIdAttributeId() const {
   if (translate_attributes_for_testing_) [[unlikely]] {
     CHECK_IS_TEST();
+    // IMPORTANT: The attribute id is shared with BrowserEnterpriseClientCertTag
+    // in tests, which means setting one will set the other one to same value.
     return CertProvisioningIdAttributeId(CKA_START_DATE);
   }
   return CertProvisioningIdAttributeId(
@@ -1785,7 +1787,9 @@ BrowserEnterpriseClientCertTagAttributeId
 KcerTokenImplNss::GetBrowserEnterpriseClientCertTagAttributeId() const {
   if (translate_attributes_for_testing_) [[unlikely]] {
     CHECK_IS_TEST();
-    return BrowserEnterpriseClientCertTagAttributeId(CKA_SUBJECT);
+    // IMPORTANT: The attribute id is shared with CertProvisioningIdAttributeId
+    // in tests, which means setting one will set the other one to same value.
+    return BrowserEnterpriseClientCertTagAttributeId(CKA_START_DATE);
   }
   return BrowserEnterpriseClientCertTagAttributeId(
       pkcs11_custom_attributes::kCkaBrowserEnterpriseClientCertKey);
