@@ -88,10 +88,16 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsUiEnabled'),
       },
+
+      pageTitle_: {
+        type: String,
+        computed: 'computePageTitle_(showUniversalOptOutSettings_)',
+      },
     };
   }
 
   declare searchTerm: string;
+  declare private pageTitle_: string;
   declare private cookiesContentSettingType_: ContentSettingsTypes;
   declare private showUniversalOptOutSettings_: boolean;
   declare private isRelatedWebsiteSetsUiEnabled_: boolean;
@@ -127,6 +133,13 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private relatedWebsiteSetsToggleDisabled_() {
     return this.getPref('generated.third_party_cookie_blocking_setting')
                .value !== ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
+  }
+
+  private computePageTitle_(): string {
+    return this.i18n(
+        this.showUniversalOptOutSettings_ ?
+            'thirdPartyCookiesAndSiteDataPageTitle' :
+            'thirdPartyCookiesPageTitle');
   }
 
   // SettingsViewMixin implementation.

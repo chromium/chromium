@@ -8,7 +8,9 @@
       padding-bottom: var(--cr-section-vertical-padding);
     }
 
-    #additionalProtections {
+    #additionalProtections,
+    #cookiesHeader,
+    #siteRequestsHeader {
       padding: 16px var(--cr-section-padding) 8px var(--cr-section-padding);
     }
 
@@ -53,12 +55,14 @@
       padding-inline-start: 0;
     }
   </style>
-  <settings-subpage
-      page-title="$i18n{thirdPartyCookiesPageTitle}"
+  <settings-subpage page-title="[[pageTitle_]]"
       learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
       search-label="$i18n{siteSettingsAllSitesFilter}"
       search-icon="settings20:filter-list"
       search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    <template is="dom-if" if="[[showUniversalOptOutSettings_]]">
+      <h2 id="cookiesHeader">$i18n{thirdPartyCookiesSubHeader}</h2>
+    </template>
     <div id="explanationText" class="secondary">
       $i18n{thirdPartyCookiesPageDescription}
     </div>
@@ -133,9 +137,16 @@
         </settings-collapse-radio-button>
       </settings-radio-group>
     </div>
-    <h2 id="additionalProtections">
-      $i18n{trackingProtectionAdvancedLabel}
-    </h2>
+    <template is="dom-if" if="[[showUniversalOptOutSettings_]]">
+      <h2 id="siteRequestsHeader">
+        $i18n{siteRequestsSubHeader}
+      </h2>
+    </template>
+    <template is="dom-if" if="[[!showUniversalOptOutSettings_]]">
+      <h2 id="additionalProtections">
+        $i18n{trackingProtectionAdvancedLabel}
+      </h2>
+    </template>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
     <template is="dom-if" if="[[showUniversalOptOutSettings_]]" restamp>

@@ -27,9 +27,9 @@
     </template>
     <cr-link-row id="thirdPartyCookiesLinkRow"
         start-icon="privacy:cookie"
-        class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
-        sub-label="[[computeThirdPartyCookiesSublabel_(
-            prefs.profile.cookie_controls_mode.*)]]"
+        class="hr"
+        label="[[thirdPartyCookiesLabel_]]"
+        sub-label="[[thirdPartyCookiesSublabel_]]"
         on-click="onCookiesClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>

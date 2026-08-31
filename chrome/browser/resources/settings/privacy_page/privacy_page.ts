@@ -26,6 +26,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
@@ -75,6 +76,24 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value: false,
       },
+
+      showUniversalOptOutSettings_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showUniversalOptOutSettings'),
+      },
+
+      thirdPartyCookiesLabel_: {
+        type: String,
+        computed:
+            'computeThirdPartyCookiesLabel_(showUniversalOptOutSettings_)',
+      },
+
+      thirdPartyCookiesSublabel_: {
+        type: String,
+        computed:
+            'computeThirdPartyCookiesSublabel_(showUniversalOptOutSettings_, ' +
+                'prefs.profile.cookie_controls_mode.value)',
+      },
     };
   }
 
@@ -82,6 +101,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private showPrivacyGuideDialog_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
   declare private shouldShowDbdDeletionConfirmationToast_: boolean;
+  declare private showUniversalOptOutSettings_: boolean;
+  declare private thirdPartyCookiesLabel_: string;
+  declare private thirdPartyCookiesSublabel_: string;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -167,7 +189,22 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         TrustSafetyInteraction.USED_PRIVACY_CARD);
   }
 
+  private computeThirdPartyCookiesLabel_(): string {
+    return this.i18n(
+        this.showUniversalOptOutSettings_ ?
+            'thirdPartyCookiesAndSiteDataLinkRowLabel' :
+            'thirdPartyCookiesLinkRowLabel');
+  }
+
   private computeThirdPartyCookiesSublabel_(): string {
+    if (this.showUniversalOptOutSettings_) {
+      return this.i18n('thirdPartyCookiesAndSiteDataLinkRowSublabel');
+    }
+
+    if (!this.prefs) {
+      return '';
+    }
+
     const currentCookieSetting =
         this.getPref('profile.cookie_controls_mode').value;
     switch (currentCookieSetting) {

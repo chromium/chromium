@@ -86,8 +86,7 @@ suite('CookiesPageTest', function() {
   test('SubpageTitle', function() {
     assertEquals(
         page.i18n('thirdPartyCookiesPageTitle'),
-        page.shadowRoot!.querySelector('settings-subpage')!.getAttribute(
-            'page-title'));
+        page.shadowRoot!.querySelector('settings-subpage')!.pageTitle);
   });
 
   test('ElementVisibility', async function() {
@@ -95,6 +94,8 @@ suite('CookiesPageTest', function() {
     assertTrue(isChildVisible(page, '#explanationText'));
     assertTrue(isChildVisible(page, '#generalControls'));
     assertTrue(isChildVisible(page, '#additionalProtections'));
+    assertFalse(isChildVisible(page, '#cookiesHeader'));
+    assertFalse(isChildVisible(page, '#siteRequestsHeader'));
     assertTrue(isChildVisible(page, '#exceptionHeader'));
     assertTrue(isChildVisible(page, '#allow3pcExceptionsList'));
     // Controls
@@ -172,6 +173,8 @@ suite('UniversalOptOut', function() {
   });
 
   function createPage(showSettings: boolean) {
+    resetRouterForTesting();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({showUniversalOptOutSettings: showSettings});
 
@@ -183,8 +186,20 @@ suite('UniversalOptOut', function() {
     flush();
   }
 
-  test('UniversalOptOutToggle', function() {
+  teardown(function() {
+    page.remove();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('UniversalOptOutEnabled', function() {
     createPage(true);
+    const subpage = page.shadowRoot!.querySelector('settings-subpage');
+    assertTrue(!!subpage);
+    assertEquals(
+        page.i18n('thirdPartyCookiesAndSiteDataPageTitle'), subpage.pageTitle);
+    assertTrue(isChildVisible(page, '#cookiesHeader'));
+    assertTrue(isChildVisible(page, '#siteRequestsHeader'));
+    assertFalse(isChildVisible(page, '#additionalProtections'));
     assertTrue(isChildVisible(page, '#universalOptOutToggle'));
 
     const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -203,8 +218,14 @@ suite('UniversalOptOut', function() {
     assertFalse(pref.value);
   });
 
-  test('UniversalOptOutToggle_Hidden', function() {
+  test('UniversalOptOutDisabled', function() {
     createPage(false);
+    const subpage = page.shadowRoot!.querySelector('settings-subpage');
+    assertTrue(!!subpage);
+    assertEquals(page.i18n('thirdPartyCookiesPageTitle'), subpage.pageTitle);
+    assertFalse(isChildVisible(page, '#cookiesHeader'));
+    assertFalse(isChildVisible(page, '#siteRequestsHeader'));
+    assertTrue(isChildVisible(page, '#additionalProtections'));
     assertFalse(isChildVisible(page, '#universalOptOutToggle'));
   });
 });

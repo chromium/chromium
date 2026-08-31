@@ -155,35 +155,56 @@ suite('CookiesSubpageRedesignDisabled', function() {
   }
 
   test(
-      'cookiesLinkRowSublabel', async function() {
+      'cookiesLinkRow', async function() {
         resetRouterForTesting();
 
         await createPage();
 
-        page.set(
-            'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
         const thirdPartyCookiesLinkRow =
             page.shadowRoot!.querySelector<CrLinkRowElement>(
                 '#thirdPartyCookiesLinkRow');
         assertTrue(!!thirdPartyCookiesLinkRow);
         assertEquals(
+            page.i18n('thirdPartyCookiesLinkRowLabel'),
+            thirdPartyCookiesLinkRow.label);
+
+        page.setPrefValue(
+            'profile.cookie_controls_mode', CookieControlsMode.OFF);
+        assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
             thirdPartyCookiesLinkRow.subLabel);
 
-        page.set(
-            'prefs.profile.cookie_controls_mode.value',
-            CookieControlsMode.INCOGNITO_ONLY);
+        page.setPrefValue(
+            'profile.cookie_controls_mode', CookieControlsMode.INCOGNITO_ONLY);
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
             thirdPartyCookiesLinkRow.subLabel,
         );
 
-        page.set(
-            'prefs.profile.cookie_controls_mode.value',
+        page.setPrefValue(
+            'profile.cookie_controls_mode',
             CookieControlsMode.BLOCK_THIRD_PARTY);
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelDisabled'),
             thirdPartyCookiesLinkRow.subLabel);
+      });
+
+  test('cookiesLinkRowWithUniversalOptOut', async function() {
+    loadTimeData.overrideValues({showUniversalOptOutSettings: true});
+    resetRouterForTesting();
+
+    await createPage();
+
+    const thirdPartyCookiesLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#thirdPartyCookiesLinkRow');
+    assertTrue(!!thirdPartyCookiesLinkRow);
+    assertEquals(
+        page.i18n('thirdPartyCookiesAndSiteDataLinkRowLabel'),
+        thirdPartyCookiesLinkRow.label);
+    assertEquals(
+        page.i18n('thirdPartyCookiesAndSiteDataLinkRowSublabel'),
+        thirdPartyCookiesLinkRow.subLabel);
   });
 });
 
@@ -201,26 +222,27 @@ suite('PrivacyGuideRow', function() {
     loadTimeData.overrideValues({showPrivacyGuide: true});
     resetRouterForTesting();
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
+    return createPage();
+  });
+
+  async function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
-  });
+  }
 
   test('rowNotShown', async function() {
     loadTimeData.overrideValues({showPrivacyGuide: false});
     resetRouterForTesting();
 
     page.remove();
-    page = document.createElement('settings-privacy-page');
-    document.body.appendChild(page);
+    await createPage();
 
-    await flushTasks();
     assertFalse(
         loadTimeData.getBoolean('showPrivacyGuide'),
         'showPrivacyGuide was not overwritten');

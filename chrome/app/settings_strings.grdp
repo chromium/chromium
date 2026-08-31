@@ -1738,11 +1738,11 @@
     <message name="IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_LEARN_MORE_ACCESSIBILITY_LABEL" desc="The accessibility label for a link to learn more about Do Not Track">
       Learn more about Do Not Track
     </message>
-    <message name="IDS_SETTINGS_UNIVERSAL_OPT_OUT_LABEL" desc="Label of the Universal Opt-Out settings toggle" translateable="false">
+    <message name="IDS_SETTINGS_UNIVERSAL_OPT_OUT_LABEL" desc="Title of a setting. Users choose whether they want to send a request to sites about how to treat their user data. On desktop computers, this string appears in the ‘Site requests’ section of the ‘Third-party cookies and site data’ page. On mobile devices, this string appears on its own subpage. The tone should be informative.">
       Send an opt-out request to sites regarding use of your data
     </message>
-    <message name="IDS_SETTINGS_UNIVERSAL_OPT_OUT_SUB_LABEL" desc="Sub-label of the Universal Opt-Out settings toggle" translateable="false">
-      The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale or sharing of your data or its use for personalized ads.
+    <message name="IDS_SETTINGS_UNIVERSAL_OPT_OUT_SUB_LABEL" desc="Subtitle of a setting. It appears below the title: ‘Send an opt-out request to sites regarding use of your data’. Users choose whether they want to send a request to sites about how to treat their user data. This string explains that sites may not respond to the user’s request even when this toggle is on; and, even when they do respond, sites may handle opt-out requests differently based on regional laws. On desktop computers, this string appears in the ‘Site requests’ section of the ‘Third-party cookies and site data’ page. On mobile devices, this string appears on its own subpage. The tone should be informative.">
+      The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale and sharing of your data or its use for personalized ads.
     </message>
     <message name="IDS_SETTINGS_PERMISSIONS_DESCRIPTION" desc="Description of the controls available on the permissions and site content settings page">
       Controls what information sites can use and show (location, camera, pop-ups, and more)
@@ -3066,6 +3066,21 @@
     <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="3 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
       Third-party cookies are blocked
     </message>
+    <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_AND_SITE_DATA_PAGE_TITLE" desc="The title of a subpage in settings where users can manage cookies and request how sites can use their user data. ‘Third-party cookies’ refers to data files created by domains other than the website the user is currently visiting. ‘Site data’ refers to other information stored on the device by websites, as well as requests made to those sites regarding use of your data. The ampersand means ‘and’ and should be translated according to standard locale conventions. The tone should be informative.">
+      Third-party cookies &amp; site data
+    </message>
+    <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_AND_SITE_DATA_LINK_ROW_LABEL" desc="Title of an entry point in settings. Users click this to navigate to a subpage where they can manage cookies and request how sites can use their user data. It appears within the ‘Privacy and security’ section of settings. ‘Third-party cookies’ refers to data files created by domains other than the website the user is currently visiting. ‘Site data’ refers to other information stored on the device by websites, as well as requests made to those sites regarding use of your data. The ampersand means ‘and’ and should be translated according to standard locale conventions. The tone should be informative.">
+      Third-party cookies &amp; site data
+    </message>
+    <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_AND_SITE_DATA_LINK_ROW_SUB_LABEL" desc="Subtitle of a setting, which appears directly below the settings label ‘Third-party cookies and site data’. It explains that users can control the ways websites create and use files (cookies) and other user information (your data) on the user’s device. ‘Manage’ acts as an imperative verb. The tone should be informative.">
+      Manage how sites use cookies and your data
+    </message>
+    <message name="IDS_SETTINGS_SITE_REQUESTS_SUB_HEADER" desc="The subheading of a section on the settings subpage where users request how sites can use their user data. The tone should be informative.">
+      Site requests
+    </message>
+    <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_SUB_HEADER" desc="The subheading of a section on the settings subpage where users can manage cookies. ‘Third-party cookies’ refers to data files created by domains other than the website the user is currently visiting. The tone should be informative.">
+      Third-party cookies
+    </message>
     <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_RADIO_LABEL" desc="1 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies.">
       Allow third-party cookies
     </message>
@@ -3086,6 +3101,9 @@
     </message>
     <message name="IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_TOGGLE_SUB_LABEL" desc="Sub-label for the Do Not Track toggle. Explains that sites may not respond to 'do not track' requests even when this toggle is on.">
       Sites use their discretion when responding to this request
+    </message>
+    <message name="IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_DISCLAIMER_TOGGLE_SUB_LABEL" desc="Sub-label for the Do Not Track toggle. Explains that sites may not respond to 'do not track' requests even when this toggle is on.">
+      Sites, including Google, use their discretion when responding to this request
     </message>
     <message name="IDS_SETTINGS_TRACKING_PROTECTION_SITES_ALLOWED_COOKIES_TITLE" desc="Title of the section on the Tracking Protection settings page that lets users manage which sites are allowed to use third-party cookies.">
       Sites allowed to use third-party cookies
