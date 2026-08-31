@@ -32,17 +32,22 @@
 ///    - `Mojo<namespace><type name>Generator` (e.g. `MojoUrlMojomUrlGenerator`)
 
 public enum CommonMojoStrings {
-    static let boolElement = "BoolElement"
-    static let int8Element = "Int8Element"
-    static let int16Element = "Int16Element"
-    static let int32Element = "Int32Element"
-    static let int64Element = "Int64Element"
-    static let uint8Element = "Uint8Element"
-    static let uint16Element = "Uint16Element"
-    static let uint32Element = "Uint32Element"
-    static let uint64Element = "Uint64Element"
-    static let floatElement = "FloatElement"
+    static let boolElement = "Bool"
+    // These integer names match the names of `namedIntegers` defined in
+    // `JavaScriptEnvironment`. Type merging requires that the two types share
+    // the same `group`.
+    static let int8Element = "Int8"
+    static let int16Element = "Int16"
+    static let int32Element = "Int32"
+    static let int64Element = "Int64"
+    static let uint8Element = "Uint8"
+    static let uint16Element = "Uint16"
+    static let uint32Element = "Uint32"
+    static let uint64Element = "Uint64"
+    static let floatElement = "Float"
+    // There exists already an `ObjectGroup` with the `group` "String"
     static let stringElement = "StringElement"
+
 
     // mojo
     static let mojo = "Mojo"
@@ -226,21 +231,22 @@ extension ILType {
     public static let jsBoolElement: ILType =
         .boolean + .object(ofGroup: CommonMojoStrings.boolElement)
     public static let jsInt8Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.int8Element)
+        .jsInt8 + .object(ofGroup: CommonMojoStrings.int8Element)
     public static let jsInt16Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.int16Element)
+        .jsInt16 + .object(ofGroup: CommonMojoStrings.int16Element)
     public static let jsInt32Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.int32Element)
+        .jsInt32 + .object(ofGroup: CommonMojoStrings.int32Element)
     public static let jsInt64Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.int64Element)
+        .bigint + .object(ofGroup: CommonMojoStrings.int64Element)
     public static let jsUint8Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.uint8Element)
+        .jsUint8 + .object(ofGroup: CommonMojoStrings.uint8Element)
     public static let jsUint16Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.uint16Element)
+        .jsUint16 + .object(ofGroup: CommonMojoStrings.uint16Element)
     public static let jsUint32Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.uint32Element)
+        .jsUint32 + .object(ofGroup: CommonMojoStrings.uint32Element)
+    // TODO(crbug.com/553587894): Determine a way to support uint64
     public static let jsUint64Element: ILType =
-        .integer + .object(ofGroup: CommonMojoStrings.uint64Element)
+        .bigint + .object(ofGroup: CommonMojoStrings.uint64Element)
     public static let jsFloatElement: ILType =
         .float + .object(ofGroup: CommonMojoStrings.floatElement)
     public static let jsStringElement: ILType =
