@@ -48,6 +48,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -64,6 +65,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Mock private VerticalTabListCoordinator mMockTabListCoordinator;
     @Mock private SideUiCoordinator mMockSideUiCoordinator;
+    @Mock private Tab mTab;
 
     private VerticalTabRailCollapseController mCollapseController;
     private VerticalTabsSideUiCoordinator mCoordinator;
@@ -217,10 +219,10 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @SmallTest
     public void testHasContentToShow() {
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
-        assertTrue(mCoordinator.hasContentToShow());
+        assertTrue(mCoordinator.hasContentToShow(mTab));
 
         mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
-        assertFalse(mCoordinator.hasContentToShow());
+        assertFalse(mCoordinator.hasContentToShow(mTab));
     }
 
     @Test

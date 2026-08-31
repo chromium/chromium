@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.side_ui;
 
+import android.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
@@ -13,12 +14,15 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.Map;
 
 /** Minimum implementation of {@link SideUiContainer} to allow setting/getting width for tests. */
 @DoNotMock
@@ -29,12 +33,8 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** Height type for this container. */
     public @HeightType int mHeightType = HeightType.TOOLBAR;
 
-    /**
-     * Whether the container has content to show.
-     *
-     * <p>This will be returned by {@link #hasContentToShow()}.
-     */
-    public boolean mHasContentToShow = true;
+    /** Map of {@link Tab} to whether this container has content to show for that tab. */
+    public final Map<Tab, Boolean> mHasContentForTabMap = new ArrayMap<>();
 
     /**
      * Whether browser top controls should remain locked when this container is showing.
@@ -135,8 +135,8 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
-    public boolean hasContentToShow() {
-        return mHasContentToShow;
+    public boolean hasContentToShow(Tab tab) {
+        return mHasContentForTabMap.getOrDefault(tab, true);
     }
 
     @Override

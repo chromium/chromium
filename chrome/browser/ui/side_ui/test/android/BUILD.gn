@@ -15,6 +15,7 @@ android_library("test_support_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/side_ui/public:java",
     "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

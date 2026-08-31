@@ -25,6 +25,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -424,11 +425,11 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public boolean hasContentToShow() {
+    public boolean hasContentToShow(Tab tab) {
         ThreadUtils.assertOnUiThread();
-        var sidePanelCoordinatorAndroidBridge = mNativeBridgeSelector.getCurrentCoordinatorBridge();
-        return sidePanelCoordinatorAndroidBridge != null
-                && sidePanelCoordinatorAndroidBridge.hasContentToShow();
+        boolean hasContent = mNativeBridgeSelector.hasContentToShow(tab);
+        log(TAG, "hasContentToShow", hasContent, "Tab#" + tab.getId());
+        return hasContent;
     }
 
     @Override

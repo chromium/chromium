@@ -17,6 +17,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 
 /** JNI bridge for communicating with the native {@code SidePanelCoordinatorAndroid}. */
@@ -53,9 +54,10 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     /**
-     * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#hasContentToShow
+     * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#hasContentToShow(Tab)
      */
-    boolean hasContentToShow() {
+    boolean hasContentToShow(Tab tab) {
+        // TODO(crbug.com/541376517): Update this method to actually pass the tab to native.
         boolean hasContentToShow =
                 mNativeSidePanelCoordinatorAndroid != 0
                         ? SidePanelCoordinatorAndroidBridgeJni.get()

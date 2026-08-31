@@ -15,6 +15,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -224,6 +225,18 @@ final class SidePanelNativeBridgeSelector {
     boolean canShow(Profile profile) {
         return profile.equals(mTabModelSelector.getCurrentModel().getProfile())
                 && mSidePanelContainerCoordinator.canShow();
+    }
+
+    /** Returns whether the side panel has content to show for the given {@link Tab}. */
+    boolean hasContentToShow(Tab tab) {
+        TabModel currentTabModel = mTabModelSelector.getCurrentModel();
+        if (currentTabModel.getTabById(tab.getId()) != tab) {
+            // The given tab isn't in the current tab model.
+            return false;
+        }
+
+        var coordinatorBridge = getCurrentCoordinatorBridge();
+        return coordinatorBridge != null && coordinatorBridge.hasContentToShow(tab);
     }
 
     /**
