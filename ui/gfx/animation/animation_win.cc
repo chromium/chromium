@@ -20,19 +20,11 @@ bool Animation::ShouldRenderRichAnimationImpl() {
   // WM_SETTINGCHANGE messages are broadcasted when SystemParametersInfo()
   // causes modifications. UpdatePrefersReducedMotion() is called when such an
   // event is received.
-  if (base::features::IsReducePPMsEnabled()) {
-    if (!has_reduced_motion_platform_parameter_.has_value()) {
-      UpdatePrefersReducedMotion();
-    }
-    if (*has_reduced_motion_platform_parameter_) {
-      return !*prefers_reduced_motion_;
-    }
-  } else {
-    BOOL result;
-    // Get "Turn off all unnecessary animations" value.
-    if (::SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, &result, 0)) {
-      return !!result;
-    }
+  if (!has_reduced_motion_platform_parameter_.has_value()) {
+    UpdatePrefersReducedMotion();
+  }
+  if (*has_reduced_motion_platform_parameter_) {
+    return !*prefers_reduced_motion_;
   }
   return !base::win::IsCurrentSessionRemote();
 }
