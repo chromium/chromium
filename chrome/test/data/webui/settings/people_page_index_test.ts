@@ -91,10 +91,12 @@ suite('PeoplePageIndex', function() {
   }
 
   setup(async function() {
+    // <if expr="is_chromeos">
     loadTimeData.overrideValues({
       replaceSyncPromosWithSignInPromos: false,
     });
     resetRouterForTesting();
+    // </if>
 
     // Set SignedInState.SIGNED_IN otherwise navigating to routes.SYNC_ADVANCED
     // would automatically redirect to routes.SYNC.
@@ -119,6 +121,7 @@ suite('PeoplePageIndex', function() {
     assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
     assertActiveView('parent');
 
+    // <if expr="is_chromeos">
     let whenEntered = eventToPromise('view-enter-finish', index);
     Router.getInstance().navigateTo(routes.SYNC);
     await whenEntered;
@@ -128,14 +131,13 @@ suite('PeoplePageIndex', function() {
     Router.getInstance().navigateTo(routes.SYNC_ADVANCED);
     await whenEntered;
     assertActiveView('syncControls');
+    // </if>
 
     // <if expr="not is_chromeos">
-    whenEntered = eventToPromise('view-enter-finish', index);
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
-    await whenEntered;
     assertActiveView('parent');
 
-    whenEntered = eventToPromise('view-enter-finish', index);
+    let whenEntered = eventToPromise('view-enter-finish', index);
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
     await whenEntered;
     assertActiveView('manageProfile');

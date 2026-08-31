@@ -6,11 +6,15 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsGoogleServicesPageElement} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
+// <if expr="is_chromeos">
+import {loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
+// </if>
 
 
 suite('GoogleServicesPage', function() {
@@ -20,8 +24,10 @@ suite('GoogleServicesPage', function() {
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    // <if expr="is_chromeos">
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
     resetRouterForTesting();
+    // </if>
 
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);

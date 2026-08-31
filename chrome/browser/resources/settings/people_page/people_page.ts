@@ -279,26 +279,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
    * Handler for when the sync state is pushed from the browser.
    */
   private handleSyncStatus_(syncStatus: SyncStatus) {
-    // <if expr="is_chromeos">
     this.syncStatus = syncStatus;
-    // </if>
-    // <if expr="not is_chromeos">
-    // Sign-in impressions should be recorded only if the sign-in promo is
-    // shown. They should be recorder only once, the first time
-    // |this.syncStatus| is set.
-    // With `ReplaceSyncPromosWithSignInPromos`, this is not a sign in promo, so
-    // we should not record.
-    const shouldRecordSigninImpression = !this.syncStatus && syncStatus &&
-        this.signinAllowed_ && !this.isSyncing_() &&
-        !this.replaceSyncPromosWithSignInPromos_;
-
-    this.syncStatus = syncStatus;
-
-    if (shouldRecordSigninImpression && !this.shouldShowSyncAccountControl_()) {
-      // SyncAccountControl records the impressions user actions.
-      chrome.metricsPrivate.recordUserAction('Signin_Impression_FromSettings');
-    }
-    // </if>
   }
 
   // <if expr="not is_chromeos">
@@ -314,9 +295,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       return false;
     }
 
-    return (!this.replaceSyncPromosWithSignInPromos_ &&
-            this.storedAccounts.length > 0) ||
-        this.isSyncing_();
+    return this.isSyncing_();
   }
   // </if>
 

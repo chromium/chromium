@@ -428,12 +428,6 @@ suite('<history-sync-optin>', function() {
       historySync: SyncState.TURNED_OFF,
     });
 
-    // history-sync-optin elements are only shown when the
-    // replaceSyncPromosWithSignInPromos is true
-    loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
-    });
-
     element = document.createElement('history-synced-device-manager');
     // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
     // the same order in tests, in order to catch regressions like
@@ -471,7 +465,6 @@ suite('<history-sync-optin>', function() {
       historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
-    // Should not be visible with kReplaceSyncPromosWithSignInPromos enabled.
     assertFalse(isChildVisible(element, '#signInGuide'));
     // The other states promo elements should not be visible.
     assertFalse(isChildVisible(element, '#signed-in-sync-history-promo-desc'));

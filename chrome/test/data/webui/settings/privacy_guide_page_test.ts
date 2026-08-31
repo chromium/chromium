@@ -752,8 +752,6 @@ suite('HistorySyncCardNavigations', function() {
         testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
 
-  // <if expr="not is_chromeos">
-  // ChromeOS does not have signed-in non-syncing users.
   test('ShownForSignedInUsersWhenFlagEnabled', async function() {
     loadTimeData.overrideValues({'replaceSyncPromosWithSignInPromos': true});
 
@@ -768,6 +766,7 @@ suite('HistorySyncCardNavigations', function() {
     assertHistorySyncCardVisible(page, syncBrowserProxy);
   });
 
+  // <if expr="is_chromeos">
   test('NotShownForSignedInUsersWhenFlagDisabled', async function() {
     loadTimeData.overrideValues({'replaceSyncPromosWithSignInPromos': false});
 

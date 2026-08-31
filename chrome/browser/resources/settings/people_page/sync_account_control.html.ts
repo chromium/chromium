@@ -72,12 +72,6 @@ export function getHtml(this: SettingsSyncAccountControlElement) {
             @click="${this.onSignoutClick_}">
           $i18n{signOutOfChrome}
         </cr-button>
-        <cr-button id="sync-button" class="action-button cr-button-gap"
-            ?hidden="${this.shouldHideSyncButton_()}"
-            @click="${this.onSyncButtonClick_}"
-            ?disabled="${this.shouldDisableSyncButton_()}">
-          $i18n{turnOnSync}
-        </cr-button>
         <cr-button id="turn-off"
             class="cr-button-gap"
             ?hidden="${!this.shouldShowTurnOffButton_()}"

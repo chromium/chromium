@@ -25,9 +25,9 @@ suite('AccountPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
       isEeaChoiceCountry: false,
       // <if expr="is_chromeos">
+      replaceSyncPromosWithSignInPromos: true,
       osSettingsAccountsPageUrl: 'chrome://os-settings/osPeople',
       // </if>
     });

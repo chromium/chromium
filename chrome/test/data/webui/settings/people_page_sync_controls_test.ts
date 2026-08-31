@@ -248,6 +248,7 @@ suite('SyncControlsTest', function() {
   // </if>
 });
 
+// <if expr="is_chromeos">
 suite('SyncControlsSubpageTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
@@ -333,6 +334,7 @@ suite('SyncControlsSubpageTest', function() {
         assertEquals(routes.ACCOUNT, router.getCurrentRoute());
       });
 });
+// </if>
 
 suite('SyncControlsAccountSettingsTest', function() {
   let syncControls: SettingsSyncControlsElement;
@@ -350,7 +352,9 @@ suite('SyncControlsAccountSettingsTest', function() {
     pluralStringProxy = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralStringProxy);
 
+    // <if expr="is_chromeos">
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    // </if>
     // <if expr="not is_chromeos">
     loadTimeData.overrideValues({unoPhase2FollowUp: true});
     // </if>

@@ -99,10 +99,6 @@ suite('AutofillAccount', function() {
   });
 
   test('displaysAccountLinkRow', async function() {
-    loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
-    });
-    resetRouterForTesting();
     // Re-create the element to apply the new loadTimeData.
     createAccountCardElement();
 

@@ -6,16 +6,17 @@
 import 'chrome://settings/settings.js';
 
 import type {SettingsSyncAccountControlElement} from 'chrome://settings/settings.js';
-import {loadTimeData, PrefService, PrefsBrowserProxy, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {PrefService, PrefsBrowserProxy, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // <if expr="not is_chromeos">
+import {loadTimeData} from 'chrome://settings/settings.js';
 import type {CrActionMenuElement, StoredAccount} from 'chrome://settings/settings.js';
 import {ChromeSigninAccessPoint, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 // </if>
@@ -39,9 +40,6 @@ suite('SyncAccountControl', function() {
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
     await PrefService.getInstance().whenInitialized();
-
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
-    resetRouterForTesting();
 
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
@@ -135,8 +133,6 @@ suite('SyncAccountControl', function() {
 
     const userInfo =
         testElement.shadowRoot.querySelector<HTMLElement>('#user-info')!;
-    const syncButton =
-        testElement.shadowRoot.querySelector<HTMLElement>('#sync-button')!;
 
     // Avatar row shows the right account.
     assertTrue(isChildVisible(testElement, '#promo-header'));
@@ -158,30 +154,6 @@ suite('SyncAccountControl', function() {
     assertTrue(items[1]!.textContent.includes('bar@bar.com'));
     assertEquals(items[2]!.id, 'sign-in-item');
 
-    // "sync to" button is showing the correct name and syncs with the
-    // correct account when clicked.
-    assertTrue(isVisible(syncButton));
-    assertFalse(isChildVisible(testElement, '#turn-off'));
-    syncButton.click();
-    await microtasksFinished();
-
-    let [email, isDefaultPromoAccount] =
-        await browserProxy.whenCalled('startSyncingWithEmail');
-    assertEquals(email, 'foo@foo.com');
-    assertEquals(isDefaultPromoAccount, true);
-
-    assertTrue(isChildVisible(testElement, 'cr-icon-button'));
-    assertTrue(testElement.shadowRoot
-                   .querySelector<HTMLElement>('#sync-icon-container')!.hidden);
-
-    assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
-    testElement.shadowRoot.querySelector<HTMLElement>(
-                              '#dropdown-arrow')!.click();
-    await microtasksFinished();
-    assertTrue(
-        testElement.shadowRoot.querySelector<CrActionMenuElement>(
-                                  '#menu')!.open);
-
     // Switching selected account will update UI with the right name and
     // email.
     items[1]!.click();
@@ -190,38 +162,11 @@ suite('SyncAccountControl', function() {
     assertFalse(userInfo.textContent.includes('foo@foo.com'));
     assertTrue(userInfo.textContent.includes('barName'));
     assertTrue(userInfo.textContent.includes('bar@bar.com'));
-    assertTrue(isVisible(syncButton));
-
-    browserProxy.resetResolver('startSyncingWithEmail');
-    syncButton.click();
-    await microtasksFinished();
-
-    [email, isDefaultPromoAccount] =
-        await browserProxy.whenCalled('startSyncingWithEmail');
-    assertEquals(email, 'bar@bar.com');
-    assertEquals(isDefaultPromoAccount, false);
 
     // Tapping the last menu item will initiate sign-in.
     items[2]!.click();
     await browserProxy.whenCalled('startSignIn');
   });
-
-  test(
-      'sync button not visible with replaceSyncPromosWithSignInPromos',
-      async function() {
-        loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
-        resetRouterForTesting();
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        testElement = document.createElement('settings-sync-account-control');
-        testElement.syncStatus = {
-          signedInState: SignedInState.SIGNED_IN,
-          statusAction: StatusAction.NO_ACTION,
-        };
-        document.body.appendChild(testElement);
-        await microtasksFinished();
-
-        assertFalse(isChildVisible(testElement, '#sync-button'));
-      });
 
   test(
       'Updated UI shown when sync off', async function() {
@@ -232,7 +177,6 @@ suite('SyncAccountControl', function() {
 
         await microtasksFinished();
 
-        assertTrue(isChildVisible(testElement, '#sync-button'));
         assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
         assertTrue(isChildVisible(testElement, '#signout-button'));
       });
@@ -259,7 +203,6 @@ suite('SyncAccountControl', function() {
 
     await microtasksFinished();
 
-    assertTrue(isChildVisible(testElement, '#sync-button'));
     assertFalse(isChildVisible(testElement, '#signout-button'));
     assertFalse(isChildVisible(testElement, '#remove-account-button'));
 
@@ -282,7 +225,6 @@ suite('SyncAccountControl', function() {
       statusAction: StatusAction.NO_ACTION,
     };
     await microtasksFinished();
-    assertTrue(isChildVisible(testElement, '#sync-button'));
     // Menu is hidden.
     assertFalse(!!testElement.shadowRoot.querySelector('#menu'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
@@ -317,7 +259,6 @@ suite('SyncAccountControl', function() {
     assertFalse(userInfo.textContent.includes('fooName'));
     assertFalse(userInfo.textContent.includes('foo@foo.com'));
 
-    assertFalse(isChildVisible(testElement, '#sync-button'));
     assertTrue(isChildVisible(testElement, '#turn-off'));
     assertFalse(isChildVisible(testElement, '#sync-error-button'));
 
@@ -329,7 +270,6 @@ suite('SyncAccountControl', function() {
         Router.getInstance().getCurrentRoute(),
         Router.getInstance().getRoutes().SIGN_OUT);
   });
-
 
   test(
       'signed in, has error', async function() {
@@ -498,7 +438,6 @@ suite('SyncAccountControl', function() {
     assertFalse(isChildVisible(testElement, '#turn-off'));
     assertFalse(isChildVisible(testElement, '#sync-error-button'));
     assertFalse(isChildVisible(testElement, '#signin-paused-buttons'));
-    assertFalse(isChildVisible(testElement, '#sync-button'));
     assertFalse(isChildVisible(testElement, '#signout-button'));
     assertFalse(isChildVisible(testElement, '#account-aware'));
   });
@@ -625,10 +564,9 @@ suite('SyncAccountControl', function() {
     const userInfo =
         testElement.shadowRoot.querySelector<HTMLElement>('#user-info')!;
     const secondaryContentSignedIn = userInfo.children[1]!.textContent;
-    assertNotEquals(secondaryContentSignedIn.trim(), signedInAccount.email);
+    assertEquals(secondaryContentSignedIn.trim(), signedInAccount.email);
     assertFalse(isChildVisible(testElement, '#signin-paused-buttons'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
-    assertTrue(isChildVisible(testElement, '#sync-button'));
 
     // Set Signed in Paused state.
     testElement.syncStatus = {
@@ -639,12 +577,11 @@ suite('SyncAccountControl', function() {
 
     assertTrue(isChildVisible(testElement, '#avatar-row'));
     const secondaryContentSigninPaused = userInfo.children[1]!.textContent;
-    assertNotEquals(secondaryContentSignedIn, secondaryContentSigninPaused);
+    assertEquals(secondaryContentSignedIn, secondaryContentSigninPaused);
     assertEquals(secondaryContentSigninPaused.trim(), signedInAccount.email);
     assertTrue(isChildVisible(testElement, '#signin-paused-buttons'));
     assertTrue(isChildVisible(testElement, '#remove-account-button'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
-    assertFalse(isChildVisible(testElement, '#sync-button'));
   });
 
   test(

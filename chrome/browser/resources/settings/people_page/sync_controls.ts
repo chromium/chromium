@@ -99,6 +99,8 @@ export class SettingsSyncControlsElement extends
        */
       isAccountSettingsPage_: {type: Boolean},
 
+      showBatchUploadPromo_: {type: Boolean},
+
       batchUploadPromoHTML_: {type: String},
     };
   }
@@ -115,6 +117,8 @@ export class SettingsSyncControlsElement extends
   private cachedSyncPrefs_: Partial<SyncPrefs>|null = null;
   accessor showSyncDisabledInformation: boolean = false;
   protected accessor isAccountSettingsPage_: boolean = false;
+  protected accessor showBatchUploadPromo_: boolean =
+      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
   protected accessor batchUploadPromoHTML_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
 
@@ -124,11 +128,11 @@ export class SettingsSyncControlsElement extends
     this.addWebUiListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
-    const showBatchUploadPromo = loadTimeData.valueExists('unoPhase2FollowUp') ?
-        loadTimeData.getBoolean('unoPhase2FollowUp') :
-        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
+    if (loadTimeData.valueExists('unoPhase2FollowUp')) {
+      this.showBatchUploadPromo_ = loadTimeData.getBoolean('unoPhase2FollowUp');
+    }
 
-    if (showBatchUploadPromo) {
+    if (this.showBatchUploadPromo_) {
       BatchUploadPromoProxyImpl.getInstance()
           .callbackRouter.onLocalDataCountChanged.addListener(
               (localDataCount: number) => {
@@ -146,8 +150,13 @@ export class SettingsSyncControlsElement extends
     if (currentRoute === routes.SYNC_ADVANCED) {
       this.syncBrowserProxy_.didNavigateToSyncPage();
     }
-    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
-        currentRoute === routes.ACCOUNT) {
+    if (currentRoute === routes.ACCOUNT) {
+      // <if expr="is_chromeos">
+      if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+        return;
+      }
+      // </if>
+
       this.isAccountSettingsPage_ = true;
       this.syncBrowserProxy_.didNavigateToAccountSettingsPage();
     }
@@ -192,11 +201,7 @@ export class SettingsSyncControlsElement extends
 
   private async batchUploadPromoLocalDataCountChanged_(localDataCount: number):
       Promise<void> {
-    const showBatchUploadPromo = loadTimeData.valueExists('unoPhase2FollowUp') ?
-        loadTimeData.getBoolean('unoPhase2FollowUp') :
-        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
-
-    if (!showBatchUploadPromo) {
+    if (!this.showBatchUploadPromo_) {
       return;
     }
 
@@ -216,11 +221,7 @@ export class SettingsSyncControlsElement extends
   }
 
   protected shouldShowBatchUploadPromo_(): boolean {
-    const showBatchUploadPromo = loadTimeData.valueExists('unoPhase2FollowUp') ?
-        loadTimeData.getBoolean('unoPhase2FollowUp') :
-        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
-
-    if (!showBatchUploadPromo) {
+    if (!this.showBatchUploadPromo_) {
       return false;
     }
 
@@ -278,9 +279,11 @@ export class SettingsSyncControlsElement extends
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    // <if expr="is_chromeos">
     if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
       return;
     }
+    // </if>
 
     this.isAccountSettingsPage_ = newRoute === routes.ACCOUNT;
 
@@ -423,15 +426,17 @@ export class SettingsSyncControlsElement extends
     const router = Router.getInstance();
     if (router.getCurrentRoute() === routes.SYNC_ADVANCED &&
         this.syncControlsHidden_()) {
+      // <if expr="is_chromeos">
+      if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+        router.navigateTo(routes.SYNC);
+        return;
+      }
+      // </if>
+
       // Try to navigate the user to the account page, where they can find the
       // toggles. If the page does not exist, they will be redirected to the
       // people settings page from there.
-      if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
-        router.navigateTo(routes.ACCOUNT);
-        return;
-      }
-
-      router.navigateTo(routes.SYNC);
+      router.navigateTo(routes.ACCOUNT);
     }
   }
 

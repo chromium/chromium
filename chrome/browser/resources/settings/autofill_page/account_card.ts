@@ -91,12 +91,6 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
        */
       storedAccounts: Object,
 
-      replaceSyncPromosWithSignInPromos_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'),
-      },
-
       primaryAccountName_: String,
       primaryAccountEmail_: String,
       primaryAccountIconUrl_: String,
@@ -138,7 +132,6 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
 
   // <if expr="not is_chromeos">
   declare storedAccounts: StoredAccount[]|null;
-  declare private replaceSyncPromosWithSignInPromos_: boolean;
   declare private primaryAccountName_: string;
   declare private primaryAccountEmail_: string;
   declare private primaryAccountIconUrl_: string;
@@ -238,8 +231,7 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
     // With `ReplaceSyncPromosWithSignInPromos`, this is not a sign in promo, so
     // we should not record.
     const shouldRecordSigninImpression = !this.syncStatus && syncStatus &&
-        this.signinAllowed_ && !this.isSyncing_() &&
-        !this.replaceSyncPromosWithSignInPromos_;
+        this.signinAllowed_ && !this.isSyncing_();
 
     this.syncStatus = syncStatus;
 
@@ -256,7 +248,7 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
   }
 
   private shouldLinkToAccountSettingsPage_(): boolean {
-    return this.replaceSyncPromosWithSignInPromos_ && !!this.syncStatus &&
+    return !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SIGNED_IN;
   }
 

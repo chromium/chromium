@@ -425,6 +425,7 @@ suite('AllBuilds', function() {
             '#priceEmailNotificationsToggle'));
       });
 
+  // <if expr="is_chromeos">
   test(
       'priceEmailNotificationsToggleHiddenForSignedInUsersWithoutFlag',
       async function() {
@@ -464,6 +465,7 @@ suite('AllBuilds', function() {
         assertTrue(!!testElement.shadowRoot.querySelector(
             '#priceEmailNotificationsToggle'));
       });
+  // </if>
 });
 
 // <if expr="_google_chrome">
