@@ -37,7 +37,6 @@ class BASE_EXPORT ThermalStateObserverMac {
   ~ThermalStateObserverMac();
 
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
-  int GetCurrentSpeedLimit() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ThermalStateObserverMacTest, StateChange);
