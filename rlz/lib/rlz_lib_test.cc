@@ -741,15 +741,19 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
   EXPECT_TRUE(rlz_lib::test::WasSendFinancialPingInterrupted());
   rlz_lib::test::ResetSendFinancialPingInterrupted();
 
-  // Wait for the background thread to finish and clean up any pending network
-  // requests so that the URLLoaderFactory remote is disconnected before
-  // `test_url_loader_factory` is destroyed.
   io_thread.Stop();
+
+  // If PingRlzServer started before SetURLLoaderFactory(nullptr) was called on
+  // io_thread, a pending request was created on base::ThreadPool. Simulate a
+  // response to complete the SimpleURLLoader, then run until idle to ensure all
+  // ThreadPool tasks and Mojo receiver cleanups finish on their own sequence
+  // before `test_url_loader_factory` is destroyed on the main thread.
   while (test_url_loader_factory.NumPending() > 0) {
     test_url_loader_factory.SimulateResponseForPendingRequest(
         test_url_loader_factory.GetPendingRequest(0)->request.url.spec(), "",
         net::HTTP_NOT_FOUND);
   }
+  RunUntilIdle();
 }
 
 TEST_F(RlzLibTest, ClearProductState) {
