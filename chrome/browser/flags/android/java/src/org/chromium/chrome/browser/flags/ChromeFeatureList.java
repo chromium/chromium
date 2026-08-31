@@ -320,7 +320,6 @@ public abstract class ChromeFeatureList {
     public static final String APB144_PATCH2 = "Apb144Patch2";
     public static final String APB144_PATCH3 = "Apb144Patch3";
     public static final String APB144_PATCH4 = "Apb144Patch4";
-    public static final String APB144_PATCH5 = "Apb144Patch5";
     public static final String APB144_PATCH6 = "Apb144Patch6";
     public static final String APB144_PATCH7 = "Apb144Patch7";
     public static final String APB144_PATCH8 = "Apb144Patch8";
@@ -911,7 +910,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidApb144Patch2 = newCachedFlag(APB144_PATCH2, true);
     public static final CachedFlag sAndroidApb144Patch3 = newCachedFlag(APB144_PATCH3, true);
     public static final CachedFlag sAndroidApb144Patch4 = newCachedFlag(APB144_PATCH4, true);
-    public static final CachedFlag sAndroidApb144Patch5 = newCachedFlag(APB144_PATCH5, true);
     public static final CachedFlag sAndroidApb144Patch6 = newCachedFlag(APB144_PATCH6, true);
     public static final CachedFlag sAndroidApb144Patch7 = newCachedFlag(APB144_PATCH7, true);
     public static final CachedFlag sAndroidApb144Patch8 = newCachedFlag(APB144_PATCH8, true);
@@ -1459,7 +1457,6 @@ public abstract class ChromeFeatureList {
                     sAndroidApb144Patch2,
                     sAndroidApb144Patch3,
                     sAndroidApb144Patch4,
-                    sAndroidApb144Patch5,
                     sAndroidApb144Patch6,
                     sAndroidApb144Patch7,
                     sAndroidApb144Patch8,

@@ -364,7 +364,7 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
                         }
                     }
                 };
-        if (progressBar != null && ChromeFeatureList.sAndroidApb144Patch5.isEnabled()) {
+        if (progressBar != null) {
             progressBar.addObserver(mProgressBarObserver);
         }
 
