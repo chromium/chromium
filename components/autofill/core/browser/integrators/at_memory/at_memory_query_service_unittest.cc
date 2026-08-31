@@ -2468,6 +2468,130 @@ TEST_F(AtMemoryQueryServiceTest, LogsLocalResultsWhenRetrieved) {
   log_router.UnregisterReceiver(&receiver);
 }
 
+// Tests that discarded duplicate search results and their corresponding
+// retained results are logged to autofill-internals logs.
+TEST_F(AtMemoryQueryServiceTest, LogsDiscardedDuplicatesWhenFound) {
+  LogRouter log_router;
+  MockLogReceiver receiver;
+  log_router.RegisterReceiver(&receiver);
+
+  auto provider = std::make_unique<FakeMemoryDataProvider>();
+  MemorySearchResult local_result(MemoryDataType::kVehiclePlateNumber, u"Plate",
+                                  u"12345");
+  local_result.is_local = true;
+  local_result.sources = {MemoryEntrySource(MemoryEntrySourceType::kPhotos),
+                          MemoryEntrySource(MemoryEntrySourceType::kGmail,
+                                            "https://gmail.com/123")};
+  provider->SetResults({local_result});
+
+  auto service = CreateQueryService(std::move(provider), &log_router);
+
+  AtMemoryQueryResponse response;
+  response.set_query_classification(
+      AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
+  auto* plan = response.mutable_autofill_fetch_plan();
+  auto* spec = plan->add_fetch_specifications();
+  spec->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_PLATE_NUMBER);
+
+  auto* remote_result = response.add_results();
+  auto* primary = remote_result->mutable_primary_attribute();
+  primary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_PLATE_NUMBER);
+  primary->set_value("12345");
+
+  StubFetchContextResponse(std::move(response));
+
+  InSequence seq;
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Evaluating Autofill fetch plan"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Retrieved local data results (unfiltered)"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Filtered local data results"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    const std::string log_str = entry.DebugString();
+    EXPECT_THAT(log_str, HasSubstr("Discarded duplicate result"));
+    EXPECT_THAT(log_str, HasSubstr("Retained result:"));
+    EXPECT_THAT(log_str, HasSubstr("Discarded result:"));
+    EXPECT_THAT(log_str, HasSubstr("VehiclePlateNumber"));
+    EXPECT_THAT(log_str, HasSubstr("12345"));
+    EXPECT_THAT(log_str, HasSubstr("PHOTOS"));
+    EXPECT_THAT(log_str, HasSubstr("GMAIL (URL: https://gmail.com/123)"));
+    EXPECT_THAT(log_str, HasSubstr("Is locally stored:"));
+  });
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"query", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+  EXPECT_TRUE(future.Wait());
+
+  log_router.UnregisterReceiver(&receiver);
+}
+
+// Tests that sensitive data in discarded duplicate logs is properly obfuscated.
+TEST_F(AtMemoryQueryServiceTest,
+       LogsDiscardedDuplicatesSensitiveDataObfuscated) {
+  LogRouter log_router;
+  MockLogReceiver receiver;
+  log_router.RegisterReceiver(&receiver);
+
+  auto provider = std::make_unique<FakeMemoryDataProvider>();
+  MemorySearchResult local_result(MemoryDataType::kPassportNumber, u"Passport",
+                                  u"PASS123");
+  local_result.is_local = true;
+  provider->SetResults({local_result});
+
+  auto service = CreateQueryService(std::move(provider), &log_router);
+
+  AtMemoryQueryResponse response;
+  response.set_query_classification(
+      AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
+  auto* plan = response.mutable_autofill_fetch_plan();
+  auto* spec = plan->add_fetch_specifications();
+  spec->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
+
+  auto* remote_result = response.add_results();
+  auto* primary = remote_result->mutable_primary_attribute();
+  primary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
+  primary->set_value("PASS123");
+
+  StubFetchContextResponse(std::move(response));
+
+  InSequence seq;
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Evaluating Autofill fetch plan"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Retrieved local data results (unfiltered)"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Filtered local data results"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    const std::string log_str = entry.DebugString();
+    EXPECT_THAT(log_str, HasSubstr("Discarded duplicate result"));
+    EXPECT_THAT(log_str, HasSubstr("\"data-pii\": \"true\""));
+    EXPECT_THAT(log_str, HasSubstr("\"value\": \"PASS123\""));
+  });
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"query", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+  EXPECT_TRUE(future.Wait());
+
+  log_router.UnregisterReceiver(&receiver);
+}
+
 }  // namespace
 
 }  // namespace autofill

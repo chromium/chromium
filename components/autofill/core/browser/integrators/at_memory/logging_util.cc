@@ -4,15 +4,20 @@
 
 #include "components/autofill/core/browser/integrators/at_memory/logging_util.h"
 
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 
@@ -65,6 +70,42 @@ std::string_view FilterOperatorToStringView(
     default:
       return "UNKNOWN";
   }
+}
+
+// Returns a human-readable string representation of `source_type`.
+std::string_view MemoryEntrySourceTypeToStringView(
+    MemoryEntrySourceType source_type) {
+  switch (source_type) {
+    case MemoryEntrySourceType::kAutofill:
+      return "AUTOFILL";
+    case MemoryEntrySourceType::kGmail:
+      return "GMAIL";
+    case MemoryEntrySourceType::kCalendar:
+      return "CALENDAR";
+    case MemoryEntrySourceType::kPhotos:
+      return "PHOTOS";
+  }
+  return "UNKNOWN";
+}
+
+LogBuffer& operator<<(LogBuffer& buffer, const MemoryEntrySource& source) {
+  buffer << MemoryEntrySourceTypeToStringView(source.type);
+  if (source.deeplink_url && !source.deeplink_url->empty()) {
+    return buffer << " (URL: " << *source.deeplink_url << ")";
+  }
+  return buffer;
+}
+
+LogBuffer&& operator<<(LogBuffer&& buffer,
+                       const std::vector<MemoryEntrySource>& sources) {
+  if (sources.empty()) {
+    buffer << "(No sources)";
+    return std::move(buffer);
+  }
+  for (const MemoryEntrySource& source : sources) {
+    buffer << Tag{"div"} << source << CTag{"div"};
+  }
+  return std::move(buffer);
 }
 
 // Returns true if any data type in `filter` is considered sensitive
@@ -208,6 +249,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const MemorySearchResult& result) {
   if (result.is_obfuscated) {
     buffer << Tr{} << "Is Obfuscated:" << "true";
   }
+  buffer << Tr{} << "Sources:" << (LogBuffer() << result.sources);
+  buffer << Tr{} << "Is locally stored:" << result.is_local;
   if (result.metadata_list.empty()) {
     buffer << Tr{} << "Metadata:" << "(none)";
   } else {
@@ -248,6 +291,20 @@ LogBuffer& operator<<(LogBuffer& buffer,
     buffer << Tag{"div"} << result << CTag{"div"};
   }
   return buffer;
+}
+
+void LogDiscardedDuplicate(LogManager& log_manager,
+                           const MemorySearchResult& discarded,
+                           const MemorySearchResult& retained) {
+  LogBuffer discarded_buf;
+  discarded_buf << discarded;
+  LogBuffer retained_buf;
+  retained_buf << retained;
+  LOG_AF(log_manager) << LoggingScope::kAtMemory << LogMessage::kAtMemory
+                      << "Discarded duplicate result:" << Br{} << Tag{"table"}
+                      << Tr{} << "Discarded result:" << std::move(discarded_buf)
+                      << Tr{} << "Retained result:" << std::move(retained_buf)
+                      << CTag{"table"};
 }
 
 }  // namespace autofill

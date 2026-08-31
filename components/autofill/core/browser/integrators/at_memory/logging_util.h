@@ -12,6 +12,7 @@
 namespace autofill {
 
 class LogBuffer;
+class LogManager;
 struct MemorySearchResult;
 
 // Serializes `plan` into `buffer`.
@@ -21,6 +22,12 @@ LogBuffer& operator<<(LogBuffer& buffer,
 // Serializes `results` into `buffer`.
 LogBuffer& operator<<(LogBuffer& buffer,
                       const std::vector<MemorySearchResult>& results);
+
+// Logs a `discarded` duplicate search result and its corresponding `retained`
+// result to `log_manager`.
+void LogDiscardedDuplicate(LogManager& log_manager,
+                           const MemorySearchResult& discarded,
+                           const MemorySearchResult& retained);
 
 }  // namespace autofill
 
