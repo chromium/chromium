@@ -781,8 +781,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   int ignore_modifiers = WebInputEvent::kShiftKey | tab_ignore_modifiers;
   FocusParams focus_params(FocusTrigger::kUserGesture);
 
-  if (keyboard_event && event.type() == event_type_names::kKeydown &&
-      !keyboard_event->repeat()) {
+  if (keyboard_event && event.type() == event_type_names::kKeydown) {
     const AtomicString key(keyboard_event->key());
     if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
       if ((key == " " || key == keywords::kCapitalEnter)) {
