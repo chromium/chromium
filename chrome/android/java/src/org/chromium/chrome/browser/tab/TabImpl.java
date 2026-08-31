@@ -43,6 +43,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -365,15 +367,16 @@ class TabImpl implements Tab, TabInternal {
 
     private @Nullable Callback<Boolean> mIsDraggingObserver;
 
-    private @Nullable Boolean mWasLastActive;
+    private @TriState int mWasLastActive;
 
     private final Callback<@Nullable Tab> mActiveTabObserver =
             (activeTab) -> {
                 boolean active = activeTab == this;
+                @TriState int activeState = TriStateUtils.from(active);
 
-                if (Objects.equals(mWasLastActive, active)) return;
+                if (mWasLastActive == activeState) return;
 
-                mWasLastActive = active;
+                mWasLastActive = activeState;
 
                 if (!active || mNativeTabAndroid == 0) return;
                 TabImplJni.get().sendDidActivateUpdate(mNativeTabAndroid);
@@ -381,7 +384,7 @@ class TabImpl implements Tab, TabInternal {
 
     private final Callback<@Nullable Tab> mActiveTabLookAheadObserver =
             (activeTab) -> {
-                if (mWasLastActive == null || !mWasLastActive || mNativeTabAndroid == 0) {
+                if (mWasLastActive != TriState.TRUE || mNativeTabAndroid == 0) {
                     return;
                 }
 
@@ -1662,15 +1665,12 @@ class TabImpl implements Tab, TabInternal {
             setTimestampMillis(System.currentTimeMillis());
         }
         String appId = null;
-        Boolean hasThemeColor = null;
-        int themeColor = 0;
         if (tabState != null) {
             appId = tabState.openerAppId;
-            themeColor = tabState.themeColor;
-            hasThemeColor = tabState.hasThemeColor();
-        }
-        if (hasThemeColor != null) {
-            updateThemeColor(hasThemeColor ? themeColor : TabState.UNSPECIFIED_THEME_COLOR);
+            updateThemeColor(
+                    tabState.hasThemeColor()
+                            ? tabState.themeColor
+                            : TabState.UNSPECIFIED_THEME_COLOR);
         }
 
         for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
@@ -3279,7 +3279,7 @@ class TabImpl implements Tab, TabInternal {
 
         clearCurrentTabSupplier(detachReason);
         mSelectionStateSupplier = null;
-        mWasLastActive = null;
+        mWasLastActive = TriState.NOT_SET;
     }
 
     @Override
@@ -3361,7 +3361,7 @@ class TabImpl implements Tab, TabInternal {
         // Reset cached active state when detaching supplier (e.g. activity recreation or tab model
         // changes). This ensures mActiveTabObserver re-evaluates tab state and re-fires
         // sendDidActivateUpdate upon reattaching.
-        mWasLastActive = null;
+        mWasLastActive = TriState.NOT_SET;
     }
 
     void setNativePtrForTesting(long nativePtr) {
