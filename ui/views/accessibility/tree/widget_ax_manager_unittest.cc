@@ -1226,6 +1226,43 @@ TEST_F(WidgetAXManagerTest, AnnouncementsAreDroppedWhenDisabled) {
   EXPECT_TRUE(generated_events.empty());
 }
 
+TEST_F(WidgetAXManagerTest, SerializesDefaultActionVerbChanges) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* child = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  api.WaitForNextSerialization();
+  ui::BrowserAccessibility* browser_node =
+      api.ax_tree_manager()->GetFromID(GetUniqueId(child));
+  ASSERT_NE(browser_node, nullptr);
+  EXPECT_EQ(browser_node->GetData().GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kNone);
+
+  child->GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kOpen);
+  api.WaitForNextSerialization();
+  EXPECT_EQ(browser_node->GetData().GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kOpen);
+
+  child->GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kPress);
+  api.WaitForNextSerialization();
+  EXPECT_EQ(browser_node->GetData().GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kPress);
+
+  child->GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kPress);
+  EXPECT_TRUE(api.pending_data_updates().empty());
+  EXPECT_FALSE(api.processing_update_posted());
+
+  child->GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kNone);
+  api.WaitForNextSerialization();
+  EXPECT_EQ(browser_node->GetData().GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kNone);
+}
+
 TEST_F(WidgetAXManagerTest,
        GetNativeViewAccessibleForIdWithoutAXTreeManagerReturnsNull) {
   std::unique_ptr<Widget> child_widget =

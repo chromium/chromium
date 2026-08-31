@@ -1608,7 +1608,20 @@ void ViewAccessibility::SetMaxValueForRange(float value) {
 
 void ViewAccessibility::SetDefaultActionVerb(
     const ax::mojom::DefaultActionVerb default_action_verb) {
+  if (data_.GetDefaultActionVerb() == default_action_verb) {
+    return;
+  }
+
+  if (default_action_verb == ax::mojom::DefaultActionVerb::kNone) {
+    RemoveDefaultActionVerb();
+    return;
+  }
+
   data_.SetDefaultActionVerb(default_action_verb);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kDefaultActionVerb,
+                        static_cast<int32_t>(default_action_verb));
+  NotifyDataChanged();
 }
 
 ax::mojom::DefaultActionVerb ViewAccessibility::GetDefaultActionVerb() const {
