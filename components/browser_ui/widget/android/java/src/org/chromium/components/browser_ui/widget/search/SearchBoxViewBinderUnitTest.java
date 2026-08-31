@@ -113,7 +113,7 @@ public class SearchBoxViewBinderUnitTest {
     @Test
     public void testFocusChangedCallback() {
         mFocusChangedValue = false;
-        mSearchText.performClick();
+        mSearchText.requestFocus();
         assertTrue(mFocusChangedValue);
 
         mPlaceholder.requestFocus();
@@ -130,31 +130,5 @@ public class SearchBoxViewBinderUnitTest {
         mModel.set(SearchBoxProperties.HAS_FOCUS, false);
         mPlaceholder.requestFocus();
         assertFalse(mSearchText.hasFocus());
-    }
-
-    @Test
-    public void testTouchModeFocusGating() {
-        // Initially, search text is focusable (for keyboard and accessibility) but not in touch
-        // mode.
-        assertTrue(mSearchText.isFocusable());
-        assertFalse(mSearchText.isFocusableInTouchMode());
-
-        // Gaining focus enables touch-mode focusability.
-        mModel.set(SearchBoxProperties.HAS_FOCUS, true);
-        assertTrue(mSearchText.isFocusable());
-        assertTrue(mSearchText.isFocusableInTouchMode());
-        assertTrue(mSearchText.hasFocus());
-
-        // Clearing focus disables touch-mode focusability to prevent automatic focus rebound.
-        mModel.set(SearchBoxProperties.HAS_FOCUS, false);
-        mPlaceholder.requestFocus();
-        assertTrue(mSearchText.isFocusable());
-        assertFalse(mSearchText.isFocusableInTouchMode());
-        assertFalse(mSearchText.hasFocus());
-
-        // Clicking / activating directly enables touch-mode focusability and requests focus.
-        mSearchText.performClick();
-        assertTrue(mSearchText.isFocusableInTouchMode());
-        assertTrue(mSearchText.hasFocus());
     }
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.widget.search;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Editable;
@@ -13,7 +12,6 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -52,9 +50,6 @@ public class SearchBoxView extends LinearLayout {
         setupView();
     }
 
-    // Suppress ClickableViewAccessibility because onTouchListener returns false, delegating click
-    // handling and performClick calls to EditText's native onTouchEvent.
-    @SuppressLint("ClickableViewAccessibility")
     private void setupView() {
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER_VERTICAL);
@@ -63,32 +58,6 @@ public class SearchBoxView extends LinearLayout {
         mSearchText = findViewById(R.id.search_text);
         mClearButton = findViewById(R.id.clear_text_button);
         mSearchLoupe = findViewById(R.id.search_loupe);
-
-        // The search text is focusable for keyboard navigation (Tab key) and TalkBack, but
-        // should not be focusable in touch mode until explicitly activated. This prevents
-        // Android's ViewRootImpl from auto-focusing the search box on startup/attachment
-        // when no hardware keyboard is present.
-        mSearchText.setFocusable(true);
-        mSearchText.setFocusableInTouchMode(false);
-
-        mSearchText.setOnTouchListener(
-                (v, event) -> {
-                    int action = event.getActionMasked();
-                    if (action == MotionEvent.ACTION_DOWN) {
-                        mSearchText.setFocusableInTouchMode(true);
-                    } else if (action == MotionEvent.ACTION_CANCEL && !mSearchText.hasFocus()) {
-                        mSearchText.setFocusableInTouchMode(false);
-                    }
-                    return false;
-                });
-
-        mSearchText.setOnClickListener(
-                (v) -> {
-                    if (!mSearchText.hasFocus()) {
-                        mSearchText.setFocusableInTouchMode(true);
-                        mSearchText.requestFocus();
-                    }
-                });
 
         mSearchText.addTextChangedListener(
                 new EmptyTextWatcher() {
@@ -103,7 +72,6 @@ public class SearchBoxView extends LinearLayout {
 
         mSearchText.setOnFocusChangeListener(
                 (v, hasFocus) -> {
-                    mSearchText.setFocusableInTouchMode(hasFocus);
                     if (mIsSettingFocus) return;
                     if (mFocusChangeCallback != null) {
                         mFocusChangeCallback.onResult(hasFocus);
@@ -117,7 +85,7 @@ public class SearchBoxView extends LinearLayout {
                                     && event.getAction() == KeyEvent.ACTION_DOWN
                                     && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                         KeyboardVisibilityDelegate.getInstance().hideKeyboard(mSearchText);
-                        setSearchTextFocus(false);
+                        mSearchText.clearFocus();
                         return true;
                     }
                     return false;
@@ -182,10 +150,8 @@ public class SearchBoxView extends LinearLayout {
         mIsSettingFocus = true;
         try {
             if (hasFocus) {
-                mSearchText.setFocusableInTouchMode(true);
                 mSearchText.requestFocus();
             } else {
-                mSearchText.setFocusableInTouchMode(false);
                 mSearchText.clearFocus();
             }
         } finally {

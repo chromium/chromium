@@ -15,6 +15,9 @@ found in the LICENSE file.
   android:layout_height="wrap_content"
   android:layout_marginHorizontal="@dimen/search_box_embedder_margin_horizontal"
   android:layout_marginBottom="@dimen/bookmark_search_box_row_margin_bottom_default"
+  android:clickable="true"
+  android:focusable="true"
+  android:focusableInTouchMode="true"
   android:importantForAccessibility="no">
 
   <!-- Shared search box component. -->
