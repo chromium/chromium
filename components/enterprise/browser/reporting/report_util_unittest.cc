@@ -9,6 +9,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,5 +57,35 @@ TEST(ReportUtilTest, GetSecuritySignalsInReportWithoutCertificates) {
   EXPECT_EQ(dict->FindInt("certificates_count"), 0);
   EXPECT_EQ(dict->FindBool("certificates_were_truncated"), false);
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST(ReportUtilTest, GetSecuritySignalsInReportWithVendorId) {
+  em::ChromeProfileReportRequest request;
+  auto* os_report = request.mutable_os_report();
+  auto* ios_attributes = os_report->mutable_ios_specific_attributes();
+  ios_attributes->set_vendor_id("test_vendor_id");
+
+  std::string json_string = GetSecuritySignalsInReport(request);
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  const std::string* vendor_id = dict->FindString("vendor_id");
+  ASSERT_TRUE(vendor_id);
+  EXPECT_EQ(*vendor_id, "test_vendor_id");
+}
+
+TEST(ReportUtilTest, GetSecuritySignalsInReportWithoutVendorId) {
+  em::ChromeProfileReportRequest request;
+  request.mutable_os_report();
+
+  std::string json_string = GetSecuritySignalsInReport(request);
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_FALSE(dict->FindString("vendor_id"));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace enterprise_reporting

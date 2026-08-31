@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "crypto/sha2.h"
@@ -225,6 +226,12 @@ std::string GetSecuritySignalsInReport(
                      os_report.verified_apps_enabled());
     signals_dict.Set("security_patch_ms",
                      base::NumberToString(os_report.security_patch_ms()));
+#elif BUILDFLAG(IS_IOS)
+    if (os_report.has_ios_specific_attributes() &&
+        os_report.ios_specific_attributes().has_vendor_id()) {
+      signals_dict.Set("vendor_id",
+                       os_report.ios_specific_attributes().vendor_id());
+    }
 #endif
   }
 
