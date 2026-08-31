@@ -250,7 +250,7 @@ class BrowserFocusTest : public InteractiveBrowserTest {
     return focus_manager;
   }
 
-  views::Widget* GetWidgetForBrowser(Browser* browser) {
+  views::Widget* GetWidgetForBrowser(BrowserWindowInterface* browser) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     CHECK(browser_view);
     views::Widget* widget = browser_view->GetWidget();
@@ -475,10 +475,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
   // Open a new browser window.
-  Browser* background_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* background_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+          browser()->GetProfile(), /*from_user_gesture=*/true));
   chrome::AddTabAt(background_browser, GURL(), -1, true);
   background_browser->GetWindow()->Show();
 
@@ -857,7 +856,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
 // TODO(crbug.com/40794922): Flaky on Linux.
 // TODO(crbug.com/41493632): Broken since CR2023.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_PopupLocationBar) {
-  Browser* popup_browser = CreateBrowserForPopup(browser()->GetProfile());
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(browser()->GetProfile());
 
   // Make sure the popup is in the front. Otherwise the test is flaky.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup_browser));
@@ -889,7 +889,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_PopupLocationBar) {
 // Tests that the location bar is not focusable when hidden, which is the case
 // in app windows.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AppLocationBar) {
-  Browser* app_browser = CreateBrowserForApp("foo", browser()->GetProfile());
+  BrowserWindowInterface* app_browser =
+      CreateBrowserForApp("foo", browser()->GetProfile());
 
   // Make sure the app window is in the front. Otherwise the test is flaky.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(app_browser));

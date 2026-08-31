@@ -1170,8 +1170,6 @@ class DetachToBrowserTabDragControllerTest
     ASSERT_TRUE(ReleaseInput());
   }
 
-  Browser* browser() const { return InProcessBrowserTest::browser(); }
-
  protected:
 #if BUILDFLAG(IS_CHROMEOS)
   void SetMinFlingVelocity(float velocity) {

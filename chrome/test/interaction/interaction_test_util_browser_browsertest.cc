@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
                        CompareScreenshot_TrackedElementWebUI) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestWebUIElementId);
   auto* const web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto handler = std::make_unique<ui::TrackedElementHandler>(
       web_contents, BrowserElements::From(browser())->GetContext(),
       std::vector<ui::ElementIdentifier>{kTestWebUIElementId});
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
                        CompareScreenshot_TrackedElementWebUIWithClipBounds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestWebUIElementId);
   auto* const web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto handler = std::make_unique<ui::TrackedElementHandler>(
       web_contents, BrowserElements::From(browser())->GetContext(),
       std::vector<ui::ElementIdentifier>{kTestWebUIElementId});

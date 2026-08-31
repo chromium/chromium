@@ -69,7 +69,8 @@ class DeviceSignalsDisclaimerInteractiveTest : public SigninBrowserTestBase {
   }
 
  protected:
-  content::WebContents* GetModalDialogWebContents(Browser* browser) {
+  content::WebContents* GetModalDialogWebContents(
+      BrowserWindowInterface* browser) {
     return browser->GetFeatures()
         .signin_view_controller()
         ->GetModalDialogWebContentsForTesting();

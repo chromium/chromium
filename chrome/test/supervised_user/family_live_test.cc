@@ -24,6 +24,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/supervised_user/browser_user.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
@@ -170,9 +172,9 @@ void FamilyLiveTest::SigninToBrowser() {
 
 void FamilyLiveTest::SigninToBrowserFor(BrowserUser& browser_user) {
   browser_user.SignInToBrowser();
-  browser_user.browser().tab_strip_model()->CloseWebContentsAt(
+  browser_user.browser().GetTabStripModel()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
-  browser_user.browser().tab_strip_model()->CloseWebContentsAt(
+  browser_user.browser().GetTabStripModel()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
   if (IsSwitchEnabled(kDebugSwitch)) {
@@ -304,7 +306,7 @@ std::unique_ptr<BrowserUser> FamilyLiveTest::MakeSignedInBrowser(
     const test_accounts::FamilyMember& credentials) {
   // Managed externally to the test fixture.
   Profile& profile = CreateNewProfile();
-  Browser* browser = CreateBrowser(&profile);
+  BrowserWindowInterface* browser = CreateBrowser(&profile);
   CHECK(browser) << "Expected to create a browser.";
 
   BrowserUser::NewTabCallback new_tab_callback = base::BindLambdaForTesting(

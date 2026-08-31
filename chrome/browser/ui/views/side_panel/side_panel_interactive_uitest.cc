@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -500,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        SidePanelPinButtonsHideInIncognitoMode) {
-  Browser* const incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* const incognito = CreateIncognitoBrowser();
   RunTestSequence(
       InContext(BrowserElements::From(incognito)->GetContext(),
                 WaitForShow(kBrowserViewElementId)),

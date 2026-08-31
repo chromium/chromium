@@ -16,6 +16,8 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/test_switches.h"
@@ -286,19 +288,19 @@ std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
           InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
     std::string type;
     switch (browser->GetType()) {
-      case Browser::TYPE_APP:
+      case BrowserWindowInterface::Type::TYPE_APP:
         type = "App window";
         break;
-      case Browser::TYPE_APP_POPUP:
+      case BrowserWindowInterface::Type::TYPE_APP_POPUP:
         type = "Popup app window";
         break;
-      case Browser::TYPE_NORMAL:
+      case BrowserWindowInterface::Type::TYPE_NORMAL:
         type = "Tabbed browser window";
         break;
-      case Browser::TYPE_DEVTOOLS:
+      case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
         type = "Devtools window";
         break;
-      case Browser::TYPE_PICTURE_IN_PICTURE:
+      case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
         type = "Picture-in-picture window";
         break;
       default:

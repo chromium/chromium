@@ -25,7 +25,7 @@ class PasswordManagerInternalsBrowserTest : public WebUIMochaBrowserTest {
     OpenInternalsPageWithBrowser(browser(), disposition);
   }
 
-  void OpenInternalsPageWithBrowser(Browser* browser,
+  void OpenInternalsPageWithBrowser(BrowserWindowInterface* browser,
                                     WindowOpenDisposition disposition) {
     std::string url_string("chrome://");
     url_string += chrome::kChromeUIPasswordManagerInternalsHost;

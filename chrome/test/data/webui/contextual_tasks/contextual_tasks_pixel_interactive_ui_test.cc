@@ -47,6 +47,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"

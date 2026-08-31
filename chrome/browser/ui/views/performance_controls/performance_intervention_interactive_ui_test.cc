@@ -24,8 +24,10 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
@@ -154,7 +156,7 @@ class PerformanceInterventionInteractiveTest
 
   std::vector<resource_attribution::PageContext> GetPageContextForTabs(
       const std::vector<int>& tab_indices,
-      Browser* browser) {
+      BrowserWindowInterface* browser) {
     std::vector<resource_attribution::PageContext> page_contexts;
     TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     for (int index : tab_indices) {
@@ -170,7 +172,7 @@ class PerformanceInterventionInteractiveTest
   }
 
   void NotifyActionableTabListChange(const std::vector<int>& tab_indices,
-                                     Browser* browser) {
+                                     BrowserWindowInterface* browser) {
     performance_manager::user_tuning::PerformanceDetectionManager::GetInstance()
         ->NotifyActionableTabObserversForTesting(
             PerformanceDetectionManager::ResourceType::kCpu,
@@ -530,12 +532,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 #endif
   // Create two browser windows with tabs and ensure the second browser window
   // is active
-  Browser* const first_browser = browser();
+  BrowserWindowInterface* const first_browser = browser();
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
-  Browser* const second_browser = CreateBrowser(first_browser->GetProfile());
+  BrowserWindowInterface* const second_browser =
+      CreateBrowser(first_browser->GetProfile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   BrowserWindow* const first_browser_window =
@@ -587,12 +590,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
     GTEST_SKIP() << "Linux Wayland doesn't support window activation";
   }
 #endif
-  Browser* const first_browser = browser();
+  BrowserWindowInterface* const first_browser = browser();
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
-  Browser* const second_browser = CreateBrowser(first_browser->GetProfile());
+  BrowserWindowInterface* const second_browser =
+      CreateBrowser(first_browser->GetProfile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   BrowserWindow* const first_browser_window =
@@ -649,13 +653,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        SuggestTabsOnlyForLastActiveProfile) {
   // Create two browser windows with tabs and ensure the second browser window
   // is active
-  Browser* const first_browser = browser();
+  BrowserWindowInterface* const first_browser = browser();
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
 
-  Browser* const second_browser = CreateBrowser(CreateTestProfile());
+  BrowserWindowInterface* const second_browser =
+      CreateBrowser(CreateTestProfile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   BrowserWindow* const first_browser_window =

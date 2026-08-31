@@ -40,7 +40,8 @@
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -365,7 +366,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     ViewEventTestBase::SetUp();
     ASSERT_TRUE(bb_view_);
 
-    static_cast<TestBrowserWindow*>(BrowserWindow::FromBrowser(browser_.get()))
+    static_cast<TestBrowserWindow*>(browser_->GetWindow())
         ->SetNativeWindow(window()->GetNativeWindow());
 
     bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);

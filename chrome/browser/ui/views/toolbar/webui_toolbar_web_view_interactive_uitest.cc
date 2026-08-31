@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -445,8 +446,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
       /*extra_data=*/{}, /*from_session_restore=*/true,
       /*is_active_browser=*/std::nullopt);
   ASSERT_TRUE(restored_contents);
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   RunTestSequence(
       WaitForShow(kWebUIToolbarElementIdentifier),
@@ -458,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
       InstrumentNonTabWebView(kWebUIToolbarWebViewId, kInstrumentedWebViewId,
                               /*wait_for_ready=*/true),
       // Switch to the restored WebUI background tab.
-      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      Do([this]() { browser()->GetTabStripModel()->ActivateTabAt(1); }),
       // Verify that the WebUI Location Bar receives the update and displays the
       // new URL.
       WaitForJsResultAt(kWebUIToolbarWebViewId,

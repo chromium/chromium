@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -749,7 +750,7 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
     ui::ElementIdentifier page_identifier) {
   return std::make_unique<TabWebContentsInteractionTestUtil>(
-      static_cast<Browser*>(nullptr), page_identifier);
+      static_cast<BrowserWindowInterface*>(nullptr), page_identifier);
 }
 
 // static

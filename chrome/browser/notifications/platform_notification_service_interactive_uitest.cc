@@ -231,8 +231,8 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
     return RunScript("RequestPermission();");
   }
 
-  content::WebContents* GetActiveWebContents(Browser* browser) {
-    return browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser) {
+    return browser->GetTabStripModel()->GetActiveWebContents();
   }
 
   // Show a notification that sets `close_event_timeout` milliseconds in the

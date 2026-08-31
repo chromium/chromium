@@ -499,7 +499,7 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
   }
 
  private:
-  void OpenPageInfoBubble(Browser* browser) {
+  void OpenPageInfoBubble(BrowserWindowInterface* browser) {
     LocationIconTestAccessor(browser).ShowBubble();
     views::BubbleDialogDelegateView* page_info =
         PageInfoBubbleView::GetPageInfoBubbleForTesting();

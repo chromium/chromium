@@ -11,6 +11,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/ukm_reporting_service.h"
 #include "components/ukm/ukm_service.h"
 #include "components/ukm/ukm_test_helper.h"
@@ -65,7 +66,7 @@ class MetricsInternalsUIBrowserTestWithLog
 
   void SetUpOnMainThread() override {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetActiveTabInterface()->GetContents();
     DCHECK(web_contents);
     // Note that we stop observing automatically in the destructor of
     // content::WebContentsObserver, so no need to do it manually.

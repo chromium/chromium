@@ -14,7 +14,7 @@
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -36,7 +36,7 @@ BrowserUser::BrowserUser(
     test_accounts::FamilyMember credentials,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager& identity_manager,
-    Browser& browser,
+    BrowserWindowInterface& browser,
     Profile& profile,
     const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>
         add_tab_function)

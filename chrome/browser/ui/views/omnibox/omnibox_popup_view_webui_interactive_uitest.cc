@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -23,7 +26,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -108,13 +110,13 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
     return location_bar()->GetOmniboxController()->edit_model();
   }
 
-  SkColor GetSelectedColor(Browser* browser) {
+  SkColor GetSelectedColor(BrowserWindowInterface* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->GetColorProvider()
         ->GetColor(kColorOmniboxResultsBackgroundSelected);
   }
 
-  SkColor GetNormalColor(Browser* browser) {
+  SkColor GetNormalColor(BrowserWindowInterface* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->GetColorProvider()
         ->GetColor(kColorOmniboxResultsBackground);

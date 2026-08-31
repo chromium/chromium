@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -266,7 +267,8 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
   }
 
-  void BasicPixelTest(Browser* browser, const std::string& screenshot_name) {
+  void BasicPixelTest(BrowserWindowInterface* browser,
+                      const std::string& screenshot_name) {
     ui::TrackedElement* element = nullptr;
     WebUIToolbarWebView* webui_toolbar_view = nullptr;
     views::WebView* web_view = nullptr;
@@ -455,7 +457,7 @@ class WebUIToolbarViewsInteractiveUiTest
   // started, so use with care.
   StepBuilder DoWaitForLoadStop() {
     StepBuilder step = Do(base::BindOnce(
-        [](Browser* browser) {
+        [](BrowserWindowInterface* browser) {
           content::WaitForLoadStop(
               browser->GetTabStripModel()->GetActiveWebContents());
         },
@@ -621,7 +623,7 @@ class WebUIToolbarViewsInteractiveUiTest
   // reload button.
   StepBuilder DoStartReloadWithoutClick() {
     StepBuilder step = Do(base::BindOnce(
-        [](Browser* browser) {
+        [](BrowserWindowInterface* browser) {
           browser->GetTabStripModel()
               ->GetActiveWebContents()
               ->GetController()
@@ -1869,7 +1871,7 @@ class WebUIToolbarFocusInteractiveUiTestBase
   }
 
  protected:
-  views::View* GetViewForIdentifier(Browser* browser,
+  views::View* GetViewForIdentifier(BrowserWindowInterface* browser,
                                     ui::ElementIdentifier el_id) {
     auto* element_tracker_views = views::ElementTrackerViews::GetInstance();
     ui::ElementContext context = BrowserElements::From(browser)->GetContext();

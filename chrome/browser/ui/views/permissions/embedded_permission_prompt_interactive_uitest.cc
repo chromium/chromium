@@ -14,6 +14,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
@@ -991,7 +992,8 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 
         // Simulate another window becoming active, and then the current window
         // again.
-        Browser* focused_window = CreateBrowser(browser()->GetProfile());
+        BrowserWindowInterface* focused_window =
+            CreateBrowser(browser()->GetProfile());
         ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
         ASSERT_FALSE(browser()->GetWindow()->IsActive());
 
@@ -1062,7 +1064,8 @@ IN_PROC_BROWSER_TEST_P(
                                   /*mic_allowed=*/false);
 
         // Simulate deactivation and reactivation.
-        Browser* focused_window = CreateBrowser(browser()->GetProfile());
+        BrowserWindowInterface* focused_window =
+            CreateBrowser(browser()->GetProfile());
         ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
         ASSERT_FALSE(browser()->GetWindow()->IsActive());
 

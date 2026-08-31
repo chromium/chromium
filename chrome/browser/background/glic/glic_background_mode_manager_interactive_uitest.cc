@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
+
 #include <memory>
 #include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -309,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
   Profile& second_profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-  Browser* const second_browser = CreateBrowser(&second_profile);
+  BrowserWindowInterface* const second_browser = CreateBrowser(&second_profile);
 
   // Delete the first profile and the glic launcher should not be in the
   // background since there are no profiles that are eligible to use glic.

@@ -1653,7 +1653,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleWithUnifiedUiDisabledInteractiveUiTest,
       std::make_unique<password_manager::PasswordForm>(*test_form()));
 
   // Open another window with focus.
-  Browser* focused_window = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* focused_window =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
 
   PasswordAutoSignInView::set_auto_signin_toast_timeout(1);

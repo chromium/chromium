@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
+
 #include "base/functional/bind.h"
 #include "build/buildflag.h"
-#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
@@ -37,7 +39,7 @@ class BaseAddressBubblesControllerTest : public InteractiveBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   ContentAutofillClient* autofill_client() {
@@ -159,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, NoCrashesOnTabClose) {
   RunTestSequence(
       ShowInitBubble(), EnsurePresent(SaveAddressProfileView::kTopViewId),
       Do([this]() {
-        browser()->tab_strip_model()->GetActiveWebContents()->Close();
+        browser()->GetTabStripModel()->GetActiveWebContents()->Close();
       }));
 }
 

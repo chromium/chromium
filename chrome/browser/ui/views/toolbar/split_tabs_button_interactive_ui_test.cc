@@ -377,7 +377,8 @@ class SplitTabButtonInteractiveTest
         IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED);
   }
 
-  static std::u16string GetSplitTabsButtonEnabledName(Browser* browser) {
+  static std::u16string GetSplitTabsButtonEnabledName(
+      BrowserWindowInterface* browser) {
     TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
     if (!active_tab || !active_tab->IsSplit()) {

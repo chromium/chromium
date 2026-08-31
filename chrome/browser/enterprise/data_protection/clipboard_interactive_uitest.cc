@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -31,7 +32,6 @@
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/test_print_preview_observer.h"
-#include "printing/buildflags/buildflags.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 namespace enterprise_data_protection {

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -46,7 +48,7 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
   auto RequestPermission() {
     return Do(base::BindLambdaForTesting([&]() {
       controller_->RequestPermission(
-          browser()->tab_strip_model()->GetActiveTab()->GetContents(),
+          browser()->GetTabStripModel()->GetActiveTab()->GetContents(),
           base::BindRepeating(
               &LensPermissionBubbleInteractiveUiTest::RequestPermissionCallback,
               base::Unretained(this)));

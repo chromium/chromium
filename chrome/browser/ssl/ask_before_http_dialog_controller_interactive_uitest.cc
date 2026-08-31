@@ -281,7 +281,8 @@ class AskBeforeHttpDialogControllerUiTest
   content::ContentMockCertVerifier mock_cert_verifier_;
   base::HistogramTester histograms_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      incognito_browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(

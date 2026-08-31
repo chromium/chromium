@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
+
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -15,7 +17,8 @@
 
 namespace {
 
-void InputKeys(Browser* browser, const std::vector<ui::KeyboardCode>& keys) {
+void InputKeys(BrowserWindowInterface* browser,
+               const std::vector<ui::KeyboardCode>& keys) {
   for (auto key : keys) {
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser, key, false, false,
                                                 false, false));
@@ -42,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
       InstallExtension(test_data_dir_.AppendASCII("omnibox"), 1);
   ASSERT_NE(extension, nullptr);
 
-  Browser* current_browser = browser();
+  BrowserWindowInterface* current_browser = browser();
   chrome::FocusLocationBar(current_browser);
   ASSERT_TRUE(ui_test_utils::IsViewFocused(current_browser, VIEW_ID_OMNIBOX));
 

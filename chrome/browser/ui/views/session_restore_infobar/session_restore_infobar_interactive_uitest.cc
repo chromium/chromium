@@ -63,7 +63,8 @@ class SessionRestoreInfobarInteractiveTest
  protected:
   bool IsDefaultContinueSession() const { return GetParam(); }
 
-  void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
+  void CreateInfobar(BrowserWindowInterface* browser,
+                     bool is_post_crash_launch) {
     auto* controller =
         session_restore_infobar::SessionRestoreInfobarController::From(browser);
     controller->MaybeShowInfoBar(*browser->GetProfile(), is_post_crash_launch);
@@ -88,7 +89,8 @@ class SessionRestoreInfobarDefaultTest : public InteractiveBrowserTest {
       const SessionRestoreInfobarDefaultTest&) = delete;
 
  protected:
-  void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
+  void CreateInfobar(BrowserWindowInterface* browser,
+                     bool is_post_crash_launch) {
     auto* controller =
         session_restore_infobar::SessionRestoreInfobarController::From(browser);
     controller->MaybeShowInfoBar(*browser->GetProfile(), is_post_crash_launch);
@@ -113,7 +115,8 @@ class SessionRestoreInfobarDefaultOffTest : public InteractiveBrowserTest {
       const SessionRestoreInfobarDefaultOffTest&) = delete;
 
  protected:
-  void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
+  void CreateInfobar(BrowserWindowInterface* browser,
+                     bool is_post_crash_launch) {
     auto* controller =
         session_restore_infobar::SessionRestoreInfobarController::From(browser);
     controller->MaybeShowInfoBar(*browser->GetProfile(), is_post_crash_launch);

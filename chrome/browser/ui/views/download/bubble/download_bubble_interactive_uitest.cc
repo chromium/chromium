@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
@@ -194,7 +195,8 @@ class DownloadBubbleInteractiveUiTest
 
   auto DownloadBubblePromoIsActive(bool active, const base::Feature& feature) {
     return base::BindOnce(
-        [](Browser* browser, bool active, const base::Feature& feature) {
+        [](BrowserWindowInterface* browser, bool active,
+           const base::Feature& feature) {
           return active == BrowserUserEducationInterface::From(browser)
                                ->IsFeaturePromoActive(feature);
         },

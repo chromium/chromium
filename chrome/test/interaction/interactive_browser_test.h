@@ -8,6 +8,7 @@
 #include <concepts>
 #include <utility>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/interaction/interactive_browser_window_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -105,7 +106,7 @@ class InteractiveBrowserTestMixin : public T, public InteractiveBrowserTestApi {
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();
-    if (Browser* browser = T::browser()) {
+    if (BrowserWindowInterface* browser = T::browser()) {
       SetContextWidget(
           BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
     }

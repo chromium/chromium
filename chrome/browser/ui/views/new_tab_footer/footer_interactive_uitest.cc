@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHiddenOnNonExtensionNtp) {
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHidesInGuestProfile) {
   LoadNtpOverridingExtension();
-  Browser* const guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
   ui_test_utils::BrowserActivationWaiter(guest_browser).WaitForActivation();
 
   RunTestSequenceInContext(
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHidesInGuestProfile) {
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHidesInIncognito) {
   LoadNtpOverridingExtension();
-  Browser* const incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* const incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
 
   RunTestSequenceInContext(

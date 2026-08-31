@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Incognito) {
 
   // No waiting happens here - BrowserCreatedObserver is used to obtain a
   // pointer to the newly added browser.
-  Browser* incognito_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* incognito_browser = browser_created_observer.Wait();
   EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
 
   histogram_tester.ExpectUniqueSample(

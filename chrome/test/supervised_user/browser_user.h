@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/test_support/account_repository.h"
@@ -32,7 +32,7 @@ class BrowserUser {
   BrowserUser(test_accounts::FamilyMember credentials,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               signin::IdentityManager& identity_manager,
-              Browser& browser,
+              BrowserWindowInterface& browser,
               Profile& profile,
               const NewTabCallback add_tab_function);
   ~BrowserUser();
@@ -54,14 +54,14 @@ class BrowserUser {
   // These services can be used to verify browser state.
   FamilyLinkSettingsState::Services GetServices() const;
 
-  Browser& browser() const { return browser_.get(); }
+  BrowserWindowInterface& browser() const { return browser_.get(); }
   Profile& profile() const { return profile_.get(); }
 
  private:
   const test_accounts::FamilyMember credentials_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ref<signin::IdentityManager> identity_manager_;
-  raw_ref<Browser> browser_;
+  raw_ref<BrowserWindowInterface> browser_;
   raw_ref<Profile> profile_;
 
   signin::test::SignInFunctions sign_in_functions_;

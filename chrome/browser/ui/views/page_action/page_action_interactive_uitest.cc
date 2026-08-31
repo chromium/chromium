@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_enums.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -147,7 +148,7 @@ class PageActionUiTestBase {
 
   virtual ~PageActionUiTestBase() = default;
 
-  virtual Browser* GetBrowser() const = 0;
+  virtual BrowserWindowInterface* GetBrowser() const = 0;
 
   page_actions::PageActionController* page_action_controller() const {
     return GetBrowser()
@@ -304,7 +305,7 @@ class PageActionInteractiveUiTest : public InteractiveBrowserTest,
   ~PageActionInteractiveUiTest() override = default;
 
   // PageActionUiTestBase:
-  Browser* GetBrowser() const override { return browser(); }
+  BrowserWindowInterface* GetBrowser() const override { return browser(); }
 };
 
 // Tests that switching from a full available space to a reduced available space
@@ -706,7 +707,7 @@ class PageActionMetricsInteractiveUiTest : public InteractiveBrowserTest,
   ~PageActionMetricsInteractiveUiTest() override = default;
 
   // PageActionUiTestBase:
-  Browser* GetBrowser() const override { return browser(); }
+  BrowserWindowInterface* GetBrowser() const override { return browser(); }
 
  protected:
   void SetZoomLevel(content::PageZoom zoom_level) {
@@ -855,7 +856,7 @@ class PageActionPixelTestBase : public UiBrowserTest,
   ~PageActionPixelTestBase() override = default;
 
   // PageActionUiTestBase:
-  Browser* GetBrowser() const final { return browser(); }
+  BrowserWindowInterface* GetBrowser() const final { return browser(); }
 
   // UiBrowserTest:
   void ShowUi(const std::string& /*name*/) override {
@@ -1029,7 +1030,7 @@ class AnchoredMessageInteractiveTestBase : public InteractiveBrowserTest,
   ~AnchoredMessageInteractiveTestBase() override = default;
 
   // Implements PageActionUiTestBase:
-  Browser* GetBrowser() const override { return browser(); }
+  BrowserWindowInterface* GetBrowser() const override { return browser(); }
 
   void ShowTestAnchoredMessage(
       std::u16string text,

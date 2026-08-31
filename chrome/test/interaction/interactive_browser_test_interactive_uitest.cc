@@ -529,7 +529,8 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
   ~WebBubbleView() override = default;
 
   // Creates a bubble with a WebView and loads `url` in the view.
-  static WebBubbleView* CreateBubble(Browser* browser, GURL url) {
+  static WebBubbleView* CreateBubble(BrowserWindowInterface* browser,
+                                     GURL url) {
     BrowserView* const browser_view =
         BrowserView::GetBrowserViewForBrowser(browser);
     auto bubble_ptr = base::WrapUnique(

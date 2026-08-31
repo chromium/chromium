@@ -125,7 +125,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  Browser* current_browser() { return current_browser_; }
+  BrowserWindowInterface* current_browser() { return current_browser_; }
 
   GURL GetDifferentOriginUrl() const { return GURL("https://test.com"); }
 
@@ -255,7 +255,8 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
 
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> current_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      current_browser_ = nullptr;
 
   base::HistogramTester histograms_;
 

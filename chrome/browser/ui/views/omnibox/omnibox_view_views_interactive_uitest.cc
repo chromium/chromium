@@ -74,6 +74,7 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -155,7 +156,7 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
     return &triggered_feature_service_;
   }
 
-  static void GetOmniboxViewForBrowser(Browser* browser,
+  static void GetOmniboxViewForBrowser(BrowserWindowInterface* browser,
                                        OmniboxView** omnibox_view) {
     BrowserWindow* window = BrowserWindow::FromBrowser(browser);
     ASSERT_TRUE(window);
@@ -1208,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeInitRespectsIME) {
   OmniboxMockInputMethod* input_method = new OmniboxMockInputMethod();
   ui::SetUpInputMethodForTesting(input_method);
   input_method->SetInputLocaleCJK(/*is_cjk=*/true);
-  Browser* browser_2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser_2 = CreateBrowser(browser()->GetProfile());
   OmniboxView* view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser_2, &view));
   OmniboxViewViews* omnibox_view_views = static_cast<OmniboxViewViews*>(view);
