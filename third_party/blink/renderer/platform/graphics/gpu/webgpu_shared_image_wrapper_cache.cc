@@ -9,10 +9,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper.h"
@@ -405,8 +407,36 @@ WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
     }
 #endif
 
+    auto* sii =
+        context_provider_wrapper->ContextProvider().SharedImageInterface();
+    // The SharedImages created by this provider serve as a means of
+    // import/export between VideoFrames/canvas and WebGPU, e.g.:
+    // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
+    //   WebGPU textures will then be read by clients)
+    // * Export from WebGPU into a static bitmap image via
+    //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
+    //   export happens via the WebGPU interface)
+    // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
+    // Additionally, these SharedImages are both read and written by the
+    // raster interface (both occur, for example, when copying canvas
+    // resources between canvases) and can be put into
+    // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
+    // GL textures by WebGL (via
+    // AcceleratedStaticBitmapImage::CopyToTexture()).
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+
+    auto shared_image = sii->CreateSharedImage(
+        {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
+         shared_image_usage_flags, "CanvasResourceRaster"},
+        gpu::kNullSurfaceHandle);
+
     wrapper = std::make_unique<WebGpuSharedImageWrapper>(
-        size, format, alpha_type, color_space, context_provider_wrapper);
+        std::move(shared_image), context_provider_wrapper);
 
     if (IsGpuContextLost(context_provider_wrapper.get())) {
       return nullptr;

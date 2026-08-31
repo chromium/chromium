@@ -39,10 +39,7 @@ namespace blink {
 
 class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
  public:
-  WebGpuSharedImageWrapper(gfx::Size size,
-                           viz::SharedImageFormat format,
-                           SkAlphaType alpha_type,
-                           const gfx::ColorSpace& color_space,
+  WebGpuSharedImageWrapper(scoped_refptr<gpu::ClientSharedImage> shared_image,
                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>
                                context_provider_wrapper);
   ~WebGpuSharedImageWrapper();
