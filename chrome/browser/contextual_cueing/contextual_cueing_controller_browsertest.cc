@@ -22,6 +22,7 @@
 #include "chrome/browser/contextual_cueing/test_cue_target.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/private_insights/private_insights_service_factory.h"
@@ -272,12 +273,6 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
             browser()->GetProfile()));
   }
 
- private:
-  syncer::TestSyncService* GetTestSyncService() {
-    return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
-  }
-
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
     SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
@@ -286,6 +281,12 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
     private_insights::PrivateInsightsServiceFactory::GetInstance()
         ->SetTestingFactory(
             context, base::BindRepeating(&CreateMockPrivateInsightsService));
+  }
+
+ private:
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   ui::UserDataFactory::ScopedOverride user_ed_override_;
@@ -1246,23 +1247,166 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   EXPECT_EQ(tooltip_observer.tooltip_, u"");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
-                       NoLongerActiveTabAfterResponse) {
+class ContextualCueingControllerMockOptGuideBrowserTest
+    : public ContextualCueingControllerBrowserTest {
+ public:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    ContextualCueingControllerBrowserTest::OnWillCreateBrowserContextServices(
+        context);
+    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<MockOptimizationGuideKeyedService>>();
+        }));
+  }
+
+  MockOptimizationGuideKeyedService* mock_opt_guide() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->GetProfile()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
+                       InactiveTabShowsQuietCueAfterModelExecution) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP()
+      << "Contextual cueing anchored message not implemented for Android";
+#else
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
+  tabs::TabInterface* tab_1 = browser()->GetActiveTabInterface();
+  page_actions::PageActionController* tab_1_page_action_controller =
+      tab_1->GetTabFeatures()->page_action_controller();
+  CHECK(tab_1_page_action_controller);
+
+  class TestObserver : public page_actions::PageActionModelObserver {
+   public:
+    void OnPageActionModelChanged(
+        const page_actions::PageActionModelInterface& model) override {
+      visible_ = model.GetVisible();
+      anchored_message_showing_ = model.ShouldShowAnchoredMessage();
+    }
+    bool visible_ = false;
+    bool anchored_message_showing_ = false;
+  };
+
+  TestObserver observer;
+  base::ScopedObservation<page_actions::PageActionModelInterface,
+                          page_actions::PageActionModelObserver>
+      observation(&observer);
+  tab_1_page_action_controller->AddObserver(kActionAnchoredContextualCue,
+                                            observation);
+
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      saved_callback;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContextualCueing,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) { saved_callback = std::move(callback); });
+
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  SeedExecutionResult(MakeCompleteResponse());
   SimulateFilterPassed();
+  ASSERT_TRUE(saved_callback);
 
   // Open new tab in foreground right away.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.example.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Run the saved callback with the response while tab 1 is inactive.
+  auto response = MakeCompleteResponse();
+  optimization_guide::proto::Any response_any;
+  response.SerializeToString(response_any.mutable_value());
+  response_any.set_type_url(
+      base::StrCat({"type.googleapis.com/", response.GetTypeName()}));
+  std::move(saved_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               response_any, /*execution_info=*/nullptr),
+           nullptr);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+  VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
+
+  // Switch back to Tab 1.
+  browser()->GetTabStripModel()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfTab(tab_1));
+
+  // Once Tab 1 is active, the suggestion chip should be visible quietly without
+  // showing the anchored message bubble.
+  EXPECT_TRUE(observer.visible_);
+  EXPECT_FALSE(observer.anchored_message_showing_);
+
+  // Click the suggestion chip to expand the anchored message.
+  auto* action =
+      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  ASSERT_TRUE(action);
+  action->InvokeAction();
+
+  EXPECT_TRUE(observer.visible_);
+  EXPECT_TRUE(observer.anchored_message_showing_);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
+                       TabNavigatedAwayAfterModelExecution) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      saved_callback;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContextualCueing,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) { saved_callback = std::move(callback); });
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  SimulateFilterPassed();
+  ASSERT_TRUE(saved_callback);
+
+  // Navigate the tab away to a different URL before model execution response
+  // arrives.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.example.com/def")));
+
+  // Run the saved callback with the response.
+  auto response = MakeCompleteResponse();
+  optimization_guide::proto::Any response_any;
+  response.SerializeToString(response_any.mutable_value());
+  response_any.set_type_url(
+      base::StrCat({"type.googleapis.com/", response.GetTypeName()}));
+  std::move(saved_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               response_any, /*execution_info=*/nullptr),
+           nullptr);
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 1);
@@ -2245,7 +2389,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
           ->GetTabFeatures()
           ->page_action_controller();
   CHECK(second_controller);
-  page_actions::PageActionObserver second_observer(kActionAnchoredContextualCue);
+  page_actions::PageActionObserver second_observer(
+      kActionAnchoredContextualCue);
   second_observer.RegisterAsPageActionObserver(*second_controller);
 
   // The page action should still be showing on the tab in the second window.
@@ -2253,7 +2398,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   EXPECT_FALSE(
       second_observer.GetCurrentPageActionState().anchored_message_showing);
 
-  // Invoke the action on the second browser window. The first click opens the anchored message.
+  // Invoke the action on the second browser window. The first click opens the
+  // anchored message.
   auto* action = actions::ActionManager::Get().FindAction(
       kActionAnchoredContextualCue,
       BrowserActions::From(second_browser)->root_action_item());
@@ -2267,18 +2413,17 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // Second click invokes the action.
   action->InvokeAction();
 
-  TestCueTarget* second_cue_target = static_cast<TestCueTarget*>(
-      second_browser->GetActiveTabInterface()
-          ->GetTabFeatures()
-          ->contextual_cueing_controller()
-          ->GetTarget(CueTargetType::kGlic));
+  TestCueTarget* second_cue_target =
+      static_cast<TestCueTarget*>(second_browser->GetActiveTabInterface()
+                                      ->GetTabFeatures()
+                                      ->contextual_cueing_controller()
+                                      ->GetTarget(CueTargetType::kGlic));
   ASSERT_TRUE(second_cue_target);
   ASSERT_TRUE(second_cue_target->HasClickData());
   EXPECT_EQ("Prompt",
             std::get<GlicCueActionData>(second_cue_target->click_data).prompt);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !second_observer.GetCurrentPageActionState().showing;
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !second_observer.GetCurrentPageActionState().showing; }));
 }
 
 class ContextualCueingControllerMultiSourceBrowserTest

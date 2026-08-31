@@ -227,11 +227,11 @@ ContextualCueingController::ActiveCueData::ActiveCueData(
       cue_id(std::move(cue_id)) {}
 
 ContextualCueingController::ActiveCueData::~ActiveCueData() = default;
-ContextualCueingController::ActiveCueData::ActiveCueData(
-    const ActiveCueData&) = default;
+ContextualCueingController::ActiveCueData::ActiveCueData(const ActiveCueData&) =
+    default;
 ContextualCueingController::ActiveCueData&
-ContextualCueingController::ActiveCueData::operator=(
-    const ActiveCueData&) = default;
+ContextualCueingController::ActiveCueData::operator=(const ActiveCueData&) =
+    default;
 
 void ContextualCueingController::OnActionInvoked() {
   if (!active_cue_data_) {
@@ -354,10 +354,10 @@ void ContextualCueingController::RunGlicSingleSourcePath(
     return;
   }
 
-  CUEING_LOG(base::StringPrintf(
-      "%s eligible for cue: Category classification "
-      "succeeded. Initiating model execution request.",
-      active_web_contents->GetLastCommittedURL().spec()));
+  CUEING_LOG(
+      base::StringPrintf("%s eligible for cue: Category classification "
+                         "succeeded. Initiating model execution request.",
+                         active_web_contents->GetLastCommittedURL().spec()));
   InitiateModelExecutionRequest(CueTargetType::kGlic);
 }
 
@@ -740,12 +740,12 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     std::vector<optimization_guide::proto::Tab> background_tabs,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (!tab_->IsActivated() || !tab_->GetContents() ||
+  if (!tab_->GetContents() ||
       !AreTabsEqual(active_tab,
                     GetTabProtoFromWebContents(tab_->GetContents()))) {
     CUEING_LOG(
-        "Model execution returned but tab for generated cue is no longer "
-        "active.");
+        "Model execution returned but tab for generated cue is no longer on "
+        "the requested page.");
     OnShowCueFailed(
         ContextualCueingDecision::kNoLongerActiveTabAfterModelExecution);
     return;
@@ -825,8 +825,10 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   }
 
   if (IsAllowedToShowCue() == ContextualCueingDecision::kUnspecified) {
-    ShowCue(*target_type, CueIntrusiveness::kLoud, *target, cue,
-            background_tabs);
+    CueIntrusiveness intrusiveness = tab_->IsActivated()
+                                         ? CueIntrusiveness::kLoud
+                                         : CueIntrusiveness::kQuiet;
+    ShowCue(*target_type, intrusiveness, *target, cue, background_tabs);
   }
 }
 
@@ -1094,8 +1096,8 @@ void ContextualCueingController::ShowCue(
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type, cue,
-      tabs_to_show, background_tabs, cuj,
-      std::move(action_data), cue_id, target.SupportsEditPrompt());
+      tabs_to_show, background_tabs, cuj, std::move(action_data), cue_id,
+      target.SupportsEditPrompt());
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,
@@ -1124,9 +1126,8 @@ void ContextualCueingController::ShowCue(
 
   CUEING_LOG(base::StringPrintf(
       "Showing %s cue for CUJ %s: %s [%s]",
-      intrusiveness == CueIntrusiveness::kLoud ? "loud" : "quiet",
-      cuj, strings.anchored_message_text(),
-      strings.action_text()));
+      intrusiveness == CueIntrusiveness::kLoud ? "loud" : "quiet", cuj,
+      strings.anchored_message_text(), strings.action_text()));
 
   auto cue_log = contextual_cueing_internals::mojom::CueLog::New();
   cue_log->cuj = cuj;
