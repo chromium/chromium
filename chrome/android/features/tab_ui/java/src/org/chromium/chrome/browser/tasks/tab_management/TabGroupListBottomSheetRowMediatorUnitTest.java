@@ -11,6 +11,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -68,12 +71,14 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private final Token mToken = Token.createRandom();
+    private Context mContext;
     private List<Tab> mTabs;
     private SavedTabGroup mSavedTabGroup;
     private TabGroupListBottomSheetRowMediator mMediator;
 
     @Before
     public void setUp() {
+        mContext = ContextUtils.getApplicationContext();
         mTabs = new ArrayList<>();
         mTabs.add(mTab);
 
@@ -94,9 +99,13 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         when(mTabModel.tabGroupExists(mToken)).thenReturn(true);
         when(mTabModel.getGroupLastShownTabId(mToken)).thenReturn(TEST_LOCAL_ID);
 
+        GroupWindowInfo groupInfo =
+                GroupWindowInfo.forSyncedGroup(
+                        mContext, mSavedTabGroup, GroupWindowState.IN_CURRENT);
+
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
-                        mSavedTabGroup,
+                        groupInfo,
                         mTabModel,
                         mFaviconResolver,
                         mTabGroupSyncService,
@@ -152,9 +161,21 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
     @Test
     public void testClickRow_noLocalId() {
-        PropertyModel model = mMediator.getModel();
         mSavedTabGroup.localId = null;
         mSavedTabGroup.savedTabs.get(0).localId = null;
+        GroupWindowInfo groupInfo =
+                GroupWindowInfo.forSyncedGroup(mContext, mSavedTabGroup, GroupWindowState.HIDDEN);
+        mMediator =
+                new TabGroupListBottomSheetRowMediator(
+                        groupInfo,
+                        mTabModel,
+                        mFaviconResolver,
+                        mTabGroupSyncService,
+                        mOnClickRunnable,
+                        mTabMovedCallback,
+                        mTabs);
+
+        PropertyModel model = mMediator.getModel();
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -49,13 +52,15 @@ public class GroupWindowCheckerUnitTest {
     @Mock private TabModel mTabModel;
     @Spy private TabList mTabList;
     @Mock private Tab mTab1;
+    private Context mContext;
     private GroupWindowChecker mSyncUtils;
 
     @Before
     public void setUp() {
+        mContext = ContextUtils.getApplicationContext();
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
 
-        mSyncUtils = new GroupWindowChecker(mSyncService, mTabModel);
+        mSyncUtils = new GroupWindowChecker(mContext, mSyncService, mTabModel);
     }
 
     @Test
@@ -75,7 +80,7 @@ public class GroupWindowCheckerUnitTest {
         when(mSyncService.getGroup("id1")).thenReturn(group1);
         when(mSyncService.getGroup("id2")).thenReturn(group2);
 
-        List<SavedTabGroup> sortedList =
+        List<GroupWindowInfo> sortedList =
                 mSyncUtils.getSortedGroupList(
                         this::tabGroupSelectionPredicate,
                         (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
@@ -105,7 +110,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(token1);
 
-        List<SavedTabGroup> sortedList =
+        List<GroupWindowInfo> sortedList =
                 mSyncUtils.getSortedGroupList(
                         this::tabGroupSelectionPredicate,
                         (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
@@ -117,7 +122,7 @@ public class GroupWindowCheckerUnitTest {
     @Test
     public void testGetSortedGroupList_empty() {
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {});
-        List<SavedTabGroup> sortedList =
+        List<GroupWindowInfo> sortedList =
                 mSyncUtils.getSortedGroupList(
                         this::tabGroupSelectionPredicate,
                         (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
@@ -252,7 +257,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(token1);
 
-        List<SavedTabGroup> sortedList = mSyncUtils.getDefaultSortedGroupList();
+        List<GroupWindowInfo> sortedList = mSyncUtils.getDefaultSortedGroupList();
 
         assertEquals(2, sortedList.size());
         assertEquals("title2", sortedList.get(0).title);

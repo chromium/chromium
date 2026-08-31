@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
+import org.chromium.chrome.browser.tasks.tab_management.GroupWindowInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTabGroupItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -151,7 +151,8 @@ import java.util.function.Supplier;
 
         @Nullable TabGroupSyncService syncService = mTabGroupSyncServiceSupplier.get();
         if (syncService != null && !tabModel.isIncognito()) {
-            GroupWindowChecker windowChecker = new GroupWindowChecker(syncService, tabModel);
+            GroupWindowChecker windowChecker =
+                    new GroupWindowChecker(mContext, syncService, tabModel);
             return windowChecker.hasOtherGroups(currentGroupId);
         }
 
@@ -212,26 +213,21 @@ import java.util.function.Supplier;
 
         @Nullable TabGroupSyncService syncService = mTabGroupSyncServiceSupplier.get();
         if (syncService != null && !tabModel.isIncognito()) {
-            GroupWindowChecker windowChecker = new GroupWindowChecker(syncService, tabModel);
-            List<SavedTabGroup> sortedGroups = windowChecker.getDefaultSortedGroupList();
+            GroupWindowChecker windowChecker =
+                    new GroupWindowChecker(mContext, syncService, tabModel);
+            List<GroupWindowInfo> sortedGroups = windowChecker.getDefaultSortedGroupList();
 
-            for (SavedTabGroup tabGroup : sortedGroups) {
-                if (tabGroup.localId == null) {
+            for (GroupWindowInfo tabGroup : sortedGroups) {
+                if (tabGroup.localId == null || Objects.equals(currentGroupId, tabGroup.localId)) {
                     continue;
-                }
-                Token groupId = tabGroup.localId.tabGroupId;
-                if (Objects.equals(currentGroupId, groupId)) {
-                    continue;
-                }
-
-                String title = tabGroup.title;
-                if (TextUtils.isEmpty(title)) {
-                    title = TabGroupTitleUtils.getDefaultTitle(mContext, tabGroup.savedTabs.size());
                 }
 
                 submenuItems.add(
                         buildTabGroupListItem(
-                                groupId, title, tabGroup.color, tabModel.isIncognito()));
+                                tabGroup.localId,
+                                tabGroup.title,
+                                tabGroup.color,
+                                tabModel.isIncognito()));
             }
             return submenuItems;
         }
@@ -349,8 +345,8 @@ import java.util.function.Supplier;
             TabModel tabModel,
             TabGroupSyncService syncService,
             boolean showIcons) {
-        GroupWindowChecker windowChecker = new GroupWindowChecker(syncService, tabModel);
-        List<SavedTabGroup> sortedGroups = windowChecker.getDefaultSortedGroupList();
+        GroupWindowChecker windowChecker = new GroupWindowChecker(mContext, syncService, tabModel);
+        List<GroupWindowInfo> sortedGroups = windowChecker.getDefaultSortedGroupList();
         if (sortedGroups.isEmpty()) {
             if (submenuItems.isEmpty()) {
                 submenuItems.add(AppMenuItemUtils.buildEmptySubmenuItem());
@@ -371,19 +367,13 @@ import java.util.function.Supplier;
                         mIsMenuIconAtStart));
 
         // TODO(crbug.com/509065807): Observe TabModel to update this while the menu is open.
-        for (SavedTabGroup tabGroup : sortedGroups) {
+        for (GroupWindowInfo tabGroup : sortedGroups) {
             if (tabGroup.localId == null) {
                 continue;
             }
-            Token groupId = tabGroup.localId.tabGroupId;
-            String title = tabGroup.title;
-            if (TextUtils.isEmpty(title)) {
-                title = TabGroupTitleUtils.getDefaultTitle(mContext, tabGroup.savedTabs.size());
-            }
-
             submenuItems.add(
                     buildTabGroupParentSubmenuItem(
-                            groupId, title, tabGroup.color, showIcons, tabModel));
+                            tabGroup.localId, tabGroup.title, tabGroup.color, showIcons, tabModel));
         }
     }
 

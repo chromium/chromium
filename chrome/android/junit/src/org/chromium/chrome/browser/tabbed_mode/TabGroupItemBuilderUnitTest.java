@@ -668,6 +668,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = new Token(1L, 1L);
         when(mIncognitoTabModel.getTabGroupCount()).thenReturn(1);
         when(mIncognitoTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mIncognitoTabModel.tabGroupExists(token1)).thenReturn(true);
         when(mIncognitoTabModel.getTabGroupTitle(token1)).thenReturn("Incognito Group");
         when(mIncognitoTabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(TabGroupColorId.GREY);

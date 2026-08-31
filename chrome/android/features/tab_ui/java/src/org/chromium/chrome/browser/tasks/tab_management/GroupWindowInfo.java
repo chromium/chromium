@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -20,28 +18,12 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 
 /** Encapsulates metadata, window location, and sync status for a tab group. */
 @NullMarked
 public class GroupWindowInfo {
-    @IntDef({
-        GroupWindowState.IN_CURRENT,
-        GroupWindowState.IN_CURRENT_CLOSING,
-        GroupWindowState.IN_ANOTHER,
-        GroupWindowState.HIDDEN
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface GroupWindowState {
-        int IN_CURRENT = 0;
-        int IN_CURRENT_CLOSING = 1;
-        int IN_ANOTHER = 2;
-        int HIDDEN = 3;
-    }
-
     public final @Nullable Token localId;
     public final @Nullable String syncId;
     public final String title;

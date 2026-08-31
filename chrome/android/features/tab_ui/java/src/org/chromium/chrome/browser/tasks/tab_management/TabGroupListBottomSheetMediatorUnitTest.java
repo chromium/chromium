@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -100,6 +101,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mModelList = spy(new ModelList());
         mMediator =
                 new TabGroupListBottomSheetMediator(
+                        ContextUtils.getApplicationContext(),
                         mModelList,
                         mTabModel,
                         mTabGroupCreationCallback,
@@ -356,6 +358,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     public void testPopulateList_incognito() {
         mMediator =
                 new TabGroupListBottomSheetMediator(
+                        ContextUtils.getApplicationContext(),
                         mModelList,
                         mTabModel,
                         mTabGroupCreationCallback,
@@ -494,6 +497,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     public void testPopulateList_noNewGroupRow() {
         mMediator =
                 new TabGroupListBottomSheetMediator(
+                        ContextUtils.getApplicationContext(),
                         mModelList,
                         mTabModel,
                         mTabGroupCreationCallback,
@@ -512,6 +516,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     public void testPopulateList_noNewGroupRow_multipleTabsInSameGroup() {
         mMediator =
                 new TabGroupListBottomSheetMediator(
+                        ContextUtils.getApplicationContext(),
                         mModelList,
                         mTabModel,
                         mTabGroupCreationCallback,
@@ -534,6 +539,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     public void testPopulateList_showNewGroupRow_singleTabInGroup() {
         mMediator =
                 new TabGroupListBottomSheetMediator(
+                        ContextUtils.getApplicationContext(),
                         mModelList,
                         mTabModel,
                         mTabGroupCreationCallback,
@@ -557,6 +563,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     public void testPopulateList_showNewGroupRow_multipleTabGroups() {
         mMediator =
                 new TabGroupListBottomSheetMediator(
+                        ContextUtils.getApplicationContext(),
                         mModelList,
                         mTabModel,
                         mTabGroupCreationCallback,

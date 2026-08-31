@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -15,7 +14,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -28,13 +26,13 @@ import java.util.List;
  */
 @NullMarked
 class TabGroupListBottomSheetRowMediator {
-    private final SavedTabGroup mSavedTabGroup;
+    private final GroupWindowInfo mGroupInfo;
     private final TabModel mTabModel;
     private final @Nullable TabMovedCallback mTabMovedCallback;
     private final PropertyModel mPropertyModel;
 
     /**
-     * @param savedTabGroup The tab group to be represented by this row.
+     * @param groupInfo The tab group to be represented by this row.
      * @param tabModel Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
@@ -43,36 +41,36 @@ class TabGroupListBottomSheetRowMediator {
      * @param tabs The tabs to be added to a tab group.
      */
     public TabGroupListBottomSheetRowMediator(
-            SavedTabGroup savedTabGroup,
+            GroupWindowInfo groupInfo,
             TabModel tabModel,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             Runnable onClickRunnable,
             @Nullable TabMovedCallback tabMovedCallback,
             List<Tab> tabs) {
-        mSavedTabGroup = savedTabGroup;
+        mGroupInfo = groupInfo;
         mTabModel = tabModel;
         mTabMovedCallback = tabMovedCallback;
 
-        int numTabs = mSavedTabGroup.savedTabs.size();
-        List<GURL> urlList = TabGroupFaviconCluster.buildUrlListFromSyncGroup(mSavedTabGroup);
+        int numTabs = mGroupInfo.tabCount;
+        List<GURL> urlList = mGroupInfo.faviconUrls;
 
         PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupRowProperties.ALL_KEYS);
         builder.with(
                 TabGroupRowProperties.CLUSTER_DATA,
                 new ClusterData(faviconResolver, numTabs, urlList));
-        builder.with(TabGroupRowProperties.COLOR_INDEX, mSavedTabGroup.color);
+        builder.with(TabGroupRowProperties.COLOR_INDEX, mGroupInfo.color);
 
         TabGroupRowViewTitleData titleData =
                 new TabGroupRowViewTitleData(
-                        mSavedTabGroup.title,
+                        mGroupInfo.title,
                         numTabs,
                         R.plurals.tab_group_bottom_sheet_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
 
         builder.with(
                 TabGroupRowProperties.TIMESTAMP_EVENT,
-                new TabGroupTimeAgo(mSavedTabGroup.updateTimeMs, TimestampEvent.UPDATED));
+                new TabGroupTimeAgo(mGroupInfo.lastModifiedTimeMs, TimestampEvent.UPDATED));
         builder.with(
                 TabGroupRowProperties.ROW_CLICK_RUNNABLE,
                 () -> {
@@ -90,11 +88,10 @@ class TabGroupListBottomSheetRowMediator {
         RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.ExistingGroup");
 
         assert !tabs.isEmpty();
-        if (mSavedTabGroup.localId == null) {
+        if (mGroupInfo.localId == null) {
             return;
         }
-        Token groupId = mSavedTabGroup.localId.tabGroupId;
         TabGroupUiUtils.addTabsToGroup(
-                mTabModel, tabs, groupId, mTabMovedCallback, /* bringToFront= */ false);
+                mTabModel, tabs, mGroupInfo.localId, mTabMovedCallback, /* bringToFront= */ false);
     }
 }

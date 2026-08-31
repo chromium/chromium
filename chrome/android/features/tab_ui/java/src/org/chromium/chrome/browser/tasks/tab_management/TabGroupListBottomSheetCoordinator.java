@@ -143,6 +143,7 @@ public class TabGroupListBottomSheetCoordinator {
         TabGroupListBottomSheetCoordinatorDelegate delegate = createDelegate(destroyOnHide);
         mMediator =
                 new TabGroupListBottomSheetMediator(
+                        context,
                         modelList,
                         tabModel,
                         tabGroupCreationCallback,

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.createNewGroupForTabs;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.findSingleTabGroupIfPresent;
 
+import android.content.Context;
+
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
@@ -22,7 +24,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -39,6 +40,7 @@ import java.util.Set;
  */
 @NullMarked
 public class TabGroupListBottomSheetMediator {
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final TabGroupListBottomSheetCoordinatorDelegate mDelegate;
     private final ModelList mModelList;
@@ -83,6 +85,7 @@ public class TabGroupListBottomSheetMediator {
             };
 
     /**
+     * @param context The {@link Context} to use.
      * @param modelList Side effect is adding items to this list.
      * @param tabModel Used to read current tab groups.
      * @param tabGroupCreationCallback Used to follow up on tab group creation.
@@ -94,6 +97,7 @@ public class TabGroupListBottomSheetMediator {
      * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      */
     public TabGroupListBottomSheetMediator(
+            Context context,
             ModelList modelList,
             TabModel tabModel,
             TabGroupCreationCallback tabGroupCreationCallback,
@@ -103,6 +107,7 @@ public class TabGroupListBottomSheetMediator {
             BottomSheetController bottomSheetController,
             TabGroupListBottomSheetCoordinatorDelegate delegate,
             boolean supportsShowNewGroup) {
+        mContext = context;
         mModelList = modelList;
         mTabModel = tabModel;
         mTabGroupCreationCallback = tabGroupCreationCallback;
@@ -182,12 +187,13 @@ public class TabGroupListBottomSheetMediator {
     }
 
     private void populateRegularTabGroups(List<Tab> tabs, @Nullable Token groupToFilter) {
-        GroupWindowChecker windowChecker = new GroupWindowChecker(mTabGroupSyncService, mTabModel);
-        List<SavedTabGroup> sortedTabGroups = windowChecker.getDefaultSortedGroupList();
+        if (mTabGroupSyncService == null) return;
+        GroupWindowChecker windowChecker =
+                new GroupWindowChecker(mContext, mTabGroupSyncService, mTabModel);
+        List<GroupWindowInfo> sortedTabGroups = windowChecker.getDefaultSortedGroupList();
 
-        for (SavedTabGroup tabGroup : sortedTabGroups) {
-            if (tabGroup.localId != null
-                    && Objects.equals(groupToFilter, tabGroup.localId.tabGroupId)) {
+        for (GroupWindowInfo tabGroup : sortedTabGroups) {
+            if (tabGroup.localId != null && Objects.equals(groupToFilter, tabGroup.localId)) {
                 continue;
             }
 
