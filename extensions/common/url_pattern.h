@@ -297,8 +297,13 @@ class URLPattern {
   std::string path_;
 
   // The path with "?" and "\" characters escaped for use with the
-  // MatchPattern() function.
-  std::string path_escaped_;
+  // MatchPattern() function when matching against raw (possibly
+  // percent-encoded) paths.
+  std::string raw_path_for_matching_;
+
+  // The `raw_path_for_matching_` with percent-encoded characters unescaped for
+  // use when matching against unescaped UTF-8 paths.
+  std::string utf8_path_for_matching_;
 
   // A string representing this URLPattern.
   mutable std::string spec_;
