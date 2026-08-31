@@ -201,9 +201,16 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
   configuration.background.backgroundColor = ButtonBackgroundColor(nil);
   configuration.background.cornerRadius = kButtonCornerRadius;
   configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
-  UIImage* icon = SymbolWithPointSize(symbol, IsNewTabPageUICleanupEnabled()
-                                                  ? kSymbolPointSizeUICleanup
-                                                  : kSymbolPointSize);
+  UIImage* icon;
+  if (IsNewTabPageUICleanupEnabled()) {
+    UIImageSymbolConfiguration* symbolConfiguration =
+        [UIImageSymbolConfiguration
+            configurationWithPointSize:kSymbolPointSizeUICleanup
+                                weight:UIImageSymbolWeightSemibold];
+    icon = SymbolWithConfiguration(symbol, symbolConfiguration);
+  } else {
+    icon = SymbolWithPointSize(symbol, kSymbolPointSize);
+  }
   configuration.image = MakeSymbolMonochrome(icon);
 
   if (title) {
