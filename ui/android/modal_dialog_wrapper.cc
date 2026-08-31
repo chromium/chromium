@@ -45,12 +45,17 @@ ModalDialogWrapper* g_dialog_ptr_for_testing = nullptr;
 void ModalDialogWrapper::ShowTabModal(
     std::unique_ptr<ui::DialogModel> dialog_model,
     ui::WindowAndroid* window) {
+  if (!window) {
+    return;
+  }
+  auto* dialog_manager = window->GetModalDialogManagerBridge();
+  if (!dialog_manager) {
+    return;
+  }
   ModalDialogWrapper* tab_modal =
       new ModalDialogWrapper(std::move(dialog_model), window);
   g_dialog_ptr_for_testing = tab_modal;
   tab_modal->BuildPropertyModel();
-  auto* dialog_manager = window->GetModalDialogManagerBridge();
-  CHECK(dialog_manager);
   dialog_manager->ShowDialog(tab_modal->java_obj_,
                              ModalDialogManagerBridge::ModalDialogType::kTab);
   // `tab_modal` will delete itself when dialog is dismissed.

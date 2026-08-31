@@ -72,6 +72,9 @@ void AppendOptionalAndroidPermissionsForContentSetting(
 bool HasRequiredAndroidPermissionsForContentSetting(
     ui::WindowAndroid* window_android,
     ContentSettingsType content_settings_type) {
+  if (!window_android) {
+    return false;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_AndroidPermissionRequester_hasRequiredAndroidPermissionsForContentSetting(
       env, window_android, static_cast<int>(content_settings_type));
@@ -184,7 +187,9 @@ bool HasSystemPermission(ContentSettingsType type,
     return false;
   }
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
-  DCHECK(window_android);
+  if (!window_android) {
+    return false;
+  }
 
   return HasRequiredAndroidPermissionsForContentSetting(window_android, type);
 }
@@ -198,9 +203,11 @@ bool CanRequestSystemPermission(ContentSettingsType type,
       !IsSystemLocationSettingEnabled()) {
     return false;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
-  DCHECK(window_android);
+  if (!window_android) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PermissionUtil_canRequestSystemPermission(
       env, static_cast<int>(type), window_android);
 }
