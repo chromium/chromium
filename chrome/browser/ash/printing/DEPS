@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chromeos/printing",
   "+chrome/browser/component_updater",
-  "+chrome/browser/history",
   "+chrome/browser/local_discovery",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
