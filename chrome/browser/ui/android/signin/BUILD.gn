@@ -64,6 +64,7 @@ android_library("java") {
     "//url:gurl_java",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/signin/AccountPreviewPreferenceStringUtils.java",
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncConfig.java",
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncCoordinatorSupplier.java",
@@ -225,6 +226,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncHelperTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoDelegateTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/AccountPreviewPreferenceStringUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncConfigTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninPromoLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SigninAndHistorySyncBundleHelperTest.java",
@@ -238,6 +240,7 @@ robolectric_library("junit") {
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
