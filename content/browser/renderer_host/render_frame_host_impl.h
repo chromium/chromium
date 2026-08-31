@@ -692,6 +692,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ReinitializeDocumentAssociatedDataForReuseAfterCrash(
       base::PassKey<RenderFrameHostManager>);
 
+  // Immediately reinitializes `current_initiator_state_token_` when the
+  // RenderFrameHost needs to be immediately reused after a crash. Only usable
+  // for a main frame where `is_render_frame_deleted()` is true.
+  void ReinitializeInitiatorStateTokenAfterCrash(
+      base::PassKey<RenderFrameHostManager>);
+
   // Immediately reinitializes DocumentUserData for testing a corner case crash
   // scenario. See usage in
   // ManifestBrowserTest.GetManifestInterruptedByDestruction.
@@ -900,6 +906,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       const blink::DocumentToken& document_token,
+      const base::UnguessableToken& initiator_state_token,
       const blink::FramePolicy& frame_policy,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       blink::FrameOwnerElementType owner_type,
@@ -937,6 +944,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::LocalFrameToken& frame_token,
       const blink::DocumentToken& document_token,
       base::UnguessableToken devtools_frame_token,
+      const base::UnguessableToken& initiator_state_token,
       const blink::FramePolicy& frame_policy,
       std::string frame_name,
       std::string frame_unique_name,
@@ -3402,6 +3410,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::LocalFrameToken& frame_token,
       const blink::DocumentToken& document_token,
       base::UnguessableToken devtools_frame_token,
+      const base::UnguessableToken& initiator_state_token,
       bool renderer_initiated_creation_of_main_frame,
       LifecycleStateImpl lifecycle_state,
       scoped_refptr<BrowsingContextState> browsing_context_state,
@@ -3689,6 +3698,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       override;
   void CreateChildFrame(
       const blink::LocalFrameToken& frame_token,
+      const base::UnguessableToken& initiator_state_token,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,

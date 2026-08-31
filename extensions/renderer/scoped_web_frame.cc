@@ -36,13 +36,15 @@ ScopedWebFrame::ScopedWebFrame()
           /*color_provider_colors=*/nullptr,
           /*history_index=*/-1,
           /*history_length=*/0)),
-      frame_(blink::WebLocalFrame::CreateMainFrame(view_,
-                                                   &frame_client_,
-                                                   nullptr,
-                                                   mojo::NullRemote(),
-                                                   blink::LocalFrameToken(),
-                                                   blink::DocumentToken(),
-                                                   nullptr)) {
+      frame_(blink::WebLocalFrame::CreateMainFrame(
+          view_,
+          &frame_client_,
+          nullptr,
+          mojo::NullRemote(),
+          blink::LocalFrameToken(),
+          blink::DocumentToken(),
+          base::UnguessableToken::Create(),
+          nullptr)) {
   view_->DidAttachLocalMainFrame();
 }
 

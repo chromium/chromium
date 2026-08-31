@@ -246,6 +246,7 @@ class CORE_EXPORT LocalFrame final
   void Init(
       Frame* opener,
       const DocumentToken& document_token,
+      const base::UnguessableToken& initiator_state_token,
       std::unique_ptr<PolicyContainer> policy_container,
       const StorageKey& storage_key,
       ukm::SourceId document_ukm_source_id,

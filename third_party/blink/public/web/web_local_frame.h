@@ -144,6 +144,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
       const LocalFrameToken& frame_token,
       const DocumentToken& document_token,
+      const base::UnguessableToken& initiator_state_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),

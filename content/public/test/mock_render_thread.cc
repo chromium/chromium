@@ -164,6 +164,7 @@ void MockRenderThread::OnCreateWindow(mojom::CreateNewWindowParams& params,
   reply->widget_routing_id = GetNextRoutingID();
   reply->visual_properties.screen_infos =
       display::ScreenInfos(display::ScreenInfo());
+  reply->initiator_state_token = base::UnguessableToken::Create();
 
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
   page_broadcast.Bind(std::move(params.page_broadcast_remote));

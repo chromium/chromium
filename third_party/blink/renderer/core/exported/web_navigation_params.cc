@@ -56,6 +56,7 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
       info.initiator_origin_trial_features;
   result->frame_policy = info.frame_policy;
   result->had_transient_user_activation = info.url_request.HasUserGesture();
+  result->initiator_state_token = info.initiator_state_token;
   return result;
 }
 

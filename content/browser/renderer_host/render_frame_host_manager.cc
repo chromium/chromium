@@ -846,8 +846,9 @@ void RenderFrameHostManager::InitRoot(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/IPC::mojom::kRoutingIdNone,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
-      blink::DocumentToken(), devtools_frame_token, renderer_initiated_creation,
-      browsing_context_state,
+      blink::DocumentToken(), devtools_frame_token,
+      /*initiator_state_token=*/base::UnguessableToken::Create(),
+      renderer_initiated_creation, browsing_context_state,
       ProcessAllocationContext{ProcessAllocationSource::kRFHInitRoot}));
 
   // Creating a main RenderFrameHost also creates a new Page, so notify the
@@ -861,6 +862,7 @@ void RenderFrameHostManager::InitChild(
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
+    const base::UnguessableToken& initiator_state_token,
     const base::UnguessableToken& devtools_frame_token,
     blink::FramePolicy frame_policy,
     std::string frame_name,
@@ -892,7 +894,7 @@ void RenderFrameHostManager::InitChild(
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
       std::move(frame_remote), frame_token, document_token,
-      devtools_frame_token,
+      devtools_frame_token, initiator_state_token,
       /*renderer_initiated_creation=*/false, browsing_context_state,
       ProcessAllocationContext{
           ProcessAllocationSource::kNoProcessCreationExpected}));
@@ -3483,6 +3485,10 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
     render_frame_host_->ReinitializeDocumentAssociatedDataForReuseAfterCrash(
         /* passkey */ {});
 
+    // Similarly, we should reinitialize the initiator state token.
+    render_frame_host_->ReinitializeInitiatorStateTokenAfterCrash(
+        /* passkey */ {});
+
     // Since it's possible for the now reinitialized main frame to create new
     // sub-frames/windows we need to also reinitialize the
     // RuntimeFeatureStateDocumentData, since those new frames/windows will
@@ -4340,6 +4346,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
     base::UnguessableToken devtools_frame_token,
+    const base::UnguessableToken& initiator_state_token,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> browsing_context_state,
     const ProcessAllocationContext& process_allocation_context) {
@@ -4440,8 +4447,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
       site_instance, std::move(render_view_host),
       frame_tree.render_frame_delegate(), &frame_tree, frame_tree_node_,
       frame_routing_id, std::move(frame_remote), frame_token, document_token,
-      devtools_frame_token, renderer_initiated_creation, lifecycle_state,
-      std::move(browsing_context_state));
+      devtools_frame_token, initiator_state_token, renderer_initiated_creation,
+      lifecycle_state, std::move(browsing_context_state));
 }
 
 bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
@@ -4614,6 +4621,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
           mojo::PendingAssociatedRemote<mojom::Frame>(),
           blink::LocalFrameToken(), blink::DocumentToken(),
           render_frame_host_->devtools_frame_token(),
+          /*initiator_state_token=*/base::UnguessableToken::Create(),
           /*renderer_initiated_creation=*/false, browsing_context_state,
           ProcessAllocationContext{
               ProcessAllocationSource::kNoProcessCreationExpected});

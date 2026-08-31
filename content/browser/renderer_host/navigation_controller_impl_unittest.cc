@@ -2154,8 +2154,9 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name0,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::DocumentToken(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(), kOwnerType, ukm::kInvalidSourceId);
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType,
+      ukm::kInvalidSourceId);
   TestRenderFrameHost* subframe =
       static_cast<TestRenderFrameHost*>(contents()
                                             ->GetPrimaryFrameTree()
@@ -2199,8 +2200,9 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name1,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::DocumentToken(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(), kOwnerType, ukm::kInvalidSourceId);
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType,
+      ukm::kInvalidSourceId);
   TestRenderFrameHost* subframe2 =
       static_cast<TestRenderFrameHost*>(contents()
                                             ->GetPrimaryFrameTree()
@@ -2244,8 +2246,9 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name2,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::DocumentToken(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(), kOwnerType, ukm::kInvalidSourceId);
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), kOwnerType,
+      ukm::kInvalidSourceId);
   TestRenderFrameHost* subframe3 =
       static_cast<TestRenderFrameHost*>(contents()
                                             ->GetPrimaryFrameTree()
@@ -2303,8 +2306,8 @@ TEST_F(NavigationControllerTest, BackSubframe) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::DocumentToken(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(),
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   FrameTreeNode* subframe =
       contents()->GetPrimaryFrameTree().root()->child_at(0);
@@ -3138,8 +3141,8 @@ TEST_F(NavigationControllerTest, SameSubframe) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::DocumentToken(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(),
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   TestRenderFrameHost* subframe =
       static_cast<TestRenderFrameHost*>(contents()
@@ -3296,8 +3299,8 @@ TEST_F(NavigationControllerTest, SubframeWhilePending) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::DocumentToken(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(),
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   TestRenderFrameHost* subframe =
       static_cast<TestRenderFrameHost*>(contents()
@@ -3959,8 +3962,8 @@ TEST_F(NavigationControllerTest, SubFrameNavigationUIData) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::DocumentToken(), blink::FramePolicy(),
-      blink::mojom::FrameOwnerProperties(),
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   TestRenderFrameHost* subframe =
       static_cast<TestRenderFrameHost*>(contents()

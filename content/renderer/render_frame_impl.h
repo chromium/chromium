@@ -253,6 +253,7 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
       bool is_on_initial_empty_document,
       const blink::DocumentToken& document_token,
+      const base::UnguessableToken& initiator_state_token,
       blink::mojom::PolicyContainerPtr policy_container,
       bool is_for_nested_main_frame);
 

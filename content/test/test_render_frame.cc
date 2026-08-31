@@ -142,6 +142,7 @@ class MockFrameHost : public mojom::FrameHost {
 
   void CreateChildFrame(
       const blink::LocalFrameToken& frame_token,
+      const base::UnguessableToken& initiator_state_token,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,

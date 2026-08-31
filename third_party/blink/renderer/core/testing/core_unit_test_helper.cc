@@ -73,7 +73,9 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
         base::UnguessableToken::Create());
   }
 
-  child->Init(/*opener=*/nullptr, DocumentToken(), std::move(policy_container),
+  child->Init(/*opener=*/nullptr, DocumentToken(),
+              /*initiator_state_token=*/base::UnguessableToken::Create(),
+              std::move(policy_container),
               parent_frame->DomWindow()->GetStorageKey(),
               /*document_ukm_source_id=*/ukm::kInvalidSourceId,
               /*creator_base_url=*/KURL(), std::move(sandbox_origin_token));

@@ -223,6 +223,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const LocalFrameToken& frame_token,
     WebFrame* opener,
     const DocumentToken& document_token,
+    const base::UnguessableToken& initiator_state_token,
     CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
         interface_broker,
     std::unique_ptr<WebPolicyContainer> policy_container) {
@@ -249,8 +250,8 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
   child->InitializeCoreFrame(
       *GetFrame()->GetPage(), owner, this, previous_sibling,
       FrameInsertType::kInsertInConstructor, name, window_agent_factory, opener,
-      document_token, std::move(interface_broker), std::move(policy_container),
-      storage_key,
+      document_token, initiator_state_token, std::move(interface_broker),
+      std::move(policy_container), storage_key,
       /*creator_base_url=*/NullUrl());
   DCHECK(child->GetFrame());
   return child;

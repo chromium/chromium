@@ -268,7 +268,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
         blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
         false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-        blink::DocumentToken(), frame_policy,
+        blink::DocumentToken(), base::UnguessableToken::Create(), frame_policy,
         blink::mojom::FrameOwnerProperties(), false, owner_type,
         /*is_dummy_frame_for_inner_tree=*/false);
   }

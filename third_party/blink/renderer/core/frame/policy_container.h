@@ -46,7 +46,7 @@ class CORE_EXPORT PolicyContainer {
   // ExecutionContext::SetInitiatorStateToken.
   void UpdateReferrerPolicy(
       network::mojom::blink::ReferrerPolicy policy,
-      const base::UnguessableToken& new_initiator_state_token);
+      const base::UnguessableToken& initiator_state_token);
   network::mojom::blink::ReferrerPolicy GetReferrerPolicy() const;
 
   // Append |policies| to the list of Content Security Policy and sync them with
@@ -56,7 +56,7 @@ class CORE_EXPORT PolicyContainer {
   // ExecutionContext::SetInitiatorStateToken.
   void AddContentSecurityPolicies(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies,
-      const base::UnguessableToken& new_initiator_state_token);
+      const base::UnguessableToken& initiator_state_token);
 
   const mojom::blink::PolicyContainerPolicies& GetPolicies() const;
 

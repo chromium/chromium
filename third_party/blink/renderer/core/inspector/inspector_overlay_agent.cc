@@ -1584,8 +1584,10 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
       FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
       nullptr, mojo::NullRemote());
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
-  frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
-              StorageKey(), /*document_ukm_source_id=*/ukm::kInvalidSourceId,
+  frame->Init(/*opener=*/nullptr, DocumentToken(),
+              /*initiator_state_token=*/base::UnguessableToken::Create(),
+              /*policy_container=*/nullptr, StorageKey(),
+              /*document_ukm_source_id=*/ukm::kInvalidSourceId,
               /*creator_base_url=*/NullUrl());
   frame->View()->SetCanHaveScrollbars(false);
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);

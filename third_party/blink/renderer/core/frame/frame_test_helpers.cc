@@ -345,7 +345,8 @@ WebLocalFrameImpl* CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(
       parent.CreateLocalChild(scope, client, nullptr, LocalFrameToken()));
   client->Bind(frame, std::move(owned_client));
-  finish_creation(frame, DocumentToken(), mojo::NullRemote(),
+  finish_creation(frame, DocumentToken(), base::UnguessableToken::Create(),
+                  mojo::NullRemote(),
                   std::make_unique<base::UnguessableToken>(
                       base::UnguessableToken::Create()));
   return frame;
@@ -365,7 +366,8 @@ WebLocalFrameImpl* CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(
       parent.CreateLocalChild(scope, client, nullptr, LocalFrameToken()));
   client->Bind(frame, std::move(self_owned));
-  finish_creation(frame, DocumentToken(), mojo::NullRemote(),
+  finish_creation(frame, DocumentToken(), base::UnguessableToken::Create(),
+                  mojo::NullRemote(),
                   std::make_unique<base::UnguessableToken>(
                       base::UnguessableToken::Create()));
   return frame;
@@ -490,6 +492,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
       web_view_, web_frame_client, nullptr, mojo::NullRemote(),
       LocalFrameToken(), DocumentToken(),
+      /*initiator_state_token=*/base::UnguessableToken::Create(),
       // Passing a null policy_container will create an empty, default policy
       // container.
       /*policy_container=*/nullptr, opener,
@@ -619,7 +622,7 @@ WebLocalFrameImpl* WebViewHelper::CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
       mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
       nullptr, previous_sibling, properties, LocalFrameToken(), nullptr,
-      DocumentToken(), mojo::NullRemote(),
+      DocumentToken(), base::UnguessableToken::Create(), mojo::NullRemote(),
       std::make_unique<WebPolicyContainer>(
           WebPolicyContainerPolicies(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote())));
@@ -877,7 +880,8 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
   client->sandbox_flags_ = frame_policy.sandbox_flags;
   TestWebFrameClient* client_ptr = client.get();
   client_ptr->Bind(frame, std::move(client));
-  finish_creation(frame, DocumentToken(), mojo::NullRemote(),
+  finish_creation(frame, DocumentToken(), base::UnguessableToken::Create(),
+                  mojo::NullRemote(),
                   std::make_unique<base::UnguessableToken>(
                       base::UnguessableToken::Create()));
   return frame;

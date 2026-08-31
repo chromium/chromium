@@ -505,6 +505,9 @@ bool RenderViewHostImpl::CreateRenderView(
           main_rfh->policy_container_host()->CreatePolicyContainerForBlink();
     }
 
+    local_frame_params->initiator_state_token =
+        main_rfh->current_initiator_state_token();
+
     // Populate the sandbox origin token if available.
     if (auto token = main_rfh->GetPage().TakeSandboxOriginTokenForPopup()) {
       local_frame_params->sandbox_origin_token = *token;

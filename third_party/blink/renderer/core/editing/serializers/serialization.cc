@@ -809,8 +809,10 @@ static Document* CreateStagingDocumentForMarkupSanitization(
       MakeGarbageCollected<LocalFrameView>(*frame, gfx::Size(800, 600));
   frame->SetView(frame_view);
   // TODO(https://crbug.com/1355751) Initialize `storage_key`.
-  frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
-              StorageKey(), /*document_ukm_source_id=*/ukm::kInvalidSourceId,
+  frame->Init(/*opener=*/nullptr, DocumentToken(),
+              /*initiator_state_token=*/base::UnguessableToken::Create(),
+              /*policy_container=*/nullptr, StorageKey(),
+              /*document_ukm_source_id=*/ukm::kInvalidSourceId,
               /*creator_base_url=*/NullUrl());
 
   Document* document = frame->GetDocument();

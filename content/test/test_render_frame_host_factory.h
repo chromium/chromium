@@ -41,6 +41,7 @@ class TestRenderFrameHostFactory : public RenderFrameHostFactory {
       const blink::LocalFrameToken& frame_token,
       const blink::DocumentToken& document_token,
       base::UnguessableToken devtools_frame_token,
+      const base::UnguessableToken& initiator_state_token,
       bool renderer_initiated_creation,
       RenderFrameHostImpl::LifecycleStateImpl lifecycle_state,
       scoped_refptr<BrowsingContextState> browsing_context_state) override;
