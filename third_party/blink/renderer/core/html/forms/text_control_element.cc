@@ -878,9 +878,9 @@ void TextControlElement::SelectionChanged(bool user_triggered) {
   if (!GetLayoutObject() || !IsTextControl())
     return;
 
-  // The cached selection is authoritative while unfocused, so only refresh it
-  // from the live DOM selection when focused.
-  if (IsFocused() ||
+  // The cached selection is authoritative when ShouldApplySelectionCache() is
+  // true, so only refresh it from the live DOM selection otherwise.
+  if (!ShouldApplySelectionCache() ||
       !RuntimeEnabledFeatures::PreserveUnfocusedSelectionCacheEnabled()) {
     ComputedSelection computed_selection;
     ComputeSelection(kStart | kEnd | kDirection, computed_selection);

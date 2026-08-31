@@ -4830,9 +4830,10 @@
     },
     {
       // When enabled, a text control's cached selection is preserved while the
-      // control is not focused instead of being refreshed from the live DOM
-      // selection. Kill switch for https://crbug.com/40884623. This feature
-      // ships in M153 and can be removed in M155.
+      // control is not focused or has a post-layout selection restore pending,
+      // instead of being refreshed from the live DOM selection. Kill switch
+      // for https://crbug.com/40884623. This feature ships in M154 and can be
+      // removed in M156.
       name: "PreserveUnfocusedSelectionCache",
       status: "stable",
     },

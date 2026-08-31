@@ -3,6 +3,7 @@
 <title>Focus preservation and focus fixup after moveBefore()</title>
 <link rel="help" href="https://dom.spec.whatwg.org/#dom-parentnode-movebefore">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-fixup-rule">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#textFieldSelection">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/rendering-utils.js"></script>
@@ -57,6 +58,35 @@ promise_test(async t => {
   assert_equals(document.activeElement, button,
                 "Focus remains on the button after a rendering update");
 }, "moveBefore() preserves focus when the focused element remains focusable");
+
+promise_test(async t => {
+  const {sourceParent, destinationParent} = createTestNodes(t);
+  const input = document.createElement("input");
+  input.value = "0123456789";
+  sourceParent.append(input);
+
+  input.focus();
+  assert_equals(document.activeElement, input, "The input is focused");
+
+  input.setSelectionRange(2, 7, "backward");
+  assert_equals(input.selectionStart, 2, "selectionStart was set");
+  assert_equals(input.selectionEnd, 7, "selectionEnd was set");
+  assert_equals(input.selectionDirection, "backward",
+                "selectionDirection was set");
+
+  destinationParent.moveBefore(input, null);
+  assert_equals(input.parentNode, destinationParent,
+                "The input was moved to the destination parent");
+
+  await waitForAtLeastOneFrame();
+
+  assert_equals(document.activeElement, input,
+                "The input remains focused");
+  assert_equals(input.selectionStart, 2, "selectionStart is preserved");
+  assert_equals(input.selectionEnd, 7, "selectionEnd is preserved");
+  assert_equals(input.selectionDirection, "backward",
+                "selectionDirection is preserved");
+}, "moveBefore() preserves focus and a backward selection in a text input");
 
 promise_test(async t => {
   const {button, destinationParent} = createTestNodes(t);
