@@ -394,16 +394,25 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->GetTabStripModel()->ActivateTabAt(0);
 
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+
   // clang-format off
   RunTestSequence(
-    StartSession(),
+    InstrumentTab(kFirstWebContentsElementId),
+    NavigateWebContents(kFirstWebContentsElementId, url),
+    StartSessionWithTarget(kFirstWebContentsElementId, "#text_id"),
     ObserveSessionStateChanges(),
     WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
 
     // Switch to the second tab. The session should be ended but only after
     // finalization.
     SelectTab(kTabStripElementId, 1),
     WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    InAnyContext(
+        EnsureNotPresent(DictationOverlayView::kViewElementIdForTesting)),
     CheckHasSession(true),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
 
@@ -414,7 +423,9 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 
     // Switch back to the first tab and ensure the UI does not reappear.
     SelectTab(kTabStripElementId, 0),
-    EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting)
+    EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting),
+    InAnyContext(
+        EnsureNotPresent(DictationOverlayView::kViewElementIdForTesting))
   );
   // clang-format on
 }
