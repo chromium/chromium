@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Task Manager Toolbar dimensions -->
+    <dimen name="task_manager_toolbar_height">70dp</dimen>
+    <dimen name="task_manager_toolbar_padding">16dp</dimen>
+    <dimen name="task_manager_chip_margin_end">8dp</dimen>
+</resources>

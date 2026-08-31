@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/task_manager_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/task_manager_toolbar_height"
+    android:padding="@dimen/task_manager_toolbar_padding"
+    android:scrollbars="none"
+    android:fillViewport="true"
+    android:clipToPadding="false">
+
+    <!-- Categories Container -->
+    <LinearLayout
+        android:id="@+id/category_chips_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:gravity="center_vertical">
+
+        <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/category_chip_tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/task_manager_chip_margin_end"
+            app:icon="@drawable/ic_tab_24dp"
+            android:text="@string/task_manager_category_tabs_and_extensions_name" />
+
+        <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/category_chip_browser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/task_manager_chip_margin_end"
+            app:icon="@drawable/ic_chrome"
+            android:text="@string/task_manager_category_browser_name" />
+
+        <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/category_chip_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_data_table_fill_24dp"
+            android:text="@string/task_manager_category_all_name" />
+    </LinearLayout>
+</HorizontalScrollView>

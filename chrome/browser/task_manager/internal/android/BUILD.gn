@@ -53,10 +53,13 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/task_item.xml",
     "java/res/layout/task_manager_activity.xml",
+    "java/res/layout/task_manager_toolbar.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/app:java_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//ui/android:ui_java_resources",
   ]
 }
 
