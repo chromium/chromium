@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/history/core/browser/history_service.h"
 
 namespace autofill {
 
@@ -49,7 +50,13 @@ const Suggestion& GetSuggestionToStore(
 
 }  // namespace
 
-AtMemoryPersistedStateManager::AtMemoryPersistedStateManager() = default;
+AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
+    history::HistoryService* history_service) {
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
+}
+
 AtMemoryPersistedStateManager::~AtMemoryPersistedStateManager() = default;
 
 const std::optional<AtMemorySearchState>&
@@ -116,8 +123,7 @@ void AtMemoryPersistedStateManager::OnSuggestionAccepted(
       previously_filled_suggestions_.push_back(suggestion_to_store);
     }
   }
-  field_id_ = FieldGlobalId();
-  search_state_.reset();
+  ResetSearchState();
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {
@@ -130,6 +136,28 @@ void AtMemoryPersistedStateManager::StopSearching() {
   }
   search_state_->suggestions.clear();
   search_state_->is_searching = false;
+}
+
+void AtMemoryPersistedStateManager::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  Reset();
+}
+
+void AtMemoryPersistedStateManager::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  history_service_observation_.Reset();
+}
+
+void AtMemoryPersistedStateManager::Reset() {
+  ResetSearchState();
+  previously_filled_suggestions_.clear();
+}
+
+void AtMemoryPersistedStateManager::ResetSearchState() {
+  field_id_ = FieldGlobalId();
+  field_origin_ = url::Origin();
+  search_state_.reset();
 }
 
 }  // namespace autofill

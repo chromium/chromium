@@ -259,7 +259,8 @@ class TestAutofillClientTemplate : public T {
   AtMemoryManager* GetAtMemoryManager() override {
     if (!at_memory_manager_ &&
         base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
-      at_memory_manager_ = std::make_unique<AtMemoryManager>(this);
+      at_memory_manager_ =
+          std::make_unique<AtMemoryManager>(this, /*history_service=*/nullptr);
     }
     return at_memory_manager_.get();
   }

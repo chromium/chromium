@@ -53,6 +53,7 @@
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -2751,6 +2752,47 @@ TEST_F(AtMemoryManagerTestBase,
   EXPECT_TRUE(manager()
                   .GetStateForField(field_id, form_origin())
                   .filter.empty());
+}
+
+// Tests that when search statefulness is enabled and history is deleted,
+// the persisted state for the field is cleared.
+TEST_F(AtMemoryManagerTestBase, SearchStatefulness_HistoryDeletionResetsState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  auto [form_id, field_id] = SeeForm();
+
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+  manager().OnFilterChanged(u"john");
+  MockQueryResultsAndExpectCallback(u"john",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"john");
+  ASSERT_FALSE(final_suggestions.empty());
+
+  // Hide popup without accepting. State is preserved.
+  manager().OnPopupHidden();
+  EXPECT_EQ(manager().GetStateForField(field_id, form_origin()).filter,
+            u"john");
+
+  // Delete history.
+  test_api(manager()).state_manager()->OnHistoryDeletions(
+      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+
+  // State should now be cleared.
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());

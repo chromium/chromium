@@ -1285,7 +1285,9 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                   web_contents->GetBrowserContext())));
   }
   if (base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
-    at_memory_manager_ = std::make_unique<AtMemoryManager>(this);
+    at_memory_manager_ = std::make_unique<AtMemoryManager>(
+        this, HistoryServiceFactory::GetForProfile(
+                  GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   }
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {

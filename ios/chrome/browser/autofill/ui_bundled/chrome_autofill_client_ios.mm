@@ -188,7 +188,9 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
   }
 
   if (autofill::IsAutofillAtMemorySearchUIEnabled(this)) {
-    at_memory_manager_ = std::make_unique<AtMemoryManager>(this);
+    at_memory_manager_ = std::make_unique<AtMemoryManager>(
+        this, ios::HistoryServiceFactory::GetForProfile(
+                  profile_, ServiceAccessType::EXPLICIT_ACCESS));
   }
 }
 

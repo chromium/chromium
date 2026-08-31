@@ -11,10 +11,17 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "url/origin.h"
+
+namespace history {
+class HistoryService;
+}
 
 namespace autofill {
 
@@ -33,12 +40,13 @@ namespace autofill {
 // active field (e.g. before any filter has been entered, or after clearing the
 // filter). `search_state_` is only instantiated once the user enters or submits
 // a query.
-class AtMemoryPersistedStateManager {
+class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
  public:
   static constexpr size_t kMaxPreviouslyFilledSuggestions = 20;
 
-  AtMemoryPersistedStateManager();
-  ~AtMemoryPersistedStateManager();
+  explicit AtMemoryPersistedStateManager(
+      history::HistoryService* history_service);
+  ~AtMemoryPersistedStateManager() override;
 
   AtMemoryPersistedStateManager(const AtMemoryPersistedStateManager&) = delete;
   AtMemoryPersistedStateManager& operator=(
@@ -63,9 +71,21 @@ class AtMemoryPersistedStateManager {
     return previously_filled_suggestions_;
   }
 
-  const url::Origin& field_origin() const { return field_origin_; }
+  const url::Origin& field_origin() const {
+    CHECK(field_id_);
+    return field_origin_;
+  }
+
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
 
  private:
+  void Reset();
+  void ResetSearchState();
+
   // Field id for which the `search_state_` is kept.
   FieldGlobalId field_id_;
   // Origin of the field for which the `search_state_` is kept.
@@ -75,6 +95,10 @@ class AtMemoryPersistedStateManager {
   std::optional<AtMemorySearchState> search_state_;
   // Stores previously filled suggestions.
   std::vector<Suggestion> previously_filled_suggestions_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 };
 
 }  // namespace autofill

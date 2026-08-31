@@ -34,6 +34,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace history {
+class HistoryService;
+}
+
 namespace autofill {
 
 struct AtMemorySearchState;
@@ -50,7 +54,8 @@ class AtMemoryManager {
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>;
 
-  explicit AtMemoryManager(AutofillClient* client);
+  AtMemoryManager(AutofillClient* client,
+                  history::HistoryService* history_service);
 
   AtMemoryManager(const AtMemoryManager&) = delete;
   AtMemoryManager& operator=(const AtMemoryManager&) = delete;

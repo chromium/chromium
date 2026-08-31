@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/history/core/browser/history_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -37,7 +39,7 @@ class AtMemoryPersistedStateManagerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  AtMemoryPersistedStateManager state_manager_;
+  AtMemoryPersistedStateManager state_manager_{/*history_service=*/nullptr};
   FieldGlobalId field_id_{test::MakeFieldGlobalId()};
   FieldGlobalId other_field_id_{test::MakeFieldGlobalId()};
 };
@@ -125,15 +127,20 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 }
 
 TEST_F(AtMemoryPersistedStateManagerTest,
+       FieldOriginCrashesWhenNoFieldIsActive) {
+  EXPECT_CHECK_DEATH(state_manager().field_origin());
+}
+
+TEST_F(AtMemoryPersistedStateManagerTest,
        OnSuggestionAcceptedResetsSearchState) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
   state_manager().OnSuggestionAccepted(
       Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
 
+  EXPECT_CHECK_DEATH(state_manager().field_origin());
   EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
             std::nullopt);
-  EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
 // Tests that stopping an ongoing search clears incomplete suggestions.
@@ -354,6 +361,56 @@ TEST_F(AtMemoryPersistedStateManagerTest, EvictsOldestWhenLimitReached) {
   EXPECT_EQ(
       state_manager().previously_filled_suggestions().back().main_text.value,
       u"20");
+}
+
+TEST_F(AtMemoryPersistedStateManagerTest,
+       HistoryDeletionClearsPersistedSuggestions) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
+  state_manager().StopSearching();
+  state_manager().OnSuggestionsChanged(suggestions);
+
+  ASSERT_TRUE(state_manager().GetStateForField(field_id(), FieldOrigin()));
+
+  state_manager().OnHistoryDeletions(
+      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+
+  EXPECT_CHECK_DEATH(state_manager().field_origin());
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+}
+
+TEST_F(AtMemoryPersistedStateManagerTest,
+       HistoryDeletionClearsOngoingSearchState) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"ongoing_query");
+  EXPECT_TRUE(state_manager().IsSearching());
+
+  state_manager().OnHistoryDeletions(
+      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+
+  EXPECT_FALSE(state_manager().IsSearching());
+  EXPECT_CHECK_DEATH(state_manager().field_origin());
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+}
+
+TEST_F(AtMemoryPersistedStateManagerTest,
+       HistoryDeletionClearsPreviouslyFilledSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  state_manager().OnSuggestionAccepted(s1);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  state_manager().OnHistoryDeletions(
+      /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
+
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
 }  // namespace
