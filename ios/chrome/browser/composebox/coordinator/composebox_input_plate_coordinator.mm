@@ -190,6 +190,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                          browser:self.browser];
   _pickerPresenter.delegate = self;
   _pickerPresenter.dataSource = self;
+  _pickerPresenter.metricsRecorder = _metricsRecorder;
 
   if (_entrypoint == ComposeboxEntrypoint::kNTPAIMButton) {
     [_metricsRecorder
@@ -892,6 +893,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   }
 
   [_metricsRecorder recordDriveFilesAttached:results.count];
+  [_metricsRecorder
+      recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
+        forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
 
   for (ComposeboxPickerDriveResult* result in results) {
     [_mediator processDriveFileWithIdentifier:result.identifier

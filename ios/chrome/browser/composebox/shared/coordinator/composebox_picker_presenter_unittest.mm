@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 
+#import <PhotosUI/PhotosUI.h>
 #import <UIKit/UIKit.h>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/contextual_search/input_state_model.h"
 #import "components/contextual_search/pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -27,6 +31,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 #pragma mark - FakePresenterDriveFilePickerHandler
 
@@ -129,6 +134,9 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
     presenter_.dataSource = data_source_;
+    metrics_recorder_ = [[ComposeboxMetricsRecorder alloc]
+        initWithEntrypoint:ComposeboxEntrypoint::kNTPFakebox];
+    presenter_.metricsRecorder = metrics_recorder_;
   }
 
   void SignIn() {
@@ -152,6 +160,7 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   FakePresenterDriveFilePickerHandler* handler_ = nil;
   FakePresenterDataSource* data_source_ = nil;
+  ComposeboxMetricsRecorder* metrics_recorder_ = nil;
   ComposeboxPickerPresenter* presenter_ = nil;
 };
 
@@ -242,4 +251,149 @@ TEST_F(ComposeboxPickerPresenterTest,
   [presenter_ presentDriveFilePicker];
 
   EXPECT_FALSE(handler_.drivePickerShown);
+}
+
+// Tests that picking an image records kAttachmentAdded for Camera.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestCameraPicker_DidFinishWithImage_RecordsAttachmentAdded) {
+  base::HistogramTester histogram_tester;
+  UIImage* test_image = [[UIImage alloc] init];
+  id<UIImagePickerControllerDelegate> camera_delegate =
+      static_cast<id<UIImagePickerControllerDelegate>>(presenter_);
+
+  [camera_delegate imagePickerController:[[UIImagePickerController alloc] init]
+           didFinishPickingMediaWithInfo:@{
+             UIImagePickerControllerOriginalImage : test_image
+           }];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Camera",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+}
+
+// Tests that picking with no image records kLocalError for Camera.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestCameraPicker_DidFinishWithNoImage_RecordsLocalError) {
+  base::HistogramTester histogram_tester;
+  id<UIImagePickerControllerDelegate> camera_delegate =
+      static_cast<id<UIImagePickerControllerDelegate>>(presenter_);
+
+  [camera_delegate imagePickerController:[[UIImagePickerController alloc] init]
+           didFinishPickingMediaWithInfo:@{}];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Camera",
+      static_cast<int>(MobileFuseboxPickerOutcome::kLocalError), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kLocalError), 1);
+}
+
+// Tests that cancelling camera picker records kManualUserExit for Camera.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestCameraPicker_DidCancel_RecordsManualUserExit) {
+  base::HistogramTester histogram_tester;
+  id<UIImagePickerControllerDelegate> camera_delegate =
+      static_cast<id<UIImagePickerControllerDelegate>>(presenter_);
+
+  [camera_delegate
+      imagePickerControllerDidCancel:[[UIImagePickerController alloc] init]];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Camera",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+}
+
+// Tests that picking items in the Gallery picker records kAttachmentAdded.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestGalleryPicker_DidFinishWithResults_RecordsAttachmentAdded) {
+  base::HistogramTester histogram_tester;
+  id<PHPickerViewControllerDelegate> gallery_delegate =
+      static_cast<id<PHPickerViewControllerDelegate>>(presenter_);
+
+  id mock_result = OCMClassMock([PHPickerResult class]);
+  id mock_item_provider = [[NSItemProvider alloc] init];
+  OCMStub([mock_result itemProvider]).andReturn(mock_item_provider);
+  OCMStub([mock_result assetIdentifier]).andReturn(@"test_asset_id");
+
+  PHPickerConfiguration* config = [[PHPickerConfiguration alloc] init];
+  PHPickerViewController* picker =
+      [[PHPickerViewController alloc] initWithConfiguration:config];
+
+  [gallery_delegate picker:picker didFinishPicking:@[ mock_result ]];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Gallery",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+}
+
+// Tests that dismissing the Gallery picker with no items records
+// kManualUserExit.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestGalleryPicker_DidFinishEmpty_RecordsManualUserExit) {
+  base::HistogramTester histogram_tester;
+  id<PHPickerViewControllerDelegate> gallery_delegate =
+      static_cast<id<PHPickerViewControllerDelegate>>(presenter_);
+
+  PHPickerConfiguration* config = [[PHPickerConfiguration alloc] init];
+  PHPickerViewController* picker =
+      [[PHPickerViewController alloc] initWithConfiguration:config];
+
+  [gallery_delegate picker:picker didFinishPicking:@[]];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Gallery",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+}
+
+// Tests that selecting files in document picker records kAttachmentAdded.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestDocumentPicker_DidPickDocuments_RecordsAttachmentAdded) {
+  base::HistogramTester histogram_tester;
+  id<UIDocumentPickerDelegate> document_delegate =
+      static_cast<id<UIDocumentPickerDelegate>>(presenter_);
+
+  UIDocumentPickerViewController* mock_controller =
+      OCMClassMock([UIDocumentPickerViewController class]);
+  NSURL* test_url = [NSURL URLWithString:@"file:///test.pdf"];
+  [document_delegate documentPicker:mock_controller
+             didPickDocumentsAtURLs:@[ test_url ]];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.File",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+}
+
+// Tests that cancelling document picker records kManualUserExit.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestDocumentPicker_DidCancel_RecordsManualUserExit) {
+  base::HistogramTester histogram_tester;
+  id<UIDocumentPickerDelegate> document_delegate =
+      static_cast<id<UIDocumentPickerDelegate>>(presenter_);
+
+  UIDocumentPickerViewController* mock_controller =
+      OCMClassMock([UIDocumentPickerViewController class]);
+  [document_delegate documentPickerWasCancelled:mock_controller];
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.File",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
 }

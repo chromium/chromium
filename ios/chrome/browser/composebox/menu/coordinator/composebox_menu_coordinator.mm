@@ -216,6 +216,7 @@ CGFloat const kSheetTopPadding = 40.0f;
                          browser:self.browser];
   _pickerPresenter.delegate = self;
   _pickerPresenter.dataSource = self;
+  _pickerPresenter.metricsRecorder = _metricsRecorder;
 }
 
 - (void)stop {
@@ -493,6 +494,9 @@ CGFloat const kSheetTopPadding = 40.0f;
     return;
   }
   [_metricsRecorder recordDriveFilesAttached:results.count];
+  [_metricsRecorder
+      recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
+        forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
   [_mediator processDriveItems:results];
 }
 

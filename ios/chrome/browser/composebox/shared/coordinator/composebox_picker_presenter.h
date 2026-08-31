@@ -15,6 +15,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
+@class ComposeboxMetricsRecorder;
 @class ComposeboxPickerPresenter;
 
 /// Delegate for various picker events.
@@ -77,6 +78,9 @@
 
 /// Data source for this class.
 @property(nonatomic, weak) id<ComposeboxPickerPresenterDataSource> dataSource;
+
+/// The metrics recorder for tracking picker outcomes.
+@property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
 // Creates a new object of this type.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
