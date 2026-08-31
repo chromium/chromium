@@ -92,7 +92,7 @@ bool LockScreenStorageHelper::SetData(const url::Origin& origin,
 
 ValueStore* LockScreenStorageHelper::GetValueStoreForOrigin(
     const url::Origin& origin) {
-  DCHECK(!origin.opaque());
+  CHECK(!origin.opaque(), base::NotFatalUntil::M159);
 
   // ValueStore will create a directory for storing its data. The directory name
   // is passed in. We want to key data by origin, so we use a hash of the origin
@@ -137,8 +137,8 @@ LockScreenStorageImpl::~LockScreenStorageImpl() = default;
 
 void LockScreenStorageImpl::Init(content::BrowserContext* browser_context,
                                  const base::FilePath& base_path) {
-  DCHECK(!browser_context_);
-  DCHECK(!browser_context->IsOffTheRecord());
+  CHECK(!browser_context_, base::NotFatalUntil::M159);
+  CHECK(!browser_context->IsOffTheRecord(), base::NotFatalUntil::M159);
   browser_context_ = browser_context;
   helper_.AsyncCall(&LockScreenStorageHelper::Init).WithArgs(base_path);
 }

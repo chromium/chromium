@@ -4186,8 +4186,8 @@ Status BackingStore::MigrateToV5(LevelDBWriteBatch* write_batch) {
 }
 
 Status BackingStore::Transaction::HandleBlobPreTransaction() {
-  DCHECK(backing_store_);
-  DCHECK(blobs_to_write_.empty());
+  CHECK(backing_store_, base::NotFatalUntil::M159);
+  CHECK(blobs_to_write_.empty(), base::NotFatalUntil::M159);
 
   if (backing_store_->in_memory()) {
     return Status::OK();
@@ -4224,7 +4224,7 @@ Status BackingStore::Transaction::HandleBlobPreTransaction() {
         case IndexedDBExternalObject::ObjectType::kFile:
         case IndexedDBExternalObject::ObjectType::kBlob:
           blobs_to_write_.push_back({database_id(), next_blob_number});
-          DCHECK(entry.is_remote_valid());
+          CHECK(entry.is_remote_valid(), base::NotFatalUntil::M159);
           entry.set_blob_number(next_blob_number);
           ++next_blob_number;
           result = UpdateBlobNumberGeneratorCurrentNumber(
@@ -4245,7 +4245,7 @@ Status BackingStore::Transaction::HandleBlobPreTransaction() {
 }
 
 bool BackingStore::Transaction::CollectBlobFilesToRemove() {
-  DCHECK(backing_store_);
+  CHECK(backing_store_, base::NotFatalUntil::M159);
 
   if (backing_store_->in_memory()) {
     return true;
@@ -4259,7 +4259,8 @@ bool BackingStore::Transaction::CollectBlobFilesToRemove() {
     if (!BlobEntryKey::FromObjectStoreDataKey(&key_piece, &blob_entry_key)) {
       NOTREACHED();
     }
-    DCHECK_EQ(database_id(), blob_entry_key.database_id());
+    CHECK_EQ(database_id(), blob_entry_key.database_id(),
+             base::NotFatalUntil::M159);
     std::string blob_entry_key_bytes = blob_entry_key.Encode();
     bool found;
     std::string blob_entry_value_bytes;
@@ -4292,7 +4293,7 @@ bool BackingStore::Transaction::CollectBlobFilesToRemove() {
 void BackingStore::Transaction::PartitionBlobsToRemove(
     BlobJournalType* inactive_blobs,
     BlobJournalType* active_blobs) const {
-  DCHECK(backing_store_);
+  CHECK(backing_store_, base::NotFatalUntil::M159);
 
   ActiveBlobRegistry* registry = backing_store_->active_blob_registry();
   for (const auto& iter : blobs_to_remove_) {
@@ -4316,8 +4317,8 @@ BackingStore::Transaction::PrepareCursor(std::unique_ptr<Cursor> cursor) {
 StatusOr<bool> BackingStore::Transaction::CommitPhaseOne(
     BlobWriteCallback callback,
     SerializeFsaCallback /*unused*/) {
-  DCHECK(transaction_.get());
-  DCHECK(backing_store_);
+  CHECK(transaction_.get(), base::NotFatalUntil::M159);
+  CHECK(backing_store_, base::NotFatalUntil::M159);
   TRACE_EVENT0("IndexedDB", "BackingStore::Transaction::CommitPhaseOne");
 
   Status s;
@@ -4329,8 +4330,9 @@ StatusOr<bool> BackingStore::Transaction::CommitPhaseOne(
     return base::unexpected(s);
   }
 
-  DCHECK(external_object_change_map_.empty() ||
-         KeyPrefix::IsValidDatabaseId(database_id()));
+  CHECK(external_object_change_map_.empty() ||
+            KeyPrefix::IsValidDatabaseId(database_id()),
+        base::NotFatalUntil::M159);
   if (!CollectBlobFilesToRemove()) {
     INTERNAL_WRITE_ERROR(TRANSACTION_COMMIT_METHOD);
     transaction_ = nullptr;
@@ -4343,10 +4345,10 @@ StatusOr<bool> BackingStore::Transaction::CommitPhaseOne(
 }
 
 Status BackingStore::Transaction::CommitPhaseTwo() {
-  DCHECK(backing_store_);
+  CHECK(backing_store_, base::NotFatalUntil::M159);
   TRACE_EVENT0("IndexedDB", "BackingStore::Transaction::CommitPhaseTwo");
 
-  DCHECK(committing_);
+  CHECK(committing_, base::NotFatalUntil::M159);
   committing_ = false;
 
   Status s;
@@ -4413,7 +4415,7 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
     saved_recovery_journal = recovery_journal;
     BlobJournalType active_blobs;
     if (!blobs_to_remove_.empty()) {
-      DCHECK(!backing_store_->in_memory());
+      CHECK(!backing_store_->in_memory(), base::NotFatalUntil::M159);
       PartitionBlobsToRemove(&inactive_blobs, &active_blobs);
     }
     recovery_journal.insert(recovery_journal.end(), inactive_blobs.begin(),
@@ -4463,7 +4465,7 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
     return Status::OK();
   }
 
-  DCHECK(!external_object_change_map_.empty());
+  CHECK(!external_object_change_map_.empty(), base::NotFatalUntil::M159);
 
   s = backing_store_->CleanUpBlobJournalEntries(inactive_blobs);
   if (!s.ok()) {
@@ -4481,7 +4483,7 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
 }
 
 bool BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
-  DCHECK(backing_store_);
+  CHECK(backing_store_, base::NotFatalUntil::M159);
 
   if (backing_store_->in_memory()) {
     return false;
@@ -4529,7 +4531,7 @@ bool BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
           return;
         }
         auto& write_state = transaction->write_state_.value();
-        DCHECK(!write_state.on_complete.is_null());
+        CHECK(!write_state.on_complete.is_null(), base::NotFatalUntil::M159);
         if (result != storage::mojom::WriteBlobToFileResult::kSuccess) {
           auto on_complete = std::move(write_state.on_complete);
           transaction->write_state_.reset();
@@ -4636,7 +4638,7 @@ bool BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
 }
 
 void BackingStore::Transaction::Rollback() {
-  DCHECK(backing_store_);
+  CHECK(backing_store_, base::NotFatalUntil::M159);
   TRACE_EVENT0("IndexedDB", "BackingStore::Transaction::Rollback");
 
   if (committing_) {
@@ -4697,7 +4699,7 @@ Status BackingStore::Transaction::PutExternalObjectsIfNeeded(
 void BackingStore::Transaction::PutExternalObjects(
     const std::string& object_store_data_key,
     std::vector<IndexedDBExternalObject>* external_objects) {
-  DCHECK(!object_store_data_key.empty());
+  CHECK(!object_store_data_key.empty(), base::NotFatalUntil::M159);
 
   auto it = external_object_change_map_.find(object_store_data_key);
   IndexedDBExternalObjectChangeRecord* record = nullptr;

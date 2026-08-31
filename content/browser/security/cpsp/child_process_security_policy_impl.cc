@@ -793,8 +793,8 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   // Determine if the certain permissions have been granted to a content URI.
   bool HasPermissionsForContentUri(const base::FilePath& file,
                                    int permissions) const {
-    DCHECK(!file.empty());
-    DCHECK(file.IsContentUri());
+    CHECK(!file.empty(), base::NotFatalUntil::M159);
+    CHECK(file.IsContentUri(), base::NotFatalUntil::M159);
     if (!permissions) {
       return false;
     }
@@ -942,7 +942,8 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
              lock_to_set.GetProcessLockURL());
 
     if (process_lock_.is_invalid()) {
-      DCHECK(browsing_instance_default_isolation_states_.empty());
+      CHECK(browsing_instance_default_isolation_states_.empty(),
+            base::NotFatalUntil::M159);
       CHECK(lock_to_set.AllowsAnySite() || lock_to_set.IsLockedToSite());
     } else {
       // Verify that we are not trying to update the lock with different
@@ -973,7 +974,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   }
 
   void AddBrowsingInstanceInfo(const IsolationContext& context) {
-    DCHECK(!context.browsing_instance_id().is_null());
+    CHECK(!context.browsing_instance_id().is_null(), base::NotFatalUntil::M159);
     browsing_instance_default_isolation_states_.insert(
         {context.browsing_instance_id(), context.default_isolation_state()});
 
@@ -1279,9 +1280,9 @@ ChildProcessSecurityPolicyImpl* ChildProcessSecurityPolicyImpl::GetInstance() {
 
 void ChildProcessSecurityPolicyImpl::Add(ChildProcessId child_id,
                                          BrowserContext* browser_context) {
-  DCHECK(browser_context);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(child_id);
+  CHECK(browser_context, base::NotFatalUntil::M159);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(child_id, base::NotFatalUntil::M159);
 
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
     rust::child_process_security_policy::create_state_for_process(child_id);
@@ -1332,8 +1333,8 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
 }
 
 void ChildProcessSecurityPolicyImpl::Remove(ChildProcessId child_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(child_id);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(child_id, base::NotFatalUntil::M159);
 
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
     rust::child_process_security_policy::prepare_to_remove_state(child_id);
@@ -2144,7 +2145,7 @@ bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
     RenderProcessHost* process,
     const scoped_refptr<network::ResourceRequestBody>& body) {
   CHECK(process);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   return CanReadRequestBody(
       process->GetID(), process->GetStoragePartition()->GetFileSystemContext(),
@@ -2390,7 +2391,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     int child_id,
     const IsolationContext& isolation_context,
     const UrlInfo& url_info) {
-  DCHECK(url_info.origin.has_value());
+  CHECK(url_info.origin.has_value(), base::NotFatalUntil::M159);
   const url::Origin& origin = *url_info.origin;
   // First check whether the URL is allowed to commit, without considering the
   // origin. This involves scheme checks as well as CanAccessDataForOrigin.
@@ -2976,12 +2977,12 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
 void ChildProcessSecurityPolicyImpl::IncludeIsolationContext(
     int child_id,
     const IsolationContext& isolation_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   base::AutoLock lock(lock_);
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   auto* state = process_states_.GetProcessStateForMutation(
       ChildProcessId::FromUnsafeValue(child_id));
-  DCHECK(state);
+  CHECK(state, base::NotFatalUntil::M159);
   state->AddBrowsingInstanceInfo(isolation_context);
 }
 
@@ -2992,7 +2993,7 @@ void ChildProcessSecurityPolicyImpl::LockProcess(
     const ProcessLock& process_lock) {
   // LockProcess should only be called on the UI thread (OTOH, it is okay to
   // call GetProcessLock from any thread).
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   base::AutoLock lock(lock_);
   auto* state = process_states_.GetProcessStateForMutation(child_id);
@@ -3124,7 +3125,7 @@ void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(
   // This can only be called from the UI thread, as it reads state that's only
   // available (and is only safe to be retrieved) on the UI thread, such as
   // BrowsingInstance IDs.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
 
@@ -3191,7 +3192,8 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
         // the old ID, since NextBrowsingInstanceId() returns monotonically
         // increasing IDs.
         if (applies_to_future_browsing_instances) {
-          DCHECK_LE(entry.browsing_instance_id(), browsing_instance_id);
+          CHECK_LE(entry.browsing_instance_id(), browsing_instance_id,
+                   base::NotFatalUntil::M159);
         }
         should_add = false;
         break;
@@ -3205,7 +3207,7 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
         // BrowsingInstances should always reference
         // SiteInstanceImpl::NextBrowsingInstanceId(), which always refers to
         // an ID that's greater than any existing BrowsingInstance ID.
-        DCHECK(!applies_to_future_browsing_instances);
+        CHECK(!applies_to_future_browsing_instances, base::NotFatalUntil::M159);
 
         should_add = false;
         break;
@@ -3622,7 +3624,7 @@ void ChildProcessSecurityPolicyImpl::RecordDefaultOriginAgentClusterOriginIfNew(
   // All callers to this function live on the UI thread, so the IsolationContext
   // should contain a BrowserContext*.
   BrowserContext* browser_context = isolation_context.browser_context();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M159);
 
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::
@@ -3725,7 +3727,7 @@ void ChildProcessSecurityPolicyImpl::RemoveAllStateForBrowsingInstanceInternal(
 
   {
     // content_unittests don't always report being on the IO thread.
-    DCHECK(IsRunningOnExpectedThread());
+    CHECK(IsRunningOnExpectedThread(), base::NotFatalUntil::M159);
     base::AutoLock lock(lock_);
     process_states_.RemoveStateForBrowsingInstance(browsing_instance_id);
 
@@ -3811,7 +3813,7 @@ void ChildProcessSecurityPolicyImpl::AddCoopIsolatedOriginForBrowsingInstance(
   // This can only be called from the UI thread, as it reads state that's only
   // available (and is only safe to be retrieved) on the UI thread, such as
   // BrowsingInstance IDs.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   BrowsingInstanceId browsing_instance_id(
       isolation_context.browsing_instance_id());

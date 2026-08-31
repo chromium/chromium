@@ -91,8 +91,8 @@ void EmbeddedPermissionRequestCallbackWrapper(
     const std::vector<PermissionStatus>& initial_statuses,
     base::OnceCallback<void(EmbeddedPermissionControlResult)> callback,
     const std::vector<PermissionResult>& results) {
-  DCHECK(!results.empty());
-  DCHECK_EQ(initial_statuses.size(), results.size());
+  CHECK(!results.empty(), base::NotFatalUntil::M159);
+  CHECK_EQ(initial_statuses.size(), results.size(), base::NotFatalUntil::M159);
 
   bool all_unchanged = std::ranges::all_of(
       std::views::zip(initial_statuses, results), [](const auto& item) {
@@ -682,7 +682,7 @@ PermissionResult PermissionServiceImpl::GetPermissionResultForCurrentContext(
             permission, context_->render_process_host(), origin_);
   }
 
-  DCHECK(!context_->GetEmbeddingOrigin().has_value());
+  CHECK(!context_->GetEmbeddingOrigin().has_value(), base::NotFatalUntil::M159);
   return browser_context->GetPermissionController()
       ->GetPermissionResultForOriginWithoutContext(permission, origin_);
 }

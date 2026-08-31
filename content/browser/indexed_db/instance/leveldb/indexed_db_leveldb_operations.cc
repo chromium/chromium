@@ -279,7 +279,7 @@ Status GetMaxObjectStoreId(DBOrTransaction* db,
     *max_object_store_id = 0;
   }
 
-  DCHECK_GE(*max_object_store_id, 0);
+  CHECK_GE(*max_object_store_id, 0, base::NotFatalUntil::M159);
   return s;
 }
 
@@ -308,7 +308,7 @@ Status SetMaxObjectStoreId(TransactionalLevelDBTransaction* transaction,
     max_object_store_id = 0;
   }
 
-  DCHECK_GE(max_object_store_id, 0);
+  CHECK_GE(max_object_store_id, 0, base::NotFatalUntil::M159);
   if (!s.ok()) {
     INTERNAL_READ_ERROR(SET_MAX_OBJECT_STORE_ID);
     return s;
@@ -340,7 +340,7 @@ Status GetNewVersionNumber(TransactionalLevelDBTransaction* transaction,
     last_version = 0;
   }
 
-  DCHECK_GE(last_version, 0);
+  CHECK_GE(last_version, 0, base::NotFatalUntil::M159);
 
   int64_t version = last_version + 1;
   s = PutInt(transaction, last_version_key, version);
@@ -350,7 +350,7 @@ Status GetNewVersionNumber(TransactionalLevelDBTransaction* transaction,
   }
 
   // TODO(jsbell): Think about how we want to handle the overflow scenario.
-  DCHECK(version > last_version);
+  CHECK(version > last_version, base::NotFatalUntil::M159);
 
   *new_version_number = version;
   return s;
@@ -424,7 +424,7 @@ Status GetNewDatabaseId(LevelDBDirectTransaction* transaction,
     max_database_id = 0;
   }
 
-  DCHECK_GE(max_database_id, 0);
+  CHECK_GE(max_database_id, 0, base::NotFatalUntil::M159);
 
   int64_t database_id = max_database_id + 1;
   s = PutInt(transaction, MaxDatabaseIdKey::Encode(), database_id);
@@ -448,7 +448,7 @@ bool CheckObjectStoreAndMetaDataType(const TransactionalLevelDBIterator* it,
   ObjectStoreMetaDataKey meta_data_key;
   bool ok =
       ObjectStoreMetaDataKey::Decode(&slice, &meta_data_key) && slice.empty();
-  DCHECK(ok);
+  CHECK(ok, base::NotFatalUntil::M159);
   if (meta_data_key.ObjectStoreId() != object_store_id) {
     return false;
   }
@@ -469,7 +469,7 @@ bool CheckIndexAndMetaDataKey(const TransactionalLevelDBIterator* it,
   std::string_view slice(it->Key());
   IndexMetaDataKey meta_data_key;
   bool ok = IndexMetaDataKey::Decode(&slice, &meta_data_key);
-  DCHECK(ok);
+  CHECK(ok, base::NotFatalUntil::M159);
   if (meta_data_key.IndexId() != index_id) {
     return false;
   }
@@ -561,10 +561,12 @@ bool UpdateBlobNumberGeneratorCurrentNumber(
                                            &old_number)) {
     return false;
   }
-  DCHECK_LT(old_number, blob_number_generator_current_number);
+  CHECK_LT(old_number, blob_number_generator_current_number,
+           base::NotFatalUntil::M159);
 #endif
-  DCHECK(DatabaseMetaDataKey::IsValidBlobNumber(
-      blob_number_generator_current_number));
+  CHECK(DatabaseMetaDataKey::IsValidBlobNumber(
+            blob_number_generator_current_number),
+        base::NotFatalUntil::M159);
   const std::string key = DatabaseMetaDataKey::Encode(
       database_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER);
 

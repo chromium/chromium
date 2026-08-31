@@ -99,7 +99,7 @@ template <typename TransactionOrWriteBatch>
 [[nodiscard]] Status PutInt(TransactionOrWriteBatch* transaction_or_write_batch,
                             std::string_view key,
                             int64_t value) {
-  DCHECK_GE(value, 0);
+  CHECK_GE(value, 0, base::NotFatalUntil::M159);
   std::string buffer;
   EncodeInt(value, &buffer);
   return PutValue(transaction_or_write_batch, key, &buffer);

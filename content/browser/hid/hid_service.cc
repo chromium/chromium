@@ -44,7 +44,7 @@ class DocumentHelper
                  mojo::PendingReceiver<blink::mojom::HidService> receiver)
       : DocumentService(render_frame_host, std::move(receiver)),
         parent_(std::move(parent)) {
-    DCHECK(parent_);
+    CHECK(parent_, base::NotFatalUntil::M159);
   }
   ~DocumentHelper() override = default;
 
@@ -197,7 +197,7 @@ void HidService::Create(
     base::WeakPtr<ServiceWorkerVersion> service_worker_version,
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
-  DCHECK(service_worker_version);
+  CHECK(service_worker_version, base::NotFatalUntil::M159);
 
   if (origin.opaque()) {
     // Service worker should not be available to a window/worker client which

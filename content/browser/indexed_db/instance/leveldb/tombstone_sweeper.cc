@@ -37,7 +37,7 @@ WrappingIterator<T>::WrappingIterator(const T* container,
   container_ = container;
   valid_ = true;
   iterations_done_ = 0;
-  DCHECK_LT(start_position, container_->size());
+  CHECK_LT(start_position, container_->size(), base::NotFatalUntil::M159);
   inner_ = container_->begin();
   std::advance(inner_, start_position);
   CHECK(inner_ != container_->end());
@@ -48,7 +48,7 @@ WrappingIterator<T>::~WrappingIterator() {}
 
 template <typename T>
 void WrappingIterator<T>::Next() {
-  DCHECK(valid_);
+  CHECK(valid_, base::NotFatalUntil::M159);
   iterations_done_++;
   if (iterations_done_ >= container_->size()) {
     valid_ = false;
@@ -110,7 +110,7 @@ LevelDbTombstoneSweeper::SweepState::SweepState() = default;
 LevelDbTombstoneSweeper::SweepState::~SweepState() = default;
 
 bool LevelDbTombstoneSweeper::RunRound() {
-  DCHECK(database_metadata_);
+  CHECK(database_metadata_, base::NotFatalUntil::M159);
 
   if (database_metadata_->empty()) {
     return true;

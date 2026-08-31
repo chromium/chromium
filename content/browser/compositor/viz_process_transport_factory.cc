@@ -141,7 +141,7 @@ VizProcessTransportFactory::VizProcessTransportFactory(
       host_frame_sink_manager_(
           BrowserMainLoop::GetInstance()->host_frame_sink_manager()),
       resize_task_runner_(resize_task_runner) {
-  DCHECK(gpu_channel_establish_factory_);
+  CHECK(gpu_channel_establish_factory_, base::NotFatalUntil::M159);
   task_graph_runner_->Start("CompositorTileWorker1",
                             base::SimpleThread::Options());
   GetHostFrameSinkManager()->SetConnectionLostCallback(
@@ -483,7 +483,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
 gpu::ContextResult
 VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-  DCHECK(!is_gpu_compositing_disabled_);
+  CHECK(!is_gpu_compositing_disabled_, base::NotFatalUntil::M159);
 
   if (!gpu_channel_host && base::FeatureList::IsEnabled(
                                features::kShutdownForFailedChannelCreation)) {
