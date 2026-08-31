@@ -35,20 +35,17 @@ ContextImplLiteRt::Create(
     bool is_incognito) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
-  // Read the device before `options` is moved below.
-  const mojom::Device device = options->device;
   return std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>(
       new ContextImplLiteRt(
-          device, std::move(receiver), std::move(context_provider),
-          std::move(options), std::move(write_tensor_consumer),
-          std::move(read_tensor_producer), std::move(gpu_task_scheduler),
-          std::move(memory_tracker), std::move(owning_task_runner),
-          shared_image_manager, std::move(main_task_runner), is_incognito),
+          std::move(receiver), std::move(context_provider), std::move(options),
+          std::move(write_tensor_consumer), std::move(read_tensor_producer),
+          std::move(gpu_task_scheduler), std::move(memory_tracker),
+          std::move(owning_task_runner), shared_image_manager,
+          std::move(main_task_runner), is_incognito),
       OnTaskRunnerDeleter(std::move(task_runner)));
 }
 
 ContextImplLiteRt::ContextImplLiteRt(
-    mojom::Device device,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
@@ -63,7 +60,7 @@ ContextImplLiteRt::ContextImplLiteRt(
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
                        ContextBackendUma::kLiteRT,
-                       tflite::GraphBuilderTflite::GetContextProperties(device),
+                       tflite::GraphBuilderTflite::GetContextProperties(),
                        std::move(options),
                        std::move(write_tensor_consumer),
                        std::move(read_tensor_producer),
@@ -84,18 +81,15 @@ WebNNContextImpl::WebNNContextImplPtr ContextImplLiteRt::CreateForRenderer(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
-  // Read the device before `options` is moved below.
-  const mojom::Device device = options->device;
   return WebNNContextImplPtr(
-      new ContextImplLiteRt(
-          device, std::move(receiver), std::move(context_provider),
-          std::move(options), std::move(webgpu_properties),
-          std::move(owning_task_runner), std::move(main_task_runner)),
+      new ContextImplLiteRt(std::move(receiver), std::move(context_provider),
+                            std::move(options), std::move(webgpu_properties),
+                            std::move(owning_task_runner),
+                            std::move(main_task_runner)),
       OnTaskRunnerDeleter(std::move(task_runner)));
 }
 
 ContextImplLiteRt::ContextImplLiteRt(
-    mojom::Device device,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
     mojom::CreateContextOptionsPtr options,
@@ -105,7 +99,7 @@ ContextImplLiteRt::ContextImplLiteRt(
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
                        ContextBackendUma::kLiteRT,
-                       tflite::GraphBuilderTflite::GetContextProperties(device),
+                       tflite::GraphBuilderTflite::GetContextProperties(),
                        std::move(options),
                        std::move(owning_task_runner),
                        std::move(main_task_runner)),

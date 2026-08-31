@@ -52,7 +52,6 @@ class ContextImplLiteRt final : public WebNNContextImpl {
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ContextImplLiteRt(
-      mojom::Device device,
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
       mojom::CreateContextOptionsPtr options,
@@ -67,7 +66,6 @@ class ContextImplLiteRt final : public WebNNContextImpl {
 
   // Constructor for running without GPU dependencies.
   ContextImplLiteRt(
-      mojom::Device device,
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
       mojom::CreateContextOptionsPtr options,

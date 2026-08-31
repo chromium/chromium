@@ -139,11 +139,7 @@ class GraphBuilderTflite final {
       mojo::SharedRemote<mojom::WeightsFileSession> session,
       bool use_external_buffer);
 
-  // `context_device` selects the runtime accelerator the context targets. Some
-  // limits depend on the accelerator; for example the ML Drift GPU delegate
-  // does not support int64, so int64 is removed from all op support limits when
-  // `context_device` is `mojom::Device::kGpu`.
-  static ContextProperties GetContextProperties(mojom::Device context_device);
+  static ContextProperties GetContextProperties();
 
  private:
   using IdToOperandMap = base::flat_map<OperandId, mojom::OperandPtr>;
