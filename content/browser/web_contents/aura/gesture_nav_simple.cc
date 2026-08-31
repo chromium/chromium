@@ -472,7 +472,9 @@ bool GestureNavSimple::OnOverscrollUpdate(float delta_x, float delta_y) {
     return false;
   }
   float delta = std::abs(mode_ == OVERSCROLL_SOUTH ? delta_y : delta_x);
-  CHECK_LE(delta, max_delta_, base::NotFatalUntil::M158);
+  // TODO(crbug.com/554386214): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LE(delta, max_delta_);
   affordance_->SetDragProgress(delta / completion_threshold_);
   return true;
 }
