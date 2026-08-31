@@ -44,10 +44,10 @@ using enum ExtendedReportingLevel;
 
 class FakeSafeBrowsingHatsDelegate : public SafeBrowsingHatsDelegate {
  public:
-  void LaunchRedWarningSurvey(const SurveyStringData& survey_string_data,
-                              const SurveyBitsData& survey_bits_data) override {
-    survey_string_data_ = survey_string_data;
-    survey_bits_data_ = survey_bits_data;
+  void LaunchRedWarningSurvey(SurveyStringData survey_string_data,
+                              SurveyBitsData survey_bits_data) override {
+    survey_string_data_ = std::move(survey_string_data);
+    survey_bits_data_ = std::move(survey_bits_data);
   }
   SurveyStringData GetSurveyStringData() { return survey_string_data_; }
   SurveyBitsData GetSurveyBitsData() { return survey_bits_data_; }

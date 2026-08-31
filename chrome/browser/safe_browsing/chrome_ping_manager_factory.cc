@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_safe_browsing_hats_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -19,11 +18,18 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/android/chrome_safe_browsing_hats_delegate_android.h"
+#elif BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_hats_delegate_desktop.h"
+#endif
 
 namespace safe_browsing {
 
@@ -64,9 +70,13 @@ std::unique_ptr<KeyedService>
 ChromePingManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<ChromeSafeBrowsingHatsDelegate> hats_delegate = nullptr;
-#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_ANDROID)
-  hats_delegate = std::make_unique<ChromeSafeBrowsingHatsDelegate>(profile);
+  std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate;
+#if BUILDFLAG(IS_ANDROID)
+  hats_delegate =
+      std::make_unique<ChromeSafeBrowsingHatsDelegateAndroid>(profile);
+#elif BUILDFLAG(FULL_SAFE_BROWSING)
+  hats_delegate =
+      std::make_unique<ChromeSafeBrowsingHatsDelegateDesktop>(profile);
 #endif
   return PingManager::Create(
       GetV4ProtocolConfig(),

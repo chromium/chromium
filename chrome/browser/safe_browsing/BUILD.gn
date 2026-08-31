@@ -182,7 +182,6 @@ static_library("safe_browsing") {
       "chrome_password_reuse_detection_manager_client.h",
       "chrome_ping_manager_factory.h",
       "chrome_safe_browsing_blocking_page_factory.h",
-      "chrome_safe_browsing_hats_delegate.h",
       "chrome_safe_browsing_local_state_delegate.h",
       "chrome_safe_browsing_tab_observer_delegate.h",
       "chrome_ui_manager_delegate.h",
@@ -246,7 +245,6 @@ static_library("safe_browsing") {
       "chrome_password_reuse_detection_manager_client.cc",
       "chrome_ping_manager_factory.cc",
       "chrome_safe_browsing_blocking_page_factory.cc",
-      "chrome_safe_browsing_hats_delegate.cc",
       "chrome_safe_browsing_local_state_delegate.cc",
       "chrome_safe_browsing_tab_observer_delegate.cc",
       "chrome_ui_manager_delegate.cc",
@@ -303,15 +301,22 @@ static_library("safe_browsing") {
     ]
     if (is_android) {
       public += [
+        "android/chrome_safe_browsing_hats_delegate_android.h",
         "android/client_side_detection_intelligent_scan_delegate_android.h",
       ]
       sources += [
+        "android/chrome_safe_browsing_hats_delegate_android.cc",
         "android/client_side_detection_intelligent_scan_delegate_android.cc",
       ]
     } else {
-      public += [ "client_side_detection_intelligent_scan_delegate_desktop.h" ]
-      sources +=
-          [ "client_side_detection_intelligent_scan_delegate_desktop.cc" ]
+      public += [
+        "chrome_safe_browsing_hats_delegate_desktop.h",
+        "client_side_detection_intelligent_scan_delegate_desktop.h",
+      ]
+      sources += [
+        "chrome_safe_browsing_hats_delegate_desktop.cc",
+        "client_side_detection_intelligent_scan_delegate_desktop.cc",
+      ]
     }
     deps += [
       ":advanced_protection",
@@ -777,7 +782,6 @@ source_set("unit_tests") {
   if (safe_browsing_mode != 0) {
     sources += [
       "chrome_password_protection_service_unittest.cc",
-      "chrome_safe_browsing_hats_delegate_unittest.cc",
       "chrome_ui_manager_delegate_unittest.cc",
       "chrome_user_population_helper_unittest.cc",
       "client_side_detection_host_unittest.cc",
@@ -870,6 +874,7 @@ source_set("unit_tests") {
       "advanced_protection_status_manager_desktop_unittest.cc",
       "chrome_password_reuse_detection_manager_client_unittest.cc",
       "chrome_ping_manager_factory_unittest.cc",
+      "chrome_safe_browsing_hats_delegate_desktop_unittest.cc",
       "client_side_detection_intelligent_scan_delegate_desktop_unittest.cc",
       "client_side_detection_intelligent_scan_delegate_factory_unittest.cc",
       "client_side_detection_service_factory_unittest.cc",
@@ -992,6 +997,7 @@ source_set("unit_tests") {
 
   if (safe_browsing_mode == 2 && is_android) {
     sources += [
+      "android/chrome_safe_browsing_hats_delegate_android_unittest.cc",
       "android/client_side_detection_intelligent_scan_delegate_android_unittest.cc",
       "android/password_reuse_controller_android_unittest.cc",
       "android/suspicious_site_controller_android_unittest.cc",
