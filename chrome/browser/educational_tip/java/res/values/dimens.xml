@@ -8,61 +8,68 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
   <!-- Educational tip module dimens -->
-
-  <dimen name="educational_tip_module_content_image_size">72dp</dimen>
-  <dimen name="educational_tip_module_content_info_padding_start">16dp</dimen>
-  <dimen name="educational_tip_module_content_image_radius">12dp</dimen>
+  <!-- go/keep-sorted start -->
   <dimen name="educational_tip_module_button_height">48dp</dimen>
   <dimen name="educational_tip_module_button_padding_start">14dp</dimen>
+  <dimen name="educational_tip_module_content_image_radius">12dp</dimen>
+  <dimen name="educational_tip_module_content_image_size">72dp</dimen>
+  <dimen name="educational_tip_module_content_info_padding_start">16dp</dimen>
+  <!-- go/keep-sorted end -->
 
   <!-- Educational tip two-cell layout dimens -->
-  <dimen name="educational_tip_two_cell_icon_container_size">52dp</dimen>
   <dimen name="educational_tip_two_cell_divider_margin_start">65dp</dimen>
+  <dimen name="educational_tip_two_cell_icon_container_size">52dp</dimen>
 
   <!-- Default browser promo card dimens -->
+  <!-- go/keep-sorted start -->
+  <dimen name="default_browser_bottom_sheet_button_margin_bottom">24dp</dimen>
+  <dimen name="default_browser_bottom_sheet_button_margin_top">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_description_margin_top">4dp</dimen>
   <dimen name="default_browser_bottom_sheet_drag_handel_bar_height">4dp</dimen>
   <dimen name="default_browser_bottom_sheet_drag_handel_bar_margin_vertical">8dp</dimen>
   <dimen name="default_browser_bottom_sheet_drag_handle_bar_width">32dp</dimen>
-  <dimen name="default_browser_bottom_sheet_scroll_view_padding_lateral">24dp</dimen>
   <dimen name="default_browser_bottom_sheet_icon_container_height">99dp</dimen>
   <dimen name="default_browser_bottom_sheet_icon_container_margin_top">4dp</dimen>
-  <dimen name="default_browser_bottom_sheet_icon_container_padding_top">25dp</dimen>
   <dimen name="default_browser_bottom_sheet_icon_container_padding_bottom">26dp</dimen>
-  <dimen name="default_browser_bottom_sheet_title_margin_top">16dp</dimen>
-  <dimen name="default_browser_bottom_sheet_description_margin_top">4dp</dimen>
-  <dimen name="default_browser_bottom_sheet_steps_container_margin_top">16dp</dimen>
-  <dimen name="default_browser_bottom_sheet_step_padding_top">16dp</dimen>
-  <dimen name="default_browser_bottom_sheet_step_padding_end">8dp</dimen>
-  <dimen name="default_browser_bottom_sheet_step_number_width">24dp</dimen>
+  <dimen name="default_browser_bottom_sheet_icon_container_padding_top">25dp</dimen>
+  <dimen name="default_browser_bottom_sheet_scroll_view_padding_lateral">24dp</dimen>
   <dimen name="default_browser_bottom_sheet_step_content_margin_start">16dp</dimen>
-  <dimen name="default_browser_bottom_sheet_button_margin_top">16dp</dimen>
-  <dimen name="default_browser_bottom_sheet_button_margin_bottom">24dp</dimen>
+  <dimen name="default_browser_bottom_sheet_step_number_width">24dp</dimen>
+  <dimen name="default_browser_bottom_sheet_step_padding_end">8dp</dimen>
+  <dimen name="default_browser_bottom_sheet_step_padding_top">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_steps_container_margin_top">16dp</dimen>
+  <dimen name="default_browser_bottom_sheet_title_margin_top">16dp</dimen>
+  <!-- go/keep-sorted end -->
 
   <!-- Educational tip instructional bottom sheet dimens -->
   <dimen name="save_passwords_instructional_bottom_sheet_animation_height">250dp</dimen>
   <dimen name="save_passwords_instructional_bottom_sheet_step_vertical_padding">12dp</dimen>
 
-  <!--  Educational tip setup list "See more" bottom sheet-->
-  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_padding">24dp</dimen>
-  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_padding_top">8dp</dimen>
-  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_margin">16dp</dimen>
-  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_height">36dp</dimen>
-  <dimen name="educational_tip_setup_list_see_more_description_margin_top">4dp</dimen>
-  <dimen name="educational_tip_setup_list_see_more_description_margin_bottom">24dp</dimen>
+  <!-- Educational tip setup list "See more" bottom sheet -->
+  <!-- go/keep-sorted start -->
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_container_corner_radius">16dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_height">36dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_margin">16dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_corner_radius">4dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_height">84dp</dimen>
-  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_padding">16dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_icon_height">40dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_icon_width">40dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_margin">12dp</dimen>
   <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_margin_bottom">2dp</dimen>
-  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_corner_radius">4dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_list_item_padding">16dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_padding">24dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_padding_top">8dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_description_margin_bottom">24dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_description_margin_top">4dp</dimen>
+  <!-- go/keep-sorted end -->
 
   <!-- Educational tip setup list celebratory promo dimens -->
+  <!-- go/keep-sorted start -->
+  <dimen name="setup_list_celebratory_promo_description_margin_top">4dp</dimen>
+  <dimen name="setup_list_celebratory_promo_logo_height">55dp</dimen>
+  <dimen name="setup_list_celebratory_promo_logo_width">200dp</dimen>
+  <dimen name="setup_list_celebratory_promo_min_height">184dp</dimen>
   <dimen name="setup_list_celebratory_promo_padding_bottom">34dp</dimen>
   <dimen name="setup_list_celebratory_promo_text_margin_lateral">16dp</dimen>
-  <dimen name="setup_list_celebratory_promo_description_margin_top">4dp</dimen>
-  <dimen name="setup_list_celebratory_promo_min_height">184dp</dimen>
-  <dimen name="setup_list_celebratory_promo_logo_width">200dp</dimen>
-  <dimen name="setup_list_celebratory_promo_logo_height">55dp</dimen>
+  <!-- go/keep-sorted end -->
 </resources>
