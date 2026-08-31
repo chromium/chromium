@@ -181,14 +181,14 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVoiceWaiting) {
 }
 
 TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVirtualFocusFlags) {
-  // 1. Default state: flags disabled.
+  // 1. Default state.
   {
     base::DictValue strings =
         SearchboxHandler::GetWebUIDataSourceDict(profile());
     EXPECT_FALSE(*strings.FindBool("realboxVirtualFocusNavigation"));
     EXPECT_FALSE(*strings.FindBool("omniboxPopupVirtualFocusNavigation"));
     EXPECT_FALSE(*strings.FindBool("lensOverlayVirtualFocusNavigation"));
-    EXPECT_FALSE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
+    EXPECT_TRUE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
     EXPECT_FALSE(*strings.FindBool("webuiBrowserVirtualFocusNavigation"));
   }
 
