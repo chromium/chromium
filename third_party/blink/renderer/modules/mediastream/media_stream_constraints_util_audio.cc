@@ -88,13 +88,68 @@ bool ShouldSupportExtendedEchoCancellationModes(AudioCaptureApi capture_type) {
          (capture_type == AudioCaptureApi::kGumMicrophone);
 }
 
-// This class encapsulates two values that together build up the score of each
-// processed candidate.
-// - Fitness, similarly defined by the W3C specification
-//   (https://w3c.github.io/mediacapture-main/#dfn-fitness-distance);
-// - Distance from the default device ID;
-// - The priority associated to the echo cancellation type selected.
-// - The priority of the associated processing-based container.
+// ============================================================================
+// 4-Tier Audio Candidate Container Hierarchy
+// ============================================================================
+// The audio constraint resolution engine organizes candidate configurations
+// into a 4-tier tree structure:
+//
+// [Tier 4: CandidatesContainer]
+//    Top-level orchestrator. Holds a Vector<DeviceContainer> for all eligible
+//    physical audio devices (or content capture capabilities). Coordinates the
+//    two-phase lifecycle: Phase 1 (ApplyConstraintSet for Basic/Advanced sets)
+//    followed by Phase 2 (SelectSettingsAndScore).
+//
+// [Tier 3: DeviceContainer]
+//    Encapsulates all candidate configurations for a single physical/virtual
+//    device. Manages device-level properties (deviceId, groupId,
+//    disableLocalEcho, renderToAssociatedSink) and owns up to three
+//    ProcessingBasedContainer variants.
+//
+// [Tier 2: ProcessingBasedContainer]
+//    Represents a specific audio capture pipeline for a device:
+//      - kUnprocessed: Raw hardware capture (LocalMediaStreamAudioSource).
+//      - kNoApmProcessed: Hardware capture with mirroring, no WebRTC APM.
+//      - kApmProcessed: Software APM capture (ProcessedLocalAudioSource) with
+//        WebRTC/AudioService AEC, AGC, NS, and ML Voice Isolation.
+//    Enforces pipeline-specific invariants and cross-constraint validation.
+//
+// [Tier 1: Specialized Property Containers]
+//    Leaf containers wrapping DiscreteSet or NumericRangeSet for individual
+//    properties:
+//      - BooleanContainer (disableLocalEcho, renderToAssociatedSink,
+//      noiseSuppression)
+//      - StringContainer (deviceId, groupId, mediaStreamSource)
+//      - NumericRangeSetContainer / NumericDiscreteSetContainer (sampleRate,
+//      latency, channels)
+//      - AutoGainControlContainer (handles AGC boolean set and ideal fitness)
+//      - VoiceIsolationContainer (handles VI boolean set, ExcludeEnabled,
+//      IsStrictlyEnabled)
+//      - EchoCancellationContainer (handles EchoCancellationModeSet and default
+//      propagation)
+
+// ============================================================================
+// Composite Scoring & Ranking (Score)
+// ============================================================================
+// Candidates surviving Phase 1 pruning are ranked using a 4-tuple composite
+// score compared lexicographically:
+//
+//   Score = <fitness, is_default_device, ec_mode_score, processing_priority>
+//
+// 1. fitness (double):
+//    Normalized W3C fitness value (similarly defined by the W3C specification:
+//    https://w3c.github.io/mediacapture-main/#dfn-fitness-distance).
+//    1.0 for an exact or ideal match; 1.0 - distance for continuous numeric
+//    properties.
+// 2. is_default_device (bool):
+//    Tie-breaker prioritizing the system default audio input device (1 if
+//    matched, 0 otherwise).
+// 3. ec_mode_score (EcModeScore enum):
+//    Prioritizes standard browser echo cancellation over restricted modes:
+//    kBrowserDecides (4) > kAll (3) > kRemoteOnly (2) > kDisabled (1).
+// 4. processing_priority (int):
+//    Prioritizes APM processing for microphone capture (kApmProcessed = 3)
+//    or unprocessed capture for desktop screen capture (kUnprocessed = 3).
 //
 // Differently from the definition in the W3C specification, the present
 // algorithm maximizes the score.
@@ -203,11 +258,13 @@ class BooleanContainer {
       bool default_setting) const {
     DCHECK(!IsEmpty());
 
-    if (constraint.HasIdeal() && allowed_values_.Contains(constraint.Ideal()))
+    if (constraint.HasIdeal() && allowed_values_.Contains(constraint.Ideal())) {
       return std::make_tuple(1.0, constraint.Ideal());
+    }
 
-    if (allowed_values_.is_universal())
+    if (allowed_values_.is_universal()) {
       return std::make_tuple(0.0, default_setting);
+    }
 
     DCHECK_EQ(allowed_values_.elements().size(), 1U);
     return std::make_tuple(0.0, allowed_values_.FirstElement());
@@ -243,8 +300,9 @@ class StringContainer {
     if (constraint.HasIdeal()) {
       for (const String& ideal_candidate : constraint.Ideal()) {
         std::string candidate = ideal_candidate.Utf8();
-        if (allowed_values_.Contains(candidate))
+        if (allowed_values_.Contains(candidate)) {
           return std::make_tuple(1.0, candidate);
+        }
       }
     }
 
@@ -289,8 +347,9 @@ class NumericRangeSetContainer {
     DCHECK(!IsEmpty());
 
     if (constraint.HasIdeal()) {
-      if (allowed_values_.Contains(constraint.Ideal()))
+      if (allowed_values_.Contains(constraint.Ideal())) {
         return std::make_tuple(1.0, constraint.Ideal());
+      }
 
       T value = SelectClosestValueTo(constraint.Ideal());
       double fitness = 1.0 - blink::NumericConstraintFitnessDistance(
@@ -299,8 +358,9 @@ class NumericRangeSetContainer {
     }
 
     if (default_setting) {
-      if (allowed_values_.Contains(*default_setting))
+      if (allowed_values_.Contains(*default_setting)) {
         return std::make_tuple(0.0, *default_setting);
+      }
 
       // If the default value provided is not contained, select the value
       // closest to it.
@@ -370,8 +430,9 @@ class NumericDiscreteSetContainer {
     DCHECK(!IsEmpty());
 
     if (constraint.HasIdeal()) {
-      if (allowed_values_.Contains(constraint.Ideal()))
+      if (allowed_values_.Contains(constraint.Ideal())) {
         return std::make_tuple(1.0, constraint.Ideal());
+      }
 
       T value = SelectClosestValueTo(constraint.Ideal());
       double fitness =
@@ -380,8 +441,9 @@ class NumericDiscreteSetContainer {
     }
 
     if (default_setting) {
-      if (allowed_values_.Contains(*default_setting))
+      if (allowed_values_.Contains(*default_setting)) {
         return std::make_tuple(0.0, *default_setting);
+      }
 
       // If the default value provided is not contained, select the value
       // closest to it.
@@ -704,8 +766,9 @@ class AutoGainControlContainer {
 
     if (agc_constraint.HasIdeal()) {
       bool agc_ideal = agc_constraint.Ideal();
-      if (allowed_values_.Contains(agc_ideal))
+      if (allowed_values_.Contains(agc_ideal)) {
         return std::make_tuple(1.0, agc_ideal);
+      }
     }
 
     if (allowed_values_.is_universal()) {
@@ -1321,8 +1384,9 @@ class DeviceContainer {
         BooleanContainer(BoolSet({source->RenderToAssociatedSinkEnabled()}));
 
 #if DCHECK_IS_ON()
-    for (const auto& container : boolean_containers_)
+    for (const auto& container : boolean_containers_) {
       DCHECK(!container.IsEmpty());
+    }
 #endif
   }
 
@@ -1331,20 +1395,23 @@ class DeviceContainer {
 
     failed_constraint_name =
         device_id_container_.ApplyConstraintSet(constraint_set.device_id);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     failed_constraint_name =
         group_id_container_.ApplyConstraintSet(constraint_set.group_id);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     for (const auto& info : kBooleanPropertyContainerInfoMap) {
       failed_constraint_name =
           boolean_containers_[info.index].ApplyConstraintSet(
               constraint_set.*(info.constraint_member));
-      if (failed_constraint_name)
+      if (failed_constraint_name) {
         return failed_constraint_name;
+      }
     }
 
     // For each processing based container, apply the constraints and only fail
@@ -1404,8 +1471,9 @@ class DeviceContainer {
     std::optional<int> best_requested_buffer_size;
     int best_num_channels = 1;
     for (const auto& container : processing_based_containers_) {
-      if (container.IsEmpty())
+      if (container.IsEmpty()) {
         continue;
+      }
 
       auto [container_score, container_properties, requested_buffer_size,
             num_channels] =
@@ -1438,8 +1506,9 @@ class DeviceContainer {
     DCHECK(!boolean_containers_.empty());
 
     for (auto& container : boolean_containers_) {
-      if (container.IsEmpty())
+      if (container.IsEmpty()) {
         return true;
+      }
     }
 
     return device_id_container_.IsEmpty() || group_id_container_.IsEmpty();
@@ -1456,7 +1525,7 @@ class DeviceContainer {
   // DeviceContainer::boolean_containers_ and MediaTrackConstraintSetPlatform.
   struct BooleanPropertyContainerInfo {
     BooleanContainerId index;
-    BooleanConstraint ConstraintSet::*constraint_member;
+    BooleanConstraint ConstraintSet::* constraint_member;
   };
 
   static constexpr BooleanPropertyContainerInfo
@@ -1673,8 +1742,9 @@ AudioCaptureSettings SelectSettingsAudioCapture(
     mojom::blink::MediaStreamType stream_type,
     bool is_full_reconfiguration_allowed,
     const MediaStreamAudioTrack* current_track) {
-  if (capabilities.empty())
+  if (capabilities.empty()) {
     return AudioCaptureSettings();
+  }
 
   std::string media_stream_source = GetMediaStreamSource(constraints);
   std::string default_device_id;
@@ -1684,21 +1754,23 @@ AudioCaptureSettings SelectSettingsAudioCapture(
     default_device_id = capabilities.begin()->DeviceID().Utf8();
   }
 
-  CandidatesContainer candidates(capabilities, stream_type, media_stream_source,
-                                 default_device_id, is_full_reconfiguration_allowed,
-                                 current_track);
+  CandidatesContainer candidates(
+      capabilities, stream_type, media_stream_source, default_device_id,
+      is_full_reconfiguration_allowed, current_track);
   DCHECK(!candidates.IsEmpty());
 
   auto* failed_constraint_name =
       candidates.ApplyConstraintSet(constraints.Basic());
-  if (failed_constraint_name)
+  if (failed_constraint_name) {
     return AudioCaptureSettings(failed_constraint_name);
+  }
 
   for (const auto& advanced_set : constraints.Advanced()) {
     CandidatesContainer copy = candidates;
     failed_constraint_name = candidates.ApplyConstraintSet(advanced_set);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       candidates = std::move(copy);
+    }
   }
   DCHECK(!candidates.IsEmpty());
 

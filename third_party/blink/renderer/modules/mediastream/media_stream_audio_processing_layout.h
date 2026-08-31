@@ -13,11 +13,35 @@
 
 namespace blink {
 
+// ============================================================================
+// MediaStream Audio Processing Layout
+// ============================================================================
 // Source of truth for media stream audio processing configuration.
-// Based on the requested AudioProcessingProperties and available device
-// effects, determines what processing should be done in WebRTC and what
-// should be delegated to the platform, as well as configures necessary
-// AudioProcessingSettings for WebRTC processing.
+// Translates resolved Blink-level `AudioProcessingProperties` into concrete
+// configurations for the underlying audio processing layers:
+//
+// 1. `media::AudioProcessingSettings`:
+//    Configures WebRTC Audio Processing Module (APM) instances (running either
+//    in the Blink Renderer or in the Audio Service utility process).
+//
+// 2. `media::AudioParameters::Effects`:
+//    Configures hardware and OS-level platform audio effects requested from
+//    the platform audio input stream.
+//
+// Platform-Specific & Experimental Behaviors:
+// - macOS: Devices supporting CoreAudio Ambient Noise Reduction ('nzca')
+//   report the `NOISE_SUPPRESSION` platform effect.
+//   `IsIndependentSystemNsAllowed() == true` preserves this effect, offloading
+//   noise suppression to the OS and turning off WebRTC software NS.
+// - Windows: Platform effects (AEC, NS, AGC) are coupled by OS audio drivers
+//   as an indivisible package. Platform NS and AGC cannot be enabled or
+//   disabled independently unless platform AEC is active.
+// - Windows & macOS (Platform AEC): Hardware/platform echo cancellation
+//   (`media::AudioParameters::ECHO_CANCELLER`) is an experimental, unlaunched
+//   feature gated by `media::kEnforceSystemEchoCancellation`.
+// - ChromeOS: Manages hardware and ML voice isolation effects
+//   (`media::AudioParameters::VOICE_ISOLATION`), and applies `IGNORE_UI_GAINS`
+//   when software AGC is active to avoid double amplification.
 class MODULES_EXPORT MediaStreamAudioProcessingLayout {
  public:
   static bool IsIndependentSystemNsAllowedForTests();

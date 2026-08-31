@@ -17,6 +17,41 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+// This header defines the formal mathematical set representations and geometric
+// optimization algorithms used by the W3C Media Capture SelectSettings engine.
+//
+// The constraint solver operates over three primary domain types:
+//
+// 1. NumericRangeSet<T>:
+//    Models closed continuous 1D intervals [Min, Max] over float, double, or
+//    integer values (e.g., sampleRate, frameRate, latency). Supports set
+//    intersection, containment checks, and boundary emptiness testing.
+//
+// 2. DiscreteSet<T>:
+//    Models countable or enumerated domains (e.g., boolean flags, string device
+//    IDs, discrete channel counts). Operates in one of three explicit states:
+//      - Universal: Unconstrained (all domain values admitted).
+//      - Explicit: Constrained to a specific finite subset {v1, v2, ...}.
+//      - Empty: Unsatisfiable constraint combination (leads to
+//      OverconstrainedError).
+//
+// 3. ResolutionSet:
+//    Models 2D video resolution candidates (height, width, aspect ratio) as a
+//    convex polygon in Cartesian (height, width) space bounded by up to 6
+//    linear inequalities:
+//      min_width <= width <= max_width
+//      min_height <= height <= max_height
+//      min_aspect_ratio <= (width / height) <= max_aspect_ratio
+//
+// Geometric Optimization:
+//    If the ideal point (ideal_height, ideal_width) lies inside or on the
+//    boundary of the candidate polygon, it satisfies all constraints and is
+//    used directly without modification. If the ideal point lies outside the
+//    polygon, ResolutionSet projects it orthogonally onto the closest polygon
+//    edges or vertices using Euclidean distance minimization (avoiding
+//    non-linear, discontinuous multi-variable fitness distance evaluations
+//    across continuous 2D space).
+
 namespace blink {
 
 struct MediaTrackConstraintSetPlatform;
@@ -280,18 +315,22 @@ class DiscreteSet {
   bool HasExplicitElements() const { return !elements_.empty(); }
 
   DiscreteSet Intersection(const DiscreteSet& other) const {
-    if (is_universal_)
+    if (is_universal_) {
       return other;
-    if (other.is_universal_)
+    }
+    if (other.is_universal_) {
       return *this;
-    if (IsEmpty() || other.IsEmpty())
+    }
+    if (IsEmpty() || other.IsEmpty()) {
       return EmptySet();
+    }
 
     // Both sets have explicit elements.
     Vector<T> intersection;
     for (const auto& entry : elements_) {
-      if (std::ranges::contains(other.elements_, entry))
+      if (std::ranges::contains(other.elements_, entry)) {
         intersection.push_back(entry);
+      }
     }
     return DiscreteSet(std::move(intersection));
   }
@@ -419,6 +458,9 @@ class MODULES_EXPORT ResolutionSet {
 
   // Returns a point in this (nonempty) set closest to the ideal values for the
   // height, width and aspectRatio constraints in |constraint_set|.
+  // If the determined ideal point is already contained within this set, that
+  // point is returned directly. Otherwise, the point on the boundary of the
+  // set closest to the ideal point is returned.
   // Note that this function ignores all the other data in |constraint_set|.
   // Only the ideal height, width and aspect ratio are used, and from now on
   // referred to as |ideal_height|, |ideal_width| and |ideal_aspect_ratio|

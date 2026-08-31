@@ -13,6 +13,58 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+// ============================================================================
+// MediaStream Audio Constraints Resolution (W3C SelectSettings)
+// ============================================================================
+// Implements the W3C Media Capture and Streams `SelectSettings` algorithm for
+// audio tracks (https://w3c.github.io/mediacapture-main/#dfn-selectsettings).
+//
+// The entry point `SelectSettingsAudioCapture()` evaluates JavaScript
+// `MediaTrackConstraints` against available `AudioDeviceCaptureCapabilities`
+// to select concrete `AudioCaptureSettings`:
+//   - Target audio device (`deviceId`, `groupId`)
+//   - Audio capture pipeline (`kUnprocessed`, `kNoApmProcessed`,
+//     `kApmProcessed`)
+//   - Audio processing properties (AEC mode, AGC, NS, Voice Isolation)
+//   - Audio parameters (sample rate, channel count, buffer size / latency)
+//
+// Resolution Lifecycle:
+// 1. Phase 1 (Filtering / Pruning):
+//    - Mandatory Basic Constraints: Prunes all candidate devices and processing
+//      pipelines that cannot satisfy the `Basic` constraint set. If all
+//      candidates are eliminated, resolution fails with OverconstrainedError.
+//    - Optional Advanced Constraints: Evaluates each `Advanced` constraint set
+//      sequentially. If an advanced set would eliminate all remaining
+//      candidates, it is discarded (best-effort matching).
+// 2. Phase 2 (Ranking / Selection):
+//    - Ranks surviving candidates using a composite lexicographical score:
+//      Fitness distance to ideal constraints -> Default device preference ->
+//      Echo cancellation mode preference -> Audio processing priority.
+//
+// Multi-Track Source Sharing & Sibling Constraints:
+// - Tracks requiring WebRTC APM processing (kApmProcessed) share a single
+//   underlying ProcessedLocalAudioSource for a given physical device to avoid
+//   duplicate APM instances. An unprocessed track (kUnprocessed) can open a
+//   separate LocalMediaStreamAudioSource alongside the processed one.
+// - When resolving constraints for a new track attaching to an existing source,
+//   the solver inspects all active sibling tracks sharing that source. If an
+//   existing sibling has a mandatory exact constraint (e.g.
+//   voiceIsolation: {exact: true}), candidate settings contradicting that
+//   constraint are pruned.
+// - Only exact constraints from the mandatory Basic set are recorded on
+//   tracks and enforced against siblings (Advanced sets are optional and
+//   ignored if unsatisfied).
+//
+// Dynamic Reconfiguration Asymmetry (`is_full_reconfiguration_allowed`):
+// - Initial `getUserMedia()` sets `is_full_reconfiguration_allowed = true`,
+//   allowing the engine to consider all processing pipelines (`kUnprocessed`,
+//   `kNoApmProcessed`, `kApmProcessed`).
+// - `MediaStreamTrack.applyConstraints()` sets
+//   `is_full_reconfiguration_allowed = false` because Chromium does not
+//   currently support dynamically reconfiguring a live audio source pipeline
+//   in-place (crbug.com/796964). The solver therefore confines candidates
+//   strictly to the active source's existing processing type.
+
 namespace blink {
 class MediaConstraints;
 class MediaStreamAudioSource;
@@ -161,8 +213,8 @@ using AudioDeviceCaptureCapabilities = Vector<AudioDeviceCaptureCapability>;
 //    Moreover, the echo_cancellation constraint influences most other
 //    audio-processing properties for which no explicit value is provided in
 //    their corresponding constraints.
-// |is_full_reconfiguration_allowed| indicates whether it is possible to reconfigure
-// settings on an open audio track.
+// |is_full_reconfiguration_allowed| indicates whether it is possible to
+// reconfigure settings on an open audio track.
 // TODO(crbug.com/796964): remove |is_full_reconfiguration_allowed| when both
 // getUserMedia and applyConstraints code paths allow for reconfiguration.
 MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
