@@ -151,7 +151,7 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
 
   protected shouldShowPinButton_(): boolean {
     return this.isPinButtonEnabled && this.isAiPage &&
-        this.isHandshakeComplete && this.isCobrowseEligible;
+        this.isHandshakeComplete && this.isAimEligible;
   }
 
   protected getPinButtonTooltip_(): string {
