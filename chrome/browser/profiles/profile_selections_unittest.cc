@@ -31,6 +31,7 @@ TEST_F(ProfileSelectionsTest, DefaultConstructor) {
 
   TestProfileSelection(selections, regular_profile(), regular_profile());
   TestProfileSelection(selections, incognito_profile(), nullptr);
+  TestProfileSelection(selections, isolated_mode_profile(), nullptr);
 
   TestProfileSelection(selections, guest_profile(), nullptr);
   TestProfileSelection(selections, guest_profile_otr(), nullptr);
@@ -60,6 +61,8 @@ TEST_F(ProfileSelectionsTest, CustomImplementation) {
 
   TestProfileSelection(selections, regular_profile(), regular_profile());
   TestProfileSelection(selections, incognito_profile(), incognito_profile());
+  TestProfileSelection(selections, isolated_mode_profile(),
+                       isolated_mode_profile());
 
   TestProfileSelection(selections, guest_profile(), nullptr);
   TestProfileSelection(selections, guest_profile_otr(), guest_profile_otr());
@@ -83,6 +86,7 @@ TEST_F(ProfileSelectionsTest, OnlyRegularProfile) {
 
   TestProfileSelection(selections, regular_profile(), regular_profile());
   TestProfileSelection(selections, incognito_profile(), nullptr);
+  TestProfileSelection(selections, isolated_mode_profile(), nullptr);
 
   TestProfileSelection(selections, guest_profile(), nullptr);
   TestProfileSelection(selections, guest_profile_otr(), nullptr);
@@ -107,6 +111,8 @@ TEST_F(ProfileSelectionsTest, RegularAndIncognito) {
 
   TestProfileSelection(selections, regular_profile(), regular_profile());
   TestProfileSelection(selections, incognito_profile(), incognito_profile());
+  TestProfileSelection(selections, isolated_mode_profile(),
+                       isolated_mode_profile());
 
   TestProfileSelection(selections, guest_profile(), nullptr);
   TestProfileSelection(selections, guest_profile_otr(), nullptr);
@@ -131,6 +137,8 @@ TEST_F(ProfileSelectionsTest, RedirectedInIncognito) {
 
   TestProfileSelection(selections, regular_profile(), regular_profile());
   TestProfileSelection(selections, incognito_profile(), regular_profile());
+  TestProfileSelection(selections, isolated_mode_profile(),
+                       isolated_mode_parent_profile());
 
   TestProfileSelection(selections, guest_profile(), nullptr);
   TestProfileSelection(selections, guest_profile_otr(), nullptr);
@@ -169,5 +177,31 @@ TEST_F(ProfileSelectionsTest, NoProfiles) {
 
   TestProfileSelection(selections, lockscreen_profile(), nullptr);
   TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS)s
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+TEST_F(ProfileSelectionsTest, RegularAndIsolatedMode) {
+  ProfileSelections selections =
+      ProfileSelections::Builder()
+          .WithIsolatedMode(ProfileSelection::kOwnInstance)
+          .Build();
+
+  TestProfileSelection(selections, isolated_mode_parent_profile(),
+                       isolated_mode_parent_profile());
+  TestProfileSelection(selections, incognito_profile(), nullptr);
+  TestProfileSelection(selections, isolated_mode_profile(),
+                       isolated_mode_profile());
+}
+
+TEST_F(ProfileSelectionsTest, RedirectedInIsolatedMode) {
+  ProfileSelections selections =
+      ProfileSelections::Builder()
+          .WithIsolatedMode(ProfileSelection::kRedirectedToOriginal)
+          .Build();
+
+  TestProfileSelection(selections, isolated_mode_parent_profile(),
+                       isolated_mode_parent_profile());
+  TestProfileSelection(selections, incognito_profile(), nullptr);
+  TestProfileSelection(selections, isolated_mode_profile(),
+                       isolated_mode_parent_profile());
 }

@@ -43,6 +43,9 @@ to an Original Profile, this profile is never saved on disk.
 There are different types of Profiles that can be both Original and OTR:
 - Regular Profile: is a normal user profile.
 - Incognito Profile: is the Primary OTR of a Regular Profile.
+- Enterprise Isolated Mode Profile: An OTR profile which replaces Incognito mode
+when the IsolatedModeSettings Enterprise policy is set. When it replaces
+Incognito mode, it is considered the primary OTR of a Regular Profile.
 - Guest Profile: The OTR profile for a Guest is the profile used for browsing,
 since no information is saved. The equivalent Original Profile is a dummy
 profile that exists only to hold on to the OTR Profile, it is never used.
@@ -94,6 +97,8 @@ profile that results of the selection.
 * Guest Profile.
 * System Profile.
 * Ash Internal Profiles.
+* Enterprise Isolated Mode Profile.
+
 
 `ProfileSelection` attributes description:
 * `kNone`: Always returns nullptr, no profile is selected.
@@ -117,6 +122,9 @@ The default values that are set are:
 - Guest Profile: kNone
 - System Profile: kNone
 - Ash Internal Profiles: Follows Regular Profile value.
+- Enterprise Isolated Mode Profile: Follows Regular Profile's OTR (Incognito)
+behavior if not explicitly configured using `.WithIsolatedMode()`.
+
 
 `ProfileSelections` also has some predefined static builders in its interface
 that provides common usages with standard behaviors.

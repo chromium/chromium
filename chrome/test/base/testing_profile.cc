@@ -35,6 +35,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -529,11 +530,17 @@ void TestingProfile::InitializeProfileType() {
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   if (IsOffTheRecord()) {
+    if (otr_profile_id_ != OTRProfileID::PrimaryID()) {
+      profile_metrics::SetBrowserProfileType(
+          this, profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile);
+      return;
+    }
+
     profile_metrics::SetBrowserProfileType(
-        this,
-        (otr_profile_id_ == OTRProfileID::PrimaryID())
-            ? profile_metrics::BrowserProfileType::kIncognito
-            : profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile);
+        this, enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+                  original_profile_)
+                  ? profile_metrics::BrowserProfileType::kEnterpriseIsolated
+                  : profile_metrics::BrowserProfileType::kIncognito);
     return;
   }
 

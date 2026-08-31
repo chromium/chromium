@@ -5,6 +5,10 @@
 #include "chrome/browser/profiles/profile_testing_helper.h"
 
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -20,6 +24,8 @@ ProfileTestingHelper::~ProfileTestingHelper() {
 }
 
 void ProfileTestingHelper::SetUp() {
+  scoped_feature_list_.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
   ASSERT_TRUE(manager_.SetUp());
 
   regular_profile_ = manager_.CreateTestingProfile("testing");
@@ -30,6 +36,23 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_TRUE(incognito_profile_);
   ASSERT_TRUE(incognito_profile_->IsOffTheRecord());
   ASSERT_TRUE(incognito_profile_->IsIncognitoProfile());
+
+  isolated_mode_parent_profile_ =
+      manager_.CreateTestingProfile("isolated_mode_parent");
+  ASSERT_TRUE(isolated_mode_parent_profile_);
+
+  isolated_mode_parent_profile_->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+
+  isolated_mode_profile_ =
+      isolated_mode_parent_profile_->GetPrimaryOTRProfile(true);
+
+  ASSERT_TRUE(isolated_mode_profile_);
+  ASSERT_TRUE(isolated_mode_profile_->IsOffTheRecord());
+  ASSERT_FALSE(isolated_mode_profile_->IsIncognitoProfile());
+  ASSERT_TRUE(isolated_mode_profile_->IsEnterpriseIsolatedModeProfile());
 
   guest_profile_ = manager_.CreateGuestProfile();
   ASSERT_TRUE(guest_profile_);

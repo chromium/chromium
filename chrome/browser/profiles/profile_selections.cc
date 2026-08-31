@@ -47,6 +47,18 @@ ProfileSelections::Builder& ProfileSelections::Builder::WithSystem(
   return *this;
 }
 
+ProfileSelections::Builder& ProfileSelections::Builder::WithIsolatedMode(
+    ProfileSelection selection) {
+  CHECK(selection == ProfileSelection::kNone ||
+        selection == ProfileSelection::kOwnInstance ||
+        selection == ProfileSelection::kRedirectedToOriginal)
+      << "Isolated Mode profile selection must be one of kNone, kOwnInstance "
+         "or kRedirectedToOriginal.";
+
+  selections_->SetProfileSelectionForIsolatedMode(selection);
+  return *this;
+}
+
 ProfileSelections::Builder& ProfileSelections::Builder::WithAshInternals(
     ProfileSelection selection) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -132,12 +144,15 @@ ProfileSelection ProfileSelections::GetProfileSelection(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // Isolated Mode uses the same ProfileSelection as Incognito,
+  // unless explicitly configured to behave differently.
+  if (profile->IsEnterpriseIsolatedModeProfile()) {
+    return isolated_mode_profile_selection_.value_or(
+        regular_profile_selection_);
+  }
+
   // Treat other off the record profiles as Incognito (primary otr) Profiles.
-  // TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
-  // should be revisited when deciding on the final integration of Isolated
-  // mode.
   if (profile->IsRegularProfile() || profile->IsIncognitoProfile() ||
-      profile->IsEnterpriseIsolatedModeProfile() ||
       profile_metrics::GetBrowserProfileType(profile) ==
           profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile) {
     return regular_profile_selection_;
@@ -167,6 +182,11 @@ void ProfileSelections::SetProfileSelectionForGuest(
 void ProfileSelections::SetProfileSelectionForSystem(
     ProfileSelection selection) {
   system_profile_selection_ = selection;
+}
+
+void ProfileSelections::SetProfileSelectionForIsolatedMode(
+    ProfileSelection selection) {
+  isolated_mode_profile_selection_ = selection;
 }
 
 void ProfileSelections::SetProfileSelectionForAshInternals(

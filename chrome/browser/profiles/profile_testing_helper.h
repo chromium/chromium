@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_TESTING_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 
@@ -24,6 +25,11 @@ class ProfileTestingHelper {
   TestingProfile* regular_profile() { return regular_profile_; }
   Profile* incognito_profile() { return incognito_profile_; }
 
+  TestingProfile* isolated_mode_parent_profile() {
+    return isolated_mode_parent_profile_;
+  }
+  Profile* isolated_mode_profile() { return isolated_mode_profile_; }
+
   TestingProfile* guest_profile() { return guest_profile_; }
   Profile* guest_profile_otr() { return guest_profile_otr_; }
 
@@ -41,11 +47,16 @@ class ProfileTestingHelper {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
 
   raw_ptr<TestingProfile, DanglingUntriaged> regular_profile_ = nullptr;
   raw_ptr<Profile, DanglingUntriaged> incognito_profile_ = nullptr;
+
+  raw_ptr<TestingProfile, DanglingUntriaged> isolated_mode_parent_profile_ =
+      nullptr;
+  raw_ptr<Profile, DanglingUntriaged> isolated_mode_profile_ = nullptr;
 
   raw_ptr<TestingProfile, DanglingUntriaged> guest_profile_ = nullptr;
   raw_ptr<Profile, DanglingUntriaged> guest_profile_otr_ = nullptr;

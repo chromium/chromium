@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_SELECTIONS_H_
 
 #include <memory>
+#include <optional>
 
 class Profile;
 
@@ -56,6 +57,15 @@ class ProfileSelections {
     Builder& WithRegular(ProfileSelection selection);
     Builder& WithGuest(ProfileSelection selection);
     Builder& WithSystem(ProfileSelection selection);
+
+    // This method configures the behavior only for the Isolated Mode profile
+    // and has no impact on the value configured for the original profile.
+    // Allowed values are `kNone`, `kOwnInstance` and `kRedirectedToOriginal`.
+    // If not explicitly configured, the Isolated Mode profile defaults to the
+    // same configuration as other OTR profiles.
+    // The original profile of the Isolated Mode profile is the regular profile.
+    Builder& WithIsolatedMode(ProfileSelection selection);
+
     // In Ash there are internal profiles that are not user profiles, such as a
     // the signin or the lockscreen profile.
     // Note: Even though ash internal profiles are technically regular profiles,
@@ -134,6 +144,7 @@ class ProfileSelections {
   void SetProfileSelectionForGuest(ProfileSelection selection);
   void SetProfileSelectionForSystem(ProfileSelection selection);
   void SetProfileSelectionForAshInternals(ProfileSelection selection);
+  void SetProfileSelectionForIsolatedMode(ProfileSelection selection);
 
   // Returns the `ProfileSelection` based on the profile information through the
   // set mapping.
@@ -146,6 +157,8 @@ class ProfileSelections {
   ProfileSelection guest_profile_selection_ = ProfileSelection::kNone;
   ProfileSelection system_profile_selection_ = ProfileSelection::kNone;
   ProfileSelection ash_internals_profile_selection_ = ProfileSelection::kNone;
+  std::optional<ProfileSelection> isolated_mode_profile_selection_ =
+      std::nullopt;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_SELECTIONS_H_
