@@ -70,8 +70,12 @@ found in the LICENSE file.
         android:paddingTop="@dimen/vertical_tab_pinned_tabs_padding_top"
         android:paddingBottom="@dimen/vertical_tab_pinned_tabs_padding_bottom"
         android:clipToPadding="false"
+        app:layout_constrainedHeight="true"
         app:layout_constraintTop_toBottomOf="@id/vertical_tab_header_container"
-        android:overScrollMode="never" />
+        android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbarThumbVertical="@drawable/vertical_tabs_scrollbar_thumb"
+        android:scrollbarSize="@dimen/vertical_tabs_scrollbar_width" />
 
     <!-- Tab List Recycler View -->
     <org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListRecyclerView

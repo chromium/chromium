@@ -198,6 +198,34 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (mPinnedTabsRecyclerView != null
+                && mPinnedTabsRecyclerView.getVisibility() != View.GONE) {
+            int totalHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+            // Measure child containers to determine available space.
+            int headerHeight = mHeaderContainer != null ? mHeaderContainer.getMeasuredHeight() : 0;
+            int footerHeight = mFooterContainer != null ? mFooterContainer.getMeasuredHeight() : 0;
+            int spacerHeight =
+                    (mSpacerView != null && mSpacerView.getVisibility() == View.VISIBLE)
+                            ? mSpacerView.getMeasuredHeight()
+                            : 0;
+
+            int availableTabSpace = totalHeight - headerHeight - footerHeight - spacerHeight;
+            int maxPinnedTabHeight = Math.max(0, availableTabSpace / 2);
+
+            ViewGroup.LayoutParams lp = mPinnedTabsRecyclerView.getLayoutParams();
+            if (lp instanceof ConstraintLayout.LayoutParams clp) {
+                if (clp.matchConstraintMaxHeight != maxPinnedTabHeight) {
+                    clp.matchConstraintMaxHeight = maxPinnedTabHeight;
+                }
+            }
+        }
+        // Measure all children while enforcing the params we defined above.
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         if (!hasWindowFocus && mExpandOrCollapseOnHoverListener != null) {

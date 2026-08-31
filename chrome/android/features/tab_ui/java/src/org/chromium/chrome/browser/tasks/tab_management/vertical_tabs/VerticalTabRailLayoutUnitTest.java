@@ -26,9 +26,11 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.filters.SmallTest;
 
@@ -48,6 +50,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -703,6 +706,81 @@ public class VerticalTabRailLayoutUnitTest {
 
         when(mKeyEventListener.onKeyEvent(event)).thenReturn(false);
         assertFalse(mRailLayout.dispatchKeyEvent(event));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnMeasure_CapsPinnedTabsRecyclerViewToFiftyPercent() {
+        mRailLayout.getPinnedTabsRecyclerView().setVisibility(View.VISIBLE);
+
+        int parentWidth = 300;
+        int parentHeight = 1000;
+
+        // 1. Calls our overridden #onMeasure. Initial pass measures static child views (header,
+        // footer, spacer), so getMeasuredHeight could be 0.
+        measureAndLayout(mRailLayout, parentWidth, parentHeight);
+
+        // 2. Clear the measurement cache so that our overridden #onMeasure runs again with measured
+        // children, simulating the second onMeasure pass.
+        mRailLayout.forceLayout();
+        measureAndLayout(mRailLayout, parentWidth, parentHeight);
+
+        // Header, footer, and spacer heights are determined during layout
+        int headerHeight = mRailLayout.getHeaderContainer().getMeasuredHeight();
+        int footerHeight = mRailLayout.getFooterContainer().getMeasuredHeight();
+        int spacerHeight =
+                mRailLayout.findViewById(R.id.desktop_window_spacer).getVisibility() == View.VISIBLE
+                        ? mRailLayout.findViewById(R.id.desktop_window_spacer).getMeasuredHeight()
+                        : 0;
+
+        int expectedAvailableSpace = parentHeight - headerHeight - footerHeight - spacerHeight;
+        int expectedMaxPinnedHeight = expectedAvailableSpace / 2;
+
+        ViewGroup.LayoutParams lp = mRailLayout.getPinnedTabsRecyclerView().getLayoutParams();
+        assertTrue(lp instanceof ConstraintLayout.LayoutParams);
+        ConstraintLayout.LayoutParams clp = (ConstraintLayout.LayoutParams) lp;
+
+        // Verify that clp.matchConstraintMaxHeight was set to exactly 50% of available space.
+        assertEquals(expectedMaxPinnedHeight, clp.matchConstraintMaxHeight);
+        assertTrue(clp.constrainedHeight);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnMeasure_PinnedTabsRecyclerViewGone_DoesNotEnforceMaxHeight() {
+        // Simulate having no pinned tabs.
+        mRailLayout.getPinnedTabsRecyclerView().setVisibility(View.GONE);
+
+        ConstraintLayout.LayoutParams clp =
+                (ConstraintLayout.LayoutParams)
+                        mRailLayout.getPinnedTabsRecyclerView().getLayoutParams();
+
+        // Hard-code it to a sentinel value.
+        clp.matchConstraintMaxHeight = -1;
+
+        // Trigger our overridden #onMeasure.
+        measureAndLayout(mRailLayout, 300, 1000);
+        assertEquals(
+                "#onMeasure should not have updated the layout params.",
+                -1,
+                clp.matchConstraintMaxHeight);
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabsRecyclerView_XmlAttributes() {
+        TabListRecyclerView pinnedRv = mRailLayout.getPinnedTabsRecyclerView();
+        assertNotNull(pinnedRv);
+        // Verify android:scrollbars="vertical" is enabled in XML.
+        assertTrue(pinnedRv.isVerticalScrollBarEnabled());
+
+        // Obtain constrainedHeight which is a unique layout param to ConstraintLayout.
+        ViewGroup.LayoutParams lp = pinnedRv.getLayoutParams();
+        assertTrue(lp instanceof ConstraintLayout.LayoutParams);
+        ConstraintLayout.LayoutParams clp = (ConstraintLayout.LayoutParams) lp;
+
+        // Verify app:layout_constrainedHeight="true"
+        assertTrue("layout_constrainedHeight must be true", clp.constrainedHeight);
     }
 
     private void measureAndLayout(View view, int width, int height) {
