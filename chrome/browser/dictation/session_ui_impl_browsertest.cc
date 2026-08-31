@@ -632,6 +632,51 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+                       OverlayLeftInLastPositionWhenTargetLosesFocus) {
+  if (!GetParam()) {
+    // At least until crbug.com/552154453 is addressed for the multiple stream
+    // mode, this test does not apply, as a new stream should move the overlay.
+    GTEST_SKIP() << "Does not apply if focus changes start streams.";
+  }
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  gfx::Rect target_bounds;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
+    WithElement(
+        kWebContentsElementId,
+        [&target_bounds](ui::TrackedElement* el) {
+          target_bounds = AsInstrumentedWebContents(el)
+                              ->GetElementBoundsInScreen("#text_id");
+        }),
+    // Focus a second textarea, causing the first textarea to lose focus.
+    ExecuteJs(kWebContentsElementId,
+              "() => {"
+              "  const textarea2 = document.createElement('textarea');"
+              "  textarea2.id = 'text_id_2';"
+              "  document.body.appendChild(textarea2);"
+              "  textarea2.focus();"
+              "}"),
+    // The overlay should remain in its last position.
+    InAnyContext(CheckElement(
+        DictationOverlayView::kViewElementIdForTesting,
+        [&target_bounds](ui::TrackedElement* el) {
+          const views::View* const overlay_view = AsView(el);
+          const gfx::Rect overlay_bounds = overlay_view->GetBoundsInScreen();
+          return target_bounds.Contains(overlay_bounds.origin());
+        }))
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        OverlayButtonUpdatesOnStreamStateChange) {
   if (GetParam()) {
     GTEST_SKIP() << "UI state behaviour differs in this config.";
