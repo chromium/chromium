@@ -7480,20 +7480,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
         desc="Label for a button that guides the user to composebox's context menu using a suggestion like label.">
         Ask about your tabs
       </message>
-      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP" desc="Tooltip text for the Omnibox Everywhere status tray icon." translateable="false">
-        Omnibox Everywhere
-      </message>
-      <!-- TODO(crbug.com/532187976): Make strings translateable once finalized. -->
-      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="Label for customizing keyboard shortcut item in the Omnibox Everywhere status tray context menu." translateable="false">
-        Customize keyboard shortcut
-      </message>
       <if expr="is_macosx">
-        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS" desc="Label for settings item in the Omnibox Everywhere status tray context menu [With ellipsis]." translateable="false">
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="In Title Case: Label for customizing keyboard shortcut item in the Search in Chrome status tray context menu.">
+          Customize Keyboard Shortcut
+        </message>
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS" desc="In Title Case: Label for settings item in the Search in Chrome status tray context menu [With ellipsis].">
           Settings...
         </message>
       </if>
       <if expr="not is_macosx">
-        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS" desc="Label for settings item in the Omnibox Everywhere status tray context menu." translateable="false">
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="Label for customizing keyboard shortcut item in the Search in Chrome status tray context menu.">
+          Customize keyboard shortcut
+        </message>
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS" desc="Label for settings item in the Search in Chrome status tray context menu.">
           Settings
         </message>
       </if>

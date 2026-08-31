@@ -3207,10 +3207,6 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_GLIC_STATUS_ICON_MENU_TOGGLE" desc="This is the menu item for toggling the Gemini UI.">
         Toggle Gemini in Chrome
       </message>
-      <!-- TODO(crbug.com/532187976): Make strings translateable once finalized. -->
-      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE" desc="Label for the toggle item in the Omnibox Everywhere status tray context menu." translateable="false">
-        Toggle Search in Chrome
-      </message>
       <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" desc="This is the text of the Gemini ineligible profile notice.">
         To use Gemini in Chrome, sign in with a different Google Account
       </message>
@@ -3244,6 +3240,19 @@ Google Chrome is unable to recover your settings.
           Show Gemini in Chrome in system tray
         </message>
       </if>
+      <if expr="is_macosx">
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE" desc="In Title Case: Label for the toggle item in the Search in Chrome status tray context menu.">
+          Open Search with Chrome
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE" desc="Label for the toggle item in the Search in Chrome status tray context menu.">
+          Open search with Chrome
+        </message>
+      </if>
+      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP" desc="Tooltip text for the Search in Chrome status tray icon.">
+        Search in Chrome
+      </message>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE" desc="Title of the Omnibox Everywhere section on the search settings page.">
         Search with Chrome
       </message>
