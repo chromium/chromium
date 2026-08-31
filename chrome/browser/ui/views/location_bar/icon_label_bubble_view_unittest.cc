@@ -806,6 +806,7 @@ TEST_F(IconLabelBubbleViewTest, AdditionalPaddingNotShownOnEmptyText) {
 
 TEST_F(IconLabelBubbleViewTest,
        AdditionalPaddingNotShownWhileCollapsedAndAnimated) {
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
   view()->SetUpAnimation();
   view()->SetSlideAnimationDuration(base::Seconds(60));
   view()->ResetSlideAnimation(false);
