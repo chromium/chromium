@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, GeminiSettingsContext) {
   GeminiSettingsContextPersonalization,
   // Settings for managing plugins and extensions.
   GeminiSettingsContextExtensions,
+  // Settings for managing usage limits.
+  GeminiSettingsContextUsageLimits,
   // Unknown settings context.
   GeminiSettingsContextUnknown,
 };

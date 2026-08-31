@@ -1107,7 +1107,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="GeminiAppsActivity"/>
   <int value="1" label="Personalization"/>
   <int value="2" label="Extensions"/>
-  <int value="3" label="Unknown"/>
+  <int value="3" label="(Obsolete) Unknown"/>
+  <int value="4" label="UsageLimits"/>
+  <int value="50" label="Unknown"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h:IOSGeminiSettingsItem) -->

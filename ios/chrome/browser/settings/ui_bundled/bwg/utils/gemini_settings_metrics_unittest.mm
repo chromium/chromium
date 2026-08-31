@@ -17,6 +17,9 @@ const char kCameraSettingsToggledOff[] =
     "MobileGeminiCameraSettingsGeminiCameraPermissionToggledOff";
 const char kCameraSettingsToggleHistogram[] =
     "IOS.Gemini.Camera.Settings.GeminiCameraPermissionToggled";
+const char kUsageLimitsAction[] = "Settings.GeminiSettings.GeminiUsageLimits";
+const char kItemShownHistogram[] = "IOS.Gemini.DynamicSettings.ItemShown";
+const char kItemUsedHistogram[] = "IOS.Gemini.DynamicSettings.ItemUsed";
 }  // namespace
 
 class GeminiSettingsMetricsTest : public PlatformTest {
@@ -24,6 +27,25 @@ class GeminiSettingsMetricsTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
 };
+
+TEST_F(GeminiSettingsMetricsTest, RecordGeminiSettingsUsageLimits) {
+  RecordGeminiSettingsUsageLimits();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kUsageLimitsAction));
+}
+
+TEST_F(GeminiSettingsMetricsTest, RecordGeminiSettingsItemShown) {
+  RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kUsageLimits);
+  histogram_tester_.ExpectUniqueSample(
+      kItemShownHistogram,
+      static_cast<int>(IOSGeminiSettingsItem::kUsageLimits), 1);
+}
+
+TEST_F(GeminiSettingsMetricsTest, RecordGeminiSettingsItemUsed) {
+  RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kUsageLimits);
+  histogram_tester_.ExpectUniqueSample(
+      kItemUsedHistogram, static_cast<int>(IOSGeminiSettingsItem::kUsageLimits),
+      1);
+}
 
 TEST_F(GeminiSettingsMetricsTest, RecordGeminiCameraSettingsClose) {
   RecordGeminiCameraSettingsClose();

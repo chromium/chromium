@@ -35,6 +35,11 @@ void RecordGeminiSettingsPersonalization() {
       base::UserMetricsAction("Settings.GeminiSettings.GeminiPersonalization"));
 }
 
+void RecordGeminiSettingsUsageLimits() {
+  base::RecordAction(
+      base::UserMetricsAction("Settings.GeminiSettings.GeminiUsageLimits"));
+}
+
 void RecordGeminiSettingsItemShown(IOSGeminiSettingsItem item) {
   base::UmaHistogramEnumeration("IOS.Gemini.DynamicSettings.ItemShown", item);
 }

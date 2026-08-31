@@ -11,7 +11,9 @@ enum class IOSGeminiSettingsItem {
   kGeminiAppsActivity = 0,
   kPersonalization = 1,
   kExtensions = 2,
-  kUnknown = 3,
+  // kUnknown = 3, // deprecated, moved to 50
+  kUsageLimits = 4,
+  kUnknown = 50,
   kMaxValue = kUnknown,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiSettingsItem)
@@ -33,6 +35,9 @@ void RecordGeminiSettingsExtensions();
 
 // Records that the user tapped on the Gemini Personalization settings item.
 void RecordGeminiSettingsPersonalization();
+
+// Records that the user tapped on the Gemini Usage Limits settings item.
+void RecordGeminiSettingsUsageLimits();
 
 // Records that an item is shown in the Gemini settings page.
 void RecordGeminiSettingsItemShown(IOSGeminiSettingsItem item);

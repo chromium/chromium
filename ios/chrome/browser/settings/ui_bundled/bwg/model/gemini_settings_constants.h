@@ -13,6 +13,8 @@ extern NSString* const kGeminiSettingsGeminiAppsActivityIdentifier;
 extern NSString* const kGeminiSettingsPersonalizationIdentifier;
 // The accessibility identifier for the Extensions item.
 extern NSString* const kGeminiSettingsExtensionsIdentifier;
+// The accessibility identifier for the Usage Limits item.
+extern NSString* const kGeminiSettingsUsageLimitsIdentifier;
 // The accessibility identifier for an unknown item.
 extern NSString* const kGeminiSettingsUnknownIdentifier;
 

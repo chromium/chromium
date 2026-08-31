@@ -32019,6 +32019,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.GeminiSettings.GeminiUsageLimits">
+  <owner>hamzamoh@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when user taps Gemini Usage Limits row in Settings. iOS only.
+  </description>
+</action>
+
 <action name="Settings.GoogleServices">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@google.com</owner>

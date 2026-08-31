@@ -286,6 +286,9 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     case GeminiSettingsContextExtensions:
       RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kExtensions);
       break;
+    case GeminiSettingsContextUsageLimits:
+      RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kUsageLimits);
+      break;
     default:
       RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kUnknown);
       break;
@@ -305,6 +308,10 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     case GeminiSettingsContextExtensions:
       RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kExtensions);
       RecordGeminiSettingsExtensions();
+      break;
+    case GeminiSettingsContextUsageLimits:
+      RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kUsageLimits);
+      RecordGeminiSettingsUsageLimits();
       break;
     default:
       RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kUnknown);
