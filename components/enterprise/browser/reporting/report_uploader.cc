@@ -131,6 +131,11 @@ void ReportUploader::SetRequestAndUpload(const ReportGenerationConfig& config,
 }
 
 void ReportUploader::Upload() {
+  if (requests_.empty()) {
+    SendResponse(ReportStatus::kSuccess);
+    return;
+  }
+
   auto callback = base::BindRepeating(&ReportUploader::OnRequestFinished,
                                       weak_ptr_factory_.GetWeakPtr());
 
@@ -247,7 +252,6 @@ void ReportUploader::SetListener(Listener* listener) {
 void ReportUploader::RemoveListener(Listener* listener) {
   if (listener_ != listener) {
     CHECK(!listener_);
-    return;
   }
   listener_ = nullptr;
   backoff_request_timer_.Stop();
@@ -300,15 +304,19 @@ void ReportUploader::SendResponse(const ReportStatus status) {
 }
 
 void ReportUploader::NextRequest() {
+  if (requests_.empty()) {
+    SendResponse(ReportStatus::kSuccess);
+    return;
+  }
   // We don't reset the backoff in case there are multiple requests in a row
   // and we don't start from 1 minute again.
   backoff_entry_.InformOfRequest(true);
   requests_.pop();
-  if (requests_.empty())
+  if (requests_.empty()) {
     SendResponse(ReportStatus::kSuccess);
-  else
+  } else {
     Upload();
-  return;
+  }
 }
 
 }  // namespace enterprise_reporting
