@@ -66,8 +66,6 @@ def __step_config(ctx, step_config):
                         win_toolchain_dir + ":headers-ci",
                     ],
                 })
-            else:
-                win_sdk.step_config(ctx, step_config)
         remote_wrapper = rewrapper_config.get("remote_wrapper")
         input_root_absolute_path = gn_logs.read(ctx).get("clang_need_input_root_absolute_path") == "true"
 

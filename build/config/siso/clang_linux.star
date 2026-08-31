@@ -11,7 +11,6 @@ load("./clang_exception.star", "clang_exception")
 load("./clang_unix.star", "clang_unix")
 load("./gn_logs.star", "gn_logs")
 load("./fuchsia.star", "fuchsia")
-load("./win_sdk.star", "win_sdk")
 
 target_cpus = ["amd64", "i386", "arm64", "armhf"]
 
@@ -130,8 +129,6 @@ def __step_config(ctx, step_config):
     step_config["input_deps"].update(clang_unix.input_deps(ctx))
 
     step_config["rules"].extend(clang_unix.rules(ctx))
-    if win_sdk.enabled(ctx):
-        win_sdk.step_config(ctx, step_config)
     step_config = clang_exception.step_config(ctx, step_config)
     return step_config
 

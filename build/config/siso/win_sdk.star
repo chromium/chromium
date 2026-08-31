@@ -83,7 +83,7 @@ def __filegroups(ctx):
             # for precomputed subtrees.
             # Case insensitive files are listed by filegroups.
             # But, case sensitive files are added individually in
-            # __step_config() below.
+            # __input_deps() below.
             win_toolchain_dir + ":headers-ci": {
                 "type": "glob",
                 "includes": [
@@ -104,10 +104,10 @@ def __filegroups(ctx):
         })
     return fg
 
-def __step_config(ctx, step_config):
+def __input_deps(ctx):
     win_toolchain_dir = __win_toolchain_dir(ctx)
     if not win_toolchain_dir:
-        return
+        return {}
     target_cpu = __target_cpu(ctx)
     host_cpu = __host_cpu()
     win_toolchain_headers = [
@@ -343,18 +343,19 @@ def __step_config(ctx, step_config):
         win_toolchain_libs = __extend_libs_for_case_varients(win_toolchain_libs, target_cpu)
         if target_cpu != host_cpu:
             win_toolchain_libs = __extend_libs_for_case_varients(win_toolchain_libs, host_cpu)
-        step_config["input_deps"].update({
+        return {
             win_toolchain_dir + ":headers": win_toolchain_headers,
             win_toolchain_dir + ":libs": win_toolchain_libs,
-        })
+        }
     else:
         # sdk_version may be unknown when first build after `gn clean` (no gn_logs.txt yet)
         print("sdk_version is unknown")
+    return {}
 
 win_sdk = module(
     "win_sdk",
     enabled = __enabled,
     toolchain_dir = __win_toolchain_dir,
-    step_config = __step_config,
+    input_deps = __input_deps,
     filegroups = __filegroups,
 )

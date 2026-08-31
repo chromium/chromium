@@ -84,7 +84,7 @@ def __input_deps(ctx):
         "buildtools/third_party/libc++/__config_site",
     ]
 
-    return {
+    inputs = {
         "third_party/llvm-build/Release+Asserts/bin/clang++": libcxx_inputs,
         "third_party/llvm-build/Release+Asserts/bin/clang++.exe": libcxx_inputs,
         "third_party/llvm-build/Release+Asserts/bin/clang-cl": libcxx_inputs,
@@ -149,6 +149,9 @@ def __input_deps(ctx):
             "build/toolchain/whole_archive.py",
         ],
     }
+    if win_sdk.enabled(ctx):
+        inputs.update(win_sdk.input_deps(ctx))
+    return inputs
 
 def __lld_link(ctx, cmd):
     if not (config.get(ctx, "remote-link") or config.get(ctx, "default-remote")):
