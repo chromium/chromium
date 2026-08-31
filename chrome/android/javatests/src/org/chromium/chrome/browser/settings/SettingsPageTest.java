@@ -476,15 +476,12 @@ public class SettingsPageTest {
     @MediumTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testSearchInSingleColumnThenRotateToLandscapeAndExitSearch() {
+        // Ensure starting in portrait (usually single-column mode on tablet).
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
         // Wait for settings page to load.
-        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
-
-        // Ensure portrait.
-        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
-
-        // Wait for settings page in portrait.
         onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
         // Skip test if portrait mode happens to be wide enough for two-column mode.
