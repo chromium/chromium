@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_factory.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -577,7 +578,10 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
     }
   }
 
-  if (is_editing_or_empty) {
+  if (is_editing_or_empty &&
+      (!ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(
+           GetWebContents()) ||
+       omnibox_controller_->IsPopupOpen())) {
     // Permission requests get cancelled if user edits the URL.
     // (And won't show up if it was already edited when they occurred).
     bool has_visible_chip = GetChipController()->chip()->GetVisible();

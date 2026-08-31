@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/permissions/permission_prompt_factory.h"
+
 #include <algorithm>
 #include <memory>
 
@@ -84,24 +86,7 @@ bool ShouldIgnorePermissionRequest(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(web_contents);
 
-  // Allow permission prompts for WebUI pages that should bypass the omnibox
-  // empty or editing state check:
-  // - NTP has an empty omnibox.
-  // - Contextual Tasks Tab has an empty omnibox.
-  // - Omnibox Popup is an embedded WebUI that itself may request permissions.
-  // - Omnibox Everywhere is an embedded WebUI that itself may request
-  // permissions.
-  const url::Origin committed_origin =
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  if (committed_origin.IsSameOriginWith(chrome::ChromeUINewTabURLAsGURL()) ||
-      committed_origin.IsSameOriginWith(
-          chrome::ChromeUINewTabPageURLAsGURL()) ||
-      committed_origin.IsSameOriginWith(
-          GURL(chrome::kChromeUIOmniboxPopupURL)) ||
-      committed_origin.IsSameOriginWith(
-          GURL(chrome::kChromeUIContextualTasksURL)) ||
-      committed_origin.IsSameOriginWith(
-          GURL(chrome::kChromeUIOmniboxEverywhereURL))) {
+  if (ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(web_contents)) {
     return false;
   }
 
@@ -266,6 +251,35 @@ std::unique_ptr<permissions::PermissionPrompt> CreateQuietPrompt(
 }
 
 }  // namespace
+
+bool ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+
+  // Allow permission prompts for WebUI pages that should bypass the omnibox
+  // empty or editing state check:
+  // - NTP has an empty omnibox.
+  // - Contextual Tasks Tab has an empty omnibox.
+  // - Omnibox Popup is an embedded WebUI that itself may request permissions.
+  // - Omnibox Everywhere is an embedded WebUI that itself may request
+  // permissions.
+  const url::Origin committed_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (committed_origin.IsSameOriginWith(chrome::ChromeUINewTabURLAsGURL()) ||
+      committed_origin.IsSameOriginWith(
+          chrome::ChromeUINewTabPageURLAsGURL()) ||
+      committed_origin.IsSameOriginWith(
+          GURL(chrome::kChromeUIOmniboxPopupURL)) ||
+      committed_origin.IsSameOriginWith(
+          GURL(chrome::kChromeUIContextualTasksURL)) ||
+      committed_origin.IsSameOriginWith(
+          GURL(chrome::kChromeUIOmniboxEverywhereURL))) {
+    return true;
+  }
+  return false;
+}
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     content::WebContents* web_contents,

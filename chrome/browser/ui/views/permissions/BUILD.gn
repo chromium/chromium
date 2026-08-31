@@ -40,6 +40,7 @@ if (toolkit_views) {
       "permission_prompt_bubble_view_factory.h",
       "permission_prompt_chip.h",
       "permission_prompt_desktop.h",
+      "permission_prompt_factory.h",
       "permission_prompt_quiet_icon.h",
     ]
 
