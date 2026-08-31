@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PDF_INFOBAR_PDF_INFOBAR_CONTROLLER_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
