@@ -46,7 +46,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
@@ -1194,9 +1193,7 @@ TEST_F(AutocompleteControllerTest, MlRanking_PiecewiseMappedSearchBlending) {
   EXPECT_THAT(
       controller_.SimulateCleanAutocompletePass({
           // Final score: 1100 (!= 1300)
-          CreateAnswerMlScoredMatch("answer 1100 0.75",
-                                    omnibox::ANSWER_TYPE_WEATHER, false, 1100,
-                                    0.75),
+          CreateAnswerMlScoredMatch("answer 1100 0.75", false, 1100, 0.75),
           // Final score: 1000 (!= 1500)
           CreateMlScoredMatch("calculator 1000 0.95",
                               AutocompleteMatchType::CALCULATOR, false, 1000,

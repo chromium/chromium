@@ -33,7 +33,6 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "url/gurl.h"
 
 namespace app_list {

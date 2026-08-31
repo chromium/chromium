@@ -17,28 +17,6 @@ namespace {
 OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
   // Some suggestions have custom icons. Others fallback to the icon from the
   // overall match type.
-  omnibox::AnswerType answer_type = match.answer_type;
-  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
-    switch (answer_type) {
-      case omnibox::ANSWER_TYPE_DICTIONARY:
-        return OmniboxSuggestionIconType::kDictionary;
-      case omnibox::ANSWER_TYPE_FINANCE:
-        return OmniboxSuggestionIconType::kStock;
-      case omnibox::ANSWER_TYPE_TRANSLATION:
-        return OmniboxSuggestionIconType::kTranslation;
-      case omnibox::ANSWER_TYPE_CURRENCY:
-        return OmniboxSuggestionIconType::kConversion;
-      case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
-        return OmniboxSuggestionIconType::kSunrise;
-      case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
-      case omnibox::ANSWER_TYPE_LOCAL_TIME:
-      case omnibox::ANSWER_TYPE_SPORTS:
-      case omnibox::ANSWER_TYPE_WEATHER:
-        return OmniboxSuggestionIconType::kFallbackAnswer;
-      case omnibox::ANSWER_TYPE_UNSPECIFIED:
-        NOTREACHED();
-    }
-  }
 
   if (match.suggest_template && match.suggest_template->has_type_icon()) {
     return GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(

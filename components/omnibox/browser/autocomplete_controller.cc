@@ -1718,9 +1718,6 @@ void AutocompleteController::PostProcessMatches() {
   // Notify providers which of their matches were shown. If we end up with more
   // providers to notify, we should add `RegisterDisplayedMatches()` to the
   // `AutocompleteProvider` interface and iterate all providers here.
-  if (search_provider_) {
-    search_provider_->RegisterDisplayedAnswers(internal_result_);
-  }
   // `featured_search_provider_` isn't interested in "invisible" autocomplete
   // runs, e.g. when text is copied.
   if (featured_search_provider_ && !input_.omit_asynchronous_matches()) {

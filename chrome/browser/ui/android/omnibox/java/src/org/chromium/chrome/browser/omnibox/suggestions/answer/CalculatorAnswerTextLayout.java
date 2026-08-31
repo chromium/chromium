@@ -13,7 +13,6 @@ import android.text.style.TextAppearanceSpan;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 
@@ -27,7 +26,6 @@ class CalculatorAnswerTextLayout implements AnswerText {
 
     final Context mContext;
     private final boolean mIsAnswer;
-    private final AnswerType mAnswerType;
 
     /** Content of the line of text in omnibox suggestion. */
     private final SpannableStringBuilder mText = new SpannableStringBuilder();
@@ -77,13 +75,12 @@ class CalculatorAnswerTextLayout implements AnswerText {
     CalculatorAnswerTextLayout(Context context, String text, boolean isAnswerLine) {
         mContext = context;
         mIsAnswer = isAnswerLine;
-        mAnswerType = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         appendAndStyleText(text, getAppearanceForText());
     }
 
     private void appendAndStyleText(String text, MetricAffectingSpan style) {
         // Unescape HTML entities (e.g. "&quot;", "&gt;").
-        text = AnswerTextUtils.processAnswerText(text, mIsAnswer, mAnswerType);
+        text = AnswerTextUtils.processAnswerText(text);
 
         // Append as HTML (answer responses contain simple markup).
         int start = mText.length();

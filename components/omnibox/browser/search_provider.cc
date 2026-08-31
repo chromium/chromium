@@ -176,8 +176,7 @@ class SearchProvider::CompareScoredResults {
 SearchProvider::SearchProvider(AutocompleteProviderClient* client,
                                AutocompleteProviderListener* listener)
     : BaseSearchProvider(AutocompleteProvider::TYPE_SEARCH, client),
-      providers_(client->GetTemplateURLService()),
-      answers_cache_(10) {
+      providers_(client->GetTemplateURLService()) {
   AddListener(listener);
 
   TemplateURLService* template_url_service = client->GetTemplateURLService();
@@ -185,29 +184,6 @@ SearchProvider::SearchProvider(AutocompleteProviderClient* client,
   // |template_url_service| can be null in tests.
   if (template_url_service)
     observation_.Observe(template_url_service);
-}
-
-void SearchProvider::RegisterDisplayedAnswers(
-    const AutocompleteResult& result) {
-  if (result.empty())
-    return;
-
-  // The answer must be in the first or second slot to be considered. It should
-  // only be in the second slot if AutocompleteController ranked a local search
-  // history or a verbatim item higher than the answer.
-  auto match = result.begin();
-  if (match->answer_type == omnibox::ANSWER_TYPE_UNSPECIFIED &&
-      result.size() > 1) {
-    ++match;
-  }
-
-  if (match->answer_type == omnibox::ANSWER_TYPE_UNSPECIFIED ||
-      match->fill_into_edit.empty()) {
-    return;
-  }
-
-  // Valid answer encountered, cache it for further queries.
-  answers_cache_.UpdateRecentAnswers(match->fill_into_edit, match->answer_type);
 }
 
 // static
@@ -379,7 +355,6 @@ void SearchProvider::Start(const AutocompleteInput& input,
                         &transformed_default_history_results_);
     ScoreHistoryResults(raw_keyword_history_results_, true,
                         &transformed_keyword_history_results_);
-    prefetch_data_ = FindAnswersPrefetchData();
 
     // Raw results are not needed any more.
     raw_default_history_results_.clear();
@@ -965,12 +940,6 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   // Session token and prefetch data required for answers.
   search_term_args.session_token =
       client()->GetTemplateURLService()->GetSessionToken();
-  if (!prefetch_data_.full_query_text.empty()) {
-    search_term_args.prefetch_query =
-        base::UTF16ToUTF8(prefetch_data_.full_query_text);
-    search_term_args.prefetch_query_type =
-        base::NumberToString(prefetch_data_.query_type);
-  }
   search_term_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
   search_term_args.input_state = input.input_state();
@@ -1039,20 +1008,6 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     const std::u16string& trimmed_verbatim =
         base::CollapseWhitespace(input_.text(), false);
 
-    // Verbatim results don't get suggestions and hence, answers.
-    // Scan previous matches if the last answer-bearing suggestion matches
-    // verbatim, and if so, copy over answer contents.
-    AutocompleteMatch* match_with_answer = nullptr;
-    std::u16string trimmed_verbatim_lower =
-        base::i18n::ToLower(trimmed_verbatim);
-    for (auto it = matches_.begin(); it != matches_.end(); ++it) {
-      if (it->answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
-          base::i18n::ToLower(it->fill_into_edit) == trimmed_verbatim_lower) {
-        match_with_answer = &(*it);
-        break;
-      }
-    }
-
     SearchSuggestionParser::SuggestResult verbatim(
         /*suggestion=*/trimmed_verbatim,
         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
@@ -1061,10 +1016,6 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         /*navigational_intent=*/omnibox::NAV_INTENT_NONE, verbatim_relevance,
         relevance_from_server,
         /*input_text=*/trimmed_verbatim);
-    if (match_with_answer) {
-      verbatim.SetAnswerType(match_with_answer->answer_type);
-      verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
-    }
     if (omnibox::IsComposebox(input_.current_page_classification())) {
       omnibox::SuggestTemplateInfo suggest_template;
       suggest_template.set_type_icon(
@@ -1157,7 +1108,6 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
   // suggestions, but the current assumption is that there should only ever be
   // one suggestion with an answer.  To maintain this assumption, remove any
   // answers after the first.
-  RemoveExtraAnswers(&matches);
 
 #if !BUILDFLAG(IS_IOS)
   // Only allow adding a location signaling suggestion on non-iOS, when the
@@ -1216,39 +1166,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
   }
 }
 
-void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
-  bool answer_seen = false;
-  for (auto it = matches->begin(); it != matches->end(); ++it) {
-    if (it->answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
-      if (!answer_seen) {
-        answer_seen = true;
-      } else {
-        it->answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
-        it->answer_template.reset();
-      }
-    }
-  }
-}
 
-void SearchProvider::DuplicateCardAnswer(ACMatches* matches) {
-  auto iter = std::ranges::find_if(*matches, [](const auto& match) {
-    return match.answer_template.has_value();
-  });
-
-  if (iter == matches->end()) {
-    return;
-  }
-
-  bool orig_allowed_to_be_default_match = iter->allowed_to_be_default_match;
-  iter->allowed_to_be_default_match = false;
-
-  auto& copy = matches->emplace_back(*iter);
-  copy.answer_template.reset();
-  copy.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
-  copy.actions.clear();
-  copy.allowed_to_be_default_match = orig_allowed_to_be_default_match;
-  copy.suggestion_group_id = omnibox::GROUP_SEARCH;
-}
 
 bool SearchProvider::IsTopMatchSearchWithURLInput() const {
   auto first_match = AutocompleteResult::FindTopMatch(input_, matches_);
@@ -1652,27 +1570,6 @@ void SearchProvider::UpdateDone() {
   done_ = !timer_.IsRunning() && !default_loader_ && !keyword_loader_;
 }
 
-AnswersQueryData SearchProvider::FindAnswersPrefetchData() {
-  // Retrieve the top entry from scored history results.
-  MatchMap map;
-  AddTransformedHistoryResultsToMap(transformed_keyword_history_results_,
-                                    TemplateURLRef::NO_SUGGESTIONS_AVAILABLE,
-                                    &map);
-  AddTransformedHistoryResultsToMap(transformed_default_history_results_,
-                                    TemplateURLRef::NO_SUGGESTIONS_AVAILABLE,
-                                    &map);
-
-  ACMatches matches;
-  for (MatchMap::const_iterator i(map.begin()); i != map.end(); ++i)
-    matches.push_back(i->second);
-  std::sort(matches.begin(), matches.end(), &AutocompleteMatch::MoreRelevant);
-
-  // If there is a top scoring entry, find the corresponding answer.
-  if (!matches.empty())
-    return answers_cache_.GetTopAnswerEntry(matches[0].contents);
-
-  return AnswersQueryData();
-}
 
 void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
   // The server sends back as many as 20 suggestions that may have

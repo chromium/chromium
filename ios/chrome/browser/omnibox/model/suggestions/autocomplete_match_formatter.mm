@@ -168,7 +168,7 @@ UIColor* DimColorIncognito() {
 }
 
 - (NSInteger)numberOfLines {
-  return _match.answer_type == omnibox::ANSWER_TYPE_DICTIONARY ? 3 : 1;
+  return 1;
 }
 
 - (NSNumber*)suggestionGroupId {
@@ -369,23 +369,18 @@ UIColor* DimColorIncognito() {
                                                  : SuggestionTextColor();
 
   omnibox::FormattedString::ColorType color = fragment.color();
-  BOOL isFinanceMatch = _match.answer_type == omnibox::ANSWER_TYPE_FINANCE;
   switch (color) {
     case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
       return @{
         NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
                                                     size:0],
-        NSForegroundColorAttributeName : _isReverseColorLogic && isFinanceMatch
-            ? [UIColor colorNamed:kRedColor]
-            : [UIColor colorNamed:kGreenColor],
+        NSForegroundColorAttributeName : [UIColor colorNamed:kGreenColor],
       };
     case omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE:
       return @{
         NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
                                                     size:0],
-        NSForegroundColorAttributeName : _isReverseColorLogic && isFinanceMatch
-            ? [UIColor colorNamed:kGreenColor]
-            : [UIColor colorNamed:kRedColor],
+        NSForegroundColorAttributeName : [UIColor colorNamed:kRedColor],
       };
     case omnibox::FormattedString::COLOR_PRIMARY: {
       // Calculate a slightly smaller font. The ratio here is somewhat
@@ -406,14 +401,10 @@ UIColor* DimColorIncognito() {
       };
     }
     default:
-      BOOL isFinanceDetailText =
-          _match.answer_type == omnibox::ANSWER_TYPE_FINANCE &&
-          useDeemphasizedStyling;
       return @{
         NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
                                                     size:0],
-        NSForegroundColorAttributeName : isFinanceDetailText ? UIColor.grayColor
-                                                             : defaultColor,
+        NSForegroundColorAttributeName : defaultColor,
       };
   }
 }

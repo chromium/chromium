@@ -24,7 +24,6 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
@@ -109,11 +108,6 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   static std::string CreateQueryParamStringFromMap(
       const google::protobuf::Map<std::string, std::string>& query_param_map);
-
-  static scoped_refptr<OmniboxAction> CreateAnswerAction(
-      omnibox::SuggestionEnhancement enhancement,
-      TemplateURLRef::SearchTermsArgs search_terms_args,
-      omnibox::AnswerType answer_type);
 
   // Returns whether the URL of the current page is eligible to be sent in any
   // suggest request. Only valid URLs with an HTTP or HTTPS scheme are eligible.

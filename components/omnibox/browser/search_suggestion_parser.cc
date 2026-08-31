@@ -462,13 +462,6 @@ omnibox::NavigationalIntent NavigationalIntentForNumber(int value) {
   return omnibox::NavigationalIntent::NAV_INTENT_NONE;
 }
 
-omnibox::AnswerType AnswerTypeForNumber(int value) {
-  if (omnibox::AnswerType_IsValid(value)) {
-    return static_cast<omnibox::AnswerType>(value);
-  }
-  return omnibox::ANSWER_TYPE_UNSPECIFIED;
-}
-
 // SearchSuggestionParser::Result ----------------------------------------------
 
 SearchSuggestionParser::Result::Result(
@@ -670,11 +663,6 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
 void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
     const omnibox::RichAnswerTemplate& answer_template) {
   answer_template_ = answer_template;
-}
-
-void SearchSuggestionParser::SuggestResult::SetAnswerType(
-    const omnibox::AnswerType& answer_type) {
-  answer_type_ = answer_type;
 }
 
 void SearchSuggestionParser::SuggestResult::SetEntityInfo(
@@ -1089,7 +1077,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::optional<int> suggestion_group_id;
       bool answer_parsed_successfully = false;
       omnibox::RichAnswerTemplate answer_template;
-      omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
       bool has_suggest_template = false;
 
       if (response_metadata.suggestion_details &&
@@ -1130,26 +1117,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
         suggestion_group_id = suggestion_detail.FindInt("zl");
 
         // Answer.
-        const std::string* answer_type_str =
-            suggestion_detail.FindString("ansb");
-        if (answer_type_str) {
-          // Check that answer type string can be mapped to omnibox::AnswerType.
-          int numeric_answer_type = 0;
-          if (base::StringToInt(base::UTF8ToUTF16(*answer_type_str),
-                                &numeric_answer_type)) {
-            base::UmaHistogramSparse("Omnibox.AnswerParseType",
-                                     numeric_answer_type);
-            answer_type = AnswerTypeForNumber(numeric_answer_type);
-          }
-        }
-        if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
-          // omnibox::RichAnswerTemplate is preferred to "ansa" if available.
-          if (suggest_template.has_rich_answer_template()) {
-            answer_template = suggest_template.rich_answer_template();
-            answer_parsed_successfully = true;
-          }
-          base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",
-                                    answer_parsed_successfully);
+        if (suggest_template.has_rich_answer_template()) {
+          answer_template = suggest_template.rich_answer_template();
+          answer_parsed_successfully = true;
         }
       }
 
@@ -1174,7 +1144,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
               : std::nullopt));
 
       if (answer_parsed_successfully) {
-        results->suggest_results.back().SetAnswerType(answer_type);
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
       }
 

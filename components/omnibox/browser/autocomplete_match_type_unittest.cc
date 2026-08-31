@@ -90,7 +90,6 @@ namespace {
 
 }  // namespace
 
-
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelThreadsHistory) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;

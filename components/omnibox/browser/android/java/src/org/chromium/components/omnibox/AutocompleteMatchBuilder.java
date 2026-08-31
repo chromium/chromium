@@ -7,7 +7,6 @@ package org.chromium.components.omnibox;
 import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.search_engines.StarterPackId;
@@ -34,7 +33,6 @@ public class AutocompleteMatchBuilder {
     private String mDescription;
     private List<AutocompleteMatch.MatchClassification> mDescriptionClassifications;
     private byte[] mSerializedAnswerTemplate;
-    private AnswerType mAnswerType;
     private String mFillIntoEdit;
     private GURL mUrl;
     private GURL mImageUrl;
@@ -67,7 +65,6 @@ public class AutocompleteMatchBuilder {
                 .setIsSearch(true)
                 .setDisplayText("Placeholder Suggestion")
                 .setDescription("Placeholder Description")
-                .setAnswerType(AnswerType.ANSWER_TYPE_UNSPECIFIED)
                 .setUrl(JUnitTestGURLs.SEARCH_URL);
     }
 
@@ -91,7 +88,6 @@ public class AutocompleteMatchBuilder {
         mDescription = null;
         mDescriptionClassifications = new ArrayList<>();
         mSerializedAnswerTemplate = null;
-        mAnswerType = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         mFillIntoEdit = null;
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
@@ -139,7 +135,6 @@ public class AutocompleteMatchBuilder {
                 mDescription,
                 mDescriptionClassifications,
                 mSerializedAnswerTemplate,
-                mAnswerType.getNumber(),
                 mFillIntoEdit,
                 mUrl,
                 mImageUrl,
@@ -278,10 +273,6 @@ public class AutocompleteMatchBuilder {
      * @param answer The type of answer in the Omnibox suggestion.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setAnswerType(AnswerType answerType) {
-        mAnswerType = answerType;
-        return this;
-    }
 
     /**
      * @param clipboardImageData Image data to set for this suggestion.

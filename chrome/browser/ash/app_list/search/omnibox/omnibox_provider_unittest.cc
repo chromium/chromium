@@ -29,7 +29,6 @@
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
 
 namespace app_list::test {
 

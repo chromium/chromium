@@ -44,8 +44,6 @@ void SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(
       match.type == AutocompleteMatchType::TILE_MOST_VISITED_SITE);
   match.scoring_signals->set_is_search_suggest_tail(
       match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL);
-  match.scoring_signals->set_is_answer_suggest(
-      match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED);
   match.scoring_signals->set_is_calculator_suggest(
       match.type == AutocompleteMatchType::CALCULATOR);
 }
