@@ -91,7 +91,7 @@
   text-decoration: none;
 }
 
-#textInput::placeholder {
+#textInput::part(searchbox-input)::placeholder {
   color: var(--color-omnibox-text);
 }
 
@@ -100,7 +100,7 @@
 }
 
 #textContainer .color-foreground-disabled,
-#textInput.color-foreground-disabled::placeholder  {
+#textInput.color-foreground-disabled::part(searchbox-input)::placeholder  {
   color: var(--color-omnibox-foreground-disabled);
 }
 
