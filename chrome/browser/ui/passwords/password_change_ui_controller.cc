@@ -273,13 +273,18 @@ std::unique_ptr<views::View> CreatePrivateInferenceNoticeBox(
       .Build();
 }
 
-// Creates dialog offering password change to the user with private inference
-// notice.
+// Creates dialog offering password change to the user with private inference.
+// `with_privacy_notice` controls whether the dialog is presented in the
+// first-run agreement state (including a privacy notice box, "Try now" button
+// label, and agreement learn-more link) or regular offering state (without
+// privacy notice box, with "Change it for me" button label, and regular
+// learn-more link).
 std::unique_ptr<ui::DialogModel>
 CreateOfferChangePasswordDialogWithPrivateInference(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
     base::RepeatingClosure navigate_to_settings_callback,
+    bool with_privacy_notice,
     std::u16string email,
     std::u16string display_origin) {
   ui::DialogModel::Builder dialog_builder;
@@ -293,30 +298,36 @@ CreateOfferChangePasswordDialogWithPrivateInference(
   }
 
   auto time_callback = base::BindRepeating(
-      &LogLeakDialogTimeSpent, /*with_privacy_notice=*/true, base::Time::Now());
+      &LogLeakDialogTimeSpent, with_privacy_notice, base::Time::Now());
   dialog_builder.AddCancelButton(std::move(cancel_callback).Then(time_callback),
                                  ui::DialogModel::Button::Params().SetLabel(
                                      l10n_util::GetStringUTF16(IDS_NO_THANKS)));
   dialog_builder.AddOkButton(
       std::move(accept_callback).Then(time_callback),
       ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TRY_NOW_BUTTON)));
+          with_privacy_notice
+              ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TRY_NOW_BUTTON
+              : IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CHANGE_PASSWORD)));
 
   ui::DialogModelLabel::TextReplacement email_label =
       ui::DialogModelLabel::CreatePlainText(std::move(email));
   ui::DialogModelLabel::TextReplacement link = ui::DialogModelLabel::CreateLink(
-      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_LINK_WITH_PRIVACY_NOTICE,
+      with_privacy_notice
+          ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_LINK_WITH_PRIVACY_NOTICE
+          : IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_LINK_WITHOUT_PRIVACY_NOTICE,
       navigate_to_settings_callback);
 
   dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OFFER_DIALOG_DETAILS_WITH_PI,
       {email_label, link}));
 
-  dialog_builder.AddCustomField(
-      std::make_unique<views::BubbleDialogModelHost::CustomView>(
-          CreatePrivateInferenceNoticeBox(
-              std::move(navigate_to_settings_callback)),
-          views::BubbleDialogModelHost::FieldType::kControl));
+  if (with_privacy_notice) {
+    dialog_builder.AddCustomField(
+        std::make_unique<views::BubbleDialogModelHost::CustomView>(
+            CreatePrivateInferenceNoticeBox(
+                std::move(navigate_to_settings_callback)),
+            views::BubbleDialogModelHost::FieldType::kControl));
+  }
 
   return dialog_builder.Build();
 }
@@ -419,7 +430,8 @@ void PasswordChangeUIController::UpdateState(
     CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
     if (toast_view_) {
       // If already showing a toast, update its layout.
-      toast_view_->UpdateLayout(std::move(std::get<ToastOptions>(configuration)));
+      toast_view_->UpdateLayout(
+          std::move(std::get<ToastOptions>(configuration)));
       // Manually trigger a bounds update since the widget is not auto-sized.
       tab_interface_->GetTabFeatures()
           ->tab_dialog_manager()
@@ -472,7 +484,8 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
             base::BindOnce(&PasswordChangeUIController::OnPrivacyNoticeAccepted,
                            weak_ptr_factory_.GetWeakPtr()),
             std::move(cancel_dialog_callback),
-            std::move(navigate_to_settings_callback), std::move(email),
+            std::move(navigate_to_settings_callback),
+            /*with_privacy_notice=*/true, std::move(email),
             password_change_delegate_
                 ? password_change_delegate_->GetDisplayOrigin()
                 : std::u16string());
@@ -484,6 +497,19 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           std::move(navigate_to_settings_callback),
           /*with_privacy_notice=*/true, std::move(email));
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
+      if (base::FeatureList::IsEnabled(
+              password_change::features::
+                  kPasswordChangeWithPrivateInferenceLoginCheck)) {
+        return CreateOfferChangePasswordDialogWithPrivateInference(
+            base::BindOnce(&PasswordChangeUIController::StartPasswordChangeFlow,
+                           weak_ptr_factory_.GetWeakPtr()),
+            std::move(cancel_dialog_callback),
+            std::move(navigate_to_settings_callback),
+            /*with_privacy_notice=*/false, std::move(email),
+            password_change_delegate_
+                ? password_change_delegate_->GetDisplayOrigin()
+                : std::u16string());
+      }
       return CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::StartPasswordChangeFlow,
                          weak_ptr_factory_.GetWeakPtr()),
