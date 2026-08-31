@@ -30,6 +30,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/util:java",
     "//components/cached_flags:java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     "//ui/android:ui_java",

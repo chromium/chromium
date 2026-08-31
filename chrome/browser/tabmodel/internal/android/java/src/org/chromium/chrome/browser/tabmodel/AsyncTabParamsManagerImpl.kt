@@ -62,9 +62,14 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
     private val mAsyncTabParamsManager: AsyncTabParamsManagerImpl
   ) : IncognitoTabHost {
 
+    @SuppressWarnings("UseKtx")
     override fun hasIncognitoTabs(): Boolean {
-      mAsyncTabParamsManager.forEachTab {
-        if (it.isIncognitoBranded || it.isOffTheRecord) return true
+      val params = mAsyncTabParamsManager.mAsyncTabParams
+      for (i in 0 until params.size()) {
+        val param = params.valueAt(i)
+        if (param.isIncognito) {
+          return true
+        }
       }
       return false
     }
@@ -72,14 +77,12 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
     @SuppressWarnings("UseKtx")
     override fun closeAllIncognitoTabs() {
       val params = mAsyncTabParamsManager.mAsyncTabParams
-      // removeAt() does not invalidate indices so long as no read operations are made.
-      val clone = params.clone()
-      for (i in 0 until clone.size()) {
-        val param = clone.valueAt(i)
-        val tab = param.tabToReparent
-        if ((tab?.isIncognitoBranded ?: false) || (tab?.isOffTheRecord ?: false)) {
-          param.destroy()
+      // Iterate in reverse to avoid SparseArray index shifting / gc() compaction hazards when removing elements.
+      for (i in params.size() - 1 downTo 0) {
+        val param = params.valueAt(i)
+        if (param.isIncognito) {
           params.removeAt(i)
+          param.destroy()
         }
       }
     }
@@ -91,3 +94,11 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
     override fun isActiveModel() = false
   }
 }
+
+private val AsyncTabParams.isIncognito: Boolean
+  get() {
+    val tab = tabToReparent
+    val isIncognitoTab = (tab?.isIncognitoBranded ?: false) || (tab?.isOffTheRecord ?: false)
+    val isIncognitoWebContents = webContents?.isIncognito ?: false
+    return isIncognitoTab || isIncognitoWebContents
+  }
