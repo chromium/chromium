@@ -178,7 +178,7 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   [container addSubview:backgroundView];
   AddSameConstraints(container, backgroundView);
 
-  [backgroundView addSubview:moduleView];
+  [container addSubview:moduleView];
   [NSLayoutConstraint activateConstraints:@[
     [moduleView.topAnchor constraintEqualToAnchor:container.topAnchor],
     [moduleView.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
