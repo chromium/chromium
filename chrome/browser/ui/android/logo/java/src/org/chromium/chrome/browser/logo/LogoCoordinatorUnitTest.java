@@ -59,7 +59,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for the {@link LogoCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LogoCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

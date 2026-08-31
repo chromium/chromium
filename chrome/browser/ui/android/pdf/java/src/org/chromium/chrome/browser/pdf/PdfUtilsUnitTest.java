@@ -51,9 +51,7 @@ import java.io.File;
 import java.io.IOException;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {PdfUtilsUnitTest.CustomShadowParcelFileDescriptor.class})
+@Config(shadows = {PdfUtilsUnitTest.CustomShadowParcelFileDescriptor.class})
 public class PdfUtilsUnitTest {
     @Implements(ParcelFileDescriptor.class)
     public static class CustomShadowParcelFileDescriptor extends ShadowParcelFileDescriptor {

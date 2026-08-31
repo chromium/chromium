@@ -39,7 +39,7 @@ import java.lang.ref.WeakReference;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@Config(sdk = VERSION_CODES.R, manifest = Config.NONE)
+@Config(sdk = VERSION_CODES.R)
 public class EdgeToEdgeControllerCreatorUnitTest {
     private static final int TOP_STATUS_INSET = 150;
     private static final int NAVBAR_INSET = 100;

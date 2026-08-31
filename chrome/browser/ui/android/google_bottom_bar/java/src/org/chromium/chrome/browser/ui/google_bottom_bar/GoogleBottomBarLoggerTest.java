@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLo
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.Go
 
 /** Unit tests for {@link GoogleBottomBarLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class GoogleBottomBarLoggerTest {
 
     private HistogramWatcher mHistogramWatcher;

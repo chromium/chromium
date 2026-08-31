@@ -23,7 +23,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -37,7 +36,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** Unit tests for {@link TopUiThemeColorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TopUiThemeColorProviderUnitTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 

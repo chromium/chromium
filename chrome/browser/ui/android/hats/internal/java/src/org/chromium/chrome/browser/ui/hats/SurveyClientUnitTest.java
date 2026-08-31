@@ -25,7 +25,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -48,7 +47,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SurveyClientUnitTest {
     private static final String TEST_SURVEY_TRIGGER = "test_survey_trigger";
     private static final String TEST_TRIGGER_ID = "triggerId1234";

@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -34,7 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link CompositorModelChangeProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CompositorModelChangeProcessorUnitTest {
     private static final PropertyModel.WritableBooleanPropertyKey PROPERTY_CHANGED =
             new PropertyModel.WritableBooleanPropertyKey();

@@ -43,7 +43,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -76,7 +75,6 @@ import java.util.Collections;
  * parameterized to run all tests for each RP mode.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBase {
     @Parameters
     public static Collection<Object> data() {

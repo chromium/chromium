@@ -35,7 +35,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link LensOverlayImageHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LensOverlayImageHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
@@ -24,7 +23,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DrivingRestrictionsManagerTest {
     private DrivingRestrictionsManager mManager;
     @Spy private DrivingRestrictionsDelegate mSpyDelegate;

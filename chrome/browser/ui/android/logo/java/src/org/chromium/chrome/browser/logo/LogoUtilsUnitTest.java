@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
 
 /** Unit tests for the {@link LogoUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LogoUtilsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Resources mResources;

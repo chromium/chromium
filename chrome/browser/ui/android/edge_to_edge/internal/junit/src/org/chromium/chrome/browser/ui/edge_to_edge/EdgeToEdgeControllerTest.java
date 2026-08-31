@@ -104,7 +104,7 @@ import org.chromium.url.JUnitTestGURLs;
  * {@link EdgeToEdgeControllerFactory}, along with {@link EdgeToEdgeControllerImpl}
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = VERSION_CODES.R, manifest = Config.NONE)
+@Config(sdk = VERSION_CODES.R)
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class EdgeToEdgeControllerTest {
 

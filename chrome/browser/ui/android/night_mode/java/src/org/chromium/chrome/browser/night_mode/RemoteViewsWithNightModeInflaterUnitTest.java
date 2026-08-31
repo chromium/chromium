@@ -12,14 +12,12 @@ import android.widget.ScrollView;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link RemoteViewsWithNightModeInflater}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class RemoteViewsWithNightModeInflaterUnitTest {
 
     @Test

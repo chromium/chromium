@@ -42,7 +42,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link TopControlsLockCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw320dp")
+@Config(qualifiers = "sw320dp")
 public class TopControlsLockCoordinatorTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

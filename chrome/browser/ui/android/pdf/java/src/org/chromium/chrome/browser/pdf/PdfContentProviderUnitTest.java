@@ -42,9 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {PdfContentProviderUnitTest.CustomShadowParcelFileDescriptor.class})
+@Config(shadows = {PdfContentProviderUnitTest.CustomShadowParcelFileDescriptor.class})
 public class PdfContentProviderUnitTest {
     @Implements(ParcelFileDescriptor.class)
     public static class CustomShadowParcelFileDescriptor extends ShadowParcelFileDescriptor {

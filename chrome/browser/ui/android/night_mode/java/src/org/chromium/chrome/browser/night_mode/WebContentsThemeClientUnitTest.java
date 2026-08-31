@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -34,7 +33,6 @@ import org.chromium.url.JUnitTestGURLs;
 import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link WebContentsThemeClient}. */
-@Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebContentsThemeClientUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

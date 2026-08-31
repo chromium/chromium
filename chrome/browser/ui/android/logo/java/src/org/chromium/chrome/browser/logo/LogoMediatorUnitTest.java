@@ -31,7 +31,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -51,7 +50,6 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Unit tests for the {@link LogoMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LogoMediatorUnitTest {
 
     private static final String TEST_ANIMATED_LOGO_URL = "http://animated-logo.com";

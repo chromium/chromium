@@ -23,7 +23,6 @@ import org.chromium.url.GURL;
 
 /** Tests public methods in NativePage. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NativePageTest {
     public static class UrlCombo {
         public String url;

@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.cc.input.OffsetTag;
@@ -51,7 +50,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class EdgeToEdgeBottomChinMediatorTest {
     @Parameters
     public static Collection testCases() {

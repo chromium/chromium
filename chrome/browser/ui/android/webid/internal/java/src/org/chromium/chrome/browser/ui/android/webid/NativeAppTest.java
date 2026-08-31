@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowPackageManager;
 
@@ -60,7 +59,6 @@ import java.lang.ref.WeakReference;
 
 /** Robolectric tests for native app continue_on flow in AccountSelectionCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures({
     ContentFeatures.FED_CM_NATIVE_ID_PS,
     ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE

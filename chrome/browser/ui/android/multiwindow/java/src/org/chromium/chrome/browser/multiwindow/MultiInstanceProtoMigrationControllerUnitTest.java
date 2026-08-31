@@ -16,7 +16,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -35,7 +34,6 @@ import java.util.Set;
 
 /** Unit tests for {@link MultiInstanceProtoMigrationController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MultiInstanceProtoMigrationControllerUnitTest {
     private static final long MULTI_WINDOW_START_TIME = 100L;
     private static final int MAX_INSTANCE_LIMIT = 5;

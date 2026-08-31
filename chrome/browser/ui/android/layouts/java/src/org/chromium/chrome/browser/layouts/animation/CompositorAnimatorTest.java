@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Unit tests for the {@link CompositorAnimator} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         // AnimatorSet seems to not work in Robolectric 3.4.2. Remove this SDK
         // specification once we upgrade to a version in which it works. crbug.com/40544586
         sdk = Build.VERSION_CODES.TIRAMISU)

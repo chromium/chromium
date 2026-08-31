@@ -32,7 +32,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BottomBarConfigUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw300dp")
+@Config(qualifiers = "sw300dp")
 public class BottomBarConfigUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

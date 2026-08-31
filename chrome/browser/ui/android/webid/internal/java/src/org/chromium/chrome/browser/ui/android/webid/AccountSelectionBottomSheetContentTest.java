@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpMode;
@@ -21,7 +20,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** JUnit tests for {@link AccountSelectionBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AccountSelectionBottomSheetContentTest {
     private AccountSelectionBottomSheetContent mContent;
 
