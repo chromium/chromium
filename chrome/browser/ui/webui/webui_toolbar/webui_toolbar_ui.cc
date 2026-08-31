@@ -274,12 +274,16 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   if (browser) {
-    auto context = BrowserElements::From(browser)->GetContext();
+    // `base::Unretained(browser)` is safe because `browser` owns the
+    // WebContents hosting this WebUI and is guaranteed to outlive the
+    // `WebContentsUserData` holding this callback.
     ui::TrackedElementHandlerDocumentSingleton::Register(
         this, GetKnownElementIdentifiers(),
-        context ? base::BindRepeating([](ui::ElementContext c) { return c; },
-                                      context)
-                : base::RepeatingCallback<ui::ElementContext()>());
+        base::BindRepeating(
+            [](BrowserWindowInterface* bwi) {
+              return BrowserElements::From(bwi)->GetContext();
+            },
+            base::Unretained(browser)));
   }
 
   content::URLDataSource::Add(

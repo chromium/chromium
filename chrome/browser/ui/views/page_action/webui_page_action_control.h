@@ -29,6 +29,7 @@ class BrowserWindowInterface;
 class WebUIToolbarControlDelegate;
 
 namespace page_actions {
+class AnchoredMessageBubbleView;
 class PageActionModelInterface;
 class PageActionViewInterface;
 class WebUIPageActionView;
@@ -86,6 +87,15 @@ class WebUIPageActionControl {
   const page_actions::PageActionModelInterface* GetObservedModel(
       actions::ActionId action_id) const;
   page_actions::PageActionController* GetController(
+      actions::ActionId action_id);
+
+  // Returns true if there is an anchored message currently showing for
+  // `action_id`.
+  bool IsAnchoredMessageShowing(actions::ActionId action_id) const;
+
+  // Returns the AnchoredMessageBubbleView currently showing for `action_id`,
+  // or nullptr if none is showing. For testing.
+  AnchoredMessageBubbleView* GetAnchoredMessageForTesting(
       actions::ActionId action_id);
 
  private:

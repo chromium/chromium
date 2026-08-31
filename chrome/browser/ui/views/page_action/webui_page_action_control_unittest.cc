@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -32,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
@@ -164,6 +166,9 @@ TEST_F(WebUIPageActionControlTest, StateMapping) {
   auto states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
   EXPECT_EQ(target_mojom_id, states[0]->page_action_id);
+  ASSERT_TRUE(states[0]->identifier);
+  EXPECT_EQ("kAiModePageActionIconElementId",
+            states[0]->identifier->native_identifier);
 
   EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
       .Times(testing::AtLeast(1));
@@ -197,6 +202,14 @@ TEST_F(WebUIPageActionControlTest, StateMapping) {
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
   EXPECT_FALSE(states[0]->is_active);
+
+  controller->OverrideText(target_action_id, u"Chip Text");
+  controller->ShowSuggestionChip(target_action_id);
+
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_TRUE(states[0]->should_show_chip);
+  EXPECT_EQ(u"Chip Text", states[0]->text);
 
   EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
       .Times(testing::AtLeast(1));
@@ -328,6 +341,25 @@ TEST_F(WebUIPageActionControlTest, TabDestroyedBeforeControl) {
   control_->UpdateController(web_contents());
   tab_features_.reset();
   control_.reset();
+}
+
+TEST_F(WebUIPageActionControlTest, UpdateControllerToNullResetsState) {
+  control_->UpdateController(web_contents());
+
+  actions::ActionId target_action_id = kActionAiMode;
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+
+  controller->Show(target_action_id);
+  EXPECT_FALSE(control_->GetPageActionStates().empty());
+
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .Times(testing::AtLeast(1));
+  control_->UpdateController(nullptr);
+  EXPECT_TRUE(control_->GetPageActionStates().empty());
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
 }
 
 TEST_F(WebUIPageActionControlTest, GetPageActionViewInterfaceAndMethods) {
@@ -506,6 +538,56 @@ TEST_F(WebUIPageActionControlTest, MouseClickSuppression) {
     // Action should NOT have been invoked.
     EXPECT_EQ(2, ai_mode_invoked_count);
   }
+}
+
+TEST_F(WebUIPageActionControlTest, AnchoredMessageState) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab);
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  ASSERT_TRUE(controller);
+
+  actions::ActionId target_action_id = kActionAiMode;
+
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .Times(testing::AtLeast(1));
+  controller->Show(target_action_id);
+
+  page_actions::AnchoredMessageConfig config{};
+  controller->ShowAnchoredMessage(target_action_id, config);
+  // Even though controller->ShowAnchoredMessage(...) is called just before this
+  // line, EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id))
+  // correctly expects the result to be false.
+  //
+  // This happens because WebUIPageActionControl requires a physical anchor
+  // view or a visible UI element to attach the anchored message bubble to.
+  // When CreateAndShowAnchoredMessage handles the model change, it attempts to
+  // find this anchor.
+  //
+  // Since this is a unit test environment without an actual rendered WebUI or
+  // View hierarchy, a valid anchor does not exist. The control falls back to
+  // subscribing to ui::ElementTracker to wait for the UI element to become
+  // visible on the screen. Because the bubble widget cannot be created
+  // immediately, IsAnchoredMessageShowing() returns false.
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_FALSE(states[0]->should_show_chip);
+  EXPECT_TRUE(states[0]->tooltip_text.empty());
+
+  controller->OverrideTooltip(target_action_id, u"Tooltip Text");
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(states[0]->tooltip_text,
+            l10n_util::GetStringFUTF16(IDS_PAGE_ACTION_ANCHORED_MESSAGE_SHOWING,
+                                       u"Tooltip Text"));
+
+  controller->HideAnchoredMessage(target_action_id);
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
 }
 
 }  // namespace
