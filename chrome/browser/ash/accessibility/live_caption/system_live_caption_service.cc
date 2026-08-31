@@ -200,11 +200,6 @@ void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
     if (!client_) {
       // Need to wait for the recognizer to be ready before starting.
       CreateClient();
-      // Inject a fake audio system in tests.
-      if (!create_audio_system_for_testing_.is_null()) {
-        client_->set_audio_system_for_testing(  // IN-TEST
-            create_audio_system_for_testing_.Run());
-      }
     }
     // At startup, when asr becomes available, we need to know whether we are in
     // speech or not right now, and pretend that speech started at that
@@ -318,6 +313,12 @@ void SystemLiveCaptionService::CreateClient() {
           /*enable_formatting=*/true, GetPrimaryLanguageCode(),
           /*is_server_based=*/false, GetRecognizerClientType(),
           /*skip_continuously_empty_audio=*/true));
+
+  // Inject a fake audio system in tests.
+  if (!create_audio_system_for_testing_.is_null()) {
+    client_->set_audio_system_for_testing(  // IN-TEST
+        create_audio_system_for_testing_.Run());
+  }
 }
 
 void SystemLiveCaptionService::OnTranslationCallback(
