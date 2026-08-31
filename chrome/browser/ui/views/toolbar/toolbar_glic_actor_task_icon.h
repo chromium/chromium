@@ -29,6 +29,7 @@ class ToolbarGlicActorTaskIcon : public GlicActorTaskIcon<ToolbarButton> {
   void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id) override;
   void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id) override;
   void UpdateColors() override;
+  void UpdateColorsAndInsets() override;
 
   void SetIsShowingNudge(bool is_showing) override;
 

@@ -20,6 +20,7 @@ ToolbarGlicActorTaskIcon::ToolbarGlicActorTaskIcon(
     PressedCallback pressed_callback)
     : GlicActorTaskIcon<ToolbarButton>(browser_window_interface,
                                        pressed_callback) {
+  SetImageLabelSpacing(0);
   SetTaskIconToDefault();
 
   // The task icon will only ever be shown with the GlicButton, so can always
@@ -69,7 +70,12 @@ void ToolbarGlicActorTaskIcon::SetBackgroundFrameInactiveColorId(
 }
 
 void ToolbarGlicActorTaskIcon::UpdateColors() {
+  UpdateColorsAndInsets();
+}
+
+void ToolbarGlicActorTaskIcon::UpdateColorsAndInsets() {
   ToolbarButton::UpdateColorsAndInsets();
+  label()->SetBorder(nullptr);
 }
 
 void ToolbarGlicActorTaskIcon::SetIsShowingNudge(bool is_showing) {
