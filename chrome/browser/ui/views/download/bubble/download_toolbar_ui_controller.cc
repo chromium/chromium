@@ -643,7 +643,13 @@ bool DownloadToolbarUIController::IsShowingDetails() const {
 }
 
 void DownloadToolbarUIController::OnOfflineItemsInitialized() {
-  if (bubble_contents_) {
+  // Only update models if the complete view is showing. Offline items
+  // represent past downloads from history and are never displayed in the
+  // partial view (which only shows new un-actioned downloads). Furthermore,
+  // calling GetPrimaryViewModels() for the partial view triggers the 15-second
+  // rate-limiting in GetPartialView(), which returns empty models and causes
+  // the partial view bubble to be closed prematurely.
+  if (bubble_contents_ && primary_view_mode_ == DownloadBubbleMode::kComplete) {
     bubble_contents_->info().UpdateModels(GetPrimaryViewModels());
   }
 }
