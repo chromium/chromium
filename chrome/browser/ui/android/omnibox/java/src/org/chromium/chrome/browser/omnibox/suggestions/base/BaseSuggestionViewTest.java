@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Tests for {@link BaseSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BaseSuggestionViewTest {
     private static final int CONTENT_VIEW_REPORTED_HEIGHT_PX = 10;
     // Used as a (fixed) width of a refine icon.

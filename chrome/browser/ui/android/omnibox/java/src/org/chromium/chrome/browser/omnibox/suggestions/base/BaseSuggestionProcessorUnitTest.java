@@ -76,9 +76,7 @@ import java.util.function.Supplier;
 
 /** Tests for {@link BaseSuggestionViewProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowLog.class})
+@Config(shadows = {ShadowLog.class})
 public class BaseSuggestionProcessorUnitTest {
     private static class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
         @SuppressWarnings("HidingField")

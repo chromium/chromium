@@ -55,7 +55,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlBarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UrlBarMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Clipboard mClipboard;

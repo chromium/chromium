@@ -80,9 +80,7 @@ import java.util.concurrent.ExecutionException;
 
 /** Tests for {@link VoiceRecognitionHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowLog.class})
+@Config(shadows = {ShadowLog.class})
 public class VoiceRecognitionHandlerUnitTest {
     private static final GURL DEFAULT_URL = JUnitTestGURLs.URL_1;
     private static final GURL DEFAULT_SEARCH_URL = JUnitTestGURLs.SEARCH_URL;

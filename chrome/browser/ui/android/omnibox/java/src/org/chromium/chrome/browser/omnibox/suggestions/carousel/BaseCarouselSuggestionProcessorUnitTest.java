@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,7 +22,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link BaseCarouselSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BaseCarouselSuggestionProcessorUnitTest {
 
     private Context mContext;

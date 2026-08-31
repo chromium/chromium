@@ -41,7 +41,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
@@ -62,7 +61,6 @@ import java.util.Locale;
 
 /** Unit tests for FuseboxPopup. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FuseboxPopupUnitTest {
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 

@@ -37,7 +37,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAccessibilityManager;
 
 import org.chromium.base.ContextUtils;
@@ -54,7 +53,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * ParameterizedRobolectricTest once crbug.com/40525786 is fixed.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AutocompleteEditTextUnitTest {
     private static final String TAG = "AutocompleteTest";
 

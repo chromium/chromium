@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,7 +39,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** Unit tests for {@link UrlBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UrlBarCoordinatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 

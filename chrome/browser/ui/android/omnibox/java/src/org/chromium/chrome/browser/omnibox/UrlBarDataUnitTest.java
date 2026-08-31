@@ -11,14 +11,12 @@ import androidx.annotation.Nullable;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlBarData}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UrlBarDataUnitTest {
     @Test
     public void forUrlAndText_nonHttpOrHttps_DisplayTextDiffersFromUrl() {

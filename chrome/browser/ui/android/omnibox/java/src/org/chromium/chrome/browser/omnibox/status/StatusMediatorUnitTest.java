@@ -100,7 +100,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link StatusMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class StatusMediatorUnitTest {
     private static final String TAG = "StatusMediatorUnitTest";
     private static final int CURRENT_TAB_ID = 5;

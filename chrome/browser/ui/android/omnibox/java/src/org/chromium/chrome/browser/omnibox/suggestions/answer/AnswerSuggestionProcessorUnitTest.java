@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -48,7 +47,6 @@ import java.util.function.Supplier;
 
 /** Tests for {@link AnswerSuggestionProcessor}. */
 @RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AnswerSuggestionProcessorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

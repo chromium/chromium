@@ -139,7 +139,7 @@ import java.util.function.Consumer;
 
 /** Tests for {@link AutocompleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = ShadowLooper.class)
+@Config(shadows = ShadowLooper.class)
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final long TEST_EVENT_TIME = 123L;

@@ -37,7 +37,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link FuseboxAttachment}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "xhdpi")
+@Config(qualifiers = "xhdpi")
 public class FuseboxAttachmentUnitTest {
     private static final String CAPTURE_TOKEN = "capture_token";
     private static final String CACHE_TOKEN = "cache_token";
