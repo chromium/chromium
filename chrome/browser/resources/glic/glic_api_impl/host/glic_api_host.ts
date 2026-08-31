@@ -421,7 +421,7 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
         return;
     }
     try {
-      this.handler.reportApiRequestCount(histogramInfo.name, mojoEvent);
+      this.handler.reportApiRequestCount(histogramInfo.id, mojoEvent);
     } catch (e) {
       console.error('[reportApiRequestCount ERROR]', e);
     }

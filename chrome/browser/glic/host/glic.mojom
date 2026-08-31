@@ -1127,7 +1127,7 @@ enum GlicRequestEvent {
 // WebClientHandler is created.
 interface WebClientHandler {
   // Reports API request count metrics from the web client.
-  ReportApiRequestCount(string request_type, GlicRequestEvent event);
+  ReportApiRequestCount(int32 request_type_id, GlicRequestEvent event);
 
   // Reports API request latency metrics from the web client.
   ReportApiRequestLatency(

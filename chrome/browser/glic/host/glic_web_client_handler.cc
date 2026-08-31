@@ -56,6 +56,7 @@
 #include "chrome/browser/glic/media/glic_media_link_helper.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -451,13 +452,9 @@ class GlicWebClientHandler
     glic::NavigateAsync(std::move(params), base::DoNothing());
   }
 
-  void ReportApiRequestCount(const std::string& request_type,
+  void ReportApiRequestCount(int32_t request_type_id,
                              glic::mojom::GlicRequestEvent event) override {
-    if (request_type.empty()) {
-      return;
-    }
-    base::UmaHistogramEnumeration(
-        base::StrCat({"Glic.Api.RequestCounts.", request_type}), event);
+    LogApiRequestCount(request_type_id, event);
   }
 
   void ReportApiRequestLatency(const std::string& request_type,

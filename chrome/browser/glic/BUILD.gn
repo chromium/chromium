@@ -60,6 +60,8 @@ source_set("glic") {
     "host/guest_source.h",
     "host/guest_util.h",
     "host/host.h",
+    "public/glic_api_metrics.cc",
+    "public/glic_api_metrics.h",
     "public/glic_close_options.h",
     "public/glic_context_menu_invocation_helper.cc",
     "public/glic_context_menu_invocation_helper.h",

@@ -45,6 +45,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -3550,6 +3551,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetUserProfileInfo) {
   histogram_tester.ExpectBucketCount(
       "Glic.Api.RequestCounts.GetUserProfileInfo",
       glic::mojom::GlicRequestEvent::kResponseSent, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.StatusCounts.Received",
+      glic::GlicHostApiRequestId::kGetUserProfileInfo, 1);
   // Confirm that this response-receiving request gets latency metrics recorded.
   histogram_tester.ExpectTotalCount(
       "Glic.Api.RequestHostLatency.GetUserProfileInfo", 1);
