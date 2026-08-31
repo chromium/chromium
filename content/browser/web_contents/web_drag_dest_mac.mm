@@ -333,6 +333,9 @@ void OnWebContentsViewDelegatePerformingDropComplete(
       std::make_unique<DropData>(*_dropDataUnfiltered);
   _currentRWHForDrag = targetRWH->GetWeakPtr();
   _currentRWHForDrag->FilterDropData(dropData.get());
+  if (!_dragSecurityInfo.IsImageAccessibleFromFrame()) {
+    dropData->file_contents.resize(0);
+  }
 
   NSDragOperation mask = info->operation_mask;
 
@@ -663,6 +666,9 @@ void OnWebContentsViewDelegatePerformingDropComplete(
     std::unique_ptr<DropData> dropData =
         std::make_unique<DropData>(*_dropDataUnfiltered);
     targetRWH->FilterDropData(dropData.get());
+    if (!_dragSecurityInfo.IsImageAccessibleFromFrame()) {
+      dropData->file_contents.resize(0);
+    }
     _dropDataFiltered.swap(dropData);
   }
 
