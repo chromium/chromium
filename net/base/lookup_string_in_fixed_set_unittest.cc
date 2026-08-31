@@ -4,24 +4,15 @@
 
 #include "net/base/lookup_string_in_fixed_set.h"
 
-#include <algorithm>
 #include <cstdint>
-#include <limits>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
-#include "base/base_paths.h"
 #include "base/containers/span.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "net/base/registry_controlled_domain_constants.h"
 #include "net/base/registry_controlled_domains/effective_tld_names_unittest1-inc.cc"
 #include "net/base/registry_controlled_domains/effective_tld_names_unittest3-inc.cc"
 #include "net/base/registry_controlled_domains/effective_tld_names_unittest4-inc.cc"
@@ -71,44 +62,6 @@ const Expectation kBasicTestCases[] = {
     {"b.c", 1},
     {"priv.no", 4},
 };
-
-// Helper function for EnumerateDafsaLanaguage.
-void RecursivelyEnumerateDafsaLanguage(const FixedSetIncrementalLookup& lookup,
-                                       std::vector<char>* sequence,
-                                       std::vector<std::string>* language) {
-  std::optional<int> result = lookup.GetResultForCurrentSequence();
-  if (result) {
-    std::string line(sequence->begin(), sequence->end());
-    line += base::StringPrintf(", %d", result.value());
-    language->emplace_back(std::move(line));
-  }
-  // Try appending each char value.
-  for (char c = std::numeric_limits<char>::min();; ++c) {
-    FixedSetIncrementalLookup continued_lookup = lookup;
-    if (continued_lookup.Advance(c)) {
-      sequence->push_back(c);
-      size_t saved_language_size = language->size();
-      RecursivelyEnumerateDafsaLanguage(continued_lookup, sequence, language);
-      CHECK_LT(saved_language_size, language->size())
-          << "DAFSA includes a branch to nowhere at node: "
-          << std::string(sequence->begin(), sequence->end());
-      sequence->pop_back();
-    }
-    if (c == std::numeric_limits<char>::max())
-      break;
-  }
-}
-
-// Uses FixedSetIncrementalLookup to build a vector of every string in the
-// language of the DAFSA.
-std::vector<std::string> EnumerateDafsaLanguage(
-    base::span<const uint8_t> graph) {
-  FixedSetIncrementalLookup query(graph);
-  std::vector<char> sequence;
-  std::vector<std::string> language;
-  RecursivelyEnumerateDafsaLanguage(query, &sequence, &language);
-  return language;
-}
 
 INSTANTIATE_TEST_SUITE_P(LookupStringInFixedSetTest,
                          Dafsa1Test,
@@ -227,7 +180,7 @@ INSTANTIATE_TEST_SUITE_P(LookupStringInFixedSetTest,
 // Validates that the generated DAFSA contains exactly the same information as
 // effective_tld_names_unittest1.gperf.
 TEST(LookupStringInFixedSetTest, Dafsa1EnumerateLanguage) {
-  auto language = EnumerateDafsaLanguage(test1::kDafsa);
+  auto language = EnumerateDafsaLanguageForTesting(test1::kDafsa);
 
   // These are the lines of effective_tld_names_unittest1.gperf, in sorted
   // order.
@@ -244,7 +197,7 @@ TEST(LookupStringInFixedSetTest, Dafsa1EnumerateLanguage) {
 // Validates that the generated DAFSA contains exactly the same information as
 // effective_tld_names_unittest5.gperf.
 TEST(LookupStringInFixedSetTest, Dafsa5EnumerateLanguage) {
-  auto language = EnumerateDafsaLanguage(test5::kDafsa);
+  auto language = EnumerateDafsaLanguageForTesting(test5::kDafsa);
 
   std::vector<std::string> expected_language = {
       "aaaam, 0", "aak, 0", "ai, 0", "bbbbn, 0", "bbl, 4", "bj, 4",
@@ -256,7 +209,7 @@ TEST(LookupStringInFixedSetTest, Dafsa5EnumerateLanguage) {
 // Validates that the generated DAFSA contains exactly the same information as
 // effective_tld_names_unittest6.gperf.
 TEST(LookupStringInFixedSetTest, Dafsa6EnumerateLanguage) {
-  auto language = EnumerateDafsaLanguage(test6::kDafsa);
+  auto language = EnumerateDafsaLanguageForTesting(test6::kDafsa);
 
   std::vector<std::string> expected_language = {
       "ia, 0", "jb, 4", "kaa, 0", "lbb, 4", "maaaa, 0", "nbbbb, 0",
