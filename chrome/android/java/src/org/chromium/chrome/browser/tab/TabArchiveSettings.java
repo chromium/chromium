@@ -187,9 +187,7 @@ public class TabArchiveSettings {
     /** Returns whether archiving of duplicate tabs is enabled. */
     public boolean isArchiveDuplicateTabsEnabled() {
         // Default to true for phones, false for tablets and desktop.
-        boolean defaultValue =
-                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext());
+        boolean defaultValue = !DeviceInfo.isDesktop() && !DeviceFormFactor.isTablet();
         return getArchiveEnabled()
                 && mPrefsManager.readBoolean(
                         ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED,
