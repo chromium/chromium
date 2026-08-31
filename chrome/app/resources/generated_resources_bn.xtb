@@ -4502,6 +4502,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{টাস্ক হয়ে গেছে}one{টাস্কগুলি হয়ে গেছে}other{টাস্কগুলি হয়ে গেছে}}</translation>
 <translation id="4429163740524851942">ফিজিক্যাল কীবোর্ড লেআউট</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
+<translation id="443008484043213881">টুল</translation>
 <translation id="4430369329743628066">বুকমার্ক যুক্ত হয়েছে</translation>
 <translation id="4430422687972614133">ভার্চুয়াল কার্ড চালু করুন</translation>
 <translation id="4431962107539413562">আপনার সব ডিভাইসেই পাসওয়ার্ড পান</translation>
@@ -4685,6 +4686,7 @@
 <translation id="4589713469967853491">ডাউনলোড ডিরেক্টরিতে লগ সেভ করা হয়েছে।</translation>
 <translation id="4590785647529325123">আপনার ডিভাইস থেকে 'ছদ্মবেশী মোড'-এ করা ব্রাউজিংয়ের ইতিহাস মুছে ফেলতে, সব 'ছদ্মবেশী ট্যাব' বন্ধ করুন</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-এ কোনও ডিভাইস সেভ করা নেই</translation>
+<translation id="4592634244097223647">Google-কে এই ছবির ব্যাপারে জিজ্ঞাসা করুন</translation>
 <translation id="4592891116925567110">স্টাইলাস ব্যবহার করে আঁকার অ্যাপ</translation>
 <translation id="4593021220803146968">&amp;এখানে যান <ph name="URL" /></translation>
 <translation id="4593962599442730215">আপনার পছন্দ পরিবর্তন করুন</translation>
@@ -5011,7 +5013,6 @@
 <translation id="4840096453115567876">যাই হোক, ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসতে চান?</translation>
 <translation id="4841475798258477260">এই ডিভাইস শুধুমাত্র নির্দিষ্ট মোবাইল নেটওয়ার্কে কানেক্ট করা যায়। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">এই পৃষ্ঠাটি প্রমাণীকৃত নয় এমন সূত্র থেকে স্ক্রিপ্ট লোড করার চেষ্টা করছে।</translation>
-<translation id="4843037705239202082">মিডিয়াকে বোঝা</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4846628405149428620">এই সাইটটি কোথায় পরিবর্তন সেভ করতে পারে তা বেছে নিন</translation>
 <translation id="4846680374085650406">আপনি এই সেটিংয়ের জন্য প্রশাসকের সুপারিশ অনুসরণ করছেন৷</translation>
@@ -6261,6 +6262,7 @@
 <translation id="5836999627049108525">যে ভাষা থেকে অনুবাদ করতে হবে</translation>
 <translation id="583756221537636748">কেস</translation>
 <translation id="5840656138956959276">উন্নত: স্ট্রিক্ট</translation>
+<translation id="5840658767386246331">Google-এ সার্চ করুন</translation>
 <translation id="5840680448799937675">সর্বদা ফাইল অফলাইনে শেয়ার করা হবে</translation>
 <translation id="5841270259333717135">ইথারনেট কনফিগার করুন</translation>
 <translation id="5841338463993781099">অ্যাকাউন্টে সেভ করবেন?</translation>
@@ -9539,7 +9541,6 @@
 <translation id="8377625247046155446">এই ডিভাইসেই শুধু এই 'পাসকী' সেভ করা হবে। আপনি সবকটি ছদ্মবেশী উইন্ডো বন্ধ করে দেওয়ার পর এটি এই ডিভাইসে থেকে যাবে।</translation>
 <translation id="837790003026572432">এই ডিভাইসে ট্যাব থেকে অডিও কাস্ট করার সুবিধা কাজ করে না</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
-<translation id="8378855320830505539">অঞ্চল</translation>
 <translation id="8379988659465232385">নাম অবশ্যই লিখতে হবে</translation>
 <translation id="8379991678458444070">এই ট্যাবটি বুকমার্ক করে রাখুন যাতে আপনি এটি চটপট খুলতে পারেন</translation>
 <translation id="8380266723152870797">উইন্ডোর নাম</translation>

@@ -4487,6 +4487,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Тапсырма орындалды}other{Тапсырмалар орындалды}}</translation>
 <translation id="4429163740524851942">Физикалық пернетақта орналасуы</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
+<translation id="443008484043213881">Құралдар</translation>
 <translation id="4430369329743628066">Бетбелгі қосылды</translation>
 <translation id="4430422687972614133">Виртуалдық картаны қосу</translation>
 <translation id="4431962107539413562">Құпия сөздеріңізге барлық құрылғыда қол жеткізіңіз</translation>
@@ -4670,6 +4671,7 @@
 <translation id="4589713469967853491">Журналдар "Жүктеп алынғандар" каталогіне жазылды.</translation>
 <translation id="4590785647529325123">Құрылғыңыздан инкогнито режиміндегі браузерді қолдану тарихын жою үшін барлық инкогнито қойындысын жабыңыз.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> электрондық поштасына ешбір құрылғы сақталмаған.</translation>
+<translation id="4592634244097223647">Google-дан осы сурет жайында сұрау</translation>
 <translation id="4592891116925567110">Стилуспен сурет салу қолданбасы</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> мекенжайына өту</translation>
 <translation id="4593962599442730215">Параметрлерді өзгерту</translation>
@@ -4995,7 +4997,6 @@
 <translation id="4840096453115567876">Бәрібір инкогнито режимінен шығасыз ба?</translation>
 <translation id="4841475798258477260">Бұл құрылғы тек нақты бір мобильдік желіге қосыла алады. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Бұл бет аутентификацияланбаған дереккөздерден сценарийлерді жүктеуге әрекет етуде.</translation>
-<translation id="4843037705239202082">Мультимедианы түсіну</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4846628405149428620">Бұл сайт өзгерістерді қай жерге сақтайтынын таңдаңыз</translation>
 <translation id="4846680374085650406">Бұл параметр үшін әкімші ұсынысын орындаудасыз.</translation>
@@ -6241,6 +6242,7 @@
 <translation id="5836999627049108525">Аударылатын тіл</translation>
 <translation id="583756221537636748">Қап</translation>
 <translation id="5840656138956959276">Жақсартылған: қатаң</translation>
+<translation id="5840658767386246331">Google арқылы іздеу</translation>
 <translation id="5840680448799937675">Файлдар әрдайым офлайн режимде бөлісіледі.</translation>
 <translation id="5841270259333717135">Ethernet желісін конфигурациялау</translation>
 <translation id="5841338463993781099">Аккаунтта сақтау керек пе?</translation>
@@ -9514,7 +9516,6 @@
 <translation id="8377625247046155446">Бұл кіру кілті тек осы құрылғыда сақталады. Барлық инкогнито терезесін жапқаннан кейін, ол осы құрылғыда қалады.</translation>
 <translation id="837790003026572432">Бұл құрылғыда трансляцияланатын қойынды аудиосының дыбысы шықпайды</translation>
 <translation id="8378714024927312812">Ұйым басқарады</translation>
-<translation id="8378855320830505539">Аймақ</translation>
 <translation id="8379988659465232385">Атау бос болмауы керек.</translation>
 <translation id="8379991678458444070">Осы қойындыға бетбелгі қою арқылы оған жылдам оралыңыз.</translation>
 <translation id="8380266723152870797">Терезенің аты</translation>

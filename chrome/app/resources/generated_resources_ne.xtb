@@ -4487,6 +4487,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{कार्य पूरा भएको छ}other{कार्यहरू पूरा भएका छन्}}</translation>
 <translation id="4429163740524851942">भौतिक किबोर्डको लेआउट</translation>
 <translation id="4430019312045809116">आयतन</translation>
+<translation id="443008484043213881">उपकरणहरू</translation>
 <translation id="4430369329743628066">पुस्तक चिन्ह थपियो!</translation>
 <translation id="4430422687972614133">भर्चुअल कार्ड अन गर्नुहोस्</translation>
 <translation id="4431962107539413562">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डहरू प्राप्त गर्नुहोस्</translation>
@@ -4670,6 +4671,7 @@
 <translation id="4589713469967853491">लगहरू डाउनलोड नामक डिरेक्टरीमा सफलतापूर्वक राइट गरियो।</translation>
 <translation id="4590785647529325123">आफ्नो डिभाइसबाट इन्कोग्निटो मोडको ब्राउजिङ हिस्ट्री मेटाउन सबै इन्कोग्निटो ट्याब बन्द गर्नुहोस्</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> मा कुनै पनि डिभाइस सेभ गरिएको छैन</translation>
+<translation id="4592634244097223647">Google लाई यो फोटोका बारेमा सोध्नुहोस्</translation>
 <translation id="4592891116925567110">रेखाचित्र बनाउन प्रयोग गरिने स्टाइलस एप</translation>
 <translation id="4593021220803146968"><ph name="URL" /> मा &amp;जानुहोस्</translation>
 <translation id="4593962599442730215">आफ्ना प्राथमिकताहरू बदल्नुहोस्</translation>
@@ -4996,7 +4998,6 @@
 <translation id="4840096453115567876">जे भए पनि इन्कोग्निटो मोडबाट बाहिरिने हो?</translation>
 <translation id="4841475798258477260">यो डिभाइस विशेष मोबाइल नेटवर्कमा मात्र कनेक्ट गर्न मिल्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">यस पृष्ठले प्रमाणित नगरिएका स्रोतहरूबाट स्क्रिप्टहरू लोड गर्ने कोशिश गरिरहेको छ।</translation>
-<translation id="4843037705239202082">मिडिया बुझ्ने सुविधा</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4846628405149428620">यो साइटले परिवर्तनहरू कहाँ सेभ गर्न सक्छ भन्ने कुरा चयन गर्नुहोस्</translation>
 <translation id="4846680374085650406">तपाईंले यो सेटिङका लागि प्रशासकको सिफारिस पालना गरिरहनुभएको छ ।</translation>
@@ -6245,6 +6246,7 @@
 <translation id="5836999627049108525">अनुवाद गर्ने स्रोत भाषा</translation>
 <translation id="583756221537636748">केस</translation>
 <translation id="5840656138956959276">परिष्कृत: कडा</translation>
+<translation id="5840658767386246331">Google मार्फत खोज्नुहोस्</translation>
 <translation id="5840680448799937675">फाइलहरू सधैँ अफलाइन सेयर गरिने छ</translation>
 <translation id="5841270259333717135">इथरनेट कन्फिगर गर्नुहोस्</translation>
 <translation id="5841338463993781099">खातामा सेभ गर्ने हो?</translation>
@@ -9518,7 +9520,6 @@
 <translation id="8377625247046155446">यो पासकी यस डिभाइसमा मात्र सेभ गरिने छ। तपाईंले सबै इन्कोग्निटो विन्डो बन्द गरेपछि पनि यो पासकी यस डिभाइसमा रहने छ।</translation>
 <translation id="837790003026572432">यो डिभाइसमा ट्याबको अडियो कास्ट गर्न मिल्दैन</translation>
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
-<translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8379988659465232385">नाम खाली हुनु हुँदैन</translation>
 <translation id="8379991678458444070">यो ट्याबमा पुस्तक चिन्ह लगाएर छिट्टै यहाँ फर्कनुहोस्</translation>
 <translation id="8380266723152870797">विन्डोको नाम</translation>

@@ -4489,6 +4489,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Úloha je dokončená}few{Úlohy sú dokončené}many{Tasks done}other{Úlohy sú dokončené}}</translation>
 <translation id="4429163740524851942">Rozloženie fyzickej klávesnice</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
+<translation id="443008484043213881">Nástroje</translation>
 <translation id="4430369329743628066">Záložka bola pridaná</translation>
 <translation id="4430422687972614133">Zapnúť virtuálnu kartu</translation>
 <translation id="4431962107539413562">Majte heslá k dispozícii vo všetkých svojich zariadeniach</translation>
@@ -4672,6 +4673,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4589713469967853491">Denníky boli úspešne zapísané do adresára Stiahnuté.</translation>
 <translation id="4590785647529325123">Ak chcete zo svojho zariadenia odstrániť históriu prehliadania v režime inkognito, zavrite všetky karty inkognito</translation>
 <translation id="459204634473266369">V e‑maile <ph name="PRIMARY_EMAIL" /> nie sú uložené žiadne zariadenia</translation>
+<translation id="4592634244097223647">Spýtať sa Googlu otázku o tomto obrázku</translation>
 <translation id="4592891116925567110">Aplikácia na kreslenie dotykovým perom</translation>
 <translation id="4593021220803146968">&amp;Prejsť na adresu <ph name="URL" /></translation>
 <translation id="4593962599442730215">Zmeniť predvoľby</translation>
@@ -4997,7 +4999,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4840096453115567876">Naozaj chcete ukončiť režim inkognito?</translation>
 <translation id="4841475798258477260">Toto zariadenie sa môže pripojiť iba ku konkrétnej mobilnej sieti. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Táto stránka sa snaží načítať skripty z neoverených zdrojov.</translation>
-<translation id="4843037705239202082">Porozumenie médiám</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4846628405149428620">Vyberte, kam tento web môže ukladať zmeny</translation>
 <translation id="4846680374085650406">V prípade tohto nastavenia dodržiavate odporúčania správcu.</translation>
@@ -6245,6 +6246,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5836999627049108525">Jazyk, z ktorého chcete prekladať</translation>
 <translation id="583756221537636748">Puzdro</translation>
 <translation id="5840656138956959276">Vylepšené: prísne</translation>
+<translation id="5840658767386246331">Hľadať pomocou Googlu</translation>
 <translation id="5840680448799937675">Súbory sa vždy budú zdieľať offline</translation>
 <translation id="5841270259333717135">Konfigurácia ethernetu</translation>
 <translation id="5841338463993781099">Chcete adresu uložiť v účte?</translation>
@@ -9524,7 +9526,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8377625247046155446">Tento prístupový kľúč bude uložený iba v tomto zariadení. Po zavretí všetkých okien inkognito zostane v tomto zariadení.</translation>
 <translation id="837790003026572432">Prenos zvuku karty nie je v tomto zariadení podporovaný</translation>
 <translation id="8378714024927312812">Spravované vašou organizáciou</translation>
-<translation id="8378855320830505539">Oblasť</translation>
 <translation id="8379988659465232385">Názov nemôže byť prázdny</translation>
 <translation id="8379991678458444070">Vráťte sa sem rýchlejšie tak, že kartu uložíte ako záložku</translation>
 <translation id="8380266723152870797">Názov okna</translation>

@@ -166,6 +166,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="8073845705237259513">Para usar a Área de trabalho remota do Google, adicione uma Conta do Google a seu dispositivo.</translation>
 <translation id="809687642899217504">Meus computadores</translation>
 <translation id="8116630183974937060">Ocorreu um erro de rede. Verifique se o dispositivo está on-line e tente novamente.</translation>
+<translation id="8249310407154411074">Mover para o início</translation>
 <translation id="8295077433896346116">Para usar a <ph name="PRODUCT_NAME" />, você precisa conceder a permissão "Acessibilidade". Assim, a entrada da máquina remota será injetada neste Mac.
 
 Clique em "<ph name="BUTTON_NAME" />" abaixo. No painel de preferências "Acessibilidade", marque a caixa ao lado de "<ph name="SERVICE_SCRIPT_NAME" />".

@@ -9,6 +9,7 @@
 <translation id="1065672644894730302">Pilihan anda tidak dapat dibaca. Beberapa ciri mungkin tidak tersedia dan perubahan terhadap pilihan tidak akan disimpan.</translation>
 <translation id="1083934481477628225">Ibu/bapa anda telah mematikan "Kebenaran untuk laman, apl dan sambungan" untuk Chromium</translation>
 <translation id="1090946077924227754">Untuk mencari ciri atau sambungan Chromium tertentu, taip pintasan carian dalam bar alamat, diikuti dengan kekunci papan kekunci pilihan anda</translation>
+<translation id="1098493699368672217">Tunjukkan carian dengan Chromium dalam dulang sistem dan hidupkan pintasan papan kekunci</translation>
 <translation id="1104942323762546749">Chromium mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="112640046208448578">Kenal pasti perkara atau tempat dan salin atau terjemahkan teks. Apabila anda menggunakan Carian Imej, tangkapan skrin halaman akan dihantar kepada pelayan. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium ialah penyemak imbas lalai anda</translation>
@@ -305,6 +306,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4298125729853015961">Eksport Kata Laluan Daripada Chromium</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
 <translation id="4334241893986177674">Cari pada tangkapan skrin ini</translation>
+<translation id="4368547723231502008">Cari dan kemukakan pertanyaan dari mana-mana sahaja, walaupun Chromium diminimumkan</translation>
 <translation id="4384331407722351213">Lancarkan Chromium apabila Windows dimulakan</translation>
 <translation id="4400772909124543403">Tiada kemaskinian tersedia</translation>
 <translation id="4407044323746248786">Keluar daripada Chromium juga?</translation>
@@ -375,6 +377,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5286907366254680517">Dikesan</translation>
 <translation id="5289287148052354622">Dapatkan apl Chromium</translation>
 <translation id="5294316920224716406">Apabila menyemak imbas dalam Mod Inkognito, Chromium akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
+<translation id="5296581118566748922">Buat carian dengan Chromium</translation>
 <translation id="5313228254328109263">Perkhidmatan Dalaman Pengemas Kini Chromium</translation>
 <translation id="5324450571874973775">Gunakan ciri ini bersama ciri Gemini yang lain dalam Chromium</translation>
 <translation id="5346389065299425353">Perincikan carian anda dengan menambahkan berbilang tab, fail dan alatan</translation>
@@ -504,6 +507,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="651535675648445253">Pintasan dibuka dalam Chromium</translation>
 <translation id="6539122709674868420">Organisasi anda menutup Chromium apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data semakan imbas telah dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.</translation>
 <translation id="6542839706527980775">Setiap profil menyimpan maklumat Chromium profil itu sendiri seperti penanda halaman, sejarah, kata laluan dan pelbagai lagi</translation>
+<translation id="6556755379298048869">Buat carian dengan pintasan papan kekunci.</translation>
 <translation id="6563921047760808519">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chromium mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Perubahan pada tetapan ini akan digunakan setelah Chromium dimulakan semula.</translation>
 <translation id="6567032987737689854">Urus sambungan anda dengan mengklik Sambungan dalam menu utama Chromium.</translation>
@@ -538,6 +542,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Tab untuk meneruskan proses</translation>
 <translation id="6862030660799253820">Cari imej ini dengan Carian Imej</translation>
+<translation id="6869568587896659271">Akses mudah kepada laman web di bawah bar alamat</translation>
 <translation id="6873893289264747459">Chromium mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
 <translation id="6877155553248388166">penjuru bawah sebelah kanan kawasan carian: kanan <ph name="RIGHT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Salin</translation>
@@ -760,6 +765,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
             • Memadamkan kuki dan data laman lain yang bersifat sementara
             <ph name="LINE_BREAKS" />
             Penanda halaman, sejarah dan kata laluan yang disimpan tidak akan terjejas.</translation>
+<translation id="8966875421152977384">Tunjukkan pintasan laman Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8980139959902937527">Manfaatkan keselamatan Google semasa dalam perjalanan dengan apl Chromium pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8981150672034878610">Tidak dapat memulakan Chromium kerana terdapat masalah semasa membuka profil anda. Cuba mulakan semula Chromium.</translation>
@@ -768,6 +774,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="9018218886431812662">Pemasangan selesai</translation>
 <translation id="9019929317751753759">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan sambungan berikut yang tidak disenaraikan dalam  <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>
+<translation id="9035791714111278917">Tunjukkan carian dengan Chromium dalam bar menu Mac dan hidupkan pintasan papan kekunci</translation>
 <translation id="904366664621834601">Chromium menyekat muat turun ini kerana fail arkib termasuk fail lain yang mungkin menyembunyikan perisian hasad</translation>
 <translation id="9053882453960391422">Pastikan kata laluan, penanda halaman dan sejarah anda disegerakkan dengan sempurna merentas peranti. Akses ciri yang anda ketahui dan sukai dengan mudah dengan mengemaskinikan penyemak imbas lalai anda kepada Chromium. Chromium akan disematkan pada bar tugas anda untuk akses pantas.</translation>
 <translation id="9056398481763999048">Gunakan alatan AI terbaik Google dengan apl Chromium pada telefon anda</translation>

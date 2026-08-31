@@ -4485,6 +4485,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{已完成工作}other{已完成工作}}</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="443008484043213881">工具</translation>
 <translation id="4430369329743628066">已新增書籤</translation>
 <translation id="4430422687972614133">開啟虛擬卡片</translation>
 <translation id="4431962107539413562">在所有裝置上存取密碼</translation>
@@ -4665,6 +4666,7 @@
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590785647529325123">如要刪除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
+<translation id="4592634244097223647">向 Google 詢問這張圖片的相關問題</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" />(&amp;G)</translation>
 <translation id="4593962599442730215">變更偏好設定</translation>
@@ -4990,7 +4992,6 @@
 <translation id="4840096453115567876">確定要結束無痕模式嗎？</translation>
 <translation id="4841475798258477260">這部裝置只能連線到特定行動網路。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">這個網頁正在嘗試載入來源未經驗證的指令碼。</translation>
-<translation id="4843037705239202082">媒體解讀</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4846628405149428620">選取這個網站儲存變更的位置</translation>
 <translation id="4846680374085650406">你目前所採用的是管理員的建議設定。</translation>
@@ -6236,6 +6237,7 @@
 <translation id="5836999627049108525">原文語言</translation>
 <translation id="583756221537636748">充電盒</translation>
 <translation id="5840656138956959276">強化：嚴格</translation>
+<translation id="5840658767386246331">透過 Google 搜尋</translation>
 <translation id="5840680448799937675">一律在離線時分享檔案</translation>
 <translation id="5841270259333717135">設定乙太網路</translation>
 <translation id="5841338463993781099">要儲存到帳戶中嗎？</translation>
@@ -9510,7 +9512,6 @@
 <translation id="8377625247046155446">這個密碼金鑰只會儲存在這部裝置中。關閉所有無痕視窗後，密碼金鑰會保存在這部裝置上。</translation>
 <translation id="837790003026572432">這部裝置不支援分頁音訊投放功能</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
-<translation id="8378855320830505539">區域</translation>
 <translation id="8379988659465232385">名稱不得留空</translation>
 <translation id="8379991678458444070">將此分頁加入書籤，日後便能快速開啟這個頁面</translation>
 <translation id="8380266723152870797">視窗名稱</translation>

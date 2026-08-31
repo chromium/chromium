@@ -4501,6 +4501,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{작업 완료}other{작업 완료}}</translation>
 <translation id="4429163740524851942">실제 키보드 레이아웃</translation>
 <translation id="4430019312045809116">볼륨</translation>
+<translation id="443008484043213881">도구</translation>
 <translation id="4430369329743628066">북마크 추가됨</translation>
 <translation id="4430422687972614133">가상 카드 사용</translation>
 <translation id="4431962107539413562">모든 기기에서 비밀번호 가져오기</translation>
@@ -4684,6 +4685,7 @@
 <translation id="4589713469967853491">로그가 다운로드 디렉터리에 작성되었습니다.</translation>
 <translation id="4590785647529325123">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />에 저장된 기기 없음</translation>
+<translation id="4592634244097223647">Google에 이 이미지에 관해 질문하기</translation>
 <translation id="4592891116925567110">스타일러스 그리기 앱</translation>
 <translation id="4593021220803146968"><ph name="URL" />(으)로 이동(&amp;G)</translation>
 <translation id="4593962599442730215">환경설정 변경</translation>
@@ -5010,7 +5012,6 @@
 <translation id="4840096453115567876">시크릿 모드를 종료하시겠습니까?</translation>
 <translation id="4841475798258477260">이 기기는 특정 모바일 네트워크에만 연결할 수 있습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">이 페이지가 인증되지 않은 소스에서 스크립트를 로드하려고 시도하고 있습니다.</translation>
-<translation id="4843037705239202082">미디어 이해</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4846628405149428620">사이트에서 변경사항을 저장할 위치 선택</translation>
 <translation id="4846680374085650406">이 설정에 대한 관리자 권장사항을 따릅니다.</translation>
@@ -6259,6 +6260,7 @@
 <translation id="5836999627049108525">출발 언어</translation>
 <translation id="583756221537636748">케이스</translation>
 <translation id="5840656138956959276">향상된 보호 모드: 엄격 적용</translation>
+<translation id="5840658767386246331">Google로 검색</translation>
 <translation id="5840680448799937675">항상 오프라인으로 파일 공유</translation>
 <translation id="5841270259333717135">이더넷 구성</translation>
 <translation id="5841338463993781099">계정에 저장하시겠습니까?</translation>
@@ -9534,7 +9536,6 @@
 <translation id="8377625247046155446">이 패스키는 이 기기에만 저장되며 시크릿 창을 모두 닫은 후에도 이 기기에 남아 있습니다.</translation>
 <translation id="837790003026572432">이 기기에서는 탭 오디오 전송이 지원되지 않습니다</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>
-<translation id="8378855320830505539">지역</translation>
 <translation id="8379988659465232385">이름은 비워둘 수 없습니다.</translation>
 <translation id="8379991678458444070">이 탭을 북마크에 추가하여 간편하게 다시 방문하세요.</translation>
 <translation id="8380266723152870797">창 이름</translation>

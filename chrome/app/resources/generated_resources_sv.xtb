@@ -4502,6 +4502,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Uppgiften har slutförts}other{Uppgiften har slutförts}}</translation>
 <translation id="4429163740524851942">Layout på fysiskt tangentbord</translation>
 <translation id="4430019312045809116">Volym</translation>
+<translation id="443008484043213881">Verktyg</translation>
 <translation id="4430369329743628066">Ett bokmärke har lagts till</translation>
 <translation id="4430422687972614133">Aktivera virtuellt kort</translation>
 <translation id="4431962107539413562">Använd dina lösenord på alla dina enheter</translation>
@@ -4685,6 +4686,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4589713469967853491">Loggarna har sparats i katalogen Nedladdningar.</translation>
 <translation id="4590785647529325123">Stäng alla inkognitoflikar om du vill radera webbhistoriken i inkognitoläget</translation>
 <translation id="459204634473266369">Inga enheter har sparats i <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4592634244097223647">Fråga Google om den här bilden</translation>
 <translation id="4592891116925567110">App för att rita med e-penna</translation>
 <translation id="4593021220803146968">&amp;Öppna <ph name="URL" /></translation>
 <translation id="4593962599442730215">Ändra inställningarna</translation>
@@ -5011,7 +5013,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4840096453115567876">Vill du avsluta inkognitoläget ändå?</translation>
 <translation id="4841475798258477260">Den här enheten kan bara anslutas till ett visst mobilnätverk. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Sidan försöker att läsa in skript från overifierade källor.</translation>
-<translation id="4843037705239202082">Medieförståelse</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Välj var den här webbplatsen får spara ändringar</translation>
 <translation id="4846680374085650406">Du följer administratörens rekommendation för den här inställningen.</translation>
@@ -6260,6 +6261,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5836999627049108525">Språk att översätta från</translation>
 <translation id="583756221537636748">Fodral</translation>
 <translation id="5840656138956959276">Utökat: strikt</translation>
+<translation id="5840658767386246331">Sök med Google</translation>
 <translation id="5840680448799937675">Filer delas alltid offline</translation>
 <translation id="5841270259333717135">Konfigurera Ethernet</translation>
 <translation id="5841338463993781099">Vill du spara i kontot?</translation>
@@ -9536,7 +9538,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8377625247046155446">Den här nyckeln sparas bara på den här enheten. Den finns kvar på enheten när du stänger alla inkognitofönster.</translation>
 <translation id="837790003026572432">Den här enheten har inte stöd för att casta ljud från en flik</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>
-<translation id="8378855320830505539">Område</translation>
 <translation id="8379988659465232385">Namn måste anges</translation>
 <translation id="8379991678458444070">Bokmärk fliken om du snabbt vill hitta tillbaka</translation>
 <translation id="8380266723152870797">Namn för fönstret</translation>

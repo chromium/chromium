@@ -4501,6 +4501,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Задачата е изпълнена}other{Задачите са изпълнени}}</translation>
 <translation id="4429163740524851942">Подредба на физическата клавиатура</translation>
 <translation id="4430019312045809116">Звук</translation>
+<translation id="443008484043213881">Инструменти</translation>
 <translation id="4430369329743628066">Отметката бе добавена</translation>
 <translation id="4430422687972614133">Включване на виртуалната карта</translation>
 <translation id="4431962107539413562">Получаване на паролите ви на всичките ви устройства</translation>
@@ -4684,6 +4685,7 @@
 <translation id="4589713469967853491">Регистрационните файлове бяха записани успешно в директорията „Изтегляния“.</translation>
 <translation id="4590785647529325123">За да изтриете историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели в този режим.</translation>
 <translation id="459204634473266369">Няма запазени устройства в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4592634244097223647">Попитайте Google за това изображение</translation>
 <translation id="4592891116925567110">Приложение за рисуване с писалка</translation>
 <translation id="4593021220803146968">&amp;Към <ph name="URL" /></translation>
 <translation id="4593962599442730215">Промяна на предпочитанията ви</translation>
@@ -5010,7 +5012,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4840096453115567876">Да се излезе ли от режим „инкогнито“ въпреки това?</translation>
 <translation id="4841475798258477260">Това устройство може да се свързва само с конкретна мобилна мрежа. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Тази страница опитва да зареди скриптове от неудостоверени източници.</translation>
-<translation id="4843037705239202082">Разбиране на мултимедията</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4846628405149428620">Изберете къде този сайт може да запазва промените</translation>
 <translation id="4846680374085650406">Следвате препоръката на администратора за тази настройка.</translation>
@@ -6260,6 +6261,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5836999627049108525">Изходен език</translation>
 <translation id="583756221537636748">Кутия</translation>
 <translation id="5840656138956959276">Подобрено: строго</translation>
+<translation id="5840658767386246331">Търсене с Google</translation>
 <translation id="5840680448799937675">Файловете винаги ще се споделят офлайн</translation>
 <translation id="5841270259333717135">Конфигуриране на Ethernet</translation>
 <translation id="5841338463993781099">Да се запази ли в профила?</translation>
@@ -9536,7 +9538,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8377625247046155446">Кодът за достъп ще бъде запазен само на това устройство. Той ще остане на устройството, след като затворите всички прозорци в режим „инкогнито“.</translation>
 <translation id="837790003026572432">Предаването на звук от раздел не се поддържа на това устройство</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
-<translation id="8378855320830505539">Област</translation>
 <translation id="8379988659465232385">Името трябва да се попълни</translation>
 <translation id="8379991678458444070">Връщайте се тук бързо, като запазите отметка към този раздел</translation>
 <translation id="8380266723152870797">Име на прозореца</translation>

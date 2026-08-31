@@ -4801,17 +4801,6 @@ URL ทางลัดต้องไม่ซ้ำกัน
 <translation id="4090088362777472639">แฮช SHA-256 ของ Ansible Playbook</translation>
 <translation id="4091040199847925434">ปิดใช้การรายงานข้อมูลระบบและเนื้อหาของหน้าซึ่งใช้เพื่อช่วยปรับปรุง Google Safe Browsing</translation>
 <translation id="4093058072421210667">ไม่อนุญาตให้ใช้รูปภาพในบรรทัด</translation>
-<translation id="4096503137212127216">คุณสามารถใช้นโยบายนี้เพื่อบล็อก <ph name="CHROME_DEVTOOLS_NAME" /> ใน URL ที่เฉพาะเจาะจงได้ ดูข้อมูลเกี่ยวกับรูปแบบ URL ได้ที่ https://support.google.com/chrome/a?p=url_blocklist_filter_format
-
-รูปแบบ URL จะจับคู่กับ URL ของทุกเฟรมในหน้าที่กำลังตรวจสอบ ลักษณะการทำงานที่ได้จะขึ้นอยู่กับว่ามีการตั้งค่านโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ด้วยหรือไม่
-
-หากตั้งค่านโยบายนี้และไม่ได้ตั้งค่า <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ระบบจะบล็อก <ph name="CHROME_DEVTOOLS_NAME" /> ของทั้งหน้าเว็บ หาก URL ของเฟรมตรงกับรูปแบบในรายการที่บล็อกนี้ หาก URL ของเฟรมไม่ตรงกับรูปแบบใดๆ ความพร้อมใช้งานจะกำหนดโดยนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />
-
-หากตั้งค่าทั้งนโยบายนี้และ <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ไว้ รายการที่อนุญาตจะมีความสำคัญเหนือกว่า หาก URL ของเฟรมตรงกับรูปแบบในรายการที่อนุญาต ระบบจะอนุญาตให้ใช้ได้ แม้ว่าจะตรงกับรูปแบบในรายการที่บล็อกนี้ด้วยก็ตาม หาก URL ตรงกับรูปแบบในรายการที่บล็อกนี้ (แต่ไม่ตรงกับรายการที่อนุญาต) ระบบจะบล็อก URL นั้น หาก URL ไม่ตรงกับรูปแบบในรายการใดๆ เลย ระบบจะใช้นโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> เป็นตัวเลือกสำรอง
-
-หากไม่ได้ตั้งค่านโยบายนี้ ความพร้อมใช้งานของ <ph name="CHROME_DEVTOOLS_NAME" /> จะกำหนดโดยนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> และ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />
-
-นโยบายนี้ระบุรายการได้ไม่เกิน 1,000 รายการ</translation>
 <translation id="4098920079809952737">อนุญาตการพิมพ์ทั้งกรณีที่มีและไม่มีกราฟิกพื้นหลัง</translation>
 <translation id="410061592404122032">ถามทุกครั้งที่เว็บไซต์ต้องการได้รับสิทธิ์การจัดการหน้าต่าง</translation>
 <translation id="410068710490553233">อนุญาตการลงชื่อเข้าใช้บัญชี Google เพิ่มเติม</translation>
@@ -10456,21 +10445,6 @@ URL ที่ตรงกับทั้งรายการที่อนุ�
 <translation id="759957074386651883">การตั้งค่า Safe Browsing</translation>
 <translation id="7602621823177962064">ปิดใช้การรายงานข้อมูลหน่วยความจำของอุปกรณ์</translation>
 <translation id="7604169113182304895">แอป Android อาจเลือกใช้รายการด้วยความสมัครใจ คุณไม่สามารถบังคับแอปให้เลือกได้</translation>
-<translation id="7604302274842086162">คุณสามารถใช้นโยบายนี้เพื่ออนุญาต <ph name="CHROME_DEVTOOLS_NAME" /> ใน URL ที่เฉพาะเจาะจงได้
-
-ระบบจะจับคู่รูปแบบ URL กับ URL ของทุกเฟรมในหน้าเว็บที่กำลังตรวจสอบ ลักษณะการทำงานที่ได้จะขึ้นอยู่กับว่ามีการตั้งค่านโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ด้วยหรือไม่
-
-หากตั้งค่านโยบายนี้และไม่ได้ตั้งค่า <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> URL ของทุกเฟรมต้องตรงกับรูปแบบในรายการที่อนุญาตนี้เพื่อให้ระบบอนุญาต <ph name="CHROME_DEVTOOLS_NAME" /> หากมี URL ของเฟรมไม่ตรงกัน ระบบจะบล็อกเครื่องมือสำหรับนักพัฒนาเว็บของทั้งหน้านั้น ดูข้อมูลเกี่ยวกับรูปแบบ URL ได้ที่ https://support.google.com/chrome/a?p=url_blocklist_filter_format
-
-หากตั้งค่าทั้งนโยบายนี้และนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> รายการที่อนุญาตนี้จะมีความสำคัญเหนือกว่า หาก URL ของเฟรมตรงกับรูปแบบในรายการที่อนุญาตนี้ ระบบจะอนุญาตให้ใช้ได้ แม้ว่าจะตรงกับรูปแบบในรายการที่บล็อกด้วยก็ตาม หาก URL ตรงกับรูปแบบในรายการที่บล็อก (แต่ไม่ตรงกับรายการที่อนุญาต) ระบบจะบล็อก URL นั้น หาก URL ไม่ตรงกับรูปแบบในรายการใดๆ เลย ระบบจะใช้นโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> เป็นตัวเลือกสำรอง
-
-หากไม่ได้ตั้งค่านโยบายนี้ ความพร้อมใช้งานของ <ph name="CHROME_DEVTOOLS_NAME" /> จะกำหนดโดยนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> และ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />
-
-นโยบายนี้ยังมีผลกับ <ph name="CHROME_DEVTOOLS_NAME" /> ที่เปิดสำหรับส่วนขยายและเว็บแอปพลิเคชันด้วย
-
-ไวลด์การ์ดโฮสต์แบบครอบคลุม (คือ ไม่อนุญาตให้ใช้ "*" หรือ "[*]") ให้ใช้นโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> เพื่อเปิดใช้ฟีเจอร์ทั่วโลก
-
-นโยบายนี้ระบุรายการได้ไม่เกิน 1,000 รายการ</translation>
 <translation id="7607831126797434329">บล็อกการดาวน์โหลดอัตโนมัติในเว็บไซต์เหล่านี้</translation>
 <translation id="7608186022704392724">ฟีเจอร์ส่ง PIN อัตโนมัติจะเปลี่ยนรูปแบบการป้อน PIN ใน "<ph name="PRODUCT_OS_NAME" />"
           ฟีเจอร์นี้จะแสดง UI พิเศษให้ผู้ใช้เห็นอย่างชัดเจนว่า PIN ต้องมีกี่หลัก แทนการแสดงช่องข้อความแบบเดียวกับที่ใช้ป้อนรหัสผ่าน ดังนั้นระบบจะจัดเก็บความยาว PIN ของผู้ใช้ไว้นอกข้อมูลที่เข้ารหัสของผู้ใช้ ใช้ได้เฉพาะ PIN ที่มีความยาวระหว่าง 6 ถึง 12 หลัก

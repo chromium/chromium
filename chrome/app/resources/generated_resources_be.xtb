@@ -4486,6 +4486,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Задача выканана}one{Задачы выкананы}few{Задачы выкананы}many{Задачы выкананы}other{Задачы выкананы}}</translation>
 <translation id="4429163740524851942">Раскладка фізічнай клавіятуры</translation>
 <translation id="4430019312045809116">Гучнасць</translation>
+<translation id="443008484043213881">Інструменты</translation>
 <translation id="4430369329743628066">Дададзена закладка</translation>
 <translation id="4430422687972614133">Уключыць віртуальную картку</translation>
 <translation id="4431962107539413562">Карыстайцеся доступам да пароляў на ўсіх сваіх прыладах</translation>
@@ -4669,6 +4670,7 @@
 <translation id="4589713469967853491">Журналы захаваны ў каталозе "Спампоўкі".</translation>
 <translation id="4590785647529325123">Каб выдаліць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта</translation>
 <translation id="459204634473266369">Ва ўліковым запісе <ph name="PRIMARY_EMAIL" /> няма захаваных прылад</translation>
+<translation id="4592634244097223647">Спытацца ў Google пра гэты відарыс</translation>
 <translation id="4592891116925567110">Праграма для рысавання пяром</translation>
 <translation id="4593021220803146968">&amp;Перайсці на старонку <ph name="URL" /></translation>
 <translation id="4593962599442730215">Змяніць параметры</translation>
@@ -4995,7 +4997,6 @@
 <translation id="4840096453115567876">Усё роўна выйсці з рэжыму інкогніта?</translation>
 <translation id="4841475798258477260">Гэта прылада можа падключацца толькі да канкрэтнай мабільнай сеткі. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Гэта старонка спрабуе загрузіць сцэнарыі з неаўтэнтыфікаваных крыніц.</translation>
-<translation id="4843037705239202082">Распазнаванне медыязмесціва</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="4846628405149428620">Укажыце, дзе сайт можа захоўваць змены</translation>
 <translation id="4846680374085650406">Для гэтай налады вы трымаецеся рэкамендацый адміністратара.</translation>
@@ -6243,6 +6244,7 @@
 <translation id="5836999627049108525">З якой мовы перакласці</translation>
 <translation id="583756221537636748">Чахол</translation>
 <translation id="5840656138956959276">Палепшаны стан: строгі</translation>
+<translation id="5840658767386246331">Пошук у Google</translation>
 <translation id="5840680448799937675">Файлы будуць заўсёды абагульвацца па-за сеткай</translation>
 <translation id="5841270259333717135">Наладзіць Ethernet</translation>
 <translation id="5841338463993781099">Захаваць ва ўліковым запісе?</translation>
@@ -9524,7 +9526,6 @@
 <translation id="8377625247046155446">Гэты ключ доступу будзе захаваны толькі на гэтай прыладзе. Ключ застанецца на ёй і пасля таго, як вы закрыеце ўсе вокны ў рэжыме інкогніта.</translation>
 <translation id="837790003026572432">Гэта прылада не падтрымлівае трансляцыю аўдыя з укладкі</translation>
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
-<translation id="8378855320830505539">Рэгіён</translation>
 <translation id="8379988659465232385">Неабходна ўвесці назву</translation>
 <translation id="8379991678458444070">Дадаўшы гэту ўкладку ў закладкі, вы будзеце мець да яе хуткі доступ</translation>
 <translation id="8380266723152870797">Назва акна</translation>

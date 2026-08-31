@@ -1118,6 +1118,7 @@
 <translation id="5465437530117042974">השינויים בגיליון התחתון של הכרטיסייה נסגרו.</translation>
 <translation id="5469852975082458401">‏ניתן לנווט בדפים באמצעות סמן הטקסט. כדי להפסיק, אפשר להקיש על F7.</translation>
 <translation id="5471273988133666918">לא ניתן להעביר את הכרטיסייה <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">‏נדרשת גישה למכשיר ממשק אנושי (HID)</translation>
 <translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
 <translation id="5489222148748465285">‏רוצה ש-Chrome ימשיך לחפש?</translation>
 <translation id="5490848366863949315">‫<ph name="TAB_TITLE" />, כרטיסייה מתוך סדרת כרטיסיות שנבחרו, במצב "תמונה בתוך תמונה"</translation>
@@ -1965,6 +1966,7 @@
 <translation id="867914734596684889">הצגה או הסתרה של סרגל הסימניות</translation>
 <translation id="8683039184091909753">תמונה</translation>
 <translation id="8688183792442786085">‫<ph name="TAB_TITLE" />, הכרטיסייה שנבחרה</translation>
+<translation id="8694622119922491927">‏אפליקציית <ph name="APP_NAME" /> זקוקה להרשאת גישה למכשירי ממשק אנושי (HID) בשביל האתר הזה. אפשר לשנות את ההגדרה הזו בהמשך דרך "הגדרות" &gt; "אפליקציות" &gt; "גישה מיוחדת לאפליקציה".</translation>
 <translation id="8696297579102085705">שליחה למכשיר שלך</translation>
 <translation id="8699120352855309748">לא להציע לי לתרגם את השפות האלה</translation>
 <translation id="8700565880437506364">‏חדש: Gemini ב-Chrome</translation>

@@ -4501,6 +4501,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Opravilo je končano}one{Opravila so končana}two{Opravila so končana}few{Opravila so končana}other{Opravila so končana}}</translation>
 <translation id="4429163740524851942">Postavitev fizične tipkovnice</translation>
 <translation id="4430019312045809116">Glasnost</translation>
+<translation id="443008484043213881">Orodja</translation>
 <translation id="4430369329743628066">Zaznamek dodan</translation>
 <translation id="4430422687972614133">Vklopi navidezno kartico</translation>
 <translation id="4431962107539413562">Dostop do gesel v vseh napravah</translation>
@@ -4684,6 +4685,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4589713469967853491">Dnevniki so bili uspešno zapisani v mapo Prenosi.</translation>
 <translation id="4590785647529325123">Če želite izbrisati anonimno zgodovino brskanja iz naprave, zaprite vse anonimne zavihke</translation>
 <translation id="459204634473266369">Nobena naprava ni shranjena v računu <ph name="PRIMARY_EMAIL" />.</translation>
+<translation id="4592634244097223647">Vprašajte Google o tej sliki</translation>
 <translation id="4592891116925567110">Aplikacija za risanje s pisalom</translation>
 <translation id="4593021220803146968">&amp;Pojdi na <ph name="URL" /></translation>
 <translation id="4593962599442730215">Spreminjanje nastavitev</translation>
@@ -5010,7 +5012,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4840096453115567876">Ali želite vseeno zapustiti anonimni način?</translation>
 <translation id="4841475798258477260">Ta naprava lahko vzpostavi povezavo samo z določenim mobilnim omrežjem. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Ta stran poskuša naložiti skripte iz virov, ki nimajo preverjene pristnosti.</translation>
-<translation id="4843037705239202082">Razumevanje predstavnosti</translation>
 <translation id="484462545196658690">Samodejno</translation>
 <translation id="4846628405149428620">Izberite, kje lahko to spletno mesto shranjuje spremembe</translation>
 <translation id="4846680374085650406">Upoštevate priporočila skrbnika za to nastavitev.</translation>
@@ -6260,6 +6261,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5836999627049108525">Jezik, iz katerega želite prevajati</translation>
 <translation id="583756221537636748">Škatlica</translation>
 <translation id="5840656138956959276">Izboljšano: strogo</translation>
+<translation id="5840658767386246331">Poišči z Googlom</translation>
 <translation id="5840680448799937675">Datoteke bodo vedno deljene brez internetne povezave</translation>
 <translation id="5841270259333717135">Konfiguriranje etherneta</translation>
 <translation id="5841338463993781099">Želite shraniti v račun?</translation>
@@ -9542,7 +9544,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8377625247046155446">Ta ključ za dostop bo shranjen samo v tej napravi. V tej napravi bo ostal, ko zaprete vsa anonimna okna.</translation>
 <translation id="837790003026572432">Predvajanje zvoka zavihka v tej napravi ni podprto</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
-<translation id="8378855320830505539">Območje</translation>
 <translation id="8379988659465232385">Polje z imenom ne sme biti prazno</translation>
 <translation id="8379991678458444070">Hitro se vrnite na ta zavihek tako, da ga dodate med zaznamke</translation>
 <translation id="8380266723152870797">Ime okna</translation>

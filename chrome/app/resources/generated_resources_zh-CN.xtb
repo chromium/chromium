@@ -4486,6 +4486,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{任务已完成}other{任务已完成}}</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="443008484043213881">工具</translation>
 <translation id="4430369329743628066">已添加书签</translation>
 <translation id="4430422687972614133">启用虚拟卡</translation>
 <translation id="4431962107539413562">在您的所有设备上获取密钥</translation>
@@ -4669,6 +4670,7 @@
 <translation id="4589713469967853491">已成功将日志写入“下载内容”目录中。</translation>
 <translation id="4590785647529325123">若要删除您设备中的无痕浏览记录，请关闭所有无痕式标签页</translation>
 <translation id="459204634473266369">尚未将任何设备保存到“<ph name="PRIMARY_EMAIL" />”</translation>
+<translation id="4592634244097223647">向 Google 询问此图片</translation>
 <translation id="4592891116925567110">触控笔绘图应用</translation>
 <translation id="4593021220803146968">转到 <ph name="URL" />(&amp;G)</translation>
 <translation id="4593962599442730215">更改您的偏好设置</translation>
@@ -4994,7 +4996,6 @@
 <translation id="4840096453115567876">仍要退出无痕模式？</translation>
 <translation id="4841475798258477260">此设备只能连接到特定的移动网络。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">此网页正试图从未经验证的来源加载脚本。</translation>
-<translation id="4843037705239202082">媒体理解</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4846628405149428620">选择要让此网站将所做更改保存到何处</translation>
 <translation id="4846680374085650406">您目前所采用的是管理员的建议设置。</translation>
@@ -6240,6 +6241,7 @@
 <translation id="5836999627049108525">原文语言</translation>
 <translation id="583756221537636748">耳机盒</translation>
 <translation id="5840656138956959276">增强：严格</translation>
+<translation id="5840658767386246331">使用 Google 搜索</translation>
 <translation id="5840680448799937675">始终离线分享</translation>
 <translation id="5841270259333717135">配置以太网</translation>
 <translation id="5841338463993781099">要保存到账号吗？</translation>
@@ -9515,7 +9517,6 @@
 <translation id="8377625247046155446">这个通行密钥只会保存在此设备上。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="837790003026572432">此设备不支持投放标签页中的音频</translation>
 <translation id="8378714024927312812">由您的组织管理</translation>
-<translation id="8378855320830505539">区域</translation>
 <translation id="8379988659465232385">名称不能为空</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
 <translation id="8380266723152870797">窗口名称</translation>

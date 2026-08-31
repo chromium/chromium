@@ -4490,6 +4490,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{ଟାସ୍କ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି}other{ଟାସ୍କଗୁଡ଼ିକ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି}}</translation>
 <translation id="4429163740524851942">ଫିଜିକାଲ୍ କୀବୋର୍ଡ ଲେଆଉଟ୍</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
+<translation id="443008484043213881">ଉପକରଣଗୁଡିକ</translation>
 <translation id="4430369329743628066">ବୁକ୍‌ମାର୍କ ଯୋଡାଗଲା</translation>
 <translation id="4430422687972614133">ଭର୍ଚୁଆଲ କାର୍ଡ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4431962107539413562">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
@@ -4673,6 +4674,7 @@
 <translation id="4589713469967853491">ଡାଉନଲୋଡ୍ ଡିରେକ୍ଟୋରୀରେ ଲଗଗୁଡ଼ିକ ସଫଳତାର ସହ ଲେଖାଯାଇଛି।</translation>
 <translation id="4590785647529325123">ଆପଣଙ୍କ ଡିଭାଇସରୁ ଇନକଗ୍ନିଟୋ ବ୍ରାଉଜିଂ ଇତିହାସକୁ ଡିଲିଟ କରିବା ପାଇଁ, ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />ରେ କୌଣସି ଡିଭାଇସ ସେଭ ହୋଇନାହିଁ</translation>
+<translation id="4592634244097223647">ଏହି ଇମେଜ ବିଷୟରେ Googleକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="4592891116925567110">ଷ୍ଟାଇଲସ୍ ଡ୍ରଇଂ ଆପ୍</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4593962599442730215">ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -4998,7 +5000,6 @@
 <translation id="4840096453115567876">ଯେ କୌଣସି ମତେ ଇନକଗ୍ନିଟୋ ମୋଡ୍ ବନ୍ଦ କରିବେ?</translation>
 <translation id="4841475798258477260">ଏହି ଡିଭାଇସକୁ କେବଳ ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ମୋବାଇଲ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରାଯାଇପାରିବ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">ଏହି ପୃଷ୍ଠା ଅପ୍ରାମାଣିକତା ଉତ୍ସରୁ ସ୍କ୍ରିପ୍ଟ ଲୋଡ୍‌ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
-<translation id="4843037705239202082">ମିଡିଆ ବିଷୟରେ ଜାଣିବା</translation>
 <translation id="484462545196658690">ସ୍ୱତଃ</translation>
 <translation id="4846628405149428620">ଏହି ସାଇଟ ପରିବର୍ତ୍ତନଗୁଡ଼ିକୁ କେଉଁଠାରେ ସେଭ କରିପାରିବ ତାହା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4846680374085650406">ଏହି ସେଟିଂ ପାଇଁ ଆପଣ ବ୍ୟବସ୍ଥାପକଙ୍କ ସୁପାରିସ୍‌ ଅନୁସରଣ କରୁଛନ୍ତି।</translation>
@@ -6245,6 +6246,7 @@
 <translation id="5836999627049108525">ଏହି ଭାଷାରୁ ଅନୁବାଦ କରାଯିବ</translation>
 <translation id="583756221537636748">କେସ</translation>
 <translation id="5840656138956959276">ଉନ୍ନତ: ଷ୍ଟ୍ରିକ୍ଟ</translation>
+<translation id="5840658767386246331">Googleରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="5840680448799937675">ଫାଇଲଗୁଡ଼ିକ ସର୍ବଦା ଅଫଲାଇନରେ ସେୟାର୍ କରାଯିବ</translation>
 <translation id="5841270259333717135">ଇଥରନେଟ୍ କନଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="5841338463993781099">ଆକାଉଣ୍ଟରେ ସେଭ କରିବେ?</translation>
@@ -9520,7 +9522,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8377625247046155446">ଏହି ପାସକୀ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ ହେବ। ଆପଣ ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରିବା ପରେ ଏହା ଏହି ଡିଭାଇସରେ ରହିବ।</translation>
 <translation id="837790003026572432">ଏହି ଡିଭାଇସରେ ଟାବ ଅଡିଓ କାଷ୍ଟ କରିବା ସପୋର୍ଟ କରୁ ନୁହେଁ</translation>
 <translation id="8378714024927312812">ଆପଣଙ୍କର ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ</translation>
-<translation id="8378855320830505539">ଅଞ୍ଚଳ</translation>
 <translation id="8379988659465232385">ନାମ ଖାଲି ରହିପାରିବ ନାହିଁ</translation>
 <translation id="8379991678458444070">ଏହି ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରି ଏଠାକୁ ଦ୍ରୁତଭାବରେ ପୁଣି ଆସନ୍ତୁ</translation>
 <translation id="8380266723152870797">ୱିଣ୍ଡୋର ନାମ</translation>

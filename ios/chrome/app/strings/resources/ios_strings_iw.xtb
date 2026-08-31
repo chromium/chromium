@@ -52,6 +52,7 @@
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1150989369772528668">יומן</translation>
 <translation id="1158134713295836892">‏‫Gemini ב-Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{בדקת סיסמה אחת}one{בדקת # סיסמאות}two{בדקת # סיסמאות}other{בדקת # סיסמאות}}</translation>
 <translation id="1161444134753003495">כניסה</translation>
 <translation id="1161663161838091892">כדי להמשיך, צריך לסנכרן את הכרטיסיות וההיסטוריה</translation>
 <translation id="1162834932051545794">{count,plural, =1{כרטיס אשראי אחד ({count})}one{{count} כרטיסי אשראי}two{{count} כרטיסי אשראי}other{{count} כרטיסי אשראי}}</translation>
@@ -335,6 +336,7 @@
 <translation id="1993126639825654370">‏העתקת כתובת ה-URL של הקישור</translation>
 <translation id="199425419756152024">הצגת הסיסמה</translation>
 <translation id="1996318269856535896">עדיין אפשר להשתמש בנתוני הגלישה הקיימים במכשיר הזה. כדי להשתמש בהם, עליך לצאת מהחשבון המנוהל שלך.</translation>
+<translation id="2002971615187574739">‏שימוש ב-AI כדי להספיק יותר</translation>
 <translation id="2010008505735295285">טעינה מחדש</translation>
 <translation id="2012723204723845092">טוב לראות אותך שוב!</translation>
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
@@ -605,6 +607,7 @@
 <translation id="2918688092312652908">סימון כפריט שלא נקרא</translation>
 <translation id="2922210239002704889">עוברים לדף הבית או למקלדת.</translation>
 <translation id="2924940770243654951">פתיחה בכרטיסייה פרטית חדשה</translation>
+<translation id="2934607171563543600">מהרגע שהשלמת את המשימה "בדיקת הסיסמאות"</translation>
 <translation id="2952278131021475699">‏חיפוש באמצעות המצלמה ב-Lens</translation>
 <translation id="2953821385349876107">‏בחירת חשבון Google אחר</translation>
 <translation id="2962516096219646456">הצגת כל נתוני המילוי האוטומטי</translation>
@@ -810,6 +813,7 @@
 <translation id="3643338347976071250">{count,plural, =1{‏סיסמה אחת ({count}) שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google עם הכתובת {email}.}one{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}two{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}other{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="3659297405161482746">לא נמצאו אמצעי תשלום</translation>
 <translation id="3662966164093827811">{count,plural, =1{נבחר פריט אחד}one{# נבחרו}two{# נבחרו}other{# נבחרו}}</translation>
+<translation id="3668035568083954765">שמירה על הפרטיות והבטיחות</translation>
 <translation id="3668816008081204991">רשימת הקריאה מוסתרת</translation>
 <translation id="3670030362669914947">מספר</translation>
 <translation id="3672283986707092811">בחירת הכול</translation>
@@ -1238,6 +1242,7 @@
 <translation id="5056446788882570708">נמצאו בעיות <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="5059136629401106827">אישור</translation>
+<translation id="5061202435354361813">רוצה לשדרג את הגלישה?</translation>
 <translation id="5062321486222145940">‏התקנת Google Drive</translation>
 <translation id="5067540696062462445">הורדות</translation>
 <translation id="5070314445039955096">ההרשאות לאתר <ph name="SITE_DOMAIN" /> יאופסו לאחר היציאה ממנו</translation>
@@ -1687,6 +1692,7 @@
 <translation id="6454311990702999318">נתונים לא תקינים</translation>
 <translation id="6459411599807878608">הפרטים מוסתרים</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">‏כדי להמליץ על משימות ולעקוב אחרי ההתקדמות, Google אוספת את נתוני השימוש של התכונה. אפשר להשבית את "שדרוג הגלישה" בכל שלב.</translation>
 <translation id="6472069383518492189">ההורדות יופיעו כאן</translation>
 <translation id="6476253015009698798">המעקב אחר מחירים לא זמין בדף הזה.</translation>
 <translation id="6476284679642588870">ניהול אמצעי תשלום</translation>
@@ -1927,6 +1933,7 @@
 <translation id="7233006041370588369">צריך לבחור סיסמה למילוי.</translation>
 <translation id="723874023660911012">החלפת פרופיל</translation>
 <translation id="7241135764990439166">המצב הפרטי לא זמין</translation>
+<translation id="7245288034498365666">סדר, ארגון וחיסכון בזמן</translation>
 <translation id="7253951228444156601">הסיסמאות נבדקות…</translation>
 <translation id="7261217796641151584">שיתוף קבוצה</translation>
 <translation id="7266578100016339897">כך יהיה לך יותר קל לשמור על סדר. אפשר לשנות את הבחירה דרך ההגדרות בכל שלב.</translation>

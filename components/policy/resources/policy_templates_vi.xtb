@@ -4843,17 +4843,6 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 <translation id="4090088362777472639">Hàm băm SHA-256 của cẩm nang Ansible.</translation>
 <translation id="4091040199847925434">Tắt tính năng báo cáo thông tin hệ thống và nội dung trang dùng để giúp cải thiện tính năng Duyệt web an toàn</translation>
 <translation id="4093058072421210667">Không cho phép tính năng Inline Image.</translation>
-<translation id="4096503137212127216">Bạn có thể dùng chính sách này để chặn <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể. Để biết thông tin về định dạng URL, hãy truy cập vào trang https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Các mẫu URL sẽ được so khớp với URL của mọi khung trên trang đang được kiểm tra. Hành vi kết quả phụ thuộc vào việc chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> có được đặt hay không.
-
-Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì mọi URL của khung khớp với một mẫu trong danh sách chặn này sẽ chặn <ph name="CHROME_DEVTOOLS_NAME" /> cho toàn bộ trang. Nếu URL của một khung không khớp với mẫu nào, thì khả năng sử dụng sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì danh sách cho phép này sẽ được ưu tiên áp dụng. Nếu URL của một khung khớp với một mẫu trong danh sách cho phép này, URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu một URL khớp với một mẫu trong danh sách chặn này (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn không đặt chính sách này, thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="4098920079809952737">Cho phép in cả khi có và không có hình đồ họa nền</translation>
 <translation id="410061592404122032">Hỏi mỗi lần một trang web muốn có quyền Quản lý cửa sổ</translation>
 <translation id="410068710490553233">Cho phép đăng nhập vào các Tài khoản Google khác</translation>
@@ -5241,6 +5230,22 @@ Lưu ý: Chính sách này sẽ vô hiệu hoá chính sách <ph name="ARC_GLS_P
 <translation id="4363057787588706121">Cho phép hợp nhất các chính sách trong danh sách thuộc các nguồn khác nhau</translation>
 <translation id="4363101430102811068">Bật tùy chọn phát hiện rò rỉ thông tin đăng nhập đã nhập</translation>
 <translation id="436581050240847513">Báo cáo giao diện mạng thiết bị</translation>
+<translation id="4366420138981318392">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không phải trải qua các bước kiểm tra <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Đối với những nguồn gốc không được áp dụng các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
+
+Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách sẽ được ưu tiên theo thứ tự sau:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4369307906396795087">Tập lệnh dành cho trình chạy (Trình chạy web, Trình chạy dịch vụ, v.v.) sử dụng tính năng kiểm tra loại MIME nới lỏng. Tập lệnh trình chạy có loại MIME cũ, như <ph name="MIMETYPE_TEXT_ASCII" />, sẽ hoạt động.</translation>
 <translation id="4370937370030117032">Không cho phép gửi tên người dùng và tên tệp đến máy in gốc</translation>
 <translation id="4372704773119750918">Không cho phép người dùng doanh nghiệp là một phần của đa cấu hình (chính hoặc phụ)</translation>
@@ -6007,6 +6012,22 @@ Nếu bạn đặt chính sách này thành False (Sai), thì chế độ mặc 
 <translation id="4826977043372474305">Thông tin đăng nhập Wi-Fi của kiosk được lưu trữ ở cấp kiosk</translation>
 <translation id="4827727182370777723">Chế độ cài đặt quyền Phông chữ trên máy mặc định</translation>
 <translation id="482803100714220060">Hiển thị URL đầy đủ</translation>
+<translation id="4830717535196994979">Danh sách mẫu URL. Yêu cầu mạng khởi tạo từ các trang web có nguồn gốc trùng khớp sẽ không được phép gửi các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Đối với những nguồn gốc không được áp dụng các mẫu nêu ở đây, cấu hình cá nhân của người dùng sẽ được áp dụng.
+
+Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập https://chromeenterprise.google/policies/url-patterns/.
+
+Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến các yêu cầu gửi đến thiết bị cục bộ và thiết bị đầu cuối trên mạng cục bộ. Nếu một nguồn gốc khớp với nhiều chính sách trong số các chính sách sau đây, thì các chính sách sẽ được ưu tiên theo thứ tự sau:
+
+  – LocalNetworkBlockedForUrls
+  – LocalNetworkAllowedForUrls
+  – LoopbackNetworkBlockedForUrls
+  – LoopbackNetworkAllowedForUrls
+  – LocalNetworkAccessBlockedForUrls
+  – LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4832373379539003927">Kiểm soát việc trình xem PDF trong <ph name="PRODUCT_NAME" /> có hỗ trợ biểu mẫu XFA trong tài liệu PDF hay không.
 
 Nếu bạn đặt chính sách này thành True (Đúng) thì tính năng hỗ trợ cho biểu mẫu XFA sẽ được bật.
@@ -9278,6 +9299,17 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 <translation id="6757613329154374267">Đã bật dịch vụ sao lưu và khôi phục</translation>
 <translation id="6758659208493449452">Chính sách này kiểm soát việc người dùng đăng ký chương trình Bảo vệ nâng cao có nhận được các tính năng tăng cường bảo vệ hay không. Một số tính năng trong số này có thể chia sẻ dữ liệu với Google (ví dụ: người dùng chương trình Bảo vệ nâng cao có thể gửi các tệp đã tải xuống cho Google để quét tìm phần mềm độc hại). Nếu bạn không đặt hoặc đặt chính sách này thành True, thì người dùng đã đăng ký sẽ nhận được các tính năng tăng cường bảo vệ. Nếu bạn đặt chính sách này thành False, thì người dùng chương trình Bảo vệ nâng cao sẽ chỉ nhận được các tính năng dành cho người dùng thông thường.</translation>
 <translation id="6763023079133439068">Cho phép các chứng chỉ thiếu tiện ích subjectAlternativeName nếu chứng chỉ là do các neo tin cậy cục bộ phát hành</translation>
+<translation id="6765476642902721793">Nếu bạn đặt chính sách này thành Enabled (Bật), các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" />
+sẽ chỉ hiển thị cảnh báo trong <ph name="CHROME_DEVTOOLS_NAME" /> do không kiểm tra được <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặt, các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> sẽ sử dụng
+chế độ xử lý mặc định cho các yêu cầu này.
+
+Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Chính sách doanh nghiệp này chỉ có hiệu lực tạm thời và sẽ bị xoá sau phiên bản M163.
+
+Về lâu dài, bạn có thể sử dụng chính sách <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> để đưa các mẫu URL vào danh sách cho phép. Các mẫu URL này sẽ tự động được cấp quyền <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="6766216162565713893">Cho phép trang web yêu cầu người dùng cấp quyền truy cập vào thiết bị Bluetooth lân cận</translation>
 <translation id="6770454900105963262">Báo cáo thông tin về các phiên kiosk hiện hoạt</translation>
 <translation id="6770703270685871935">Tự động xoá sạch dữ liệu cục bộ</translation>
@@ -10661,21 +10693,6 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
 <translation id="759957074386651883">Cài đặt Duyệt web an toàn</translation>
 <translation id="7602621823177962064">Tắt tính năng báo cáo thông tin về bộ nhớ của thiết bị</translation>
 <translation id="7604169113182304895">Các ứng dụng Android có thể chọn sử dụng danh sách này một cách tự nguyện. Bạn không thể buộc các ứng dụng đó sử dụng danh sách.</translation>
-<translation id="7604302274842086162">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể.
-
-Các mẫu URL sẽ được so khớp với URL của mọi khung trên trang đang được kiểm tra. Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> hay không.
-
-Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, URL của mọi khung phải khớp với một mẫu trong danh sách cho phép này thì <ph name="CHROME_DEVTOOLS_NAME" /> mới được cho phép. Nếu URL của bất kỳ khung nào không khớp thì Công cụ cho nhà phát triển sẽ bị chặn đối với toàn bộ trang. Để biết thông tin về định dạng URL, hãy truy cập vào trang https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép này sẽ được ưu tiên áp dụng. Nếu URL của một khung khớp với một mẫu trong danh sách cho phép này, URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu một URL khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
-
-Không được sử dụng ký tự đại diện chung chung dùng để khớp với mọi máy chủ lưu trữ (ví dụ: "*" hoặc "[*]"); hãy dùng chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> để bật tính năng này trên phạm vi toàn cục.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="7607831126797434329">Chặn tính năng tự động tải xuống trên các trang web này</translation>
 <translation id="7608186022704392724">Tính năng tự động gửi mã PIN thay đổi cách nhập mã PIN trên <ph name="PRODUCT_OS_NAME" />.
           Thay vì cho thấy cùng một trường văn bản dùng để nhập mật khẩu, tính năng này

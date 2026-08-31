@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">מחיקת קבוצה</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{פריט אחד (<ph name="TABS_COUNT_ONE" />) לא פעיל}one{‫<ph name="TABS_COUNT_MANY" /> פריטים לא פעילים}two{‫<ph name="TABS_COUNT_MANY" /> פריטים לא פעילים}other{‫<ph name="TABS_COUNT_MANY" /> פריטים לא פעילים}}</translation>
 <translation id="1568067597247500137">השתקת האתר</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{העברת הכרטיסייה למטה}one{העברת הכרטיסיות למטה}two{העברת הכרטיסיות למטה}other{העברת הכרטיסיות למטה}}</translation>
 <translation id="1645759014353344461">‫<ph name="TABS_COUNT_MANY" /> כרטיסיות מקובצות</translation>
 <translation id="1657719826150349398">העברת הכרטיסייה למטה</translation>
 <translation id="1670942869417022142">האודיו מושתק</translation>
 <translation id="1697284962337958118">הוספה אל</translation>
 <translation id="1713541401465507417">סגירה של כל הכרטיסיות והקבוצות</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{קבוצת הכרטיסיות <ph name="TAB_GROUPS_COUNT_ONE" /> לא זמינה יותר}one{‫<ph name="TAB_GROUPS_COUNT_MANY" /> קבוצות של כרטיסיות לא זמינות יותר}two{‫<ph name="TAB_GROUPS_COUNT_MANY" /> קבוצות של כרטיסיות לא זמינות יותר}other{‫<ph name="TAB_GROUPS_COUNT_MANY" /> קבוצות של כרטיסיות לא זמינות יותר}}</translation>
+<translation id="1759122978835002237">העברת קבוצת הכרטיסיות למעלה</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) מקובצת</translation>
 <translation id="1844381456014878100">אחרי 7 ימים ללא פעילות</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. הכרטיסייה הפרטית לא תהיה זמינה.}one{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}two{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}other{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{ביטול השתקת האתר}one{ביטול השתקת האתרים}two{ביטול השתקת האתרים}other{ביטול השתקת האתרים}}</translation>
 <translation id="2162620598375156287">עכשיו במחיר <ph name="CURRENT_PRICE" /> ב-<ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">העברת קבוצת הכרטיסיות למטה</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{הסרת הכרטיסייה מהקבוצה}one{הסרת הכרטיסיות מהקבוצה}two{הסרת הכרטיסיות מהקבוצה}other{הסרת הכרטיסיות מהקבוצה}}</translation>
 <translation id="2271452184061378400">קבוצות הכרטיסיות שלך נשמרות כאן</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
@@ -130,7 +133,6 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{העברת כרטיסיות לחלון חדש}one{העברת כרטיסיות לחלון אחר}two{העברת כרטיסיות לחלון אחר}other{העברת כרטיסיות לחלון אחר}}</translation>
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
-<translation id="5093447877601682598">שליחת משוב על שורת הכרטיסיות</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5204584298075822291">כיווץ הכרטיסיות</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי חודש אחד (<ph name="AUTO_DELETE_DELAY_ONE" />). אפשר לשנות את זה בהגדרות.}one{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר לשנות את זה בהגדרות.}two{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי חודשיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר לשנות את זה בהגדרות.}other{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר לשנות את זה בהגדרות.}}</translation>
@@ -194,6 +196,7 @@
 <translation id="7369451074646620503">קבוצת הכרטיסיות "<ph name="TAB_GROUP_NAME" />" לא זמינה יותר</translation>
 <translation id="7402375256128852434">הוספת כרטיסיות מהזמן האחרון</translation>
 <translation id="7452985128687107478">קבוצות של כרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{העברת הכרטיסייה למעלה}one{העברת הכרטיסיות למעלה}two{העברת הכרטיסיות למעלה}other{העברת הכרטיסיות למעלה}}</translation>
 <translation id="747459581954555080">שחזור הכול</translation>
 <translation id="7489558427602531799">העברה של קבוצת הכרטיסיות ימינה</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{פריט אחד (<ph name="TABS_COUNT_ONE" />)}one{‫<ph name="TABS_COUNT_MANY" /> פריטים}two{‫<ph name="TABS_COUNT_MANY" /> פריטים}other{‫<ph name="TABS_COUNT_MANY" /> פריטים}}</translation>

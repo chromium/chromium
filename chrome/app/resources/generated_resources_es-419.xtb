@@ -4489,6 +4489,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Tarea realizada}other{Tareas realizadas}}</translation>
 <translation id="4429163740524851942">Diseño del teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>
+<translation id="443008484043213881">Herramientas</translation>
 <translation id="4430369329743628066">Se agregó a Favoritos</translation>
 <translation id="4430422687972614133">Activar la tarjeta virtual</translation>
 <translation id="4431962107539413562">Accede a tus contraseñas en todos tus dispositivos</translation>
@@ -4672,6 +4673,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4589713469967853491">Se guardaron correctamente los registros en el directorio Descargas.</translation>
 <translation id="4590785647529325123">Para borrar del dispositivo el historial de navegación en modo Incógnito, cierra todas las pestañas de incógnito</translation>
 <translation id="459204634473266369">No hay dispositivos guardados en <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4592634244097223647">Preguntar a Google acerca de esta imagen</translation>
 <translation id="4592891116925567110">App de dibujo con la pluma stylus</translation>
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
 <translation id="4593962599442730215">Cambiar tus preferencias</translation>
@@ -4998,7 +5000,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4840096453115567876">¿Deseas salir del modo Incógnito de todas formas?</translation>
 <translation id="4841475798258477260">Este dispositivo solo se puede conectar a una red móvil específica. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Esta página está tratando de cargar scripts de fuentes no autenticadas.</translation>
-<translation id="4843037705239202082">Comprensión de contenido multimedia</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4846628405149428620">Selecciona dónde puede guardar los cambios este sitio</translation>
 <translation id="4846680374085650406">Estás siguiendo la recomendación del administrador para esta configuración.</translation>
@@ -6247,6 +6248,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5836999627049108525">Idioma del texto de origen</translation>
 <translation id="583756221537636748">Caso</translation>
 <translation id="5840656138956959276">Mejorado: estricto</translation>
+<translation id="5840658767386246331">Buscar con Google</translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5841338463993781099">¿Quieres guardarla en la cuenta?</translation>
@@ -9523,7 +9525,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8377625247046155446">Esta llave de acceso solo se guardará en este dispositivo. Permanecerá en este dispositivo cuando cierres todas las ventanas de incógnito.</translation>
 <translation id="837790003026572432">La transmisión de audio de la pestaña no es compatible con este dispositivo</translation>
 <translation id="8378714024927312812">Administrado por tu organización</translation>
-<translation id="8378855320830505539">Región</translation>
 <translation id="8379988659465232385">El nombre no puede estar vacío</translation>
 <translation id="8379991678458444070">Para regresar aquí rápidamente, agrega esta pestaña a favoritos</translation>
 <translation id="8380266723152870797">Nombre de la ventana</translation>

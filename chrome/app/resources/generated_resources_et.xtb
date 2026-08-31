@@ -4493,6 +4493,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Ülesanne valmis}other{Ülesanded vamis}}</translation>
 <translation id="4429163740524851942">Füüsilise klaviatuuri paigutus</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
+<translation id="443008484043213881">Tööriistad</translation>
 <translation id="4430369329743628066">Järjehoidja on lisatud</translation>
 <translation id="4430422687972614133">Lülita virtuaalne kaart sisse</translation>
 <translation id="4431962107539413562">Pääsete oma paroolidele juurde kõigis oma seadmetes</translation>
@@ -4676,6 +4677,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4589713469967853491">Logide kirjutamine kataloogi Allalaadimised õnnestus.</translation>
 <translation id="4590785647529325123">Inkognito režiimi sirvimisajaloo kustutamiseks seadmest sulgege kõik inkognito vahelehed</translation>
 <translation id="459204634473266369">Ühtegi seadet pole kontole <ph name="PRIMARY_EMAIL" /> salvestatud</translation>
+<translation id="4592634244097223647">Küsige Google'ilt selle pildi kohta</translation>
 <translation id="4592891116925567110">Elektronpliiatsiga joonistamise rakendus</translation>
 <translation id="4593021220803146968">&amp;Mine asukohta <ph name="URL" /></translation>
 <translation id="4593962599442730215">Muutke oma eelistusi</translation>
@@ -5002,7 +5004,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4840096453115567876">Kas sulgeda ikka inkognito režiim?</translation>
 <translation id="4841475798258477260">See seade saab luua ühenduse ainult kindla mobiilsidevõrguga. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">See leht üritab skripte laadida volitamata allikatest.</translation>
-<translation id="4843037705239202082">Meedia mõistmine</translation>
 <translation id="484462545196658690">Automaatne</translation>
 <translation id="4846628405149428620">Valige, kus see sait muudatusi salvestada saab</translation>
 <translation id="4846680374085650406">Järgite selle seade puhul administraatori soovitust.</translation>
@@ -6251,6 +6252,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5836999627049108525">Keel, millest tõlkida</translation>
 <translation id="583756221537636748">Ümbris</translation>
 <translation id="5840656138956959276">Täiustatud: range</translation>
+<translation id="5840658767386246331">Otsi Google’iga</translation>
 <translation id="5840680448799937675">Faile jagatakse alati võrguühenduseta</translation>
 <translation id="5841270259333717135">Etherneti seadistamine</translation>
 <translation id="5841338463993781099">Salvesta kontole?</translation>
@@ -9527,7 +9529,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8377625247046155446">See pääsuvõti salvestatakse ainult sellesse seadmesse. Pärast kõigi inkognito akende sulgemist jääb see sellesse seadmesse.</translation>
 <translation id="837790003026572432">Vahelehe heli ülekandmist ei toetata selles seadmes</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>
-<translation id="8378855320830505539">Piirkond</translation>
 <translation id="8379988659465232385">Nime väli ei tohi olla tühi</translation>
 <translation id="8379991678458444070">Lisage vaheleht järjehoidjatesse, et siia kiiresti naasta</translation>
 <translation id="8380266723152870797">Akna nimi</translation>

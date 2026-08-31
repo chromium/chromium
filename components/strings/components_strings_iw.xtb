@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">הקבצים בהכנה…</translation>
 <translation id="1014509239502131234">מתבצע ביטול של התוצאה</translation>
 <translation id="1015730422737071372">ספק פרטים נוספים</translation>
+<translation id="1016671033299705843">הוספת רישיון הנהיגה באופן מאובטח</translation>
 <translation id="1019413721762100891">כבוי</translation>
 <translation id="1021753677514347426">‏הבעיה הזו מתרחשת בגלל אישור שהותקן במכשיר על ידך או על ידי מישהו אחר. האישור הזה מוכר כאישור שמשמש לצורך מעקב אחרי רשתות ויירוט נתונים מרשתות, והוא לא נחשב כמהימן על ידי Chromium. במקרים מסוימים מתבצע מעקב מסיבות לגיטימיות, כמו במוסדות חינוך או ברשתות של חברות, אך Chromium רוצה לוודא שהמעקב מתבצע בידיעתך גם אם אין לך אפשרות לעצור אותו. המעקב עשוי להתבצע בכל דפדפן או אפליקציה שניגשים לאינטרנט.</translation>
 <translation id="1024111578869940408">תוקפים שמחקים אתרים לפעמים משתמשים בכתובת האינטרנט של האתר המקורי, ועושים בה שינויים שקשה להבחין בהם.</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> לא שלח נתונים.</translation>
 <translation id="1393071644879491291">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך. אזהרה מ-Chrome: ממש לא מומלץ להמשיך. עדיף לעשות אחורה פנה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">‏הוספת תעודה מזהה באופן מאובטח ל-Google Wallet</translation>
 <translation id="1398743098754840707">אתרים שיתווספו לכאן לא יהיו מקור לתשובות, גם אם הכרטיסייה פתוחה. אם האתר שמוסיפים נמצא באותו רגע בשימוש בשרשור, יכול להיות שיעברו עד 30 דקות עד שהשרשור יפסיק להפנות אליו.</translation>
 <translation id="1405567553485452995">ירוק בהיר</translation>
 <translation id="1406370515365284486">אמצעי התשלום שלך עדיין יישמרו</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">כל הקלדת טקסט, הצגת דף או פעילות אחרת באינטרנט נמצאת במעקב. בנוסף, התוכן באתרים עשוי להשתנות ללא ידיעתך.</translation>
 <translation id="2289385804009217824">חיתוך</translation>
 <translation id="2292556288342944218">הגישה לאינטרנט חסומה</translation>
+<translation id="2294150501457238325">הוספת דרכון באופן מאובטח</translation>
 <translation id="2295831393422400053">הפעלת ההגדרה 'שיפור החיפושים והגלישה' לצורך שימוש בתכונה 'עזרה בכתיבה'</translation>
 <translation id="2296244067976588032">‏מפתח גישה • iCloud Keychain</translation>
 <translation id="2296331629987861142">משלמים בתשלומים נוחים (בכפוף לזכאות, בכפוף לעמלות)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">ניהול פרטי הקניות</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2935726091208500473">שיתוף הכרטיסיות</translation>
+<translation id="2936698630976431647">‏כדי למלא אוטומטית מבצעים מ-Google, צריך לבחור בשדה "קוד הטבה"</translation>
 <translation id="293796669683825859">תגובות</translation>
 <translation id="2938225289965773019">לפתוח קישורי <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706">‫<ph name="ORIGIN" /> – כדי להציג את הסמן, לעבור בין אפליקציות, לטעון מחדש את הדף או לחזור אחורה</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3190736958609431397">ביטול המעקב</translation>
 <translation id="3194737229810486521"><ph name="URL" /> רוצה לאחסן נתונים במכשיר שלך באופן קבוע</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">‏הוספת רישיון נהיגה ל-Google Wallet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> בשרת <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">קוד הזמנה</translation>
 <translation id="3196902089458890316">תמיד לשתף את הכרטיסיות הרלוונטיות? זה יעזור לך לקבל תשובות טובות יותר.</translation>
@@ -1390,6 +1395,7 @@
 <translation id="3380864720620200369">מספר לקוח:</translation>
 <translation id="3383566085871012386">סדר העדיפות הנוכחי</translation>
 <translation id="3383713837163550889">הקבצים המקומיים שלך יימחקו בעוד דקה</translation>
+<translation id="33837817515081754">‏הוספת מספר KTN‏ (Known Traveler Number) ל-Google Wallet</translation>
 <translation id="3384522979010096022">הארגון שלך לא מאפשר לך לראות את האתר הזה</translation>
 <translation id="3391030046425686457">כתובת למשלוח</translation>
 <translation id="3391482648489541560">עריכת קבצים</translation>
@@ -1463,6 +1469,7 @@
 <translation id="3517264445792388751">מערכת הקבצים הושבתה על ידי האדמין שלך</translation>
 <translation id="3518941727116570328">טיפול באובייקטים מרובים</translation>
 <translation id="3519670528214225835">אפשר לשאול את <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">‏הוספת רכב ל-Google Wallet</translation>
 <translation id="3525130752944427905">‏10x14 אינץ'</translation>
 <translation id="3525435918300186947">‏לאפשר לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש?</translation>
 <translation id="3527624163937328588">הסרת הקובץ המצורף</translation>
@@ -1816,6 +1823,7 @@
 <translation id="4103249731201008433">המספר הסידורי של המכשיר אינו חוקי</translation>
 <translation id="4103592298805904008">Cardboard (Single Wall)</translation>
 <translation id="4104702906064390950">‏מתבצעת שמירה של פרטי ה-IBAN</translation>
+<translation id="4104995898379951162">‏הוספת מספר KTN‏ (Known Traveler Number) באופן מאובטח</translation>
 <translation id="4106101218644797743">הגדרות הסנכרון</translation>
 <translation id="4106887816571530227">אין הרשאה לתוכן מוטמע</translation>
 <translation id="4107047499377819067">‏ההתקנה של שירותי ה-VPN שפועלים ברקע החלה. יכול להיות שזה ייקח כמה דקות.</translation>
@@ -1873,6 +1881,7 @@
 <translation id="4195459680867822611">‏הכפתור להצגת טיפים ל-Chrome, מפעילים אותו כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4196861286325780578">&amp;ביצוע מחדש של העברה</translation>
+<translation id="4199131764832701740">‏הוספת דרכון ל-Google Wallet</translation>
 <translation id="4202554117186904723">הגליל החמישי</translation>
 <translation id="4203769790323223880">אין הרשאת גישה למצלמה</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />לבדוק את תצורת האנטי-וירוס וחומת האש<ph name="END_LINK" /></translation>
@@ -2242,6 +2251,7 @@ Del</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">עדכון התעודה המזהה באופן מאובטח</translation>
 <translation id="4807098396393229769">שם על הכרטיס</translation>
+<translation id="4808598252755230865">‏הוספת מספר KTN‏ (Known Traveler Number) באופן מאובטח ל-Google Wallet</translation>
 <translation id="4809079943450490359">הוראות ממנהל המכשיר שלך:</translation>
 <translation id="4811450222531576619">מידע על המקור והנושא שלו</translation>
 <translation id="4811696127853690432">‏שמירת פרטי הרכב באופן מאובטח ב-Google Wallet</translation>
@@ -2271,6 +2281,7 @@ Del</translation>
 <translation id="4855395119669662878">האדמין יתחיל להעלות את הקבצים שלך אל <ph name="CLOUD_PROVIDER" /> ב-<ph name="DATE_TIME" />. צריך להשאיר את המכשיר מחובר עד שההעלאה של הקובץ תסתיים. במהלך ההעלאה, תהיה לך אפשרות לקרוא רק קבצים מקומיים.</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
 <translation id="4860260582253463350">‏כדי להמשיך אל YouTube, אנחנו צריכים לאמת את זהותך. ב-Family Link אפשר לראות את ההגדרות שההורים או האפוטרופוסים הגדירו.</translation>
+<translation id="4861514638281352187">‏הוספת מספר Redress באופן מאובטח</translation>
 <translation id="4862642413395066333">‏חתימה על תגובות OCSP</translation>
 <translation id="4864406669374375262">מחרוזת הגרסה הועתקה ללוח</translation>
 <translation id="486459320933704969">כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
@@ -2703,6 +2714,7 @@ Del</translation>
 <translation id="55635442646131152">ראשי הפרקים של המסמך</translation>
 <translation id="5563589142503817291">‏כדי להשתמש בשירותי המיקום, צריך להיכנס אל <ph name="LINK" /> ולתת ל-Chrome גישה</translation>
 <translation id="5565613213060953222">פתיחת כרטיסייה פרטית</translation>
+<translation id="5565613377956908865">‏הוספת תעודה מזהה ל-Google Wallet</translation>
 <translation id="5565735124758917034">פעילה</translation>
 <translation id="5570825185877910964">הגנה על החשבון</translation>
 <translation id="5571083550517324815">לא ניתן לבצע איסוף מהכתובת הזו. עליך לבחור כתובת אחרת.</translation>
@@ -2890,6 +2902,7 @@ Del</translation>
 <translation id="5895694128043506580">‏‫Google Chrome מנסה להציג מידע רגיש</translation>
 <translation id="5898767305816764989">‏כפתור 'אהבתי', לוחצים על Enter כדי לשלוח משוב שאהבת את <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">צהוב</translation>
+<translation id="5902204772823742902">‏הוספת רישיון נהיגה באופן מאובטח ל-Google Wallet</translation>
 <translation id="5903264686717710770">כותרת:</translation>
 <translation id="5905671155741555195">‏הכתובת בעבודה יכולה לעזור לך בשירותי Google, למשל לקבל תוצאות חיפוש רלוונטיות יותר ומסלולים במפות Google. אפשר לערוך או למחוק את הכתובת <ph name="BEGIN_LINK" />בחשבון <ph name="ACCOUNT" /> ב-Google<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (מסונכרנים)</translation>
@@ -3309,6 +3322,7 @@ Del</translation>
 <translation id="6613866251791999074">‏מידע נוסף על מנוע החיפוש ב-Chrome</translation>
 <translation id="6615297766614333076">מערים 2</translation>
 <translation id="6619496928666593220">‏לא הוזן IBAN</translation>
+<translation id="662009501953240458">‏הוספת פרטי הרכב באופן מאובטח ל-Google Wallet</translation>
 <translation id="6624427990725312378">פרטי איש קשר</translation>
 <translation id="6625629379283886932">תלמד אותי איך לתכנת</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> חיפוש</translation>
@@ -3679,6 +3693,7 @@ Del</translation>
 <translation id="7261463765917514051">תשלום מאובטח בעזרת מילוי אוטומטי</translation>
 <translation id="7265608370113700582">הכתובת זמינה רק במכשיר הזה</translation>
 <translation id="7266094331715305887">אפליקציות במכשיר</translation>
+<translation id="7268742523336093718">‏הוספת דרכון באופן מאובטח ל-Google Wallet</translation>
 <translation id="7269151392155523061">קיצור הדרך לא יכול להיות זהה למילת המפתח של אגרגטור החיפוש שהוגדרה על ידי <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: ‏ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏קבצים שמורידים נשלחים אל Google Cloud או אל צדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="7275334191706090484">סימניות מנוהלות</translation>
@@ -4248,6 +4263,7 @@ Del</translation>
 <translation id="8241707690549784388">הדף שחיפשת השתמש במידע שהזנת. החזרה לדף זה עלולה לגרום לכפילות בפעולות שביצעת. האם ברצונך להמשיך?</translation>
 <translation id="8242426110754782860">המשך</translation>
 <translation id="824620968958405573">משימת פעולות אוטומטיות בדפדפן</translation>
+<translation id="8247824837030847066">הוספת תעודה מזהה באופן מאובטח</translation>
 <translation id="8248406213705193919">לשמור את הכרטיס באופן מאובטח?</translation>
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="8250094606476360498">‏הכתובת הזו שמורה במכשיר הזה. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
@@ -4667,6 +4683,7 @@ Del</translation>
 <translation id="9003639428623471314">‏מעטפה – Kahu</translation>
 <translation id="9004367719664099443">‏יש עכשיו סשן VR פעיל</translation>
 <translation id="9005998258318286617">‏הטעינה של מסמך ה-PDF נכשלה.</translation>
+<translation id="900686221526305417">הוספת רכב באופן מאובטח</translation>
 <translation id="9008201768610948239">סגירה</translation>
 <translation id="9010187979699879769">תיצור לי לוח זמנים ללימודים</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{אין}=1{מאתר אחד}one{מ-# אתרים}two{מ-# אתרים}other{מ-# אתרים}}</translation>
@@ -4821,6 +4838,7 @@ Del</translation>
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
 <translation id="949026252328034572">‫<ph name="MEMBER_COUNT" /> משתמשים הצטרפו לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">‏ביקשת לבקר באתר הזה. להורה שלך יש אפשרות לענות ב-Family Link.</translation>
+<translation id="949484466204182817">‏הוספת מספר Redress ל-Google Wallet</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="950926967802086924">‏מפתח גישה • מנהל הסיסמאות של Google</translation>
 <translation id="952165179818196872">כדי לשלם בלי לעבור בין אפליקציות, אפשר להוסיף את <ph name="PROVIDER" /></translation>
@@ -4835,6 +4853,7 @@ Del</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">‏בהתאם לחוק באזור שלך, אנחנו מאפשרים לך לבחור את מנוע החיפוש שישמש כברירת המחדל ב-Chromium. מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>
 <translation id="963837307749850257">כל המשתמשים</translation>
+<translation id="963988220224168636">‏הוספת מספר Redress באופן מאובטח ל-Google Wallet</translation>
 <translation id="964050462028070434">ניהול של סיסמאות ומפתחות גישה…</translation>
 <translation id="964681140808832181">כן, אני רוצה לבטל</translation>
 <translation id="969892804517981540">גרסה רשמית</translation>

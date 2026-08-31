@@ -4501,6 +4501,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{टास्क पूरा हुआ}one{टास्क पूरा हुआ}other{टास्क पूरा हुआ}}</translation>
 <translation id="4429163740524851942">फ़िज़िकल कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">आवाज़</translation>
+<translation id="443008484043213881">टूल</translation>
 <translation id="4430369329743628066">बुकमार्क जोड़ा गया</translation>
 <translation id="4430422687972614133">वर्चुअल कार्ड चालू करें</translation>
 <translation id="4431962107539413562">अपने सभी डिवाइसों पर पासवर्ड ऐक्सेस करें</translation>
@@ -4684,6 +4685,7 @@
 <translation id="4589713469967853491">डाउनलोड डायरेक्ट्री में लॉग सेव किए गए.</translation>
 <translation id="4590785647529325123">अपने डिवाइस से गुप्त मोड में की गई ब्राउज़िंग का इतिहास मिटाने के लिए, सभी गुप्त टैब बंद करें</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> से कोई डिवाइस नहीं जुड़ा है</translation>
+<translation id="4592634244097223647">Google से इस इमेज के बारे में पूछें</translation>
 <translation id="4592891116925567110">स्टाइलस की मदद से ड्रॉ करने के लिए ऐप्लिकेशन</translation>
 <translation id="4593021220803146968"><ph name="URL" /> पर &amp;जाएं</translation>
 <translation id="4593962599442730215">अपनी प्राथमिकताएं बदलना</translation>
@@ -5009,7 +5011,6 @@
 <translation id="4840096453115567876">क्या आपको फिर भी गुप्त मोड छोड़ना है?</translation>
 <translation id="4841475798258477260">इस डिवाइस को किसी खास मोबाइल नेटवर्क से ही कनेक्ट किया जा सकता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">यह पृष्‍ठ अप्रमाणीकृत स्रोतों से स्‍क्रिप्‍ट लोड करने का प्रयास कर रहा है.</translation>
-<translation id="4843037705239202082">मीडिया समझने की क्षमता</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4846628405149428620">चुनें कि यह साइट बदलावों को कहां सेव करेगी</translation>
 <translation id="4846680374085650406">आप इस सेटिंग के लिए व्यवस्थापक की अनुशंसा का अनुसरण कर रहे हैं.</translation>
@@ -6257,6 +6258,7 @@
 <translation id="5836999627049108525">वह भाषा जिससे अनुवाद करना है</translation>
 <translation id="583756221537636748">केस</translation>
 <translation id="5840656138956959276">सुरक्षा की बेहतर और मज़बूत सुविधा</translation>
+<translation id="5840658767386246331">Google की मदद से खोजें</translation>
 <translation id="5840680448799937675">फ़ाइलों को हमेशा ऑफ़लाइन शेयर किया जाएगा</translation>
 <translation id="5841270259333717135">ईथरनेट कॉन्फ़िगर करें</translation>
 <translation id="5841338463993781099">क्या खाते में सेव करना है?</translation>
@@ -9534,7 +9536,6 @@
 <translation id="8377625247046155446">यह पासकी सिर्फ़ इस डिवाइस पर सेव की जाएगी. सभी गुप्त विंडो बंद करने के बाद, यह पासकी इस डिवाइस पर सेव रहेगी.</translation>
 <translation id="837790003026572432">इस डिवाइस पर, टैब के ऑडियो को कास्ट करने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="8378714024927312812">आपके संगठन की ओर से प्रबंधित</translation>
-<translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8379988659465232385">नाम डालना ज़रूरी है</translation>
 <translation id="8379991678458444070">इस टैब को बुकमार्क करके यहां जल्दी वापस आएं</translation>
 <translation id="8380266723152870797">विंडो का नाम</translation>

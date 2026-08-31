@@ -4489,6 +4489,7 @@
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{ამოცანა შესრულებულია}other{ამოცანა შესრულებულია}}</translation>
 <translation id="4429163740524851942">ფიზიკური კლავიატურის განლაგება</translation>
 <translation id="4430019312045809116">ხმა</translation>
+<translation id="443008484043213881">ხელსაწყოები</translation>
 <translation id="4430369329743628066">სანიშნე დამატებულია</translation>
 <translation id="4430422687972614133">ვირტუალური ბარათის ჩართვა</translation>
 <translation id="4431962107539413562">მიიღეთ თქვენი პაროლები ყველა მოწყობილობაზე</translation>
@@ -4672,6 +4673,7 @@
 <translation id="4589713469967853491">ჟურნალები წარმატებით ჩაიწერა „ჩამოტვირთვების“ კატალოგში.</translation>
 <translation id="4590785647529325123">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-ში შენახული მოწყობილობები არ არის</translation>
+<translation id="4592634244097223647">Google-ისთვის ამ სურათის შესახებ შეკითხვა</translation>
 <translation id="4592891116925567110">სტილუსით სახატავი აპი</translation>
 <translation id="4593021220803146968">&amp;გადასვლა <ph name="URL" />-ზე</translation>
 <translation id="4593962599442730215">პარამეტრების შეცვლა</translation>
@@ -4998,7 +5000,6 @@
 <translation id="4840096453115567876">მაინც გსურთ ინკოგნიტო რეჟიმიდან გასვლა?</translation>
 <translation id="4841475798258477260">ამ მოწყობილობას შეუძლია მხოლოდ კონკრეტულ მობილურ ქსელთან დაკავშირება. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">ეს გვერდი ცდილობს სკრიპტების გადმოწერას არა საიმედო წყაროებიდან.</translation>
-<translation id="4843037705239202082">მედიის აღქმა</translation>
 <translation id="484462545196658690">ავტომატური</translation>
 <translation id="4846628405149428620">აირჩიეთ, სად შეუძლია ამ საიტს ცვლილებების შენახვა</translation>
 <translation id="4846680374085650406">ამ პატარამეტრის შემთხვევაში, თქვენ იზიარებთ ადმინისტრატორის რეკომენდაციას.</translation>
@@ -6247,6 +6248,7 @@
 <translation id="5836999627049108525">ენა, რომლიდანაც უნდა ითარგმნოს</translation>
 <translation id="583756221537636748">სათავსო</translation>
 <translation id="5840656138956959276">გაძლიერებული: მკაცრი</translation>
+<translation id="5840658767386246331">Google-ით ძიება</translation>
 <translation id="5840680448799937675">ფაილები ყოველთვის ხაზგარეშე რეჟიმში გაზიარდება</translation>
 <translation id="5841270259333717135">Ethernet-ის კონფიგურაცია</translation>
 <translation id="5841338463993781099">გსურთ ანგარიშში შენახვა?</translation>
@@ -9521,7 +9523,6 @@
 <translation id="8377625247046155446">წვდომის ეს გასაღები მხოლოდ ამ მოწყობილობაზე შეინახება. ის დარჩება ამ მოწყობილობაზე, როცა ყველა ინკოგნიტო ფანჯარას დახურავთ.</translation>
 <translation id="837790003026572432">ჩანართის აუდიოს ტრანსლირება ამ მოწყობილობაზე მხარდაუჭერელია</translation>
 <translation id="8378714024927312812">იმართება თქვენი ორგანიზაციის მიერ</translation>
-<translation id="8378855320830505539">რეგიონი</translation>
 <translation id="8379988659465232385">სახელი არ უნდა იყოს ცარიელი</translation>
 <translation id="8379991678458444070">დაბრუნდით აქ უფრო სწრაფად — დაამატეთ ეს ჩანართი სანიშნეებს</translation>
 <translation id="8380266723152870797">ფანჯრის სახელი</translation>
