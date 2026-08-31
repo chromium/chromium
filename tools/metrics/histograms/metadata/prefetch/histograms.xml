@@ -167,6 +167,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.AddedToFirstURLRequestStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2027-02-14">
+  <owner>taiyo@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration from when `PrefetchContainer` is added to
+    `PrefetchService` to when its initial `URLRequest` is started in `//net`
+    layer (i.e., when `URLRequest::Start()` is called for the first hop before
+    any redirects).
+
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
+    received at least one response header (redirect or non-redirect).
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2027-02-14">
   <owner>kenoss@chromium.org</owner>
@@ -248,8 +269,12 @@ chromium-metrics-reviews@google.com.
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration from when `PrefetchContainer` is added to
-    `PrefetchService` to when its URLRequest is started in //net layer (i.e.,
-    when `URLRequest::Start()` is called).
+    `PrefetchService` to when its latest redirect hop's `URLRequest` is started
+    in `//net` layer (i.e., when `URLRequest::Start()` is called for the latest
+    redirect hop). If the prefetch was redirected, this records the start time
+    of the final redirect hop. To measure the duration to the initial request
+    before redirects, see
+    `Prefetch.PrefetchContainer.AddedToFirstURLRequestStarted.{TriggerTypeAndEagerness}`.
 
     This metrics is recorded when `PrefetchContainer::dtor()` is called if it
     received a non-redirect header.
@@ -381,6 +406,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.PrefetchStartedToFirstURLRequestStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2027-02-14">
+  <owner>taiyo@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration from when `PrefetchService` starts its loading process
+    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when its initial
+    `URLRequest` is started in `//net` layer (i.e., when `URLRequest::Start()`
+    is called for the first hop before any redirects).
+
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
+    received at least one response header (redirect or non-redirect).
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchContainer.PrefetchStartedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2027-02-07">
   <owner>taiyo@chromium.org</owner>
@@ -429,9 +475,12 @@ chromium-metrics-reviews@google.com.
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration from when `PrefetchService` starts its loading process
-    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when its
-    URLRequest is started in //net layer (i.e., when `URLRequest::Start()` is
-    called).
+    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when its latest
+    redirect hop's `URLRequest` is started in `//net` layer (i.e., when
+    `URLRequest::Start()` is called for the latest redirect hop). If the
+    prefetch was redirected, this records the start time of the final redirect
+    hop. To measure the duration to the initial request before redirects, see
+    `Prefetch.PrefetchContainer.PrefetchStartedToFirstURLRequestStarted.{TriggerTypeAndEagerness}`.
 
     This metrics is recorded when `PrefetchContainer::dtor()` is called if it
     received a non-redirect header.

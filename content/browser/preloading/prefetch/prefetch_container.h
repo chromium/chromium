@@ -565,6 +565,8 @@ class CONTENT_EXPORT PrefetchContainer
   // Handles loader related events. Currently used for DevTools and metrics.
   void NotifyPrefetchRequestWillBeSent(
       const network::mojom::URLResponseHeadPtr* redirect_head);
+  void NotifyPrefetchRedirectResponseReceived(
+      const network::mojom::URLResponseHead& redirect_head);
 
   bool is_in_dtor() const { return is_in_dtor_; }
 

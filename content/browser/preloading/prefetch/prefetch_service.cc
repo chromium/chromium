@@ -1820,6 +1820,11 @@ void PrefetchService::OnPrefetchRedirect(
   }
 
   CHECK(scheduler_->IsInActiveSet(*prefetch_container));
+  CHECK(redirect_head);
+
+  if (!prefetch_container->IsDecoy()) {
+    prefetch_container->NotifyPrefetchRedirectResponseReceived(*redirect_head);
+  }
 
   std::optional<PrefetchRedirectResult> failure;
   if (redirect_info.new_method != "GET") {

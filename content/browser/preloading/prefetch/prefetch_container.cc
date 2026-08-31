@@ -1951,11 +1951,38 @@ void PrefetchContainer::NotifyPrefetchRequestWillBeSent(
   }
 }
 
+void PrefetchContainer::NotifyPrefetchRedirectResponseReceived(
+    const network::mojom::URLResponseHead& redirect_head) {
+  // Ensured by the caller `PrefetchService::OnPrefetchRedirect()`.
+  CHECK(!IsDecoy());
+
+  // Populate `time_first_url_request_started` on the first response hop.
+  //
+  // When a redirect occurs, `net::URLRequest::PrepareToRestart()` in
+  // `net/url_request/url_request.cc` resets `load_timing_info_.request_start`
+  // for the subsequent redirect hop. Thus, the final non-redirect response's
+  // `load_timing.request_start` only reflects the start time of the latest
+  // redirect hop. To capture the timestamp when the initial URLRequest was
+  // started in //net (before any redirects), we record
+  // `load_timing.request_start` from the first response hop received.
+  if (!prefetch_container_metrics_.time_first_url_request_started.has_value()) {
+    prefetch_container_metrics_.time_first_url_request_started =
+        redirect_head.load_timing.request_start;
+  }
+}
+
 void PrefetchContainer::NotifyPrefetchResponseReceived(
     const network::mojom::URLResponseHead& head) {
   // Ensured by the caller
   // `PrefetchContainer::OnPrefetchResponseStartedInternal()`.
   CHECK(!IsDecoy());
+
+  // Populate `time_first_url_request_started` on the first response hop if
+  // there were no redirects.
+  if (!prefetch_container_metrics_.time_first_url_request_started.has_value()) {
+    prefetch_container_metrics_.time_first_url_request_started =
+        head.load_timing.request_start;
+  }
 
   prefetch_container_metrics_.time_url_request_started =
       head.load_timing.request_start;
@@ -2102,6 +2129,27 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
       }),
       prefetch_container_metrics_.time_prefetch_started.value() -
           prefetch_container_metrics_.time_initial_eligibility_got.value());
+
+  if (!prefetch_container_metrics_.time_first_url_request_started.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      base::StrCat({
+          "Prefetch.PrefetchContainer.AddedToFirstURLRequestStarted.",
+          GetMetricsSuffix(),
+      }),
+      prefetch_container_metrics_.time_first_url_request_started.value() -
+          prefetch_container_metrics_.time_added_to_prefetch_service.value());
+
+  base::UmaHistogramTimes(
+      base::StrCat({
+          "Prefetch.PrefetchContainer."
+          "PrefetchStartedToFirstURLRequestStarted.",
+          GetMetricsSuffix(),
+      }),
+      prefetch_container_metrics_.time_first_url_request_started.value() -
+          prefetch_container_metrics_.time_prefetch_started.value());
 
   if (!prefetch_container_metrics_.time_url_request_started.has_value()) {
     return;
