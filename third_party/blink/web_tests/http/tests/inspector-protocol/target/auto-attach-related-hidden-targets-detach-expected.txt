@@ -1,0 +1,4 @@
+Tests that navigating a page with an auto-attached iframe and hidden targets detaches cleanly without crashing.
+iframe session detached
+SUCCESS: Navigated and detached without crash
+
