@@ -28,7 +28,10 @@ declare_args() {
 
 buildflag_header("background_mode_buildflags") {
   header = "background_mode_buildflags.h"
-  flags = [ "IOS_BACKGROUND_MODE_ENABLED=$ios_enable_background_mode" ]
+  flags = [
+    "IOS_BACKGROUND_MODE_ENABLED=$ios_enable_background_mode",
+    "IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED=$ios_enable_background_continued_processing",
+  ]
 }
 
 buildflag_header("ios_force_build_chrome_framework_buildflags") {
@@ -349,6 +352,9 @@ tweak_info_plist("info_plist") {
   ]
   if (ios_enable_background_mode) {
     info_plists += [ "resources/Background+Info.plist" ]
+  }
+  if (ios_enable_background_continued_processing) {
+    info_plists += [ "resources/BackgroundContinuedProcessing+Info.plist" ]
   }
   if (!ios_enable_liquid_glass) {
     info_plists += [ "resources/DisableLiquidGlassCompatibility+Info.plist" ]
