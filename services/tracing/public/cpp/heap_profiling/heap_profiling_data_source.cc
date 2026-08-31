@@ -43,17 +43,21 @@ class HeapProfilingDataSource::HeapSampler {
   }
 
   ~HeapSampler() {
-    EmitSamples();
     base::SamplingHeapProfiler::Get()->Stop(session_);
-    if (stop_callback_) {
-      std::move(stop_callback_).Run();
-    }
   }
-
-  void SetStopCallback(base::OnceClosure cb) { stop_callback_ = std::move(cb); }
 
   void ClearIncrementalState() {
     incr_state_ = HeapProfilingIncrementalState();
+  }
+
+  void Flush(base::OnceClosure flush_complete_callback) {
+    EmitSamples();
+    if (trace_writer_) {
+      trace_writer_->Flush();
+    }
+    if (flush_complete_callback) {
+      std::move(flush_complete_callback).Run();
+    }
   }
 
  private:
@@ -84,7 +88,6 @@ class HeapProfilingDataSource::HeapSampler {
   HeapProfilingIncrementalState incr_state_;
   base::ModuleCache module_cache_;
   base::RepeatingTimer timer_;
-  base::OnceClosure stop_callback_;
 };
 
 // static
@@ -112,14 +115,17 @@ void HeapProfilingDataSource::OnSetup(const SetupArgs& args) {
     sampling_interval_bytes_ =
         base::PoissonAllocationSampler::kDefaultSamplingIntervalBytes;
   }
-}
 
-void HeapProfilingDataSource::OnStart(const StartArgs& args) {
   session_ = base::SamplingHeapProfiler::Get()->Start(
       base::ByteSize(sampling_interval_bytes_),
       base::SamplingHeapProfiler::Priority::kInteractive);
   if (!session_) {
     DLOG(WARNING) << "Failed to start SamplingHeapProfiler session";
+  }
+}
+
+void HeapProfilingDataSource::OnStart(const StartArgs& args) {
+  if (!session_) {
     return;
   }
 
@@ -133,16 +139,17 @@ void HeapProfilingDataSource::OnStart(const StartArgs& args) {
       CreateTraceWriter(args.internal_instance_index));
 }
 
-void HeapProfilingDataSource::OnStop(const StopArgs& args) {
-  auto stop_complete_callback = args.HandleStopAsynchronously();
+void HeapProfilingDataSource::OnFlush(const FlushArgs& args) {
   if (!sampler_) {
-    stop_complete_callback();
     return;
   }
-  base::OnceClosure cb =
-      base::BindOnce([](auto callback) { callback(); }, stop_complete_callback);
+  auto flush_complete_callback = args.HandleFlushAsynchronously();
+  base::OnceClosure cb = base::BindOnce([](auto callback) { callback(); },
+                                        flush_complete_callback);
+  sampler_.AsyncCall(&HeapSampler::Flush).WithArgs(std::move(cb));
+}
 
-  sampler_.AsyncCall(&HeapSampler::SetStopCallback).WithArgs(std::move(cb));
+void HeapProfilingDataSource::OnStop(const StopArgs& args) {
   sampler_.Reset();
 }
 

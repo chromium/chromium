@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(TRACING_CPP) HeapProfilingDataSource
 
   void OnSetup(const SetupArgs&) override;
   void OnStart(const StartArgs&) override;
+  void OnFlush(const FlushArgs&) override;
   void OnStop(const StopArgs&) override;
   void WillClearIncrementalState(const ClearIncrementalStateArgs&) override;
 

@@ -86,17 +86,17 @@ void ProducerHost::OnTracingSetup() {
   producer_client_->OnTracingStart();
 }
 
-void ProducerHost::SetupDataSource(perfetto::DataSourceInstanceID,
-                                   const perfetto::DataSourceConfig&) {
-  // TODO(primiano): plumb call through mojo.
+void ProducerHost::SetupDataSource(perfetto::DataSourceInstanceID id,
+                                   const perfetto::DataSourceConfig& config) {
+  if (producer_client_) {
+    producer_client_->SetupDataSource(id, config);
+  }
 }
 
 void ProducerHost::StartDataSource(perfetto::DataSourceInstanceID id,
                                    const perfetto::DataSourceConfig& config) {
-  // The type traits will send the base fields in the DataSourceConfig and also
-  // the ChromeConfig other configs are dropped.
   producer_client_->StartDataSource(
-      id, config,
+      id,
       base::BindOnce(
           [](ProducerHost* producer_host, perfetto::DataSourceInstanceID id) {
             producer_host->producer_endpoint_->NotifyDataSourceStarted(id);

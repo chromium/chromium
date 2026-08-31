@@ -219,5 +219,136 @@ TEST_F(HeapProfilingDataSourceTest, MultipleInstances) {
   base::PoissonAllocationSampler::Get()->OnFree(free_data2);
 }
 
+TEST_F(HeapProfilingDataSourceTest, StartOnSetup) {
+  base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting
+      suppress_randomness;
+
+  perfetto::TraceConfig trace_config;
+  trace_config.set_deferred_start(true);
+  trace_config.add_buffers()->set_size_kb(1024);
+  auto* ds_cfg = trace_config.add_data_sources()->mutable_config();
+  ds_cfg->set_name(kNativeHeapProfilerSourceName);
+
+  perfetto::protos::gen::ChromiumSamplingHeapProfilerConfig config;
+  config.set_sampling_interval_bytes(1);
+  config.set_sampling_interval_ms(100);
+  ds_cfg->set_chromium_sampling_heap_profiler_raw(config.SerializeAsString());
+
+  // 1. Setup tracing session without starting yet.
+  auto tracing_session =
+      perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  tracing_session->Setup(trace_config);
+  WaitForEvents();
+
+  // 2. Trigger allocation after Setup but BEFORE StartBlocking.
+  base::allocator::dispatcher::AllocationNotificationData alloc_data(
+      reinterpret_cast<void*>(0x1234), 1024, "test_type",
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnAllocation(alloc_data);
+
+  // 3. Start tracing.
+  tracing_session->StartBlocking();
+
+  // 4. Wait for the dump interval.
+  WaitForEvents();
+
+  // 5. Stop tracing and read.
+  base::TrackEvent::Flush();
+  base::RunLoop wait_for_stop;
+  tracing_session->SetOnStopCallback(
+      [&wait_for_stop] { wait_for_stop.Quit(); });
+  tracing_session->Stop();
+  wait_for_stop.Run();
+
+  std::vector<char> serialized_data = tracing_session->ReadTraceBlocking();
+  perfetto::protos::Trace trace;
+  EXPECT_TRUE(
+      trace.ParseFromArray(serialized_data.data(), serialized_data.size()));
+
+  int heap_samples_count = 0;
+  for (const auto& packet : trace.packet()) {
+    if (packet.has_stack_sample()) {
+      heap_samples_count++;
+      EXPECT_TRUE(packet.stack_sample().has_callstack_iid());
+    }
+  }
+  EXPECT_GE(heap_samples_count, 1);
+
+  // Cleanup.
+  base::allocator::dispatcher::FreeNotificationData free_data(
+      reinterpret_cast<void*>(0x1234),
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnFree(free_data);
+}
+
+TEST_F(HeapProfilingDataSourceTest, CloneTraceDumpsReport) {
+  perfetto::TraceConfig trace_config;
+  trace_config.set_unique_session_name("test_clone_session");
+  trace_config.add_buffers()->set_size_kb(1024);
+  auto* ds_cfg = trace_config.add_data_sources()->mutable_config();
+  ds_cfg->set_name(kNativeHeapProfilerSourceName);
+
+  perfetto::protos::gen::ChromiumSamplingHeapProfilerConfig config;
+  config.set_sampling_interval_bytes(1);
+  // Set dump_interval_ms to 0 so no periodic dump occurs automatically.
+  config.set_sampling_interval_ms(0);
+  ds_cfg->set_chromium_sampling_heap_profiler_raw(config.SerializeAsString());
+
+  // 1. Setup and start tracing session.
+  auto tracing_session =
+      perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  tracing_session->Setup(trace_config);
+  tracing_session->StartBlocking();
+
+  // 2. Trigger an allocation.
+  base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting
+      suppress_randomness;
+
+  base::allocator::dispatcher::AllocationNotificationData alloc_data(
+      reinterpret_cast<void*>(0x1234), 1024, "test_type",
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnAllocation(alloc_data);
+
+  // 3. Clone the tracing session.
+  auto cloned_session =
+      perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  base::RunLoop clone_run_loop;
+  cloned_session->CloneTrace(
+      {"test_clone_session"},
+      [&clone_run_loop](perfetto::TracingSession::CloneTraceCallbackArgs args) {
+        EXPECT_TRUE(args.success);
+        clone_run_loop.Quit();
+      });
+  clone_run_loop.Run();
+
+  // 4. Read the cloned trace and verify it contains heap dump samples.
+  std::vector<char> cloned_data = cloned_session->ReadTraceBlocking();
+  perfetto::protos::Trace cloned_trace;
+  EXPECT_TRUE(
+      cloned_trace.ParseFromArray(cloned_data.data(), cloned_data.size()));
+
+  int heap_samples_count = 0;
+  for (const auto& packet : cloned_trace.packet()) {
+    if (packet.has_stack_sample()) {
+      heap_samples_count++;
+      EXPECT_TRUE(packet.stack_sample().has_callstack_iid());
+    }
+  }
+  EXPECT_GE(heap_samples_count, 1);
+
+  // 5. Stop the original session.
+  base::RunLoop wait_for_stop;
+  tracing_session->SetOnStopCallback(
+      [&wait_for_stop] { wait_for_stop.Quit(); });
+  tracing_session->Stop();
+  wait_for_stop.Run();
+
+  // Cleanup.
+  base::allocator::dispatcher::FreeNotificationData free_data(
+      reinterpret_cast<void*>(0x1234),
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnFree(free_data);
+}
+
 }  // namespace
 }  // namespace tracing

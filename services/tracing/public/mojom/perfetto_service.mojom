@@ -163,9 +163,13 @@ interface ProducerClient {
   // Called when tracing is first enabled, before any data sources are started.
   OnTracingStart();
 
+  // Called by Perfetto (via ProducerHost) to setup a data source instance
+  // before starting.
+  SetupDataSource(uint64 id, DataSourceConfig data_source_config);
+
   // Called by Perfetto (via ProducerHost) to request a data source to start
   // logging.
-  StartDataSource(uint64 id, DataSourceConfig data_source_config) => ();
+  StartDataSource(uint64 id) => ();
 
   // Requesting a data source to stop logging again, with the id previously
   // sent in the StartDataSource call.
