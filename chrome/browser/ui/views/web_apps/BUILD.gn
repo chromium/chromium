@@ -104,6 +104,7 @@ source_set("browser_tests") {
     ":web_app_blocked_migration_infobar_delegate",
     ":web_app_install_progress_view",
     ":web_app_update_identity_view",
+    ":web_app_update_review_dialog",
     "//base",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
@@ -237,6 +238,62 @@ source_set("web_app_install_progress_view") {
     "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
     "//ui/base",
     "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+# Modularized UI component for web app modal dialog delegate.
+source_set("web_app_modal_dialog_delegate") {
+  public = [ "web_app_modal_dialog_delegate.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/picture_in_picture",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("web_app_uninstall_dialog_view") {
+  public = [ "web_app_uninstall_dialog_view.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/web_applications",
+    "//components/webapps/common",
+    "//skia",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("web_app_update_review_dialog") {
+  public = [ "web_app_update_review_dialog.h" ]
+  public_deps = [
+    "//ui/base",
+    "//ui/base/interaction",
+  ]
+}
+
+source_set("image_carousel_view") {
+  public = [ "image_carousel_view.h" ]
+  public_deps = [
+    "//base",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("view_visible_in_active_widget_notifier") {
+  public = [ "view_visible_in_active_widget_notifier.h" ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/base/interaction",
     "//ui/views",
   ]
 }
