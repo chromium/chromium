@@ -5037,6 +5037,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024891" label="E_ACCESSDENIED"/>
   <int value="-2147024890" label="E_HANDLE"/>
   <int value="-2147024888" label="E_NOT_ENOUGH_MEMORY"/>
+  <int value="-2147024883" label="ERROR_INVALID_DATA"/>
   <int value="-2147024882" label="E_OUTOFMEMORY"/>
   <int value="-2147024877" label="ERROR_WRITE_PROTECT"/>
   <int value="-2147024875" label="ERROR_NOT_READY"/>
@@ -5044,6 +5045,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024865" label="ERROR_GEN_FAILURE"/>
   <int value="-2147024846" label="E_NOT_SUPPORTED / ERROR_NOT_SUPPORTED"/>
   <int value="-2147024839" label="ERROR_ADAP_HDW_ERR"/>
+  <int value="-2147024832" label="ERROR_NETNAME_DELETED"/>
   <int value="-2147024809" label="E_INVALIDARG"/>
   <int value="-2147024784" label="ERROR_DISK_FULL"/>
   <int value="-2147024775" label="ERROR_SEM_TIMEOUT"/>
@@ -5168,6 +5170,7 @@ shown properly on the user-facing crash UI.
   <int value="-2005139430" label="AEERR_ITEM_NOT_FOUND"/>
   <int value="-2005139426" label="AEERR_INVALID_CONNECTION_FORMAT"/>
   <int value="-2005139410" label="AEERR_ADG_ALREADY_CONNECTED"/>
+  <int value="-2005139406" label="0x887C0032 (Audio Engine Error)"/>
   <int value="-2005139405" label="AEERR_TIMED_OUT"/>
   <int value="-2005139398" label="AEERR_APO_NOT_REGISTERED"/>
   <int value="-2005139372" label="AEERR_BUFFER_SIZE_MISMATCH"/>
@@ -5234,6 +5237,7 @@ shown properly on the user-facing crash UI.
   <int value="-1073741523" label="STATUS_CANT_WAIT"/>
   <int value="-1073741515" label="STATUS_DLL_NOT_FOUND"/>
   <int value="-1073741502" label="STATUS_DLL_INIT_FAILED"/>
+  <int value="-1073740022" label="STATUS_THREADPOOL_HANDLE_EXCEPTION"/>
   <int value="-1072875856" label="MF_E_PLATFORM_NOT_INITIALIZED"/>
   <int value="-1072875855" label="MF_E_BUFFERTOOSMALL"/>
   <int value="-1072875854" label="MF_E_INVALIDREQUEST"/>
