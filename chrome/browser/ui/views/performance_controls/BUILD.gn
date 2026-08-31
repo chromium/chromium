@@ -8,7 +8,7 @@ import("//build/config/ui.gni")
 assert(toolkit_views)
 
 source_set("performance_controls") {
-  sources = [
+  public = [
     "battery_saver_bubble_view.h",
     "battery_saver_button.h",
     "memory_saver_bubble_view.h",
@@ -27,9 +27,7 @@ source_set("performance_controls") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-}
 
-source_set("impl") {
   sources = [
     "battery_saver_bubble_view.cc",
     "battery_saver_button.cc",
@@ -42,7 +40,6 @@ source_set("impl") {
   ]
 
   deps = [
-    ":performance_controls",
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui:browser_element_identifiers",

@@ -2822,8 +2822,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/passwords:impl",
       "//chrome/browser/ui/views/payments",
       "//chrome/browser/ui/views/payments:impl",
-      "//chrome/browser/ui/views/performance_controls",
-      "//chrome/browser/ui/views/performance_controls:impl",
       "//chrome/browser/ui/views/permissions",
       "//chrome/browser/ui/views/permissions:impl",
       "//chrome/browser/ui/views/permissions/chip",
@@ -3225,11 +3223,6 @@ static_library("ui") {
       # the following headers get modularized:
       # - c/b/ui/scoped_tabbed_browser_displayer.h
       "//chrome/browser/ui/views/commerce:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # the following headers get modularized:
-      # - c/b/ui/tab_ui_helper.h
-      "//chrome/browser/ui/views/performance_controls:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
