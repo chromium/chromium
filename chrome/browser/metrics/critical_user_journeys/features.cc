@@ -11,11 +11,11 @@ namespace metrics {
 BASE_FEATURE(kCriticalUserJourneyService, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These can be toggled by default as needed.
-BASE_FEATURE(kClearBrowsingHistoryJourney, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kViewDownloadedFileJourney, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClearBrowsingHistoryJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kViewDownloadedFileJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kViewDownloadedFileFromAppMenuJourney,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPinExtensionJourney, base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPinExtensionJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsGlowupJourneys, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // HaTS.
