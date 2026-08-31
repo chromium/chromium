@@ -2098,6 +2098,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
       actions::ActionItem::Builder(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {},
+              bwi))
+          .SetActionId(kActionFakePageActionForDebug)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi)).Cut();
               },

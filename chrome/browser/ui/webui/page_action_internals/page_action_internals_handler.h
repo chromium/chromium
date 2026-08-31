@@ -8,6 +8,10 @@
 #include "chrome/browser/ui/webui/page_action_internals/page_action_internals.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace page_actions {
+class PageActionController;
+}
+
 class PageActionInternalsHandler
     : public page_action_internals::mojom::PageHandler {
  public:
@@ -21,7 +25,18 @@ class PageActionInternalsHandler
 
   ~PageActionInternalsHandler() override;
 
+  // page_action_internals::mojom::PageHandler:
+  void ShowPageAction(page_action_internals::mojom::PageActionParamsPtr params,
+                      ShowPageActionCallback callback) override;
+  void ShowAnchoredMessage(
+      page_action_internals::mojom::AnchoredMessageParamsPtr params,
+      ShowAnchoredMessageCallback callback) override;
+  void HidePageAction(HidePageActionCallback callback) override;
+
  private:
+  // Helper to get the active PageActionController.
+  page_actions::PageActionController* GetActiveController();
+
   mojo::Receiver<page_action_internals::mojom::PageHandler> receiver_;
 };
 

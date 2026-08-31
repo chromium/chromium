@@ -4,12 +4,71 @@
 
 module page_action_internals.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+
 // Mojo interface definitions for chrome://page-action-internals.
 // This internal page allows configuring and exercising the Page Action and
 // Anchored Messaging frameworks in a controlled debug environment.
 
-// Main handler interface (backend).
+// Specific icons selectable in the debug UI. Some custom icons are used
+// to help visualize a specific icon-stacking case in the UI.
+enum IconType {
+  kInfo,
+  kOrangeAFavicon,
+};
+
+// Types of action buttons that can be displayed on the trailing side of an
+// anchored message bubble (e.g., to test dismiss or overflow menu
+// interactions).
+enum ActionButtonType {
+  kClose,
+  kMenu,
+};
+
+// An item within the optional expanded drawer section of an anchored message.
+struct ExpandableItem {
+  mojo_base.mojom.String16 text;
+  IconType? icon_type;
+};
+
+// The content specific to the expanded drawer section of an anchored message,
+// supporting an arbitrary list of item rows with icons.
+struct ExpandableContent {
+  mojo_base.mojom.String16 heading;
+  array<ExpandableItem> items;
+};
+
+// Parameters for triggering the page action icon and optional suggestion chip
+// in the Omnibox location bar.
+struct PageActionParams {
+  IconType? icon_type;
+
+  // When present, sets the suggestion chip label and shows the chip.
+  // When null, clears the override and hides the chip.
+  mojo_base.mojom.String16? chip_text;
+};
+
+// Parameters for triggering an anchored message bubble pointing to the page
+// action icon.
+struct AnchoredMessageParams {
+  mojo_base.mojom.String16 message_text;
+  IconType? bubble_icon;
+  ActionButtonType? action_icon;
+  ExpandableContent? expandable_content;
+};
+
+// Main handler interface (browser backend).
 interface PageHandler {
+  // Shows the debug page action icon in the Omnibox for the active tab,
+  // optionally with an expanded suggestion chip.
+  ShowPageAction(PageActionParams params) => (bool success);
+
+  // Shows the anchored message bubble pointing to the debug page action icon
+  // on the active tab.
+  ShowAnchoredMessage(AnchoredMessageParams params) => (bool success);
+
+  // Hides and dismisses the debug page action (bubble, chip, and icon).
+  HidePageAction() => (bool success);
 };
 
 // Factory to bind the handler for chrome://page-action-internals.
