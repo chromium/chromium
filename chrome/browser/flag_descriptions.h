@@ -5150,6 +5150,13 @@ inline constexpr char kAppStoreBillingDebugDescription[] =
     "requested using the Payment Request API. This flag removes the "
     "restriction that the TWA has to be installed from the app-store.";
 
+inline constexpr char kSecurePaymentConfirmationCredentialDiscoveryModeName[] =
+    "Secure Payment Confirmation Credential Discovery Mode";
+inline constexpr char
+    kSecurePaymentConfirmationCredentialDiscoveryModeDescription[] =
+        "Controls the strategy for discovering Secure Payment Confirmation "
+        "credentials (e.g. database-only, hybrid, or OS store only).";
+
 inline constexpr char kWebrtcHideLocalIpsWithMdnsName[] =
     "Anonymize local IPs exposed by WebRTC.";
 inline constexpr char kWebrtcHideLocalIpsWithMdnsDecription[] =

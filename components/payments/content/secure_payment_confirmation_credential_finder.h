@@ -26,18 +26,18 @@ namespace payments {
 class WebPaymentsWebDataService;
 struct SecurePaymentConfirmationCredential;
 
-// Wraps retrieval and matching of SPC credentials, from either the user profile
-// database or OS-level APIs.
+// Wraps retrieval and matching of SPC credentials. Depending on the platform,
+// may query either or both of OS provided APIs and the user-profile database.
 class SecurePaymentConfirmationCredentialFinder {
  public:
   SecurePaymentConfirmationCredentialFinder();
   virtual ~SecurePaymentConfirmationCredentialFinder();
 
+  using MatchedCredentials = std::optional<
+      std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>;
+
   using SecurePaymentConfirmationCredentialFinderCallback =
-      base::OnceCallback<void(
-          std::optional<
-              std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
-              credentials)>;
+      base::OnceCallback<void(MatchedCredentials credentials)>;
 
   // Retrieve available SPC credentials that match the input `credential_ids`
   // and `relying_party_id`, and which if necessary have the third-party payment
@@ -55,24 +55,41 @@ class SecurePaymentConfirmationCredentialFinder {
       SecurePaymentConfirmationCredentialFinderCallback result_callback);
 
  private:
-  // On platforms where Chrome uses the user profile database to store
-  // credentials for SPC, this callback will be called with the retrieved and
-  // matching credential ids.
+  // The source where we found a given credential, either via OS APIs or the
+  // user-profile database.
+  enum class QuerySource {
+    kOSStore,
+    kWebDatabase,
+  };
+
+  // Holds the result of a query for matching credentials, including the source
+  // and the returned credentials. Used to compare between OS and user-profile
+  // database queries for platforms that support both.
+  struct QueryResult {
+    QueryResult(QuerySource source, MatchedCredentials credentials);
+    ~QueryResult();
+    QueryResult(QueryResult&&);
+    QueryResult& operator=(QueryResult&&);
+
+    QuerySource source;
+    MatchedCredentials credentials;
+  };
+
+  using QueryCallback = base::RepeatingCallback<void(QueryResult)>;
+
   void OnGetMatchingCredentialsFromWebDataService(
-      SecurePaymentConfirmationCredentialFinderCallback callback,
+      QueryCallback callback,
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result);
 
-  // On platforms where there is credential-store level support for retrieving
-  // credentials for SPC this callback will be called with the retrieved and
-  // matching credential ids.
-  //
-  // |relying_party_id| and |matching_credentials| are always std::move'd in,
-  // and so are not const-ref.
   void OnGetMatchingCredentialIdsFromStore(
-      SecurePaymentConfirmationCredentialFinderCallback callback,
+      QueryCallback callback,
       std::string relying_party_id,
       std::vector<std::vector<uint8_t>> matching_credentials);
+
+  void OnAllQueriesComplete(
+      SecurePaymentConfirmationCredentialFinderCallback result_callback,
+      std::vector<QueryResult> results);
 
   // On platforms where we are using the user profile database, this map holds
   // in-progress requests to the database.

@@ -45,4 +45,17 @@ void RecordBrowserBoundKeyMetadataUpdated(bool success) {
       success);
 }
 
+void RecordOSStoreUplift(bool has_uplift) {
+  base::UmaHistogramBoolean(
+      "PaymentRequest.SecurePaymentConfirmation.CredentialFinder.OSStoreUplift",
+      has_uplift);
+}
+
+void RecordWebDatabaseHasOrphanedCredentials(bool has_orphaned_credentials) {
+  base::UmaHistogramBoolean(
+      "PaymentRequest.SecurePaymentConfirmation.CredentialFinder."
+      "WebDatabaseHasOrphanedCredentials",
+      has_orphaned_credentials);
+}
+
 }  // namespace payments

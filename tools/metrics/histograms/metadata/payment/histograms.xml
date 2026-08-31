@@ -488,6 +488,37 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.CredentialFinder.OSStoreUplift"
+    enum="Boolean" expires_after="2027-08-20">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Records whether querying the OS credential store provided an uplift over the
+    Chrome Web Payments database (i.e. the OS store found matching credentials
+    while the Web Payments database had zero valid matching credentials on the
+    authenticator, enabling an SPC flow that would have otherwise failed).
+
+    Recorded when both the OS credential store and database have been queried
+    during a hybrid SPC authentication flow.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.CredentialFinder.WebDatabaseHasOrphanedCredentials"
+    enum="Boolean" expires_after="2027-08-20">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Records whether the Chrome Web Payments database returned orphan credentials
+    that no longer exist on the underlying OS authenticator (e.g. because the
+    user deleted them in OS settings).
+
+    Recorded when both the OS credential store and database have been queried
+    during a hybrid SPC authentication flow.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmation.Fallback.NoAuthenticator"
     enum="Boolean" expires_after="2027-07-01">
   <owner>darwinyang@google.com</owner>

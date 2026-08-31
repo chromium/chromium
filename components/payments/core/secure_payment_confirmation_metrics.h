@@ -61,6 +61,10 @@ void RecordBrowserBoundKeyRetrieval(
 
 void RecordBrowserBoundKeyMetadataUpdated(bool success);
 
+void RecordOSStoreUplift(bool has_uplift);
+
+void RecordWebDatabaseHasOrphanedCredentials(bool has_orphaned_credentials);
+
 // TODO(crbug.com/40171413): Move other SPC metrics into this common file.
 
 }  // namespace payments

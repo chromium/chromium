@@ -9103,6 +9103,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "secure-payment-confirmation-credential-discovery-mode",
+    "owners": [ "smcgruer@chromium.org", "chrome-payments-eng@google.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "semantic-embedder-api",
     "owners": [
       "//chrome/browser/ai/OWNERS",
