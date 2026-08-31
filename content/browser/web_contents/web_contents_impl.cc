@@ -7140,35 +7140,12 @@ DropData* WebContentsImpl::GetDropData() {
 
 void WebContentsImpl::Focus() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Focus");
-  UpdateVisibilityPreFocus();
   view_->Focus();
 }
 
 void WebContentsImpl::SetInitialFocus() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetInitialFocus");
-  UpdateVisibilityPreFocus();
   view_->SetInitialFocus();
-}
-
-void WebContentsImpl::UpdateVisibilityPreFocus() {
-  // Typically the view becomes visible when a navigation commits. However, if a
-  // view is focused before navigation commits, it must be made visible or on
-  // some platforms (i.e. Mac) Focus will be rejected.
-  //
-  // If we're in the middle of swapping frames, the timing of making the new
-  // frame visible is very sensitive and managed by the RenderFrameHostManager.
-  // Some clients Focus the new frame upon swapping, so we need to make sure we
-  // don't have that Focus call also set visibility.
-  //
-  // TODO(https://crbug.com/526983047): We should decouple the notions of
-  // rendering and window visibility so that a window can be focused and visible
-  // before navigation commits and the RFH is still hidden.
-  if (base::FeatureList::IsEnabled(
-          features::kRemoveEnsureRFHVisibilityConsistent) &&
-      !is_swapping_render_frame_hosts_ &&
-      GetVisibility() == Visibility::VISIBLE) {
-    SetPrimaryMainFrameViewVisibility(Visibility::VISIBLE);
-  }
 }
 
 void WebContentsImpl::StoreFocus() {
@@ -11347,8 +11324,6 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
                new_frame);
   DCHECK_NE(new_frame->lifecycle_state(),
             RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
-
-  base::AutoReset<bool> scope(&is_swapping_render_frame_hosts_, true);
 
   // Only fire RenderViewHostChanged if it is related to our FrameTree, as
   // observers can not deal with events coming from non-primary FrameTree.

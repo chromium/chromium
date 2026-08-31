@@ -2323,7 +2323,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   shell_surface->SetGeometry(gfx::Rect(gfx::Point(20, 50), kBufferSize));
   surface->Commit();
   EXPECT_EQ(gfx::Rect(20, 50, 256, 256), window->bounds());
-  event_generator->ReleaseLeftButton();
+  window_state->DeleteDragDetails();
   ASSERT_FALSE(window_state->is_dragged());
 
   ash::Shell::Get()->pip_controller()->TuckWindow(/*left=*/true);

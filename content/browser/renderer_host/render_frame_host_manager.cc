@@ -96,7 +96,6 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "url/gurl_debug.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -5184,25 +5183,19 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
 
   CHECK(render_frame_host->IsRenderFrameLive());
 
-  if (!base::FeatureList::IsEnabled(
-          features::kRemoveEnsureRFHVisibilityConsistent)) {
-    // The RenderWidgetHostView goes away with the render process. Initializing
-    // a RenderFrame means we'll be creating (or reusing,
-    // https://crbug.com/419087) a RenderWidgetHostView. The new
-    // RenderWidgetHostView should take its visibility from the
-    // RenderWidgetHostImpl, but this call exists to handle cases where it did
-    // not during a same-process navigation.
-    // TODO(danakj): We now hide the widget unconditionally (treating main frame
-    // and child frames alike) and show in DidFinishNavigation() always, so this
-    // should be able to go away. Try to remove this.
-    // TODO(https://crbug.com/521200679): Removing this breaks keyboard tab
-    // switching while a new tab is loading because aura::Window visibility
-    // tracks RFH visibility, not whether the window is visible to the user.
-    // kRemoveEnsureRFHVisibilityConsistent fixes this by making the RFH visible
-    // when it's focused, not just when it commits.
-    if (render_frame_host == render_frame_host_.get()) {
-      EnsureRenderFrameHostVisibilityConsistent();
-    }
+  // The RenderWidgetHostView goes away with the render process. Initializing a
+  // RenderFrame means we'll be creating (or reusing, https://crbug.com/419087)
+  // a RenderWidgetHostView. The new RenderWidgetHostView should take its
+  // visibility from the RenderWidgetHostImpl, but this call exists to handle
+  // cases where it did not during a same-process navigation.
+  // TODO(danakj): We now hide the widget unconditionally (treating main frame
+  // and child frames alike) and show in DidFinishNavigation() always, so this
+  // should be able to go away. Try to remove this.
+  // TODO(https://crbug.com/521200679): Removing this breaks keyboard tab
+  // switching while a new tab is loading, despite the tab appearing to become
+  // visible at the correct time.
+  if (render_frame_host == render_frame_host_.get()) {
+    EnsureRenderFrameHostVisibilityConsistent();
   }
 
   return true;
