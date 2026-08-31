@@ -425,4 +425,24 @@ public class SettingsSearchCoordinatorUnitTest {
         mCoordinator.onHeaderLayoutUpdated();
         assertEquals(View.VISIBLE, searchBox.getVisibility());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testExitSearchState_withSettingsInTab_multiColumn_focusesSearchBox() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
+        searchBox.setVisibility(View.GONE);
+
+        mCoordinator.exitSearchState();
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        assertTrue(searchBox.isFocused());
+    }
 }

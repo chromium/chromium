@@ -962,7 +962,12 @@ public class SettingsSearchCoordinator
         // SlidingPaneLayout#SimplePanelSlideListener set up in initializeMultiColumnSearchUi
         // for mutli-column settings, and by FragmentManager.FragmentLifecycleCallbacks set up
         // in observeFragmentForVisibilityChange for single-column settings.
-        if (mUseMultiColumn) searchBox.setVisibility(View.VISIBLE);
+        if (mUseMultiColumn) {
+            searchBox.setVisibility(View.VISIBLE);
+            if (shouldAutoFocusSearchBox()) {
+                requestAccessibilityFocus(searchBox);
+            }
+        }
 
         showBackArrowInSingleColumnMode(true);
         EditText queryEdit = requireViewById(R.id.search_query);
