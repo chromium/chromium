@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/test/bind.h"
 #include "chrome/browser/shell_integration.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_PIN_INFOBAR_PIN_INFOBAR_CONTROLLER_H_
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_PIN_INFOBAR_PIN_INFOBAR_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
