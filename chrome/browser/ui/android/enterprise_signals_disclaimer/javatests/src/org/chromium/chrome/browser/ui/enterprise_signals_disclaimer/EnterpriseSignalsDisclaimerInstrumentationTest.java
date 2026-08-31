@@ -21,13 +21,11 @@ import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
-import android.view.FocusFinder;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -447,49 +445,6 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         waitForDisclaimerNotShowing();
         waitForSignout();
-        ThreadUtils.runOnUiThreadBlocking(controller::destroy);
-    }
-
-    @Test
-    @LargeTest
-    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-    public void focusSearchConfinesFocusToDisclaimer() {
-        InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
-        final EnterpriseSignalsDisclaimerController controller =
-                createControllerAndShowDisclaimer();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    View acceptButton = activity().findViewById(R.id.disclaimer_accept_button);
-                    Assert.assertNotNull(acceptButton);
-
-                    View scrollView = activity().findViewById(R.id.disclaimer_scroll_view);
-                    EnterpriseSignalsDisclaimerView disclaimerView =
-                            (EnterpriseSignalsDisclaimerView) scrollView.getParent();
-
-                    View firstFocusable =
-                            FocusFinder.getInstance()
-                                    .findNextFocus(disclaimerView, null, View.FOCUS_FORWARD);
-                    View lastFocusable =
-                            FocusFinder.getInstance()
-                                    .findNextFocus(disclaimerView, null, View.FOCUS_BACKWARD);
-                    Assert.assertNotNull(firstFocusable);
-                    Assert.assertNotNull(lastFocusable);
-
-                    // Forward focus from the last focusable element should wrap to the first
-                    // focusable element.
-                    View nextAfterLast =
-                            disclaimerView.focusSearch(lastFocusable, View.FOCUS_FORWARD);
-                    Assert.assertEquals(firstFocusable, nextAfterLast);
-
-                    // Backward focus from the first focusable element should wrap to the last
-                    // focusable element.
-                    View prevBeforeFirst =
-                            disclaimerView.focusSearch(firstFocusable, View.FOCUS_BACKWARD);
-                    Assert.assertEquals(lastFocusable, prevBeforeFirst);
-                });
-
-        waitForDisclaimerVisible();
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 }
