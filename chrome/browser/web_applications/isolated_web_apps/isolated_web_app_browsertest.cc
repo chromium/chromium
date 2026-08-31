@@ -1885,6 +1885,51 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
   EXPECT_EQ(browsers_before, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
+                       CrossOriginWindowOpenAboutBlankAndNavigatePopup) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> source_app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo source_url_info,
+                       source_app->Install(profile()));
+
+  std::unique_ptr<ScopedBundledIsolatedWebApp> target_app =
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetLaunchHandlerClientMode(GetParam()))
+          .AddHtml("/something/weird.html", "meow")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo target_url_info,
+                       target_app->Install(profile()));
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          OpenIsolatedWebApp(profile(), source_url_info.app_id()));
+
+  const GURL target_url =
+      target_url_info.origin().GetURL().Resolve("/something/weird.html");
+
+  content::WebContentsAddedObserver web_contents_added_observer;
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "window.popup = window.open('about:blank', '_blank', 'popup');"));
+  content::WebContents* popup_contents =
+      web_contents_added_observer.GetWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  content::TestNavigationObserver nav_observer(popup_contents);
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace("window.popup.location.href = $1;", target_url)));
+  nav_observer.Wait();
+
+  // The navigation to the cross-origin IWA must be blocked.
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+
+  // No window for the target app should be created.
+  EXPECT_FALSE(AppBrowserController::FindForWebApp(*profile(),
+                                                   target_url_info.app_id()));
+}
+
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest, PlainLaunch) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(

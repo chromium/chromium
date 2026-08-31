@@ -98,6 +98,10 @@ void RunNavigationInDefaultBrowser(NavigationHandle* handle) {
                                          params, base::DoNothing());
 }
 
+BASE_FEATURE(kBlockCrossIwaMainFrameNavigations,
+             "BlockCrossIwaMainFrameNavigations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 // static
@@ -213,6 +217,15 @@ IsolatedWebAppThrottle::MaybeThrottleNavigationTransition(
 
   // Handle main frame navigations.
   if (navigation_handle()->IsInMainFrame()) {
+    // Block renderer-initiated main frame navigations into the app that were
+    // initiated by a non-app frame. This ensures that all main-frame
+    // navigations into the app come from the app itself or from the browser.
+    if (base::FeatureList::IsEnabled(kBlockCrossIwaMainFrameNavigations) &&
+        navigation_handle()->IsRendererInitiated() &&
+        navigation_handle()->GetInitiatorOrigin() != app_origin) {
+      return block_action;
+    }
+
     // If the main frame tries to leave the app's origin, cancel the
     // navigation and open the URL in the systems' default application.
     // Navigations to URLs with custom schemes (say, meow://) initiated by the
