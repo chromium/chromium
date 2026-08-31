@@ -232,7 +232,7 @@ class CORE_EXPORT DisplayLockContext final
     if (IsLocked() && IsActivatable(DisplayLockActivationReason::kAny)) {
       MarkForStyleRecalcIfNeeded();
       MarkForLayoutIfNeeded();
-      MarkAncestorsForPrePaintIfNeeded();
+      MarkForPrePaintIfNeeded();
     }
   }
 
@@ -342,7 +342,7 @@ class CORE_EXPORT DisplayLockContext final
   // dirty, and false otherwise.
   bool MarkForStyleRecalcIfNeeded();
   bool MarkForLayoutIfNeeded();
-  bool MarkAncestorsForPrePaintIfNeeded();
+  bool MarkForPrePaintIfNeeded();
   bool MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
   bool MarkNeedsCullRectUpdate();
   bool MarkForCompositingUpdatesIfNeeded();
@@ -350,7 +350,9 @@ class CORE_EXPORT DisplayLockContext final
 
   bool IsElementDirtyForStyleRecalc() const;
   bool IsElementDirtyForLayout() const;
+
   bool IsElementDirtyForPrePaint() const;
+  bool IsContextDirtyForPrePaint() const;
 
   // Helper to schedule an animation to delay lifecycle updates for the next
   // frame.

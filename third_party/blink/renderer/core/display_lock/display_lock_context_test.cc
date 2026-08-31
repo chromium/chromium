@@ -198,6 +198,10 @@ class DisplayLockContextTest : public testing::Test {
     return DisplayLockUtilities::ScopedForcedUpdate(node, phase, include_self);
   }
 
+  bool IsContextDirtyForPrePaint(DisplayLockContext* context) {
+    return context->IsContextDirtyForPrePaint();
+  }
+
   const int FAKE_FIND_ID = 1;
 
  private:
@@ -1539,10 +1543,20 @@ TEST_F(DisplayLockContextTest, AncestorAllowedTouchAction) {
   EXPECT_TRUE(locked_object->InsideBlockingTouchEventHandler());
   EXPECT_FALSE(lockedchild_object->InsideBlockingTouchEventHandler());
 
+  EXPECT_TRUE(
+      IsContextDirtyForPrePaint(locked_object->GetDisplayLockContext()));
+  EXPECT_FALSE(locked_object->ShouldCheckForPaintInvalidation());
+
   // Manually commit the lock so that we can verify which dirty bits get
   // propagated.
   CommitElement(*locked_element, false);
   UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  if (RuntimeEnabledFeatures::ClearDisplayLockPrePaintFlagsEnabled()) {
+    EXPECT_FALSE(
+        IsContextDirtyForPrePaint(locked_object->GetDisplayLockContext()));
+  }
+  EXPECT_TRUE(locked_object->ShouldCheckForPaintInvalidation());
 
   EXPECT_FALSE(EffectiveAllowedTouchActionChanged(*ancestor_object));
   EXPECT_FALSE(EffectiveAllowedTouchActionChanged(*handler_object));
@@ -1812,10 +1826,22 @@ TEST_F(DisplayLockContextTest, AncestorWheelEventHandler) {
   EXPECT_TRUE(locked_object->InsideBlockingWheelEventHandler());
   EXPECT_FALSE(lockedchild_object->InsideBlockingWheelEventHandler());
 
+  EXPECT_TRUE(
+      IsContextDirtyForPrePaint(locked_object->GetDisplayLockContext()));
+  EXPECT_FALSE(locked_object->ShouldCheckForPaintInvalidation());
+
   // Manually commit the lock so that we can verify which dirty bits get
   // propagated.
   CommitElement(*locked_element, false);
   UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  if (RuntimeEnabledFeatures::ClearDisplayLockPrePaintFlagsEnabled()) {
+    EXPECT_FALSE(
+        IsContextDirtyForPrePaint(locked_object->GetDisplayLockContext()));
+  }
+  EXPECT_FALSE(
+      IsContextDirtyForPrePaint(locked_object->GetDisplayLockContext()));
+  EXPECT_TRUE(locked_object->ShouldCheckForPaintInvalidation());
 
   EXPECT_FALSE(BlockingWheelEventHandlerChanged(*ancestor_object));
   EXPECT_FALSE(BlockingWheelEventHandlerChanged(*handler_object));

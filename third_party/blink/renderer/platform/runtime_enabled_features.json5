@@ -1154,6 +1154,11 @@
       status: "stable",
     },
     {
+      // Killswitch crbug.com/547894783
+      name: "ClearDisplayLockPrePaintFlags",
+      status: "stable",
+    },
+    {
       // Fixes a bug where ancestor elements retain a stale :focus-within
       // state if the focused element's subtree is removed during blur
       // or focusout events.

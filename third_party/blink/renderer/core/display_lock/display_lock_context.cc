@@ -498,7 +498,7 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
     }
     if (!old_forced_info.is_forced(ForcedPhase::kPrePaint) &&
         forced_info_.is_forced(ForcedPhase::kPrePaint)) {
-      MarkAncestorsForPrePaintIfNeeded();
+      MarkForPrePaintIfNeeded();
     }
 
     if (emit_warnings && document_ &&
@@ -608,7 +608,7 @@ void DisplayLockContext::Unlock() {
   // Now that we know we have a layout object, we should ensure that we can
   // reach the rest of the phases as well.
   MarkForLayoutIfNeeded();
-  MarkAncestorsForPrePaintIfNeeded();
+  MarkForPrePaintIfNeeded();
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
   MarkNeedsCullRectUpdate();
 
@@ -716,7 +716,7 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
   return false;
 }
 
-bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
+bool DisplayLockContext::MarkForPrePaintIfNeeded() {
   // TODO(vmpstr): We should add a compositing phase for proper bookkeeping.
   bool compositing_dirtied = MarkForCompositingUpdatesIfNeeded();
   bool visual_overflow_dirtied = MarkForVisualOverflowRecalcIfNeeded();
@@ -735,6 +735,10 @@ bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
     reasons.PutAll(layout_object->GetDescendantPrePaintSubtreeWalkReasons());
     if (!reasons.empty()) {
       layout_object->SetNeedsPrePaintSubtreeWalk(reasons);
+    }
+    if (RuntimeEnabledFeatures::ClearDisplayLockPrePaintFlagsEnabled()) {
+      needs_pre_paint_subtree_walk_ = false;
+      pre_paint_subtree_walk_reasons_.Clear();
     }
     return true;
   }
@@ -827,10 +831,14 @@ bool DisplayLockContext::IsElementDirtyForPrePaint() const {
   if (auto* layout_object = element_->GetLayoutObject()) {
     return PrePaintTreeWalk::ObjectRequiresPrePaint(*layout_object) ||
            PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(*layout_object) ||
-           needs_pre_paint_subtree_walk_ ||
-           !pre_paint_subtree_walk_reasons_.empty();
+           IsContextDirtyForPrePaint();
   }
   return false;
+}
+
+bool DisplayLockContext::IsContextDirtyForPrePaint() const {
+  return needs_pre_paint_subtree_walk_ ||
+         !pre_paint_subtree_walk_reasons_.empty();
 }
 
 void DisplayLockContext::DidMoveToNewDocument(Document& old_document) {
