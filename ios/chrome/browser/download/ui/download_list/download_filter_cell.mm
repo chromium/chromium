@@ -57,7 +57,7 @@ Symbol GetFilterTypeSymbol(DownloadFilterType filterType) {
     case DownloadFilterType::kVideo:
       return SymbolVideo;
     case DownloadFilterType::kAudio:
-      return SymbolWaveformMid;
+      return SymbolWaveform;
     case DownloadFilterType::kPDF:
       return SymbolTextDocument;
     case DownloadFilterType::kOther:
