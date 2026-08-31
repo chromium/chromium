@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <numeric>
 
+#import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
@@ -231,6 +232,14 @@ LevelUpService::LevelUpService(
   PopulateTasks();
   LoadPrefs();
 
+  if (pref_service_) {
+    pref_change_registrar_.Init(pref_service_);
+    pref_change_registrar_.Add(
+        prefs::kLevelUpUIEnabled,
+        base::BindRepeating(&LevelUpService::OnUIEnabledPrefChanged,
+                            base::Unretained(this)));
+  }
+
   tab_group_observer_ = std::make_unique<LevelUpTabGroupObserver>(
       this, browser_list, session_restoration_service);
   password_check_observer_ = std::make_unique<LevelUpPasswordCheckObserver>(
@@ -240,11 +249,18 @@ LevelUpService::LevelUpService(
 LevelUpService::~LevelUpService() = default;
 
 void LevelUpService::Shutdown() {
+  pref_change_registrar_.Reset();
   if (tab_group_observer_) {
     tab_group_observer_->Shutdown();
   }
   if (password_check_observer_) {
     password_check_observer_->Shutdown();
+  }
+}
+
+void LevelUpService::OnUIEnabledPrefChanged() {
+  if (pref_service_) {
+    is_ui_enabled_ = pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
   }
 }
 

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ios/chrome/browser/level_up/model/task_info.h"
 #include "ios/chrome/browser/level_up/model/task_types.h"
 
@@ -104,7 +105,11 @@ class LevelUpService : public KeyedService {
   // Declared const since it does not modify any service state.
   int CalculateLevel(size_t completed_count) const;
 
-  raw_ptr<PrefService> pref_service_;
+  // Called when the `kLevelUpUIEnabled` preference changes.
+  void OnUIEnabledPrefChanged();
+
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<LevelUpPasswordCheckObserver> password_check_observer_;
   std::unique_ptr<LevelUpTabGroupObserver> tab_group_observer_;
   std::map<TaskType, std::unique_ptr<TaskInfo>> tasks_;

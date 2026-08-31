@@ -109,7 +109,9 @@
     TaskType taskType = it->second;
     if (!_levelUpService->IsTaskCompleted(taskType)) {
       _levelUpService->MarkTaskCompleted(taskType);
-      [self showCompletionSnackbarForTask:taskType];
+      if (_levelUpService->IsUIEnabled()) {
+        [self showCompletionSnackbarForTask:taskType];
+      }
     }
   }
 }

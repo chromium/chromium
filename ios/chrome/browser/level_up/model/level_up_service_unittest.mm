@@ -251,4 +251,15 @@ TEST_F(LevelUpServiceTest, TestResetAllTasksStatus) {
           prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
 }
 
+// Tests that changing the UI enabled preference updates IsUIEnabled().
+TEST_F(LevelUpServiceTest, TestUIEnabledPrefObservation) {
+  EXPECT_FALSE(service_->IsUIEnabled());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kLevelUpUIEnabled, true);
+  EXPECT_TRUE(service_->IsUIEnabled());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kLevelUpUIEnabled, false);
+  EXPECT_FALSE(service_->IsUIEnabled());
+}
+
 }  // namespace

@@ -13,11 +13,19 @@
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -37,8 +45,15 @@ class LevelUpSceneAgentTest : public PlatformTest {
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_.get();
 
-    scene_state_ = [[SceneState alloc] init];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
+
+    Browser* browser =
+        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+    mock_snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler_
+                             forProtocol:@protocol(SnackbarCommands)];
 
     agent_ = [[LevelUpSceneAgent alloc] init];
     [scene_state_ addAgent:agent_];
@@ -49,6 +64,7 @@ class LevelUpSceneAgentTest : public PlatformTest {
   void TearDown() override {
     [agent_ stopListening];
     agent_ = nil;
+    [scene_state_ shutdown];
     scene_state_ = nil;
     PlatformTest::TearDown();
   }
@@ -59,35 +75,59 @@ class LevelUpSceneAgentTest : public PlatformTest {
   FakeStartupInformation* fake_startup_information_;
   AppState* app_state_;
   ProfileState* profile_state_;
-  SceneState* scene_state_;
+  FakeSceneState* scene_state_;
+  id<SnackbarCommands> mock_snackbar_handler_;
   LevelUpSceneAgent* agent_;
   raw_ptr<LevelUpService> service_;
 };
 
-TEST_F(LevelUpSceneAgentTest, TestActionTriggersCompletion) {
-  // Ensure tasks are not completed initially.
+// Tests that completing a task marks it completed and does not show the
+// snackbar when progress updates are disabled.
+TEST_F(LevelUpSceneAgentTest,
+       TestActionTriggersCompletionWithoutSnackbarWhenProgressUpdatesDisabled) {
+  // Progress updates are disabled by default.
+  EXPECT_FALSE(service_->IsUIEnabled());
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
-  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kPasswordCheckup));
 
   // Simulate the scene becoming active to start listening.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Snackbar should not be shown.
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
 
   // Record the action that should trigger kTabGroups completion.
   base::RecordAction(
       base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
 
-  // Verify that the task is now completed.
+  // Verify that the task is completed and snackbar was not shown.
   EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kTabGroups));
-  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kPasswordCheckup));
-
-  // Record the action that should trigger kPasswordCheckup completion.
-  base::RecordAction(
-      base::UserMetricsAction("MobilePasswordCheckupSettingsClose"));
-
-  // Verify that password checkup is completed as well.
-  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kPasswordCheckup));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
 }
 
+// Tests that completing a task marks it completed and shows the snackbar when
+// progress updates are enabled.
+TEST_F(LevelUpSceneAgentTest,
+       TestActionTriggersCompletionWithSnackbarWhenProgressUpdatesEnabled) {
+  service_->SetUIEnabled(true);
+  EXPECT_TRUE(service_->IsUIEnabled());
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
+
+  // Simulate the scene becoming active to start listening.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Snackbar should be shown.
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+
+  // Record the action that should trigger kTabGroups completion.
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
+
+  // Verify that the task is completed and snackbar was shown.
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kTabGroups));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
+// Tests that recording user actions triggers stat increments.
 TEST_F(LevelUpSceneAgentTest, TestActionTriggersStatIncrement) {
   EXPECT_EQ(
       0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
