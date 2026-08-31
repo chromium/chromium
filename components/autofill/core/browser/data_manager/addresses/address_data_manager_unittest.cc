@@ -17,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "base/values.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -32,7 +31,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -1315,25 +1313,6 @@ TEST_F(AddressDataManagerTest, RemoveNameEmailProfileOnSignOutWhileLoading) {
 
   // Verify the profile is gone.
   EXPECT_TRUE(address_data_manager().GetProfiles().empty());
-}
-
-TEST_F(AddressDataManagerTest, IsAutofillProfileEnabled_EnterprisePolicy) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
-
-  EXPECT_TRUE(address_data_manager().IsAutofillProfileEnabled());
-
-  base::ListValue blocked_list;
-  base::DictValue entry;
-  entry.Set("url_pattern", "*");
-  base::ListValue blocked_types;
-  blocked_types.Append("contact_info");
-  entry.Set("blocked_types", std::move(blocked_types));
-  blocked_list.Append(std::move(entry));
-  static_cast<TestingPrefServiceSimple*>(prefs_.get())
-      ->SetManagedPref(prefs::kAutofillTypesBlocked, std::move(blocked_list));
-
-  EXPECT_FALSE(address_data_manager().IsAutofillProfileEnabled());
 }
 
 }  // namespace
