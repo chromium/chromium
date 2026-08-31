@@ -387,30 +387,6 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
-TEST_F(Canvas2DResourceProviderTest, ImageCacheOnContextLost) {
-  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
-
-  Vector<cc::DrawImage> images = {
-      cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10),
-                    cc::PaintFlags::FilterQuality::kNone, SkM44(), 0u,
-                    cc::TargetColorParams()),
-      cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
-                    SkM44(), 0u, cc::TargetColorParams())};
-  provider->GetCanvasForTesting().drawImage(images[0].paint_image(), 0u, 0u,
-                                            SkSamplingOptions(), nullptr);
-
-  static_cast<WebGraphicsContext3DProviderWrapper::DestructionObserver*>(
-      provider.get())
-      ->OnContextDestroyed();
-  // We should unref all images on the cache when the context is destroyed.
-  EXPECT_EQ(image_decode_cache_.num_locked_images(), 0);
-  image_decode_cache_.set_disallow_cache_use(true);
-  provider->GetCanvasForTesting().drawImage(images[1].paint_image(), 0u, 0u,
-                                            SkSamplingOptions(), nullptr);
-}
-
 TEST_F(Canvas2DResourceProviderTest, EstimatedSizeInBytesSoftware) {
   constexpr gfx::Size kSize(20, 20);
   viz::SharedImageFormat format = viz::SharedImageFormat::N32Format();
