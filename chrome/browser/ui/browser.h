@@ -160,8 +160,6 @@ class Browser : public TabStripModelObserver,
       DidBecomeInactiveCallback callback) override;
   Type GetType() const override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
-  Browser* GetBrowserForMigrationOnly() override;
-  const Browser* GetBrowserForMigrationOnly() const override;
   bool IsTabModalPopup() const override;
   void SetIsTabModalPopup(
       bool is_tab_modal_popup,

@@ -502,14 +502,6 @@ std::vector<tabs::TabInterface*> Browser::GetAllTabInterfaces() {
   return results;
 }
 
-Browser* Browser::GetBrowserForMigrationOnly() {
-  return this;
-}
-
-const Browser* Browser::GetBrowserForMigrationOnly() const {
-  return this;
-}
-
 bool Browser::IsTabModalPopup() const {
   return is_tab_modal_popup_;
 }
