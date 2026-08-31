@@ -2833,6 +2833,61 @@ TEST_F(ServiceWorkerRegistryTest, NoUsbEventHandler) {
   EXPECT_FALSE(version->has_usb_event_handlers());
 }
 
+TEST_F(ServiceWorkerRegistryTest, LiveRegistrationKeyMatchedHistogram) {
+  base::HistogramTester histogram_tester;
+  const GURL kScope("https://valid.example.com/scope");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope));
+  const GURL kScript("https://valid.example.com/script.js");
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScript,
+                                                kKey,
+                                                /*resource_id=*/1);
+  const int64_t stored_reg_id = registration->id();
+  ServiceWorkerVersion* version = registration->waiting_version();
+  version->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration->SetActiveVersion(version);
+
+  ASSERT_EQ(StoreRegistration(registration, version),
+            blink::ServiceWorkerStatusCode::kOk);
+
+  // 1. Finding registration when live registration exists with matching key.
+  scoped_refptr<ServiceWorkerRegistration> found_registration;
+  EXPECT_EQ(FindRegistrationForClientUrl(kScope, kKey, found_registration),
+            blink::ServiceWorkerStatusCode::kOk);
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.LiveRegistrationKeyMatched", true, 1);
+
+  // 2. Simulate browser restart so live_registrations_ and live_versions_ are
+  // cleared.
+  found_registration = nullptr;
+  registration = nullptr;
+  version = nullptr;
+  SimulateRestart();
+
+  // 3. Create a conflicting live registration in memory with a different
+  // StorageKey.
+  const blink::StorageKey kConflictingKey = blink::StorageKey::CreateFirstParty(
+      url::Origin::Create(GURL("https://other.example.com/")));
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = kScope;
+  scoped_refptr<ServiceWorkerRegistration> conflicting_registration =
+      ServiceWorkerRegistration::Create(
+          options, kConflictingKey, stored_reg_id, context()->AsWeakPtr(),
+          blink::mojom::AncestorFrameType::kNormalFrame);
+
+  // When FindRegistration is performed for kKey, the disk returns stored data
+  // for kKey, but GetOrCreateRegistration finds conflicting_registration in
+  // memory.
+  EXPECT_EQ(FindRegistrationForClientUrl(kScope, kKey, found_registration),
+            blink::ServiceWorkerStatusCode::kOk);
+  histogram_tester.ExpectBucketCount("ServiceWorker.LiveRegistrationKeyMatched",
+                                     false, 1);
+  histogram_tester.ExpectTotalCount("ServiceWorker.LiveRegistrationKeyMatched",
+                                    2);
+}
+
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
  private:
   blink::ScopedTestOriginTrialPolicy origin_trial_policy_;

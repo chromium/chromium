@@ -1201,7 +1201,10 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(data.registration_id);
   if (registration) {
-    if (registration->key() != data.key &&
+    const bool key_matched = (registration->key() == data.key);
+    base::UmaHistogramBoolean("ServiceWorker.LiveRegistrationKeyMatched",
+                              key_matched);
+    if (!key_matched &&
         base::FeatureList::IsEnabled(
             kServiceWorkerDumpWithoutCrashingOnStorageKeyMismatch)) {
       // TODO(crbug.com/539155958): Investigate why the StorageKey of the live

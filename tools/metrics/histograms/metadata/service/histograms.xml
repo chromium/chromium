@@ -871,6 +871,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ServiceWorker.LiveRegistrationKeyMatched" enum="Boolean"
+    expires_after="2027-01-03">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether the StorageKey of an existing in-memory live registration
+    matched the StorageKey of the data fetched from disk in
+    ServiceWorkerRegistry::GetOrCreateRegistration.
+  </summary>
+</histogram>
+
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.AutoPreloadResponseReceivedToFetchHandlerEnd.{ServiceWorkerFetchResponseFromName}"
     units="ms" expires_after="2027-01-31">
