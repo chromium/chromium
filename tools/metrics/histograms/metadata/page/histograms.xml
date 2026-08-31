@@ -106,6 +106,17 @@ chromium-metrics-reviews@google.com.
                reached"/>
 </variants>
 
+<variants name="GWSPrewarmSubresourceCacheStatus">
+  <variant name="" summary="all subresources"/>
+  <variant name=".Cached"
+      summary="all cached subresources (HTTP and memory cache)"/>
+  <variant name=".HttpCached"
+      summary="subresources served from the HTTP cache"/>
+  <variant name=".MemoryCached"
+      summary="subresources served from the in-renderer memory cache"/>
+  <variant name=".NotCached" summary="subresources served from network"/>
+</variants>
+
 <variants name="HiddenSuffix">
   <variant name="" summary="never hidden during the navigation"/>
   <variant name=".TabWasHiddenAtStartLaterShown"
@@ -2856,6 +2867,134 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
   <token key="PrerenderStatus" variants="PrerenderStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prewarm.LastSubresourceLoadToCancellation"
+    units="ms" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the duration (headroom) between the completion of the last
+    subresource load and the cancellation of the Google Search prewarm
+    prerendered page. Recorded when the prerendered prewarm page is cancelled
+    after having loaded at least one subresource.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prewarm.LoadEventOccurredBeforeCancellation"
+    enum="Boolean" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the load event (window.onload) occurred before the Google
+    Search prewarm prerendered page was cancelled/ended. Recorded when the
+    prerendered prewarm page ends/cancels.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.Prewarm.LoadEventToCancellation"
+    units="ms" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the duration (headroom) between the load event (window.onload)
+    completion and the cancellation of the Google Search prewarm prerendered
+    page. Recorded when the prerendered prewarm page is cancelled after having
+    reached the load event.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prewarm.NavigationToCancellation"
+    units="ms" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the duration from navigation start to cancellation of the Google
+    Search prewarm prerendered page. Recorded when the prerendered prewarm page
+    is cancelled/destroyed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prewarm.NavigationToDOMContentLoaded"
+    units="ms" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the duration from navigation start to DOMContentLoaded event start
+    for the Google Search prewarm prerendered page. Recorded when
+    DOMContentLoaded event occurs.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prewarm.NavigationToLastSubresourceLoad"
+    units="ms" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the duration from navigation start to the completion of the last
+    subresource load on the Google Search prewarm prerendered page. Recorded
+    when the prerendered prewarm page ends/cancels after having loaded at least
+    one subresource.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.Prewarm.NavigationToLoadEvent"
+    units="ms" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the duration from navigation start to the load event
+    (window.onload) start for the Google Search prewarm prerendered page.
+    Recorded when load event occurs.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prewarm.SubresourceCount{SubresourceCacheStatus}"
+    units="count" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the total count of {SubresourceCacheStatus} loaded successfully on
+    the Google Search prewarm prerendered page. Recorded once at session end
+    when the prerendered prewarm page ends or is cancelled without being
+    activated.
+  </summary>
+  <token key="SubresourceCacheStatus"
+      variants="GWSPrewarmSubresourceCacheStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Prewarm.SubresourceDestination{SubresourceCacheStatus}"
+    enum="RequestDestination" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the request destination (type of resource, e.g. Script, Style,
+    Image, Font) of {SubresourceCacheStatus} loaded on the Google Search prewarm
+    prerendered page. Recorded in the browser when each completed subresource
+    load notification is received from the network stack or in-renderer memory
+    cache.
+  </summary>
+  <token key="SubresourceCacheStatus"
+      variants="GWSPrewarmSubresourceCacheStatus"/>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.Prewarm.WasActivated"
+    enum="Boolean" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether a Google Search prewarm page load was unexpectedly activated
+    into a primary frame tab instead of being cancelled. Recorded once per
+    prewarm page load at session end (as true if activated, or false if
+    cancelled without activation).
+  </summary>
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.Prewarm.WasResponseCached"
