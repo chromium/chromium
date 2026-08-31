@@ -63,8 +63,9 @@ public class EnterpriseSignalsDisclaimerCoordinator {
         // get a bottom sheet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             view = EnterpriseSignalsDisclaimerView.createForModalDialog(context);
-            // TODO(b/527872237): Implement signout on dismissal for the modal dialog.
-            mDisclaimerHost = new ModalDialogDisclaimerHost(modalDialogManager, view);
+            mDisclaimerHost =
+                    new ModalDialogDisclaimerHost(
+                            modalDialogManager, view, this::onDialogDismissed);
         } else {
             var sheetContent = new EnterpriseSignalsDisclaimerBottomSheetView(context);
             view = sheetContent;

@@ -403,7 +403,6 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
-    // TODO(b/527872237): Remove the restriction once modal dialog supports the same logic.
     @Restriction(DeviceFormFactor.PHONE)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     @DisabledTest(message = "crbug.com/553594054")
@@ -423,8 +422,28 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
-    // TODO(b/527872237): Remove the restriction once modal dialog supports the same logic.
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    public void clickingOutsideModalDialogSignsOutAndHidesDialog() {
+        final EnterpriseSignalsDisclaimerController controller =
+                createControllerAndShowDisclaimer();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel model =
+                            modalDialogManager().getCurrentPresenterForTest().getDialogModel();
+                    modalDialogManager()
+                            .dismissDialog(
+                                    model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                });
+
+        waitForDisclaimerNotShowing();
+        waitForSignout();
+        ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+    }
+
+    @Test
+    @LargeTest
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     @DisabledTest(message = "crbug.com/553594054")
     public void backPressSignsOutAndHidesDialog() {
