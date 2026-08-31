@@ -346,6 +346,8 @@ class MODULES_EXPORT AudioParamHandler final
 
   FRIEND_TEST_ALL_PREFIXES(AudioParamHandlerTest,
                            TimelinePruningOnDisconnectedNode);
+  FRIEND_TEST_ALL_PREFIXES(AudioParamHandlerTest,
+                           SetValueCurveWithPastStartTime);
 
   AudioParamHandler(BaseAudioContext&,
                     AudioParamType,

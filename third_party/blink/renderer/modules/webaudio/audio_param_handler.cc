@@ -1597,6 +1597,12 @@ void AudioParamHandler::ClampNewEventsToCurrentTime(double current_time) {
   bool clamped_some_event_time = false;
 
   for (auto* event : new_events_) {
+    // Clamping SetValueCurve start times would shift the curve past its end
+    // event. ProcessSetValueCurve already handles start times in the past.
+    if (event->GetType() == ParamEvent::Type::kSetValueCurve ||
+        event->GetType() == ParamEvent::Type::kSetValueCurveEnd) {
+      continue;
+    }
     if (event->Time() < current_time) {
       event->SetTime(current_time);
       clamped_some_event_time = true;
@@ -2129,7 +2135,8 @@ std::tuple<size_t, float, size_t> AudioParamHandler::ProcessSetValueCurve(
   // (because the current time is increasing).
   fill_to_frame =
       (fill_to_end_frame < start_frame) ? 0 : (fill_to_end_frame - start_frame);
-  fill_to_frame = std::min(fill_to_frame, values.size());
+  fill_to_frame =
+      std::min({fill_to_frame, values.size(), next_event_fill_to_frame});
 
   // Index into the curve data using a floating-point value.
   // We're scaling the number of curve points by the duration (see

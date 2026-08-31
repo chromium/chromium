@@ -123,4 +123,67 @@ TEST(AudioParamHandlerTest, TimelinePruningOnDisconnectedNode) {
   }
 }
 
+TEST(AudioParamHandlerTest, SetValueCurveWithPastStartTime) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 1024, 48000, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  const Vector<float> curve = {1.0f, 2.0f, 3.0f};
+
+  // Case 1: A curve starts in the past but is still active during the render
+  // quantum. Verify its start time is not clamped to currentTime (which would
+  // shift the curve past its end event and following events) and that rendering
+  // correctly offsets into the curve.
+  {
+    OscillatorNode* osc = context->createOscillator(exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    AudioParamHandler& handler = osc->frequency()->Handler();
+
+    // Curve from t = 0 to t = 0.001 (frames 0..48 at 48kHz), then SetValue(4.0)
+    // at t = 0.001.
+    handler.SetValueCurveAtTime(curve, 0.0, 0.001, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    handler.SetValueAtTime(4.0f, 0.001, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    // Render from frame 24 (t = 0.0005).
+    std::array<float, 128> values;
+    handler.ValuesForFrameRange(24, 24 + 128, 1.0f, values, 48000, 48000,
+                                -3.4e38f, 3.4e38f, 128);
+
+    // Frames 24..47 are the second half of the curve (2.0 -> ~3.0).
+    EXPECT_FLOAT_EQ(values[0], 2.0f);
+    EXPECT_NEAR(values[23], 2.958333f, 1e-5f);
+    // Frames 48..151 are from SetValueAtTime(4.0).
+    EXPECT_FLOAT_EQ(values[24], 4.0f);
+    EXPECT_FLOAT_EQ(values[127], 4.0f);
+  }
+
+  // Case 2: A curve has already ended entirely in the past before the render
+  // quantum. Verify the curve is skipped without timeline corruption and
+  // rendering cleanly picks up subsequent events.
+  {
+    OscillatorNode* osc = context->createOscillator(exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    AudioParamHandler& handler = osc->frequency()->Handler();
+
+    handler.SetValueCurveAtTime(curve, 0.0, 0.001, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    handler.SetValueAtTime(4.0f, 0.002, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    // Render from frame 96 (t = 0.002), after the entire curve.
+    std::array<float, 128> values;
+    handler.ValuesForFrameRange(96, 96 + 128, 1.0f, values, 48000, 48000,
+                                -3.4e38f, 3.4e38f, 128);
+
+    EXPECT_FLOAT_EQ(values[0], 4.0f);
+    EXPECT_FLOAT_EQ(values[127], 4.0f);
+  }
+}
+
 }  // namespace blink
