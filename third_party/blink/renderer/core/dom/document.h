@@ -746,7 +746,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void EvaluateMediaQueryList();
 
-  FormController& GetFormController();
+  FormController& EnsureFormController();
+  FormController* GetFormController() const { return form_controller_.Get(); }
   DocumentState* GetDocumentState() const;
   void SetStateForNewControls(const Vector<String>&);
 

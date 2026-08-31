@@ -2365,7 +2365,7 @@ String Document::nodeName() const {
   return "#document";
 }
 
-FormController& Document::GetFormController() {
+FormController& Document::EnsureFormController() {
   if (!form_controller_) {
     form_controller_ = MakeGarbageCollected<FormController>(*this);
     HistoryItem* history_item = Loader() ? Loader()->GetHistoryItem() : nullptr;
@@ -2384,7 +2384,7 @@ DocumentState* Document::GetDocumentState() const {
 void Document::SetStateForNewControls(const Vector<String>& state_vector) {
   if (!state_vector.size() && !form_controller_)
     return;
-  GetFormController().SetStateForNewControls(state_vector);
+  EnsureFormController().SetStateForNewControls(state_vector);
 }
 
 LocalFrameView* Document::View() const {

@@ -2811,7 +2811,7 @@ void Internals::disableReferencedFilePathsVerification() const {
     return;
   GetFrame()
       ->GetDocument()
-      ->GetFormController()
+      ->EnsureFormController()
       .SetDropReferencedFilePathsForTesting();
 }
 

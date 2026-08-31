@@ -420,6 +420,21 @@ void FormController::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(document_state_);
   visitor->Trace(form_key_generator_);
+  visitor->Trace(last_autofill_invalidation_insertion_point_);
+}
+
+bool FormController::ShouldInvalidateAncestorFormsForAutofill(
+    const ContainerNode& insertion_point) {
+  DCHECK_EQ(document_.Get(), &insertion_point.GetDocument());
+  // The DOM tree version stays fixed throughout a subtree notification.
+  const uint64_t dom_tree_version = document_->DomTreeVersion();
+  if (last_autofill_invalidation_insertion_point_ == &insertion_point &&
+      last_autofill_invalidation_dom_tree_version_ == dom_tree_version) {
+    return false;
+  }
+  last_autofill_invalidation_insertion_point_ = &insertion_point;
+  last_autofill_invalidation_dom_tree_version_ = dom_tree_version;
+  return true;
 }
 
 DocumentState* FormController::ControlStates() const {

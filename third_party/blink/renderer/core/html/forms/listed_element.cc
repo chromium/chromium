@@ -62,6 +62,15 @@ namespace blink {
 namespace {
 
 void InvalidateAncestorFormsForAutofill(ContainerNode& insertion_point) {
+  // If no FormController exists, walk and invalidate all ancestor forms
+  // without deduplication rather than creating one just for this optimization.
+  if (FormController* form_controller =
+          insertion_point.GetDocument().GetFormController();
+      form_controller &&
+      !form_controller->ShouldInvalidateAncestorFormsForAutofill(
+          insertion_point)) {
+    return;
+  }
   // Let any forms in the shadow including ancestors know that this
   // ListedElement has changed.
   ContainerNode* starting_node = &insertion_point;
@@ -144,7 +153,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
   if (ClassSupportsStateRestore() && insertion_point.isConnected() &&
       !element.ContainingShadowRoot()) {
     element.GetDocument()
-        .GetFormController()
+        .EnsureFormController()
         .InvalidateStatefulFormControlList();
   }
 
@@ -203,7 +212,7 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
       !element.ContainingShadowRoot() &&
       !insertion_point.ContainingShadowRoot()) {
     element.GetDocument()
-        .GetFormController()
+        .EnsureFormController()
         .InvalidateStatefulFormControlList();
   }
 
@@ -759,7 +768,7 @@ void ListedElement::NotifyFormStateChanged() {
 
 void ListedElement::TakeStateAndRestore() {
   if (ClassSupportsStateRestore()) {
-    ToHTMLElement().GetDocument().GetFormController().RestoreControlStateFor(
+    ToHTMLElement().GetDocument().EnsureFormController().RestoreControlStateFor(
         *this);
   }
 }

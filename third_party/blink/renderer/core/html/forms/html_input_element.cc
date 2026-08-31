@@ -949,7 +949,7 @@ void HTMLInputElement::ParseAttribute(
     // attribute. So, delay the SetChecked() call until
     // finishParsingChildren() is called if parsing is in progress.
     if ((!parsing_in_progress_ ||
-         !GetDocument().GetFormController().HasControlStates()) &&
+         !GetDocument().EnsureFormController().HasControlStates()) &&
         !dirty_checkedness_) {
       SetChecked(!value.IsNull());
       dirty_checkedness_ = false;

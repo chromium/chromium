@@ -252,10 +252,11 @@ TEST(HTMLDocumentParserFastpathTest, HTMLInputElementCheckedState) {
   // Set the state for new controls, which triggers a different code path in
   // HTMLInputElement::ParseAttribute.
   div1->SetInnerHTMLWithoutTrustedTypes("<select form='ff'></select>");
-  DocumentState* document_state = document->GetFormController().ControlStates();
+  DocumentState* document_state =
+      document->EnsureFormController().ControlStates();
   Vector<String> state1 = document_state->ToStateVector();
-  document->GetFormController().SetStateForNewControls(state1);
-  EXPECT_TRUE(document->GetFormController().HasControlStates());
+  document->EnsureFormController().SetStateForNewControls(state1);
+  EXPECT_TRUE(document->EnsureFormController().HasControlStates());
 
   div2->SetInnerHTMLWithoutTrustedTypes("<input checked='true'>");
   HTMLInputElement* input_element = To<HTMLInputElement>(div2->firstChild());

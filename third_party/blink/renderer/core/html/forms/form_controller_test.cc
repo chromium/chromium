@@ -26,7 +26,7 @@ TEST(DocumentStateTest, ToStateVectorConnected) {
   Node* body = html->appendChild(doc.CreateRawElement(html_names::kBodyTag));
   To<Element>(body)->SetInnerHTMLWithoutTrustedTypes(
       "<select form='ff'></select>");
-  DocumentState* document_state = doc.GetFormController().ControlStates();
+  DocumentState* document_state = doc.EnsureFormController().ControlStates();
   Vector<String> state1 = document_state->ToStateVector();
   // <signature>, <control-size>, <form-key>, <name>, <type>, <data-size(0)>
   EXPECT_EQ(6u, state1.size());
@@ -35,6 +35,27 @@ TEST(DocumentStateTest, ToStateVectorConnected) {
   // Success if the following ToStateVector() doesn't fail with a DCHECK.
   Vector<String> state2 = document_state->ToStateVector();
   EXPECT_EQ(0u, state2.size());
+}
+
+TEST(FormControllerTest, DeduplicatesAutofillInvalidationWithinMutation) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  auto& doc = *Document::CreateForTest(execution_context.GetExecutionContext());
+  Element* html = doc.CreateRawElement(html_names::kHTMLTag);
+  doc.appendChild(html);
+  Element* body = doc.CreateRawElement(html_names::kBodyTag);
+  html->appendChild(body);
+  Element* sibling = doc.CreateRawElement(html_names::kDivTag);
+  html->appendChild(sibling);
+  FormController& form_controller = doc.EnsureFormController();
+
+  EXPECT_TRUE(form_controller.ShouldInvalidateAncestorFormsForAutofill(*body));
+  EXPECT_FALSE(form_controller.ShouldInvalidateAncestorFormsForAutofill(*body));
+  EXPECT_TRUE(
+      form_controller.ShouldInvalidateAncestorFormsForAutofill(*sibling));
+  EXPECT_TRUE(form_controller.ShouldInvalidateAncestorFormsForAutofill(*body));
+  body->appendChild(doc.CreateRawElement(html_names::kDivTag));
+  EXPECT_TRUE(form_controller.ShouldInvalidateAncestorFormsForAutofill(*body));
 }
 
 TEST(FormControllerTest, FormSignature) {
