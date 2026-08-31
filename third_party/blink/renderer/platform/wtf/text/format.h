@@ -402,6 +402,20 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 // If the number of `{}` placeholders does not match the number of arguments,
 // or if braces are unclosed or unmatched, a compile-time error will be raised.
 // Specifying precision for non-floating-point types will also raise an error.
+//
+// Unsupported Features:
+// The following features are currently not supported.
+// Contributions are welcome if features are needed:
+// - Non-Latin-1 format strings
+// - Positional arguments (e.g. `{2}`)
+// - Fill-and-align (e.g. `{: >}`)
+// - Sign (e.g. `{:+}`)
+// - Alternate form (e.g. `{:#}`)
+// - Locale-specific formatting (e.g. `{:L}`)
+// - Certain type specifiers: `?`, `b`, `B`, `o`, `a`, `A`, `m`, `n`
+// - Nested replacement fields (e.g. `{:{}d}`)
+// - Range, pair, and tuple arguments
+// - `std::formatter`
 template <typename... Args>
 inline String Format(FormatString<std::type_identity_t<Args>...> format,
                      Args&&... args) {
