@@ -62,4 +62,12 @@ export class MockMIDIService {
       this.client_.dataReceived(port, data, timestamp);
     }
   }
+
+  setInputPortState(port, state) {
+    this.client_.setInputPortState(port, state);
+  }
+
+  setOutputPortState(port, state) {
+    this.client_.setOutputPortState(port, state);
+  }
 }

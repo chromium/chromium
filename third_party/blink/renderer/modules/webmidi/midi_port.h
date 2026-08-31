@@ -107,6 +107,8 @@ class MIDIPort : public EventTarget,
 
   ScriptPromise<MIDIPort> Accept(ScriptState*);
 
+  // Dispatches or buffers statechange events for both this port and its parent
+  // MIDIAccess depending on page visibility.
   void SetStates(midi::mojom::PortState, MIDIPortConnectionState);
 
   String id_;

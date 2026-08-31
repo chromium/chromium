@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access_initializer.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_dispatcher.h"
@@ -49,10 +50,12 @@ class MIDIInput;
 class MIDIInputMap;
 class MIDIOutput;
 class MIDIOutputMap;
+class MIDIPort;
 
 class MIDIAccess final : public EventTarget,
                          public ActiveScriptWrappable<MIDIAccess>,
                          public ExecutionContextLifecycleObserver,
+                         public PageVisibilityObserver,
                          public MIDIDispatcher::Client {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -83,7 +86,7 @@ class MIDIAccess final : public EventTarget,
   bool HasPendingActivity() const final;
 
   // ExecutionContextLifecycleObserver
-  void ContextDestroyed() override {}
+  void ContextDestroyed() override;
 
   // MIDIDispatcher::Client
   void DidAddInputPort(const String& id,
@@ -120,19 +123,45 @@ class MIDIAccess final : public EventTarget,
                     base::span<const uint8_t> data,
                     base::TimeTicks time_stamp);
 
+  // PageVisibilityObserver
+  void PageVisibilityChanged() override;
+
+  bool IsPageVisible() const;
+
+  // Buffers statechange events while the page is hidden. Called by MIDIAccess
+  // for port additions and by MIDIPort for connection/disconnection changes.
+  void BufferEvent(EventTarget* target, MIDIPort* port);
+
+  struct PendingEvent {
+    DISALLOW_NEW();
+
+   public:
+    Member<EventTarget> target;
+    Member<MIDIPort> port;
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(target);
+      visitor->Trace(port);
+    }
+  };
+
   // Eager finalization needed to promptly release m_accessor. Otherwise
   // its client back reference could end up being unsafely used during
   // the lazy sweeping phase.
   void Trace(Visitor*) const override;
 
  private:
+  void FlushPendingEvents();
+
   Member<MIDIDispatcher> dispatcher_;
   bool sysex_enabled_ = false;
   bool has_pending_activity_ = false;
   HeapVector<Member<MIDIInput>> inputs_;
   HeapVector<Member<MIDIOutput>> outputs_;
+  HeapVector<PendingEvent> pending_events_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::MIDIAccess::PendingEvent)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_ACCESS_H_

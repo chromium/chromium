@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {PortState} from '/gen/media/midi/midi_service.mojom.m.js';
+
+promise_test(async (t) => {
+  const mock = new MockMIDIService();
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
+
+  const access = await navigator.requestMIDIAccess();
+  assert_class_string(access, 'MIDIAccess');
+
+  const inputPort = access.inputs.values().next().value;
+  assert_class_string(inputPort, 'MIDIInput');
+
+  let statechange_event_count = 0;
+  let resolveEvents;
+  const eventsPromise = new Promise(resolve => {
+    resolveEvents = resolve;
+  });
+
+  access.onstatechange = (e) => {
+    statechange_event_count++;
+    if (statechange_event_count >= 2 && resolveEvents) {
+      resolveEvents();
+    }
+  };
+  inputPort.onstatechange = (e) => {
+    statechange_event_count++;
+    if (statechange_event_count >= 2 && resolveEvents) {
+      resolveEvents();
+    }
+  };
+
+  // Hide the page.
+  const visibilityPromise = new Promise(resolve => {
+    document.addEventListener('visibilitychange', resolve, {once: true});
+  });
+  testRunner.setMainWindowHidden(true);
+  await visibilityPromise;
+
+  // Trigger port state change. Input port is index 0.
+  mock.setInputPortState(0, PortState.DISCONNECTED);
+
+  // Wait a bit to ensure no event is fired.
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+  assert_equals(
+      statechange_event_count, 0,
+      'No event should be fired while page is hidden');
+
+  // Show the page.
+  testRunner.setMainWindowHidden(false);
+
+  // Wait for the events.
+  await eventsPromise;
+  assert_equals(
+      statechange_event_count, 2,
+      'Events should be flushed when page becomes visible');
+  assert_equals(inputPort.state, 'disconnected');
+
+}, 'MIDI statechange events are buffered when the page is hidden');
+</script>
+</body>
+</html>
