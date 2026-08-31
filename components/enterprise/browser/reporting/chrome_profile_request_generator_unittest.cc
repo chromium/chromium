@@ -281,10 +281,16 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(os_report.mac_addresses(2), kFakeSignalMacAddr3);
 
 #if BUILDFLAG(IS_ANDROID)
+      EXPECT_TRUE(os_report.has_has_potentially_harmful_apps());
+      EXPECT_TRUE(os_report.has_verified_apps_enabled());
+
       EXPECT_EQ(os_report.has_potentially_harmful_apps(), kFakeHasHarmfulApps);
       EXPECT_EQ(os_report.verified_apps_enabled(), kFakeVerifiedAppsEnabled);
       EXPECT_EQ(os_report.security_patch_ms(), kFakeSecurityPatchLevel);
-#endif
+#else
+      EXPECT_FALSE(os_report.has_has_potentially_harmful_apps());
+      EXPECT_FALSE(os_report.has_verified_apps_enabled());
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
       ASSERT_TRUE(os_report.has_ios_specific_attributes());
@@ -320,6 +326,10 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(0, os_report.antivirus_info_size());
       EXPECT_EQ(0, os_report.hotfixes_size());
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+      EXPECT_FALSE(os_report.has_has_potentially_harmful_apps());
+      EXPECT_FALSE(os_report.has_verified_apps_enabled());
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)
       EXPECT_FALSE(os_report.has_ios_specific_attributes());
 #endif  // BUILDFLAG(IS_IOS)

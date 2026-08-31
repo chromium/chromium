@@ -73,8 +73,6 @@ device_signals::SignalsAggregationResponse CreateSuccessResponse() {
   os_signals.screen_lock_secured = device_signals::SettingValue::ENABLED;
   os_signals.os_firewall = device_signals::SettingValue::ENABLED;
   os_signals.secure_boot_mode = device_signals::SettingValue::ENABLED;
-  os_signals.has_potentially_harmful_apps = false;
-  os_signals.verified_apps_enabled = false;
   os_signals.mac_addresses = std::vector<std::string>{kMacAddress};
   os_signals.system_dns_servers = std::vector<std::string>{kDnsServer};
   os_signals.device_affiliation_ids =
