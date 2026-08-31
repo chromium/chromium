@@ -1468,43 +1468,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Linux FYI Debug (NVIDIA)",
-    description_html = "Runs debug GPU tests on stable Linux/NVIDIA GTX 1660 configs",
-    parent = "GPU FYI Linux Builder (dbg)",
-    builder_spec = gpu_fyi_thin_tester_builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_fyi_linux_debug_gtests",
-            "gpu_fyi_linux_debug_telemetry_tests",
-        ],
-        mixins = [
-            "linux_nvidia_gtx_1660_stable",
-        ],
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.DEBUG,
-        os_type = targets.os_type.LINUX,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Nvidia",
-        short_name = "dbg",
-    ),
-)
-
-ci.thin_tester(
     name = "Linux FYI Experimental Release (AMD RX 5500XT)",
     description_html = "Runs release GPU tests on experimental Linux/AMD RX 5500XT configs",
     parent = "GPU FYI Linux Builder",

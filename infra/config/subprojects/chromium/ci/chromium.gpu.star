@@ -422,8 +422,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_desktop_passthrough_gtests",
-            "gpu_common_linux_telemetry_tests",
+            "gpu_linux_debug_gtests",
+            "gpu_linux_debug_telemetry_tests",
         ],
         mixins = [
             "linux_nvidia_gtx_1660_stable",

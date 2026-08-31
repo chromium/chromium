@@ -92,7 +92,6 @@ ci/GPU Mac arm64 Builder
 ci/GPU Win x64 Builder
 ci/GPU Win x64 Builder (dbg)
 ci/Linux Debug (NVIDIA)
-ci/Linux FYI Debug (NVIDIA)
 ci/Linux FYI Experimental Release (AMD 780M)
 ci/Linux FYI Experimental Release (AMD 890M)
 ci/Linux FYI Experimental Release (AMD RX 5500XT)
@@ -213,7 +212,6 @@ try/gpu-fyi-try-linux-amd-rx-9070xt-exp
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
 try/gpu-fyi-try-linux-intel-uhd770-rel
-try/gpu-fyi-try-linux-nvidia-dbg
 try/gpu-fyi-try-linux-nvidia-exp
 try/gpu-fyi-try-linux-nvidia-rel
 try/gpu-fyi-try-linux-nvidia-rtx-4070-super-rel

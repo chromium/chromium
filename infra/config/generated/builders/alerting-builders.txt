@@ -132,7 +132,6 @@ ci/Linux Chromium OS ASan LSan Builder
 ci/Linux Chromium OS ASan LSan Tests (1)
 ci/Linux ChromiumOS MSan Builder
 ci/Linux ChromiumOS MSan Tests
-ci/Linux FYI Debug (NVIDIA)
 ci/Linux FYI Experimental Release (AMD 780M)
 ci/Linux FYI Experimental Release (AMD 890M)
 ci/Linux FYI Experimental Release (Intel UHD 630)
@@ -539,7 +538,6 @@ try/gpu-fyi-try-linux-amd-rx-9070xt-exp
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
 try/gpu-fyi-try-linux-intel-uhd770-rel
-try/gpu-fyi-try-linux-nvidia-dbg
 try/gpu-fyi-try-linux-nvidia-exp
 try/gpu-fyi-try-linux-nvidia-rel
 try/gpu-fyi-try-linux-nvidia-rtx-4070-super-rel

@@ -3135,6 +3135,27 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_all_linux_debug_gtests",
+    targets = [
+        "gpu_linux_debug_gtests",
+        "gpu_fyi_linux_debug_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_linux_debug_telemetry_tests",
+    targets = [
+        "gpu_linux_debug_telemetry_tests",
+        "gpu_fyi_linux_debug_telemetry_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_tests": targets.remove(
+            reason = "Default behavior only tested on non-FYI",
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_all_linux_release_gtests",
     targets = [
         "gpu_linux_release_gtests",
@@ -3514,15 +3535,6 @@ targets.bundle(
             "skia_gold_test",
         ],
     },
-)
-
-targets.bundle(
-    name = "gpu_common_linux_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_telemetry_tests",
-    ],
 )
 
 targets.bundle(
@@ -4359,16 +4371,14 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_linux_debug_gtests",
     targets = [
-        "gpu_common_gtests_passthrough",
+        # No Linux/Debug FYI-only gtests at the moment.
     ],
 )
 
 targets.bundle(
     name = "gpu_fyi_linux_debug_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+        # No Linux/Debug FYI-only tests at the moment.
     ],
 )
 
@@ -4560,6 +4570,22 @@ targets.bundle(
             "gpu_integration_test_common_args",
         ],
     },
+)
+
+targets.bundle(
+    name = "gpu_linux_debug_gtests",
+    targets = [
+        "gpu_desktop_passthrough_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_linux_debug_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_telemetry_tests",
+    ],
 )
 
 targets.bundle(

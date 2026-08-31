@@ -239,15 +239,6 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
-    name = "gpu-fyi-try-linux-nvidia-dbg",
-    mirrors = [
-        "ci/GPU FYI Linux Builder (dbg)",
-        "ci/Linux FYI Debug (NVIDIA)",
-    ],
-    gn_args = "ci/GPU FYI Linux Builder (dbg)",
-)
-
-gpu_linux_builder(
     name = "gpu-fyi-try-linux-nvidia-exp",
     mirrors = [
         "ci/GPU FYI Linux Builder",
