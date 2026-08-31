@@ -16,6 +16,7 @@ interface Primary {
   GetStrings() => (array<string> strings);
   PassFloats(array<float> floats);
   PassInts(array<int32> ints);
+  PassUInts(array<uint32> ints);
 };
 
 struct Entry {};

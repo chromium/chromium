@@ -28,6 +28,7 @@ extension ILType {
             "getStrings",
             "passFloats",
             "passInts",
+            "passUInts",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -59,7 +60,10 @@ extension ObjectGroup {
                 .plain(.jsFloatArray),
             ] => .undefined,
             "passInts": [
-                .plain(.jsIntegerArray),
+                .plain(.jsInt32Array),
+            ] => .undefined,
+            "passUInts": [
+                .plain(.jsUint32Array),
             ] => .undefined,
         ]
     )
@@ -139,7 +143,7 @@ extension ObjectGroup {
         name: "golden.Primary_SyncGetBools_ResponseParams",
         instanceType: .jsGoldenPrimary_SyncGetBools_ResponseParams,
         properties: [
-            "bools": .jsBooleanArray,
+            "bools": .jsBoolArray,
         ],
         methods: [:]
     )
@@ -155,7 +159,7 @@ extension ObjectGroup {
         name: "golden.Primary_GetBools_ResponseParams",
         instanceType: .jsGoldenPrimary_GetBools_ResponseParams,
         properties: [
-            "bools": .jsBooleanArray,
+            "bools": .jsBoolArray,
         ],
         methods: [:]
     )
@@ -175,14 +179,16 @@ extension ObjectGroup {
 extension ILType {
     fileprivate static let jsGoldenEntryArray: ILType =
         .createJsArrayType(ofElementType: .jsGoldenEntry)
-    fileprivate static let jsBooleanArray: ILType =
-        .createJsArrayType(ofElementType: .jsBooleanElement)
+    fileprivate static let jsBoolArray: ILType =
+        .createJsArrayType(ofElementType: .jsBoolElement)
     fileprivate static let jsStringArray: ILType =
         .createJsArrayType(ofElementType: .jsStringElement)
     fileprivate static let jsFloatArray: ILType =
         .createJsArrayType(ofElementType: .jsFloatElement)
-    fileprivate static let jsIntegerArray: ILType =
-        .createJsArrayType(ofElementType: .jsIntegerElement)
+    fileprivate static let jsInt32Array: ILType =
+        .createJsArrayType(ofElementType: .jsInt32Element)
+    fileprivate static let jsUint32Array: ILType =
+        .createJsArrayType(ofElementType: .jsUint32Element)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
@@ -208,17 +214,17 @@ private let MojoGoldenEntryArrayGenerator = CodeGenerator(
         elementGroupName:
             ObjectGroup.goldenEntry.name)
 }
-private let MojoBooleanArrayGenerator = CodeGenerator(
-    "MojoBooleanArrayGenerator",
+private let MojoBoolArrayGenerator = CodeGenerator(
+    "MojoBoolArrayGenerator",
     inputs: .one,
-    produces: [.jsBooleanArray]
+    produces: [.jsBoolArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.boolean)
     var elements: [Variable] = [elem]
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.booleanElement.name)
+            ObjectGroup.boolElement.name)
 }
 private let MojoStringArrayGenerator = CodeGenerator(
     "MojoStringArrayGenerator",
@@ -244,17 +250,29 @@ private let MojoFloatArrayGenerator = CodeGenerator(
         elementGroupName:
             ObjectGroup.floatElement.name)
 }
-private let MojoIntegerArrayGenerator = CodeGenerator(
-    "MojoIntegerArrayGenerator",
+private let MojoInt32ArrayGenerator = CodeGenerator(
+    "MojoInt32ArrayGenerator",
     inputs: .one,
-    produces: [.jsIntegerArray]
+    produces: [.jsInt32Array]
 ) { b, _ in
     let elem = b.findOrGenerateType(.integer)
     var elements: [Variable] = [elem]
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.integerElement.name)
+            ObjectGroup.int32Element.name)
+}
+private let MojoUint32ArrayGenerator = CodeGenerator(
+    "MojoUint32ArrayGenerator",
+    inputs: .one,
+    produces: [.jsUint32Array]
+) { b, _ in
+    let elem = b.findOrGenerateType(.integer)
+    var elements: [Variable] = [elem]
+    b.createArray(
+        with: elements,
+        elementGroupName:
+            ObjectGroup.uint32Element.name)
 }
 
 ///
@@ -361,10 +379,11 @@ let mojoPrimaryProfile = Profile(
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoGoldenEntryArrayGenerator, 1),
-        (MojoBooleanArrayGenerator, 1),
+        (MojoBoolArrayGenerator, 1),
         (MojoStringArrayGenerator, 1),
         (MojoFloatArrayGenerator, 1),
-        (MojoIntegerArrayGenerator, 1),
+        (MojoInt32ArrayGenerator, 1),
+        (MojoUint32ArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

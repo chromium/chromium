@@ -72,7 +72,7 @@ extension ObjectGroup {
                 .plain(.integer),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetArrayValue_ResponseParams),
             "getMapValue": [
-                .plain(.jsString_IntegerMap),
+                .plain(.jsString_Uint64Map),
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMapValue_ResponseParams),
             "sendObserver": [
@@ -83,7 +83,7 @@ extension ObjectGroup {
                 .plain(.integer),
             ] => .jsGoldenPrimary_SyncGetArrayValue_ResponseParams,
             "syncGetMapValue": [
-                .plain(.jsString_IntegerMap),
+                .plain(.jsString_Uint64Map),
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetMapValue_ResponseParams),
         ]
@@ -312,10 +312,10 @@ private let MojoFloatArrayGenerator = CodeGenerator(
 /// Maps
 ///
 extension ILType {
-    fileprivate static let jsString_IntegerMap: ILType =
+    fileprivate static let jsString_Uint64Map: ILType =
         .createJsMapType(
             ofKeyType: .jsStringElement,
-            ofValueType: .jsIntegerElement
+            ofValueType: .jsUint64Element
         )
 }
 
@@ -330,13 +330,13 @@ extension ILType {
 /// to prevent the CodeGenerator from being scheduled first when there are
 /// no visible variables, as `findOrGenerateType` causes a crash if there
 /// are no visibile variables.
-private let MojoString_IntegerMapGenerator = CodeGenerator(
-    "MojoString_IntegerMapGenerator",
+private let MojoString_Uint64MapGenerator = CodeGenerator(
+    "MojoString_Uint64MapGenerator",
     inputs: .one,
-    produces: [.jsString_IntegerMap]
+    produces: [.jsString_Uint64Map]
 ) { b, _, _ in
     let key = b.findOrGenerateType(.jsStringElement)
-    let val = b.findOrGenerateType(.jsIntegerElement)
+    let val = b.findOrGenerateType(.jsUint64Element)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
 
@@ -355,7 +355,7 @@ private let MojoString_IntegerMapGenerator = CodeGenerator(
         withKeys: keys,
         withValues: values,
         keyGroupName: ObjectGroup.stringElement.name,
-        valueGroupName: ObjectGroup.integerElement.name
+        valueGroupName: ObjectGroup.uint64Element.name
     )
 }
 

@@ -44,7 +44,7 @@ extension ObjectGroup {
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassMap_ResponseParams),
             "passNestedMap": [
-                .plain(.jsInteger_String_GoldenEntryMapMap),
+                .plain(.jsInt32_String_GoldenEntryMapMap),
                 .plain(.integer),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassNestedMap_ResponseParams),
             "getMap": [
@@ -125,7 +125,7 @@ extension ObjectGroup {
         name: "golden.Primary_GetMap_ResponseParams",
         instanceType: .jsGoldenPrimary_GetMap_ResponseParams,
         properties: [
-            "result": .jsFloat_BooleanMap,
+            "result": .jsFloat_BoolMap,
         ],
         methods: [:]
     )
@@ -140,15 +140,15 @@ extension ILType {
             ofKeyType: .jsStringElement,
             ofValueType: .jsGoldenEntry
         )
-    fileprivate static let jsInteger_String_GoldenEntryMapMap: ILType =
+    fileprivate static let jsInt32_String_GoldenEntryMapMap: ILType =
         .createJsMapType(
-            ofKeyType: .jsIntegerElement,
+            ofKeyType: .jsInt32Element,
             ofValueType: .jsString_GoldenEntryMap
         )
-    fileprivate static let jsFloat_BooleanMap: ILType =
+    fileprivate static let jsFloat_BoolMap: ILType =
         .createJsMapType(
             ofKeyType: .jsFloatElement,
-            ofValueType: .jsBooleanElement
+            ofValueType: .jsBoolElement
         )
 }
 
@@ -179,36 +179,36 @@ private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
         valueGroupName: ObjectGroup.goldenEntry.name
     )
 }
-private let MojoInteger_String_GoldenEntryMapMapGenerator = CodeGenerator(
-    "MojoInteger_String_GoldenEntryMapMapGenerator",
+private let MojoInt32_String_GoldenEntryMapMapGenerator = CodeGenerator(
+    "MojoInt32_String_GoldenEntryMapMapGenerator",
     inputs: .one,
-    produces: [.jsInteger_String_GoldenEntryMapMap]
+    produces: [.jsInt32_String_GoldenEntryMapMap]
 ) { b, _, _ in
-    let key = b.findOrGenerateType(.jsIntegerElement)
+    let key = b.findOrGenerateType(.jsInt32Element)
     let val = b.findOrGenerateType(.jsString_GoldenEntryMap)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.integerElement.name,
+        keyGroupName: ObjectGroup.int32Element.name,
         valueGroupName: ObjectGroup.stringGoldenEntryMap.name
     )
 }
-private let MojoFloat_BooleanMapGenerator = CodeGenerator(
-    "MojoFloat_BooleanMapGenerator",
+private let MojoFloat_BoolMapGenerator = CodeGenerator(
+    "MojoFloat_BoolMapGenerator",
     inputs: .one,
-    produces: [.jsFloat_BooleanMap]
+    produces: [.jsFloat_BoolMap]
 ) { b, _, _ in
     let key = b.findOrGenerateType(.jsFloatElement)
-    let val = b.findOrGenerateType(.jsBooleanElement)
+    let val = b.findOrGenerateType(.jsBoolElement)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(
         withKeys: keys,
         withValues: values,
         keyGroupName: ObjectGroup.floatElement.name,
-        valueGroupName: ObjectGroup.booleanElement.name
+        valueGroupName: ObjectGroup.boolElement.name
     )
 }
 

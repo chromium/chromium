@@ -10,32 +10,34 @@ from mojom.generate.template_expander import UseJinja
 from generators.mojom_js_generator import JavaScriptStylizer
 
 GENERATOR_PREFIX = "fuzzilli"
-# Map primitive predicates to the fuzzilli type representation
+# Map primitive predicates to (fuzzilli type representation, element type
+# prefix). The element type prefix refers to the name of the `ILType.object`
+# definition representing the primitive.
 PRIMITIVES_MAPPING = {
-  mojom.BOOL: "boolean",
-  mojom.INT8: "integer",
-  mojom.INT16: "integer",
-  mojom.INT32: "integer",
-  mojom.INT64: "integer",
-  mojom.UINT8: "integer",
-  mojom.UINT16: "integer",
-  mojom.UINT32: "integer",
-  mojom.UINT64: "integer",
-  mojom.FLOAT: "float",
-  mojom.DOUBLE: "float",  # no dedicated `.double` type
-  mojom.STRING: "string",
-  mojom.NULLABLE_BOOL: "boolean",
-  mojom.NULLABLE_INT8: "integer",
-  mojom.NULLABLE_INT16: "integer",
-  mojom.NULLABLE_INT32: "integer",
-  mojom.NULLABLE_INT64: "integer",
-  mojom.NULLABLE_UINT8: "integer",
-  mojom.NULLABLE_UINT16: "integer",
-  mojom.NULLABLE_UINT32: "integer",
-  mojom.NULLABLE_UINT64: "integer",
-  mojom.NULLABLE_FLOAT: "float",
-  mojom.NULLABLE_DOUBLE: "float",
-  mojom.NULLABLE_STRING: "string",
+  mojom.BOOL: ("boolean", "Bool"),
+  mojom.INT8: ("integer", "Int8"),
+  mojom.INT16: ("integer", "Int16"),
+  mojom.INT32: ("integer", "Int32"),
+  mojom.INT64: ("integer", "Int64"),
+  mojom.UINT8: ("integer", "Uint8"),
+  mojom.UINT16: ("integer", "Uint16"),
+  mojom.UINT32: ("integer", "Uint32"),
+  mojom.UINT64: ("integer", "Uint64"),
+  mojom.FLOAT: ("float", "Float"),
+  mojom.DOUBLE: ("float", "Float"),  # no dedicated `.double` type
+  mojom.STRING: ("string", "String"),
+  mojom.NULLABLE_BOOL: ("boolean", "Bool"),
+  mojom.NULLABLE_INT8: ("integer", "Int8"),
+  mojom.NULLABLE_INT16: ("integer", "Int16"),
+  mojom.NULLABLE_INT32: ("integer", "Int32"),
+  mojom.NULLABLE_INT64: ("integer", "Int64"),
+  mojom.NULLABLE_UINT8: ("integer", "Uint8"),
+  mojom.NULLABLE_UINT16: ("integer", "Uint16"),
+  mojom.NULLABLE_UINT32: ("integer", "Uint32"),
+  mojom.NULLABLE_UINT64: ("integer", "Uint64"),
+  mojom.NULLABLE_FLOAT: ("float", "Float"),
+  mojom.NULLABLE_DOUBLE: ("float", "Float"),
+  mojom.NULLABLE_STRING: ("string", "String"),
 }
 # Map raw Mojo handle kinds to their Fuzzilli UniqueName
 # TODO(crbug.com/553473421): Add support for MSGPIPE and PLATFORMHANDLE
@@ -243,8 +245,10 @@ class Generator(generator.Generator):
   # type. These proxy types are identified by their `Element` suffix.
   def _FormatUniqueName(self, kind, primitive_with_suffix=False):
     if kind in PRIMITIVES_MAPPING:
-      name = generator.ToCamel(PRIMITIVES_MAPPING[kind])
-      return name + "Element" if primitive_with_suffix else name
+      il_type, element_prefix = PRIMITIVES_MAPPING[kind]
+      if primitive_with_suffix:
+        return f"{element_prefix}Element"
+      return element_prefix
 
     if kind in HANDLES_MAPPING:
       return HANDLES_MAPPING[kind]
@@ -295,10 +299,10 @@ class Generator(generator.Generator):
   # type. These proxy types are identified by their `Element` suffix.
   def _ILTypeName(self, kind, primitive_with_suffix=False):
     if kind in PRIMITIVES_MAPPING:
-      name = PRIMITIVES_MAPPING[kind]
+      il_type, element_prefix = PRIMITIVES_MAPPING[kind]
       if primitive_with_suffix:
-        return f"js{generator.ToCamel(name)}Element"
-      return name
+        return f"js{element_prefix}Element"
+      return il_type
 
     if (
       mojom.IsStructKind(kind)
