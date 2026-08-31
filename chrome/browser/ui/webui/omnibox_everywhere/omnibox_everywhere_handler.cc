@@ -128,19 +128,21 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
       base::BindRepeating(&OmniboxEverywhereHandler::GetSuggestInputs,
                           base::Unretained(this)));
   autocomplete_controller_observation_.Observe(autocomplete_controller());
-  pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      omnibox::kShowAiModeOmniboxButton,
-      base::BindRepeating(&OmniboxEverywhereHandler::OnAimEligibilityChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      omnibox_everywhere::prefs::kFreDismissed,
-      base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      omnibox_everywhere::prefs::kFreImpressionCount,
-      base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
-                          base::Unretained(this)));
+  if (profile_ && profile_->GetPrefs()) {
+    pref_change_registrar_.Init(profile_->GetPrefs());
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode,
+        base::BindRepeating(&OmniboxEverywhereHandler::OnShowAiModePrefChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kFreDismissed,
+        base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kFreImpressionCount,
+        base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
+                            base::Unretained(this)));
+  }
 
   if (g_browser_process && g_browser_process->profile_manager()) {
     profile_attributes_storage_observation_.Observe(
@@ -252,11 +254,13 @@ void OmniboxEverywhereHandler::ActivateKeyword(
   // handled directly by the frontend SearchboxMixin via `onKeywordClick`.
 }
 
-void OmniboxEverywhereHandler::OnAimEligibilityChanged() {
+void OmniboxEverywhereHandler::OnShowAiModePrefChanged() {
   if (page()) {
-    page()->UpdateAimPopupEligibility(
-        IsAimEligible(profile_) &&
-        profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+    const bool show_ai_mode =
+        !profile_ || !profile_->GetPrefs() ||
+        profile_->GetPrefs()->GetBoolean(
+            omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode);
+    page()->UpdateAimPopupEligibility(IsAimEligible(profile_) && show_ai_mode);
   }
 }
 

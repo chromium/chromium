@@ -353,6 +353,56 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     assertTrue(!!element.shadowRoot.querySelector('#voiceSearchButton'));
   });
 
+  test(
+      'updateAimPopupEligibility toggles compose button and plus button',
+      async () => {
+        assertTrue(!!omnibox.shadowRoot.querySelector('#composeButton'));
+        assertTrue(!!omnibox.shadowRoot.querySelector('#context'));
+
+        testProxy.page.updateAimPopupEligibility(false);
+        await microtasksFinished();
+
+        assertFalse(!!omnibox.shadowRoot.querySelector('#composeButton'));
+        assertFalse(!!omnibox.shadowRoot.querySelector('#context'));
+        assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+
+        testProxy.page.updateAimPopupEligibility(true);
+        await microtasksFinished();
+
+        assertTrue(!!omnibox.shadowRoot.querySelector('#composeButton'));
+        assertTrue(!!omnibox.shadowRoot.querySelector('#context'));
+      });
+
+  test(
+      'updateAimPopupEligibility respects isFuseboxEnabled false capability ' +
+          'in loadTimeData',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          isFuseboxEnabled: false,
+          searchboxShowComposeEntrypoint: true,
+        });
+        const testOmnibox =
+            document.createElement('omnibox-everywhere-omnibox');
+        document.body.appendChild(testOmnibox);
+        await microtasksFinished();
+
+        assertTrue(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
+        assertFalse(!!testOmnibox.shadowRoot.querySelector('#context'));
+
+        testProxy.page.updateAimPopupEligibility(false);
+        await microtasksFinished();
+
+        assertFalse(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
+        assertFalse(!!testOmnibox.shadowRoot.querySelector('#context'));
+
+        testProxy.page.updateAimPopupEligibility(true);
+        await microtasksFinished();
+
+        assertTrue(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
+        assertFalse(!!testOmnibox.shadowRoot.querySelector('#context'));
+      });
+
   test('ContextMenuUnboundedToggleEvent', async () => {
     const contextMenu =
         omnibox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(

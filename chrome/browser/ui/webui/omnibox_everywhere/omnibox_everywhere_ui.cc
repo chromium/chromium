@@ -87,6 +87,14 @@ bool IsFuseboxEligible(Profile* profile) {
              ->IsFuseboxEligible();
 }
 
+bool IsFuseboxEnabled(Profile* profile) {
+  const bool show_ai_mode =
+      !profile || !profile->GetPrefs() ||
+      profile->GetPrefs()->GetBoolean(
+          omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode);
+  return IsFuseboxEligible(profile) && show_ai_mode;
+}
+
 void AddMostVisitedSourceStrings(content::WebUIDataSource* source,
                                  Profile* profile) {
   source->AddBoolean("omniboxEverywhereMostVisitedEnabled",
@@ -304,15 +312,13 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
 
   AddMostVisitedSourceStrings(source, profile_);
 
+  const bool is_fusebox_enabled = IsFuseboxEnabled(profile_);
+  source->AddBoolean("searchboxShowComposeEntrypoint", is_fusebox_enabled);
+  source->AddBoolean("isFuseboxEnabled", is_fusebox_enabled);
   source->AddBoolean(
-      "searchboxShowComposeEntrypoint",
-      IsAimEligible(profile_) &&
-          profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
-  source->AddBoolean("isFuseboxEnabled", IsFuseboxEligible(profile_));
-  source->AddBoolean("ntpRealboxDynamicAiModeButton",
-                     IsFuseboxEligible(profile_) &&
-                         base::FeatureList::IsEnabled(
-                             ntp_realbox::kNtpRealboxDynamicAiModeButton));
+      "ntpRealboxDynamicAiModeButton",
+      is_fusebox_enabled && base::FeatureList::IsEnabled(
+                                ntp_realbox::kNtpRealboxDynamicAiModeButton));
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());

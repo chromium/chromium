@@ -52,6 +52,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(kOmniboxEverywhereShowAiMode, true);
   registry->RegisterBooleanPref(kFreDismissed, false);
   registry->RegisterIntegerPref(kFreImpressionCount, 0);
 }

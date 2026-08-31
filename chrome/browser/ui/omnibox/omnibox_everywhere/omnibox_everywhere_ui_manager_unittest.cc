@@ -1318,23 +1318,30 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAlwaysShowAiModeToggle) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
 
+  profile_.GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode, true);
   profile_.GetPrefs()->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
   EXPECT_TRUE(ui_manager->IsCommandIdChecked(
       omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
 
   ui_manager->ExecuteCommand(
       omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode, 0);
-  EXPECT_FALSE(
-      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode));
   EXPECT_FALSE(ui_manager->IsCommandIdChecked(
       omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+  // Verify that the browser omnibox preference remains unaffected.
+  EXPECT_TRUE(
+      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
 
   ui_manager->ExecuteCommand(
       omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode, 0);
-  EXPECT_TRUE(
-      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode));
   EXPECT_TRUE(ui_manager->IsCommandIdChecked(
       omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+  EXPECT_TRUE(
+      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuShowShortcutsToggle) {

@@ -207,8 +207,11 @@ export class OmniboxEverywhereOmniboxElement extends
             });
     this.aimPopupEligibilityListenerId_ =
         this.callbackRouter_.updateAimPopupEligibility.addListener(
-            (eligible: boolean) => {
-              this.composeButtonEnabled = eligible;
+            (aiModePrefEnabled: boolean) => {
+              this.composeButtonEnabled = aiModePrefEnabled &&
+                  loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
+              this.isFuseboxEnabled = aiModePrefEnabled &&
+                  loadTimeData.getBoolean('isFuseboxEnabled');
             });
     this.screenshotMenuClosedListenerId_ =
         this.callbackRouter_.onScreenshotMenuClosed.addListener(() => {

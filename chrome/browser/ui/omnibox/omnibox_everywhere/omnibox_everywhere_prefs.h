@@ -64,6 +64,12 @@ inline constexpr char kOmniboxEverywhereLaunchOnStartup[] =
 // (close/hide on focus loss) model instead of the persistent model.
 inline constexpr char kOmniboxEverywhereEphemeralModel[] =
     "omnibox_everywhere.ephemeral_model";
+
+// Boolean preference specifying whether AI Mode / Fusebox entrypoints are
+// enabled in Omnibox Everywhere.
+inline constexpr char kOmniboxEverywhereShowAiMode[] =
+    "omnibox_everywhere.show_ai_mode";
+
 // FilePath preference specifying the path of the last target profile set
 // for Omnibox Everywhere.
 inline constexpr char kLastTargetProfileDir[] =

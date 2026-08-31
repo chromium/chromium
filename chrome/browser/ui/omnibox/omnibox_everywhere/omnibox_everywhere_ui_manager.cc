@@ -1081,8 +1081,8 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       if (profile_ && profile_->GetPrefs()) {
         PrefService* prefs = profile_->GetPrefs();
         prefs->SetBoolean(
-            omnibox::kShowAiModeOmniboxButton,
-            !prefs->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+            prefs::kOmniboxEverywhereShowAiMode,
+            !prefs->GetBoolean(prefs::kOmniboxEverywhereShowAiMode));
       }
       break;
     }
@@ -1181,8 +1181,11 @@ bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
 
 bool OmniboxEverywhereUIManager::IsCommandIdChecked(int command_id) const {
   if (command_id == kAlwaysShowAiMode) {
-    return profile_ &&
-           profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton);
+    if (profile_ && profile_->GetPrefs()) {
+      return profile_->GetPrefs()->GetBoolean(
+          prefs::kOmniboxEverywhereShowAiMode);
+    }
+    return true;
   }
   if (command_id == kShowShortcuts) {
     if (g_browser_process && g_browser_process->local_state()) {

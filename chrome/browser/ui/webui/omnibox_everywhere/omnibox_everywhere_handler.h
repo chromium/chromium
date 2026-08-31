@@ -83,7 +83,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
                             const std::u16string& old_profile_name) override;
 
  private:
-  void OnAimEligibilityChanged();
+  void OnShowAiModePrefChanged();
   void UpdatePromoState();
   void PushProfileInfo();
 
