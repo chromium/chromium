@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/policy/uploading",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/supervised_user",
@@ -30,6 +29,7 @@ specific_include_rules = {
   ".*_base_test\\.h|.*_(unit|browser|api|integration_|ui|base_)test\\.cc": [
     "+chrome/browser/ash/app_restore",
     "+chrome/browser/ash/login/test",
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
     "+chrome/browser/extensions/extension_service.h",
     "+chrome/browser/extensions/extension_service_test_with_install.h",
     "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
@@ -44,8 +44,5 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/create_browser_window.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
-  ],
-  "website_approval_notifier_unittest\\.cc": [
-    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   ],
 }

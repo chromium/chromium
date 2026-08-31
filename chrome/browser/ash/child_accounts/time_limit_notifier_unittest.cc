@@ -4,28 +4,46 @@
 
 #include "chrome/browser/ash/child_accounts/time_limit_notifier.h"
 
+#include <memory>
+
+#include "ash/public/cpp/notification_utils.h"
 #include "base/time/time.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
 class TimeLimitNotifierTest : public testing::Test {
  public:
-  TimeLimitNotifierTest()
-      : notification_tester_(&profile_), notifier_(&profile_) {}
+  TimeLimitNotifierTest() : notifier_(&profile_) {}
 
   TimeLimitNotifierTest(const TimeLimitNotifierTest&) = delete;
   TimeLimitNotifierTest& operator=(const TimeLimitNotifierTest&) = delete;
 
   ~TimeLimitNotifierTest() override = default;
 
+  void SetUp() override {
+    message_center::MessageCenter::Initialize();
+    user_manager::User* user =
+        fake_user_manager_->AddUser(user_manager::StubAccountId());
+    AnnotatedAccountId::Set(&profile_, user->GetAccountId());
+    user_hash_ = user->username_hash();
+  }
+
+  void TearDown() override { message_center::MessageCenter::Shutdown(); }
+
  protected:
   bool HasLockNotification() {
-    return notification_tester_.GetNotification("time-limit-lock-notification")
-        .has_value();
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        CreateUserScopedNotificationId("time-limit-lock-notification",
+                                       user_hash_));
   }
 
   bool HasPolicyUpdateNotification(TimeLimitNotifier::LimitType limit_type) {
@@ -43,18 +61,21 @@ class TimeLimitNotifierTest : public testing::Test {
       default:
         NOTREACHED();
     }
-    return notification_tester_.GetNotification(notification_id).has_value();
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        CreateUserScopedNotificationId(notification_id, user_hash_));
   }
 
   void RemoveNotification() {
-    notification_tester_.RemoveAllNotifications(
-        NotificationHandler::Type::TRANSIENT, true /* by_user */);
+    message_center::MessageCenter::Get()->RemoveAllNotifications(
+        /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
   }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
   TestingProfile profile_;
-  NotificationDisplayServiceTester notification_tester_;
+  std::string user_hash_;
   TimeLimitNotifier notifier_;
 };
 
