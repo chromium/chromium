@@ -35,16 +35,6 @@
     BOOL observingCamera;
 @property(nonatomic, readwrite, assign) CGRect viewportRect;
 
-// YES if `cameraState` is CAMERA_AVAILABLE.
-- (BOOL)isCameraAvailable;
-// Starts receiving notfications about changes to the capture session and to the
-// torch properties.
-- (void)startReceivingNotifications;
-// Stops receiving all notifications.
-- (void)stopReceivingNotifications;
-// Returns the camera attached to `_captureSession`.
-- (AVCaptureDevice*)camera;
-
 @end
 
 @implementation CameraController
@@ -174,10 +164,12 @@
 
 #pragma mark - Private methods
 
+// YES if `cameraState` is CAMERA_AVAILABLE.
 - (BOOL)isCameraAvailable {
   return [self cameraState] == scanner::CAMERA_AVAILABLE;
 }
 
+// Starts capturing the camera stream
 - (void)loadCaptureSession:(AVCaptureVideoPreviewLayer*)previewLayer {
   DCHECK(previewLayer);
   DCHECK([self cameraState] == scanner::CAMERA_NOT_LOADED);
@@ -188,16 +180,21 @@
   });
 }
 
+// Initializes the camera stream on a background queue.
 - (void)continueLoadCaptureSession:(AVCaptureVideoPreviewLayer*)previewLayer {
-  // Get the back camera.
-  NSArray* videoCaptureDevices = nil;
-  NSString* cameraType = AVCaptureDeviceTypeBuiltInWideAngleCamera;
+  // Get the back camera, preferring multi-camera devices with macro support.
+  NSArray<AVCaptureDeviceType>* deviceTypes = @[
+    AVCaptureDeviceTypeBuiltInTripleCamera,
+    AVCaptureDeviceTypeBuiltInDualWideCamera,
+    AVCaptureDeviceTypeBuiltInDualCamera,
+    AVCaptureDeviceTypeBuiltInWideAngleCamera,
+  ];
   AVCaptureDeviceDiscoverySession* discoverySession =
       [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:@[ cameraType ]
+          discoverySessionWithDeviceTypes:deviceTypes
                                 mediaType:AVMediaTypeVideo
                                  position:AVCaptureDevicePositionBack];
-  videoCaptureDevices = [discoverySession devices];
+  NSArray<AVCaptureDevice*>* videoCaptureDevices = [discoverySession devices];
   if ([videoCaptureDevices count] == 0) {
     [self setCameraState:scanner::CAMERA_UNAVAILABLE];
     return;
@@ -215,6 +212,8 @@
     return;
   }
   AVCaptureDevice* camera = videoCaptureDevices[cameraIndex];
+
+  [self configureCameraFocusAndExposure:camera];
 
   // Configure camera input.
   NSError* error = nil;
@@ -250,6 +249,37 @@
   });
 }
 
+// Configures autofocus, autoexposure, and macro settings on `camera`.
+- (void)configureCameraFocusAndExposure:(AVCaptureDevice*)camera {
+  NSError* error = nil;
+  if ([camera lockForConfiguration:&error]) {
+    // Set point of interest before setting focus/exposure mode, because
+    // setting focus/exposure mode commits the autofocus/autoexposure routine.
+    CGPoint centerPoint = CGPointMake(0.5, 0.5);
+    if ([camera isFocusPointOfInterestSupported]) {
+      [camera setFocusPointOfInterest:centerPoint];
+    }
+    if ([camera isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+      [camera setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+    }
+    if ([camera isExposurePointOfInterestSupported]) {
+      [camera setExposurePointOfInterest:centerPoint];
+    }
+    if ([camera isExposureModeSupported:
+                    AVCaptureExposureModeContinuousAutoExposure]) {
+      [camera setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+    }
+    if ([camera isAutoFocusRangeRestrictionSupported]) {
+      [camera
+          setAutoFocusRangeRestriction:AVCaptureAutoFocusRangeRestrictionNone];
+    }
+    if (![camera isSubjectAreaChangeMonitoringEnabled]) {
+      [camera setSubjectAreaChangeMonitoringEnabled:YES];
+    }
+    [camera unlockForConfiguration];
+  }
+}
+
 - (void)captureSessionConnected:(AVCaptureVideoPreviewLayer*)previewLayer {
   [self resetVideoOrientation:previewLayer];
   [_delegate captureSessionIsConnected];
@@ -260,6 +290,8 @@
   NOTREACHED();
 }
 
+// Starts receiving notfications about changes to the capture session and to the
+// torch properties.
 - (void)startReceivingNotifications {
   // Start receiving notifications about changes to the capture session.
   [[NSNotificationCenter defaultCenter]
@@ -290,6 +322,12 @@
              name:AVCaptureDeviceWasDisconnectedNotification
            object:camera];
 
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(handleAVCaptureDeviceSubjectAreaDidChange:)
+             name:AVCaptureDeviceSubjectAreaDidChangeNotification
+           object:camera];
+
   // Start receiving notifications about changes to the torch state.
   [camera addObserver:self
            forKeyPath:@"hasTorch"
@@ -308,16 +346,34 @@
   self.observingCamera = YES;
 }
 
+// Reconfigures focus and exposure if the camera is available.
+- (void)reconfigureCameraFocusAndExposure {
+  if (![self isCameraAvailable]) {
+    return;
+  }
+  [self configureCameraFocusAndExposure:[self camera]];
+}
+
+// Stops receiving all notifications.
 - (void)stopReceivingNotifications {
   // We only start receiving notifications if the camera is available.
   if ([self isObservingCamera]) {
     AVCaptureDevice* camera = [self camera];
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:self
+                  name:AVCaptureDeviceWasDisconnectedNotification
+                object:camera];
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:self
+                  name:AVCaptureDeviceSubjectAreaDidChangeNotification
+                object:camera];
     [camera removeObserver:self forKeyPath:@"hasTorch"];
     [camera removeObserver:self forKeyPath:@"torchAvailable"];
     [camera removeObserver:self forKeyPath:@"torchActive"];
   }
 }
 
+// Returns the camera attached to `_captureSession`.
 - (AVCaptureDevice*)camera {
   AVCaptureDeviceInput* captureSessionInput =
       [[_captureSession inputs] firstObject];
@@ -379,6 +435,14 @@
   __weak CameraController* weakSelf = self;
   dispatch_async(_sessionQueue, ^{
     [weakSelf setCameraState:scanner::CAMERA_UNAVAILABLE];
+  });
+}
+
+- (void)handleAVCaptureDeviceSubjectAreaDidChange:
+    (NSNotification*)notification {
+  __weak CameraController* weakSelf = self;
+  dispatch_async(_sessionQueue, ^{
+    [weakSelf reconfigureCameraFocusAndExposure];
   });
 }
 
