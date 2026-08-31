@@ -37,6 +37,18 @@ public final class AccountPickerBottomSheetStrings {
         }
 
         /**
+         * Creates the Builder copying values from an existing {@link
+         * AccountPickerBottomSheetStrings}.
+         *
+         * @param strings The existing strings to copy from.
+         */
+        public Builder(AccountPickerBottomSheetStrings strings) {
+            mTitleString = strings.titleString;
+            mSubtitleString = strings.subtitleString;
+            mDismissButtonString = strings.dismissButtonString;
+        }
+
+        /**
          * Sets the subtitle string.
          *
          * @param subtitleString The subtitle string.

@@ -41,6 +41,7 @@ final class AccountPickerBottomSheetTestUtil {
                                         R.string.signin_account_picker_bottom_sheet_title))
                         .build();
             case SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+            case SigninAccessPoint.NTP_SIGNED_OUT_ICON:
                 return new AccountPickerBottomSheetStrings.Builder(
                                 context.getString(
                                         R.string.signin_account_picker_bottom_sheet_title))

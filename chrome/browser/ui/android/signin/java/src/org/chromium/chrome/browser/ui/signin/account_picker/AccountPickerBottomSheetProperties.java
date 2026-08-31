@@ -139,8 +139,8 @@ class AccountPickerBottomSheetProperties {
             new WritableIntDefPropertyKey<>(ViewState.NO_ACCOUNTS, "view_state");
 
     // PropertyKey indicating the title, subtitle, and cancel text for the bottom sheet.
-    static final ReadableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
-            new ReadableObjectPropertyKey<>("bottom_sheet_strings");
+    static final WritableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
+            new WritableObjectPropertyKey<>("bottom_sheet_strings");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {

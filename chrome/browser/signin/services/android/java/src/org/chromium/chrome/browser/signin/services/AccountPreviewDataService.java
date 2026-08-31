@@ -57,6 +57,8 @@ public class AccountPreviewDataService {
     /**
      * Returns the preferred account if present among accounts, or the first account as default. The
      * accounts list must not be empty.
+     *
+     * <p>TODO(crbug.com/553530451): Remove this method once FullscreenSigninMediator is migrated.
      */
     @MainThread
     public AccountInfo getPreferredAccountOrDefault(List<AccountInfo> accounts) {

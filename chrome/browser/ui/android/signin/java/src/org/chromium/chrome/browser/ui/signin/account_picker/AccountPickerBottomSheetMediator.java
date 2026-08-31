@@ -17,9 +17,11 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
+import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Fl
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.AccountPreviewPreferenceStringUtils;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -68,6 +71,7 @@ public class AccountPickerBottomSheetMediator
     private final @Nullable AccountPreviewDataService mAccountPreviewDataService;
     private final AccountPickerDelegate mAccountPickerDelegate;
     private final Runnable mDismissBottomSheet;
+    private final AccountPickerBottomSheetStrings mAccountPickerBottomSheetStrings;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final @ViewState int mInitialViewState;
     private final ProfileDataCache mProfileDataCache;
@@ -111,8 +115,7 @@ public class AccountPickerBottomSheetMediator
             boolean isWebSignin,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId accountId) {
-
-        final @ViewState int initialView;
+        @ViewState int initialView;
         switch (launchMode) {
             case AccountPickerLaunchMode.CHOOSE_ACCOUNT:
                 initialView = ViewState.EXPANDED_ACCOUNT_LIST;
@@ -196,6 +199,7 @@ public class AccountPickerBottomSheetMediator
         mAccountPickerDelegate = accountPickerDelegate;
         mRequestDisplayBottomSheet = requestDisplayBottomSheet;
         mDismissBottomSheet = dismissBottomSheet;
+        mAccountPickerBottomSheetStrings = accountPickerBottomSheetStrings;
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity, identityManager);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
@@ -441,11 +445,21 @@ public class AccountPickerBottomSheetMediator
             return;
         }
 
-        mDefaultAccount =
-                accountId != null
-                        ? assertNonNull(
-                                AccountUtils.findAccountByGaiaId(accounts, accountId.getId()))
-                        : getPreferredAccountOrDefault(accounts);
+        if (accountId != null) {
+            mDefaultAccount =
+                    assertNonNull(AccountUtils.findAccountByGaiaId(accounts, accountId.getId()));
+        } else {
+            AccountPreviewPreference preference = getValidAccountPreference(accounts);
+            if (preference != null) {
+                mDefaultAccount =
+                        assertNonNull(
+                                AccountUtils.findAccountByGaiaId(accounts, preference.getGaiaId()));
+                updateSubtitleForPreferredAccountIfNeeded(preference);
+            } else {
+                mDefaultAccount = accounts.get(0);
+            }
+        }
+
         setSelectedAccount(mDefaultAccount);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
     }
@@ -479,7 +493,13 @@ public class AccountPickerBottomSheetMediator
             return;
         }
 
-        mDefaultAccount = getPreferredAccountOrDefault(accounts);
+        // Do not update the subtitle once set during initialization to avoid visual flicker.
+        AccountPreviewPreference preference = getValidAccountPreference(accounts);
+        mDefaultAccount =
+                preference != null
+                        ? assertNonNull(
+                                AccountUtils.findAccountByGaiaId(accounts, preference.getGaiaId()))
+                        : accounts.get(0);
         mSelectedAccount =
                 mSelectedAccount == null
                         ? null
@@ -783,10 +803,48 @@ public class AccountPickerBottomSheetMediator
         mSigninTimestampsLogger = SigninFlowTimestampsLogger.startLogging(flowVariant);
     }
 
-    private AccountInfo getPreferredAccountOrDefault(List<AccountInfo> accounts) {
-        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
-                        && mAccountPreviewDataService != null
-                ? mAccountPreviewDataService.getPreferredAccountOrDefault(accounts)
-                : accounts.get(0);
+    @EnsuresNonNullIf("mAccountPreviewDataService")
+    private boolean isPreferredAccountEnabled() {
+        return mAccountPreviewDataService != null
+                && SigninFeatureMap.isEnabled(
+                        SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT);
+    }
+
+    private @Nullable AccountPreviewPreference getValidAccountPreference(
+            List<AccountInfo> accounts) {
+        if (isPreferredAccountEnabled()) {
+            AccountPreviewPreference preference =
+                    mAccountPreviewDataService.getPreferredAccountForPromo();
+            if (preference != null
+                    && AccountUtils.findAccountByGaiaId(accounts, preference.getGaiaId()) != null) {
+                return preference;
+            }
+        }
+        return null;
+    }
+
+    private void updateSubtitleForPreferredAccountIfNeeded(AccountPreviewPreference preference) {
+        // TODO(crbug.com/553530451): Migrate access point specific subtitle customization to a per
+        // access point string delegate instead of checking individual access points here.
+        // We shouldn't use access point in such a helper.
+        boolean isCustomizedSubtitleEnabled =
+                mIsWebSignin || mSigninAccessPoint == SigninAccessPoint.NTP_SIGNED_OUT_ICON;
+        if (!isCustomizedSubtitleEnabled) {
+            return;
+        }
+        String customizedSubtitle =
+                mIsWebSignin
+                        ? AccountPreviewPreferenceStringUtils.getSubtitleForWebSignin(
+                                mActivity, preference)
+                        : AccountPreviewPreferenceStringUtils.getSubtitleForDefaultFlow(
+                                mActivity, preference);
+        if (customizedSubtitle == null) {
+            return;
+        }
+        AccountPickerBottomSheetStrings newStrings =
+                new AccountPickerBottomSheetStrings.Builder(mAccountPickerBottomSheetStrings)
+                        .setSubtitleString(customizedSubtitle)
+                        .build();
+        mModel.set(AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS, newStrings);
     }
 }
