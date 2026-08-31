@@ -102,3 +102,8 @@ crbug.com/485657225 external/wpt/html/semantics/forms/form-submission-0/urlencod
 crbug.com/485657225 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.optional.html [ Failure Pass ]
 crbug.com/485657225 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
 crbug.com/475029697 external/wpt/webrtc/RTCRtpParameters-codec.html [ Failure Pass ]
+
+# Flaky FedCM iframe tests
+crbug.com/555242694 external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
+crbug.com/555242694 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe-active-mode.https.html [ Failure Pass ]
+crbug.com/555242694 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe.https.html [ Failure Pass ]
