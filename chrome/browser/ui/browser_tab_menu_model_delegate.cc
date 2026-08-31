@@ -17,8 +17,10 @@ BrowserTabMenuModelDelegate::BrowserTabMenuModelDelegate(
     SessionID session_id,
     const Profile* profile,
     const web_app::AppBrowserController* app_controller,
-    tab_groups::TabGroupSyncService* tgss)
-    : session_id_(session_id),
+    tab_groups::TabGroupSyncService* tgss,
+    ui::UnownedUserDataHost& host)
+    : TabMenuModelDelegate(host),
+      session_id_(session_id),
       profile_(profile),
       app_controller_(app_controller),
       tab_group_sync_service_(tgss) {}

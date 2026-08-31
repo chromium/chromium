@@ -28,7 +28,8 @@ class BrowserTabMenuModelDelegate : public TabMenuModelDelegate {
       SessionID session_id,
       const Profile* profile,
       const web_app::AppBrowserController* app_controller,
-      tab_groups::TabGroupSyncService* tgss);
+      tab_groups::TabGroupSyncService* tgss,
+      ui::UnownedUserDataHost& host);
   ~BrowserTabMenuModelDelegate() override;
 
   BrowserTabMenuModelDelegate(const BrowserTabMenuModelDelegate&) = delete;

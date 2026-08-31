@@ -15,6 +15,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/test/scoped_feature_list.h"
@@ -37,6 +38,9 @@ class WebAppTabStripModelDelegate : public TestTabStripModelDelegate {
 // A TabMenuModelDelegate that simulates no other browser windows being open.
 class TabMenuModelTestDelegate : public TabMenuModelDelegate {
  public:
+  explicit TabMenuModelTestDelegate(ui::UnownedUserDataHost& host)
+      : TabMenuModelDelegate(host) {}
+
   std::vector<BrowserWindowInterface*> GetOtherBrowserWindows(
       bool is_app) override {
     return {};
@@ -59,7 +63,8 @@ class TabMenuModelTest : public MenuModelTest, public ::testing::Test {
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  TabMenuModelTestDelegate menu_model_delegate_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  TabMenuModelTestDelegate menu_model_delegate_{unowned_user_data_host_};
 };
 
 TEST_F(TabMenuModelTest, TabbedWebApp) {

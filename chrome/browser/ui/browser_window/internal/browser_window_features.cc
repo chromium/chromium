@@ -544,9 +544,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           *browser, browser, profile, tab_strip_model_);
 
   tab_menu_model_delegate_ =
-      std::make_unique<chrome::BrowserTabMenuModelDelegate>(
-          browser->GetSessionID(), profile, app_browser_controller_.get(),
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
+      GetUserDataFactory().CreateInstance<chrome::BrowserTabMenuModelDelegate>(
+          *browser, browser->GetSessionID(), profile,
+          app_browser_controller_.get(),
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile),
+          browser->GetUnownedUserDataHost());
 
   tab_strip_service_feature_ =
       GetUserDataFactory().CreateInstance<TabStripServiceFeature>(

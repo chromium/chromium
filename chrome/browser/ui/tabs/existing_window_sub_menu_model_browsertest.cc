@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
 
   // Create menu from browser 1.
   auto menu1 = ExistingWindowSubMenuModel::Create(
-      nullptr, browser()->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(browser()),
       browser()->GetTabStripModel(), 0);
   ASSERT_EQ(5u, menu1->GetItemCount());
   CheckBrowserTitle(menu1->GetLabelAt(2), kLongTabTitleExample, 3);
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
 
   // Create menu from browser 2.
   auto menu2 = ExistingWindowSubMenuModel::Create(
-      nullptr, browser_2->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(browser_2),
       browser_2->GetTabStripModel(), 0);
   ASSERT_EQ(5u, menu2->GetItemCount());
   CheckBrowserTitle(menu2->GetLabelAt(2), kLongTabTitleExample, 3);
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   ActivateBrowser(browser_2);
 
   auto menu3 = ExistingWindowSubMenuModel::Create(
-      nullptr, browser_3->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(browser_3),
       browser_3->GetTabStripModel(), 0);
   ASSERT_EQ(5u, menu3->GetItemCount());
   CheckBrowserTitle(menu3->GetLabelAt(2), kLongTabTitleExample, 1);
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
 
   // Test that a non-incognito browser only shows non-incognito windows.
   auto menu = ExistingWindowSubMenuModel::Create(
-      nullptr, browser()->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(browser()),
       browser()->GetTabStripModel(), 0);
   ASSERT_EQ(4u, menu->GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
 
   // Test that a incognito browser only shows incognito windows.
   auto menu_incognito = ExistingWindowSubMenuModel::Create(
-      nullptr, incognito_browser_1->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(incognito_browser_1),
       incognito_browser_1->GetTabStripModel(), 0);
   ASSERT_EQ(3u, menu_incognito->GetItemCount());
   ASSERT_EQ(kIncognitoBrowser2ExpectedTitle, menu_incognito->GetLabelAt(2));
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
 
   // Test that popups do not show.
   auto menu = ExistingWindowSubMenuModel::Create(
-      nullptr, browser()->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(browser()),
       browser()->GetTabStripModel(), 0);
   ASSERT_EQ(4u, menu->GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
@@ -353,11 +353,9 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
       browser_7, browser_5, browser_4, browser_2, browser_3, browser_6};
   // `initializer_list` (instead of `array`) is necessary to construct a dynamic
   // span which can be compared to `vector`.
-  const auto mru_ordered_windows = browser()
-                                       ->GetFeatures()
-                                       .tab_menu_model_delegate()
-                                       ->GetOtherBrowserWindows(
-                                           /*is_app=*/false);
+  const auto mru_ordered_windows =
+      TabMenuModelDelegate::From(browser())->GetOtherBrowserWindows(
+          /*is_app=*/false);
   ASSERT_EQ(6u, mru_ordered_windows.size());
   ASSERT_EQ(mru_ordered_windows, base::span{expected_mru_order});
 
@@ -365,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
   // respect MRU order within each desk grouping. Also a label shouldn't be made
   // for the 5th desk since no browsers are in it.
   auto menu1 = ExistingWindowSubMenuModel::Create(
-      nullptr, browser()->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(browser()),
       browser()->GetTabStripModel(), 0);
   ASSERT_EQ(15u, menu1->GetItemCount());
   EXPECT_EQ(u"Desk 1 (Current)", menu1->GetLabelAt(2));
@@ -416,18 +414,16 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
       browser_4, browser_2, browser_3, browser_5};
   // `initializer_list` (instead of `array`) is necessary to construct a dynamic
   // span which can be compared to `vector`.
-  const auto mru_ordered_windows = browser()
-                                       ->GetFeatures()
-                                       .tab_menu_model_delegate()
-                                       ->GetOtherBrowserWindows(
-                                           /*is_app=*/false);
+  const auto mru_ordered_windows =
+      TabMenuModelDelegate::From(browser())->GetOtherBrowserWindows(
+          /*is_app=*/false);
   ASSERT_EQ(4u, mru_ordered_windows.size());
   ASSERT_EQ(mru_ordered_windows, base::span{expected_mru_order});
 
   // Create the menu from browser 1 and ensure that the command indexes properly
   // map to their browser indices.
   auto menu1 = ExistingWindowSubMenuModel::Create(
-      nullptr, browser()->GetFeatures().tab_menu_model_delegate(),
+      nullptr, TabMenuModelDelegate::From(browser()),
       browser()->GetTabStripModel(), 0);
   const auto& command_id_to_target_index =
       static_cast<chromeos::ExistingWindowSubMenuModelChromeOS*>(menu1.get())

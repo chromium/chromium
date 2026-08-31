@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -447,7 +448,7 @@ void TabStripCollectionController::ShowTabContextMenu(
 
   auto model = std::make_unique<TabMenuModel>(
       context_menu_controller_.get(),
-      browser_view_->browser()->GetFeatures().tab_menu_model_delegate(), model_,
+      TabMenuModelDelegate::From(browser_view_->browser()), model_,
       tab_index.value());
 
   CHECK(browser_view_->tab_strip_view());

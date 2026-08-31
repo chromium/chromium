@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
@@ -923,8 +924,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   EXPECT_EQ(app_browser2->GetTabStripModel()->count(), 2);
 
   // Test the "open in existing window" menu option.
-  TabMenuModel menu(nullptr,
-                    app_browser2->GetFeatures().tab_menu_model_delegate(),
+  TabMenuModel menu(nullptr, TabMenuModelDelegate::From(app_browser2),
                     app_browser2->GetTabStripModel(), 1);
   size_t submenu_index =
       menu.GetIndexOfCommandId(TabStripModel::CommandMoveToExistingWindow)

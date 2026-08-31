@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -432,8 +433,8 @@ void BrowserTabStripController::ShowContextMenuForTab(
 
   auto model = std::make_unique<TabMenuModel>(
       context_menu_controller_.get(),
-      GetBrowserWindowInterface()->GetFeatures().tab_menu_model_delegate(),
-      model_, tab_index.value());
+      TabMenuModelDelegate::From(GetBrowserWindowInterface()), model_,
+      tab_index.value());
 
   TabMenuModel* model_ptr = model.get();
   context_menu_controller_->LoadModel(std::move(model), model_ptr);

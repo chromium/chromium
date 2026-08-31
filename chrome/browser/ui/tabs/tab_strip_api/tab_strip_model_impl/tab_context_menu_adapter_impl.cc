@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/base/base_window.h"
@@ -42,9 +43,8 @@ TabContextMenuAdapterImpl::ShowTabContextMenu(tabs::TabHandle handle,
       std::make_unique<TabContextMenuController>(handle, this);
 
   auto menu_model = std::make_unique<TabMenuModel>(
-      context_menu_controller_.get(),
-      browser_->GetFeatures().tab_menu_model_delegate(), tab_strip_model_,
-      tab_index);
+      context_menu_controller_.get(), TabMenuModelDelegate::From(browser_),
+      tab_strip_model_, tab_index);
 
   TabMenuModel* menu_model_ptr = menu_model.get();
   context_menu_controller_->LoadModel(std::move(menu_model), menu_model_ptr);

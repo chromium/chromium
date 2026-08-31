@@ -99,6 +99,7 @@ if (!is_android) {
     sources = [
       "glic_tab_sub_menu_model.h",
       "tab_menu_model.h",
+      "tab_menu_model_delegate.cc",
       "tab_menu_model_delegate.h",
     ]
 
@@ -106,8 +107,11 @@ if (!is_android) {
       "//base",
       "//chrome/browser/glic",
       "//ui/base/interaction",
+      "//ui/base/unowned_user_data",
       "//ui/menus",
     ]
+
+    deps = [ "//chrome/browser/ui/browser_window" ]
   }
 
   # Shared tab favicon theming helpers, used by both the Views tab strip
