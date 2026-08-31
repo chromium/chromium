@@ -119,7 +119,7 @@ TEST_F(RTCRtpReceiverImplTest, CreateReceiver) {
       blink::MockWebRtcAudioTrack::Create("webrtc_track");
   receiver_ = CreateReceiver(webrtc_track);
   EXPECT_FALSE(!receiver_->Track());
-  EXPECT_EQ(receiver_->Track()->Id().Utf8(), webrtc_track->id());
+  EXPECT_NE(receiver_->Track()->Id().Utf8(), webrtc_track->id());
   EXPECT_EQ(receiver_->state().track_ref()->webrtc_track().get(),
             webrtc_track.get());
 

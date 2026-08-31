@@ -7,17 +7,20 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 
 namespace base {
@@ -43,7 +46,9 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
       : main_thread_(main_thread),
         webrtc_track_(webrtc_track),
         track_execution_context_(track_execution_context),
-        id_(String::FromUtf8(webrtc_track->id())) {}
+        id_(base::FeatureList::IsEnabled(kWebRtcGenerateRemoteTrackIds)
+                ? CreateCanonicalUuidString()
+                : String::FromUtf8(webrtc_track->id())) {}
 
   RemoteMediaStreamTrackAdapter(const RemoteMediaStreamTrackAdapter&) = delete;
   RemoteMediaStreamTrackAdapter& operator=(
@@ -126,8 +131,10 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
   const scoped_refptr<WebRtcMediaStreamTrackType> webrtc_track_;
   CrossThreadPersistent<MediaStreamComponent> component_;
   CrossThreadWeakPersistent<ExecutionContext> track_execution_context_;
-  // const copy of the webrtc track id that allows us to check it from both the
-  // main and signaling threads without incurring a synchronous thread hop.
+  // A const copy of the web-exposed ID allows access from both the main and
+  // signaling threads without a synchronous thread hop. It is generated
+  // independently of the remote sender's ID, as required when creating an
+  // RTCRtpReceiver track.
   const String id_;
 };
 

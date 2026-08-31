@@ -10,6 +10,7 @@ MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncodedTransformRememberMetadata);
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kWebRtcEncodedTransformRememberVideoFrameType);
 MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions);
+MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcGenerateRemoteTrackIds);
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kWebRtcRtpScriptTransformerFrameRestrictions);
 }  // namespace blink

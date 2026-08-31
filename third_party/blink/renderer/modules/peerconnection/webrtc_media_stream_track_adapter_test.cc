@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/remote_media_stream_track_adapter.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
@@ -182,11 +184,28 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteAudioTrack) {
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kAudioKind);
-  EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->track()->Id());
+  EXPECT_NE(track_adapter_->webrtc_track()->id(),
+            track_adapter_->track()->Id().Utf8());
   EXPECT_TRUE(track_adapter_->GetRemoteAudioTrackAdapterForTesting());
   EXPECT_TRUE(
       track_adapter_->GetRemoteAudioTrackAdapterForTesting()->initialized());
+}
+
+TEST_F(WebRtcMediaStreamTrackAdapterTest,
+       RemoteTrackUsesSignaledIdWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcGenerateRemoteTrackIds);
+  scoped_refptr<blink::MockWebRtcAudioTrack> webrtc_track =
+      blink::MockWebRtcAudioTrack::Create("remote_audio_track");
+  dependency_factory_->GetWebRtcSignalingTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebRtcMediaStreamTrackAdapterTest::CreateRemoteTrackAdapter,
+          base::Unretained(this), base::Unretained(webrtc_track.get())));
+  RunMessageLoopsUntilIdle();
+  ASSERT_TRUE(track_adapter_);
+  EXPECT_EQ(track_adapter_->webrtc_track()->id(),
+            track_adapter_->track()->Id().Utf8());
 }
 
 TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteVideoTrack) {
@@ -207,8 +226,8 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteVideoTrack) {
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kVideoKind);
-  EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->track()->Id());
+  EXPECT_NE(track_adapter_->webrtc_track()->id(),
+            track_adapter_->track()->Id().Utf8());
   EXPECT_TRUE(track_adapter_->GetRemoteVideoTrackAdapterForTesting());
   EXPECT_TRUE(
       track_adapter_->GetRemoteVideoTrackAdapterForTesting()->initialized());
@@ -236,8 +255,8 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteTrackExplicitlyInitialized) {
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kAudioKind);
-  EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->track()->Id());
+  EXPECT_NE(track_adapter_->webrtc_track()->id(),
+            track_adapter_->track()->Id().Utf8());
   EXPECT_TRUE(track_adapter_->GetRemoteAudioTrackAdapterForTesting());
   EXPECT_TRUE(
       track_adapter_->GetRemoteAudioTrackAdapterForTesting()->initialized());
