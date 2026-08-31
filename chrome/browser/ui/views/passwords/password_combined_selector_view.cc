@@ -508,6 +508,11 @@ class PasswordCombinedSelectorListView : public views::View {
     return static_cast<PasswordCombinedSelectorRowView*>(forms[child_index]);
   }
 
+  views::RadioButton* GetInitiallyFocusedRadioButton() {
+    PasswordCombinedSelectorRowView* row = GetRowView(0);
+    return row ? row->GetRadioButton() : nullptr;
+  }
+
  private:
   raw_ptr<views::View> selected_view_ = nullptr;
 };
@@ -588,6 +593,17 @@ bool PasswordCombinedSelectorView::Accept() {
 bool PasswordCombinedSelectorView::ShouldAllowKeyEventsDuringInputProtection()
     const {
   return false;
+}
+
+views::View* PasswordCombinedSelectorView::GetInitiallyFocusedView() {
+  if (controller_ && controller_->GetLocalForms().size() > 1 && list_view_) {
+    if (views::RadioButton* button =
+            static_cast<PasswordCombinedSelectorListView*>(list_view_)
+                ->GetInitiallyFocusedRadioButton()) {
+      return button;
+    }
+  }
+  return DialogDelegate::GetInitiallyFocusedView();
 }
 
 void PasswordCombinedSelectorView::InitWindow() {

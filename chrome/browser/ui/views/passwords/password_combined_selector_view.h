@@ -60,6 +60,7 @@ class PasswordCombinedSelectorView
   bool Accept() override;
   bool ShouldAllowKeyEventsDuringInputProtection() const override;
   void OnWidgetInitialized() override;
+  views::View* GetInitiallyFocusedView() override;
 
  private:
   std::u16string GetWindowTitle() const override;

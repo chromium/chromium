@@ -987,6 +987,52 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, CancelCombinedSelectorDialog) {
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
+                       InitialFocusMultipleCredentials) {
+  if (!IsParamFeatureEnabled()) {
+    return;
+  }
+  ShowUi("MultipleCredentials");
+
+  PasswordCombinedSelectorView* view =
+      static_cast<PasswordCombinedSelectorView*>(
+          controller()->current_account_chooser());
+  ASSERT_TRUE(view);
+
+  std::vector<views::RadioButton*> radio_buttons =
+      GetRadioButtons(view->GetWidget()->GetContentsView());
+  ASSERT_EQ(2u, radio_buttons.size());
+
+  EXPECT_EQ(view->GetInitiallyFocusedView(), radio_buttons[0]);
+
+  EXPECT_CALL(*this, OnChooseCredential(nullptr));
+  EXPECT_CALL(*controller(), OnDialogClosed());
+  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
+  view->GetWidget()->Close();
+  waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
+                       InitialFocusSingleCredential) {
+  if (!IsParamFeatureEnabled()) {
+    return;
+  }
+  ShowUi("SingleCredential");
+
+  PasswordCombinedSelectorView* view =
+      static_cast<PasswordCombinedSelectorView*>(
+          controller()->current_account_chooser());
+  ASSERT_TRUE(view);
+
+  EXPECT_EQ(view->GetInitiallyFocusedView(), view->GetOkButton());
+
+  EXPECT_CALL(*this, OnChooseCredential(nullptr));
+  EXPECT_CALL(*controller(), OnDialogClosed());
+  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
+  view->GetWidget()->Close();
+  waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
                        PopupAccountChooserWithRemoteActorSingle) {
   if (!IsParamFeatureEnabled()) {
     return;
