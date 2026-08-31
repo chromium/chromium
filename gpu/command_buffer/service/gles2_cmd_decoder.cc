@@ -8156,6 +8156,35 @@ void GLES2DecoderImpl::DoBlitFramebufferCHROMIUM(
     state_.EnableDisableFramebufferSRGB(enable_srgb);
   }
 
+  if (workarounds().finish_before_blit_framebuffer_multi_attachment &&
+      draw_framebuffer) {
+    int color_attachment_count = 0;
+    bool need_finish = false;
+    for (uint32_t i = 0; i < group_->max_color_attachments(); ++i) {
+      const Framebuffer::Attachment* attachment =
+          draw_framebuffer->GetAttachment(GL_COLOR_ATTACHMENT0 + i);
+      if (attachment) {
+        ++color_attachment_count;
+        if (color_attachment_count > 1) {
+          need_finish = true;
+          break;
+        }
+        if (attachment->IsTextureAttachment()) {
+          GLuint client_id = attachment->object_name();
+          const TextureRef* texture_ref =
+              texture_manager()->GetTexture(client_id);
+          if (texture_ref && texture_ref->texture()->base_level() > 0) {
+            need_finish = true;
+            break;
+          }
+        }
+      }
+    }
+    if (need_finish) {
+      api()->glFinishFn();
+    }
+  }
+
   api()->glBlitFramebufferFn(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1,
                              dstY1, mask, filter);
 }

@@ -3876,6 +3876,19 @@
       "features": [
         "upload_oversized_mip_levels_via_unpack_buffer"
       ]
+    },
+    {
+      "id": 493,
+      "cr_bugs": [546252753],
+      "description": "Issue a glFinish before calling glBlitFramebuffer if the draw framebuffer has multiple color attachments or any color attachment's texture has base_level > 0.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": "Mali-G.*",
+      "features": [
+        "finish_before_blit_framebuffer_multi_attachment"
+      ]
     }
   ]
 }

@@ -4230,6 +4230,153 @@ TEST_P(GLES2DecoderManualInitTest, MESAFramebufferFlipYExtensionDisabled) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+TEST_P(GLES3DecoderManualInitTest,
+       FinishBeforeBlitFramebufferMultiAttachmentWorkaround) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  GpuDriverBugWorkarounds workarounds;
+  workarounds.finish_before_blit_framebuffer_multi_attachment = true;
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  const GLuint kTex0Client = client_texture_id_;
+  const GLuint kTex0Service = kServiceTextureId;
+  const GLuint kTex1Client = client_texture_id_ + 1;
+  const GLuint kTex1Service = kServiceTextureId + 1;
+  const GLuint kReadTexClient = client_texture_id_ + 2;
+  const GLuint kReadTexService = kServiceTextureId + 2;
+
+  const GLuint kDrawFboClient = client_framebuffer_id_;
+  const GLuint kDrawFboService = kServiceFramebufferId;
+  const GLuint kReadFboClient = client_framebuffer_id_ + 1;
+  const GLuint kReadFboService = kServiceFramebufferId + 1;
+
+  // Create Tex0 (16x16 RGBA8)
+  DoBindTexture(GL_TEXTURE_2D, kTex0Client, kTex0Service);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 16, 16, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               shared_memory_id_, kSharedMemoryOffset);
+
+  // Create Tex1 (16x16 RGBA8)
+  EXPECT_CALL(*gl_, GenTextures(1, _))
+      .WillOnce(SetArgPointee<1>(kTex1Service))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenTexturesImmediate>(kTex1Client);
+  DoBindTexture(GL_TEXTURE_2D, kTex1Client, kTex1Service);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 16, 16, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               shared_memory_id_, kSharedMemoryOffset);
+
+  // Create ReadTex (16x16 RGBA8)
+  EXPECT_CALL(*gl_, GenTextures(1, _))
+      .WillOnce(SetArgPointee<1>(kReadTexService))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenTexturesImmediate>(kReadTexClient);
+  DoBindTexture(GL_TEXTURE_2D, kReadTexClient, kReadTexService);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 16, 16, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               shared_memory_id_, kSharedMemoryOffset);
+
+  // Setup Draw FBO with 2 color attachments: COLOR_ATTACHMENT0 and
+  // COLOR_ATTACHMENT1
+  DoBindFramebuffer(GL_DRAW_FRAMEBUFFER, kDrawFboClient, kDrawFboService);
+  DoFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D, kTex0Client, kTex0Service, 0,
+                         GL_NO_ERROR);
+  DoFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+                         GL_TEXTURE_2D, kTex1Client, kTex1Service, 0,
+                         GL_NO_ERROR);
+
+  // Setup Read FBO with COLOR_ATTACHMENT0
+  EXPECT_CALL(*gl_, GenFramebuffersEXT(1, _))
+      .WillOnce(SetArgPointee<1>(kReadFboService))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenFramebuffersImmediate>(kReadFboClient);
+  DoBindFramebuffer(GL_READ_FRAMEBUFFER, kReadFboClient, kReadFboService);
+  DoFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D, kReadTexClient, kReadTexService, 0,
+                         GL_NO_ERROR);
+
+  EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_DRAW_FRAMEBUFFER))
+      .WillRepeatedly(Return(GL_FRAMEBUFFER_COMPLETE));
+  EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_READ_FRAMEBUFFER))
+      .WillRepeatedly(Return(GL_FRAMEBUFFER_COMPLETE));
+
+  // Mark all attachments as cleared so framebuffer is complete
+  FramebufferManager* framebuffer_manager = GetFramebufferManager();
+  Framebuffer* draw_fbo = framebuffer_manager->GetFramebuffer(kDrawFboClient);
+  ASSERT_TRUE(draw_fbo != nullptr);
+  framebuffer_manager->MarkAttachmentsAsCleared(
+      draw_fbo, group().renderbuffer_manager(), group().texture_manager());
+  EXPECT_TRUE(draw_fbo->IsCleared());
+
+  Framebuffer* read_fbo = framebuffer_manager->GetFramebuffer(kReadFboClient);
+  ASSERT_TRUE(read_fbo != nullptr);
+  framebuffer_manager->MarkAttachmentsAsCleared(
+      read_fbo, group().renderbuffer_manager(), group().texture_manager());
+  EXPECT_TRUE(read_fbo->IsCleared());
+
+  // 1) Blit with 2 color attachments on draw FBO: should trigger glFinish
+  // before glBlitFramebuffer.
+  {
+    ::testing::InSequence sequence;
+    EXPECT_CALL(*gl_, Finish()).Times(1).RetiresOnSaturation();
+    EXPECT_CALL(*gl_, BlitFramebuffer(0, 0, 16, 16, 0, 0, 16, 16,
+                                      GL_COLOR_BUFFER_BIT, GL_NEAREST))
+        .Times(1)
+        .RetiresOnSaturation();
+
+    cmds::BlitFramebufferCHROMIUM cmd;
+    cmd.Init(0, 0, 16, 16, 0, 0, 16, 16, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  // 2) Detach COLOR_ATTACHMENT1, so draw FBO has only 1 color attachment
+  // (COLOR_ATTACHMENT0) with base_level == 0. No glFinish should be called.
+  DoFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+                         GL_TEXTURE_2D, 0, 0, 0, GL_NO_ERROR);
+  {
+    EXPECT_CALL(*gl_, Finish()).Times(0);
+    EXPECT_CALL(*gl_, BlitFramebuffer(0, 0, 16, 16, 0, 0, 16, 16,
+                                      GL_COLOR_BUFFER_BIT, GL_NEAREST))
+        .Times(1)
+        .RetiresOnSaturation();
+
+    cmds::BlitFramebufferCHROMIUM cmd;
+    cmd.Init(0, 0, 16, 16, 0, 0, 16, 16, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  // 3) Set base_level = 1 on Tex0 (COLOR_ATTACHMENT0).
+  // Draw FBO has 1 color attachment, but its texture has base_level > 0.
+  // Should trigger glFinish before glBlitFramebuffer.
+  DoBindTexture(GL_TEXTURE_2D, kTex0Client, kTex0Service);
+  DoTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA8, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               shared_memory_id_, kSharedMemoryOffset);
+  framebuffer_manager->MarkAttachmentsAsCleared(
+      draw_fbo, group().renderbuffer_manager(), group().texture_manager());
+  cmds::TexParameteri param_cmd;
+  param_cmd.Init(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 1);
+  EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 1))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(param_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  {
+    ::testing::InSequence sequence;
+    EXPECT_CALL(*gl_, Finish()).Times(1).RetiresOnSaturation();
+    EXPECT_CALL(*gl_, BlitFramebuffer(0, 0, 16, 16, 0, 0, 16, 16,
+                                      GL_COLOR_BUFFER_BIT, GL_NEAREST))
+        .Times(1)
+        .RetiresOnSaturation();
+
+    cmds::BlitFramebufferCHROMIUM cmd;
+    cmd.Init(0, 0, 16, 16, 0, 0, 16, 16, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+}
+
 // TODO(gman): PixelStorei
 
 }  // namespace gles2
