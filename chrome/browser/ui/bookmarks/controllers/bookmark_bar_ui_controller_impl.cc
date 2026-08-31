@@ -73,3 +73,9 @@ void BookmarkBarUIControllerImpl::OpenAppsPage(
     WindowOpenDisposition disposition) {
   injector_->GetActionAdapter()->OpenAppsPage(disposition);
 }
+
+void BookmarkBarUIControllerImpl::OpenBookmark(
+    int64_t node_id,
+    WindowOpenDisposition disposition) {
+  injector_->GetActionAdapter()->OpenBookmark(node_id, disposition);
+}

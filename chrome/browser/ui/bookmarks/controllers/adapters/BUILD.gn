@@ -25,6 +25,7 @@ source_set("impl") {
       "desktop_bookmark_bar_prefs_adapter.h",
     ]
     deps += [
+      "//chrome/browser/page_load_metrics",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/tabs/saved_tab_groups",

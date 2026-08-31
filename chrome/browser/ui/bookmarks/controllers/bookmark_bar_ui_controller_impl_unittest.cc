@@ -51,6 +51,7 @@ class MockBookmarkBarPrefsAdapter : public BookmarkBarPrefsAdapter {
 class MockBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
  public:
   MOCK_METHOD(void, OpenAppsPage, (WindowOpenDisposition), (override));
+  MOCK_METHOD(void, OpenBookmark, (int64_t, WindowOpenDisposition), (override));
 };
 
 class MockBookmarkBarUIControllerInjector
@@ -151,6 +152,12 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenAppsPageDelegates) {
   EXPECT_CALL(mock_action_adapter_,
               OpenAppsPage(WindowOpenDisposition::NEW_WINDOW));
   controller_->OpenAppsPage(WindowOpenDisposition::NEW_WINDOW);
+}
+
+TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkDelegates) {
+  EXPECT_CALL(mock_action_adapter_,
+              OpenBookmark(42, WindowOpenDisposition::NEW_WINDOW));
+  controller_->OpenBookmark(42, WindowOpenDisposition::NEW_WINDOW);
 }
 
 }  // namespace
