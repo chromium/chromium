@@ -8,7 +8,7 @@
 
 namespace enterprise_groups {
 
-BASE_FEATURE(kEnterpriseGroupsExperiments, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnterpriseGroupsExperiments, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFakeEnterpriseGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 
