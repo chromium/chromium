@@ -5278,6 +5278,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.VerticalTabs.EnabledWithSidePanel">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    Logged at the point where Vertical Tabs gets enabled with SidePanel already
+    on.
+  </description>
+</action>
+
 <action name="Android.VerticalTabs.GroupHeaderHovered">
   <owner>jtanaristy@google.com</owner>
   <owner>agazal@google.com</owner>

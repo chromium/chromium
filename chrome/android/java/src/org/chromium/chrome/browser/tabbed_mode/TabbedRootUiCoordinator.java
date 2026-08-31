@@ -258,6 +258,7 @@ import org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinatorFa
 import org.chromium.chrome.browser.ui.side_panel.dev.SidePanelDevFeature;
 import org.chromium.chrome.browser.ui.side_panel.dev.SidePanelDevFeatureFactory;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinatorFactory;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
@@ -2566,6 +2567,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         VerticalTabUtils.setVerticalTabsEnabled(shouldShowVerticalTabs);
 
         if (shouldShowVerticalTabs) {
+            if (mSideUiCoordinator != null
+                    && mSideUiCoordinator.isSideUiShowing(SideUiId.SIDE_PANEL)) {
+                RecordUserAction.record("Android.VerticalTabs.EnabledWithSidePanel");
+            }
             Profile profile = mProfileSupplier.get();
             if (profile != null) {
                 TrackerFactory.getTrackerForProfile(profile)
