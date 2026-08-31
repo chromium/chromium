@@ -29,10 +29,12 @@
  */
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -45,6 +47,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
@@ -78,12 +81,15 @@ class MHTMLLoadingTest : public testing::Test {
  protected:
   void SetUp() override { helper_.Initialize(); }
 
-  void LoadURLInTopFrame(const WebURL& url, const std::string& file_name) {
+  void LoadURLInTopFrame(const WebURL& url,
+                         const std::string& file_name,
+                         bool view_source = false) {
     std::optional<Vector<char>> data = test::ReadFromFile(
         test::CoreTestDataPath(WebString::FromUtf8("mhtml/" + file_name)));
     ASSERT_TRUE(data);
     scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(std::move(*data));
     WebLocalFrameImpl* frame = helper_.GetWebView()->MainFrameImpl();
+    frame->EnableViewSourceMode(view_source);
     auto params = std::make_unique<WebNavigationParams>();
     params->url = url;
     params->response = WebURLResponse(url);
@@ -242,6 +248,37 @@ TEST_F(MHTMLLoadingTest, FormControlElements) {
       document->getElementById(AtomicString("h1"))->IsDisabledFormControl());
   EXPECT_FALSE(
       document->getElementById(AtomicString("fm"))->IsDisabledFormControl());
+}
+
+TEST_F(MHTMLLoadingTest, ViewSourceLineWrapControl) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(blink::features::kMHTML_Improvements);
+  LoadURLInTopFrame(ToKURL("file:///form.mht"), "form.mht",
+                    /*view_source=*/true);
+  ASSERT_TRUE(GetPage());
+  auto* frame = To<LocalFrame>(GetPage()->MainFrame());
+  ASSERT_TRUE(frame);
+  Document* document = frame->GetDocument();
+  ASSERT_TRUE(document);
+
+  auto* checkbox = To<HTMLInputElement>(
+      document->QuerySelector(AtomicString("input[type=checkbox]")));
+  auto* table = document->QuerySelector(AtomicString("table"));
+  ASSERT_TRUE(checkbox);
+  ASSERT_TRUE(table);
+  EXPECT_FALSE(checkbox->IsDisabledFormControl());
+  EXPECT_FALSE(checkbox->Checked());
+  EXPECT_FALSE(table->HasClass());
+
+  checkbox->click();
+
+  EXPECT_TRUE(checkbox->Checked());
+  EXPECT_EQ(table->GetClassAttribute(), AtomicString("line-wrap"));
+
+  checkbox->click();
+
+  EXPECT_FALSE(checkbox->Checked());
+  EXPECT_FALSE(table->HasClass());
 }
 
 TEST_F(MHTMLLoadingTest, LoadMHTMLContainingSoftLineBreaks) {

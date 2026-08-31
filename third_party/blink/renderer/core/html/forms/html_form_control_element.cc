@@ -320,7 +320,7 @@ bool HTMLFormControlElement::IsDisabledFormControl() const {
   // For MHTML pages loaded through other means, we do not disable forms. This
   // avoids modification of the original page, and more closely matches other
   // saved page formats.
-  if (GetDocument().Fetcher()->Archive()) {
+  if (GetDocument().Fetcher()->Archive() && !GetDocument().IsViewSource()) {
     if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
       if (GetDocument().Url().ProtocolIsInHttpFamily()) {
         return true;
