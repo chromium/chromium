@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -123,6 +124,9 @@ class HistoryClustersSidePanelContextMenu
   void ExecuteCommand(int command_id, int event_flags) override {
     switch (command_id) {
       case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
+        if (!CanAddURLToHistory(url_)) {
+          return;
+        }
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
@@ -133,6 +137,9 @@ class HistoryClustersSidePanelContextMenu
       }
 
       case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW: {
+        if (!CanAddURLToHistory(url_)) {
+          return;
+        }
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::NEW_WINDOW,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
@@ -143,6 +150,9 @@ class HistoryClustersSidePanelContextMenu
       }
 
       case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: {
+        if (!CanAddURLToHistory(url_)) {
+          return;
+        }
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::OFF_THE_RECORD,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
@@ -276,6 +286,10 @@ void HistoryClustersHandler::SetQuery(const std::string& query) {
 void HistoryClustersHandler::OpenHistoryUrl(
     const GURL& url,
     ui::mojom::ClickModifiersPtr click_modifiers) {
+  if (!CanAddURLToHistory(url)) {
+    return;
+  }
+
   // In the Side Panel, the default is the current tab. From History WebUI, the
   // default is a new foreground tab.
   WindowOpenDisposition default_disposition =
@@ -440,6 +454,10 @@ void HistoryClustersHandler::RemoveVisitByUrlAndTime(
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
     std::vector<mojom::URLVisitPtr> visits,
     const std::optional<std::string>& tab_group_name) {
+  std::erase_if(visits, [](const auto& visit_ptr) {
+    return !visit_ptr || !CanAddURLToHistory(visit_ptr->normalized_url);
+  });
+
   // Hard cap the number of opened visits in a tab group to 32. It's a
   // relatively high cap chosen fairly arbitrarily, because the user took an
   // affirmative action to open this many tabs. And hidden visits aren't opened.
@@ -593,6 +611,9 @@ void HistoryClustersHandler::ShowContextMenuForSearchbox(
 
 void HistoryClustersHandler::ShowContextMenuForURL(const GURL& url,
                                                    const gfx::Point& point) {
+  if (!CanAddURLToHistory(url)) {
+    return;
+  }
   if (history_clusters_side_panel_embedder_) {
     history_clusters_side_panel_embedder_->ShowContextMenu(
         point,
