@@ -70,7 +70,6 @@ group("unit_tests") {
     "//chrome/browser/ui/ash/shelf:unit_tests",
     "//chrome/browser/ui/ash/system:unit_tests",
     "//chrome/browser/ui/ash/test:unit_tests",
-    "//chrome/browser/ui/ash/user_education:unit_tests",
     "//chrome/browser/ui/ash/wallpaper:unit_tests",
   ]
 }
