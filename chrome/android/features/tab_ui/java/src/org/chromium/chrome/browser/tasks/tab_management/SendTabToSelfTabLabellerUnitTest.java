@@ -469,4 +469,41 @@ public class SendTabToSelfTabLabellerUnitTest {
         // synchronously.
         verifyTabCardLabelUpdated("From Example Phone", 1);
     }
+
+    @Test
+    public void testDestroy_PendingAsyncCallback_DoesNotUpdateUI() {
+        SendTabToSelfTabCardLabelData sttsData = createAndSetLabelData();
+        mUserDataHost.removeUserData(SendTabToSelfTabCardLabelData.class);
+        sttsData.save();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Trigger showAll which will start async LevelDB restore.
+        mLabeller.showAll(Collections.singletonList(mTab));
+
+        // Destroy the labeller before the async callback resolves.
+        mLabeller.destroy();
+
+        // Run all pending background and UI tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify no UI updates were pushed to the notification handler.
+        verify(mTabListNotificationHandler, never()).updateTabCardLabels(any());
+    }
+
+    @Test
+    public void testDestroy_ClearsLabelledTabIdsAndIgnoresFutureCalls() {
+        createAndSetLabelData();
+
+        mLabeller.showAll(Collections.singletonList(mTab));
+        RobolectricUtil.runAllBackgroundAndUi();
+        verifyTabCardLabelUpdated("From Example Phone", 1);
+
+        reset(mTabListNotificationHandler);
+        mLabeller.destroy();
+
+        mLabeller.showAll(Collections.singletonList(mTab));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mTabListNotificationHandler, never()).updateTabCardLabels(any());
+    }
 }
