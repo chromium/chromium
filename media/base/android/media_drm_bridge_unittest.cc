@@ -50,9 +50,7 @@ namespace media {
     }                                                               \
   } while (0)
 
-const char kAudioMp4[] = "audio/mp4";
 const char kVideoMp4[] = "video/mp4";
-const char kAudioWebM[] = "audio/webm";
 const char kVideoWebM[] = "video/webm";
 const char kInvalidKeySystem[] = "invalid.keysystem";
 const MediaDrmBridge::SecurityLevel kDefault =
@@ -63,15 +61,6 @@ const MediaDrmBridge::SecurityLevel kL3 =
     MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO;
 const char kTestOrigin[] = "http://www.example.com";
 const char kEmptyOrigin[] = "";
-
-// Helper functions to avoid typing "MediaDrmBridge::" in tests.
-
-static bool IsKeySystemSupportedWithType(
-    const std::string& key_system,
-    const std::string& container_mime_type) {
-  return MediaDrmBridge::IsKeySystemSupportedWithType(key_system,
-                                                      container_mime_type);
-}
 
 namespace {
 
@@ -156,22 +145,34 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
 
 TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
   EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
-      IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioMp4),
+      MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem),
+      kWidevineKeySystem);
+}
+
+TEST_F(MediaDrmBridgeTest, GetSupportedContainers_Widevine) {
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      MediaDrmBridge::GetSupportedContainers(kWidevineKeySystem)
+          .contains(kVideoMp4),
       kWidevineKeySystem);
   EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
-      IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoMp4),
+      MediaDrmBridge::GetSupportedContainers(kWidevineKeySystem)
+          .contains(kVideoWebM),
+      kWidevineKeySystem);
+}
+
+TEST_F(MediaDrmBridgeTest, GetSupportedContainers_WidevineWithSecurityLevel) {
+  // Querying with explicit SECURITY_LEVEL_SW_SECURE_CRYPTO should be true
+  // if Widevine is available.
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      MediaDrmBridge::GetSupportedContainers(
+          kWidevineKeySystem, MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO)
+          .contains(kVideoMp4),
       kWidevineKeySystem);
 
-  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
-      IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioWebM),
-      kWidevineKeySystem);
-  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
-      IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoWebM),
-      kWidevineKeySystem);
-
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "unknown"));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "video/avi"));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "audio/mp3"));
+  // Querying with explicit SECURITY_LEVEL_HW_SECURE_ALL may or may not be true
+  // depending on device support, but should not crash.
+  MediaDrmBridge::GetSupportedContainers(
+      kWidevineKeySystem, MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL);
 }
 
 TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_ExternalClearKey) {
@@ -182,20 +183,32 @@ TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_ExternalClearKey) {
                                         {});
   EXPECT_TRUE(base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting));
   EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
-      IsKeySystemSupportedWithType(kExternalClearKeyKeySystem, kVideoMp4),
+      MediaDrmBridge::IsKeySystemSupported(kExternalClearKeyKeySystem),
+      kExternalClearKeyKeySystem);
+}
+
+TEST_F(MediaDrmBridgeTest, GetSupportedContainers_ExternalClearKey) {
+  scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
+                                        {});
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      MediaDrmBridge::GetSupportedContainers(kExternalClearKeyKeySystem)
+          .contains(kVideoMp4),
       kExternalClearKeyKeySystem);
 }
 
 // Invalid key system is NOT supported regardless whether MediaDrm is available.
 TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_InvalidKeySystem) {
   EXPECT_FALSE(MediaDrmBridge::IsKeySystemSupported(kInvalidKeySystem));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, kAudioMp4));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, kVideoMp4));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, kAudioWebM));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, kVideoWebM));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, "unknown"));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, "video/avi"));
-  EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, "audio/mp3"));
+  EXPECT_TRUE(
+      MediaDrmBridge::GetSupportedContainers(kInvalidKeySystem).empty());
+  EXPECT_TRUE(
+      MediaDrmBridge::GetSupportedContainers(
+          kInvalidKeySystem, MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO)
+          .empty());
+  EXPECT_TRUE(
+      MediaDrmBridge::GetSupportedContainers(
+          kInvalidKeySystem, MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL)
+          .empty());
 }
 
 TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_Widevine) {

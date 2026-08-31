@@ -27,8 +27,12 @@ void MediaDrmSupportService::IsKeySystemSupported(
   DCHECK(!key_system.empty());
   DVLOG(1) << __func__ << " key_system: " << key_system;
 
+  auto security_level =
+      is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL
+                : media::MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO;
+
   auto supported_containers =
-      MediaDrmBridge::GetSupportedContainers(key_system);
+      MediaDrmBridge::GetSupportedContainers(key_system, security_level);
 
   if (supported_containers.empty()) {
     std::move(callback).Run(nullptr);
@@ -36,10 +40,6 @@ void MediaDrmSupportService::IsKeySystemSupported(
   }
 
   auto result = mojom::MediaDrmSupportResult::New();
-  auto security_level =
-      is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_HW_SECURE_ALL
-                : media::MediaDrmBridge::SECURITY_LEVEL_SW_SECURE_CRYPTO;
-
   auto version = MediaDrmBridge::MaybeGetVersion(key_system, security_level);
   if (!version.has_value() &&
       version.error() ==

@@ -208,32 +208,6 @@ KeySystemManager* GetKeySystemManager() {
   return ksm;
 }
 
-// Checks whether |key_system| is supported with |container_mime_type|. Only
-// checks |key_system| support if |container_mime_type| is empty.
-// TODO(xhwang): The |container_mime_type| is not the same as contentType in
-// the EME spec. Revisit this once the spec issue with initData type is
-// resolved.
-bool IsKeySystemSupportedWithTypeImpl(const std::string& key_system,
-                                      const std::string& container_mime_type) {
-  CHECK(!key_system.empty());
-
-  UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
-  if (scheme_uuid.empty()) {
-    DVLOG(1) << "Cannot get UUID for key system " << key_system;
-    return false;
-  }
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_scheme_uuid =
-      base::android::ToJavaByteArray(env, scheme_uuid);
-  ScopedJavaLocalRef<jstring> j_container_mime_type =
-      ConvertUTF8ToJavaString(env, container_mime_type);
-  bool supported = Java_MediaDrmBridge_isCryptoSchemeSupported(
-      env, j_scheme_uuid, j_container_mime_type);
-  DVLOG_IF(1, !supported) << "Crypto scheme not supported for " << key_system
-                          << " with " << container_mime_type;
-  return supported;
-}
 
 // Converts from String value returned from MediaDrm to an enum of HdcpVersion
 // values. Refer to http://shortn/_eFj9y8KBgR for the list of Strings that could
@@ -335,7 +309,18 @@ CdmSessionClosedReason ToCdmSessionClosedReason(
 
 // static
 bool MediaDrmBridge::IsKeySystemSupported(const std::string& key_system) {
-  return IsKeySystemSupportedWithTypeImpl(key_system, "");
+  CHECK(!key_system.empty());
+
+  UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
+  if (scheme_uuid.empty()) {
+    DVLOG(1) << "Cannot get UUID for key system " << key_system;
+    return false;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jbyteArray> j_scheme_uuid =
+      base::android::ToJavaByteArray(env, scheme_uuid);
+  return Java_MediaDrmBridge_isCryptoSchemeSupported(env, j_scheme_uuid);
 }
 
 // static
@@ -374,17 +359,9 @@ bool MediaDrmBridge::IsPersistentLicenseTypeSupported(
 }
 
 // static
-bool MediaDrmBridge::IsKeySystemSupportedWithType(
-    const std::string& key_system,
-    const std::string& container_mime_type) {
-  DCHECK(!container_mime_type.empty()) << "Call IsKeySystemSupported instead";
-
-  return IsKeySystemSupportedWithTypeImpl(key_system, container_mime_type);
-}
-
-// static
 MediaDrmBridge::SupportedContainers MediaDrmBridge::GetSupportedContainers(
-    const std::string& key_system) {
+    const std::string& key_system,
+    SecurityLevel security_level) {
   CHECK(!key_system.empty());
 
   UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
@@ -398,7 +375,8 @@ MediaDrmBridge::SupportedContainers MediaDrmBridge::GetSupportedContainers(
       base::android::ToJavaByteArray(env, scheme_uuid);
 
   base::android::ScopedJavaLocalRef<jobjectArray> j_containers =
-      Java_MediaDrmBridge_getSupportedContainers(env, j_scheme_uuid);
+      Java_MediaDrmBridge_getSupportedContainers(
+          env, j_scheme_uuid, static_cast<int>(security_level));
 
   std::vector<std::string> containers;
   if (!j_containers.is_null()) {

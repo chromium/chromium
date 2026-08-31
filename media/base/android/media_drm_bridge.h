@@ -123,18 +123,13 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // Checks whether |key_system| is supported.
   static bool IsKeySystemSupported(const std::string& key_system);
 
-  // Checks whether |key_system| is supported with |container_mime_type|.
-  // |container_mime_type| must not be empty.
-  static bool IsKeySystemSupportedWithType(
-      const std::string& key_system,
-      const std::string& container_mime_type);
-
   using SupportedContainers = base::flat_set<std::string>;
 
   // Returns the supported container MIME types (e.g. "video/webm", "video/mp4")
-  // for the specified |key_system|.
+  // for the specified |key_system| and |security_level|.
   static SupportedContainers GetSupportedContainers(
-      const std::string& key_system);
+      const std::string& key_system,
+      SecurityLevel security_level = SECURITY_LEVEL_UNKNOWN);
 
   // Returns true if this device supports per-application provisioning, false
   // otherwise.
