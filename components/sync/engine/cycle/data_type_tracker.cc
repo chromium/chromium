@@ -65,6 +65,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
       // coalescing.
       return kBigLocalChangeNudgeDelay;
     case OUTGOING_PASSWORD_SHARING_INVITATION:
+    case SEND_TAB_TO_SELF:
     case SHARING_MESSAGE:
       // Sharing messages are time-sensitive, so use a small nudge delay.
       return kMinLocalChangeNudgeDelay;
@@ -98,7 +99,6 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case PRINTERS_AUTHORIZATION_SERVERS:
     case READING_LIST:
     case USER_CONSENTS:
-    case SEND_TAB_TO_SELF:
     case SECURITY_EVENTS:
     case SHARED_TAB_GROUP_DATA:
     case WIFI_CONFIGURATIONS:
