@@ -145,9 +145,14 @@ void MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
 }
 
 void RecordAutoPreloadDispatchResult(
-    ServiceWorkerAutoPreloadDispatchResult result) {
+    ServiceWorkerAutoPreloadDispatchResult result,
+    bool is_outermost_main_frame = false) {
   base::UmaHistogramEnumeration("ServiceWorker.AutoPreload.DispatchResult",
                                 result);
+  if (is_outermost_main_frame) {
+    base::UmaHistogramEnumeration(
+        "ServiceWorker.AutoPreload.MainFrame.DispatchResult", result);
+  }
 }
 
 }  // namespace
@@ -501,21 +506,24 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
 
   if (!base::FeatureList::IsEnabled(features::kServiceWorkerAutoPreload)) {
     RecordAutoPreloadDispatchResult(
-        ServiceWorkerAutoPreloadDispatchResult::kFeatureDisabled);
+        ServiceWorkerAutoPreloadDispatchResult::kFeatureDisabled,
+        resource_request_.is_outermost_main_frame);
     return false;
   }
 
   if (!GetContentClient()->browser()->IsServiceWorkerAutoPreloadAllowed(
           context->browser_context())) {
     RecordAutoPreloadDispatchResult(
-        ServiceWorkerAutoPreloadDispatchResult::kNotAllowedByBrowser);
+        ServiceWorkerAutoPreloadDispatchResult::kNotAllowedByBrowser,
+        resource_request_.is_outermost_main_frame);
     return false;
   }
 
   // AutoPreload is triggered only in a main frame.
   if (!resource_request_.is_outermost_main_frame) {
     RecordAutoPreloadDispatchResult(
-        ServiceWorkerAutoPreloadDispatchResult::kNotOutermostMainFrame);
+        ServiceWorkerAutoPreloadDispatchResult::kNotOutermostMainFrame,
+        /*is_outermost_main_frame=*/false);
     return false;
   }
 
@@ -525,7 +533,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
           features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload) &&
       context->storage_partition()->is_guest()) {
     RecordAutoPreloadDispatchResult(
-        ServiceWorkerAutoPreloadDispatchResult::kGuestStoragePartition);
+        ServiceWorkerAutoPreloadDispatchResult::kGuestStoragePartition,
+        /*is_outermost_main_frame=*/true);
     return false;
   }
 
@@ -536,7 +545,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
   if (GetContentClient()->browser()->HasWebRequestAPIProxy(
           context->browser_context())) {
     RecordAutoPreloadDispatchResult(
-        ServiceWorkerAutoPreloadDispatchResult::kWebRequestAPIProxy);
+        ServiceWorkerAutoPreloadDispatchResult::kWebRequestAPIProxy,
+        /*is_outermost_main_frame=*/true);
     return false;
   }
 
@@ -555,10 +565,12 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     // receiving the fetch handler result.
     SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
     RecordAutoPreloadDispatchResult(
-        ServiceWorkerAutoPreloadDispatchResult::kDispatched);
+        ServiceWorkerAutoPreloadDispatchResult::kDispatched,
+        /*is_outermost_main_frame=*/true);
   } else {
     RecordAutoPreloadDispatchResult(
-        ServiceWorkerAutoPreloadDispatchResult::kStartFailed);
+        ServiceWorkerAutoPreloadDispatchResult::kStartFailed,
+        /*is_outermost_main_frame=*/true);
   }
 
   return result;
