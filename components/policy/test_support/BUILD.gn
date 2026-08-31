@@ -44,6 +44,8 @@ static_library("test_support") {
     "request_handler_for_device_initial_enrollment_state.h",
     "request_handler_for_device_state_retrieval.cc",
     "request_handler_for_device_state_retrieval.h",
+    "request_handler_for_fm_registration_token_upload.cc",
+    "request_handler_for_fm_registration_token_upload.h",
     "request_handler_for_policy.cc",
     "request_handler_for_policy.h",
     "request_handler_for_register_browser.cc",

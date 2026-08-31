@@ -29,6 +29,7 @@
 #include "components/policy/test_support/request_handler_for_device_attribute_update_permission.h"
 #include "components/policy/test_support/request_handler_for_device_initial_enrollment_state.h"
 #include "components/policy/test_support/request_handler_for_device_state_retrieval.h"
+#include "components/policy/test_support/request_handler_for_fm_registration_token_upload.h"
 #include "components/policy/test_support/request_handler_for_policy.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/policy/test_support/request_handler_for_psm_auto_enrollment.h"
@@ -132,6 +133,8 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
       std::make_unique<RequestHandlerForDeviceInitialEnrollmentState>(this));
   RegisterHandler(
       std::make_unique<RequestHandlerForDeviceStateRetrieval>(this));
+  RegisterHandler(
+      std::make_unique<RequestHandlerForFmRegistrationTokenUpload>(this));
   RegisterHandler(std::make_unique<RequestHandlerForPolicy>(this));
 #if BUILDFLAG(IS_CHROMEOS)
   RegisterHandler(std::make_unique<RequestHandlerForPsmAutoEnrollment>(this));
