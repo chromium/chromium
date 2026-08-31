@@ -139,9 +139,6 @@ tast.crash.ValidateFirmwareDumpGeneration.policy_all@brya
 tast.crash.ValidateFirmwareDumpGeneration.policy_none@brya
 tast.crash.ValidateFirmwareDumpGeneration.policy_wifi@brya
 
-# b/514426993
-tast.secagentd.AuthenticationEvents@octopus
-
 # b/505776070
 tast.hwsec.CrossVersionChromeLogin.ti50_r112
 tast.hwsec.CrossVersionChromeLogin.ti50_r114
