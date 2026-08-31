@@ -12,6 +12,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,17 +32,16 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_activity_provider.h"
 #include "chrome/browser/extensions/launch_util.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_manager/user.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -50,6 +50,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -584,46 +585,40 @@ void AppTimeController::ShowNotificationForApp(
   const std::u16string notification_source =
       l10n_util::GetStringUTF16(IDS_TIME_LIMIT_NOTIFICATION_DISPLAY_SOURCE);
 
-  std::string notification_id = GetNotificationIdFor(app_name, notification);
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  const std::string notification_id = CreateUserScopedNotificationId(
+      GetNotificationIdFor(app_name, notification), user.username_hash());
   message_center::RichNotificationData option_fields;
   option_fields.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT, kFamilyLinkSourceId,
+      NotificationCatalogName::kAppTime);
+  notifier_id.profile_id = user.GetAccountId().GetUserEmail();
 
-  message_center::Notification message_center_notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          message, notification_source, GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kFamilyLinkSourceId, NotificationCatalogName::kAppTime),
-          option_fields,
-          notification == AppNotification::kTimeLimitChanged
-              ? base::MakeRefCounted<
-                    message_center::HandleNotificationClickDelegate>(
-                    base::BindRepeating(&AppTimeController::OpenFamilyLinkApp,
-                                        weak_ptr_factory_.GetWeakPtr()))
-              : base::MakeRefCounted<message_center::NotificationDelegate>(),
-          chromeos::kNotificationSupervisedUserIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
+  auto message_center_notification = CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
+      notification_source, GURL(), notifier_id, option_fields,
+      notification == AppNotification::kTimeLimitChanged
+          ? base::MakeRefCounted<
+                message_center::HandleNotificationClickDelegate>(
+                base::BindRepeating(&AppTimeController::OpenFamilyLinkApp,
+                                    weak_ptr_factory_.GetWeakPtr()))
+          : base::MakeRefCounted<message_center::NotificationDelegate>(),
+      chromeos::kNotificationSupervisedUserIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
 
   if (icon.has_value()) {
-    message_center_notification.set_icon(
+    message_center_notification->set_icon(
         ui::ImageModel::FromImageSkia(icon.value()));
   }
 
-  auto* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile_);
-  if (!notification_display_service) {
-    return;
-  }
-
   // Close the existing notification with notification_id.
-  notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
-                                      notification_id);
-
-  notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
-                                        message_center_notification,
-                                        /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/false);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(message_center_notification));
 }
 
 }  // namespace ash::app_time

@@ -47,16 +47,18 @@ static_library("time_limits") {
     "//ash/strings",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts/constants",
-    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ui/vector_icons",
     "//components/app_constants",
+    "//components/user_manager",
     "//extensions/browser",
     "//extensions/common",
+    "//ui/message_center",
   ]
 }
 
@@ -92,6 +94,7 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     ":time_limits",
+    "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
@@ -102,8 +105,10 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
+    "//components/user_manager",
     "//extensions/common",
     "//testing/gtest",
+    "//ui/message_center",
     "//url",
   ]
 

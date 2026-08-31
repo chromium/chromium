@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -35,11 +35,13 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash::app_time {
 
@@ -137,10 +139,6 @@ class AppTimeControllerTest : public testing::Test {
     return SystemClockClient::Get()->GetTestInterface();
   }
 
-  NotificationDisplayServiceTester& notification_tester() {
-    return *notification_tester_.get();
-  }
-
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
   Profile& profile() { return *profile_.get(); }
@@ -149,7 +147,7 @@ class AppTimeControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+  std::string user_hash_;
   FakeIconLoader icon_loader_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_app_test_;
@@ -168,16 +166,18 @@ void AppTimeControllerTest::SetUp() {
   base::TimeDelta forward_by = local_midnight - base::Time::Now();
   task_environment_.FastForwardBy(forward_by);
 
+  message_center::MessageCenter::Initialize();
+
   arc_app_test_.PreProfileSetUp();
   profile_ = std::make_unique<TestingProfile>();
-  notification_tester_ =
-      std::make_unique<NotificationDisplayServiceTester>(profile_.get());
 
   app_service_test_.SetUp(profile_.get());
   apps::AppServiceProxyFactory::GetForProfile(profile_.get())
       ->OverrideInnerIconLoaderForTesting(&icon_loader_);
 
   arc_app_test_.PostProfileSetUp(profile_.get());
+  user_hash_ =
+      user_manager::UserManager::Get()->GetActiveUser()->username_hash();
   arc_app_test_.app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
   task_environment_.RunUntilIdle();
@@ -193,6 +193,7 @@ void AppTimeControllerTest::TearDown() {
   arc_app_test_.PreProfileTearDown();
   profile_.reset();
   arc_app_test_.PostProfileTearDown();
+  message_center::MessageCenter::Shutdown();
   SystemClockClient::Shutdown();
 }
 
@@ -244,20 +245,17 @@ bool AppTimeControllerTest::HasNotificationFor(
 
   notification_id = base::StrCat({notification_id, app_name});
 
-  std::optional<message_center::Notification> message_center_notification =
-      notification_tester_->GetNotification(notification_id);
-  return message_center_notification.has_value();
+  return message_center::MessageCenter::Get()->FindNotificationById(
+      CreateUserScopedNotificationId(notification_id, user_hash_));
 }
 
 size_t AppTimeControllerTest::GetNotificationsCount() {
-  return notification_tester_
-      ->GetDisplayedNotificationsForType(NotificationHandler::Type::TRANSIENT)
-      .size();
+  return message_center::MessageCenter::Get()->NotificationCount();
 }
 
 void AppTimeControllerTest::DismissNotifications() {
-  notification_tester_->RemoveAllNotifications(
-      NotificationHandler::Type::TRANSIENT, true /* by_user */);
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
 }
 
 void AppTimeControllerTest::DeleteController() {

@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/launch_util.h",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",

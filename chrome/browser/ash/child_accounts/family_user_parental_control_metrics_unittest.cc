@@ -36,6 +36,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -60,6 +61,8 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
     EXPECT_LT(base::TimeDelta(), forward_by);
     task_environment_.AdvanceClock(forward_by);
 
+    message_center::MessageCenter::Initialize();
+
     // Build a child profile.
     std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -76,6 +79,7 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
   void TearDown() override {
     parental_control_metrics_.reset();
     profile_.reset();
+    message_center::MessageCenter::Shutdown();
   }
 
  protected:
