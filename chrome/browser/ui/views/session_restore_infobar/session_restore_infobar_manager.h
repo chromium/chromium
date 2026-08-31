@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/infobars/infobar_spec.h"
