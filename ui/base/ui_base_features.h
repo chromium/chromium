@@ -355,6 +355,9 @@ BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kThemeChangeOptimization);
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kColorIdCssStyleSheetOptimization);
+
 // Kill switch for removing
 // RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent.
 //
@@ -369,6 +372,8 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsRoundedIconsEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsWebUIRoundedIconsEnabled();
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsColorIdCssStyleSheetOptimizationEnabled();
 
 }  // namespace features
 
