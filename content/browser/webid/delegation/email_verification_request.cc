@@ -5,10 +5,13 @@
 #include "content/browser/webid/delegation/email_verification_request.h"
 
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -59,11 +62,15 @@ std::string CreateContentDigestHeader(const std::string& post_data) {
 
 std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
   net::structured_headers::Parameters params;
-  for (const auto [key, value] : public_key.ToDict()) {
-    if (key == "alg" || key == "d" || !value.is_string()) {
+  for (auto [key, value] : public_key.ToDict()) {
+    if (key == "alg" || key == "d") {
       continue;
     }
-    params.emplace_back(key, net::structured_headers::Item(value.GetString()));
+    std::string* str = value.GetIfString();
+    if (!str) {
+      continue;
+    }
+    params.emplace_back(key, net::structured_headers::Item(std::move(*str)));
   }
 
   net::structured_headers::Dictionary dict;
@@ -125,7 +132,7 @@ std::string CreateMessageSignature(
     const GURL& issuance_endpoint,
     const std::string& content_digest_val,
     const std::string& signature_key_val,
-    const net::structured_headers::ParameterizedMember& signature_params,
+    net::structured_headers::ParameterizedMember signature_params,
     const crypto::keypair::PrivateKey& private_key) {
   std::string authority = std::string(issuance_endpoint.host());
   // RFC 9421 Section 2.2.3 specifies that the @authority component must be
@@ -146,7 +153,7 @@ std::string CreateMessageSignature(
        signature_params.member) {
     const std::string* component_name = param.item.GetIfString();
     CHECK(component_name);
-    std::string component_value;
+    std::string_view component_value;
     if (*component_name == "@method") {
       component_value = "POST";
     } else if (*component_name == "@authority") {
@@ -160,12 +167,12 @@ std::string CreateMessageSignature(
     } else {
       NOTREACHED();
     }
-    base::StringAppendF(&signature_base, "\"%s\": %s\n",
-                        component_name->c_str(), component_value.c_str());
+    base::StringAppendF(&signature_base, "\"%s\": %s\n", *component_name,
+                        component_value);
   }
 
   net::structured_headers::List list_wrapper;
-  list_wrapper.push_back(signature_params);
+  list_wrapper.push_back(std::move(signature_params));
   std::optional<std::string> serialized_params =
       net::structured_headers::SerializeList(list_wrapper);
   CHECK(serialized_params);
@@ -173,7 +180,7 @@ std::string CreateMessageSignature(
   // trailing newline:
   // https://datatracker.ietf.org/doc/html/rfc9421#create-sig-input
   base::StringAppendF(&signature_base, "\"@signature-params\": %s",
-                      serialized_params->c_str());
+                      *serialized_params);
 
   sdjwt::Signer http_signer = sdjwt::CreateJwtSigner(private_key);
   std::optional<std::vector<uint8_t>> signature_opt =
@@ -206,21 +213,21 @@ net::HttpRequestHeaders CreateMessageSignatureHeaders(
   net::structured_headers::ParameterizedMember signature_params =
       CreateMessageSignatureParams(created_time);
   std::string signature_input_val = SerializeSignatureInput(signature_params);
-  std::string signature_val =
-      CreateMessageSignature(issuance_endpoint, content_digest_val,
-                             signature_key_val, signature_params, private_key);
+  std::string signature_val = CreateMessageSignature(
+      issuance_endpoint, content_digest_val, signature_key_val,
+      std::move(signature_params), private_key);
 
   net::HttpRequestHeaders extra_headers;
-  extra_headers.SetHeader("Content-Digest", content_digest_val);
-  extra_headers.SetHeader("Signature-Key", signature_key_val);
-  extra_headers.SetHeader("Signature-Input", signature_input_val);
-  extra_headers.SetHeader("Signature", signature_val);
+  extra_headers.SetHeader("Content-Digest", std::move(content_digest_val));
+  extra_headers.SetHeader("Signature-Key", std::move(signature_key_val));
+  extra_headers.SetHeader("Signature-Input", std::move(signature_input_val));
+  extra_headers.SetHeader("Signature", std::move(signature_val));
   return extra_headers;
 }
 
 }  // namespace
 
-std::optional<std::string> GetDomainFromEmail(const std::string& email) {
+std::optional<std::string_view> GetDomainFromEmail(std::string_view email) {
   auto parts = base::RSplitStringOnce(email, "@");
 
   if (!parts) {
@@ -234,12 +241,12 @@ std::optional<std::string> GetDomainFromEmail(const std::string& email) {
   // Use GURL to validate that the domain is a valid host.
   // TODO(crbug.com/380367784): consider better ways to validate if
   // the email domain is well formed.
-  GURL url("https://" + std::string(parts->second));
+  GURL url(base::StrCat({"https://", parts->second}));
   if (!url.is_valid() || !url.has_host() || url.GetHost() != parts->second) {
     return std::nullopt;
   }
 
-  return std::string(parts->second);
+  return parts->second;
 }
 
 EmailVerificationRequest::EmailVerificationRequest(
@@ -300,13 +307,13 @@ void EmailVerificationRequest::CheckIfVerifiable(
   // Step 3.1: the browser extracts the domain from the email address and
   // asks the DNS server who the issuer is:
 
-  std::optional<std::string> domain = GetDomainFromEmail(email);
+  std::optional<std::string_view> domain = GetDomainFromEmail(email);
   if (!domain) {
     CompleteIsVerifiableRequest(std::move(callback), std::nullopt,
                                 EmailVerificationRequestResult::kInvalidEmail);
     return;
   }
-  std::string hostname = "_email-verification." + *domain;
+  std::string hostname = base::StrCat({"_email-verification.", *domain});
 
   dns_request_->SendRequest(
       hostname,
@@ -335,7 +342,7 @@ void EmailVerificationRequest::OnDnsRequestComplete(
     return;
   }
 
-  const std::string& record = (*text_records)[0];
+  const std::string_view record = text_records->front();
   static constexpr char kIssPrefix[] = "iss=";
   if (!base::StartsWith(record, kIssPrefix, base::CompareCase::SENSITIVE)) {
     CompleteIsVerifiableRequest(
@@ -344,7 +351,7 @@ void EmailVerificationRequest::OnDnsRequestComplete(
     return;
   }
 
-  std::string iss = record.substr(sizeof(kIssPrefix) - 1);
+  const std::string_view iss = record.substr(sizeof(kIssPrefix) - 1);
   if (iss.empty()) {
     CompleteIsVerifiableRequest(
         std::move(callback), std::nullopt,
@@ -356,7 +363,8 @@ void EmailVerificationRequest::OnDnsRequestComplete(
     std::move(on_dns_resolved_callback).Run();
   }
 
-  GURL issuer("https://" + iss);
+  GURL issuer(base::StrCat({"https://", iss}));
+  url::Origin issuer_origin = url::Origin::Create(issuer);
 
   auto well_known = base::MakeRefCounted<WellKnownOrError>();
   auto accounts = base::MakeRefCounted<AccountsOrError>();
@@ -364,18 +372,16 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   // Create a barrier closure that will run OnAccountStatusFetched when called
   // twice.
   base::RepeatingClosure barrier = base::BarrierClosure(
-      2,
-      base::BindOnce(&EmailVerificationRequest::OnAccountStatusFetched,
-                     weak_ptr_factory_.GetWeakPtr(), well_known, accounts,
-                     url::Origin::Create(issuer), email, std::move(callback)));
+      2, base::BindOnce(&EmailVerificationRequest::OnAccountStatusFetched,
+                        weak_ptr_factory_.GetWeakPtr(), well_known, accounts,
+                        issuer_origin, email, std::move(callback)));
 
   // --- Task 1: Fetch .well-known/email-verification ---
   network_manager_->FetchWellKnown(
       issuer,
       base::BindOnce(
           &EmailVerificationRequest::OnEmailVerificationWellKnownFetched,
-          weak_ptr_factory_.GetWeakPtr(), barrier, url::Origin::Create(issuer),
-          well_known));
+          weak_ptr_factory_.GetWeakPtr(), barrier, well_known));
 
   // --- Task 2: Verify User is Logged In with the provided Email ---
   // If the issuer is found, the browser fetches the issuer's
@@ -384,7 +390,7 @@ void EmailVerificationRequest::OnDnsRequestComplete(
                                   ->GetFederatedIdentityPermissionContext();
   std::optional<bool> login_status =
       permission_delegate
-          ? permission_delegate->GetIdpSigninStatus(url::Origin::Create(issuer))
+          ? permission_delegate->GetIdpSigninStatus(issuer_origin)
           : std::nullopt;
 
   // Treat "unknown" login state as "logged-in" to avoid stopping early
@@ -400,13 +406,12 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   idp_network_manager_->FetchWellKnown(
       issuer,
       base::BindOnce(&EmailVerificationRequest::OnWebIdentityWellKnownFetched,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     url::Origin::Create(issuer), email, barrier, accounts));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(issuer_origin),
+                     barrier, accounts));
 }
 
 void EmailVerificationRequest::OnEmailVerificationWellKnownFetched(
     base::RepeatingClosure barrier,
-    const url::Origin& issuer,
     scoped_refptr<WellKnownOrError> well_known,
     FetchStatus status,
     EmailVerifierNetworkRequestManager::WellKnown fetched_well_known) {
@@ -422,7 +427,6 @@ void EmailVerificationRequest::OnEmailVerificationWellKnownFetched(
 
 void EmailVerificationRequest::OnWebIdentityWellKnownFetched(
     const url::Origin& issuer,
-    const std::string& email,
     base::RepeatingClosure barrier,
     scoped_refptr<AccountsOrError> accounts,
     FetchStatus status,
@@ -451,11 +455,10 @@ void EmailVerificationRequest::OnWebIdentityWellKnownFetched(
   idp_network_manager_->SendAccountsRequest(
       url::Origin::Create(well_known.accounts), well_known.accounts,
       base::BindOnce(&EmailVerificationRequest::OnAccountsResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr(), email, barrier, accounts));
+                     weak_ptr_factory_.GetWeakPtr(), barrier, accounts));
 }
 
 void EmailVerificationRequest::OnAccountsResponseReceived(
-    const std::string& email,
     base::RepeatingClosure barrier,
     scoped_refptr<AccountsOrError> accounts,
     FetchStatus status,
