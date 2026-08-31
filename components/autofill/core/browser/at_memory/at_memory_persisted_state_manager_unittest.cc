@@ -35,9 +35,11 @@ class AtMemoryPersistedStateManagerTest : public testing::Test {
   AtMemoryPersistedStateManager& state_manager() { return state_manager_; }
   const FieldGlobalId& field_id() const { return field_id_; }
   const FieldGlobalId& other_field_id() const { return other_field_id_; }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   AtMemoryPersistedStateManager state_manager_{/*history_service=*/nullptr};
   FieldGlobalId field_id_{test::MakeFieldGlobalId()};
@@ -126,11 +128,14 @@ TEST_F(AtMemoryPersistedStateManagerTest,
             std::nullopt);
 }
 
+// Tests that accessing the field origin when no field is active crashes with a
+// CHECK failure.
 TEST_F(AtMemoryPersistedStateManagerTest,
        FieldOriginCrashesWhenNoFieldIsActive) {
   EXPECT_CHECK_DEATH(state_manager().field_origin());
 }
 
+// Tests that accepting a suggestion resets the persisted search state.
 TEST_F(AtMemoryPersistedStateManagerTest,
        OnSuggestionAcceptedResetsSearchState) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
@@ -363,6 +368,8 @@ TEST_F(AtMemoryPersistedStateManagerTest, EvictsOldestWhenLimitReached) {
       u"20");
 }
 
+// Tests that history deletion clears persisted suggestions and resets the
+// state.
 TEST_F(AtMemoryPersistedStateManagerTest,
        HistoryDeletionClearsPersistedSuggestions) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
@@ -383,6 +390,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
             std::nullopt);
 }
 
+// Tests that history deletion clears ongoing in-flight search state.
 TEST_F(AtMemoryPersistedStateManagerTest,
        HistoryDeletionClearsOngoingSearchState) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
@@ -398,6 +406,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
             std::nullopt);
 }
 
+// Tests that history deletion clears previously filled suggestions.
 TEST_F(AtMemoryPersistedStateManagerTest,
        HistoryDeletionClearsPreviouslyFilledSuggestions) {
   base::test::ScopedFeatureList feature_list{
@@ -411,6 +420,80 @@ TEST_F(AtMemoryPersistedStateManagerTest,
       /*history_service=*/nullptr, history::DeletionInfo::ForAllHistory());
 
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that persisted search state expires and is reset after the inactivity
+// TTL (30 minutes).
+TEST_F(AtMemoryPersistedStateManagerTest, StateExpiresAfterTtl) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
+  state_manager().StopSearching();
+  state_manager().OnSuggestionsChanged(suggestions);
+
+  // Before TTL expires, state is intact.
+  task_environment().FastForwardBy(AtMemoryPersistedStateManager::kTimeToLive -
+                                   base::Seconds(1));
+  const std::optional<AtMemorySearchState>& active_state =
+      state_manager().GetStateForField(field_id(), FieldOrigin());
+  ASSERT_TRUE(active_state.has_value());
+  EXPECT_EQ(active_state->filter, u"address");
+  EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
+
+  // Once TTL expires, state is reset.
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+}
+
+// Tests that state mutations (filter changes, receiving suggestions, submitting
+// queries) restart the inactivity TTL timer.
+TEST_F(AtMemoryPersistedStateManagerTest, MutationsResetTtl) {
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+
+  // Advance by 20 minutes (less than 30-minute TTL).
+  task_environment().FastForwardBy(base::Minutes(20));
+
+  // 1. OnFilterChanged: modify query, resetting TTL timer for 30 minutes.
+  state_manager().OnFilterChanged(u"new address");
+
+  // Advance another 20 minutes (40 minutes total, 20 minutes since last
+  // mutation).
+  task_environment().FastForwardBy(base::Minutes(20));
+  EXPECT_TRUE(
+      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+
+  // 2. OnSuggestionsChanged: receive suggestions, resetting TTL timer.
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
+  state_manager().OnSuggestionsChanged(suggestions);
+
+  // Advance another 20 minutes (60 minutes total, 20 minutes since last
+  // mutation).
+  task_environment().FastForwardBy(base::Minutes(20));
+  EXPECT_TRUE(
+      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+
+  // 3. OnFilterSubmitted: submit new query, resetting TTL timer.
+  state_manager().OnFilterSubmitted(u"submitted address");
+
+  // Advance another 20 minutes (80 minutes total, 20 minutes since last
+  // mutation).
+  task_environment().FastForwardBy(base::Minutes(20));
+  const std::optional<AtMemorySearchState>& active_state =
+      state_manager().GetStateForField(field_id(), FieldOrigin());
+  ASSERT_TRUE(active_state.has_value());
+  EXPECT_EQ(active_state->filter, u"submitted address");
+  EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
+
+  // Advance remaining 10 minutes to cross the new 30-minute deadline (90
+  // minutes total).
+  task_environment().FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
 }
 
 }  // namespace

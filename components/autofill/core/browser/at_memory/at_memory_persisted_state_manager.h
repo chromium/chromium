@@ -13,6 +13,8 @@
 
 #include "base/check.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -43,6 +45,7 @@ namespace autofill {
 class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
  public:
   static constexpr size_t kMaxPreviouslyFilledSuggestions = 20;
+  static constexpr base::TimeDelta kTimeToLive = base::Minutes(30);
 
   explicit AtMemoryPersistedStateManager(
       history::HistoryService* history_service);
@@ -85,6 +88,7 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
  private:
   void Reset();
   void ResetSearchState();
+  void RestartCleanupTimer();
 
   // Field id for which the `search_state_` is kept.
   FieldGlobalId field_id_;
@@ -95,6 +99,7 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   std::optional<AtMemorySearchState> search_state_;
   // Stores previously filled suggestions.
   std::vector<Suggestion> previously_filled_suggestions_;
+  base::OneShotTimer cleanup_timer_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
