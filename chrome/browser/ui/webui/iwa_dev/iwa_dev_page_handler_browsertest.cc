@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(
   auto result = CallUpdateManifestInstalledApp(app.app_id(), "1.0.0",
                                                /*allow_downgrades=*/false);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error()->message, "Error::kDowngradeNotAllowed");
+  EXPECT_EQ(result.error()->message, "Version downgrade is not allowed.");
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
   auto result = CallUpdateManifestInstalledApp(app.app_id(), "1.5.0");
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error()->message,
-            "Error::kPinnedVersionNotFoundInUpdateManifest");
+            "Pinned version not found in update manifest.");
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);

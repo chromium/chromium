@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -40,6 +41,7 @@
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_check_and_prepare_result.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -169,6 +171,36 @@ bool UpdateFound(web_app::IwaUpdateCheckAndPrepareSuccess status) {
     case web_app::IwaUpdateCheckAndPrepareSuccess::kNoUpdateFound:
     case web_app::IwaUpdateCheckAndPrepareSuccess::kUpdateFound:
       return false;
+  }
+}
+
+std::string UpdateCheckAndPrepareErrorToString(
+    web_app::IwaUpdateCheckAndPrepareError error) {
+  switch (error) {
+    case web_app::IwaUpdateCheckAndPrepareError::kUpdateManifestDownloadFailed:
+      return "Failed to download update manifest.";
+    case web_app::IwaUpdateCheckAndPrepareError::kUpdateManifestInvalidJson:
+      return "Update manifest contains invalid JSON.";
+    case web_app::IwaUpdateCheckAndPrepareError::kUpdateManifestInvalidManifest:
+      return "Invalid update manifest format.";
+    case web_app::IwaUpdateCheckAndPrepareError::
+        kUpdateManifestNoApplicableVersion:
+      return "No applicable version found in update manifest.";
+    case web_app::IwaUpdateCheckAndPrepareError::kIwaNotInstalled:
+      return "App not found.";
+    case web_app::IwaUpdateCheckAndPrepareError::
+        kPinnedVersionNotFoundInUpdateManifest:
+      return "Pinned version not found in update manifest.";
+    case web_app::IwaUpdateCheckAndPrepareError::kDowngradeNotAllowed:
+      return "Version downgrade is not allowed.";
+    case web_app::IwaUpdateCheckAndPrepareError::kDownloadPathCreationFailed:
+      return "Failed to create download path.";
+    case web_app::IwaUpdateCheckAndPrepareError::kBundleDownloadError:
+      return "Failed to download web bundle.";
+    case web_app::IwaUpdateCheckAndPrepareError::kUpdateDryRunFailed:
+      return "Update dry run failed.";
+    case web_app::IwaUpdateCheckAndPrepareError::kSystemShutdown:
+      return "Operation aborted.";
   }
 }
 
@@ -531,8 +563,7 @@ void IwaDevPageHandler::OnUpdateDiscoverAndPrepareTaskCompleted(
           std::move(*callback).Run(
               base::unexpected(mojo_base::mojom::Error::New(
                   mojo_base::mojom::Code::kInvalidArgument,
-                  web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
-                      ErrorToString(error))));
+                  UpdateCheckAndPrepareErrorToString(error))));
         }
       });
 
