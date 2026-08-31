@@ -14395,6 +14395,7 @@ from previous Chrome versions.
   <int value="-101679300" label="AndroidKeyboardA11y:disabled"/>
   <int value="-100702864" label="PageInfoAboutThisSite:disabled"/>
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
+  <int value="-99856559" label="EnterpriseProxyErrorHandling:enabled"/>
   <int value="-99781021" label="disable-roboto-font-ui"/>
   <int value="-99433146" label="LacrosLaunchAtLoginScreen:enabled"/>
   <int value="-99310969"
@@ -20803,6 +20804,7 @@ from previous Chrome versions.
   <int value="1881036528" label="disable-multilingual-spellchecker"/>
   <int value="1881065222" label="CrOSLateBootAllowFpmcuBetaFirmware:disabled"/>
   <int value="1881174782" label="disable-brotli"/>
+  <int value="1882167455" label="EnterpriseProxyErrorHandling:disabled"/>
   <int value="1882177465" label="JourneysKeywordFiltering:enabled"/>
   <int value="1882197308" label="UseChromeOSDirectVideoDecoder:disabled"/>
   <int value="1883000826" label="IsolatedSandboxedIframesName:disabled"/>

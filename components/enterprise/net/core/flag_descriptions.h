@@ -14,6 +14,9 @@ namespace enterprise_net::flag_descriptions {
 extern const char kEnableDynamicRouteFetchingName[];
 extern const char kEnableDynamicRouteFetchingDescription[];
 
+extern const char kEnterpriseProxyErrorHandlingName[];
+extern const char kEnterpriseProxyErrorHandlingDescription[];
+
 }  // namespace enterprise_net::flag_descriptions
 
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)

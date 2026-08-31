@@ -51,7 +51,12 @@ bool EnterpriseProxyErrorService::InterceptProxyAuthChallenge(
   bool is_handled = true;
   GURL proxy_url = auth_info.challenger.GetURL();
   int error_code = 0;
-  base::StringToInt(auth_info.realm, &error_code);
+  std::optional<int> forced_error_code = GetForcedDisguisedErrorCode();
+  if (forced_error_code.has_value()) {
+    error_code = *forced_error_code;
+  } else {
+    base::StringToInt(auth_info.realm, &error_code);
+  }
   auto eps_callback = base::BindOnce(
       &EnterpriseProxyErrorService::OnProxyAuthChallengeResult,
       weak_ptr_factory_.GetWeakPtr(), &is_handled, std::move(delegate),

@@ -4859,6 +4859,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enterprise-proxy-error-handling",
+    "owners": [ "xzonghan@google.com", "chrome-enterprise-networking-core@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "enterprise-published-skills-policy-enabled",
     "owners": [ "rafayb@google.com", "esalma@google.com", "austinzzr@google.com" ],
     "expiry_milestone": 155

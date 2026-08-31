@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
+#include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/enterprise/net/core/proxy_provisioning_domain_manager.h"
 #include "components/enterprise/net/core/utils.h"
@@ -222,7 +223,8 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
     return;
   }
 
-  if (IsDisguisedErrorRealm(auth_info.realm)) {
+  if (GetForcedDisguisedErrorCode().has_value() ||
+      IsDisguisedErrorRealm(auth_info.realm)) {
     RecordResultAndRunAuthCallback(std::move(callback),
                                    ProxyAuthChallengeResult::kDisguisedError,
                                    std::nullopt);

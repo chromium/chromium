@@ -269,6 +269,31 @@ TEST_F(EnterpriseProxyErrorServiceTest,
   EXPECT_FALSE(attached);
 }
 
+TEST_F(EnterpriseProxyErrorServiceTest,
+       ForcedDisguisedErrorCodeParam_ForcesError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnterpriseProxyErrorHandling, {{"forced_disguised_error_code", "503"}});
+
+  SetupManagedDomainWithProxy("proxy.example.com");
+
+  bool attached = false;
+  EnterpriseProxyErrorData attached_data;
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  // Even with a normal realm like "Enterprise Realm", the forced param
+  // overrides it to 503.
+  bool handled = error_service_->InterceptProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
+      GURL("https://target.example.com/test"), nullptr,
+      std::make_unique<TestDelegate>(&attached, &attached_data),
+      future.GetCallback());
+
+  EXPECT_TRUE(handled);
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_TRUE(attached);
+  EXPECT_EQ(attached_data.error_code(), 503);
+}
+
 TEST_F(EnterpriseProxyErrorServiceTest, NoCredentialsNeeded_ReturnsNullopt) {
   SetupManagedDomainWithProxy("proxy.example.com", /*with_auth=*/false);
 

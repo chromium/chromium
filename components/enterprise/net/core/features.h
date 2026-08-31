@@ -26,11 +26,22 @@ BASE_DECLARE_FEATURE(kEnterpriseProxyErrorHandling);
 // configuration downloads. Defaults to 3 MiB.
 extern const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam;
 
+inline constexpr char kForcedDisguisedErrorCodeParamName[] =
+    "forced_disguised_error_code";
+
+// Feature param to force a specific disguised HTTP error code (e.g. 403, 500,
+// 502, 503, 504). Defaults to 0 (disabled).
+extern const base::FeatureParam<int> kForcedDisguisedErrorCodeParam;
+
 // Return true if dynamic route fetching is enabled.
 bool IsDynamicRouteFetchingEnabled();
 
 // Return true if enterprise proxy error handling is enabled.
 bool IsEnterpriseProxyErrorHandlingEnabled();
+
+// Returns the forced disguised error code if configured (> 0) and error
+// handling is enabled, or std::nullopt.
+std::optional<int> GetForcedDisguisedErrorCode();
 
 // Returns the maximum allowed size in bytes for Provisioning Domain
 // configuration downloads.

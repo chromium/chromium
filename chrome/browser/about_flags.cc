@@ -4922,6 +4922,37 @@ const FeatureEntry::FeatureVariation
         {"3 days", kAutofillUpstreamEnforceStrikeDelay3Days, nullptr},
         {"7 days", kAutofillUpstreamEnforceStrikeDelay7Days, nullptr}};
 
+#if BUILDFLAG(ENTERPRISE_PROXY)
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced403[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "403"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced500[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "500"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced502[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "502"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced503[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "503"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced504[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "504"}};
+
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForcedUnsupported429[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "429"}};
+
+const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
+    {
+        {"Force 403 (Authorization / Block)", kEnterpriseProxyErrorForced403,
+         nullptr},
+        {"Force 500 (Internal Server Error)", kEnterpriseProxyErrorForced500,
+         nullptr},
+        {"Force 502 (Bad Gateway)", kEnterpriseProxyErrorForced502, nullptr},
+        {"Force 503 (Service Unavailable)", kEnterpriseProxyErrorForced503,
+         nullptr},
+        {"Force 504 (Gateway Timeout)", kEnterpriseProxyErrorForced504,
+         nullptr},
+        {"Force Unsupported HTTP Code (429)",
+         kEnterpriseProxyErrorForcedUnsupported429, nullptr},
+};
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13386,6 +13417,15 @@ const FeatureEntry kFeatureEntries[] = {
      enterprise_net::flag_descriptions::kEnableDynamicRouteFetchingName,
      enterprise_net::flag_descriptions::kEnableDynamicRouteFetchingDescription,
      kOsAll, FEATURE_VALUE_TYPE(enterprise_net::kEnableDynamicRouteFetching)},
+    {"enterprise-proxy-error-handling",
+     enterprise_net::flag_descriptions::kEnterpriseProxyErrorHandlingName,
+     enterprise_net::flag_descriptions::
+         kEnterpriseProxyErrorHandlingDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         enterprise_net::kEnterpriseProxyErrorHandling,
+         kEnterpriseProxyErrorHandlingVariations,
+         "EnterpriseProxyErrorHandling")},
 #endif
 
     {"payment-request-reject-too-small-windows",

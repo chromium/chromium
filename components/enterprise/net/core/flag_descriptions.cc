@@ -13,6 +13,12 @@ const char kEnableDynamicRouteFetchingDescription[] =
     "Enables fetching proxy configurations and routing rules dynamically from "
     "Provisioning Domains.";
 
+const char kEnterpriseProxyErrorHandlingName[] =
+    "Enterprise Proxy Error Handling";
+const char kEnterpriseProxyErrorHandlingDescription[] =
+    "Enables handling and displaying dedicated error pages for enterprise "
+    "proxy authentication challenges and disguised errors.";
+
 }  // namespace enterprise_net::flag_descriptions
 
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
