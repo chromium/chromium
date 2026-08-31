@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
@@ -116,10 +115,8 @@ gfx::Size LoadNavButtonIcon(ui::NavButtonProvider::FrameButtonDisplayType type,
     auto* snapshot = gtk_snapshot_new();
     gdk_paintable_snapshot(paintable, snapshot, width, height);
     auto* node = gtk_snapshot_free_to_node(snapshot);
-
     size_t nbytes = width * height * sizeof(SkColor);
-    void* pixels = g_malloc(nbytes);
-    UNSAFE_TODO(memset(pixels, 0, nbytes));
+    void* pixels = g_malloc0(nbytes);
     size_t stride = sizeof(SkColor) * width;
 
     CairoSurface surface(pixels, width, height);
