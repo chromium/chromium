@@ -10529,6 +10529,11 @@ std::string NavigationRequest::GetRequestMethod() {
   return request_method_;
 }
 
+scoped_refptr<network::ResourceRequestBody> NavigationRequest::GetPostData()
+    const {
+  return common_params_->post_data;
+}
+
 const blink::mojom::Referrer& NavigationRequest::GetReferrer() {
   return *sanitized_referrer_;
 }

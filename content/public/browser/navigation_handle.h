@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
@@ -57,6 +58,10 @@ class HttpResponseHeaders;
 class IsolationInfo;
 class SSLInfo;
 }  // namespace net
+
+namespace network {
+class ResourceRequestBody;
+}  // namespace network
 
 namespace perfetto::protos::pbzero {
 class NavigationHandle;
@@ -333,6 +338,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // This will not change during the navigation (e.g. after encountering a
   // server redirect).
   virtual std::string GetRequestMethod() = 0;
+
+  // Returns the ResourceRequestBody (POST data) for the navigation request, or
+  // nullptr if there is none. This is available starting from navigation start
+  // time (e.g. in `DidStartNavigation()`), but may be cleared if the navigation
+  // encounters an error or is redirected to a non-POST request.
+  virtual scoped_refptr<network::ResourceRequestBody> GetPostData() const = 0;
 
   // Returns a sanitized version of the referrer for this request.
   virtual const blink::mojom::Referrer& GetReferrer() = 0;

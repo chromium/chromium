@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/test/task_runner_deferring_throttle.h"
@@ -26,6 +28,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -119,13 +122,25 @@ class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 
+  void DidStartNavigation(NavigationHandle* handle) override {
+    resource_request_body_at_start_ = handle->GetPostData();
+  }
+
   void DidFinishNavigation(NavigationHandle* handle) override {
     did_finish_navigation_ = true;
     is_post_ = handle->IsPost();
+    resource_request_body_at_finish_ = handle->GetPostData();
   }
 
   bool did_finish_navigation() { return did_finish_navigation_; }
   bool is_post() { return is_post_; }
+  scoped_refptr<network::ResourceRequestBody> resource_request_body_at_start() {
+    return resource_request_body_at_start_;
+  }
+  scoped_refptr<network::ResourceRequestBody>
+  resource_request_body_at_finish() {
+    return resource_request_body_at_finish_;
+  }
 
  private:
   // set upon DidFinishNavigation.
@@ -133,6 +148,8 @@ class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
 
   // Not valid until |did_finish_navigation_| is true;
   bool is_post_ = false;
+  scoped_refptr<network::ResourceRequestBody> resource_request_body_at_start_;
+  scoped_refptr<network::ResourceRequestBody> resource_request_body_at_finish_;
 };
 
 class ResponseHeadersCheckingNavigationSimulatorTest
@@ -224,6 +241,54 @@ TEST_F(MethodCheckingNavigationSimulatorTest, SetMethodPost) {
 
   ASSERT_TRUE(did_finish_navigation());
   EXPECT_TRUE(is_post());
+}
+
+TEST_F(MethodCheckingNavigationSimulatorTest, SetResourceRequestBody) {
+  std::unique_ptr<NavigationSimulator> simulator =
+      NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.test/"), main_rfh());
+  simulator->SetMethod("POST");
+  auto request_body = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::byte_span_from_cstring("test payload"));
+  const int64_t kPostId = 12345;
+  request_body->set_identifier(kPostId);
+  simulator->SetResourceRequestBody(request_body);
+  simulator->Start();
+  EXPECT_EQ(request_body, resource_request_body_at_start());
+  simulator->Commit();
+
+  ASSERT_TRUE(did_finish_navigation());
+  EXPECT_TRUE(is_post());
+  EXPECT_EQ(request_body, resource_request_body_at_finish());
+  ASSERT_TRUE(controller().GetLastCommittedEntry());
+  EXPECT_EQ(kPostId, controller().GetLastCommittedEntry()->GetPostID());
+}
+
+TEST_F(MethodCheckingNavigationSimulatorTest,
+       SetResourceRequestBodyWithRedirect) {
+  std::unique_ptr<NavigationSimulator> simulator =
+      NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.test/"), main_rfh());
+  simulator->SetMethod("POST");
+  auto request_body = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::byte_span_from_cstring("test payload"));
+  const int64_t kPostId = 12345;
+  request_body->set_identifier(kPostId);
+  simulator->SetResourceRequestBody(request_body);
+  simulator->Start();
+  EXPECT_EQ(request_body, resource_request_body_at_start());
+
+  simulator->Redirect(GURL("https://example.test/2.html"));
+  simulator->Commit();
+
+  ASSERT_TRUE(did_finish_navigation());
+  // A server redirect should convert the request to a GET.
+  EXPECT_FALSE(is_post());
+  // The ResourceRequestBody should not be copied on redirect.
+  EXPECT_EQ(nullptr, resource_request_body_at_finish());
+  ASSERT_TRUE(controller().GetLastCommittedEntry());
+  // The PostID should be cleared for the committed navigation entry.
+  EXPECT_EQ(-1, controller().GetLastCommittedEntry()->GetPostID());
 }
 
 TEST_F(ResponseHeadersCheckingNavigationSimulatorTest, CheckResponseHeaders) {

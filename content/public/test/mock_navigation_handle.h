@@ -29,6 +29,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -146,6 +147,9 @@ class MockNavigationHandle : public NavigationHandle {
   const GURL& GetBaseURLForDataURL() override { return base_url_for_data_url_; }
   MOCK_METHOD0(IsPost, bool());
   MOCK_METHOD0(GetRequestMethod, std::string());
+  scoped_refptr<network::ResourceRequestBody> GetPostData() const override {
+    return post_data_;
+  }
   const blink::mojom::Referrer& GetReferrer() override { return referrer_; }
   void SetReferrer(blink::mojom::ReferrerPtr referrer) override {
     referrer_ = *referrer;
@@ -408,6 +412,9 @@ class MockNavigationHandle : public NavigationHandle {
   void set_was_started_from_context_menu(bool was_started_from_context_menu) {
     was_started_from_context_menu_ = was_started_from_context_menu;
   }
+  void set_post_data(scoped_refptr<network::ResourceRequestBody> post_data) {
+    post_data_ = std::move(post_data);
+  }
 
  private:
   const RenderFrameHost* GetConstParentFrameOrOuterDocument() const {
@@ -442,6 +449,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool is_blocked_by_connection_allowlist_ = false;
   net::HttpRequestHeaders request_headers_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
+  scoped_refptr<network::ResourceRequestBody> post_data_;
   std::optional<net::SSLInfo> ssl_info_;
   std::optional<net::AuthChallengeInfo> auth_challenge_info_;
   net::ResolveErrorInfo resolve_error_info_;

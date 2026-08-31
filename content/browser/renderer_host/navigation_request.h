@@ -103,6 +103,7 @@
 
 namespace network {
 struct IntegrityPolicy;
+class ResourceRequestBody;
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
@@ -411,6 +412,7 @@ class CONTENT_EXPORT NavigationRequest
   const NavigationHandleTiming& GetNavigationHandleTiming() override;
   bool IsPost() override;
   std::string GetRequestMethod() override;
+  scoped_refptr<network::ResourceRequestBody> GetPostData() const override;
   const blink::mojom::Referrer& GetReferrer() override;
   void SetReferrer(blink::mojom::ReferrerPtr referrer) override;
   bool HasUserGesture() override;

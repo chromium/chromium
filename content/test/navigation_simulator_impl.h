@@ -30,6 +30,10 @@
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
 
+namespace network {
+class ResourceRequestBody;
+}  // namespace network
+
 namespace content {
 
 class FrameTreeNode;
@@ -90,6 +94,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetNavigationStart(base::TimeTicks navigation_start) override;
   void SetReloadType(ReloadType reload_type) override;
   void SetMethod(const std::string& method) override;
+  void SetResourceRequestBody(scoped_refptr<network::ResourceRequestBody>
+                                  resource_request_body) override;
   void SetIsFormSubmission(bool is_form_submission) override;
   void SetReferrer(blink::mojom::ReferrerPtr referrer) override;
   void SetSocketAddress(const net::IPEndPoint& remote_endpoint) override;
@@ -384,6 +390,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   std::optional<net::SSLInfo> ssl_info_;
   std::optional<blink::PageState> page_state_;
   std::optional<url::Origin> origin_;
+  scoped_refptr<network::ResourceRequestBody> resource_request_body_;
   int64_t post_id_ = -1;
   bool skip_service_worker_ = false;
   std::optional<url::Origin> initiator_origin_;
