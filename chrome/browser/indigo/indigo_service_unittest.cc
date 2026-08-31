@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -73,8 +72,11 @@ class IndigoServiceTest : public testing::Test {
             contextual_cueing::ChromeSuggestionsSettingsValue::kEnabled));
 
     if (set_script_switch_in_setup_) {
-      scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-          "indigo-script", "/dummy/path");
+      // Command line changes are automatically reset between unit tests by
+      // base::TestSuite's ResetCommandLineBetweenTests listener after all
+      // tasks have finished running.
+      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII("indigo-script",
+                                                                "/dummy/path");
     }
   }
 
@@ -156,13 +158,16 @@ class IndigoServiceTest : public testing::Test {
   }
 
  protected:
+  // Must be declared before `task_environment_` so background tasks are
+  // stopped before scoped state is torn down.
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   TestingPrefServiceSimple prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<IndigoService> service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   RemoteEligibility mock_remote_eligibility_ =
       RemoteEligibility{.is_service_supported_for_account = true,
                         .has_user_image = true};
@@ -170,7 +175,6 @@ class IndigoServiceTest : public testing::Test {
   IndigoService::RemoteEligibilityCallback pending_remote_eligibility_callback_;
   bool auto_complete_remote_eligibility_fetch_ = true;
   bool set_script_switch_in_setup_ = true;
-  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(IndigoServiceTest, DefaultStateNotSignedIn) {
@@ -552,8 +556,10 @@ TEST_F(IndigoServiceTest, LoadConfigFromCommandLine) {
   ASSERT_TRUE(proto.SerializeToString(&serialized));
   ASSERT_TRUE(base::WriteFile(config_path, serialized));
 
-  // Set the command line switch.
-  scoped_command_line_.GetProcessCommandLine()->AppendSwitchPath(
+  // Set the command line switch. Command line changes are automatically
+  // reset between unit tests by base::TestSuite's
+  // ResetCommandLineBetweenTests listener after all tasks have finished.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       "indigo-config-proto", config_path);
 
   CreateService();

@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/user_action_tester.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_command_line.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
@@ -81,8 +81,11 @@ class IndigoCueTargetTest : public testing::Test {
     profile_.reset();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  // Must be declared before `task_environment_` so background tasks are
+  // stopped before scoped state is torn down.
   base::test::ScopedFeatureList feature_list_;
+
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<page_actions::FakeTabInterface> tab_interface_;
   std::unique_ptr<testing::NiceMock<page_actions::MockPageActionController>>
@@ -133,8 +136,10 @@ TEST_F(IndigoCueTargetTest, CheckEligibility_LocallyIneligible) {
 }
 
 TEST_F(IndigoCueTargetTest, CheckEligibility_EligibleGeneratesContent) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(kForceIndigoSwitch);
+  // Command line changes are automatically reset between unit tests by
+  // base::TestSuite's ResetCommandLineBetweenTests listener after all
+  // tasks have finished running.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForceIndigoSwitch);
   EXPECT_CALL(*mock_skills_service_, RefreshDiscoverySkills()).Times(1);
   base::HistogramTester histogram_tester;
 

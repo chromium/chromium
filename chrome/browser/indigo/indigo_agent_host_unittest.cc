@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/common/indigo/indigo.mojom.h"
@@ -84,11 +83,13 @@ class IndigoAgentHostTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetIndigoScriptSwitch(const base::FilePath& path) {
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitchPath(
-        "indigo-script", path);
+    // Command line changes are automatically reset between unit tests by
+    // base::TestSuite's ResetCommandLineBetweenTests listener after all
+    // tasks have finished running.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchPath("indigo-script",
+                                                             path);
   }
 
-  base::test::ScopedCommandLine scoped_command_line_;
   base::ScopedTempDir temp_dir_;
   base::FilePath script_path_;
   MockIndigoAgent mock_agent_;

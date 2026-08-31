@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -13,7 +14,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -210,8 +210,11 @@ class IndigoPageActionControllerTest : public testing::Test {
          {features::kIndigoMetadataKeywordHeuristic, {}},
          {contextual_cueing::kContextualCueingV2, {}}},
         {});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        "indigo-script", "/dummy/path");
+    // Command line changes are automatically reset between unit tests by
+    // base::TestSuite's ResetCommandLineBetweenTests listener after all
+    // tasks have finished running.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII("indigo-script",
+                                                              "/dummy/path");
     // SetUpGlobalFeaturesForTesting is required to initialize
     // GlicGlobalEnabling which is checked by GlicEnabling.
     testing_profile_manager_ =
@@ -415,9 +418,14 @@ class IndigoPageActionControllerTest : public testing::Test {
     EXPECT_TRUE(prompts_loaded_future.Wait());
   }
 
+  // Must be declared before `task_environment_` so background tasks are
+  // stopped before scoped state is torn down.
+  base::test::ScopedFeatureList feature_list_;
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      scoped_glic_bypass_;
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(IS_CHROMEOS)
   // Needed because TestWebContents ends up creating BTM classes which depend
   // on this on ChromeOS.
@@ -441,9 +449,6 @@ class IndigoPageActionControllerTest : public testing::Test {
   std::unique_ptr<IndigoPageActionController> controller_;
   std::unique_ptr<FakeGlicSidePanelCoordinator>
       fake_glic_side_panel_coordinator_;
-  base::test::ScopedCommandLine scoped_command_line_;
-  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
-      scoped_glic_bypass_;
 };
 
 TEST_F(IndigoPageActionControllerTest, ShowsWhenOptimizationGuideReturnsTrue) {
@@ -1968,8 +1973,10 @@ TEST_F(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {
 }
 
 TEST_F(IndigoPageActionControllerTest, CheckEligibilityForCueingForced) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(kForceIndigoSwitch);
+  // Command line changes are automatically reset between unit tests by
+  // base::TestSuite's ResetCommandLineBetweenTests listener after all
+  // tasks have finished running.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForceIndigoSwitch);
 
   CreateController();
 
