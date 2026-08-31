@@ -612,7 +612,13 @@ void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
     return;
   }
 
-  // TODO(b/270089579): Add support for more properties to be updatable.
+  // Note: This function only syncs a minimal subset of properties (such as
+  // bssid_allowlist) and is intentionally incomplete. Full Wi-Fi configuration
+  // updates are not needed functionally for standard workflows because
+  // WifiManager APIs that modify saved networks (addOrUpdateNetwork, save) are
+  // restricted starting in target SDK Q (API 29) in favor of network
+  // suggestions. This implementation exists primarily for CTS compatibility
+  // (e.g., b/270089579).
   base::DictValue properties;
   base::DictValue wifi_dict;
 
