@@ -20,25 +20,71 @@ public interface GlicSplitButtonDelegate {
      * @param anchoredMessageText The longer description, shown in the anchored message UI.
      * @param promptSuggestion The optional prompt to be filled in to Glic if the nudge is clicked.
      */
-    void onTriggerGlicNudgeUi(String label, String anchoredMessageText, String promptSuggestion);
+    default void onTriggerGlicNudgeUi(
+            String label, String anchoredMessageText, String promptSuggestion) {}
 
     /** Called to hide/dismiss the Glic nudge UI. */
-    void onHideGlicNudgeUi();
+    default void onHideGlicNudgeUi() {}
 
     /** Returns whether the Glic nudge UI is currently showing. */
-    boolean getIsShowingGlicNudge();
+    default boolean getIsShowingGlicNudge() {
+        return false;
+    }
 
     /**
      * Called when native C++ updates whether the Glic button should be shown.
      *
      * @param show True if the Glic button should be shown in the UI.
      */
-    void setGlicShowState(boolean show);
+    default void setGlicShowState(boolean show) {}
 
     /**
      * Called when native C++ updates whether the Glic panel UI is open.
      *
      * @param open True if the Glic panel is currently open.
      */
-    void setGlicPanelIsOpen(boolean open);
+    default void setGlicPanelIsOpen(boolean open) {}
+
+    /** Called when native C++ requests showing the Glic actor task icon. */
+    default void showGlicActorTaskIcon() {}
+
+    /** Called when native C++ requests hiding the Glic actor task icon. */
+    default void hideGlicActorTaskIcon() {}
+
+    /** Returns whether the Glic actor task icon is showing with nudge text. */
+    default boolean getIsShowingGlicActorTaskIconNudge() {
+        return false;
+    }
+
+    /**
+     * Called when native C++ updates the Glic actor nudge label.
+     *
+     * @param nudgeLabel The text label for the actor nudge.
+     */
+    default void setGlicActorNudgeLabel(String nudgeLabel) {}
+
+    /**
+     * Called when native C++ triggers an actor nudge with text.
+     *
+     * @param nudgeText The nudge text to show.
+     */
+    default void triggerGlicActorNudge(String nudgeText) {}
+
+    /**
+     * Called when native C++ updates the actor nudge button pressed state.
+     *
+     * @param pressed True if the actor task list bubble is open / pressed.
+     */
+    default void setGlicActorNudgePressedState(boolean pressed) {}
+
+    /** Called when native C++ requests showing the actor task list bubble / menu. */
+    default void showActorTaskListBubble() {}
+
+    /** Called when native C++ requests closing the actor task list bubble / menu. */
+    default void closeActorTaskListBubble() {}
+
+    /** Returns whether the actor task list bubble / menu is currently showing. */
+    default boolean isActorTaskListBubbleShowing() {
+        return false;
+    }
 }
