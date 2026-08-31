@@ -19,7 +19,6 @@
 #include "crypto/random.h"
 #include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/cbor_extract.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/network_context_factory.h"
 #include "device/fido/public/features.h"
@@ -34,11 +33,6 @@
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
-
-using device::cbor_extract::IntKey;
-using device::cbor_extract::Is;
-using device::cbor_extract::StepOrByte;
-using device::cbor_extract::Stop;
 
 namespace device::cablev2 {
 

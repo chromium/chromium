@@ -319,6 +319,7 @@ if (use_blink) {
   }
 
   static_library("cablev2_authenticator") {
+    testonly = true
     sources = [
       "cable/v2_authenticator.cc",
       "cable/v2_authenticator.h",
@@ -329,7 +330,6 @@ if (use_blink) {
       "//components/device_event_log",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
-      "//third_party/blink/public/mojom:authenticator_mojo_bindings",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
@@ -351,7 +351,6 @@ if (use_blink) {
       "//services/network/public/mojom",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/blink/public/mojom:authenticator_mojo_bindings",
     ]
   }
 

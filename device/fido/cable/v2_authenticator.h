@@ -18,7 +18,11 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/network_context_factory.h"
 #include "device/fido/public/fido_constants.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
+
+namespace device {
+struct CtapGetAssertionRequest;
+struct CtapMakeCredentialRequest;
+}  // namespace device
 
 namespace device::cablev2::authenticator {
 
@@ -69,22 +73,14 @@ class Platform {
     INVALID_JSON = 116,
   };
 
-  using MakeCredentialCallback =
-      base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> attestation_obj,
-                              bool prf_enabled)>;
+  using CTAPCallback =
+      base::OnceCallback<void(std::vector<uint8_t> ctap_response)>;
 
-  virtual void MakeCredential(
-      blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
-      MakeCredentialCallback callback) = 0;
+  virtual void MakeCredential(CtapMakeCredentialRequest request,
+                              CTAPCallback callback) = 0;
 
-  using GetAssertionCallback = base::OnceCallback<void(
-      uint32_t status,
-      blink::mojom::GetAssertionAuthenticatorResponsePtr response)>;
-
-  virtual void GetAssertion(
-      blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
-      GetAssertionCallback callback) = 0;
+  virtual void GetAssertion(CtapGetAssertionRequest request,
+                            CTAPCallback callback) = 0;
 
   // OnStatus is called when a new informative status is available.
   virtual void OnStatus(Status) = 0;

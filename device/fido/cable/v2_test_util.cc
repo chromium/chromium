@@ -45,7 +45,6 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "url/gurl.h"
 
@@ -408,64 +407,26 @@ class TestPlatform : public authenticator::Platform {
         ctap2_device_(ctap2_device),
         observer_(observer) {}
 
-  void MakeCredential(
-      blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
-      MakeCredentialCallback callback) override {
-    device::CtapMakeCredentialRequest request(
-        /*client_data_json=*/"", std::move(params->relying_party),
-        std::move(params->user),
-        PublicKeyCredentialParams(std::move(params->public_key_parameters)));
-    CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    base::span(request.client_data_hash).copy_from(params->challenge);
-    request.resident_key_required =
-        !params->authenticator_selection
-            ? false
-            : params->authenticator_selection->resident_key ==
-                  ResidentKeyRequirement::kRequired;
-    request.prf = params->prf_enable;
-
+  void MakeCredential(device::CtapMakeCredentialRequest request,
+                      CTAPCallback callback) override {
     std::pair<device::CtapRequestCommand, std::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
 
     ctap2_device_->DeviceTransact(
         ToCTAP2Command(std::move(request_cbor)),
-        base::BindOnce(&TestPlatform::OnMakeCredentialResult,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+        base::BindOnce(&TestPlatform::OnCTAPResult, weak_factory_.GetWeakPtr(),
+                       std::move(callback)));
   }
 
-  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
-                    GetAssertionCallback callback) override {
-    device::CtapGetAssertionRequest request(std::move(params->relying_party_id),
-                                            /* client_data_json= */ "");
-    request.allow_list = std::move(params->allow_credentials);
-    request.user_verification = params->user_verification;
-
-    CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    base::span(request.client_data_hash).copy_from(params->challenge);
-    if (params->extensions) {
-      for (const auto& prf_input_from_request :
-           params->extensions->prf_inputs) {
-        PRFInput prf_input_to_authenticator;
-        prf_input_to_authenticator.credential_id =
-            std::move(prf_input_from_request->id);
-        prf_input_to_authenticator.salt1 =
-            base::ToArray<32>(prf_input_from_request->first);
-        if (prf_input_from_request->second) {
-          prf_input_to_authenticator.salt2 =
-              base::ToArray<32>(*prf_input_from_request->second);
-        }
-
-        request.prf_inputs.emplace_back(std::move(prf_input_to_authenticator));
-      }
-    }
-
+  void GetAssertion(device::CtapGetAssertionRequest request,
+                    CTAPCallback callback) override {
     std::pair<device::CtapRequestCommand, std::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
 
     ctap2_device_->DeviceTransact(
         ToCTAP2Command(std::move(request_cbor)),
-        base::BindOnce(&TestPlatform::OnGetAssertionResult,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+        base::BindOnce(&TestPlatform::OnCTAPResult, weak_factory_.GetWeakPtr(),
+                       std::move(callback)));
   }
 
   void OnStatus(Status status) override {
@@ -509,122 +470,14 @@ class TestPlatform : public authenticator::Platform {
     return ret;
   }
 
-  void OnMakeCredentialResult(MakeCredentialCallback callback,
-                              std::optional<std::vector<uint8_t>> result) {
+  void OnCTAPResult(CTAPCallback callback,
+                    std::optional<std::vector<uint8_t>> result) {
     if (!result || result->empty()) {
-      std::move(callback).Run(
-          static_cast<uint32_t>(device::CtapDeviceResponseCode::kCtap2ErrOther),
-          {}, /* prf_enabled= */ false);
+      std::move(callback).Run({static_cast<uint8_t>(
+          device::CtapDeviceResponseCode::kCtap2ErrOther)});
       return;
     }
-    const base::span payload = *result;
-
-    if (payload.size() == 1 ||
-        payload[0] !=
-            static_cast<uint8_t>(device::CtapDeviceResponseCode::kSuccess)) {
-      std::move(callback).Run(payload[0], {},
-                              /* prf_enabled= */ false);
-      return;
-    }
-
-    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan<1>());
-    const cbor::Value::MapValue& in_map = v->GetMap();
-
-    cbor::Value::MapValue out_map;
-    out_map.emplace("fmt", in_map.find(cbor::Value(1))->second.GetString());
-    out_map.emplace("authData",
-                    in_map.find(cbor::Value(2))->second.GetBytestring());
-    out_map.emplace("attStmt", in_map.find(cbor::Value(3))->second.GetMap());
-
-    bool prf_enabled = false;
-    const auto& unsigned_extension_outputs_it = in_map.find(cbor::Value(6));
-    if (unsigned_extension_outputs_it != in_map.end()) {
-      const cbor::Value::MapValue& unsigned_extension_outputs =
-          unsigned_extension_outputs_it->second.GetMap();
-      const auto prf_it =
-          unsigned_extension_outputs.find(cbor::Value(kExtensionPRF));
-      if (prf_it != unsigned_extension_outputs.end()) {
-        prf_enabled = prf_it->second.GetMap()
-                          .find(cbor::Value(kExtensionPRFEnabled))
-                          ->second.GetBool();
-      }
-    }
-
-    std::optional<std::vector<uint8_t>> attestation_obj =
-        cbor::Writer::Write(cbor::Value(std::move(out_map)));
-
-    std::move(callback).Run(
-        static_cast<uint32_t>(device::CtapDeviceResponseCode::kSuccess),
-        *attestation_obj, prf_enabled);
-  }
-
-  void OnGetAssertionResult(GetAssertionCallback callback,
-                            std::optional<std::vector<uint8_t>> result) {
-    if (!result || result->empty()) {
-      std::move(callback).Run(
-          static_cast<uint32_t>(device::CtapDeviceResponseCode::kCtap2ErrOther),
-          nullptr);
-      return;
-    }
-    const base::span payload = *result;
-
-    if (payload.size() == 1 ||
-        payload[0] !=
-            static_cast<uint8_t>(device::CtapDeviceResponseCode::kSuccess)) {
-      std::move(callback).Run(payload[0], nullptr);
-      return;
-    }
-
-    auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
-    response->info = blink::mojom::CommonCredentialInfo::New();
-    response->extensions =
-        blink::mojom::AuthenticationExtensionsClientOutputs::New();
-
-    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan<1>());
-    const cbor::Value::MapValue& in_map = v->GetMap();
-
-    auto cred_id_it = in_map.find(cbor::Value(1));
-    response->info->raw_id = cred_id_it->second.GetMap()
-                                 .find(cbor::Value("id"))
-                                 ->second.GetBytestring();
-    response->info->authenticator_data =
-        in_map.find(cbor::Value(2))->second.GetBytestring();
-    response->signature = in_map.find(cbor::Value(3))->second.GetBytestring();
-
-    auto user_it = in_map.find(cbor::Value(4));
-    if (user_it != in_map.end()) {
-      response->user_handle = user_it->second.GetMap()
-                                  .find(cbor::Value("id"))
-                                  ->second.GetBytestring();
-    }
-
-    auto unsigned_extension_outputs_it = in_map.find(cbor::Value(8));
-    if (unsigned_extension_outputs_it != in_map.end()) {
-      const cbor::Value::MapValue& unsigned_extension_outputs =
-          unsigned_extension_outputs_it->second.GetMap();
-      const auto prf_it =
-          unsigned_extension_outputs.find(cbor::Value(kExtensionPRF));
-      if (prf_it != unsigned_extension_outputs.end()) {
-        const cbor::Value::MapValue& results_from_authenticator =
-            prf_it->second.GetMap()
-                .find(cbor::Value(kExtensionPRFResults))
-                ->second.GetMap();
-        auto results_for_response = blink::mojom::PRFValues::New();
-        results_for_response->first =
-            results_from_authenticator.find(cbor::Value(kExtensionPRFFirst))
-                ->second.GetBytestring();
-        const auto second_it =
-            results_from_authenticator.find(cbor::Value(kExtensionPRFSecond));
-        if (second_it != results_from_authenticator.end()) {
-          results_for_response->second = second_it->second.GetBytestring();
-        }
-        response->extensions->prf_results = std::move(results_for_response);
-      }
-    }
-
-    std::move(callback).Run(
-        static_cast<uint32_t>(device::CtapDeviceResponseCode::kSuccess),
-        std::move(response));
+    std::move(callback).Run(std::move(*result));
   }
 
   scoped_refptr<CableMockBluetoothAdapter> mock_adapter_;
