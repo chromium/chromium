@@ -263,6 +263,14 @@ bool PageActionTestAccessor::IsIconVisible() {
   return !pav->IsChipVisible();
 }
 
+bool PageActionTestAccessor::HasFocus() {
+  if (auto* pav = GetPageActionView()) {
+    return pav->HasFocus();
+  }
+
+  return EvaluateWebUI("(el) => el.matches(':focus')");
+}
+
 bool PageActionTestAccessor::IsAnimating() {
   if (features::IsWebUILocationBarEnabled()) {
     return EvaluateWebUI(

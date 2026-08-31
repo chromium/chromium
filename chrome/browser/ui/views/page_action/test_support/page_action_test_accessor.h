@@ -48,6 +48,7 @@ class PageActionTestAccessor {
   bool IsChipVisible();
   bool IsIconVisible();
   bool IsAnimating();
+  bool HasFocus();
   std::u16string GetText();
   std::u16string GetTooltipText();
   std::u16string GetAccessibleName();

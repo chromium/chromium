@@ -9,8 +9,10 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -62,6 +65,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 using ToastViewObserver =
     views::test::PollingViewObserver<bool, toasts::ToastView>;
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ToastViewObserver, kToastViewObserver);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kBookmarkStarFocused);
 
 class OmniboxInputWaiter : public OmniboxTabHelper::Observer {
  public:
@@ -186,6 +191,17 @@ class ToastControllerInteractiveTest
     return result;
   }
 
+  auto WaitForBookmarkStar() {
+    return Steps(PollState(kBookmarkStarFocused,
+                           [this]() {
+                             page_actions::PageActionTestAccessor accessor(
+                                 browser(), kActionBookmarkThisTab);
+                             return accessor.HasFocus();
+                           }),
+                 WaitForState(kBookmarkStarFocused, true),
+                 StopObservingState(kBookmarkStarFocused));
+  }
+
   template <typename T, typename U>
   auto TestToastFocus(T&& check_previous_focus, U&& check_next_focus) {
     ui::Accelerator next_pane;
@@ -300,8 +316,8 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, FocusTraversal) {
       CheckView(kToolbarAppMenuButtonElementId,
                 [](AppMenuButton* button) { return button->HasFocus(); }),
 #else
-      CheckView(kBookmarkStarViewElementId,
-                [](views::View* star_view) { return star_view->HasFocus(); }),
+
+      WaitForBookmarkStar(),
 #endif
       CheckView(kBrowserViewElementId, [](BrowserView* browser_view) {
         return browser_view->GetActiveContentsWebView()->HasFocus();
@@ -325,9 +341,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
           CheckView(kToolbarAppMenuButtonElementId,
                     [](AppMenuButton* button) { return button->HasFocus(); }),
 #else
-          CheckView(
-              kBookmarkStarViewElementId,
-              [](views::View* star_view) { return star_view->HasFocus(); }),
+          WaitForBookmarkStar(),
 #endif
           Steps(
               CheckResult(
@@ -523,7 +537,10 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   // because we are focusing after the toast is already shown.
   BrowserView::GetBrowserViewForBrowser(browser())->SetFocusToLocationBar(true);
   EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_FALSE(toast_controller->GetToastWidgetForTesting()->IsVisible());
+  // ... that may happen asynchronously, however.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return toast_controller->GetToastWidgetForTesting()->IsVisible() == false;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
