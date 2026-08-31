@@ -56,40 +56,50 @@ std::unique_ptr<net::test_server::HttpResponse> HandleSlowNoCache(
   return http_response;
 }
 
+// Posts a set of BEST_EFFORT tasks before startup is complete, and tests that
+// they don't run until after it's complete.
+void PostBestEffortTasksBeforeStartup() {
+  ASSERT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(3, run_loop.QuitClosure());
+
+  // Thread pool task.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+        barrier.Run();
+      }));
+
+  // UI thread task.
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(
+          FROM_HERE, base::BindLambdaForTesting([&]() {
+            EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+            barrier.Run();
+          }));
+
+  // IO thread task.
+  content::GetIOThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(
+          FROM_HERE, base::BindLambdaForTesting([&]() {
+            EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+            barrier.Run();
+          }));
+
+  run_loop.Run();
+}
+
 class NoBestEffortTasksDuringStartupTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
   void PreRunTestOnMainThread() override {
     // This test must run before PreRunTestOnMainThread() sets startup as
     // complete.
-    TestNoBestEffortTasksDuringStartup();
+    PostBestEffortTasksBeforeStartup();
 
     InProcessBrowserTest::PreRunTestOnMainThread();
-  }
-
-  void TestNoBestEffortTasksDuringStartup() {
-    EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-
-    base::RunLoop run_loop;
-    auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
-
-    // Thread pool task.
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindLambdaForTesting([&]() {
-          EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-          barrier.Run();
-        }));
-
-    // UI thread task.
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(
-            FROM_HERE, base::BindLambdaForTesting([&]() {
-              EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-              barrier.Run();
-            }));
-
-    run_loop.Run();
   }
 };
 
@@ -121,27 +131,8 @@ class NoBestEffortTasksDuringSlowStartupTest : public InProcessBrowserTest {
   }
 
   void TestNoBestEffortTasksDuringSlowStartup() {
-    EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-
-    base::RunLoop run_loop;
-    auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
-
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindLambdaForTesting([&]() {
-          EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-          barrier.Run();
-        }));
-
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(
-            FROM_HERE, base::BindLambdaForTesting([&]() {
-              EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-              barrier.Run();
-            }));
-
     base::TimeTicks start_time = base::TimeTicks::Now();
-    run_loop.Run();
+    PostBestEffortTasksBeforeStartup();
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
     EXPECT_GE(elapsed, base::Seconds(6));
   }
@@ -225,30 +216,9 @@ class NoBestEffortTasksDuringSessionRestoreStartupTest
   }
 
   void TestNoBestEffortTasksDuringSessionRestore() {
-    EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-
     SessionRestore::AddObserver(this);
 
-    base::RunLoop run_loop;
-    auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
-
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindLambdaForTesting([this, barrier]() {
-          EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-          EXPECT_TRUE(restore_finished_);
-          barrier.Run();
-        }));
-
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(
-            FROM_HERE, base::BindLambdaForTesting([this, barrier]() {
-              EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-              EXPECT_TRUE(restore_finished_);
-              barrier.Run();
-            }));
-
-    run_loop.Run();
+    PostBestEffortTasksBeforeStartup();
 
     BrowserWindowInterface* restored_browser =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile();

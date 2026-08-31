@@ -99,6 +99,9 @@ const char kDisableBackgroundTimerThrottling[] =
 // Disables the BackForwardCache feature.
 const char kDisableBackForwardCache[] = "disable-back-forward-cache";
 
+// Delays execution of TaskPriority::BEST_EFFORT tasks until shutdown.
+const char kDisableBestEffortTasks[] = "disable-best-effort-tasks";
+
 // Disable one or more Blink runtime-enabled features.
 // Use names from runtime_enabled_features.json5, separated by commas.
 // Applied after kEnableBlinkFeatures, and after other flags that change these

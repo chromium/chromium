@@ -12,9 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_switches.h"
 #include "base/cfi_buildflags.h"
-#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
@@ -711,55 +709,6 @@ TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions,
   unblock_task.Signal();
 
   flush_event.Wait();
-}
-
-// Verifies that BEST_EFFORT tasks don't run when the
-// --disable-best-effort-tasks command-line switch is specified.
-//
-// Not using the same fixture as other tests because we want to append a command
-// line switch before creating the pool.
-TEST(ThreadPoolImplTest_Switch, DisableBestEffortTasksSwitch) {
-  CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableBestEffortTasks);
-
-  ThreadPoolImpl thread_pool("Test");
-  ThreadPoolInstance::InitParams init_params(
-      kMaxNumForegroundThreads, kMaxNumUtilityThreads, kMaxNumAudioThreads);
-  thread_pool.Start(init_params, nullptr);
-
-  AtomicFlag best_effort_can_run;
-  TestWaitableEvent best_effort_did_run;
-  thread_pool.PostDelayedTask(
-      FROM_HERE,
-      {TaskPriority::BEST_EFFORT, TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      BindLambdaForTesting([&] {
-        EXPECT_TRUE(best_effort_can_run.IsSet());
-        best_effort_did_run.Signal();
-      }),
-      TimeDelta());
-
-  TestWaitableEvent user_blocking_did_run;
-  thread_pool.PostDelayedTask(
-      FROM_HERE, {TaskPriority::USER_BLOCKING},
-      BindLambdaForTesting([&] { user_blocking_did_run.Signal(); }),
-      TimeDelta());
-
-  // The USER_BLOCKING task should run.
-  user_blocking_did_run.Wait();
-
-  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-
-  // The BEST_EFFORT task should not run when a BEST_EFFORT fence is deleted.
-  thread_pool.BeginBestEffortFence();
-  thread_pool.EndBestEffortFence();
-
-  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-
-  // The BEST_EFFORT task should only run during shutdown.
-  best_effort_can_run.Set();
-  thread_pool.Shutdown();
-  EXPECT_TRUE(best_effort_did_run.IsSignaled());
-  thread_pool.JoinForTesting();
 }
 
 // Verifies that tasks only run when allowed by fences.

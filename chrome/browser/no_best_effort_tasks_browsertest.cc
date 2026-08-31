@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string_view>
 
-#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -24,6 +28,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -114,10 +119,40 @@ class NoBestEffortTasksTest : public PlatformBrowserTest {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 constexpr std::string_view kExtensionId = "ddchlicdkolnonkihahngkmmmjnjlkkf";
-constexpr base::TimeDelta kSendMessageRetryPeriod = base::Milliseconds(250);
 #endif
 
 }  // namespace
+
+// Verify that BEST_EFFORT tasks don't run during these tests.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, ValidatePreconditions) {
+  // `best_effort_tasks_allowed` must be heap-allocated because the validation
+  // task could in theory run after returning from this scope.
+  auto best_effort_tasks_allowed = std::make_unique<bool>(false);
+#if BUILDFLAG(IS_ANDROID)
+  bool* best_effort_tasks_allowed_ptr = best_effort_tasks_allowed.get();
+#endif
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](std::unique_ptr<bool> best_effort_tasks_allowed) {
+            EXPECT_TRUE(*best_effort_tasks_allowed);
+          },
+          std::move(best_effort_tasks_allowed)));
+
+  // Give the validation task a chance to run before continuing, to avoid
+  // false positives.
+  base::RunLoop run_loop;
+  base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
+                                    TestTimeouts::action_timeout());
+  run_loop.Run();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android doesn't shut down the ThreadPool between tests so the validation
+  // task could run during teardown. On other platforms it shouldn't run at all.
+  *best_effort_tasks_allowed_ptr = true;
+#endif
+}
 
 // Verify that it is possible to load and paint the initial about:blank page
 // without running BEST_EFFORT tasks.
@@ -236,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
     LOG(INFO) << "Waiting for the extension's message listener...";
     base::RunLoop run_loop;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), kSendMessageRetryPeriod);
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
 }

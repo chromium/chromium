@@ -7,13 +7,27 @@
 #include <utility>
 #include <variant>
 
+#include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/features.h"
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/synchronization/atomic_flag.h"
+#include "base/task/execution_fence.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/gpu/content_gpu_client.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -268,6 +282,114 @@ class ContentMainRunnerImplBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ContentMainRunnerImplBrowserTest, StartupSequence) {
   // All of the work is done in SetUp().
+}
+
+// Tests command-line switches handled by ContentMainRunnerImpl.
+class ContentMainRunnerImplSwitchesBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  // Flags that are set during the test. Because Android doesn't shut down the
+  // thread pool between tests, tasks posted during the test can run after it's
+  // torn down, so each task must hold a reference to this struct.
+  class Flags : public base::RefCountedThreadSafe<Flags> {
+   public:
+    base::AtomicFlag best_effort_can_run;
+    base::AtomicFlag thread_pool_best_effort_ran;
+    base::AtomicFlag ui_thread_best_effort_ran;
+
+   private:
+    friend class base::RefCountedThreadSafe<Flags>;
+    ~Flags() = default;
+  };
+
+  ContentMainRunnerImplSwitchesBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        base::features::kScopedBestEffortExecutionFenceForTaskQueue,
+        GetParam());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableBestEffortTasks);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    // The ThreadPool BEST_EFFORT task should have run during shutdown.
+    // This can't be guaranteed for other tasks because browser threads don't
+    // allow the BLOCK_SHUTDOWN trait. It also can't be guaranteed on Android,
+    // which doesn't shut down the thread pool between tests.
+#if !BUILDFLAG(IS_ANDROID)
+    EXPECT_TRUE(flags_->thread_pool_best_effort_ran.IsSet());
+#endif
+
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  // Processes tasks for a short time.
+  void ProcessSomeTasks() {
+    base::RunLoop run_loop;
+    base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
+                                      TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+
+ protected:
+  scoped_refptr<Flags> flags_ = base::MakeRefCounted<Flags>();
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(FeatureState,
+                         ContentMainRunnerImplSwitchesBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ContentMainRunnerImplSwitchesBrowserTest,
+                       DisableBestEffortTasksSwitch) {
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                             base::BindLambdaForTesting([flags = flags_] {
+                               EXPECT_TRUE(flags->best_effort_can_run.IsSet());
+                               flags->thread_pool_best_effort_ran.Set();
+                             }));
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kScopedBestEffortExecutionFenceForTaskQueue)) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(FROM_HERE, base::BindLambdaForTesting([flags = flags_] {
+                     EXPECT_TRUE(flags->best_effort_can_run.IsSet());
+                     flags->ui_thread_best_effort_ran.Set();
+                   }));
+    // TODO(crbug.com/483479415): Also test the IO thread once
+    // ScopedBestEffortExecutionFence supports it.
+  }
+
+  // USER_BLOCKING tasks should run.
+  base::RunLoop run_loop;
+  auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
+
+  base::ThreadPool::PostTask(FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+                             barrier_closure);
+  content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE, barrier_closure);
+
+  run_loop.Run();
+
+  ProcessSomeTasks();
+  EXPECT_FALSE(flags_->thread_pool_best_effort_ran.IsSet());
+  EXPECT_FALSE(flags_->ui_thread_best_effort_ran.IsSet());
+
+  // BEST_EFFORT tasks should not run when a BEST_EFFORT fence is deleted.
+  {
+    base::ScopedBestEffortExecutionFence fence;
+  }
+
+  ProcessSomeTasks();
+  EXPECT_FALSE(flags_->thread_pool_best_effort_ran.IsSet());
+  EXPECT_FALSE(flags_->ui_thread_best_effort_ran.IsSet());
+
+  // BEST_EFFORT tasks should only run during shutdown.
+  flags_->best_effort_can_run.Set();
 }
 
 }  // namespace

@@ -8,10 +8,10 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
+#include "base/task/execution_fence.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_runner.h"
@@ -82,6 +82,10 @@ class ContentMainRunnerImpl : public ContentMainRunner {
 
   // Received in Initialize(), handed-off in Run().
   std::optional<ContentMainParams> content_main_params_;
+
+  // Disables BEST_EFFORT tasks until shutdown if the command-line includes
+  // --disable-best-effort-tasks.
+  std::optional<base::ScopedBestEffortExecutionFence> best_effort_fence_;
 };
 
 }  // namespace content

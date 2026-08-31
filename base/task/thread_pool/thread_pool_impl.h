@@ -211,10 +211,6 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
 
   bool inherit_task_importance_by_default_ = false;
 
-  // Whether the --disable-best-effort-tasks switch is preventing execution of
-  // BEST_EFFORT tasks until shutdown.
-  const bool has_disable_best_effort_switch_;
-
   // Number of fences preventing execution of tasks of any/BEST_EFFORT priority.
   int num_fences_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   int num_best_effort_fences_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
