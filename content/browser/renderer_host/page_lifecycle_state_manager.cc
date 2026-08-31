@@ -325,8 +325,9 @@ void PageLifecycleStateManager::OnSetPageLifecycleStateResponse(
 }
 
 void PageLifecycleStateManager::OnBackForwardCacheTimeout() {
-  CHECK(!last_acknowledged_state_->is_in_back_forward_cache,
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/554374746): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!last_acknowledged_state_->is_in_back_forward_cache);
   render_view_host_impl_->OnBackForwardCacheTimeout();
   back_forward_cache_timeout_monitor_.Stop();
 }
