@@ -173,11 +173,19 @@ source_set("private_verification_tokens_issuer_config_unittest") {
   deps = [
     ":private_verification_tokens_issuer_config",
     ":private_verification_tokens_parameters",
+    ":test_support",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "private_verification_tokens_test_util.h" ]
+  deps = [ "//base" ]
 }
 
 # ATHM (Anonymous Tokens with Hidden Metadata): Crubit bindings over

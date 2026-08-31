@@ -19,12 +19,16 @@
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -39,7 +43,8 @@ class PrivateVerificationTokensInstallerPolicyTest : public ::testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment env_;
+  base::test::TaskEnvironment env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir component_install_dir_;
 };
 
@@ -97,7 +102,13 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, CustomUninstall) {
 
 TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
   base::RunLoop run_loop;
-  std::string json_content = R"(
+
+  const ::private_verification_tokens::test::FutureExpiration
+      future_expiration =
+          ::private_verification_tokens::test::GetFutureExpiration();
+
+  std::string json_content = base::StringPrintf(
+      R"(
     {
       "1": {
         "issuers": [
@@ -107,7 +118,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
             "publicKey": "cHZ0LWtleQ==",
             "publicKeyProof": "cHZ0LXByb29m",
             "batchSize": 4,
-            "expiration": "12",
+            "expiration": "%s",
             "redeemers": ["https://s1.a.example", "https://s2.a.example"],
             "deploymentId": "dep-a"
           },
@@ -117,14 +128,15 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
             "publicKey": "YW5vdGhlci1hd2Vzb21lLWtleQ==",
             "publicKeyProof": "YW5vdGhlci1hd2Vzb21lLXByb29m",
             "batchSize": 3,
-            "expiration": "24",
+            "expiration": "%s",
             "redeemers": ["https://sub1.b.example", "https://sub2.b.example"],
             "deploymentId": "dep-b"
           }
         ]
       }
     }
-  )";
+  )",
+      future_expiration.string_rep, future_expiration.string_rep);
 
   bool callback_called = false;
   auto callback =
@@ -145,7 +157,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
         const private_verification_tokens::PrivateVerificationTokensPublicKey
             expected_pk_a{origin_a, base::ToVector<uint8_t>(decoded_key_a),
                           base::ToVector<uint8_t>(decoded_proof_a),
-                          base::Time::UnixEpoch() + base::Seconds(12), 1};
+                          future_expiration.time, 1};
 
         EXPECT_TRUE(got->config().contains(origin_a));
         const private_verification_tokens::IssuerConfig& config_a =
@@ -171,7 +183,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
         private_verification_tokens::PrivateVerificationTokensPublicKey
             expected_pk_b{origin_b, base::ToVector<uint8_t>(decoded_key_b),
                           base::ToVector<uint8_t>(decoded_proof_b),
-                          base::Time::UnixEpoch() + base::Seconds(24), 1};
+                          future_expiration.time, 1};
 
         EXPECT_TRUE(got->config().contains(origin_b));
         const private_verification_tokens::IssuerConfig& config_b =

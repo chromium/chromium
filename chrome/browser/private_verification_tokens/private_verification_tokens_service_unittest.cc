@@ -29,6 +29,7 @@
 #include "components/private_verification_tokens/common/athm_test_issuer.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_test_util.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/features.h"
@@ -41,6 +42,9 @@
 #include "url/origin.h"
 
 namespace {
+
+using ::private_verification_tokens::test::FutureExpiration;
+using ::private_verification_tokens::test::GetFutureExpiration;
 
 const base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("PrivateVerificationTokens");
@@ -189,7 +193,8 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
         base::Base64Encode(test_issuer_->public_key());
     const std::string encoded_public_key_proof =
         base::Base64Encode(test_issuer_->public_key_proof());
-    const std::string expiration_str = "12";
+    const FutureExpiration future_expiration = GetFutureExpiration();
+    const std::string expiration_str = future_expiration.string_rep;
     const std::string json_str = base::StringPrintf(
         R"({
       "issuers": [
@@ -262,7 +267,8 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
  private:
   std::optional<private_verification_tokens::AthmTestIssuer> test_issuer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
   TestingProfile profile_;

@@ -107,6 +107,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
+    "//components/private_verification_tokens/common:test_support",
     "//mojo/public/cpp/base:protobuf_support",
     "//services/network/public/cpp",
     "//testing/gmock",

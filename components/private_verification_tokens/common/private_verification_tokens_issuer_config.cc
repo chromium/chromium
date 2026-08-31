@@ -84,6 +84,9 @@ std::optional<int64_t> GetValidExpiration(const base::DictValue& dict) {
   if (!base::StringToInt64(*expiration_str, &expiration) || expiration < 0) {
     return std::nullopt;
   }
+  if (base::Time::FromSecondsSinceUnixEpoch(expiration) <= base::Time::Now()) {
+    return std::nullopt;
+  }
   return expiration;
 }
 
