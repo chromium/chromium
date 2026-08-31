@@ -62,10 +62,11 @@ schema:
     type: object
   type: array
 future_on:
-- chrome.*
-- chrome_os
-- android
-- ios
 - fuchsia
+supported_on:
+- chrome.*:154-
+- chrome_os:154-
+- android:154-
+- ios:154-
 tags: []
 type: dict
