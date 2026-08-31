@@ -9,7 +9,6 @@
 #include "crypto/crypto_export.h"
 #include "crypto/keypair.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace crypto::sign {
 
