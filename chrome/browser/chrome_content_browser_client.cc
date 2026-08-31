@@ -2253,10 +2253,8 @@ bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
     content::RenderFrameHost& render_frame_host) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host);
-  if (base::FeatureList::IsEnabled(features::kGlicEnableMojoJs)) {
-    if (web_contents && glic::IsGlicGuest(web_contents)) {
-      return true;
-    }
+  if (web_contents && glic::IsGlicGuest(web_contents)) {
+    return true;
   }
   // TODO(crbug.com/539909218): Prototype shortcut. Enabling MojoJS for any PWC
   // exposes the entire Mojo interface surface rather than only GeicApi, and the

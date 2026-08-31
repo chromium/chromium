@@ -271,7 +271,6 @@ class GlicBrowserTestMixin : public T {
         {chrome::android::kEnableAndroidSidePanelLogs, {}},
         {features::kGlicAndroidSidePanel, {}},
 #endif
-        {features::kGlicEnableMojoJs, {}},
     };
 
     glic_test_environment_.SetGlicPagePath(

@@ -4,10 +4,8 @@
 
 #include "chrome/browser/glic/host/glic_guest_observer.h"
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/glic/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -24,9 +22,6 @@ GlicGuestObserver::~GlicGuestObserver() = default;
 
 void GlicGuestObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (!base::FeatureList::IsEnabled(features::kGlicEnableMojoJs)) {
-    return;
-  }
   if (IsGlicGuest(web_contents())) {
     render_frame_host->EnableMojoJsBindings(/*features=*/nullptr);
   }
@@ -34,8 +29,7 @@ void GlicGuestObserver::RenderFrameCreated(
 
 void GlicGuestObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(features::kGlicEnableMojoJs) ||
-      !navigation_handle->IsInMainFrame()) {
+  if (!navigation_handle->IsInMainFrame()) {
     return;
   }
   auto* rfh = navigation_handle->GetRenderFrameHost();
