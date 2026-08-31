@@ -26,6 +26,8 @@ EnumTraits<network::mojom::NetworkIsolationPartition,
       return net::NetworkIsolationPartition::kFedCmUncredentialedRequests;
     case NetworkIsolationPartition::kDnsOverHttps:
       return net::NetworkIsolationPartition::kDnsOverHttps;
+    case NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+      return net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone;
   }
   NOTREACHED();
 }
@@ -45,6 +47,8 @@ network::mojom::NetworkIsolationPartition EnumTraits<
       return NetworkIsolationPartition::kFedCmUncredentialedRequests;
     case net::NetworkIsolationPartition::kDnsOverHttps:
       return NetworkIsolationPartition::kDnsOverHttps;
+    case net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+      return NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone;
   }
   NOTREACHED();
 }

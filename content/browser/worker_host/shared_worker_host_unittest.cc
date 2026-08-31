@@ -86,6 +86,18 @@ class SharedWorkerHostTest : public testing::Test {
 
   base::WeakPtr<SharedWorkerHost> CreateHostWithExtendedLifetime(
       bool extended_lifetime) {
+    return CreateHostWithParams(blink::mojom::SharedWorkerSameSiteCookies::kAll,
+                                extended_lifetime);
+  }
+
+  base::WeakPtr<SharedWorkerHost> CreateHostWithSameSiteCookies(
+      blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) {
+    return CreateHostWithParams(same_site_cookies, /*extended_lifetime=*/false);
+  }
+
+  base::WeakPtr<SharedWorkerHost> CreateHostWithParams(
+      blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
+      bool extended_lifetime) {
     blink::StorageKey creator_storage_key =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl));
     bool is_opaque_origin_enabled = base::FeatureList::IsEnabled(
@@ -99,7 +111,7 @@ class SharedWorkerHostTest : public testing::Test {
         network::mojom::CredentialsMode::kSameOrigin, "name",
         creator_storage_key, worker_storage_key, renderer_origin,
         blink::mojom::SharedWorkerCreationContextType::kSecure,
-        blink::mojom::SharedWorkerSameSiteCookies::kAll, extended_lifetime);
+        same_site_cookies, extended_lifetime);
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
@@ -665,6 +677,39 @@ TEST_F(SharedWorkerHostTest,
         "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
         true, 1);
   }
+}
+
+TEST_F(SharedWorkerHostTest, NetworkIsolationPartitionForSameSiteCookies) {
+  base::WeakPtr<SharedWorkerHost> host_all = CreateHostWithSameSiteCookies(
+      blink::mojom::SharedWorkerSameSiteCookies::kAll);
+  base::WeakPtr<SharedWorkerHost> host_none = CreateHostWithSameSiteCookies(
+      blink::mojom::SharedWorkerSameSiteCookies::kNone);
+
+  ASSERT_TRUE(host_all);
+  ASSERT_TRUE(host_none);
+
+  EXPECT_EQ(host_all->GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kGeneral);
+  EXPECT_EQ(host_none->GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
+
+  EXPECT_EQ(host_all->GetNetworkIsolationKey().GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kGeneral);
+  EXPECT_EQ(host_none->GetNetworkIsolationKey().GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
+  EXPECT_NE(host_all->GetNetworkIsolationKey(),
+            host_none->GetNetworkIsolationKey());
+  EXPECT_NE(host_all->GetNetworkIsolationKey().ToCacheKeyString(),
+            host_none->GetNetworkIsolationKey().ToCacheKeyString());
+
+  EXPECT_EQ(
+      host_all->GetNetworkAnonymizationKey().network_isolation_partition(),
+      net::NetworkIsolationPartition::kGeneral);
+  EXPECT_EQ(
+      host_none->GetNetworkAnonymizationKey().network_isolation_partition(),
+      net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
+  EXPECT_NE(host_all->GetNetworkAnonymizationKey(),
+            host_none->GetNetworkAnonymizationKey());
 }
 
 }  // namespace content
