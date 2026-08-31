@@ -437,5 +437,48 @@ TEST_F(AutofillPolicyServiceTest, AllCategoryWithWildcardBlocksAllAutofill) {
       AutofillClient::AutofillPolicyDataCategory::kShopping));
 }
 
+// Tests that when AutofillAddressEnabled is disabled by enterprise admin
+// policy (managed pref), identity_docs and travel are also blocked by policy,
+// while shopping remains unaffected.
+TEST_F(AutofillPolicyServiceTest,
+       AddressAutofillManagedDisabledBlocksIdentityDocsAndTravel) {
+  const GURL url("https://www.example.com");
+
+  // Initially all are allowed.
+  EXPECT_FALSE(IsAutofillTypeBlockedByPolicy(
+      url, AutofillClient::AutofillPolicyDataCategory::kIdentityDocs));
+  EXPECT_FALSE(IsAutofillTypeBlockedByPolicy(
+      url, AutofillClient::AutofillPolicyDataCategory::kTravel));
+  EXPECT_FALSE(IsAutofillTypeBlockedByPolicy(
+      url, AutofillClient::AutofillPolicyDataCategory::kShopping));
+
+  // User disabling address autofill does NOT block identity docs or travel by
+  // enterprise policy.
+  prefs_.SetBoolean(prefs::kAutofillProfileEnabled, false);
+  EXPECT_FALSE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, url, AutofillClient::AutofillPolicyDataCategory::kIdentityDocs));
+  EXPECT_FALSE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, url, AutofillClient::AutofillPolicyDataCategory::kTravel));
+
+  // Enterprise admin disabling address autofill BLOCKS identity docs and
+  // travel by policy.
+  prefs_.SetManagedPref(prefs::kAutofillProfileEnabled, base::Value(false));
+
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      url, AutofillClient::AutofillPolicyDataCategory::kIdentityDocs));
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      url, AutofillClient::AutofillPolicyDataCategory::kTravel));
+  EXPECT_TRUE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, url, AutofillClient::AutofillPolicyDataCategory::kIdentityDocs));
+  EXPECT_TRUE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, url, AutofillClient::AutofillPolicyDataCategory::kTravel));
+
+  // Shopping is not blocked by address policy.
+  EXPECT_FALSE(IsAutofillTypeBlockedByPolicy(
+      url, AutofillClient::AutofillPolicyDataCategory::kShopping));
+  EXPECT_FALSE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, url, AutofillClient::AutofillPolicyDataCategory::kShopping));
+}
+
 }  // namespace
 }  // namespace autofill

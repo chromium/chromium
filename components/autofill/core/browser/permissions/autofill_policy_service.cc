@@ -40,11 +40,25 @@ bool IsCategoryGloballyBlocked(
       }
       break;
     case AutofillClient::AutofillPolicyDataCategory::kIdentityDocs:
+      // Due to the legacy AutofillAddressEnabled policy, if
+      // AutofillAddressEnabled is disabled by an enterprise admin, identity
+      // docs are also blocked by policy.
+      if (prefs.IsManagedPreference(prefs::kAutofillProfileEnabled) &&
+          !prefs.GetBoolean(prefs::kAutofillProfileEnabled)) {
+        return true;
+      }
       if (!prefs.GetBoolean(prefs::kAutofillAiIdentityEntitiesEnabled)) {
         return true;
       }
       break;
     case AutofillClient::AutofillPolicyDataCategory::kTravel:
+      // Due to the legacy AutofillAddressEnabled policy, if
+      // AutofillAddressEnabled is disabled by an enterprise admin, travel
+      // information is also blocked by policy.
+      if (prefs.IsManagedPreference(prefs::kAutofillProfileEnabled) &&
+          !prefs.GetBoolean(prefs::kAutofillProfileEnabled)) {
+        return true;
+      }
       if (!prefs.GetBoolean(prefs::kAutofillAiTravelEntitiesEnabled)) {
         return true;
       }
@@ -186,6 +200,15 @@ bool AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableAutofillSettingsEnterprisePolicy)) {
     return false;
+  }
+
+  // If the legacy AutofillAddressEnabled policy is disabled by the enterprise
+  // admin, identity docs and travel are disabled as well.
+  if ((category == AutofillClient::AutofillPolicyDataCategory::kIdentityDocs ||
+       category == AutofillClient::AutofillPolicyDataCategory::kTravel) &&
+      prefs.IsManagedPreference(prefs::kAutofillProfileEnabled) &&
+      !prefs.GetBoolean(prefs::kAutofillProfileEnabled)) {
+    return true;
   }
 
   const base::ListValue& policy_list =
