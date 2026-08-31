@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/test_result.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -324,6 +326,15 @@ class GlicBrowserTestMixin : public T {
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
 
+    // Cache a weak pointer to the test profile. Tests may close all browser
+    // windows during the test body, causing `T::GetProfile()` (which relies on
+    // `browser()`) to return nullptr during teardown or later helper calls,
+    // while the Profile itself remains alive. Using a WeakPtr ensures safe
+    // access and auto-invalidates if the Profile is destroyed.
+    Profile* profile = T::GetProfile();
+    CHECK(profile);
+    weak_profile_ = profile->GetWeakPtr();
+
     // Disable side panel animations on supported platforms.
     if (IsSidePanelEnabled()) {
       SidePanelUI* side_panel_ui = SidePanelUIProvider::From(GetBrowser());
@@ -345,6 +356,12 @@ class GlicBrowserTestMixin : public T {
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)
     activation_controller_.reset();
 #endif
+    // Explicitly shut down the warming pool to destroy any active warmed
+    // WebContents before GlicBrowserTest drains pending UI/Mojo tasks and
+    // the fixture's ScopedFeatureList destructor runs.
+    if (weak_profile_ && GlicKeyedService::Get(weak_profile_.get())) {
+      coordinator().GetWebContentsWarmingPoolForTesting().Shutdown();
+    }
     T::TearDownOnMainThread();
     // Ensure all pending UI thread tasks (such as Mojo disconnects or Android
     // JNI cleanup tasks) have finished running before the test fixture is
@@ -672,25 +689,25 @@ class GlicBrowserTestMixin : public T {
   // Returns the only glic instance. CHECK fails if there is ever more than one.
   GlicInstanceImpl* GetOnlyGlicInstance() {
     return static_cast<GlicInstanceImpl*>(
-        ::glic::GetOnlyGlicInstance(T::GetProfile()));
+        ::glic::GetOnlyGlicInstance(weak_profile_.get()));
   }
 
   // Returns the glic instance bound to the given tab. Returns nullptr if not
   // found.
   GlicInstanceImpl* GetInstanceForTab(tabs::TabInterface* tab) {
     return static_cast<GlicInstanceImpl*>(
-        ::glic::GetInstanceForTab(T::GetProfile(), tab));
+        ::glic::GetInstanceForTab(weak_profile_.get(), tab));
   }
 
   // Returns the glic instance with the given id. Returns nullptr if not found.
   GlicInstanceImpl* GetInstanceById(InstanceId id) {
     return static_cast<GlicInstanceImpl*>(
-        ::glic::GetInstanceById(T::GetProfile(), id));
+        ::glic::GetInstanceById(weak_profile_.get(), id));
   }
 
   GlicInstanceCoordinatorImpl& coordinator() {
     return static_cast<GlicInstanceCoordinatorImpl&>(
-        GlicKeyedService::Get(T::GetProfile())->instance_coordinator());
+        service()->instance_coordinator());
   }
 
   // Opens a new tab with the given URL and wait for load to complete.
@@ -940,7 +957,11 @@ class GlicBrowserTestMixin : public T {
         state_to_string(state));
   }
 
-  GlicKeyedService* service() { return GlicKeyedService::Get(T::GetProfile()); }
+  GlicKeyedService* service() {
+    GlicKeyedService* service = GlicKeyedService::Get(weak_profile_.get());
+    CHECK(service);
+    return service;
+  }
   BrowserWindowInterface* GetBrowser() {
     return T::GetTabListInterface()
         ->GetActiveTab()
@@ -1078,6 +1099,10 @@ class GlicBrowserTestMixin : public T {
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)
   std::unique_ptr<views::test::MockActivationController> activation_controller_;
 #endif
+  // Weak reference to the main test profile initialized during setup, allowing
+  // safe profile access during teardown even if all browser windows were
+  // closed.
+  base::WeakPtr<Profile> weak_profile_;
 };
 
 using GlicBrowserTest = GlicBrowserTestMixin<PlatformBrowserTest>;

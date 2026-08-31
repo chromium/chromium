@@ -39,13 +39,6 @@ class GlicWarmingChecksTestBase : public GlicBrowserTest {
     GlicBrowserTest::SetUp();
   }
 
-  void TearDownOnMainThread() override {
-    if (service()) {
-      coordinator().GetWebContentsWarmingPoolForTesting().Shutdown();
-    }
-    GlicBrowserTest::TearDownOnMainThread();
-  }
-
   void TearDown() override {
     GlicBrowserTest::TearDown();
     SetPrewarmingEnabledForTesting(true);

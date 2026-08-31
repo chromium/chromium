@@ -566,7 +566,7 @@ class GlicMessagingFullyEnabledBrowserTest
     : public glic::GlicBrowserTestMixin<GlicMessagingBrowserTest> {
  public:
   void SetUpOnMainThread() override {
-    GlicMessagingBrowserTest::SetUpOnMainThread();
+    glic::GlicBrowserTestMixin<GlicMessagingBrowserTest>::SetUpOnMainThread();
     SetupIdentityAndCapabilities();
   }
 };

@@ -130,6 +130,9 @@ class GlicTestEnvironment : public ProfileObserver {
   internal::GlicTestEnvironmentShared shared_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
 
+  bool StartTestServerIfNeeded(
+      net::test_server::EmbeddedTestServer* http_server);
+
   // URL configuration state.
   std::string glic_page_path_ = "/glic/test_client/index.html";
   std::map<std::string, std::string> mock_glic_query_params_;
