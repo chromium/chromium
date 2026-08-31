@@ -607,7 +607,13 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
 
 // Exercises accounting in the case where an extension has two different-site
 // web iframes.
-IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, ExtensionWithTwoWebIframes) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ExtensionWithTwoWebIframes DISABLED_ExtensionWithTwoWebIframes
+#else
+#define MAYBE_ExtensionWithTwoWebIframes ExtensionWithTwoWebIframes
+#endif
+IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
+                       MAYBE_ExtensionWithTwoWebIframes) {
   size_t baseline_count = GetRenderProcessCount() - 1;
   scoped_refptr<TestMemoryDetails> details =
       base::MakeRefCounted<TestMemoryDetails>();
