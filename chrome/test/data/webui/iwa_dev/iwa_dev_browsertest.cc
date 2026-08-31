@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/common/content_features.h"
@@ -13,10 +12,7 @@ class IwaDevBrowserTest : public WebUIMochaBrowserTest {
  protected:
   IwaDevBrowserTest() {
     set_test_loader_host(chrome::kChromeUIIwaDevHost);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kIsolatedWebAppDevUi,
-                              features::kIsolatedWebApps},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_page_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/iwa_dev_resources.h"
 #include "chrome/grit/iwa_dev_resources_map.h"
 #include "chrome/grit/theme_resources.h"
@@ -22,8 +21,7 @@
 #include "ui/webui/webui_util.h"
 
 bool IwaDevUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return content::AreIsolatedWebAppsEnabled(browser_context) &&
-         base::FeatureList::IsEnabled(features::kIsolatedWebAppDevUi);
+  return content::AreIsolatedWebAppsEnabled(browser_context);
 }
 
 IwaDevUI::IwaDevUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {

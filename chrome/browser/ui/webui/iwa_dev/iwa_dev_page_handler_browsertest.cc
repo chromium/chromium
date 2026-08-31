@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -98,10 +96,6 @@ class MockPage : public iwa_dev::mojom::Page {
 class IwaDevHandlerBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  IwaDevHandlerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebAppDevUi);
-  }
-
   void SetUpOnMainThread() override {
     web_app::IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
     ASSERT_TRUE(
@@ -215,7 +209,6 @@ class IwaDevHandlerBrowserTest
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
