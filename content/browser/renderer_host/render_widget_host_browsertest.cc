@@ -1082,8 +1082,14 @@ IN_PROC_BROWSER_TEST_F(
       1);
 }
 
+// TODO(crbug.com/554213904): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FoldablesCSSWithReload DISABLED_FoldablesCSSWithReload
+#else
+#define MAYBE_FoldablesCSSWithReload FoldablesCSSWithReload
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
-                       FoldablesCSSWithReload) {
+                       MAYBE_FoldablesCSSWithReload) {
   const char kTestPageURL[] =
       R"HTML(data:text/html,<!DOCTYPE html>
       <style>
