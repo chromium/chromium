@@ -14,6 +14,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_processor_controls.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
@@ -83,6 +84,15 @@ class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
 
  private:
   media::AudioParameters params_;
+};
+
+class MockAudioProcessorControls : public media::AudioProcessorControls {
+ public:
+  void GetStats(GetStatsCB callback) override {
+    std::move(callback).Run(media::AudioProcessingStats());
+  }
+  MOCK_METHOD(void, SetPreferredNumCaptureChannels, (int32_t), (override));
+  MOCK_METHOD(void, SetVoiceIsolation, (bool), (override));
 };
 
 }  // namespace
@@ -263,6 +273,53 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlow) {
   EXPECT_CALL(*mock_audio_capturer_source(), Stop());
   MediaStreamAudioTrack::From(audio_track())->Stop();
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+TEST_P(ProcessedLocalAudioSourceTest,
+       SetVoiceIsolationCallsAudioProcessorControls) {
+  if (GetParam() != ProcessingLocation::kAudioService) {
+    GTEST_SKIP();
+  }
+
+  // 1. Create processed local audio source.
+  CreateProcessedLocalAudioSource(MediaStreamAudioProcessingLayout(
+      AudioProcessingProperties(),
+      /*available_platform_effects=*/0,
+      /*channels=*/ChannelLayoutToChannelCount(kProcessedChannelLayout)));
+
+  // 2. Connect the track, and expect the MockAudioCapturerSource to be
+  // initialized and started by ProcessedLocalAudioSource.
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              Initialize(_, capture_source_callback()));
+  // ProcessedLocalAudioSource configures AGC on the capturer source before
+  // starting capture.
+  EXPECT_CALL(*mock_audio_capturer_source(), SetAutomaticGainControl(_));
+  EXPECT_CALL(*mock_audio_capturer_source(), Start())
+      .WillOnce(Invoke(
+          capture_source_callback(),
+          &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
+  ASSERT_TRUE(audio_source()->ConnectToInitializedTrack(audio_track()));
+
+  // 3. Call SetVoiceIsolation before controls are created. The setting should
+  // be cached in the proxy.
+  audio_source()->SetVoiceIsolation(true);
+
+  // 4. Inject mock controls. The cached voice isolation setting should be
+  // applied immediately.
+  testing::StrictMock<MockAudioProcessorControls> mock_controls;
+  EXPECT_CALL(mock_controls, SetVoiceIsolation(true));
+  capture_source_callback()->OnCaptureProcessorCreated(&mock_controls);
+
+  // 5. Call SetVoiceIsolation after controls are created. This should be
+  // forwarded to the mock controls immediately.
+  EXPECT_CALL(mock_controls, SetVoiceIsolation(false));
+  audio_source()->SetVoiceIsolation(false);
+
+  // Clean up.
+  EXPECT_CALL(*mock_audio_capturer_source(), Stop());
+  MediaStreamAudioTrack::From(audio_track())->Stop();
+}
+#endif
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 INSTANTIATE_TEST_SUITE_P(All,

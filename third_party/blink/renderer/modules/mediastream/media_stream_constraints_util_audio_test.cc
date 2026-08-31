@@ -1875,7 +1875,7 @@ class TestAudioSource : public blink::MediaStreamAudioSource {
     return audio_properties_;
   }
   void SetAudioProcessingProperties(
-      const AudioProcessingProperties& properties) override {
+      const AudioProcessingProperties& properties) {
     audio_properties_ = properties;
   }
   void SetFormatForTesting(const media::AudioParameters& params) {

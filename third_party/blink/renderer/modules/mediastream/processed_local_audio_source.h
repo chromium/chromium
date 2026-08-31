@@ -75,6 +75,9 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   std::optional<blink::AudioProcessingProperties> GetAudioProcessingProperties()
       const final;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  void SetVoiceIsolation(bool enabled) final;
+#endif
   bool IsProcessedSource() const final { return true; }
   bool IsApmProcessedSource() const final {
     return processing_layout_.NeedWebrtcAudioProcessing();
