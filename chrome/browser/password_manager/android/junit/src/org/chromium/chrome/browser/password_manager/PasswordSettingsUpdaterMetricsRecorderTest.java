@@ -29,9 +29,7 @@ import java.util.Collection;
  * Tests that metric reporter correctly writes the histograms depending on the function and setting.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class PasswordSettingsUpdaterMetricsRecorderTest {
     @Parameters
     public static Collection testCases() {

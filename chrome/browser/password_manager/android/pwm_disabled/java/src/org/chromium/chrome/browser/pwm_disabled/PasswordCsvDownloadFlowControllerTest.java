@@ -71,9 +71,7 @@ import java.util.List;
 
 /** Tests for {@link PasswordCsvDownloadFlowController} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class PasswordCsvDownloadFlowControllerTest {
     private static final String TEST_FILE_DATA =
             "name,url,username,password,note\n"

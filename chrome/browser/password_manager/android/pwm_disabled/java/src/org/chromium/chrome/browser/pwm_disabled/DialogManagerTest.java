@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -32,7 +31,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Tests for the {@link DialogManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DialogManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -75,9 +75,7 @@ import java.util.Set;
 
 /** Tests for the password checkup-related methods in {@link PasswordManagerHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class PasswordManagerCheckupHelperTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
     private static final String TEST_NO_EMAIL_ADDRESS = null;

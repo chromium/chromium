@@ -18,12 +18,10 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class GmsUpdateLauncherTest {
     @Test
     public void testSendsIntentOnLaunchGmsUpdate() {

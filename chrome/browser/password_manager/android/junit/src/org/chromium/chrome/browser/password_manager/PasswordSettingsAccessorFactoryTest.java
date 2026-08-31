@@ -12,13 +12,11 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for the methods of {@link PasswordSettingsAccessorFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PasswordSettingsAccessorFactoryTest {
     @Test
     public void testGetOrCreateReusesExistingFactory() {

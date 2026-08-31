@@ -26,9 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class CctPasswordSavingMetricsRecorderBridgeTest {
     private static final long INCREMENT_MS = 10;
 

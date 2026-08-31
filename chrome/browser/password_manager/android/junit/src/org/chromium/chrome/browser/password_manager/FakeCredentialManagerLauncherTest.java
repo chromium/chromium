@@ -21,7 +21,6 @@ import com.google.android.gms.common.api.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 
 /** Tests for {@link FakeCredentialManagerLauncher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FakeCredentialManagerLauncherTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
     private FakeCredentialManagerLauncher mFakeLauncher;

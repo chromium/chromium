@@ -28,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,7 +45,6 @@ import java.util.Optional;
 
 /** Tests that dispatcher bridge calls as invoked by the password store reach the backend. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
     private static final PasswordSpecificsData.Builder sTestProfile =

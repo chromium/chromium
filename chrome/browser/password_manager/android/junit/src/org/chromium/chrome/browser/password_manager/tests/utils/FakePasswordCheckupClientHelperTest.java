@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -28,7 +27,6 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 
 /** Tests for {@link FakePasswordCheckupClientHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FakePasswordCheckupClientHelperTest {
     private static final String TEST_ACCOUNT = "test@example.com";
     private FakePasswordCheckupClientHelper mFakeHelper;

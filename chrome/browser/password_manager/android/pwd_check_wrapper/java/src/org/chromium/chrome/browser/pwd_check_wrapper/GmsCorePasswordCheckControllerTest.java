@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
@@ -42,7 +41,6 @@ import java.util.concurrent.ExecutionException;
 
 /** Unit tests for {@link GmsCorePasswordCheckController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 // This is only used from Safety Check v1 which will be soon deprecated in favor Safety Check v2.
 // There is still one entry point to this from the PhishGuard dialog.
 public class GmsCorePasswordCheckControllerTest {

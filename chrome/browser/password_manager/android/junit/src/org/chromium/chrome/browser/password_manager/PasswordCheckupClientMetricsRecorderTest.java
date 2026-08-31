@@ -25,9 +25,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.Passwo
  * Tests that metric reporter correctly writes the histograms depending on the operation and error.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class PasswordCheckupClientMetricsRecorderTest {
     private static final String PASSWORD_CHECKUP_HISTOGRAM_BASE = "PasswordManager.PasswordCheckup";
 

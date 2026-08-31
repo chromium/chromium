@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowDialog;
 
@@ -46,7 +45,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link PasswordsCsvDownloadDialogController} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PasswordCsvDownloadDialogTest {
     private static final Uri SAVED_EXPORT_FILE_URI = Uri.parse("fake/test/path/file.ext");
 
