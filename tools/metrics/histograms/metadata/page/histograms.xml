@@ -1835,7 +1835,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDohDetails.ConnectionInfo"
-    enum="HttpConnectionInfoCoarse" expires_after="2026-09-06">
+    enum="HttpConnectionInfoCoarse" expires_after="2027-08-27">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1848,7 +1848,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDohDetails.SessionSource"
-    enum="NetworkSessionSource" expires_after="2026-09-06">
+    enum="NetworkSessionSource" expires_after="2027-08-27">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1907,7 +1907,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestResolutionDetails.TaskCompletionDelay.{ResolutionSource}"
-    units="ms" expires_after="2026-09-06">
+    units="ms" expires_after="2027-08-27">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2423,7 +2423,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.MaxStreamLimitPendingDelay{ConnectionProtocolType}"
-    units="ms" expires_after="2026-09-06">
+    units="ms" expires_after="2027-08-27">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
