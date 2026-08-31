@@ -242,7 +242,7 @@ extension ObjectGroup {
         name: "golden.Primary_GetMapValue_ResponseParams",
         instanceType: .jsGoldenPrimary_GetMapValue_ResponseParams,
         properties: [
-            "result": .integer,
+            "result": .bigint,
         ],
         methods: [:]
     )
@@ -258,7 +258,7 @@ extension ObjectGroup {
         name: "golden.Primary_SyncGetMapValue_ResponseParams",
         instanceType: .jsGoldenPrimary_SyncGetMapValue_ResponseParams,
         properties: [
-            "result": .integer,
+            "result": .bigint,
         ],
         methods: [:]
     )
@@ -348,7 +348,7 @@ private let MojoString_Uint64MapGenerator = CodeGenerator(
        if probability(0.5) {
            values.append(b.loadUndefined())
        } else {
-           values.append(b.randomVariable(forUseAs: .integer))
+           values.append(b.randomVariable(forUseAs: .bigint))
        }
     }
     b.createMap(

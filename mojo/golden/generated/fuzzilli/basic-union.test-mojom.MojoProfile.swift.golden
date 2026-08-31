@@ -145,7 +145,7 @@ private let MojoInt64ArrayGenerator = CodeGenerator(
     inputs: .one,
     produces: [.jsInt64Array]
 ) { b, _ in
-    let elem = b.findOrGenerateType(.integer)
+    let elem = b.findOrGenerateType(.bigint)
     var elements: [Variable] = [elem]
     b.createArray(
         with: elements,

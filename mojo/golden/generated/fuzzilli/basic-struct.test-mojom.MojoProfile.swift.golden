@@ -41,7 +41,7 @@ extension ObjectGroup {
         methods: [
             "useStruct": [
                 .plain(.jsGoldenLargeStruct),
-                .plain(.integer),
+                .plain(.bigint),
             ] => .undefined,
             "getStruct": [
                 .plain(.string),
@@ -86,7 +86,7 @@ extension ILType {
             "data",
         ])
     fileprivate static let jsGoldenLargeStructConstructor: ILType = .constructor([
-        .plain(.integer),
+        .plain(.bigint),
         .plain(.string),
         .plain(.jsGoldenSimpleStruct),
         .either(.string, .undefined),
@@ -118,7 +118,7 @@ extension ObjectGroup {
         name: "golden.LargeStruct",
         instanceType: .jsGoldenLargeStruct,
         properties: [
-            "id": .integer,
+            "id": .bigint,
             "value": .string,
             "residence": .jsGoldenSimpleStruct,
             "optionalField": .string,
@@ -177,7 +177,7 @@ private let MojoInt64ArrayGenerator = CodeGenerator(
     inputs: .one,
     produces: [.jsInt64Array]
 ) { b, _ in
-    let elem = b.findOrGenerateType(.integer)
+    let elem = b.findOrGenerateType(.bigint)
     var elements: [Variable] = [elem]
     b.createArray(
         with: elements,
