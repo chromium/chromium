@@ -20,6 +20,10 @@ class TestCueTarget : public CueTarget {
   bool page_eligible = true;
   CueActionData click_data = std::monostate();
   CueActionData edit_prompt_data = std::monostate();
+  bool chip_shown = false;
+  bool chip_clicked = false;
+  std::optional<page_actions::PageActionPriorityCategory>
+      anchored_message_shown_priority;
 
   TestCueTarget();
   ~TestCueTarget() override;
@@ -36,7 +40,11 @@ class TestCueTarget : public CueTarget {
   bool IsPageEligible(
       const page_content_annotations::PageContentAnnotationsResult& result,
       content::WebContents* active_web_contents) const override;
-  void OnClick(CueActionData data) override;
+  void OnChipShown() override;
+  void OnChipClicked() override;
+  void OnAnchoredMessageShown(
+      page_actions::PageActionPriorityCategory priority) override;
+  void OnAnchoredMessageClicked(CueActionData data) override;
   void OnEditPrompt(CueActionData data) override;
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;

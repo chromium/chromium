@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -122,7 +123,30 @@ bool IndigoCueTarget::IsPageEligible(
   return false;
 }
 
-void IndigoCueTarget::OnClick(contextual_cueing::CueActionData data) {
+void IndigoCueTarget::OnChipShown() {
+  RecordShownEntryPoint(IndigoPageActionEntryPoint::kSuggestionChip);
+}
+
+void IndigoCueTarget::OnChipClicked() {
+  RecordClickedEntryPoint(EntryPoint::kSuggestionChip, std::nullopt);
+}
+
+void IndigoCueTarget::OnAnchoredMessageShown(
+    page_actions::PageActionPriorityCategory priority) {
+  if (auto* controller = IndigoPageActionController::From(&tab_.get())) {
+    controller->set_last_anchored_message_priority(priority);
+  }
+  if (priority == page_actions::PageActionPriorityCategory::kContextualCue) {
+    RecordShownEntryPoint(
+        IndigoPageActionEntryPoint::kProactiveAnchoredMessage);
+  } else if (priority ==
+             page_actions::PageActionPriorityCategory::kUserInteraction) {
+    RecordShownEntryPoint(IndigoPageActionEntryPoint::kReactiveAnchoredMessage);
+  }
+}
+
+void IndigoCueTarget::OnAnchoredMessageClicked(
+    contextual_cueing::CueActionData data) {
   auto* controller = IndigoPageActionController::From(&tab_.get());
   if (controller) {
     controller->InvokeAction(EntryPoint::kAnchoredMessage);

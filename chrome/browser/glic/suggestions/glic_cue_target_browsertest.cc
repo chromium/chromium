@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestAutoSubmitEnabled,
   contextual_cueing::CueActionData data = glic_data;
 
   // Clicking should invoke and auto-open.
-  target.OnClick(data);
+  target.OnAnchoredMessageClicked(data);
 
   // Verifies that the JS client receives the correct prompt and
   // autoSubmit=true.
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestAutoSubmitDisabled,
   contextual_cueing::CueActionData data = glic_data;
 
   // Clicking should invoke but not auto-submit.
-  target.OnClick(data);
+  target.OnAnchoredMessageClicked(data);
 
   // Verifies that the JS client receives the correct prompt and
   // autoSubmit=false.
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestMessageFirstFreEnabled,
   contextual_cueing::CueActionData data = glic_data;
 
   // Clicking should invoke and auto-open with FreOverride::kTrustFirstInline.
-  target.OnClick(data);
+  target.OnAnchoredMessageClicked(data);
 
   // Verifies that the JS client receives the correct prompt, autoSubmit=true,
   // and freOverride=FreOverride.TRUST_FIRST_INLINE.
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestMessageFirstFreEnabled,
 
   // Clicking should invoke and auto-open with FreOverride::kUnspecified because
   // the user has already completed the FRE.
-  target.OnClick(data);
+  target.OnAnchoredMessageClicked(data);
 
   // Verifies that the JS client receives the correct prompt, autoSubmit=true,
   // and freOverride=FreOverride.UNSPECIFIED.
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Clicking should invoke but not auto-submit, and freOverride should be
   // FreOverride::kUnspecified.
-  target.OnClick(data);
+  target.OnAnchoredMessageClicked(data);
 
   // Verifies that the JS client receives the correct prompt, autoSubmit=false,
   // and freOverride=FreOverride.UNSPECIFIED.

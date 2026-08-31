@@ -161,7 +161,8 @@ bool GlicCueTarget::IsEligible() const {
          !glic_keyed_service_->IsPanelShowingForBrowser(*window);
 }
 
-void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
+void GlicCueTarget::OnAnchoredMessageClicked(
+    contextual_cueing::CueActionData data) {
   InvokeGlic(std::move(data), base::FeatureList::IsEnabled(
                                   features::kGlicContextualCueingV2AutoSubmit));
 }

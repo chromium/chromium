@@ -25,6 +25,10 @@ namespace page_content_annotations {
 class PageContentAnnotationsResult;
 }  // namespace page_content_annotations
 
+namespace page_actions {
+enum class PageActionPriorityCategory;
+}  // namespace page_actions
+
 namespace contextual_cueing {
 
 // LINT.IfChange(CueTargetType)
@@ -135,8 +139,18 @@ class CueTarget {
       const page_content_annotations::PageContentAnnotationsResult& result,
       content::WebContents* active_web_contents) const = 0;
 
-  // Called when the user clicks the cue's action button.
-  virtual void OnClick(CueActionData data) = 0;
+  // Called when the cue's omnibox suggestion chip is shown to the user.
+  virtual void OnChipShown() {}
+
+  // Called when the user clicks the cue's omnibox suggestion chip.
+  virtual void OnChipClicked() {}
+
+  // Called when the cue's anchored message is shown to the user.
+  virtual void OnAnchoredMessageShown(
+      page_actions::PageActionPriorityCategory priority) {}
+
+  // Called when the user clicks the anchored message's action button.
+  virtual void OnAnchoredMessageClicked(CueActionData data) = 0;
 
   // Whether this target supports editing prompt via the menu.
   virtual bool SupportsEditPrompt() const;

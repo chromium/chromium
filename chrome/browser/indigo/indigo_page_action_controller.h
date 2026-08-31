@@ -201,6 +201,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // This should only be called by `IndigoCueTarget`.
   void CheckEligibilityForCueing(EligibilityCallback callback);
 
+  void set_last_anchored_message_priority(
+      std::optional<page_actions::PageActionPriorityCategory> priority) {
+    last_anchored_message_priority_ = priority;
+  }
+
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;

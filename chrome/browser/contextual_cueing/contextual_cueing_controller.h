@@ -45,6 +45,7 @@ struct OptimizationGuideModelExecutionResult;
 namespace page_actions {
 class PageActionController;
 class PageActionObserver;
+enum class PageActionPriorityCategory;
 }  // namespace page_actions
 
 namespace signin {
@@ -286,6 +287,8 @@ class ContextualCueingController
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<page_actions::PageActionObserver> page_action_observer_;
+  std::optional<page_actions::PageActionPriorityCategory>
+      current_anchored_message_priority_;
 #endif
 
   GURL last_logged_active_url_;

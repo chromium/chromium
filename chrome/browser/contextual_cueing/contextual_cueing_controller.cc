@@ -1103,6 +1103,17 @@ void ContextualCueingController::ShowCue(
 
   MaybeShowTabList(page_action_controller, tabs_to_show);
 
+  // Record the intended priority before calling Show(), so that synchronous
+  // observer callbacks triggered by Show() (such as OnPageActionIconShown) know
+  // that a loud anchored message is being shown rather than a quiet chip.
+  if (intrusiveness == CueIntrusiveness::kLoud) {
+    current_anchored_message_priority_ =
+        page_actions::PageActionPriorityCategory::kContextualCue;
+  }
+
+  // Show() must be called before ShowAnchoredMessage() because the page action
+  // must be requested to be visible in the model for the anchored message to
+  // be displayed.
   page_action_controller->Show(kActionAnchoredContextualCue);
 
   if (intrusiveness == CueIntrusiveness::kLoud) {
@@ -1222,6 +1233,9 @@ void ContextualCueingController::MaybeShowTabList(
 void ContextualCueingController::OnCueHidden() {
   cue_hidden_time_ = base::TimeTicks();
   cue_shown_time_ = base::TimeTicks();
+#if !BUILDFLAG(IS_ANDROID)
+  current_anchored_message_priority_ = std::nullopt;
+#endif
 }
 
 void ContextualCueingController::OnCueFormFactorShown(
@@ -1230,6 +1244,20 @@ void ContextualCueingController::OnCueFormFactorShown(
   if (form_factor == CueFormFactor::kAnchoredMessage) {
     cue_shown_time_ = base::TimeTicks::Now();
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (active_cue_data_) {
+    if (CueTarget* target = GetTarget(active_cue_data_->cue_type)) {
+      if ((form_factor == CueFormFactor::kIcon ||
+           form_factor == CueFormFactor::kChip) &&
+          !current_anchored_message_priority_) {
+        target->OnChipShown();
+      } else if (form_factor == CueFormFactor::kAnchoredMessage &&
+                 current_anchored_message_priority_) {
+        target->OnAnchoredMessageShown(*current_anchored_message_priority_);
+      }
+    }
+  }
+#endif
 }
 
 void ContextualCueingController::OnCueFormFactorHidden(
@@ -1237,6 +1265,9 @@ void ContextualCueingController::OnCueFormFactorHidden(
   RecordCueFormFactorHidden(form_factor);
   if (form_factor == CueFormFactor::kAnchoredMessage) {
     cue_hidden_time_ = base::TimeTicks::Now();
+#if !BUILDFLAG(IS_ANDROID)
+    current_anchored_message_priority_ = std::nullopt;
+#endif
   }
   // Resets the cue state and shown timer only when the entire page action
   // icon is hidden, preserving the original contextual cue lifecycle behavior.
@@ -1278,10 +1309,15 @@ void ContextualCueingController::OnCueClicked(
   const page_actions::PageActionState& state =
       page_action_observer_->GetCurrentPageActionState();
   if (!state.anchored_message_showing) {
+    if (CueTarget* target = GetTarget(cue_type)) {
+      target->OnChipClicked();
+    }
     // Re-show the anchored message to allow for the user to see the tab
     // sharing UI before invoking the cue target's click action
     if (page_actions::PageActionController* page_action_controller =
             tab_->GetTabFeatures()->page_action_controller()) {
+      current_anchored_message_priority_ =
+          page_actions::PageActionPriorityCategory::kUserInteraction;
       page_action_controller->ShowAnchoredMessage(
           kActionAnchoredContextualCue,
           {.priority =
@@ -1342,7 +1378,7 @@ void ContextualCueingController::OnCueInteraction(
       break;
     case ContextualCueingInteraction::kCueClicked:
       if (CueTarget* target = GetTarget(cue_type)) {
-        target->OnClick(std::move(action));
+        target->OnAnchoredMessageClicked(std::move(action));
       }
       contextual_cueing_service_->OnCueClicked(cue_type);
       break;
@@ -1362,6 +1398,7 @@ void ContextualCueingController::HideCue() {
 #if !BUILDFLAG(IS_ANDROID)
   active_cue_data_.reset();
   dependencies_.clear();
+  current_anchored_message_priority_ = std::nullopt;
   page_actions::PageActionController* page_action_controller =
       tab_->GetTabFeatures()->page_action_controller();
   if (!page_action_controller) {

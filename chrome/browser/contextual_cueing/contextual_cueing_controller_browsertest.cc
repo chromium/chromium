@@ -2738,6 +2738,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
   non_mes_target->supported_intrusiveness = {CueIntrusiveness::kLoud,
                                              CueIntrusiveness::kQuiet};
   non_mes_target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  TestCueTarget* target_ptr = non_mes_target.get();
   browser()
       ->GetActiveTabInterface()
       ->GetTabFeatures()
@@ -2781,6 +2782,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
   // The chip should still be visible, but anchored message is NOT showing.
   EXPECT_TRUE(observer.visible_);
   EXPECT_FALSE(observer.anchored_message_showing_);
+  EXPECT_TRUE(target_ptr->chip_shown);
 
   // When clicking the suggestion chip, it should expand out into an anchored
   // message.
@@ -2791,6 +2793,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 
   EXPECT_TRUE(observer.visible_);
   EXPECT_TRUE(observer.anchored_message_showing_);
+  EXPECT_TRUE(target_ptr->chip_clicked);
+  EXPECT_EQ(target_ptr->anchored_message_shown_priority,
+            page_actions::PageActionPriorityCategory::kUserInteraction);
 }
 
 }  // namespace

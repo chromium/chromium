@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -1246,15 +1247,11 @@ TEST_F(IndigoPageActionControllerTest,
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kSuggestionChip);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.SuggestionChip.Click"),
-            1);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.AnchoredMessage.Click"),
-            0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kSuggestionChipClickAction), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kAnchoredMessageClickAction), 0);
   histogram_tester.ExpectUniqueSample(
-      "Indigo.PageAction.ClickedEntryPoint",
-      IndigoPageActionEntryPoint::kSuggestionChip, 1);
+      kClickedEntryPointHistogram, IndigoPageActionEntryPoint::kSuggestionChip,
+      1);
 }
 
 TEST_F(IndigoPageActionControllerTest,
@@ -1266,14 +1263,10 @@ TEST_F(IndigoPageActionControllerTest,
       .SetLastAnchoredMessagePriority(
           page_actions::PageActionPriorityCategory::kContextualCue);
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.SuggestionChip.Click"),
-            0);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.AnchoredMessage.Click"),
-            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kSuggestionChipClickAction), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kAnchoredMessageClickAction), 1);
   histogram_tester.ExpectUniqueSample(
-      "Indigo.PageAction.ClickedEntryPoint",
+      kClickedEntryPointHistogram,
       IndigoPageActionEntryPoint::kProactiveAnchoredMessage, 1);
 }
 
@@ -1282,17 +1275,11 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionErrorToastRecordsMetrics) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kErrorToast);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.SuggestionChip.Click"),
-            0);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.AnchoredMessage.Click"),
-            0);
-  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.ErrorToast.Retry.Click"),
-            1);
-  histogram_tester.ExpectUniqueSample("Indigo.PageAction.ClickedEntryPoint",
-                                      IndigoPageActionEntryPoint::kErrorToast,
-                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kSuggestionChipClickAction), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kAnchoredMessageClickAction), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kErrorToastRetryClickAction), 1);
+  histogram_tester.ExpectUniqueSample(
+      kClickedEntryPointHistogram, IndigoPageActionEntryPoint::kErrorToast, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest, ShowsSuggestionChipWhenSidePanelIsOpen) {
@@ -1313,7 +1300,8 @@ TEST_F(IndigoPageActionControllerTest, ShowsSuggestionChipWhenSidePanelIsOpen) {
   navigation->Commit();
 }
 
-TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
+TEST_F(IndigoPageActionControllerTest,
+       OnPageActionAnchoredMessageShownProactive) {
   CreateController();
 
   auto* service = IndigoServiceFactory::GetForProfile(profile_.get());
@@ -1321,9 +1309,9 @@ TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
 
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.AnchoredMessage.Proactive.Show"),
-            0);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(kProactiveAnchoredMessageShowAction),
+      0);
 
   IndigoPageActionController::TestApi(controller_.get())
       .SetLastAnchoredMessagePriority(
@@ -1341,9 +1329,9 @@ TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
   // during navigation) should NOT be enough to record the user action or
   // update the service's state.
   EXPECT_TRUE(service->CanShowContextualCue());
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.AnchoredMessage.Proactive.Show"),
-            0);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(kProactiveAnchoredMessageShowAction),
+      0);
 
   // Trigger the observer event, simulating the anchored message actually
   // showing.
@@ -1354,12 +1342,56 @@ TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
 
   // Verify that the service was notified and the action was recorded.
   EXPECT_FALSE(service->CanShowContextualCue());
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "Indigo.PageAction.AnchoredMessage.Proactive.Show"),
-            1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(kProactiveAnchoredMessageShowAction),
+      1);
   histogram_tester.ExpectUniqueSample(
-      "Indigo.PageAction.ShownEntryPoint",
+      kShownEntryPointHistogram,
       IndigoPageActionEntryPoint::kProactiveAnchoredMessage, 1);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       OnPageActionAnchoredMessageShownReactive) {
+  CreateController();
+
+  auto* service = IndigoServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(service->CanShowContextualCue());
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  IndigoPageActionController::TestApi(controller_.get())
+      .SetLastAnchoredMessagePriority(
+          page_actions::PageActionPriorityCategory::kUserInteraction);
+
+  page_actions::PageActionState state;
+  state.action_id = kActionIndigo;
+  state.anchored_message_showing = true;
+  controller_->OnPageActionAnchoredMessageShown(state);
+
+  EXPECT_FALSE(service->CanShowContextualCue());
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(kReactiveAnchoredMessageShowAction), 1);
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram,
+      IndigoPageActionEntryPoint::kReactiveAnchoredMessage, 1);
+}
+
+TEST_F(IndigoPageActionControllerTest, OnPageActionChipShown) {
+  CreateController();
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  page_actions::PageActionState state;
+  state.action_id = kActionIndigo;
+  state.chip_showing = true;
+  controller_->OnPageActionChipShown(state);
+
+  EXPECT_EQ(user_action_tester.GetActionCount(kSuggestionChipShowAction), 1);
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram, IndigoPageActionEntryPoint::kSuggestionChip,
+      1);
 }
 
 TEST_F(IndigoPageActionControllerTest,

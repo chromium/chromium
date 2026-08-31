@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -107,11 +108,54 @@ TEST_F(IndigoCueTargetTest, BasicProperties) {
             optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED);
 }
 
-TEST_F(IndigoCueTargetTest, OnClickInvokesAnchoredMessage) {
+TEST_F(IndigoCueTargetTest, OnAnchoredMessageClickedInvokesAnchoredMessage) {
   base::UserActionTester user_action_tester;
-  cue_target_->OnClick(std::monostate{});
+  cue_target_->OnAnchoredMessageClicked(std::monostate{});
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kAnchoredMessageClickAction));
+}
+
+TEST_F(IndigoCueTargetTest, OnChipShownRecordsMetrics) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  cue_target_->OnChipShown();
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kSuggestionChipShowAction));
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram, IndigoPageActionEntryPoint::kSuggestionChip,
+      1);
+}
+
+TEST_F(IndigoCueTargetTest, OnChipClickedRecordsMetrics) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  cue_target_->OnChipClicked();
+  EXPECT_EQ(user_action_tester.GetActionCount(kSuggestionChipClickAction), 1);
+  histogram_tester.ExpectUniqueSample(
+      kClickedEntryPointHistogram, IndigoPageActionEntryPoint::kSuggestionChip,
+      1);
+}
+
+TEST_F(IndigoCueTargetTest, OnAnchoredMessageShownProactiveRecordsMetrics) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  cue_target_->OnAnchoredMessageShown(
+      page_actions::PageActionPriorityCategory::kContextualCue);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Indigo.PageAction.AnchoredMessage.Click"));
+                   kProactiveAnchoredMessageShowAction));
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram,
+      IndigoPageActionEntryPoint::kProactiveAnchoredMessage, 1);
+}
+
+TEST_F(IndigoCueTargetTest, OnAnchoredMessageShownReactiveRecordsMetrics) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  cue_target_->OnAnchoredMessageShown(
+      page_actions::PageActionPriorityCategory::kUserInteraction);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount(kReactiveAnchoredMessageShowAction));
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram,
+      IndigoPageActionEntryPoint::kReactiveAnchoredMessage, 1);
 }
 
 TEST_F(IndigoCueTargetTest, CheckEligibility_NullWebContents) {

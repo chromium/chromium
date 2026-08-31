@@ -10,11 +10,14 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/indigo/fake_api.h"
+#include "ui/actions/actions.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
@@ -1004,6 +1007,7 @@ class IndigoContextualCueingV2BrowserTest : public IndigoBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(IndigoContextualCueingV2BrowserTest,
                        ArbitrationAndInvocationFlow) {
+  base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
   RunTestSequence(
@@ -1015,6 +1019,16 @@ IN_PROC_BROWSER_TEST_F(IndigoContextualCueingV2BrowserTest,
       PressButton(
           page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
       WaitForShow(IndigoToolbar::kToolbarElementId));
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   kProactiveAnchoredMessageShowAction));
+  histogram_tester.ExpectUniqueSample(
+      kShownEntryPointHistogram,
+      IndigoPageActionEntryPoint::kProactiveAnchoredMessage, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kAnchoredMessageClickAction));
+  histogram_tester.ExpectUniqueSample(
+      kClickedEntryPointHistogram,
+      IndigoPageActionEntryPoint::kProactiveAnchoredMessage, 1);
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.ShownCueCUJ",
