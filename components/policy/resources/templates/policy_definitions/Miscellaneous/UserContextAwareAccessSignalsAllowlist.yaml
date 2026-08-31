@@ -20,6 +20,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - ios
 supported_on:
 - chrome.*:116-

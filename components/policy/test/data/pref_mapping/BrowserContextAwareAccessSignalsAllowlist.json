@@ -4,7 +4,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "enterprise_connectors.device_trust_browser.origins",

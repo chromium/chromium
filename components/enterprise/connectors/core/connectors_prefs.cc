@@ -106,8 +106,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterIntegerPref(kOnFileTransferScopePref, 0);
 #endif
-  RegisterDeviceTrustConnectorProfilePrefs(registry);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
+  RegisterDeviceTrustConnectorProfilePrefs(registry);
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);

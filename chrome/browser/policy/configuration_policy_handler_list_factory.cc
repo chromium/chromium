@@ -2820,12 +2820,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       enterprise::content::kCopyPreventionSettings, chrome_schema));
   handlers->AddHandler(std::make_unique<DefaultDownloadDirPolicyHandler>());
   handlers->AddHandler(std::make_unique<DownloadDirPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<
-          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
-          key::kUserContextAwareAccessSignalsAllowlist,
-          enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref,
-          chrome_schema));
+
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(key::kPromotionalTabsEnabled,
                                             prefs::kPromotionsEnabled,
@@ -3033,16 +3028,24 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kBrowsingDataLifetime, browsing_data::prefs::kBrowsingDataLifetime,
       chrome_schema));
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  handlers->AddHandler(std::make_unique<GuestModePolicyHandler>());
-  handlers->AddHandler(std::make_unique<LocalSyncPolicyHandler>());
-  handlers->AddHandler(std::make_unique<ThemeColorPolicyHandler>());
+#if !BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kBrowserContextAwareAccessSignalsAllowlist,
           enterprise_connectors::kBrowserContextAwareAccessSignalsAllowlistPref,
           chrome_schema));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kUserContextAwareAccessSignalsAllowlist,
+          enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref,
+          chrome_schema));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  handlers->AddHandler(std::make_unique<GuestModePolicyHandler>());
+  handlers->AddHandler(std::make_unique<LocalSyncPolicyHandler>());
+  handlers->AddHandler(std::make_unique<ThemeColorPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<SingleDeprecatedPolicyToMultipleNewPolicyHandler>(
           std::make_unique<ManagedAccountRestrictionsPolicyHandler>(
