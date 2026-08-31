@@ -88,7 +88,8 @@ public class BookmarkTabletTest {
     private void openBookmarkManager() throws InterruptedException {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
-        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
+        String rootFolderId = "folder/0";
+        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl() + rootFolderId);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mItemsContainer =
@@ -180,7 +181,8 @@ public class BookmarkTabletTest {
                                 }
                             });
                 });
-        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
+        String rootFolderId = "folder/0";
+        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl() + rootFolderId);
         onView(withText(startsWith("Mobile bookmarks"))).check(matches(isDisplayed()));
         assertEquals(0, callbackHelper.getCallCount());
     }

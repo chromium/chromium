@@ -2057,6 +2057,30 @@ public class BookmarkTest {
                                 false));
     }
 
+    private void openDesktopBookmarkManager() {
+        loadBookmarkModel();
+        mActivityTestRule.getActivityTestRule().loadUrlNoWaiting(getOriginalNativeBookmarksUrl());
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivityTab().getNativePage() instanceof BookmarkPage);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mItemsContainer =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.selectable_list_recycler_view);
+                    mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
+                    mBookmarkManagerCoordinator =
+                            ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
+                                    .getManagerForTesting();
+                    mModelList = mBookmarkManagerCoordinator.getModelListForTesting();
+                    mDelegate = mBookmarkManagerCoordinator.getBookmarkDelegateForTesting();
+                    mAdapter = (DragReorderableRecyclerViewAdapter) mItemsContainer.getAdapter();
+                    mToolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                });
+    }
+
     private boolean isItemPresentInBookmarkList(final String expectedTitle) {
         return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<>() {
@@ -2392,15 +2416,15 @@ public class BookmarkTest {
     @MediumTest
     @Restriction({DeviceFormFactor.ONLY_TABLET})
     @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
-    public void testDesktopLayout_InitRedirectsFromRoot() throws Exception {
+    public void testDesktopLayout_SelectsBookmarksBarByDefault() throws Exception {
         assumeTrue(
                 mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp
                         >= BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP);
         DeviceInfo.setIsDesktopForTesting(true);
         try {
-            openBookmarkManager();
+            openDesktopBookmarkManager();
 
-            // Verify that we are redirected to "Bookmarks bar" (first folder).
+            // Verify that we default to "Bookmarks bar" (first folder).
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(mToolbar.getTitle(), equalTo("Bookmarks bar")));
 
