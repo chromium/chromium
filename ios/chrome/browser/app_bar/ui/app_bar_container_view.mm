@@ -85,8 +85,7 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   [self updatePositioning];
 }
 
-- (void)layoutSubviews {
-  [super layoutSubviews];
+- (void)windowSizeDidChange {
   [self updatePositioning];
 }
 

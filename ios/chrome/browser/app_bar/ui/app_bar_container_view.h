@@ -29,6 +29,10 @@ enum class AppBarPosition;
 // Sets the App Bar view to be contained.
 - (void)setAppBar:(UIView*)appBar;
 
+// Notifies the container view that the window size has changed, updating its
+// constraints.
+- (void)windowSizeDidChange;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONTAINER_VIEW_H_
