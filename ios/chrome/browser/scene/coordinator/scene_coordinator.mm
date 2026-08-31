@@ -1270,7 +1270,11 @@ inline LayoutStateScenePassKey PassKey() {
   DCHECK(!self.isSigninInProgress);
 
   if (self.currentBrowser->type() == Browser::Type::kIncognito) {
-    NOTREACHED();
+    // This can occur if the URL ended up loading while the user switched to
+    // incognito mode. This can occur in particular in case of faulty internet
+    // connection, that caused the URL to ends up loading long after the request
+    // was sent.
+    return;
   }
   if (_settingsNavigationController) {
     [_settingsNavigationController
