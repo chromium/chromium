@@ -86,7 +86,8 @@ class RulesetManagerTest : public DNRTestBase {
       std::unique_ptr<CompositeMatcher>* matcher,
       const std::vector<std::string>& host_permissions = {},
       bool has_background_script = false,
-      bool allow_file_access = false) {
+      bool allow_file_access = false,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal) {
     base::FilePath extension_dir =
         temp_dir().GetPath().AppendASCII(extension_dirname);
 
@@ -104,6 +105,11 @@ class RulesetManagerTest : public DNRTestBase {
 
     auto loader = CreateExtensionLoader();
     loader->set_allow_file_access(allow_file_access);
+    if (location != mojom::ManifestLocation::kInternal) {
+      loader->set_pack_extension(true);
+      loader->set_location(location);
+      loader->set_ignore_manifest_warnings(true);
+    }
     last_loaded_extension_ = loader->LoadExtension(extension_dir);
     ASSERT_TRUE(last_loaded_extension_);
 
@@ -177,6 +183,20 @@ class RulesetManagerTest : public DNRTestBase {
   }
 
   RulesetManager* manager() { return manager_.get(); }
+
+  void SetUpDSE() {
+    auto* template_url_service = static_cast<TemplateURLService*>(
+        TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(),
+            base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)));
+    TemplateURLData data;
+    data.SetShortName(u"google");
+    data.SetKeyword(u"google");
+    data.SetURL("http://google.com/search?q={searchTerms}");
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  }
 
  private:
   scoped_refptr<const Extension> last_loaded_extension_;
@@ -454,18 +474,7 @@ TEST_P(RulesetManagerTest, RedirectDSE) {
   rule.action->redirect.emplace();
   rule.action->redirect->url = std::string("http://abc.com");
 
-  // Set up DSE.
-  auto* template_url_service = static_cast<TemplateURLService*>(
-      TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(),
-          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)));
-  TemplateURLData data;
-  data.SetShortName(u"google");
-  data.SetKeyword(u"google");
-  data.SetURL("http://google.com/search?q={searchTerms}");
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  SetUpDSE();
 
   std::unique_ptr<CompositeMatcher> matcher;
   ASSERT_NO_FATAL_FAILURE(
@@ -537,6 +546,127 @@ TEST_P(RulesetManagerTest, RedirectDSE) {
                            2 /* kOtherMainFrameRedirects */, 1);
   tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
                            1 /* kMainFrameDSERedirects */, 1);
+}
+
+class RulesetManagerDSERedirectExemptionTest : public RulesetManagerTest {
+ public:
+  RulesetManagerDSERedirectExemptionTest() = default;
+
+  void SetUp() override {
+    RulesetManagerTest::SetUp();
+    SetUpDSE();
+  }
+
+  void TearDown() override {
+    if (last_loaded_extension()) {
+      manager()->RemoveRuleset(last_loaded_extension()->id());
+    }
+    RulesetManagerTest::TearDown();
+  }
+
+ protected:
+  // Evaluates a redirect rule for an exempt extension and verifies that:
+  // 1. The returned action matches an expected RequestAction derived from the
+  //    rule.
+  // 2. The redirect is logged under `kOtherMainFrameRedirects` rather than DSE
+  //    histograms or UKMs.
+  void VerifyDSERedirectExemption(
+      const TestRule& rule,
+      const std::string& extension_name,
+      const std::vector<std::string>& host_permissions = {},
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal) {
+    std::unique_ptr<CompositeMatcher> matcher;
+    ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
+        {rule}, extension_name, &matcher, host_permissions,
+        /*has_background_script=*/false, /*allow_file_access=*/false,
+        location));
+    const ExtensionId extension_id = last_loaded_extension()->id();
+    manager()->AddRuleset(extension_id, std::move(matcher));
+
+    base::HistogramTester tester;
+    ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+    RequestAction expected_redirect_action = CreateRequestActionForTesting(
+        RequestActionType::REDIRECT, *rule.id, *rule.priority,
+        kMinValidStaticRulesetID, extension_id);
+    if (rule.action->redirect->extension_path) {
+      std::string path = *rule.action->redirect->extension_path;
+      if (!path.empty() && path.front() == '/') {
+        path = path.substr(1);
+      }
+      expected_redirect_action.redirect_url =
+          Extension::GetBaseURLFromExtensionId(extension_id).Resolve(path);
+    } else {
+      expected_redirect_action.redirect_url = GURL(*rule.action->redirect->url);
+    }
+
+    std::optional<url::Origin> initiator =
+        rule.action->redirect->url
+            ? std::make_optional(
+                  url::Origin::Create(*expected_redirect_action.redirect_url))
+            : std::nullopt;
+
+    WebRequestInfo request(GetRequestParamsForURL(
+        "http://google.com/search?q=foo", std::move(initiator),
+        WebRequestResourceType::MAIN_FRAME));
+    manager()->EvaluateBeforeRequest(request, /*is_incognito_context=*/false);
+
+    ASSERT_EQ(1u, request.dnr_actions->size());
+    EXPECT_EQ(expected_redirect_action, (*request.dnr_actions)[0]);
+
+    tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                             2 /* kOtherMainFrameRedirects */, 1);
+    tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                             1 /* kMainFrameDSERedirects */, 0);
+    EXPECT_EQ(
+        0u,
+        test_ukm_recorder
+            .GetEntriesByName(
+                ukm::builders::Extensions_DeclarativeNetRequest_DSERedirect::
+                    kEntryName)
+            .size());
+  }
+};
+
+TEST_P(RulesetManagerDSERedirectExemptionTest, InternalExtensionPage) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("google.com");
+  rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+  rule.priority = kMinValidPriority;
+  rule.action->type = std::string("redirect");
+  rule.action->redirect.emplace();
+  rule.action->redirect->extension_path = std::string("/page.html");
+
+  VerifyDSERedirectExemption(rule, "extension_page_redirect",
+                             {"*://google.com/*"});
+}
+
+TEST_P(RulesetManagerDSERedirectExemptionTest, ComponentExtension) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("google.com");
+  rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+  rule.priority = kMinValidPriority;
+  rule.action->type = std::string("redirect");
+  rule.action->redirect.emplace();
+  rule.action->redirect->url = std::string("http://abc.com");
+
+  VerifyDSERedirectExemption(rule, "component_extension_redirect",
+                             {"*://google.com/*", "*://abc.com/*"},
+                             mojom::ManifestLocation::kComponent);
+}
+
+TEST_P(RulesetManagerDSERedirectExemptionTest, PolicyExtension) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("google.com");
+  rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+  rule.priority = kMinValidPriority;
+  rule.action->type = std::string("redirect");
+  rule.action->redirect.emplace();
+  rule.action->redirect->url = std::string("http://abc.com");
+
+  VerifyDSERedirectExemption(rule, "policy_extension_redirect",
+                             {"*://google.com/*", "*://abc.com/*"},
+                             mojom::ManifestLocation::kExternalPolicy);
 }
 
 // Tests that an extension can't block or redirect resources on the chrome-
@@ -1407,6 +1537,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          RulesetManagerResponseHeadersTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RulesetManagerDSERedirectExemptionTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 

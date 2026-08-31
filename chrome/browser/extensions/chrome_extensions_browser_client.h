@@ -215,6 +215,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool ShouldSchemeBypassNavigationChecks(
       const std::string& scheme) const override;
   bool IsDefaultSearchEngineRedirect(content::BrowserContext* context,
+                                     const ExtensionId& extension_id,
                                      const GURL& request_url,
                                      const GURL& redirect_url) const override;
   base::FilePath GetSaveFilePath(content::BrowserContext* context) override;

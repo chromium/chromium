@@ -787,8 +787,24 @@ bool ChromeExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
 
 bool ChromeExtensionsBrowserClient::IsDefaultSearchEngineRedirect(
     content::BrowserContext* context,
+    const ExtensionId& extension_id,
     const GURL& request_url,
     const GURL& redirect_url) const {
+  // Exempt internal extension pages, blank pages, and browser internal URLs.
+  if (redirect_url.SchemeIs(extensions::kExtensionScheme) ||
+      redirect_url.IsAboutBlank() ||
+      redirect_url.SchemeIs(content::kChromeUIScheme)) {
+    return false;
+  }
+  // Exempt trusted extensions.
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  if (extension && (Manifest::IsComponentLocation(extension->location()) ||
+                    Manifest::IsPolicyLocation(extension->location()))) {
+    return false;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(profile);
 

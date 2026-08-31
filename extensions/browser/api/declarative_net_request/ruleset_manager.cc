@@ -527,7 +527,8 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
       } else {
         bool is_dse_redirect =
             ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
-                browser_context_, request.url, action->redirect_url.value());
+                browser_context_, action->extension_id, request.url,
+                action->redirect_url.value());
         if (is_dse_redirect) {
           base::UmaHistogramEnumeration(
               "Extensions.DeclarativeNetRequest.RedirectAction",
