@@ -5,6 +5,11 @@
 #ifndef PARTITION_ALLOC_PARTITION_TLS_H_
 #define PARTITION_ALLOC_PARTITION_TLS_H_
 
+#include <array>
+#include <atomic>
+#include <cstdint>
+#include <cstring>
+
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -12,7 +17,7 @@
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/partition_alloc_check.h"
 
-#if PA_BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
 #endif
 
@@ -25,8 +30,40 @@
 // because it allocates memory.
 namespace partition_alloc::internal {
 
+class ThreadCache;
+
+constexpr inline size_t kMaxThreadCacheIndex = 4;
+
+constexpr inline uintptr_t kTombstone = 1;
+constexpr inline uintptr_t kTombstoneMask = ~kTombstone;
+
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+constexpr inline size_t kThreadCacheStorageSize = 4096;
+#else
+constexpr inline size_t kThreadCacheStorageSize = 2048;
+#endif
+
+struct PartitionTls {
+  alignas(uint64_t) std::array<std::array<uint8_t, kThreadCacheStorageSize>,
+                               kMaxThreadCacheIndex> thread_cache_storage = {};
+  bool disallow_allocations = false;
+
+  PA_ALWAYS_INLINE ThreadCache* GetThreadCache(size_t index) {
+    return reinterpret_cast<ThreadCache*>(&thread_cache_storage[index]);
+  }
+
+  PA_ALWAYS_INLINE void ClearThreadCache(size_t index) {
+    thread_cache_storage[index].fill(0);
+  }
+};
+
 #if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 using PartitionTlsKey = pthread_key_t;
+
+PA_ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
+                                         void (*destructor)(void*)) {
+  return !pthread_key_create(key, destructor);
+}
 
 // Only on x86_64, the implementation is not stable on ARM64. For instance, in
 // macOS 11, the TPIDRRO_EL0 registers holds the CPU index in the low bits,
@@ -63,11 +100,6 @@ PA_ALWAYS_INLINE void* FastTlsGet(PartitionTlsKey index) {
 
 #endif  // PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 
-PA_ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
-                                         void (*destructor)(void*)) {
-  return !pthread_key_create(key, destructor);
-}
-
 PA_ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
 #if PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
   PA_DCHECK(pthread_getspecific(key) == FastTlsGet(key));
@@ -83,8 +115,6 @@ PA_ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
 }
 
 #elif PA_BUILDFLAG(IS_WIN)
-// Note: supports only a single TLS key on Windows. Not a hard constraint, may
-// be lifted.
 using PartitionTlsKey = unsigned long;
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
@@ -119,27 +149,79 @@ PA_ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
 }
 
 // Registers a callback for DLL_PROCESS_DETACH events.
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void PartitionTlsSetOnDllProcessDetach(void (*callback)());
 
 #else
-// Not supported.
 using PartitionTlsKey = int;
 
-PA_ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
-                                         void (*destructor)(void*)) {
-  // NOTIMPLEMENTED() may allocate, crash instead.
-  PA_IMMEDIATE_CRASH();
-}
+PA_ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) = delete;
 
-PA_ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
-  PA_IMMEDIATE_CRASH();
-}
-
-PA_ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
-  PA_IMMEDIATE_CRASH();
-}
+PA_ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key,
+                                      void* value) = delete;
 
 #endif  // PA_BUILDFLAG(IS_WIN)
+
+constexpr inline PartitionTlsKey kInvalidTlsKey =
+    static_cast<PartitionTlsKey>(-1);
+
+extern PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) std::atomic<PartitionTlsKey> g_tls_key;
+
+// Returns the global TLS key. It is safe to use relaxed memory ordering
+// because:
+// 1. `g_tls_key` is monotonically initialized once under a lock from
+//    `kInvalidTlsKey` to a valid key and never modified or unset afterward.
+// 2. If a thread sees a stale `kInvalidTlsKey`, it falls back to the slow path
+//    (`EnsureThreadSpecificDataInitialized()`), which acquires `g_tls_key_lock`
+//    and establishes synchronization with the initializing thread.
+// 3. The key is an opaque scalar handle passed by value to OS TLS APIs. Each
+//    thread independently allocates and accesses its own `PartitionTls` in its
+//    own TLS slot, so there are no cross-thread data dependencies published via
+//    this key.
+PA_ALWAYS_INLINE PartitionTlsKey GetTlsKey() {
+  return g_tls_key.load(std::memory_order_relaxed);
+}
+
+PA_ALWAYS_INLINE bool IsTlsPtrTombstone(void* ptr) {
+  return reinterpret_cast<uintptr_t>(ptr) == kTombstone;
+}
+
+PA_ALWAYS_INLINE bool IsTlsPtrValid(void* ptr) {
+  return reinterpret_cast<uintptr_t>(ptr) & kTombstoneMask;
+}
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTls* GetTlsSlowPath();
+
+PA_ALWAYS_INLINE bool IsTombstoneSlow() {
+  PartitionTlsKey key = GetTlsKey();
+  if (key == kInvalidTlsKey) [[unlikely]] {
+    return false;
+  }
+  void* ptr = PartitionTlsGet(key);
+  return IsTlsPtrTombstone(ptr);
+}
+
+PA_ALWAYS_INLINE PartitionTls* GetTls() {
+  PartitionTlsKey key = GetTlsKey();
+  if (key == kInvalidTlsKey) [[unlikely]] {
+    return nullptr;
+  }
+  auto* tls = reinterpret_cast<PartitionTls*>(PartitionTlsGet(key));
+  if (!IsTlsPtrValid(tls)) [[unlikely]] {
+    if (IsTlsPtrTombstone(tls)) {
+      return nullptr;
+    }
+    tls = GetTlsSlowPath();
+  }
+  return tls;
+}
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void EnsureThreadSpecificDataInitialized();
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void RemoveTombstoneForTesting();
+
+void TlsDestructor(void* data);
 
 }  // namespace partition_alloc::internal
 

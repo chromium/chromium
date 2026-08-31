@@ -554,9 +554,13 @@ if (is_clang_or_gcc) {
       sources += [
         "page_allocator_internals_posix.cc",
         "page_allocator_internals_posix.h",
+        "partition_tls_posix.cc",
       ]
     } else if (is_fuchsia) {
-      sources += [ "page_allocator_internals_fuchsia.h" ]
+      sources += [
+        "page_allocator_internals_fuchsia.h",
+        "partition_tls_posix.cc",
+      ]
     }
     if (is_android) {
       # The Android NDK supports PR_MTE_* macros as of NDK r23.

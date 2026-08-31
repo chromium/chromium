@@ -6,36 +6,46 @@
 
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_tls.h"
 
 #if PA_CONFIG(HAS_ALLOCATION_GUARD)
 
 namespace partition_alloc {
 
-namespace {
-thread_local bool g_disallow_allocations;
-}  // namespace
-
 ScopedDisallowAllocations::ScopedDisallowAllocations() {
-  if (g_disallow_allocations) {
-    PA_IMMEDIATE_CRASH();
+  auto* tls = internal::GetTls();
+  if (tls) {
+    if (tls->disallow_allocations) {
+      PA_IMMEDIATE_CRASH();
+    }
+    tls->disallow_allocations = true;
   }
-
-  g_disallow_allocations = true;
 }
 
 ScopedDisallowAllocations::~ScopedDisallowAllocations() {
-  g_disallow_allocations = false;
+  auto* tls = internal::GetTls();
+  if (tls) {
+    tls->disallow_allocations = false;
+  }
 }
 
 ScopedAllowAllocations::ScopedAllowAllocations() {
-  // Save the previous value, as ScopedAllowAllocations is used in all
-  // partitions, not just the malloc() ones(s).
-  saved_value_ = g_disallow_allocations;
-  g_disallow_allocations = false;
+  auto* tls = internal::GetTls();
+  if (tls) {
+    // Save the previous value, as ScopedAllowAllocations is used in all
+    // partitions, not just the malloc() ones(s).
+    saved_value_ = tls->disallow_allocations;
+    tls->disallow_allocations = false;
+  } else {
+    saved_value_ = false;
+  }
 }
 
 ScopedAllowAllocations::~ScopedAllowAllocations() {
-  g_disallow_allocations = saved_value_;
+  auto* tls = internal::GetTls();
+  if (tls) {
+    tls->disallow_allocations = saved_value_;
+  }
 }
 
 }  // namespace partition_alloc

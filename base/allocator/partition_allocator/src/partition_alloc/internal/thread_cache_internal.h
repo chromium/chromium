@@ -45,9 +45,7 @@ class HeapDumper;
 
 namespace internal {
 
-extern PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
 
-constexpr inline size_t kMaxThreadCacheIndex = 4;
 constexpr inline size_t kDefaultRootThreadCacheIndex = 0;
 
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
@@ -221,21 +219,20 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // interactions.
   static void EnsureThreadSpecificDataInitialized();
 
-  static ThreadCache* Get(size_t index) {
+  PA_ALWAYS_INLINE static ThreadCache* Get(size_t index) {
     PA_DCHECK(index < internal::kMaxThreadCacheIndex);
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
     return PA_UNSAFE_TODO(internal::g_thread_caches[index]);
 #else
-    // This region isn't MTE-tagged.
-    auto* ptr = reinterpret_cast<ThreadCache*>(
-        internal::PartitionTlsGet(internal::g_thread_cache_key));
-    // TODO(crbug.com/467243745): Eliminate the `IsValidPtr` check. Improve
-    // `IsValidPtr` to also validate against `nullptr + index` and `kTombstone +
-    // index`.
-    if (!ThreadCache::IsValidPtr(ptr)) [[unlikely]] {
+    auto* tls = internal::GetTls();
+    if (!tls) [[unlikely]] {
       return nullptr;
     }
-    return PA_UNSAFE_TODO(ptr + index);
+    auto* tcache = tls->GetThreadCache(index);
+    if (!IsValid(tcache)) [[unlikely]] {
+      return nullptr;
+    }
+    return tcache;
 #endif
   }
 
@@ -251,31 +248,24 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Returns true if the ThreadCache* from ThreadCache::Get() is valid
   // and initialized.
   static bool IsValid(ThreadCache* tcache) {
-#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-    // `g_thread_caches[index]` has valid pointers only if the ThreadCache
-    // object is initialized.
-    return IsValidPtr(tcache);
-#else
     // Even if the array of ThreadCache is allocated, the ThreadCache object
     // may not be initialized, and thus check `root_` to know if initialized.
     // We use pointer arithmetic to directly inspect the memory for `root_`, as
     // accessing `tcache->root_` is UB before the ThreadCache object's lifetime
     // begins (i.e., between memset(0) and placement new).
-    return tcache && PA_UNSAFE_TODO(*reinterpret_cast<uintptr_t*>(
-                         (reinterpret_cast<uint8_t*>(tcache) +
-                          offsetof(ThreadCache, root_))));
-#endif
+    return IsValidPtr(tcache) && PA_UNSAFE_TODO(*reinterpret_cast<uintptr_t*>(
+                                     (reinterpret_cast<uint8_t*>(tcache) +
+                                      offsetof(ThreadCache, root_))));
   }
 
   static bool IsTombstone() {
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
     void* ptr = PA_UNSAFE_TODO(
         internal::g_thread_caches[internal::kThreadCacheTombstoneIndex]);
-#else
-    void* ptr = internal::PartitionTlsGet(internal::g_thread_cache_key);
-#endif
-    // Do not MTE-untag, as it'd mess up the sentinel value.
     return reinterpret_cast<uintptr_t>(ptr) == kTombstone;
+#else
+    return internal::IsTombstoneSlow();
+#endif
   }
 
   // Create a new ThreadCache associated with |root|.

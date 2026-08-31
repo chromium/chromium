@@ -2,18 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 #include "partition_alloc/partition_tls.h"
+// clang-format on
 
 #include <windows.h>
 
+#include "partition_alloc/build_config.h"
+
+#if !PA_BUILDFLAG(IS_WIN)
+#error "This file is only for Windows builds."
+#endif
+
+#include "partition_alloc/internal/thread_cache_internal.h"
+#include "partition_alloc/internal_allocator.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_lock.h"
+
 namespace partition_alloc::internal {
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+std::atomic<PartitionTlsKey> g_tls_key{kInvalidTlsKey};
 
 namespace {
 
-// Store the key as the thread destruction callback doesn't get it.
-PartitionTlsKey g_key;
-void (*g_destructor)(void*) = nullptr;
 void (*g_on_dll_process_detach)() = nullptr;
+Lock g_tls_key_lock;
 
 // Static callback function to call with each thread termination.
 void NTAPI PartitionTlsOnThreadExit(PVOID module,
@@ -27,24 +41,99 @@ void NTAPI PartitionTlsOnThreadExit(PVOID module,
     g_on_dll_process_detach();
   }
 
-  if (g_destructor) {
-    void* per_thread_data = PartitionTlsGet(g_key);
+  PartitionTlsKey key = GetTlsKey();
+  if (key != kInvalidTlsKey) {
+    void* per_thread_data = PartitionTlsGet(key);
     if (per_thread_data) {
-      g_destructor(per_thread_data);
+      TlsDestructor(per_thread_data);
     }
   }
 }
 
 }  // namespace
 
+void EnsureThreadSpecificDataInitialized() {
+  if (GetTlsKey() != kInvalidTlsKey) {
+    return;
+  }
+  ScopedGuard scoped_locker(g_tls_key_lock);
+  if (GetTlsKey() != kInvalidTlsKey) {
+    return;
+  }
+
+  PartitionTlsKey key;
+  bool ok = PartitionTlsCreate(&key, TlsDestructor);
+  PA_CHECK(ok);
+  g_tls_key.store(key, std::memory_order_release);
+}
+
+PartitionTls* GetTlsSlowPath() {
+  EnsureThreadSpecificDataInitialized();
+  PartitionTlsKey key = GetTlsKey();
+  if (key == kInvalidTlsKey) {
+    return nullptr;
+  }
+  void* existing = PartitionTlsGet(key);
+  if (IsTlsPtrTombstone(existing)) {
+    return nullptr;
+  }
+  if (existing) {
+    return static_cast<PartitionTls*>(existing);
+  }
+  PartitionTls* tls = ConstructAtInternalPartition<PartitionTls>();
+  PartitionTlsSet(key, tls);
+  return tls;
+}
+
+void TlsDestructor(void* value) {
+  if (!IsTlsPtrValid(value)) {
+    return;
+  }
+  auto* tls = static_cast<PartitionTls*>(value);
+
+  PartitionTlsKey key = GetTlsKey();
+  if (key != kInvalidTlsKey) {
+    PartitionTlsSet(key, reinterpret_cast<void*>(kTombstone));
+  }
+
+  for (size_t i = 0; i < kMaxThreadCacheIndex; i++) {
+    auto* tcache = tls->GetThreadCache(i);
+    if (ThreadCache::IsValid(tcache)) {
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
+      PA_UNSAFE_TODO(internal::g_thread_caches[i]) = nullptr;
+#endif
+      tcache->~ThreadCache();
+      tls->ClearThreadCache(i);
+    }
+  }
+
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
+  PA_UNSAFE_TODO(
+      internal::g_thread_caches[internal::kThreadCacheTombstoneIndex]) =
+      reinterpret_cast<ThreadCache*>(kTombstone);
+#endif
+
+  DestroyAtInternalPartition(tls);
+}
+
+void RemoveTombstoneForTesting() {
+  PartitionTlsKey key = GetTlsKey();
+  if (key != kInvalidTlsKey) {
+    if (IsTombstoneSlow()) {
+      PartitionTlsSet(key, nullptr);
+    }
+  }
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
+  PA_UNSAFE_TODO(
+      internal::g_thread_caches[internal::kThreadCacheTombstoneIndex]) =
+      nullptr;
+#endif
+}
+
 bool PartitionTlsCreate(PartitionTlsKey* key, void (*destructor)(void*)) {
-  PA_CHECK(g_destructor == nullptr);  // Only one TLS key supported at a time.
   PartitionTlsKey value = TlsAlloc();
   if (value != TLS_OUT_OF_INDEXES) {
     *key = value;
-
-    g_key = value;
-    g_destructor = destructor;
     return true;
   }
   return false;
@@ -110,4 +199,4 @@ PIMAGE_TLS_CALLBACK partition_tls_thread_exit_callback =
 #pragma data_seg()
 
 #endif  // _WIN64
-}       // extern "C"
+}  // extern "C"
