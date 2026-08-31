@@ -39,7 +39,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
 
   static const std::string& string_value(
       const net::structured_headers::Item& item) {
-    return item.GetStringStrict();
+    return item.GetString();
   }
 
   static const std::string& token_value(
