@@ -245,6 +245,9 @@ class AutoPictureInPictureTabHelper
 
   bool IsEligibleForAutoPictureInPicture(bool should_record_blocking_metrics);
 
+  // Returns true if the primary main frame has an opaque security origin.
+  bool PrimaryMainFrameHasOpaqueOrigin() const;
+
   // Returns true if the tab:
   //   * Has audio focus
   //   * Is playing unmuted playback

@@ -89,8 +89,8 @@ public class AutoPictureInPicturePermissionController implements NightModeStateP
         AutoPictureInPictureTabHelper helper =
                 assertNonNull(AutoPictureInPictureTabHelper.fromWebContents(webContents));
 
-        // Create the controller and register it with the helper. This prevents "fire and forget"
-        // by giving the controller a clear owner (the helper attached to the WebContents).
+        // Create the controller and register it with the helper only if it is successfully shown.
+        // This prevents "fire and forget" while ensuring an unshown controller is never registered.
         AutoPictureInPicturePermissionController controller =
                 new AutoPictureInPicturePermissionController(webContents, closePipCallback);
 
@@ -104,9 +104,10 @@ public class AutoPictureInPicturePermissionController implements NightModeStateP
                         pipActivity.revertToRequestedBounds();
                     }
                 };
-        helper.setPermissionController(controller);
 
-        controller.show(activity);
+        if (controller.show(activity)) {
+            helper.setPermissionController(controller);
+        }
     }
 
     /**
@@ -116,7 +117,7 @@ public class AutoPictureInPicturePermissionController implements NightModeStateP
      * @return True if a prompt is needed, false otherwise.
      */
     public static boolean isPermissionPromptNeeded(WebContents webContents) {
-        if (!isAutoPictureInPictureInUse(webContents)) {
+        if (webContents == null || !isAutoPictureInPictureInUse(webContents)) {
             return false;
         }
 
@@ -170,9 +171,9 @@ public class AutoPictureInPicturePermissionController implements NightModeStateP
         mClosePipCallback = closePipCallback;
     }
 
-    private void show(Activity activity) {
+    private boolean show(Activity activity) {
         if (mWebContents.isDestroyed() || activity.isFinishing() || activity.isDestroyed()) {
-            return;
+            return false;
         }
 
         mActivityWeakRef = new WeakReference<>(activity);
@@ -180,7 +181,7 @@ public class AutoPictureInPicturePermissionController implements NightModeStateP
         ViewGroup rootView = activity.findViewById(android.R.id.content);
         if (rootView == null) {
             Log.w(TAG, "Could not find root view to attach Auto-PiP prompt.");
-            return;
+            return false;
         }
 
         // Add the privacy mask first, so it's behind the prompt. Use the activity context directly
@@ -193,6 +194,7 @@ public class AutoPictureInPicturePermissionController implements NightModeStateP
 
         GlobalNightModeStateProviderHolder.getInstance().addObserver(this);
         updateViews();
+        return true;
     }
 
     @Override

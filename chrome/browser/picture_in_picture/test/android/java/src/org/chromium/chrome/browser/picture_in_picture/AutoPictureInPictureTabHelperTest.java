@@ -92,6 +92,8 @@ public class AutoPictureInPictureTabHelperTest {
     private static final String PIP_BUTTON_ID = "pip";
     private static final String AUTO_PIP_VIDEO_PAGE =
             "/chrome/test/data/media/picture-in-picture/autopip-video.html";
+    private static final String AUTO_PIP_VIDEO_SANDBOXED_PAGE =
+            "/chrome/test/data/media/picture-in-picture/autopip-video-sandboxed.html";
     private static final String AUTO_PIP_NOT_REGISTERED_PAGE =
             "/chrome/test/data/media/picture-in-picture/autopip-no-register.html";
     private static final String VIDEO_CONFERENCING_PAGE =
@@ -290,6 +292,29 @@ public class AutoPictureInPictureTabHelperTest {
         // Since the site did not register for auto-pip, it should not enter.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Should not enter auto-PiP if not registered.");
+    }
+
+    @Test
+    @MediumTest
+    public void testDoesNotAutopipWithOpaqueOrigin() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_SANDBOXED_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Switch away from the tab.
+        switchToTab(newTab);
+
+        // Since the site has an opaque origin, it should not enter auto-PiP.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP with opaque origin.");
     }
 
     @Test

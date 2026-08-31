@@ -27,6 +27,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
@@ -121,6 +122,14 @@ bool AutoPictureInPictureTabHelper::HasAutoPictureInPictureBeenRegistered()
   }
 
   return has_ever_registered_for_auto_picture_in_picture_;
+}
+
+bool AutoPictureInPictureTabHelper::PrimaryMainFrameHasOpaqueOrigin() const {
+  if (!web_contents()) {
+    return false;
+  }
+  const content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  return rfh && rfh->GetLastCommittedOrigin().opaque();
 }
 
 void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
@@ -655,6 +664,10 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   // Don't try to autopip if picture-in-picture is currently disabled.
   if (PictureInPictureWindowManager::GetInstance()
           ->IsPictureInPictureDisabled()) {
+    return false;
+  }
+
+  if (PrimaryMainFrameHasOpaqueOrigin()) {
     return false;
   }
 

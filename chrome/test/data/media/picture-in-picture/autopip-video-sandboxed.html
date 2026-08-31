@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Autopip Video Sandboxed</title>
+</head>
+<body>
+  <video id="video" controls loop>
+    <source src="../bigbuck.webm">
+  </video>
+  <button id="pip" onclick="openPip()">Enter Picture-in-Picture</button>
+</body>
+<script>
+const video = document.getElementById('video');
+
+function playVideo() {
+  navigator.mediaSession.playbackState = "playing";
+  video.play();
+}
+
+function pauseVideo() {
+  video.pause();
+  navigator.mediaSession.playbackState = "paused";
+}
+
+function muteVideo() {
+  video.muted = true;
+}
+
+function openPip(details) {
+  video.requestPictureInPicture();
+}
+
+navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);
+</script>

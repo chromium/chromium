@@ -100,7 +100,7 @@ public class AutoPictureInPicturePermissionControllerTest {
 
     @After
     public void tearDown() {
-        if (mActivityController != null) {
+        if (mActivityController != null && mActivity != null && !mActivity.isDestroyed()) {
             mActivityController.pause().stop().destroy();
         }
     }
@@ -169,6 +169,30 @@ public class AutoPictureInPicturePermissionControllerTest {
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
         Assert.assertEquals(0, rootView.getChildCount());
+    }
+
+    @Test
+    public void testShowPrompt_WhenActivityFinishing_DoesNotRegisterController() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+        mActivity.finish();
+
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+
+        ViewGroup rootView = mActivity.findViewById(android.R.id.content);
+        Assert.assertEquals(0, rootView.getChildCount());
+        Assert.assertNull(mTabHelper.getPermissionController());
+    }
+
+    @Test
+    public void testShowPrompt_WhenActivityDestroyed_DoesNotRegisterController() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+        mActivityController.pause().stop().destroy();
+
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+
+        Assert.assertNull(mTabHelper.getPermissionController());
     }
 
     @Test
