@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "account_capabilities_fetcher.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -103,6 +104,18 @@ class TestSupportAndroid {
     ReturnFetchResults(account_info, capabilities);
   }
 
+  void ReturnAccountCapabilitiesFetchPartialSuccess(
+      const CoreAccountInfo& account_info,
+      base::span<const std::string_view> capability_names,
+      bool capability_value) {
+    AccountCapabilities capabilities;
+    AccountCapabilitiesTestMutator mutator(&capabilities);
+    for (std::string_view name : capability_names) {
+      mutator.SetCapability(std::string(name), capability_value);
+    }
+    ReturnFetchResults(account_info, capabilities);
+  }
+
   void ReturnAccountCapabilitiesFetchFailure(
       const CoreAccountInfo& account_info) {
     // Return an empty `AccountCapabilities` object.
@@ -138,10 +151,11 @@ const char kSingleCapabilitiyResponseFormat[] =
 
 const char kCapabilityParamName[] = "names=";
 
-std::string GenerateValidAccountCapabilitiesResponse(bool capability_value) {
+std::string GenerateValidAccountCapabilitiesResponse(
+    base::span<const std::string_view> capability_names,
+    bool capability_value) {
   std::vector<std::string> dict_array;
-  for (std::string_view name :
-       AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames()) {
+  for (std::string_view name : capability_names) {
     dict_array.push_back(base::StringPrintf(kSingleCapabilitiyResponseFormat,
                                             name.size(), name.data(),
                                             base::ToString(capability_value)));
@@ -159,17 +173,15 @@ void VerifyAccountCapabilitiesRequest(const network::ResourceRequest& request) {
   std::string request_body = network::GetUploadData(request);
   // The request body should look like:
   // "names=Name1&names=Name2&names=Name3"
-  std::vector<std::string_view> requested_capabilities =
-      base::SplitStringPiece(request_body, "&", base::KEEP_WHITESPACE,
-                             base::SPLIT_WANT_ALL);
+  std::vector<std::string_view> requested_capabilities = base::SplitStringPiece(
+      request_body, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   for (auto& name : requested_capabilities) {
     EXPECT_TRUE(base::StartsWith(name, kCapabilityParamName));
     name = name.substr(std::strlen(kCapabilityParamName));
   }
-  EXPECT_THAT(
-      requested_capabilities,
-      ::testing::ContainerEq(AccountCapabilitiesTestMutator::
-                                 GetSupportedAccountCapabilityNames()));
+  EXPECT_THAT(requested_capabilities,
+              ::testing::ContainerEq(AccountCapabilitiesTestMutator::
+                                         GetSupportedAccountCapabilityNames()));
 }
 
 class TestSupportGaia {
@@ -205,7 +217,21 @@ class TestSupportGaia {
     IssueAccessToken(account_info.account_id);
     ReturnFetchResults(
         GetAccountCapabilitiesUrl(), net::HTTP_OK,
-        GenerateValidAccountCapabilitiesResponse(capability_value));
+        GenerateValidAccountCapabilitiesResponse(
+            AccountCapabilitiesTestMutator::
+                GetSupportedAccountCapabilityNames(),
+            capability_value));
+  }
+
+  void ReturnAccountCapabilitiesFetchPartialSuccess(
+      const CoreAccountInfo& account_info,
+      base::span<const std::string_view> capability_names,
+      bool capability_value) {
+    IssueAccessToken(account_info.account_id);
+    ReturnFetchResults(
+        GetAccountCapabilitiesUrl(), net::HTTP_OK,
+        GenerateValidAccountCapabilitiesResponse(capability_names,
+                                                 capability_value));
   }
 
   void ReturnAccountCapabilitiesFetchFailure(
@@ -286,6 +312,13 @@ class AccountCapabilitiesFetcherTest : public ::testing::Test {
   void ReturnAccountCapabilitiesFetchSuccess(bool capability_value) {
     test_support_.ReturnAccountCapabilitiesFetchSuccess(account_info(),
                                                         capability_value);
+  }
+
+  void ReturnAccountCapabilitiesFetchPartialSuccess(
+      base::span<const std::string_view> capability_names,
+      bool capability_value) {
+    test_support_.ReturnAccountCapabilitiesFetchPartialSuccess(
+        account_info(), capability_names, capability_value);
   }
 
   void ReturnAccountCapabilitiesFetchFailure() {
@@ -386,6 +419,38 @@ TEST_F(AccountCapabilitiesFetcherTest, Success_False) {
               Run(account_id(), Eq(expected_capabilities)));
   EXPECT_CALL(on_all_fetches_complete_callback, Run(account_id()));
   ReturnAccountCapabilitiesFetchSuccess(false);
+}
+
+TEST_F(AccountCapabilitiesFetcherTest, PartialSuccess) {
+  base::MockCallback<
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback>
+      on_some_capabilities_fetched_callback;
+  base::MockCallback<AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback>
+      on_all_fetches_complete_callback;
+  std::unique_ptr<AccountCapabilitiesFetcher> fetcher =
+      CreateFetcher(on_some_capabilities_fetched_callback.Get(),
+                    on_all_fetches_complete_callback.Get());
+  AccountCapabilities expected_capabilities;
+  AccountCapabilitiesTestMutator mutator(&expected_capabilities);
+  mutator.set_can_fetch_family_member_info(true);
+  base::HistogramTester tester;
+
+  fetcher->Start();
+  EXPECT_CALL(on_some_capabilities_fetched_callback,
+              Run(account_id(), Eq(expected_capabilities)));
+  EXPECT_CALL(on_all_fetches_complete_callback, Run(account_id()));
+  ReturnAccountCapabilitiesFetchPartialSuccess(
+      {kCanFetchFamilyMemberInfoCapabilityName}, true);
+
+#if !BUILDFLAG(IS_ANDROID)
+  tester.ExpectTotalCount(
+      "Signin.AccountCapabilities.Foreground.FetchDuration.Success", 1);
+  tester.ExpectTotalCount(
+      "Signin.AccountCapabilities.Foreground.FetchDuration.Failure", 0);
+  tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.Foreground.FetchResult",
+      AccountCapabilitiesFetcherGaia::FetchResult::kPartialSuccess, 1);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(AccountCapabilitiesFetcherTest, FetchFailure) {

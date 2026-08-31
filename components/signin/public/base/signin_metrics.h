@@ -620,8 +620,9 @@ enum class FetchAccountCapabilitiesFromSystemLibraryResult {
   // Errors after 20 are reserved for iOS.
   kErrorMissingCapability = 20,
   kErrorUnexpectedValue = 21,
+  kPartialSuccess = 22,
 
-  kMaxValue = kErrorUnexpectedValue
+  kMaxValue = kPartialSuccess
 };
 
 // Tracks type of the button that was presented to the user.
