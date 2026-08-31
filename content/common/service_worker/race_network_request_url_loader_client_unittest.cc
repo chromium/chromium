@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/common/features.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
@@ -758,5 +759,39 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   EXPECT_FALSE(client_for_fetch_handler()
                    ->received_redirect_head()
                    ->ssl_info.has_value());
+}
+
+TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
+       FetchHandlerWins_DeprecateTwoPhaseWrite) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kServiceWorkerRaceNetworkRequestDeprecateTwoPhaseWrite);
+
+  SetUpURLLoaderClient(network::GetDataPipeDefaultAllocationSize());
+
+  owner()->SetDispatchedPreloadType(
+      ServiceWorkerResourceLoader::DispatchedPreloadType::kRaceNetworkRequest);
+
+  // Set commit responsibility to kServiceWorker beforehand (Fetch Handler
+  // responds first).
+  owner()->SetCommitResponsibility(
+      ServiceWorkerResourceLoader::FetchResponseFrom::kServiceWorker);
+
+  const std::string kExpectedBody = "test response body for fetch handler";
+
+  base::RunLoop run_loop;
+  client_for_fetch_handler()->SetOnReceiveResponseCallback(
+      run_loop.QuitClosure());
+
+  WriteData(kExpectedBody);
+  CompleteResponse(net::OK);
+  run_loop.Run();
+
+  // Ensure the fetch handler client receives the response.
+  client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/false);
+  EXPECT_EQ(client_for_fetch_handler()->ConsumeChunk(), kExpectedBody);
+
+  // Owner should NOT have received/committed the race network response.
+  EXPECT_FALSE(owner()->committed_response_head());
 }
 }  // namespace content

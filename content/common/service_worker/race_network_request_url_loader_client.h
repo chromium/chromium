@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/race_network_request_read_buffer_manager.h"
@@ -24,6 +25,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kServiceWorkerRaceNetworkRequestDeprecateTwoPhaseWrite);
+
 // RaceNetworkRequestURLLoaderClient handles the response when the request is
 // triggered in the RaceNetworkRequest mode.
 // If the response from the RaceNetworkRequest mode is faster than the one from

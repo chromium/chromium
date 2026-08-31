@@ -30,6 +30,13 @@
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
+
+// (crbug.com/340949948): When enabled, deprecates TwoPhaseWrite in
+// ServiceWorkerRaceNetworkRequestURLLoaderClient when the fetch handler
+// responds first for Static Routing race requests.
+BASE_FEATURE(kServiceWorkerRaceNetworkRequestDeprecateTwoPhaseWrite,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 const char kMainResourceHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.MainFrame.MainResource";
@@ -198,15 +205,35 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       // blink::ServiceWorkerLoaderHelpers::SaveResponseInfo(). But currently
       // this is called only when the response is returned from the fetch event.
       head_->was_fetched_via_service_worker = true;
-      if (owner_->commit_responsibility() ==
-          FetchResponseFrom::kNoResponseYet) {
+      if (base::FeatureList::IsEnabled(
+              kServiceWorkerRaceNetworkRequestDeprecateTwoPhaseWrite) &&
+          owner_->dispatched_preload_type() ==
+              ServiceWorkerResourceLoader::DispatchedPreloadType::
+                  kRaceNetworkRequest) {
         simple_buffer_manager_.emplace(std::move(body));
-        CloneResponse();
+        switch (owner_->commit_responsibility()) {
+          case FetchResponseFrom::kNoResponseYet:
+          case FetchResponseFrom::kWithoutServiceWorker:
+          case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
+            CloneResponse();
+            break;
+          case FetchResponseFrom::kServiceWorker:
+            CloneResponseForFetchHandler();
+            break;
+          case FetchResponseFrom::kAutoPreloadHandlingFallback:
+            NOTREACHED();
+        }
       } else {
-        // TODO(crbug.com/523017337): Remove the else block and the related code
-        // once we confirmed this is not needed anymore.
-        read_buffer_manager_.emplace(std::move(body));
-        WatchDataUpdate();
+        if (owner_->commit_responsibility() ==
+            FetchResponseFrom::kNoResponseYet) {
+          simple_buffer_manager_.emplace(std::move(body));
+          CloneResponse();
+        } else {
+          // TODO(crbug.com/523017337): Remove the else block and the related
+          // code once we confirmed this is not needed anymore.
+          read_buffer_manager_.emplace(std::move(body));
+          WatchDataUpdate();
+        }
       }
       break;
     case DataConsumePolicy::kForwardingOnly:
