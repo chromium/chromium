@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
@@ -136,6 +137,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
+#import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -146,6 +148,8 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
+#import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
@@ -210,12 +214,14 @@ const char kChromeAppStoreUrl[] =
                                 SendTabToSelfCommands,
                                 SendTabToSelfCoordinatorDelegate,
                                 SharedTabGroupLastTabAlertCommands,
+                                StoreKitCoordinatorDelegate,
                                 SyncedSetUpCommands,
                                 SyncedSetUpCoordinatorDelegate,
                                 TabPickerCommands,
                                 TipsPasswordsCommands,
                                 TipsPasswordsCoordinatorDelegate,
                                 UnitConversionCommands,
+                                WebContentCommands,
                                 WelcomeBackPromoCommands,
                                 WhatsNewCommands>
 
@@ -269,6 +275,7 @@ const char kChromeAppStoreUrl[] =
   PasskeyCreationBottomSheetCoordinator* _passkeyCreationBottomSheetCoordinator;
   PasskeyIncognitoInterstitialCoordinator* _passkeyIncognitoCoordinator;
   PasskeyWelcomeScreenCoordinator* _passkeyWelcomeScreenCoordinator;
+  PassKitCoordinator* _passKitCoordinator;
   PasswordBreachCoordinator* _passwordBreachCoordinator;
   PasswordProtectionCoordinator* _passwordProtectionCoordinator;
   PasswordSuggestionCoordinator* _passwordSuggestionCoordinator;
@@ -285,6 +292,7 @@ const char kChromeAppStoreUrl[] =
   ProceduralBlock _searchEngineChoiceClosedBlock;
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   SharingCoordinator* _sharingCoordinator;
+  StoreKitCoordinator* _storeKitCoordinator;
   SyncedSetUpCoordinator* _syncedSetUpCoordinator;
   ProceduralBlock _runAfterSyncedSetUpDismissal;
   TabPickerCoordinator* _tabPickerCoordinator;
@@ -361,6 +369,7 @@ const char kChromeAppStoreUrl[] =
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
   [self dismissLevelUp];
+  [self stopPassKitCoordinator];
   [self dismissPasskeyCreation];
   [self dismissPasskeySuggestions];
   [self stopPasskeyWelcomeScreenCoordinator];
@@ -381,6 +390,7 @@ const char kChromeAppStoreUrl[] =
   [self stopSearchEngineChoiceScreen];
   [self stopSendTabToSelf];
   [self stopSharingSheet];
+  [self stopStoreKitCoordinator];
   [self stopSyncedSetUpCoordinator];
   [self stopTabPickerCoordinator];
   [self dismissPasswordsTip];
@@ -495,6 +505,30 @@ const char kChromeAppStoreUrl[] =
   _nonModalSignInPromoCoordinator = nil;
 }
 
+// Stops the PassKit coordinator.
+- (void)stopPassKitCoordinator {
+  [_passKitCoordinator stop];
+  _passKitCoordinator = nil;
+}
+
+// Starts the StoreKitCoordinator with the given productParameters.
+- (void)startStoreKitCoordinatorWithParameters:
+    (NSDictionary*)productParameters {
+  _storeKitCoordinator = [[StoreKitCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  _storeKitCoordinator.delegate = self;
+  _storeKitCoordinator.iTunesProductParameters = productParameters;
+  [_storeKitCoordinator start];
+}
+
+// Stops the StoreKit coordinator.
+- (void)stopStoreKitCoordinator {
+  [_storeKitCoordinator stop];
+  _storeKitCoordinator.delegate = nil;
+  _storeKitCoordinator = nil;
+}
+
 // Starts dispatching to the various command protocols.
 - (void)startDispatching {
   NSArray<Protocol*>* protocols = @[
@@ -536,6 +570,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(TabPickerCommands),
     @protocol(TipsPasswordsCommands),
     @protocol(UnitConversionCommands),
+    @protocol(WebContentCommands),
     @protocol(WelcomeBackPromoCommands),
     @protocol(WhatsNewCommands),
   ];
@@ -2087,6 +2122,14 @@ const char kChromeAppStoreUrl[] =
   [self stopSyncedSetUpCoordinator];
 }
 
+#pragma mark - StoreKitCoordinatorDelegate
+
+- (void)storeKitCoordinatorWantsToStop:(StoreKitCoordinator*)coordinator {
+  // TODO(crbug.com/555077798): Replace this by command protocol.
+  CHECK_EQ(_storeKitCoordinator, coordinator);
+  [self stopStoreKitCoordinator];
+}
+
 #pragma mark - TabPickerCommands
 
 - (void)showTabPickerWithParams:(TabPickerParams*)params
@@ -2157,6 +2200,31 @@ const char kChromeAppStoreUrl[] =
 - (void)hideUnitConversion {
   [_unitConversionCoordinator stop];
   _unitConversionCoordinator = nil;
+}
+
+#pragma mark - WebContentCommands
+
+- (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
+  __weak __typeof(self) weakSelf = self;
+  // Properly start the StoreKitCoordinator in a clean presented state.
+  [HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands)
+      clearPresentedStateWithCompletion:^{
+        [weakSelf startStoreKitCoordinatorWithParameters:productParameters];
+      }
+                         dismissOmnibox:YES];
+}
+
+- (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes {
+  if (_passKitCoordinator.passes) {
+    // Another pass is being displayed -- early return (this is unexpected).
+    return;
+  }
+
+  _passKitCoordinator =
+      [[PassKitCoordinator alloc] initWithBaseViewController:_baseViewController
+                                                     browser:_browser];
+  _passKitCoordinator.passes = passes;
+  [_passKitCoordinator start];
 }
 
 #pragma mark - WelcomeBackPromoCommands

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 
-#import <StoreKit/StoreKit.h>
-
 #import <memory>
 #import <optional>
 
@@ -104,7 +102,6 @@
 #import "ios/chrome/browser/download/coordinator/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
-#import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/safari_download_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/vcard_coordinator.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
@@ -229,7 +226,6 @@
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
-#import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -254,8 +250,6 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_coordinator.h"
-#import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
-#import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
@@ -343,12 +337,10 @@
 
     SnackbarCoordinatorDelegate,
     SnapshotGeneratorDelegate,
-    StoreKitCoordinatorDelegate,
     SyncPresenterCommands,
     TextZoomCommands,
     TrustedVaultReauthenticationCoordinatorDelegate,
     URLLoadingDelegate,
-    WebContentCommands,
     WebNavigationNTPDelegate,
     WebUsageEnablerBrowserAgentObserving>
 
@@ -422,9 +414,6 @@
 // Coordinator for new tab pages.
 @property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
 
-// Coordinator for the PassKit UI presentation.
-@property(nonatomic, strong) PassKitCoordinator* passKitCoordinator;
-
 // Coordinator for the password settings UI presentation.
 @property(nonatomic, strong)
     PasswordSettingsCoordinator* passwordSettingsCoordinator;
@@ -466,9 +455,6 @@
 // The coordinator used for Spotlight Debugger.
 @property(nonatomic, strong)
     SpotlightDebuggerCoordinator* spotlightDebuggerCoordinator;
-
-// Coordinator for presenting SKStoreProductViewController.
-@property(nonatomic, strong) StoreKitCoordinator* storeKitCoordinator;
 
 // Coordinator for Text Zoom.
 @property(nonatomic, strong) TextZoomCoordinator* textZoomCoordinator;
@@ -889,14 +875,6 @@
   self.recentTabsCoordinator = nil;
 }
 
-
-// Stop the store kit coordinator.
-- (void)stopStoreKitCoordinator {
-  [self.storeKitCoordinator stop];
-  self.storeKitCoordinator.delegate = nil;
-  self.storeKitCoordinator = nil;
-}
-
 // Stops the coordinator for password manager settings.
 - (void)stopPasswordSettingsCoordinator {
   [self.passwordSettingsCoordinator stop];
@@ -1004,7 +982,6 @@
     @protocol(QuickDeleteCommands),
     @protocol(SyncPresenterCommands),
     @protocol(TextZoomCommands),
-    @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
   ];
 
@@ -1431,9 +1408,6 @@
   [self.vcardCoordinator stop];
   self.vcardCoordinator = nil;
 
-  [self.passKitCoordinator stop];
-  self.passKitCoordinator = nil;
-
   [self.printCoordinator stop];
   self.printCoordinator = nil;
 
@@ -1455,8 +1429,6 @@
 
   [self.safeBrowsingCoordinator stop];
   self.safeBrowsingCoordinator = nil;
-
-  [self stopStoreKitCoordinator];
 
   [self hideTextZoomUI];
 
@@ -1656,17 +1628,6 @@
   // openMatch.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(animationCompletion));
-}
-
-// Starts the StoreKitCoordinator with the given productParameters.
-- (void)startStoreKitCoordinatorWithParameters:
-    (NSDictionary*)productParameters {
-  self.storeKitCoordinator = [[StoreKitCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.storeKitCoordinator.delegate = self;
-  self.storeKitCoordinator.iTunesProductParameters = productParameters;
-  [self.storeKitCoordinator start];
 }
 
 #pragma mark - AutoDeletionCommands
@@ -2186,9 +2147,6 @@
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [_modalHost clearPresentedState];
-
-  [self.passKitCoordinator stop];
-  self.passKitCoordinator = nil;
 
   [self.printCoordinator dismissAnimated:YES];
 
@@ -2826,32 +2784,6 @@
   // Disconnect the presenter from the context to cancel active overlays.
   OverlayPresenter::FromBrowser(self.browser, OverlayModality::kInfobarBanner)
       ->SetPresentationContext(nullptr);
-}
-
-#pragma mark - WebContentCommands
-
-- (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
-  __weak __typeof(self) weakSelf = self;
-  // Properly start the StoreKitCoordinator in a clean presented state.
-  [self
-      clearPresentedStateWithCompletion:^{
-        [weakSelf startStoreKitCoordinatorWithParameters:productParameters];
-      }
-                         dismissOmnibox:YES];
-}
-
-- (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes {
-  if (self.passKitCoordinator.passes) {
-    // Another pass is being displayed -- early return (this is unexpected).
-    return;
-  }
-
-  self.passKitCoordinator =
-      [[PassKitCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser];
-
-  self.passKitCoordinator.passes = passes;
-  [self.passKitCoordinator start];
 }
 
 #pragma mark - DefaultBrowserPromoNonModalCommands
@@ -3559,14 +3491,6 @@
     (RecentTabsCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.recentTabsCoordinator);
   [self stopRecentTabsCoordinator];
-}
-
-
-#pragma mark - StoreKitCoordinatorDelegate
-
-- (void)storeKitCoordinatorWantsToStop:(StoreKitCoordinator*)coordinator {
-  CHECK_EQ(coordinator, self.storeKitCoordinator);
-  [self stopStoreKitCoordinator];
 }
 
 #pragma mark - AutofillAddCreditCardCoordinatorDelegate
