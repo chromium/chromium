@@ -267,6 +267,16 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
               base::BindRepeating(MakeOkResult,
                                   /*requires_page_stabilization=*/true)));
     }
+
+    ON_CALL(mock_actor_task_delegate_, RequestToShowUserConfirmationDialog)
+        .WillByDefault([](TaskId, const url::Origin&, bool,
+                          ActorTaskDelegate::UserConfirmationDialogCallback
+                              callback) {
+          std::move(callback).Run(
+              webui::mojom::UserConfirmationDialogResponse::New(
+                  webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                      true)));
+        });
   }
 
   void TearDown() override {
@@ -1288,14 +1298,43 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
 
 // TODO(crbug.com/480230075): Crashing on Android.
 #if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-#define MAYBE_AllowLocalhost DISABLED_AllowLocalhost
+#define MAYBE_LocalhostPromptsForUserConfirmation \
+  DISABLED_LocalhostPromptsForUserConfirmation
 #else
-#define MAYBE_AllowLocalhost AllowLocalhost
+#define MAYBE_LocalhostPromptsForUserConfirmation \
+  LocalhostPromptsForUserConfirmation
 #endif
-TEST_F(ExecutionEngineUrlGatingTest, MAYBE_AllowLocalhost) {
-  CheckUrl(GURL("http://localhost/"), true);
-  CheckUrl(GURL("http://127.0.0.1/"), true);
-  CheckUrl(GURL("http://[::1]/"), true);
+TEST_F(ExecutionEngineUrlGatingTest,
+       MAYBE_LocalhostPromptsForUserConfirmation) {
+  const GURL localhost_url("http://localhost/");
+  EXPECT_CALL(mock_actor_task_delegate(),
+              RequestToShowUserConfirmationDialog(
+                  _, url::Origin::Create(localhost_url), _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          webui::mojom::UserConfirmationDialogResponse::New(
+              webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                  true))));
+  CheckUrl(localhost_url, /*expected_allowed=*/true);
+
+  const GURL ipv4_url("http://127.0.0.1/");
+  EXPECT_CALL(mock_actor_task_delegate(),
+              RequestToShowUserConfirmationDialog(
+                  _, url::Origin::Create(ipv4_url), _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          webui::mojom::UserConfirmationDialogResponse::New(
+              webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                  true))));
+  CheckUrl(ipv4_url, /*expected_allowed=*/true);
+
+  const GURL ipv6_url("http://[::1]/");
+  EXPECT_CALL(mock_actor_task_delegate(),
+              RequestToShowUserConfirmationDialog(
+                  _, url::Origin::Create(ipv6_url), _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          webui::mojom::UserConfirmationDialogResponse::New(
+              webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                  true))));
+  CheckUrl(ipv6_url, /*expected_allowed=*/true);
 }
 
 TEST_F(ExecutionEngineUrlGatingTest, AllowAboutBlank) {

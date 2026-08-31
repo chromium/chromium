@@ -259,14 +259,16 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
 }
 
-TEST_F(OriginGatingCheckerTest, BuiltInPredicate_ForbidIpAddress_Blocked) {
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_ForbidNonLocalhostIpAddress_Blocked) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kForbidIpAddress,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_,
+      OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
+                                  GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
-  GURL destination("https://127.0.0.1/page");
+  GURL destination("https://192.168.1.1/page");
 
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
       .Times(0);
@@ -276,15 +278,62 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_ForbidIpAddress_Blocked) {
       checker, nullptr, source, destination);
 
   EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kForbidIpAddress);
+  EXPECT_EQ(decision.attribution, DecisionSource::kForbidNonLocalhostIpAddress);
 }
 
 TEST_F(OriginGatingCheckerTest,
-       BuiltInPredicate_ForbidIpAddress_NoDecision_FallsBack) {
+       BuiltInPredicate_ForbidNonLocalhostIpAddress_Ipv4LocalhostFallsBack) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kForbidIpAddress,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_,
+      OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
+                                  GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://127.0.0.1/page");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_ForbidNonLocalhostIpAddress_Ipv6LocalhostFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
+                                  GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://[::1]/page");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_ForbidNonLocalhostIpAddress_NoDecision_FallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
+                                  GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -301,11 +350,13 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
 }
 
-TEST_F(OriginGatingCheckerTest, BuiltInPredicate_RequireHttps_HttpsFallsBack) {
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrLocalhost_HttpsFallsBack) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {{DecisionSource::kRequireHttps, GateableEventSet::All()}},
-                     /*use_site_keyed_cache=*/false));
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -322,11 +373,13 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_RequireHttps_HttpsFallsBack) {
   EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
 }
 
-TEST_F(OriginGatingCheckerTest, BuiltInPredicate_RequireHttps_HttpBlocked) {
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrLocalhost_HttpBlocked) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {{DecisionSource::kRequireHttps, GateableEventSet::All()}},
-                     /*use_site_keyed_cache=*/false));
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("http://foo.com");
@@ -339,7 +392,94 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_RequireHttps_HttpBlocked) {
       checker, nullptr, source, destination);
 
   EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttps);
+  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttpsOrLocalhost);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrLocalhost_DomainLocalhostFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("http://localhost/page");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrLocalhost_Ipv4LocalhostFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("http://127.0.0.1/page");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrLocalhost_Ipv6LocalhostFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("http://[::1]/page");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrLocalhost_NonHttpLocalhostBlocked) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("file://localhost/tmp");
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttpsOrLocalhost);
 }
 
 TEST_F(OriginGatingCheckerTest,

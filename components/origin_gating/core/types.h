@@ -65,10 +65,12 @@ enum class DecisionSource {
   // delegate provides the embedder-specific logic via
   // `Delegate::EvaluateEnterprisePolicy`.
   kEnterprisePolicy,
-  // Predicate that blocks if the destination's host is an IP address.
-  kForbidIpAddress,
-  // Predicate that blocks if the destination's scheme is not https.
-  kRequireHttps,
+  // Predicate that blocks if the destination's host is an IP address, unless
+  // it is a loopback/localhost IP address.
+  kForbidNonLocalhostIpAddress,
+  // Predicate that blocks if the destination's scheme is not https, unless the
+  // destination is localhost.
+  kRequireHttpsOrLocalhost,
   // Predicate that blocks if the destination's scheme is neither https nor
   // http.
   kRequireHttpsOrHttp,

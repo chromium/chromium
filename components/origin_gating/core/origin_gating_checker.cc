@@ -57,14 +57,18 @@ Decision EvaluateAllowAboutBlank(const GURL& destination) {
                                     : Decision::kNoDecision;
 }
 
-Decision EvaluateForbidIpAddress(const GURL& destination) {
-  return destination.HostIsIPAddress() ? Decision::kBlocked
-                                       : Decision::kNoDecision;
+Decision EvaluateForbidNonLocalhostIpAddress(const GURL& destination) {
+  return destination.HostIsIPAddress() && !net::IsLocalhost(destination)
+             ? Decision::kBlocked
+             : Decision::kNoDecision;
 }
 
-Decision EvaluateRequireHttps(const GURL& destination) {
-  return destination.SchemeIs(url::kHttpsScheme) ? Decision::kNoDecision
-                                                 : Decision::kBlocked;
+Decision EvaluateRequireHttpsOrLocalhost(const GURL& destination) {
+  return destination.SchemeIs(url::kHttpsScheme) ||
+                 (net::IsLocalhost(destination) &&
+                  destination.SchemeIs(url::kHttpScheme))
+             ? Decision::kNoDecision
+             : Decision::kBlocked;
 }
 
 Decision EvaluateRequireHttpsOrHttp(const GURL& destination) {
@@ -228,10 +232,10 @@ std::optional<Decision> OriginGatingChecker::EvaluateSinglePredicate(
                          std::move(callback)));
       return std::nullopt;
     }
-    case DecisionSource::kForbidIpAddress:
-      return EvaluateForbidIpAddress(input.destination);
-    case DecisionSource::kRequireHttps:
-      return EvaluateRequireHttps(input.destination);
+    case DecisionSource::kForbidNonLocalhostIpAddress:
+      return EvaluateForbidNonLocalhostIpAddress(input.destination);
+    case DecisionSource::kRequireHttpsOrLocalhost:
+      return EvaluateRequireHttpsOrLocalhost(input.destination);
     case DecisionSource::kRequireHttpsOrHttp:
       return EvaluateRequireHttpsOrHttp(input.destination);
     case DecisionSource::kActorContainerConfig:

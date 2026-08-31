@@ -35,10 +35,10 @@ std::string DecisionSourceToString(DecisionSource source) {
       return "CacheWithoutUserConfirmation";
     case DecisionSource::kEnterprisePolicy:
       return "EnterprisePolicy";
-    case DecisionSource::kForbidIpAddress:
-      return "ForbidIpAddress";
-    case DecisionSource::kRequireHttps:
-      return "RequireHttps";
+    case DecisionSource::kForbidNonLocalhostIpAddress:
+      return "ForbidNonLocalhostIpAddress";
+    case DecisionSource::kRequireHttpsOrLocalhost:
+      return "RequireHttpsOrLocalhost";
     case DecisionSource::kRequireHttpsOrHttp:
       return "RequireHttpsOrHttp";
     case DecisionSource::kActorContainerConfig:

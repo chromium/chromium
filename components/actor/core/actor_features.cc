@@ -26,6 +26,8 @@ BASE_FEATURE(kGlicBlockFileSystemAccessApiFilePicker,
 BASE_FEATURE(kGlicDeferDownloadFilePickerToUserTakeover,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicActorLocalhostIsSensitive, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,

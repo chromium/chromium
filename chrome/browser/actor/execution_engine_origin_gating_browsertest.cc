@@ -5,14 +5,18 @@
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
@@ -20,6 +24,7 @@
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -2850,5 +2855,136 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const auto& info) {
                            return std::string(info.param.test_name);
                          });
+
+struct LocalhostTestParam {
+  const char* test_name;
+  const char* host;
+};
+
+class ExecutionEngineLocalhostUrlGatingBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<LocalhostTestParam> {
+ public:
+  ExecutionEngineLocalhostUrlGatingBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(kGlicActorLocalhostIsSensitive);
+  }
+
+  ~ExecutionEngineLocalhostUrlGatingBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineLocalhostUrlGatingBrowserTest,
+                       LocalhostPageActionAllowedByUser) {
+  const GURL localhost_url =
+      embedded_test_server()->GetURL(GetParam().host, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), localhost_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  WaitTool::SetNoDelayForTesting();
+  std::unique_ptr<ToolRequest> tool_request = MakeWaitRequest(active_tab());
+  ASSERT_TRUE(tool_request->RequiresUrlCheckInCurrentTab());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectOkResult(result);
+
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(localhost_url)))));
+
+  // Subsequent check for the same origin is allowed via cache without
+  // re-prompting.
+  std::unique_ptr<ToolRequest> tool_request2 = MakeWaitRequest(active_tab());
+  ActResultFuture result2;
+  actor_task().Act(ToRequestList(tool_request2), result2.GetCallback());
+  ExpectOkResult(result2);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineLocalhostUrlGatingBrowserTest,
+                       LocalhostPageActionDeniedByUser) {
+  const GURL localhost_url =
+      embedded_test_server()->GetURL(GetParam().host, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), localhost_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, false)));
+
+  WaitTool::SetNoDelayForTesting();
+  std::unique_ptr<ToolRequest> tool_request = MakeWaitRequest(active_tab());
+  ASSERT_TRUE(tool_request->RequiresUrlCheckInCurrentTab());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineLocalhostUrlGatingBrowserTest,
+                       LocalhostNavigateAllowedByUser) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  const GURL localhost_url =
+      embedded_test_server()->GetURL(GetParam().host, "/title1.html");
+  std::unique_ptr<ToolRequest> tool_request =
+      MakeNavigateRequest(*active_tab(), localhost_url.spec());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectOkResult(result);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), localhost_url);
+
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(localhost_url)))));
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineLocalhostUrlGatingBrowserTest,
+                       LocalhostNavigateDeniedByUser) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, false)));
+
+  const GURL localhost_url =
+      embedded_test_server()->GetURL(GetParam().host, "/title1.html");
+  std::unique_ptr<ToolRequest> tool_request =
+      MakeNavigateRequest(*active_tab(), localhost_url.spec());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+}
+
+constexpr LocalhostTestParam kLocalhostTestParams[] = {
+    {.test_name = "LocalhostDomain", .host = "localhost"},
+    {.test_name = "Ipv4Loopback", .host = "127.0.0.1"},
+    {.test_name = "SubdomainLocalhost", .host = "foo.localhost"},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExecutionEngineLocalhostUrlGatingBrowserTest,
+    testing::ValuesIn(kLocalhostTestParams),
+    [](const testing::TestParamInfo<LocalhostTestParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace actor

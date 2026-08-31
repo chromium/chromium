@@ -319,11 +319,20 @@ void IsNonSensitiveUrl(Profile* profile,
                        base::OnceCallback<void(bool)> callback) {
   CHECK_NE(context, nullptr);
   auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
+
+  if (base::FeatureList::IsEnabled(kGlicActorLocalhostIsSensitive) &&
+      net::IsLocalhost(url)) {
+    decision_context->destination_is_sensitive = true;
+    std::move(callback).Run(/*not_sensitive=*/false);
+    return;
+  }
+
   if (decision_context->destination_is_sensitive.has_value()) {
     std::move(callback).Run(
         !decision_context->destination_is_sensitive.value());
     return;
   }
+
   base::expected<void, base::OnceCallback<void(bool)>> sensitive_check_result =
       MaybeCheckOptimizationGuideForSensitiveUrl(
           url, profile,
@@ -492,8 +501,8 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
           return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
         case DecisionSource::kAllowHttpLocalhost:
         case DecisionSource::kAllowAboutBlank:
-        case DecisionSource::kForbidIpAddress:
-        case DecisionSource::kRequireHttps:
+        case DecisionSource::kForbidNonLocalhostIpAddress:
+        case DecisionSource::kRequireHttpsOrLocalhost:
         case DecisionSource::kRequireHttpsOrHttp:
           NOTREACHED();
       }
@@ -525,9 +534,9 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
       switch (decision.attribution.Source()) {
         case DecisionSource::kEnterprisePolicy:
           return MayActOnUrlBlockReason::kEnterprisePolicy;
-        case DecisionSource::kForbidIpAddress:
+        case DecisionSource::kForbidNonLocalhostIpAddress:
           return MayActOnUrlBlockReason::kIpAddress;
-        case DecisionSource::kRequireHttps:
+        case DecisionSource::kRequireHttpsOrLocalhost:
         case DecisionSource::kRequireHttpsOrHttp:
           return ProfileIOData::IsHandledURL(url)
                      ? MayActOnUrlBlockReason::kWrongScheme
@@ -685,8 +694,12 @@ ExecutionEngine::ExecutionEngine(
                            &BlockSafeBrowsingWarningIfSafetyChecksEnabled),
                        kTabSafeBrowsingObserverPredicateName),
                    {GateableEvent::kPageAction}},
+                  // If localhost should be treated as sensitive, only
+                  // auto-allow for navigation requests.
                   {DecisionSource::kAllowHttpLocalhost,
-                   kRequestsAndPageActions},
+                   base::FeatureList::IsEnabled(kGlicActorLocalhostIsSensitive)
+                       ? GateableEventSet{GateableEvent::kNavigationRequest}
+                       : kRequestsAndPageActions},
                   {DecisionSource::kAllowAboutBlank, kRequestsAndPageActions},
                   // Allow insecure HTTP for navigation requests, as in
                   // practice sites may have HTTP links that will get upgraded.
@@ -694,8 +707,10 @@ ExecutionEngine::ExecutionEngine(
                   // serious of an impediment.
                   {DecisionSource::kRequireHttpsOrHttp,
                    {GateableEvent::kNavigationRequest}},
-                  {DecisionSource::kRequireHttps, {GateableEvent::kPageAction}},
-                  {DecisionSource::kForbidIpAddress, kRequestsAndPageActions},
+                  {DecisionSource::kRequireHttpsOrLocalhost,
+                   {GateableEvent::kPageAction}},
+                  {DecisionSource::kForbidNonLocalhostIpAddress,
+                   kRequestsAndPageActions},
                   {CustomPredicate(
                        base::BindRepeating(&AllowIfSafetyChecksDisabled),
                        kSafetyChecksDisabledPredicateName),

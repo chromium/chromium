@@ -23,6 +23,12 @@ BASE_DECLARE_FEATURE(kGlicBlockFileSystemAccessApiFilePicker);
 
 BASE_DECLARE_FEATURE(kGlicDeferDownloadFilePickerToUserTakeover);
 
+// When enabled: localhost URLs (e.g. 127.0.0.1, localhost, [::1]) are treated
+// as sensitive origins, requiring user confirmation for page actions and
+// navigations.
+// When disabled: localhost URLs are treated as safe.
+BASE_DECLARE_FEATURE(kGlicActorLocalhostIsSensitive);
+
 BASE_DECLARE_FEATURE(kGlicCrossOriginNavigationGating);
 // Feature params to kGlicCrossOriginNavigationGating to enable individual
 // checks for debugging.
