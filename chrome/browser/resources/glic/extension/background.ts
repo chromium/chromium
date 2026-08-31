@@ -47,6 +47,8 @@ chrome.runtime.onMessageExternal.addListener(
           invocationSource: details.invocationSource,
           documentId: sender.documentId,
           inNewTab: details.inNewTab,
+          conversationId: details.conversationId,
+          turnId: details.turnId,
         });
       }
 

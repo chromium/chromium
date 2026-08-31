@@ -40,6 +40,7 @@ declare namespace chrome {
       UNKNOWN = 'unknown',
       UNIVERSAL_CART = 'universal-cart',
       PROMOTION_PAGE = 'promotion-page',
+      WEB_CONTINUITY = 'web-continuity',
     }
 
     export interface GetStateParams {
@@ -51,6 +52,8 @@ declare namespace chrome {
       invocationSource: InvocationSource;
       documentId: string;
       inNewTab?: boolean;
+      conversationId?: string;
+      turnId?: string;
     }
 
     export enum ErrorCode {

@@ -95,9 +95,20 @@ class GlicMessagingAccessDisabledBrowserTest : public GlicPrivateApiTestBase {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-content::EvalJsResult ExecuteInvoke(content::WebContents* web_contents,
-                                    const std::string& prompt_id,
-                                    const std::string& invocation_source) {
+content::EvalJsResult ExecuteInvoke(
+    content::WebContents* web_contents,
+    const std::string& prompt_id,
+    const std::string& invocation_source,
+    const std::optional<std::string>& conversation_id = std::nullopt,
+    const std::optional<std::string>& turn_id = std::nullopt) {
+  std::string extra_fields;
+  if (conversation_id) {
+    extra_fields +=
+        base::StringPrintf(", conversationId: '%s'", conversation_id->c_str());
+  }
+  if (turn_id) {
+    extra_fields += base::StringPrintf(", turnId: '%s'", turn_id->c_str());
+  }
   std::string script = base::StringPrintf(
       R"(
       (async () => {
@@ -108,7 +119,7 @@ content::EvalJsResult ExecuteInvoke(content::WebContents* web_contents,
           chrome.runtime.sendMessage(
               '%s', {type: 'glicPrivate.invoke', args: {
                 promptId: '%s',
-                invocationSource: '%s'
+                invocationSource: '%s'%s
               }}, (response) => {
                 if (chrome.runtime.lastError) {
                   resolve(chrome.runtime.lastError.message);
@@ -120,7 +131,7 @@ content::EvalJsResult ExecuteInvoke(content::WebContents* web_contents,
       })()
       )",
       extension_misc::kGlicExtensionId, prompt_id.c_str(),
-      invocation_source.c_str());
+      invocation_source.c_str(), extra_fields.c_str());
 
   return content::EvalJs(web_contents, script);
 }
@@ -1026,18 +1037,32 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingWebContinuityBrowserTest,
                                                          /*create=*/true));
   ASSERT_TRUE(mock_service);
 
-  // Expect InvokeWithAutoSubmit to be called with kWebContinuity source.
+  std::string cid = "c_123";
+  std::string turn_id = "t_456";
+  auto conversation_matcher = testing::VariantWith<glic::ConversationId>(
+      testing::AllOf(testing::Field(&glic::ConversationId::conversation_id,
+                                    testing::Eq(cid)),
+                     testing::Field(&glic::ConversationId::turn_id,
+                                    testing::Eq(std::make_optional(turn_id)))));
+
+  // Expect InvokeWithAutoSubmit to be called with kWebContinuity source and
+  // conversation.
   EXPECT_CALL(
       *mock_service,
       InvokeWithAutoSubmit(
           testing::_,
-          testing::Property(&glic::GlicInvokeOptions::GetInvocationSource,
-                            testing::Eq(glic::mojom::InvocationSource::kWebContinuity))))
+          testing::AllOf(
+              testing::Property(
+                  &glic::GlicInvokeOptions::GetInvocationSource,
+                  testing::Eq(glic::mojom::InvocationSource::kWebContinuity)),
+              testing::Field(&glic::GlicInvokeOptions::target,
+                             testing::Field(&glic::Target::conversation,
+                                            conversation_matcher)))))
       .Times(1);
 
   // We don't need a prompt ID for web-continuity.
   content::EvalJsResult result =
-      ExecuteInvoke(tab, "", "web-continuity");
+      ExecuteInvoke(tab, "", "web-continuity", cid, turn_id);
   EXPECT_EQ("success", result);
 }
 

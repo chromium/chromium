@@ -509,7 +509,12 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
   glic::GlicInvokeOptions options{source};
 
   options.feature_mode = feature_mode;
-  options.target.conversation = glic::NewConversation();
+  if (params->details.conversation_id) {
+    options.target.conversation = glic::ConversationId(
+        *params->details.conversation_id, params->details.turn_id);
+  } else {
+    options.target.conversation = glic::NewConversation();
+  }
 
   bool in_new_tab = params->details.in_new_tab.value_or(false);
 
