@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ui/ash/network/enrollment_dialog_view.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #include "chrome/browser/ui/ash/network/network_state_notifier.h"
@@ -18,8 +19,8 @@ namespace {
 
 bool IsUIAvailable() {
   // UI is available when screen is unlocked.
-  return !ash::ScreenLocker::default_screen_locker() ||
-         !ash::ScreenLocker::default_screen_locker()->locked();
+  return !ash::ScreenLockerController::Get().screen_locker() ||
+         !ash::ScreenLockerController::Get().screen_locker()->locked();
 }
 
 }  // namespace

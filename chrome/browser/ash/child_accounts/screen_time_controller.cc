@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limit_override.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -264,7 +265,7 @@ void ScreenTimeController::OnScreenLockByPolicy(
       ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
-  ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
+  ScreenLockerController::Get().screen_locker()->TemporarilyDisableAuthForUser(
       account_id, AuthDisabledData(ConvertLockReason(active_policy),
                                    next_unlock_time, GetScreenTimeDuration(),
                                    true /*disable_lock_screen_media*/));
@@ -282,7 +283,8 @@ void ScreenTimeController::OnScreenLockByPolicyEnd() {
       ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
-  ScreenLocker::default_screen_locker()->ReenableAuthForUser(account_id);
+  ScreenLockerController::Get().screen_locker()->ReenableAuthForUser(
+      account_id);
 
   // TODO(agawronska): Move showing shelf button to ash.
   LoginScreen::Get()->ShowParentAccessButton(false);

@@ -140,11 +140,6 @@ ScreenLocker::ScreenLocker(
   }
 }
 
-// static
-ScreenLocker* ScreenLocker::default_screen_locker() {
-  return ScreenLockerController::Get().screen_locker();
-}
-
 void ScreenLocker::Init() {
   VLOG(1) << "ScreenLocker::Init()";
   input_method::InputMethodManager* imm =
@@ -514,7 +509,7 @@ void ScreenLocker::SetClocksForTesting(const base::Clock* clock,
   // Testing clocks should be already set at timer's initialization,
   // which happens in ScreenLocker's constructor.
   CHECK(base::CurrentUIThread::IsSet());
-  CHECK(!default_screen_locker());
+  CHECK(!ScreenLockerController::Get().screen_locker());
   g_clock_for_testing_ = clock;
   g_tick_clock_for_testing_ = tick_clock;
 }

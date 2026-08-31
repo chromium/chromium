@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,7 +99,7 @@ void InputMethodPersistence::PersistInputMethod(Profile* profile) {
     case InputMethodManager::UIStyle::kLock:
       // We are either in unit test, or screen should be locked.
       DCHECK(!LoginScreenClientImpl::HasInstance() ||
-             ScreenLocker::default_screen_locker());
+             ScreenLockerController::Get().screen_locker());
       return;
     case InputMethodManager::UIStyle::kSecondaryLogin:
       // We use a special set of input methods on the screen. Do not update.

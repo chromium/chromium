@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -124,7 +125,7 @@ void ViewsScreenLocker::HandleAuthenticateUserWithPasswordOrPin(
   auto on_authenticated = base::BindOnce(&ViewsScreenLocker::OnAuthenticated,
                                          weak_factory_.GetWeakPtr(), account_id,
                                          std::move(callback));
-  ScreenLocker::default_screen_locker()->Authenticate(
+  ScreenLockerController::Get().screen_locker()->Authenticate(
       std::move(user_context), std::move(on_authenticated));
 }
 
@@ -136,8 +137,9 @@ void ViewsScreenLocker::HandleAuthenticateUserWithEasyUnlock(
 void ViewsScreenLocker::HandleAuthenticateUserWithChallengeResponse(
     const AccountId& account_id,
     base::OnceCallback<void(bool)> callback) {
-  ScreenLocker::default_screen_locker()->AuthenticateWithChallengeResponse(
-      account_id, std::move(callback));
+  ScreenLockerController::Get()
+      .screen_locker()
+      ->AuthenticateWithChallengeResponse(account_id, std::move(callback));
 }
 
 void ViewsScreenLocker::HandleOnFocusPod(const AccountId& account_id) {

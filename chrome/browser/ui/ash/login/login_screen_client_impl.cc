@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -350,7 +350,7 @@ void LoginScreenClientImpl::CancelAddUser() {
 }
 
 void LoginScreenClientImpl::LoginAsGuest() {
-  DCHECK(!ash::ScreenLocker::default_screen_locker());
+  DCHECK(!ash::ScreenLockerController::Get().screen_locker());
   if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
         ash::UserContext(user_manager::UserType::kGuest,

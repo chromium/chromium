@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
@@ -46,7 +47,7 @@ void LoginApiLockHandler::Authenticate(
     base::OnceCallback<void(bool auth_success)> callback) {
   unlock_in_progress_ = true;
   callback_ = std::move(callback);
-  ash::ScreenLocker::default_screen_locker()->Authenticate(
+  ash::ScreenLockerController::Get().screen_locker()->Authenticate(
       std::make_unique<ash::UserContext>(user_context),
       base::BindOnce(&LoginApiLockHandler::AuthenticateCallback,
                      weak_factory_.GetWeakPtr()));

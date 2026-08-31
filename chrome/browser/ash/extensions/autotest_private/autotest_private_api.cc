@@ -112,6 +112,7 @@
 #include "chrome/browser/ash/lobster/lobster_service.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -1342,11 +1343,12 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
 
-  // default_screen_locker()->locked() is set when the UI is ready, so this
-  // tells us both views based lockscreen UI and screenlocker are ready.
+  // ScreenLockerController::Get().screen_locker()->locked() is set when the
+  // UI is ready, so this tells us both views based lockscreen UI and
+  // screenlocker are ready.
   const bool is_screen_locked =
-      !!ash::ScreenLocker::default_screen_locker() &&
-      ash::ScreenLocker::default_screen_locker()->locked();
+      !!ash::ScreenLockerController::Get().screen_locker() &&
+      ash::ScreenLockerController::Get().screen_locker()->locked();
 
   if (user_manager) {
     result.Set("isLoggedIn", user_manager->IsUserLoggedIn());

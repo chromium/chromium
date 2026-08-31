@@ -80,11 +80,6 @@ class ScreenLocker
 
   ~ScreenLocker() override;
 
-  // Returns the default instance if it has been created.
-  // DEPRECATED: Use ScreenLockerController::Get().screen_locker() instead.
-  // TODO(crbug.com/539761804): Replace callers and remove this.
-  static ScreenLocker* default_screen_locker();
-
   // Returns true if the lock UI has been confirmed as displayed.
   bool locked() const { return locked_; }
 

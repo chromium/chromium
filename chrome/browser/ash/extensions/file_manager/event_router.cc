@@ -51,7 +51,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -287,7 +287,7 @@ bool ShouldShowNotificationForVolume(
   // the screen is locked or running in kiosk app mode and make sure the file
   // manager is opened only for the active user.
   if (ash::LoginDisplayHost::default_host() ||
-      ash::ScreenLocker::default_screen_locker() ||
+      ash::ScreenLockerController::Get().screen_locker() ||
       IsRunningInForcedAppMode() ||
       profile != ProfileManager::GetActiveUserProfile()) {
     return false;

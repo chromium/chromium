@@ -21,6 +21,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -378,8 +379,8 @@ bool ChromeVirtualKeyboardDelegate::SetWindowBoundsInScreen(
 void ChromeVirtualKeyboardDelegate::GetClipboardHistory(
     OnGetClipboardHistoryCallback get_history_callback) {
   // Do not leak clipboard history items if the screen is locked.
-  if (ash::ScreenLocker::default_screen_locker() &&
-      ash::ScreenLocker::default_screen_locker()->locked()) {
+  if (ash::ScreenLockerController::Get().screen_locker() &&
+      ash::ScreenLockerController::Get().screen_locker()->locked()) {
     std::move(get_history_callback)
         .Run(std::vector<ash::ClipboardHistoryItem>());
     return;
@@ -465,8 +466,8 @@ bool ChromeVirtualKeyboardDelegate::SetRequestedKeyboardState(
 bool ChromeVirtualKeyboardDelegate::IsSettingsEnabled() {
   return (user_manager::UserManager::Get()->IsUserLoggedIn() &&
           !ash::UserAddingScreen::Get()->IsRunning() &&
-          !(ash::ScreenLocker::default_screen_locker() &&
-            ash::ScreenLocker::default_screen_locker()->locked()));
+          !(ash::ScreenLockerController::Get().screen_locker() &&
+            ash::ScreenLockerController::Get().screen_locker()->locked()));
 }
 
 void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated() {

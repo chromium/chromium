@@ -33,8 +33,8 @@ namespace ash {
 namespace {
 
 bool IsScreenLockerLocked() {
-  return ScreenLocker::default_screen_locker() &&
-         ScreenLocker::default_screen_locker()->locked();
+  return ScreenLockerController::Get().screen_locker() &&
+         ScreenLockerController::Get().screen_locker()->locked();
 }
 
 // This class is used to observe state of the global ScreenLocker instance,
@@ -43,8 +43,9 @@ bool IsScreenLockerLocked() {
 class LoginAttemptObserver : public AuthStatusConsumer {
  public:
   LoginAttemptObserver()
-      : consumer_reset_(CHECK_DEREF(ScreenLocker::default_screen_locker())
-                            .SetLoginStatusConsumerForTesting(this)) {}
+      : consumer_reset_(
+            CHECK_DEREF(ScreenLockerController::Get().screen_locker())
+                .SetLoginStatusConsumerForTesting(this)) {}
 
   LoginAttemptObserver(const LoginAttemptObserver&) = delete;
   LoginAttemptObserver& operator=(const LoginAttemptObserver&) = delete;
@@ -131,7 +132,7 @@ void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
   UserContext user_context(user_manager::UserType::kRegular, account_id);
   user_context.SetKey(Key(password));
 
-  auto* locker = ScreenLocker::default_screen_locker();
+  auto* locker = ScreenLockerController::Get().screen_locker();
   CHECK(locker);
   authenticator_reset_ = locker->SetAuthenticatorsForTesting(
       base::MakeRefCounted<StubAuthenticator>(locker, user_context));
