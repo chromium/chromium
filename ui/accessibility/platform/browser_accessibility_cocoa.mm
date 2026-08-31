@@ -474,6 +474,33 @@ bool ui::HasNonEmptyGroupSemantics(const ui::AXNodeData& data) {
   return false;
 }
 
+namespace {
+
+bool UsesShowMenuForDefaultAction(const ui::BrowserAccessibility& node) {
+  // TODO(accessibility): Add a primary-menu action so macOS pop-up buttons and
+  // select comboboxes can serialize AXShowMenu directly.
+  return !node.manager()->IsWebContentSource() && node.HasDefaultAction() &&
+         !node.HasAction(ax::mojom::Action::kShowContextMenu) &&
+         (node.GetRole() == ax::mojom::Role::kPopUpButton ||
+          node.GetRole() == ax::mojom::Role::kComboBoxSelect);
+}
+
+bool SupportsShowMenuAction(const ui::BrowserAccessibility& node) {
+  return node.manager()->IsWebContentSource() ||
+         node.HasAction(ax::mojom::Action::kShowContextMenu) ||
+         UsesShowMenuForDefaultAction(node);
+}
+
+void PerformShowMenuAction(ui::BrowserAccessibility& node) {
+  if (UsesShowMenuForDefaultAction(node)) {
+    node.manager()->DoDefaultAction(node);
+  } else {
+    node.manager()->ShowContextMenu(node);
+  }
+}
+
+}  // namespace
+
 namespace ui {
 void EnableAXCustomActionNamesForTestingProjection() {
   g_enable_ax_custom_action_names_for_testing_projection = true;
@@ -2967,14 +2994,18 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     return [NSMutableArray array];
   }
 
-  NSMutableArray* actions = [NSMutableArray
-      arrayWithObjects:NSAccessibilityShowMenuAction,
-                       NSAccessibilityScrollToVisibleAction, nil];
+  NSMutableArray* actions = [NSMutableArray array];
 
   // VoiceOver expects the "press" action to be first.
   if (_owner->HasDefaultAction()) {
     [actions insertObject:NSAccessibilityPressAction atIndex:0];
   }
+
+  if (SupportsShowMenuAction(*_owner)) {
+    [actions addObject:NSAccessibilityShowMenuAction];
+  }
+
+  [actions addObject:NSAccessibilityScrollToVisibleAction];
 
   if (ui::IsMenuRelated(_owner->GetRole()))
     [actions addObject:NSAccessibilityCancelAction];
@@ -3287,7 +3318,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     node->SetData(data);  // Set the data back in the node.
     // LINT.ThenChange(accessibilityPerformPress)
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
-    manager->ShowContextMenu(*actionTarget);
+    if (SupportsShowMenuAction(*actionTarget)) {
+      PerformShowMenuAction(*actionTarget);
+    }
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
     ui::AXPlatformNodeBase* mac_obj =
         [ObjCCastStrict<BrowserAccessibilityCocoa>(
@@ -3345,8 +3378,10 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     return NO;
   }
   BrowserAccessibility* actionTarget = [self actionTarget];
-  BrowserAccessibilityManager* manager = actionTarget->manager();
-  manager->ShowContextMenu(*actionTarget);
+  if (!SupportsShowMenuAction(*actionTarget)) {
+    return NO;
+  }
+  PerformShowMenuAction(*actionTarget);
   return YES;
 }
 

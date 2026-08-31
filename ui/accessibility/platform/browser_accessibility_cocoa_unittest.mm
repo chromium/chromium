@@ -15,6 +15,7 @@
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace {
 
@@ -259,5 +260,84 @@ TEST_P(BrowserAccessibilityCocoaTest, AXPressAdvertisementMatchesExecution) {
   EXPECT_CALL(*manager, DoDefaultAction(::testing::Ref(*node_3)));
   EXPECT_FALSE([cocoa_node_2 accessibilityPerformPress]);
   [cocoa_node_3 accessibilityPerformPress];
+}
+
+TEST_P(BrowserAccessibilityCocoaTest, ViewsShowMenuUsesSerializedCapabilities) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kGroup;
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+
+  TestAXNodeIdDelegate node_id_delegate;
+  TestAXPlatformTreeManagerDelegate delegate;
+  delegate.is_web_content_source_ = false;
+  auto manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      update, node_id_delegate, &delegate);
+  BrowserAccessibility* root_node = manager->GetBrowserAccessibilityRoot();
+  BrowserAccessibilityCocoa* node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          root_node->GetNativeViewAccessible().Get());
+
+  EXPECT_FALSE([[node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityShowMenuAction]);
+  EXPECT_FALSE([node accessibilityPerformShowMenu]);
+
+  root.AddAction(ax::mojom::Action::kShowContextMenu);
+  root_node->node()->SetData(root);
+
+  EXPECT_TRUE([[node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityShowMenuAction]);
+  EXPECT_TRUE([node accessibilityPerformShowMenu]);
+}
+
+TEST_P(BrowserAccessibilityCocoaTest, WebContentRetainsShowMenuAction) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kGroup;
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+
+  TestAXNodeIdDelegate node_id_delegate;
+  TestAXPlatformTreeManagerDelegate delegate;
+  delegate.is_web_content_source_ = true;
+  auto manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      update, node_id_delegate, &delegate);
+  BrowserAccessibilityCocoa* node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible()
+              .Get());
+
+  EXPECT_TRUE([[node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityShowMenuAction]);
+  EXPECT_TRUE([node accessibilityPerformShowMenu]);
+}
+
+TEST_P(BrowserAccessibilityCocoaTest, ViewsPopupShowMenuUsesDefaultAction) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kPopUpButton;
+  root.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+
+  TestAXNodeIdDelegate node_id_delegate;
+  TestAXPlatformTreeManagerDelegate delegate;
+  delegate.is_web_content_source_ = false;
+  auto manager = std::make_unique<MockBrowserAccessibilityManagerMac>(
+      update, node_id_delegate, &delegate);
+  BrowserAccessibility* root_node = manager->GetBrowserAccessibilityRoot();
+  BrowserAccessibilityCocoa* node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          root_node->GetNativeViewAccessible().Get());
+
+  EXPECT_TRUE([[node internalAccessibilityActionNames]
+      containsObject:NSAccessibilityShowMenuAction]);
+  EXPECT_CALL(*manager, DoDefaultAction(::testing::Ref(*root_node)));
+  EXPECT_TRUE([node accessibilityPerformShowMenu]);
 }
 }  // namespace ui
