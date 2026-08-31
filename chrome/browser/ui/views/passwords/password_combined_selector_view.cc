@@ -168,7 +168,9 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
       const url::Origin& initiator,
       favicon::FaviconService* favicon_service,
       PasswordCombinedSelectorRadioButtonDelegate* radio_delegate,
-      int index) {
+      int index,
+      int pos_in_set = 0,
+      int set_size = 0) {
     const int horizontal_padding = show_radio_button ? kHorizontalPadding : 0;
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalPadding, horizontal_padding)));
@@ -264,7 +266,8 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
 
     // Radio Button
     if (show_radio_button) {
-      MaybeAddRadioButton(username, details, radio_delegate, index);
+      MaybeAddRadioButton(username, details, radio_delegate, index, pos_in_set,
+                          set_size);
     }
   }
 
@@ -272,13 +275,19 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
       const std::u16string& username,
       const std::vector<std::u16string>& details,
       PasswordCombinedSelectorRadioButtonDelegate* delegate,
-      int index) {
+      int index,
+      int pos_in_set,
+      int set_size) {
     auto radio_button =
         std::make_unique<PasswordCombinedSelectorRadioButton>(delegate, index);
     std::vector<std::u16string> name_parts = {username};
     name_parts.insert(name_parts.end(), details.begin(), details.end());
     radio_button->GetViewAccessibility().SetName(
         base::JoinString(name_parts, u"\n"));
+    if (set_size > 0) {
+      radio_button->GetViewAccessibility().SetPosInSet(pos_in_set);
+      radio_button->GetViewAccessibility().SetSetSize(set_size);
+    }
     radio_button_ = AddChildView(std::move(radio_button));
   }
 
@@ -458,9 +467,9 @@ class PasswordCombinedSelectorListView : public views::View {
           std::make_unique<PasswordCombinedSelectorRowView>(
               username, details, show_radio_buttons,
               form->IsFederatedCredential(), is_remote_actor, form->icon_url,
-              form->url, loader_factory,
-              initiator, favicon_service, delegate,
-              i));
+              form->url, loader_factory, initiator, favicon_service, delegate,
+              i, /*pos_in_set=*/i + 1,
+              /*set_size=*/static_cast<int>(forms.size())));
 
       if (i == 0) {
         selected_view_ = row;
@@ -472,6 +481,10 @@ class PasswordCombinedSelectorListView : public views::View {
     wrapper->SetOwnedGroup(kGroupId);
 
     if (show_radio_buttons) {
+      wrapper->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+      wrapper->GetViewAccessibility().SetRole(ax::mojom::Role::kRadioGroup);
+      wrapper->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+          IDS_ACCOUNT_CHOOSER_RADIO_GROUP_ACCESSIBILITY_LABEL));
       wrapper->AddChildView(std::make_unique<views::Separator>());
     }
 

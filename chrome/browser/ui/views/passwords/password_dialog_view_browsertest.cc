@@ -44,7 +44,10 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -1030,6 +1033,43 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
   view->GetWidget()->Close();
   waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
+                       RadioButtonAccessibilityAttributes) {
+  if (!IsParamFeatureEnabled()) {
+    return;
+  }
+  ShowUi("MultipleCredentials");
+
+  PasswordCombinedSelectorView* view =
+      static_cast<PasswordCombinedSelectorView*>(
+          controller()->current_account_chooser());
+  ASSERT_TRUE(view);
+
+  views::View* list_view = view->GetWidget()->GetContentsView()->GetViewByID(
+      PasswordCombinedSelectorView::kCredentialListId);
+  ASSERT_TRUE(list_view);
+  auto* scroll_view = static_cast<views::ScrollView*>(list_view->children()[0]);
+  views::View* wrapper = scroll_view->contents();
+  ASSERT_TRUE(wrapper);
+  ui::AXNodeData wrapper_data;
+  wrapper->GetViewAccessibility().GetAccessibleNodeData(&wrapper_data);
+  EXPECT_EQ(wrapper_data.role, ax::mojom::Role::kRadioGroup);
+
+  std::vector<views::RadioButton*> radio_buttons =
+      GetRadioButtons(view->GetWidget()->GetContentsView());
+  ASSERT_EQ(radio_buttons.size(), 2u);
+
+  ui::AXNodeData node_data_0;
+  radio_buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&node_data_0);
+  EXPECT_EQ(node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
+  EXPECT_EQ(node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 2);
+
+  ui::AXNodeData node_data_1;
+  radio_buttons[1]->GetViewAccessibility().GetAccessibleNodeData(&node_data_1);
+  EXPECT_EQ(node_data_1.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 2);
+  EXPECT_EQ(node_data_1.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 2);
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
