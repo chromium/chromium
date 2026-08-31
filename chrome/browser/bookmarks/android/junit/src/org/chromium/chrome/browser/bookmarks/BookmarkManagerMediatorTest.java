@@ -58,7 +58,6 @@ import org.mockito.quality.Strictness;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
@@ -3099,7 +3098,6 @@ public class BookmarkManagerMediatorTest {
 
         doReturn("chrome://bookmarks/").when(mNativePage).getUrl();
         mMediator.openFolder(mFolderId2);
-        ShadowLooper.idleMainLooper();
         verify(mNativePage).onStateChange("chrome-native://bookmarks/folder/6", true);
     }
 

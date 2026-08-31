@@ -88,11 +88,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+/** Unit tests for the {@link BookmarkBarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.BOOKMARKS_BAR_NTP,
-    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT
-})
+@DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
 public class BookmarkBarMediatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -1145,29 +1143,7 @@ public class BookmarkBarMediatorTest {
                         eq(mActivity),
                         eq(mTab),
                         eq(mProfile),
-                        eq(mBookmarkModel.getDefaultFolderViewLocation()));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
-    public void testOnAllBookmarksButtonClick_desktopLayoutEnabled() {
-        ArgumentCaptor<ClickWithMetaStateCallback> clickCallbackCaptor =
-                ArgumentCaptor.forClass(ClickWithMetaStateCallback.class);
-        verify(mAllBookmarksButtonModel)
-                .set(eq(BookmarkBarButtonProperties.CLICK_CALLBACK), clickCallbackCaptor.capture());
-
-        ClickWithMetaStateCallback clickCallback = clickCallbackCaptor.getValue();
-        assertNotNull(clickCallback);
-
-        clickCallback.onClickWithMeta(0, 0);
-
-        verify(mBookmarkManagerOpener)
-                .showBookmarkManager(
-                        eq(mActivity),
-                        eq(mTab),
-                        eq(mProfile),
-                        eq(mBookmarkModel.getDesktopFolderId()));
+                        eq(mBookmarkModel.getRootFolderId()));
     }
 
     @Test

@@ -360,7 +360,7 @@ class BookmarkBarMediator
                                     mActivity,
                                     mCurrentTabSupplier.get(),
                                     profile,
-                                    model.getDefaultFolderViewLocation());
+                                    model.getRootFolderId());
                 });
     }
 

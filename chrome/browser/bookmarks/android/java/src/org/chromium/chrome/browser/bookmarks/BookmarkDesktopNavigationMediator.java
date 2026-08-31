@@ -56,18 +56,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         mModelList = modelList;
         mBookmarkDelegate = bookmarkDelegate;
 
+        refreshNavigationList();
+
         mBookmarkDelegate.addUiObserver(this);
         mBookmarkModel.addObserver(this);
-
-        if (mBookmarkModel.isBookmarkModelLoaded()) {
-            refreshNavigationList();
-
-            BookmarkId initialFolder =
-                    mBookmarkDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER
-                            ? mBookmarkDelegate.getCurrentFolderId()
-                            : null;
-            onFolderStateSet(initialFolder);
-        }
     }
 
     /** Destroys the mediator and removes observers. */
@@ -123,6 +115,13 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         }
         for (BookmarkId id : localFolders) {
             mModelList.add(createFolderItem(id));
+        }
+
+        updateSelectionHighlight();
+
+        if (Objects.equals(mCurrentFolderId, mBookmarkModel.getRootFolderId())
+                && !isSmallScreen()) {
+            openFirstFolder();
         }
     }
 
@@ -202,28 +201,11 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         }
     }
 
-    private boolean isTopLevelFolder(BookmarkId id) {
-        for (ListItem item : mModelList) {
-            if (item.type == NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM) {
-                BookmarkId itemId = item.model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID);
-                if (Objects.equals(itemId, id)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private @Nullable BookmarkId getTopLevelAncestorId(@Nullable BookmarkId id) {
-        if (id == null || Objects.equals(id, mBookmarkModel.getRootFolderId())) {
-            return null;
-        }
+        if (id == null) return null;
 
         BookmarkId current = id;
         while (current != null) {
-            if (isTopLevelFolder(current)) {
-                return current;
-            }
             BookmarkItem item = mBookmarkModel.getBookmarkById(current);
             if (item == null) return null;
 
@@ -245,6 +227,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
     public void onFolderStateSet(@Nullable BookmarkId folder) {
         mCurrentFolderId = folder;
         updateSelectionHighlight();
+
+        if (Objects.equals(folder, mBookmarkModel.getRootFolderId()) && !isSmallScreen()) {
+            refreshNavigationList();
+        }
     }
 
     @Override
@@ -256,22 +242,37 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
     }
 
     public void onConfigurationChanged(Configuration newConfig) {
-        updateSelectionHighlight();
+        if (!isSmallScreen(newConfig)
+                && Objects.equals(mCurrentFolderId, mBookmarkModel.getRootFolderId())) {
+            openFirstFolder();
+        }
     }
 
     // BookmarkModelObserver implementation
     @Override
     public void bookmarkModelChanged() {
-        if (!mBookmarkModel.isBookmarkModelLoaded()) {
-            return;
-        }
         refreshNavigationList();
-        BookmarkId currentFolder =
-                mCurrentFolderId != null
-                        ? mCurrentFolderId
-                        : (mBookmarkDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER
-                                ? mBookmarkDelegate.getCurrentFolderId()
-                                : null);
-        onFolderStateSet(currentFolder);
+    }
+
+    private void openFirstFolder() {
+        for (ListItem item : mModelList) {
+            if (item.type == NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM) {
+                BookmarkId id = item.model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID);
+                if (id != null
+                        && mBookmarkModel.doesBookmarkExist(id)
+                        && !Objects.equals(id, mBookmarkModel.getRootFolderId())) {
+                    mBookmarkDelegate.replaceFolder(id);
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean isSmallScreen() {
+        return isSmallScreen(mContext.getResources().getConfiguration());
+    }
+
+    private static boolean isSmallScreen(Configuration config) {
+        return config.screenWidthDp < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP;
     }
 }
