@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -53,7 +52,6 @@ import java.util.Set;
  * expected.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebappRegistryTest {
     // These were copied from WebappRegistry for backward compatibility checking.
     private static final String REGISTRY_FILE_NAME = "webapp_registry";

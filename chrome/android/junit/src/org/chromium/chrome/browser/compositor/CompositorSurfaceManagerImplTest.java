@@ -47,7 +47,6 @@ import java.util.Set;
 
 /** Unit tests for the CompositorSurfaceManagerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CompositorSurfaceManagerImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private CompositorSurfaceManager.SurfaceManagerCallbackTarget mCallback;

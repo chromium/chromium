@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -26,7 +25,6 @@ import java.util.List;
 
 /** Unit tests for DeferredStartupHandler. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DeferredStartupHandlerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final List<IdleHandler> mIdleHandlers = new ArrayList<>();

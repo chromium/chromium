@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,7 +31,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for the {@link HomepagePolicyManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class HomepagePolicyManagerTest {
     public static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     public static final String CHROME_NTP = JUnitTestGURLs.NTP_URL.getSpec();

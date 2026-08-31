@@ -79,9 +79,7 @@ import java.util.List;
 
 /** Unit test for {@link ShareDelegateImpl} that mocked out most native class calls. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        sdk = {BaseRobolectricTestRunner.MIN_SDK, 34})
+@Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 34})
 public class ShareDelegateImplUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

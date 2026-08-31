@@ -88,7 +88,6 @@ import java.util.concurrent.CountDownLatch;
 /** Unit tests for {@link org.chromium.chrome.browser.backup.ChromeBackupAgent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {
             ChromeBackupAgentTest.BackupManagerShadow.class,
         })

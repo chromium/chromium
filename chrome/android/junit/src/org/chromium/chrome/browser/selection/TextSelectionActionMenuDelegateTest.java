@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
@@ -55,7 +54,6 @@ import java.util.List;
 
 /** Unit tests for {@link TextSelectionActionMenuDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT)
 public class TextSelectionActionMenuDelegateTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

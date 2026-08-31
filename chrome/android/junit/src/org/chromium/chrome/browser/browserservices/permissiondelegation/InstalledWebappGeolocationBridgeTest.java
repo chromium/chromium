@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -38,7 +37,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link InstalledWebappGeolocationBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class InstalledWebappGeolocationBridgeTest {
     private static final long NATIVE_POINTER = 12;
 

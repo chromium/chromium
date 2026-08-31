@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -45,7 +44,6 @@ import java.util.Map;
 
 /** Test for {@link FeedFeedbackCollector}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FeedFeedbackCollectorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     // Enable the Features class, so we can override command line switches in the test.

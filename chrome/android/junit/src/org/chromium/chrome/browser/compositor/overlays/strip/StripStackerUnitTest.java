@@ -25,7 +25,7 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link StripStacker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 public class StripStackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

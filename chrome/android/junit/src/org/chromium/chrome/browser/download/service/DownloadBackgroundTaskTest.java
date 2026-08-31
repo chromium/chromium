@@ -43,7 +43,7 @@ import org.chromium.components.download.DownloadTaskType;
 
 /** Unit tests for {@link org.chromium.chrome.browser.download.service.DownloadBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class DownloadBackgroundTaskTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

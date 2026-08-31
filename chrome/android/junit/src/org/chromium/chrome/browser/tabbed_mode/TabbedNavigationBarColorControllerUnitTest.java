@@ -58,7 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = BaseRobolectricTestRunner.MIN_SDK)
+@Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class TabbedNavigationBarColorControllerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 

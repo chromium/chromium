@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests that directories for WebappActivities are managed correctly. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebappDirectoryManagerTest {
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 

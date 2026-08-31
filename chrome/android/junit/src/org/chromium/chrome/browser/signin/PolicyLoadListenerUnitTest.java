@@ -31,9 +31,7 @@ import org.chromium.components.policy.PolicyService;
 
 /** Unit tests for PolicyLoadListener. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowProcess.class})
+@Config(shadows = {ShadowProcess.class})
 // TODO(crbug.com/40182398): Change to use paused loop. See crbug for details.
 public class PolicyLoadListenerUnitTest {
     private static final String LOADED_POLICY_READY = "Policy service should be ready to read.";

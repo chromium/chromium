@@ -33,9 +33,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /** Tests for {@link DisclosureAcceptanceBroadcastReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPendingIntent.class})
+@Config(shadows = {ShadowPendingIntent.class})
 public class DisclosureAcceptanceBroadcastReceiverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public NotificationManagerProxy mNotificationManager;

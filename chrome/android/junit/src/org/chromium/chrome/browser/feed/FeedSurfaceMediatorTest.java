@@ -69,7 +69,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;

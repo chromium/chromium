@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,7 +36,6 @@ import org.chromium.components.embedder_support.util.Origin;
 
 /** Tests for {@link PermissionUpdater}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PermissionUpdaterTest {
     private static final Origin ORIGIN = Origin.create("https://www.website.com");
     private static final String URL = "https://www.website.com";

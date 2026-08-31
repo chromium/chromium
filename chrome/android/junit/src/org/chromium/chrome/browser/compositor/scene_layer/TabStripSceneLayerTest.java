@@ -59,7 +59,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 /** Tests for {@link TabStripSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 public class TabStripSceneLayerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

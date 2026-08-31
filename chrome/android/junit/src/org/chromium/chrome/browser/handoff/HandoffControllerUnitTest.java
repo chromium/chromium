@@ -56,7 +56,7 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 // TODO(crbug.com/503422619): Update to 37 once its available, and remove the delegate in
 //  HandoffController.java.
-@Config(manifest = Config.NONE, sdk = 35)
+@Config(sdk = 35)
 public class HandoffControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -77,7 +76,6 @@ import java.util.Map;
 
 /** Unit tests for WebApkUpdateManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkUpdateManagerUnitTest {
     @Mock public Activity mActivityMock;
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;

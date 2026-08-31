@@ -182,7 +182,6 @@ import java.util.stream.IntStream;
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
 @DisableFeatures({

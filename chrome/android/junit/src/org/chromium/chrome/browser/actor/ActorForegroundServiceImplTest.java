@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /** Unit tests for {@link ActorForegroundServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
 public class ActorForegroundServiceImplTest {
     private static final String START_ACTOR_FOREGROUND_SERVICE =

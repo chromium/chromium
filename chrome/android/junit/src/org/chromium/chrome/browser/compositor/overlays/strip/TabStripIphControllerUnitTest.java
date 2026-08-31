@@ -28,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,7 +46,6 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /** Unit tests for {@link TabStripIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabStripIphControllerUnitTest {
     private static final float TAB_STRIP_HEIGHT = 40f;
     private static final float TAB_WIDTH = 150f;

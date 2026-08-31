@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,7 +22,6 @@ import java.util.Set;
 
 /** Tests for {@link InstalledWebappDataRegister}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class InstalledWebappDataRegisterTest {
     private static final int UID = 23;
     private static final String APP_NAME = "Example App";

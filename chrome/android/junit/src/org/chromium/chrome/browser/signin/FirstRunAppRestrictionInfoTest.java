@@ -33,9 +33,7 @@ import org.chromium.components.policy.PolicySwitches;
 
 /** Unit test for {@link AppRestrictionSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowUserManager.class})
+@Config(shadows = {ShadowUserManager.class})
 public class FirstRunAppRestrictionInfoTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Bundle mMockBundle;

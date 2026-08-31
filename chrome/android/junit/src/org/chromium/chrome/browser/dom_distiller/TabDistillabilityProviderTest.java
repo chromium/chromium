@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,7 +31,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link TabDistillabilityProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabDistillabilityProviderTest {
 
     private static final GURL URL_1 = new GURL("http://www.test1.com");

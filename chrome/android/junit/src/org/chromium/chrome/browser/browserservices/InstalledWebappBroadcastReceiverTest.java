@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -61,7 +60,6 @@ import java.util.Set;
 
 /** Tests for {@link InstalledWebappBroadcastReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 public class InstalledWebappBroadcastReceiverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

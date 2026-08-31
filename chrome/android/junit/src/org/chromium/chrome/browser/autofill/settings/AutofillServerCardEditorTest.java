@@ -50,7 +50,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.Callback;
@@ -89,7 +88,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link AutofillServerCardEditor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING_V2,

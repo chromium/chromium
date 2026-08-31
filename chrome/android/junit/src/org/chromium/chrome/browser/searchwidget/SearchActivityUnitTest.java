@@ -48,7 +48,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.Callback;
@@ -99,7 +98,6 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES})
 public class SearchActivityUnitTest {
     private static final String TEST_URL = "https://abc.xyz/";

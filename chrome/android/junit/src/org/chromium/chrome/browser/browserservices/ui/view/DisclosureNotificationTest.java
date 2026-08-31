@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -43,7 +42,6 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 /** Tests for {@link DisclosureNotification}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
-@Config(manifest = Config.NONE)
 public class DisclosureNotificationTest {
     private static final String SCOPE = "https://www.example.com";
     private static final String PACKAGE = "com.example.twa";

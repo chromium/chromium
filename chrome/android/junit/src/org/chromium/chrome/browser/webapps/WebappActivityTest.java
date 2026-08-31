@@ -29,7 +29,7 @@ import org.chromium.webapk.test.WebApkTestHelper;
 
 /** Unit tests for {@link WebappActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 33)
+@Config(sdk = 33)
 public class WebappActivityTest {
     private static class TestWebappActivity extends WebappActivity {
         private BrowserServicesIntentDataProvider mMockIntentDataProvider;

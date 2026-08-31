@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link BrowserExitReasonTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
+@Config(sdk = Build.VERSION_CODES.R)
 @EnableFeatures(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)
 public class BrowserExitReasonTrackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

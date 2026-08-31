@@ -7,13 +7,11 @@ package org.chromium.chrome.browser.gsa;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests of {@link GSAUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class GSAUtilsUnitTest {
 
     @Test

@@ -42,7 +42,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabHoverCardView} positioning on the tab strip. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 public class StripTabHoverCardPositionUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -29,7 +29,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -52,7 +51,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TileGroupDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TileGroupDelegateImplUnitTest {
     private static final GURL NON_SEARCH_URL = JUnitTestGURLs.URL_1;
     private static final GURL SEARCH_URL = JUnitTestGURLs.URL_2;

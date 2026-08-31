@@ -26,7 +26,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -37,7 +36,6 @@ import java.util.function.Supplier;
 
 /** Tests for {@link TwaSplashController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TwaSplashControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

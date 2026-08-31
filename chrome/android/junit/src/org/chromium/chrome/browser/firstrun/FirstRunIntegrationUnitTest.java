@@ -56,7 +56,6 @@ import java.util.List;
 
 /** JUnit tests for first run triggering code. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class FirstRunIntegrationUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

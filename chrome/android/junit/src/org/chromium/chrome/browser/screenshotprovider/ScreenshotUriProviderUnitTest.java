@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.SupplierUtils;
@@ -43,7 +42,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link ScreenshotUriProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ScreenshotUriProviderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

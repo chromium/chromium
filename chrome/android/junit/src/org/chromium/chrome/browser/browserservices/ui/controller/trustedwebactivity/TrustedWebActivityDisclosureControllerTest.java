@@ -49,7 +49,7 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link TrustedWebActivityDisclosureController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_TWA_DISCLOSURES)
 public class TrustedWebActivityDisclosureControllerTest {
     private static final String CLIENT_PACKAGE = "com.example.twaclient";

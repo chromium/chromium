@@ -39,9 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TabStateBrowserControlsVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class TabStateBrowserControlsVisibilityDelegateTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

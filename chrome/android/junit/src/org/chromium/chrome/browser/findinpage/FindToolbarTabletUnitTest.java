@@ -47,7 +47,7 @@ import java.util.Map;
 
 /** Unit tests for {@link FindToolbarTablet}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 public class FindToolbarTabletUnitTest {
     private static final int SIDE_UI_WIDTH_PX = 250;
     private static final int POPUP_WIDTH_PX = 100;

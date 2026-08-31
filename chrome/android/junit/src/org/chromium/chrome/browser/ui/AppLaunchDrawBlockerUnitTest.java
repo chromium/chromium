@@ -57,9 +57,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for AppLaunchDrawBlocker behavior. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class AppLaunchDrawBlockerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

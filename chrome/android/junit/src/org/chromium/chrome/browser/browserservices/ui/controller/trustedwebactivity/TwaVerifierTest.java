@@ -22,7 +22,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.TriState;
@@ -40,7 +39,6 @@ import java.util.HashSet;
 
 /** Tests for {@link TwaVerifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TwaVerifierTest {
     private static final String INITIAL_URL = "https://www.initialurl.com/page.html";
     private static final String ADDITIONAL_ORIGIN = "https://www.otherverifiedorigin.com";

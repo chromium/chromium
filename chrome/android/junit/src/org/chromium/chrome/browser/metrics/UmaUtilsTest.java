@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowUsageStatsManager;
 
@@ -22,7 +21,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 
 /** Unit tests for {@link UmaUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UmaUtilsTest {
     private static final String HISTOGRAM_IS_BACKGROUND_RESTRICTED =
             "Android.BackgroundRestrictions.IsBackgroundRestricted";

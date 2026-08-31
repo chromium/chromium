@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -52,7 +51,6 @@ import org.chromium.components.sync.SyncService;
  * first run.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
 public class FirstRunFlowSequencerTest {
 

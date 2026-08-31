@@ -63,9 +63,7 @@ import org.chromium.ui.widget.ToastManager;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN})
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class SigninAndHistorySyncActivityLauncherImplTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

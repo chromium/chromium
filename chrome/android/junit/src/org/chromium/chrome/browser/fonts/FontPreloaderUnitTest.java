@@ -37,9 +37,7 @@ import java.util.List;
 
 /** Unit tests for {@link FontPreloader}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowResourcesCompat.class})
+@Config(shadows = {ShadowResourcesCompat.class})
 public class FontPreloaderUnitTest {
     private static final int[] FONTS = {
         R.font.chrome_google_sans, R.font.chrome_google_sans_medium, R.font.chrome_google_sans_bold

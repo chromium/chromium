@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,7 +46,6 @@ import org.chromium.chrome.browser.profiles.OtrProfileId;
 
 /** Unit tests for {@link DownloadUtils} helper methods and preferred app routing. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures({ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB})
 public class DownloadUtilsUnitTest {
     private static final String TEST_FILE_PATH = "/path/to/downloaded_file.pdf";

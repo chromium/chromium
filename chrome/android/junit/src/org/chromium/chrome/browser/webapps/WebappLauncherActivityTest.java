@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -35,7 +34,6 @@ import org.chromium.webapk.test.WebApkTestHelper;
 
 /** JUnit test for WebappLauncherActivity. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class WebappLauncherActivityTest {
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";

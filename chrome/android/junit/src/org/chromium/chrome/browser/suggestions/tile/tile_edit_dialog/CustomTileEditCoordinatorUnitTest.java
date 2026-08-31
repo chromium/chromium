@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditCoordinator.CustomLinksDuplicateChecker;
@@ -32,7 +31,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link CustomTileEditCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CustomTileEditCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

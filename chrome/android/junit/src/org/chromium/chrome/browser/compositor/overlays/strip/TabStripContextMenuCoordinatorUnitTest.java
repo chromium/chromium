@@ -72,7 +72,6 @@ import java.util.Collections;
 
 /** Unit tests for {@link TabStripContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures({
     ChromeFeatureList.GLIC,
     ChromeFeatureList.TASK_MANAGER_CLANK,

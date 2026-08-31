@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -48,7 +47,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TabArchiverImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabArchiverUnitTest {
     private static final GURL TEST_GURL = new GURL("https://www.google.com");
     private static final GURL TEST_GURL_2 = new GURL("https://www.example.com");

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -42,7 +41,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
  * Unit tests for settings enums defined in tools/metrics/histograms/metadata/settings/enums.xml.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SettingsEnumsTest {
 
     private static final String ENUMS_FILE_PATH =

@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -26,7 +25,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /** Unit tests for ExpandedSheetHelperImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ExpandedSheetHelperImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
@@ -54,7 +53,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for PageViewObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class PageViewObserverTest {
     private static final GURL STARTING_URL = JUnitTestGURLs.URL_1;
     private static final GURL STARTING_URL_WITH_PATH = JUnitTestGURLs.URL_1_WITH_PATH;

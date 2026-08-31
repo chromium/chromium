@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.android.XmlResourceParserImpl;
-import org.robolectric.annotation.Config;
 import org.w3c.dom.Document;
 
 import org.chromium.base.FakeTimeTestRule;
@@ -43,7 +42,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 /** Tests the WebApkSyncService class */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkSyncServiceTest {
     private static final String START_URL = "https://example.com/start";
     private static final String MANIFEST_ID = "https://example.com/id";

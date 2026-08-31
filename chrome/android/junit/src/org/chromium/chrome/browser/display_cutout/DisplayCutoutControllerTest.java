@@ -38,7 +38,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -64,7 +63,6 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link DisplayCutoutController} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DisplayCutoutControllerTest {
     private static final Insets INITIAL_STATUS_BAR_INSETS = Insets.of(0, 80, 0, 0);
     private static final Insets INITIAL_NAV_BAR_INSETS = Insets.of(0, 0, 0, 24);

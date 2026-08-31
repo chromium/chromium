@@ -43,7 +43,6 @@ import org.chromium.ui.test.util.MockitoHelper;
 
 /** Unit tests for {@link AppSpecificHistoryIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
 public class AppSpecificHistoryIphControllerUnitTest {
     @Rule

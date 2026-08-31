@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -50,7 +49,6 @@ import org.chromium.ui.widget.RectProvider;
 
 /** Tests for {@link GlicButtonContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.GLIC)
 public class GlicButtonContextMenuCoordinatorUnitTest {
     private static class TestActivity extends Activity implements SnackbarManageable {

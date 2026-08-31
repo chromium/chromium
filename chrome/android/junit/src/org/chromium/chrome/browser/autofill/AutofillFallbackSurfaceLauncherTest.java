@@ -20,7 +20,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,7 +32,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link AutofillFallbackSurfaceLauncher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
 public class AutofillFallbackSurfaceLauncherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

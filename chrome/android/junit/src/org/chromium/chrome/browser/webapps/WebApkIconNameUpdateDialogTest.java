@@ -22,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -35,7 +34,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Test for the dialog warning that WebApks have an updated name/icon. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkIconNameUpdateDialogTest {
     // A callback that fires when an action is taken in a dialog.
     private final CallbackHelper mOnActionCallback = new CallbackHelper();

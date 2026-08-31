@@ -42,7 +42,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -99,7 +98,6 @@ import java.util.Collection;
 
 /** JUnit tests for the class {@link SigninBridge}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SigninBridgeTest {
     private static final String TEST_EXTENSION_NAME = "Test Extension";
 

@@ -11,7 +11,6 @@ import android.os.Bundle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
@@ -20,7 +19,6 @@ import java.util.Map;
 
 /** Tests {@link WebApkIntentDataProviderFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebApkIntentDataProviderFactoryTest {
     private static final String ICON_URL1 = "https://example.com/1.png";
     private static final String ICON_MURMUR2_HASH1 = "11";

@@ -26,7 +26,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.MessagePort;
@@ -36,7 +35,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 
 /** Unit tests for {@link PostMessageHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PostMessageHandlerTest {
     private static final Uri SOURCE_URI = Uri.parse("android-app://org.chromium.test");
     private static final Uri TARGET_URI = Uri.parse("https://www.example.com");

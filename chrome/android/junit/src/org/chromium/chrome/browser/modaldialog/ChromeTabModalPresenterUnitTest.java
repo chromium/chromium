@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -46,7 +45,6 @@ import java.util.function.Supplier;
 
 /** Tests for {@link ChromeTabModalPresenter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChromeTabModalPresenterUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

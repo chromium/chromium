@@ -43,7 +43,6 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDisplayManager;
 import org.robolectric.shadows.ShadowKeyguardManager;
 import org.robolectric.shadows.ShadowPowerManager;
@@ -81,7 +80,6 @@ import java.util.Map;
  * than GURL/Origin).
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
 public class IntentHandlerRobolectricTest {
     private static final String[] ACCEPTED_NON_HTTP_AND_HTTPS_URLS = {

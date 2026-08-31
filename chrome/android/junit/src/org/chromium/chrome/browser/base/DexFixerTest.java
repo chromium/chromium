@@ -35,9 +35,7 @@ import java.io.IOException;
 
 /** Unit tests for {@link DexFixer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {DexFixerTest.ShadowOs.class})
+@Config(shadows = {DexFixerTest.ShadowOs.class})
 public class DexFixerTest {
     @Implements(Os.class)
     public static class ShadowOs {

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.TIRAMISU)
+@Config(sdk = Build.VERSION_CODES.TIRAMISU)
 @EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
 public class GoogleWalletLauncherTest {
     /** Unit tests for {@link AutofillFallbackSurfaceLauncher}. */

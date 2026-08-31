@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.messages.MessageIdentifier;
@@ -17,7 +16,6 @@ import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 
 /** Unit tests for {@link ChromeMessageAutodismissDurationProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ChromeMessageAutodismissDurationProviderTest {
     @Before
     public void setUp() {

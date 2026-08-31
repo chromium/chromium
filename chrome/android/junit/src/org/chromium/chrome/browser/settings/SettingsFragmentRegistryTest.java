@@ -41,7 +41,7 @@ import java.util.Map;
 
 /** Unit tests for {@link SettingsFragmentRegistry}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsFragmentRegistryTest {
 

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -17,7 +16,6 @@ import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /** Unit tests for GooglePlayServicesChecker. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BackgroundSyncGooglePlayServicesCheckerTest {
     @Test
     @Feature("BackgroundSync")

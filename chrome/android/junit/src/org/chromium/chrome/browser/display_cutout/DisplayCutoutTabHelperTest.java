@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -31,7 +30,6 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DisplayCutoutTabHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

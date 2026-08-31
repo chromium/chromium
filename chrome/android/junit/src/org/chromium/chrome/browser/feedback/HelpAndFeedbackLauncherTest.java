@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ServiceLoaderUtil;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 
 /** Tests for {@link HelpAndFeedbackLauncher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class HelpAndFeedbackLauncherTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -29,7 +28,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Test for {@link FindToolbarManagerTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FindToolbarManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private FindToolbarManager mFindToolbarManager;

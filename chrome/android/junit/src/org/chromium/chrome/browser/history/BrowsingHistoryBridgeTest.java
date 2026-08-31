@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -31,7 +30,6 @@ import java.util.List;
 
 /** Unit tests for BrowsingHistoryBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BrowsingHistoryBridgeTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

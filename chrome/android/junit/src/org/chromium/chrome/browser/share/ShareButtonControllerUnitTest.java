@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -49,7 +48,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link ShareButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;

@@ -67,7 +67,6 @@ import java.util.List;
 
 /** Unit tests for {@link DesktopSiteSettingsIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DesktopSiteSettingsIphControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

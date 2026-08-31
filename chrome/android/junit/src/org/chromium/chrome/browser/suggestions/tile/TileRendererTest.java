@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
 import org.chromium.base.ThreadUtils;
@@ -52,7 +51,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** A simple test for {@link TileRenderer} using real {@link android.view.View} objects. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TileRendererTest {
     private static final int TITLE_LINES = 1;
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;

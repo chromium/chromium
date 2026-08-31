@@ -38,7 +38,7 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Tests for {@link StripLayoutTab}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp")
 public class StripLayoutTabTest {
 
     private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;

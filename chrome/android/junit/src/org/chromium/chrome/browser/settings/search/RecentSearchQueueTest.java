@@ -14,7 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -25,7 +24,6 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Unit tests for {@link RecentSearchQueue}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @NullMarked
 public class RecentSearchQueueTest {
     private static final String PREF_KEY = ChromePreferenceKeys.SETTINGS_RECENT_SEARCH_ENTRIES;

@@ -89,7 +89,6 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link Tab}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabUnitTest {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;

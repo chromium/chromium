@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -41,7 +40,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link CustomTileEditView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CustomTileEditViewUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

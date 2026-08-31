@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -57,7 +56,6 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SearchActivityUtilsUnitTest {
     // Placeholder Activity class that guarantees the PackageName is valid for IntentUtils.
     private static class TestActivity extends Activity {}
