@@ -57,6 +57,7 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
+#include "components/autofill/core/browser/permissions/autofill_policy_service.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -1160,7 +1161,12 @@ bool PaymentsDataManager::IsCardBenefitsSyncEnabled() const {
 }
 
 bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
+  if (!pref_service_) {
+    return false;
+  }
+  return !AutofillPolicyService::IsAutofillTypeBlockedByPolicyFromPref(
+      *pref_service_, GURL(),
+      AutofillClient::AutofillPolicyDataCategory::kPayments);
 }
 
 bool PaymentsDataManager::IsAutofillHasSeenIbanPrefEnabled() const {

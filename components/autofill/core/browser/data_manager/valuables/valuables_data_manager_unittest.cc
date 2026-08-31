@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
@@ -20,7 +21,9 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/webdata/common/web_database.h"
@@ -250,6 +253,34 @@ TEST_F(ValuablesDataManagerPaymentMethodsOffTest,
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
 
   valuables_table().SetLoyaltyCards({card1, card2});
+
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
+                                              &image_fetcher());
+  helper().WaitUntilIdle();
+
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCardsToSuggest(), IsEmpty());
+}
+
+TEST_F(ValuablesDataManagerTest,
+       GetLoyaltyCardsWhenEnterprisePolicyBlocksPayments) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+
+  valuables_table().SetLoyaltyCards({card1, card2});
+
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "*");
+  base::ListValue blocked_types;
+  blocked_types.Append("payments");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  static_cast<TestingPrefServiceSimple*>(&prefs())->SetManagedPref(
+      prefs::kAutofillTypesBlocked, std::move(blocked_list));
 
   ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
                                               &image_fetcher());

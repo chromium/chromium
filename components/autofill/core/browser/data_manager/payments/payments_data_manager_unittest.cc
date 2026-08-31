@@ -58,6 +58,7 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -4654,6 +4655,26 @@ TEST_F(PaymentsDataManagerTest, GetWeakPtr_InvalidatedAfterManagerDestroyed) {
 
   ResetPaymentsDataManager();
   EXPECT_FALSE(weak_ptr_local);
+}
+
+TEST_F(PaymentsDataManagerTest,
+       IsAutofillPaymentMethodsEnabled_EnterprisePolicy) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+
+  EXPECT_TRUE(payments_data_manager().IsAutofillPaymentMethodsEnabled());
+
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "*");
+  base::ListValue blocked_types;
+  blocked_types.Append("payments");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  static_cast<TestingPrefServiceSimple*>(prefs_.get())
+      ->SetManagedPref(prefs::kAutofillTypesBlocked, std::move(blocked_list));
+
+  EXPECT_FALSE(payments_data_manager().IsAutofillPaymentMethodsEnabled());
 }
 
 }  // namespace
