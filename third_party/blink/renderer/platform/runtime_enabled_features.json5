@@ -2490,13 +2490,6 @@
       name: "DocumentWrite",
     },
     {
-      // DOMActivate event inherits bubbles from the underlying event to
-      // prevent activation behavior of parent elements when it doesn't bubble.
-      // crbug.com/41431966
-      name: "DOMActivateBubblesInheritance",
-      status: "stable",
-    },
-    {
       // Kill switch for marking scripts parsed by DOMParser in XML documents as
       // "already started" so they stay inert when cloned or imported.
       // https://crbug.com/542115030

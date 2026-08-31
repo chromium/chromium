@@ -3378,10 +3378,7 @@ DispatchEventResult Node::DispatchDOMActivateEvent(int detail,
   UIEvent& event = *UIEvent::Create();
   // DOMActivate inherits bubbles from the underlying event to prevent
   // activation behavior of parent elements from running when it doesn't bubble.
-  const bool bubbles =
-      RuntimeEnabledFeatures::DOMActivateBubblesInheritanceEnabled()
-          ? underlying_event.bubbles()
-          : true;
+  const bool bubbles = underlying_event.bubbles();
   event.initUIEvent(event_type_names::kDOMActivate, bubbles, true,
                     GetDocument().domWindow(), detail);
   event.SetUnderlyingEvent(&underlying_event);
