@@ -1050,12 +1050,6 @@ inline constexpr char kIOSBrowserEditMenuMetricsName[] =
 inline constexpr char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";
 
-inline constexpr char kIOSBrowserReportIncludeAllProfilesName[] =
-    "Include all profiles in browser reports";
-inline constexpr char kIOSBrowserReportIncludeAllProfilesDescription[] =
-    "When enabled, enterprise browser reports include all profiles (instead of "
-    "only the current profile).";
-
 inline constexpr char kIOSChooseFromDriveSignedOutName[] =
     "Choose from Drive Signed Out";
 inline constexpr char kIOSChooseFromDriveSignedOutDescription[] =
@@ -1080,12 +1074,6 @@ inline constexpr char kIOSDockingPromoV2Name[] = "Docking Promo V2";
 inline constexpr char kIOSDockingPromoV2Description[] =
     "When enabled, the user will be presented an animated, instructional "
     "promo V2 showing how to move Chrome to their native iOS dock.";
-
-inline constexpr char kIOSEnableCloudProfileReportingName[] =
-    "Enable profile reporting on iOS";
-inline constexpr char kIOSEnableCloudProfileReportingDescription[] =
-    "When enabled, profile reports will be reported to the user's "
-    "organization.";
 
 inline constexpr char kIOSEnableRealtimeEventReportingName[] =
     "Enable realtime event reporting on iOS";
