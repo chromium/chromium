@@ -208,12 +208,27 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        BundleUtils.restoreLoadedSplits(savedInstanceState);
         if (savedInstanceState != null) {
+            // setClassLoader() must be called before any values are queried for it to be used for
+            // nested Parcelables & Bundles (until Android 37, which made it so you can set it
+            // later).
+            // https://crbug.com/40877199, https://crbug.com/549795122
+            ClassLoader splitClassLoader = BundleUtils.getSplitCompatClassLoader();
+            savedInstanceState.setClassLoader(splitClassLoader);
+            BundleUtils.restoreLoadedSplits(savedInstanceState);
+            if (Build.VERSION.SDK_INT < VERSION_CODES.CINNAMON_BUN) {
+                // https://cs.android.com/search?q=Activity.java%20symbol:onRestoreInstanceState
+                Bundle windowState = savedInstanceState.getBundle("android:viewHierarchyState");
+                if (windowState != null) {
+                    windowState.setClassLoader(splitClassLoader);
+                }
+            }
+            // Eager unmarshalling is required for classes using AndroidX's SavedState, since it
+            // overrides the ClassLoader that we set here.
+            // https://crbug.com/527604007#comment17
             Bundle fragmentsState = savedInstanceState.getBundle("android:support:fragments");
             if (fragmentsState != null) {
-                setRecursiveClassLoader(
-                        fragmentsState, BundleUtils.getSplitCompatClassLoader());
+                forceInflateBundleValues(fragmentsState, splitClassLoader);
             }
         }
         mInMultiWindowMode = isInMultiWindowMode();
@@ -402,33 +417,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
         BundleUtils.saveLoadedSplits(outState);
         mActivityResultTracker.onSaveInstanceState(outState);
-    }
-
-    // This method has different Nullness than Activity.onRestoreInstanceState().
-    @SuppressWarnings("NullAway")
-    @Override
-    protected void onRestoreInstanceState(@Nullable Bundle state) {
-        if (state != null) {
-            // Ensure that classes from previously loaded splits can be read from the bundle.
-            // https://crbug.com/40877199, https://crbug.com/549795122
-            ClassLoader splitClassLoader = BundleUtils.getSplitCompatClassLoader();
-            state.setClassLoader(splitClassLoader);
-            // See: https://cs.android.com/search?q=Activity.java%20symbol:onRestoreInstanceState
-            // And: https://cs.android.com/search?q=restoreHierarchyState%20f:phonewindow
-            for (String key :
-                    new String[] {
-                        "android:ActionBar",
-                        "android:Panels",
-                        "android:viewHierarchyState",
-                        "android:views"
-                    }) {
-                Bundle nestedBundle = state.getBundle(key);
-                if (nestedBundle != null) {
-                    nestedBundle.setClassLoader(splitClassLoader);
-                }
-            }
-        }
-        super.onRestoreInstanceState(state);
     }
 
     @Override
@@ -885,20 +873,25 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return false;
     }
 
-    // Recursively sets the classloader on the given bundle and all nested bundles.
-    // Note: Iterating through a bundle can cause early unmarshalling, which can have side
-    // effects on framework-redirected data like intents (see crbug.com/527604007).
-    // It is safer to only call this on targeted nested bundles (like "android:support:fragments").
-    private static void setRecursiveClassLoader(Bundle bundle, ClassLoader classLoader) {
+    /**
+     * Sets the ClassLoader on the given bundle and all nested bundles.
+     *
+     * <p>Iterates all values, and so also triggers unmarshalling of all values.
+     */
+    private static void forceInflateBundleValues(Bundle bundle, ClassLoader classLoader) {
         bundle.setClassLoader(classLoader);
         for (String key : bundle.keySet()) {
+            Object value;
             try {
-                Object value = bundle.get(key);
-                if (value instanceof Bundle) {
-                    setRecursiveClassLoader((Bundle) value, classLoader);
-                }
+                value = bundle.get(key);
             } catch (Exception e) {
-                // Ignore any unmarshalling errors for unknown types.
+                // Ignore unmarshalling errors.
+                continue;
+            }
+            // Bundles could also be nested in: Bundle[], List<?>, SparseArray<?>, but that has so
+            // far not come up.
+            if (value instanceof Bundle b) {
+                forceInflateBundleValues(b, classLoader);
             }
         }
     }
