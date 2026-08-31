@@ -1406,12 +1406,10 @@ void NativeWidgetMacNSWindowHost::OnWindowGeometryChanged(
   content_bounds_in_screen_ = new_content_bounds_in_screen;
 
   Widget* widget = GetWidget();
-  // When a window grows vertically, the AppKit origin changes, but as far as
-  // toolkit-views is concerned, the window hasn't moved. Suppress these.
-  if (window_has_moved && widget) {
-    widget->OnNativeWidgetMove();
-  }
+  auto weak_this = weak_factory_.GetWeakPtr();
 
+  // Notify size changed first to prevent running OnNativeWidgetMove callbacks
+  // with outdated size.
   // Note we can't use new_window_bounds_in_screen.size(), since it includes the
   // titlebar for the purposes of detecting a window move.
   if (content_has_resized && widget) {
@@ -1419,6 +1417,18 @@ void NativeWidgetMacNSWindowHost::OnWindowGeometryChanged(
 
     // Update the compositor surface and layer size.
     UpdateCompositorProperties();
+  }
+
+  // Changing the size may destroy this.
+  if (!weak_this) {
+    return;
+  }
+
+  widget = GetWidget();
+  // When a window grows vertically, the AppKit origin changes, but as far as
+  // toolkit-views is concerned, the window hasn't moved. Suppress these.
+  if (window_has_moved && widget) {
+    widget->OnNativeWidgetMove();
   }
 }
 

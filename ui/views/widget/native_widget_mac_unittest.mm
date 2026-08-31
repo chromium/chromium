@@ -3018,6 +3018,33 @@ TEST_F(NativeWidgetMacTest,
   widget->CloseNow();
 }
 
+// Verifies that when a window moves and resizes simultaneously, the size change
+// is notified before the move change so that observers do not observe the new
+// window bounds with an outdated root view size.
+TEST_F(NativeWidgetMacTest, SizeChangeNotifiedBeforeMoveChange) {
+  Widget* widget = CreateTopLevelPlatformWidget();
+  widget->SetBounds(gfx::Rect(100, 100, 300, 300));
+  widget->Show();
+
+  class TestBoundsObserver : public WidgetObserver {
+   public:
+    void OnWidgetBoundsChanged(Widget* widget,
+                               const gfx::Rect& new_bounds) override {
+      EXPECT_EQ(widget->GetRootView()->size(),
+                widget->GetClientAreaBoundsInScreen().size());
+    }
+  };
+
+  TestBoundsObserver observer;
+  widget->AddObserver(&observer);
+
+  // Move and resize simultaneously.
+  widget->SetBounds(gfx::Rect(200, 200, 400, 400));
+
+  widget->RemoveObserver(&observer);
+  widget->CloseNow();
+}
+
 }  // namespace views::test
 
 @implementation TestStopAnimationWaiter
