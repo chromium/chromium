@@ -18,7 +18,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBackgroundNotPerceptibleBinding,
     &features::kPostPowerMonitorBroadcastReceiverInitToBackground,
-    &features::kPostGetMyMemoryStateToBackground,
     &features::kRebindingChildServiceConnectionController,
     &features::kRebindServiceBatchApi,
     &features::kUseSharedRebindServiceConnection,

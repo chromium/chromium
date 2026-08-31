@@ -156,8 +156,6 @@ BASE_FEATURE(kBackgroundNotPerceptibleBinding, FEATURE_ENABLED_BY_DEFAULT);
 // thread,
 BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
              FEATURE_ENABLED_BY_DEFAULT);
-// If enabled, getMyMemoryState IPC will be posted to background.
-BASE_FEATURE(kPostGetMyMemoryStateToBackground, FEATURE_ENABLED_BY_DEFAULT);
 
 // Use a single connection and rebindService() to manage the binding to a child
 // process service.

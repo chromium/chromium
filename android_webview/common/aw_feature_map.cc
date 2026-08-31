@@ -34,7 +34,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &::features::kEnablePerfettoSystemTracing,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &features::kPostChromiumStartupInWebViewConstructor,
-    &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,
     &base::features::kShutdownPreNativeThreadPoolAfterStartup,
     &features::kStartupNonBlockingWebViewConstructor,

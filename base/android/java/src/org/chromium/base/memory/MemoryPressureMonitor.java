@@ -96,9 +96,6 @@ public class MemoryPressureMonitor {
 
     private boolean mPollingEnabled;
 
-    // That's for an experiment to run the broadcast receiver in the background
-    private boolean mPostToBackgroundIsEnabled;
-
     private @Nullable Supplier<Integer> mCurrentPressureSupplierForTesting;
     private @Nullable MemoryPressureCallback mReportingCallbackForTesting;
 
@@ -156,9 +153,8 @@ public class MemoryPressureMonitor {
      * Enables memory pressure polling. See class comment for specifics. This method also does a
      * single pressure check to get the current pressure.
      */
-    public void enablePolling(boolean postToBackground) {
+    public void enablePolling() {
         ThreadUtils.assertOnUiThread();
-        mPostToBackgroundIsEnabled = postToBackground;
         if (mPollingEnabled) return;
 
         mPollingEnabled = true;
@@ -239,20 +235,14 @@ public class MemoryPressureMonitor {
             return;
         }
 
-        if (mPostToBackgroundIsEnabled) {
-            PostTask.postTask(
-                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                    () -> {
-                        Integer pressure = MemoryPressureMonitor.getCurrentMemoryPressure();
-                        if (pressure != null) {
-                            PostTask.postTask(
-                                    TaskTraits.UI_DEFAULT, () -> notifyPressure(pressure));
-                        }
-                    });
-        } else {
-            Integer pressure = MemoryPressureMonitor.getCurrentMemoryPressure();
-            if (pressure != null) notifyPressure(pressure);
-        }
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    Integer pressure = MemoryPressureMonitor.getCurrentMemoryPressure();
+                    if (pressure != null) {
+                        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> notifyPressure(pressure));
+                    }
+                });
     }
 
     private void startThrottlingInterval() {

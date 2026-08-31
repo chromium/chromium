@@ -741,9 +741,6 @@ public final class ProductionSupportedFlagList {
                 "If enabled, it posts PowerMonitor broadcast receiver init to a background"
                         + " thread."),
         Flag.baseFeature(
-                BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND,
-                "If enabled, getMyMemoryState IPC will be posted to background."),
-        Flag.baseFeature(
                 BaseFeatures.USE_HIGH_PRIORITY_THREAD_GROUP,
                 "Enables high priority thread groups (presentation and audio "
                         + "processing thread types)."),

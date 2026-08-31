@@ -357,8 +357,7 @@ public class SplitCompatApplication extends Application {
 
     private static void updateMemoryPressurePolling(@ApplicationState int newState) {
         if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
-            MemoryPressureMonitor.INSTANCE.enablePolling(
-                    ChromeFeatureList.sPostGetMyMemoryStateToBackground.isEnabled());
+            MemoryPressureMonitor.INSTANCE.enablePolling();
         } else if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
             MemoryPressureMonitor.INSTANCE.disablePolling();
         }

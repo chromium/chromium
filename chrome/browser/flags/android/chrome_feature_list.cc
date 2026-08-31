@@ -154,7 +154,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kResetNativePointerInCreditCardAuthDialog,
     &base::features::kBackgroundThreadPoolFieldTrial,
     &base::features::kLowEndMemoryExperiment,
-    &base::features::kPostGetMyMemoryStateToBackground,
     &base::features::kShutdownPreNativeThreadPoolAfterStartup,
     &blink::features::kDocumentPictureInPictureAPI,
     &blink::features::kForceWebContentsDarkMode,
