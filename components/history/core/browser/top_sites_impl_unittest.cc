@@ -119,8 +119,8 @@ class TopSitesImplTest : public HistoryUnitTestBase {
         search_engines_test_environment_.pref_service().registry());
     history_service_ = std::make_unique<HistoryService>(
         nullptr, std::unique_ptr<VisitDelegate>(), nullptr, nullptr);
-    ASSERT_TRUE(history_service_->Init(
-        TestHistoryDatabaseParamsForPath(scoped_temp_dir_.GetPath())));
+    history_service_->Init(
+        TestHistoryDatabaseParamsForPath(scoped_temp_dir_.GetPath()));
 
     // Add the fallback default search provider to the TemplateURLService as the
     // user selected default provider so that it gets a valid unique identifier.

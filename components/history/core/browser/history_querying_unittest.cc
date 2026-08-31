@@ -193,10 +193,7 @@ class HistoryQueryTest : public testing::Test {
     ASSERT_TRUE(base::CreateDirectory(history_dir_));
 
     history_ = std::make_unique<HistoryService>();
-    if (!history_->Init(TestHistoryDatabaseParamsForPath(history_dir_))) {
-      history_.reset();  // Tests should notice this NULL ptr & fail.
-      return;
-    }
+    history_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
 
     // Fill the test data.
     base_ = base::Time::Now().LocalMidnight();

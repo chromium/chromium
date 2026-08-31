@@ -45,10 +45,8 @@ std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
           BookmarkModelFactory::GetForProfile(profile)),
       /*visit_delegate=*/nullptr, device_info_tracker,
       local_device_info_provider);
-  if (!history_service->Init(history::HistoryDatabaseParamsForPath(
-          profile->GetStatePath(), GetChannel()))) {
-    return nullptr;
-  }
+  history_service->Init(history::HistoryDatabaseParamsForPath(
+      profile->GetStatePath(), GetChannel()));
 
   if (device_info_sync_service) {
     PrefService* pref_service = profile->GetPrefs();

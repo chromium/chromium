@@ -853,8 +853,8 @@ TEST_P(V5SearchHashesCacheTest, TestHistoryServiceObservation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   auto history_service = std::make_unique<history::HistoryService>();
-  ASSERT_TRUE(history_service->Init(
-      history::TestHistoryDatabaseParamsForPath(temp_dir.GetPath())));
+  history_service->Init(
+      history::TestHistoryDatabaseParamsForPath(temp_dir.GetPath()));
 
   auto cache = std::make_unique<V5SearchHashesCache>(history_service.get());
   CacheEntry(cache, "aaaa1111111111111111111111111111", 300);

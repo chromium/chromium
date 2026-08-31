@@ -2672,11 +2672,8 @@ class ClientSideDetectionHostCreditCardFormTest
     history_dir_ = temp_dir_.GetPath().AppendASCII("HistoryServiceTest");
     ASSERT_TRUE(base::CreateDirectory(history_dir_));
     history_service_ = std::make_unique<history::HistoryService>();
-    if (!history_service_->Init(
-            history::TestHistoryDatabaseParamsForPath(history_dir_))) {
-      history_service_.reset();
-      ADD_FAILURE();
-    }
+    history_service_->Init(
+        history::TestHistoryDatabaseParamsForPath(history_dir_));
 
     csd_host_->SetAndObserveHistoryServiceForTesting(history_service_.get());
   }

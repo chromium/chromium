@@ -121,11 +121,7 @@ class HistoryServiceTest : public testing::Test {
     history_dir_ = temp_dir_.GetPath().AppendASCII("HistoryServiceTest");
     ASSERT_TRUE(base::CreateDirectory(history_dir_));
     history_service_ = std::make_unique<history::HistoryService>();
-    if (!history_service_->Init(
-            TestHistoryDatabaseParamsForPath(history_dir_))) {
-      history_service_.reset();
-      ADD_FAILURE();
-    }
+    history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
   }
 
   void TearDown() override {
@@ -1498,11 +1494,7 @@ class OrderingHistoryServiceTest : public HistoryServiceTest {
     // Set up the HistoryService.
     history_service_ = std::make_unique<history::HistoryService>(
         nullptr, std::move(visit_delegate), nullptr, nullptr);
-    if (!history_service_->Init(
-            TestHistoryDatabaseParamsForPath(history_dir_))) {
-      history_service_.reset();
-      ADD_FAILURE();
-    }
+    history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
   }
 
   base::RunLoop run_loop_;

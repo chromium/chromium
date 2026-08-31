@@ -1468,7 +1468,7 @@ void HistoryService::Cleanup() {
   device_info_tracker_ = nullptr;
 }
 
-bool HistoryService::Init(
+void HistoryService::Init(
     bool no_db,
     const HistoryDatabaseParams& history_database_params) {
   TRACE_EVENT0("browser,startup", "HistoryService::Init");
@@ -1537,8 +1537,6 @@ bool HistoryService::Init(
   if (history_client_) {
     history_client_->OnHistoryServiceCreated(this);
   }
-
-  return true;
 }
 
 void HistoryService::ScheduleTask(SchedulePriority priority,

@@ -25,10 +25,8 @@ std::unique_ptr<KeyedService> BuildHistoryService(
           BookmarkModelFactory::GetForBrowserContext(context)),
       std::make_unique<history::ContentVisitDelegate>(context),
       /*device_info_tracker=*/nullptr, /*local_device_info_provider=*/nullptr);
-  if (!history_service->Init(history::HistoryDatabaseParamsForPath(
-          context->GetPath(), chrome::GetChannel()))) {
-    return nullptr;
-  }
+  history_service->Init(history::HistoryDatabaseParamsForPath(
+      context->GetPath(), chrome::GetChannel()));
   return history_service;
 }
 

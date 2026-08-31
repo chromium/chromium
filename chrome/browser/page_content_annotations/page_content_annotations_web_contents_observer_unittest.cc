@@ -201,8 +201,8 @@ class PageContentAnnotationsWebContentsObserverTest
         profile(),
         base::BindRepeating(&BuildTestPageContentAnnotationsService, &optimization_guide_model_provider_));
 
-    ASSERT_TRUE(history_service()->Init(
-        history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath())));
+    history_service()->Init(
+        history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
         web_contents(),

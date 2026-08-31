@@ -109,11 +109,10 @@ class HistoryService : public KeyedService,
 
   ~HistoryService() override;
 
-  // Initializes the history service, returning true on success. On false, do
-  // not call any other functions. The given directory will be used for storing
-  // the history files.
-  bool Init(const HistoryDatabaseParams& history_database_params) {
-    return Init(false, history_database_params);
+  // Initializes the history service. The given directory will be used for
+  // storing the history files.
+  void Init(const HistoryDatabaseParams& history_database_params) {
+    Init(false, history_database_params);
   }
 
   // Returns the directory containing the History databases.
@@ -859,7 +858,7 @@ class HistoryService : public KeyedService,
 
   // Low-level Init().  Same as the public version, but adds a `no_db` parameter
   // that is only set by unittests which causes the backend to not init its DB.
-  bool Init(bool no_db, const HistoryDatabaseParams& history_database_params);
+  void Init(bool no_db, const HistoryDatabaseParams& history_database_params);
 
   // Notification from the backend that it has finished loading. Sends
   // notification (NOTIFY_HISTORY_LOADED) and sets backend_loaded_ to true.
