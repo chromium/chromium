@@ -1007,6 +1007,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
 
   InitializeDelegate(
       /*password_update=*/false,
@@ -1016,6 +1017,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   NiceMock<MockInfoBarManager> mock_infobar_manager;
   mock_infobar_manager.AddInfoBar(
       std::make_unique<infobars::InfoBar>(std::move(delegate_)));
+  delegate_ptr->InfobarPresenting(/*automatic=*/true);
 
   __block SyncPresenterCompletionCallback captured_completion;
   OCMExpect(
@@ -1042,6 +1044,75 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   ASSERT_THAT(mock_infobar_manager.infobars(), SizeIs(1));
   EXPECT_EQ(mock_infobar_manager.infobars()[0]->delegate()->GetIdentifier(),
             infobars::InfoBarDelegate::PASSWORD_SAVED_INFOBAR_DELEGATE_IOS);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.SignedInAccountStoreUser",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.PendingSignInError",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       Accept_ActionableError_TrustedVaultKeyNeeded_ResolveErrorOnCompletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
+
+  InitializeDelegate(
+      /*password_update=*/false,
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  IOSChromeSavePasswordInfoBarDelegate* delegate_ptr = delegate_.get();
+  NiceMock<MockInfoBarManager> mock_infobar_manager;
+  mock_infobar_manager.AddInfoBar(
+      std::make_unique<infobars::InfoBar>(std::move(delegate_)));
+  delegate_ptr->InfobarPresenting(/*automatic=*/true);
+
+  __block SyncPresenterCompletionCallback captured_completion;
+  OCMExpect([mock_sync_presenter_
+      showTrustedVaultReauthForFetchKeysWithTrigger:
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::
+              kPasswordSavePrompt
+                                         completion:[OCMArg
+                                                        checkWithBlock:^BOOL(
+                                                            id obj) {
+                                                          captured_completion =
+                                                              obj;
+                                                          return YES;
+                                                        }]]);
+
+  // Tap on "Accept" -> starts reauth and returns false.
+  EXPECT_FALSE(delegate_ptr->Accept());
+  ASSERT_TRUE(captured_completion);
+
+  // Simulate error resolved on reauth completion.
+  ON_CALL(*account_store_, GetError)
+      .WillByDefault(Return(password_manager::ActionableError::kNoError));
+
+  // The password manager should save and the infobar should be replaced with
+  // the saved password confirmation infobar.
+  EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
+  form_manager_ptr_ = nullptr;
+  captured_completion();
+
+  ASSERT_THAT(mock_infobar_manager.infobars(), SizeIs(1));
+  EXPECT_EQ(mock_infobar_manager.infobars()[0]->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::PASSWORD_SAVED_INFOBAR_DELEGATE_IOS);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.SignedInAccountStoreUser",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.TrustedVaultError",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,

@@ -136,7 +136,8 @@ void RecordDismissalMetrics(
     PasswordFormManagerForUI* form_to_save,
     password_manager::metrics_util::UIDismissalReason infobar_response,
     PasswordAccountStorageUserState account_storage_user_state,
-    bool update_infobar) {
+    bool update_infobar,
+    std::optional<password_manager::ActionableError> saving_blocked_error) {
   form_to_save->GetMetricsRecorder()->RecordUIDismissalReason(infobar_response);
 
   if (update_infobar) {
@@ -145,7 +146,7 @@ void RecordDismissalMetrics(
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
         infobar_response, account_storage_user_state,
-        /*log_adoption_metric=*/false);
+        /*log_adoption_metric=*/false, saving_blocked_error);
   }
 }
 
@@ -274,7 +275,7 @@ IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
     RecordDismissalMetrics(
         form_to_save_.get(), infobar_response_,
         ComputePasswordAccountStorageUserState(sync_service_),
-        IsUpdateInfobar(infobar_type_));
+        IsUpdateInfobar(infobar_type_), resolved_error_);
     RecordInfobarDuration(/*on_dismiss=*/false);
   }
 }
@@ -453,7 +454,7 @@ void IOSChromeSavePasswordInfoBarDelegate::InfobarGone() {
 
   RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
                          ComputePasswordAccountStorageUserState(sync_service_),
-                         IsUpdateInfobar(infobar_type_));
+                         IsUpdateInfobar(infobar_type_), resolved_error_);
 
   RecordInfobarDuration(/*on_dismiss=*/true);
 
@@ -504,21 +505,21 @@ bool IOSChromeSavePasswordInfoBarDelegate::MaybeHandlePasswordError() {
     return false;
   }
 
+  password_manager::ActionableError error = GetPasswordStoreActionableError(
+      sync_service_, form_to_save_.get(), account_store_.get());
+  if (!IsActionableError(error)) {
+    return false;
+  }
+
   base::WeakPtr<IOSChromeSavePasswordInfoBarDelegate> weak_this =
       weak_ptr_factory_.GetWeakPtr();
   SyncPresenterCompletionCallback completion = ^{
     if (weak_this) {
-      weak_this->OnPasswordErrorFlowCompleted();
+      weak_this->OnPasswordErrorFlowCompleted(error);
     }
   };
 
-  switch (GetPasswordStoreActionableError(sync_service_, form_to_save_.get(),
-                                          account_store_.get())) {
-    case password_manager::ActionableError::kNoError:
-    case password_manager::ActionableError::kInactionable:
-    case password_manager::ActionableError::kInactionableTemporaryError:
-    case password_manager::ActionableError::kKeychainError:
-      return false;
+  switch (error) {
     case password_manager::ActionableError::kNeedsPassphrase:
       [sync_presenter_handler_
           showSyncPassphraseSettingsWithDismissalCompletion:completion];
@@ -534,6 +535,11 @@ bool IOSChromeSavePasswordInfoBarDelegate::MaybeHandlePasswordError() {
                   kPasswordSavePrompt
                                              completion:completion];
       break;
+    case password_manager::ActionableError::kNoError:
+    case password_manager::ActionableError::kInactionable:
+    case password_manager::ActionableError::kInactionableTemporaryError:
+    case password_manager::ActionableError::kKeychainError:
+      NOTREACHED();
   }
 
   return true;
@@ -543,7 +549,8 @@ bool IOSChromeSavePasswordInfoBarDelegate::IsHandlingPasswordError() const {
   return handling_password_error_;
 }
 
-void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted() {
+void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted(
+    password_manager::ActionableError handled_error) {
   handling_password_error_ = false;
   password_manager::ActionableError error = GetPasswordStoreActionableError(
       sync_service_, form_to_save_.get(), account_store_.get());
@@ -552,6 +559,7 @@ void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted() {
       infobar_ptr ? infobar_ptr->owner() : nullptr;
 
   if (error == password_manager::ActionableError::kNoError) {
+    resolved_error_ = handled_error;
     SavePassword();
     if (!owner) {
       return;

@@ -131,7 +131,8 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // fixed, proceeds to save the password and dismisses the infobar. Otherwise,
   // replaces the infobar with a new one, so the user can retry fixing the
   // error.
-  void OnPasswordErrorFlowCompleted();
+  void OnPasswordErrorFlowCompleted(
+      password_manager::ActionableError handled_error);
 
   // The UKM source ID for the page.
   const ukm::SourceId ukm_source_id_;
@@ -163,6 +164,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // True if the delegate is currently handling a password store error.
   bool handling_password_error_ = false;
+
+  // The actionable error that was resolved during this infobar session, if any.
+  std::optional<password_manager::ActionableError> resolved_error_;
 
   // True if this delegate is a replacement for a previous one. This only
   // happens when there is an error preventing passwords from being saved and
