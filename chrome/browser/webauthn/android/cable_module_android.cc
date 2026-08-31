@@ -8,11 +8,10 @@
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -34,7 +33,6 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_registration.h"
-#include "device/fido/cbor_extract.h"
 #include "device/fido/public/features.h"
 
 // These "headers" actually contains function definitions and thus can only be
@@ -194,41 +192,6 @@ RegistrationState* GetRegistrationState() {
   return state.get();
 }
 
-using device::cbor_extract::IntKey;
-using device::cbor_extract::Is;
-using device::cbor_extract::Map;
-using device::cbor_extract::StepOrByte;
-using device::cbor_extract::Stop;
-
-// PreLinkInfo reflects the linking information provided by Play Services.
-struct PreLinkInfo {
-  // RAW_PTR_EXCLUSION: cbor_extract.cc would cast the raw_ptr<T> to a void*,
-  // skipping an AddRef() call and causing a ref-counting mismatch.
-  RAW_PTR_EXCLUSION const std::vector<uint8_t>* contact_id;
-  RAW_PTR_EXCLUSION const std::vector<uint8_t>* pairing_id;
-  RAW_PTR_EXCLUSION const std::vector<uint8_t>* secret;
-  RAW_PTR_EXCLUSION const std::vector<uint8_t>* peer_public_key_x962;
-};
-
-// kPreLinkInfoSteps contains parsing instructions for cbor_extract to convert
-// the CBOR-encoded data from Play Services into a `PreLinkInfo`. The format
-// that Play Services uses mostly follows the "linking map" structure defined in
-// https://fidoalliance.org/specs/fido-v2.2-rd-20230321/fido-client-to-authenticator-protocol-v2.2-rd-20230321.html#hybrid-qr-initiated
-static constexpr StepOrByte<PreLinkInfo> kPreLinkInfoSteps[] = {
-    // clang-format off
-    ELEMENT(Is::kRequired, PreLinkInfo, contact_id),
-    IntKey<PreLinkInfo>(1),
-    ELEMENT(Is::kRequired, PreLinkInfo, pairing_id),
-    IntKey<PreLinkInfo>(2),
-    ELEMENT(Is::kRequired, PreLinkInfo, secret),
-    IntKey<PreLinkInfo>(3),
-    ELEMENT(Is::kRequired, PreLinkInfo, peer_public_key_x962),
-    IntKey<PreLinkInfo>(4),
-
-    Stop<PreLinkInfo>(),
-    // clang-format on
-};
-
 syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 GetSyncDataIfRegisteredInternal() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -281,55 +244,65 @@ std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
   if (!value || !value->is_map()) {
     return std::nullopt;
   }
-
-  PreLinkInfo info;
-  uint64_t pairing_id;
-  std::array<uint8_t, 32> secret;
-  std::array<uint8_t, 65> peer_public_key_x962;
-  if (!device::cbor_extract::Extract<PreLinkInfo>(&info, kPreLinkInfoSteps,
-                                                  value->GetMap()) ||
-      info.pairing_id->size() != sizeof(pairing_id) ||
-      info.secret->size() != secret.size() ||
-      info.peer_public_key_x962->size() != peer_public_key_x962.size()) {
-    return std::nullopt;
-  }
-  UNSAFE_TODO(memcpy(&pairing_id, info.pairing_id->data(), sizeof(pairing_id)));
-
-  UNSAFE_TODO(memcpy(secret.data(), info.secret->data(), secret.size()));
-  UNSAFE_TODO(memcpy(peer_public_key_x962.data(),
-                     info.peer_public_key_x962->data(),
-                     peer_public_key_x962.size()));
+  const cbor::Value::MapValue& map = value->GetMap();
 
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
   paask_info.tunnel_server_domain = device::cablev2::kTunnelServer.value();
-  paask_info.contact_id = std::move(*info.contact_id);
+
+  const auto contact_id_it = map.find(cbor::Value(1));
+  if (contact_id_it == map.end() || !contact_id_it->second.is_bytestring()) {
+    return std::nullopt;
+  }
+  paask_info.contact_id = contact_id_it->second.GetBytestring();
+
+  const auto pairing_id_it = map.find(cbor::Value(2));
+  if (pairing_id_it == map.end() || !pairing_id_it->second.is_bytestring()) {
+    return std::nullopt;
+  }
+  const auto& pairing_id_bytes = pairing_id_it->second.GetBytestring();
+  uint64_t pairing_id;
+  if (pairing_id_bytes.size() != sizeof(pairing_id)) {
+    return std::nullopt;
+  }
+  base::byte_span_from_ref(pairing_id).copy_from(pairing_id_bytes);
   if (pairing_id > std::numeric_limits<uint32_t>::max()) {
     return std::nullopt;
   }
   paask_info.id = static_cast<uint32_t>(pairing_id);
-  paask_info.secret = secret;
-  paask_info.peer_public_key_x962 = peer_public_key_x962;
+
+  const auto secret_it = map.find(cbor::Value(3));
+  if (secret_it == map.end() || !secret_it->second.is_bytestring()) {
+    return std::nullopt;
+  }
+  const auto& secret_bytes = secret_it->second.GetBytestring();
+  if (secret_bytes.size() != paask_info.secret.size()) {
+    return std::nullopt;
+  }
+  base::span(paask_info.secret).copy_from(secret_bytes);
+
+  const auto peer_public_key_it = map.find(cbor::Value(4));
+  if (peer_public_key_it == map.end() ||
+      !peer_public_key_it->second.is_bytestring()) {
+    return std::nullopt;
+  }
+  const auto& peer_public_key_bytes =
+      peer_public_key_it->second.GetBytestring();
+  if (peer_public_key_bytes.size() != paask_info.peer_public_key_x962.size()) {
+    return std::nullopt;
+  }
+  base::span(paask_info.peer_public_key_x962).copy_from(peer_public_key_bytes);
+
   return paask_info;
 }
 
 std::vector<uint8_t> CBORFromPaaskInfo(
     const syncer::DeviceInfo::PhoneAsASecurityKeyInfo& paask_info) {
   cbor::Value::MapValue map;
-
   map.emplace(1, paask_info.contact_id);
-
   const uint64_t pairing_id = paask_info.id;
-  uint8_t pairing_id_bytes[sizeof(pairing_id)];
-  UNSAFE_TODO(memcpy(pairing_id_bytes, &pairing_id, sizeof(pairing_id)));
-  map.emplace(2, std::vector<uint8_t>(std::begin(pairing_id_bytes),
-                                      std::end(pairing_id_bytes)));
-
+  map.emplace(2, base::byte_span_from_ref(pairing_id));
   map.emplace(3, paask_info.secret);
-
-  map.emplace(4,
-              std::vector<uint8_t>(std::begin(paask_info.peer_public_key_x962),
-                                   std::end(paask_info.peer_public_key_x962)));
-
+  map.emplace(4, paask_info.peer_public_key_x962);
   return cbor::Writer::Write(cbor::Value(std::move(map))).value();
 }
 
@@ -357,9 +330,8 @@ syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
     }
 
     std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
-        internal::PaaskInfoFromCBOR(base::as_bytes(UNSAFE_TODO(
-            base::span<const char>(previous_result_serialized.begin(),
-                                   previous_result_serialized.end()))));
+        internal::PaaskInfoFromCBOR(
+            base::as_byte_span(previous_result_serialized));
     if (!paask_info) {
       return result;
     }
