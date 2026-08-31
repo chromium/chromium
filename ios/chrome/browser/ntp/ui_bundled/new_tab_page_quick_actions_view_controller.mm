@@ -51,7 +51,9 @@ constexpr CGFloat kHorizontalInsetRegularXRegular = 36.0;
 // class.
 CGFloat HorizontalInsetForQuickActions(
     id<UITraitEnvironment> trait_environment) {
-  CHECK(IsNewTabPageUICleanupEnabled());
+  if (!IsNewTabPageUICleanupEnabled()) {
+    return 0.0;
+  }
   return IsRegularXRegularSizeClass(trait_environment)
              ? kHorizontalInsetRegularXRegular
              : 0.0;
@@ -90,39 +92,33 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
   _buttonStackView = [self createButtonStackView];
   [self.view addSubview:_buttonStackView];
 
-  NSMutableArray<NSLayoutConstraint*>* constraints =
-      [NSMutableArray arrayWithArray:@[
-        [_buttonStackView.topAnchor
-            constraintEqualToAnchor:self.view.topAnchor],
-        [_buttonStackView.bottomAnchor
-            constraintEqualToAnchor:self.view.bottomAnchor],
-        [_buttonStackView.heightAnchor
-            constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
-                                          ? kQuickActionsHeightUICleanup
-                                          : kQuickActionsHeight]
-      ]];
+  CGFloat inset = HorizontalInsetForQuickActions(self);
+
+  _stackViewLeadingConstraint = [_buttonStackView.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:inset];
+  _stackViewTrailingConstraint = [_buttonStackView.trailingAnchor
+      constraintEqualToAnchor:self.view.trailingAnchor
+                     constant:-inset];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_buttonStackView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [_buttonStackView.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [_buttonStackView.heightAnchor
+        constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
+                                      ? kQuickActionsHeightUICleanup
+                                      : kQuickActionsHeight],
+    _stackViewLeadingConstraint,
+    _stackViewTrailingConstraint,
+  ]];
 
   if (IsNewTabPageUICleanupEnabled()) {
-    CGFloat inset = HorizontalInsetForQuickActions(self);
-
-    _stackViewLeadingConstraint = [_buttonStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor
-                       constant:inset];
-    _stackViewTrailingConstraint = [_buttonStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor
-                       constant:-inset];
-
-    [constraints addObjectsFromArray:@[
-      _stackViewLeadingConstraint, _stackViewTrailingConstraint
-    ]];
-
     [self registerForTraitChanges:@[
       UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
     ]
                        withAction:@selector(updateButtonStackConstraints)];
   }
-
-  [NSLayoutConstraint activateConstraints:constraints];
 
   if (IsAimEnabledInNtp()) {
     _aimButton =
