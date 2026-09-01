@@ -793,10 +793,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
       // collection pass that computes stitched-container placement without
       // adding child results to the builder. Persist the final offset
       // adjustment so it is applied during each item's per-fragment layout.
-      //
-      // TODO(almaher): Fragmented OOF placement will need to apply this
-      // adjustment separately because `out_grid_lanes` only stores in-flow
-      // items.
       const LayoutUnit offset_adjustment =
           align_content_offset + (is_deferred_fill_reverse
                                       ? effective_stacking_axis_size
