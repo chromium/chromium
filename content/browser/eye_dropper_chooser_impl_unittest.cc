@@ -18,6 +18,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,6 +164,43 @@ TEST_F(EyeDropperChooserImplTest, ReentrantChooseOnSameChooserIsBadMessage) {
       "EyeDropperChooser::Choose() called while a selection was already in "
       "progress.",
       bad_message_observer.WaitForBadMessage());
+}
+
+// Inactive (e.g. bfcached or pending-deletion) documents must not bind an
+// EyeDropperChooser or consume the active document's transient user activation.
+TEST_F(EyeDropperChooserImplTest, InactiveDocumentIsRejected) {
+  // 1. Start with the initial active document.
+  RenderFrameHostWrapper old_rfh(main_rfh());
+  // 2. Navigate away. The old document goes into the Back/Forward Cache
+  //    (or becomes pending-deletion), becoming inactive.
+  NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example2.test"), main_rfh());
+
+  // Verify the old document survived the navigation but is no longer active.
+  ASSERT_FALSE(old_rfh.IsDestroyed());
+  EXPECT_FALSE(old_rfh->IsActive());
+  // 3. The NEW active document gets transient user activation.
+  auto* new_rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+  EXPECT_NE(old_rfh.get(), new_rfh);
+  EXPECT_TRUE(new_rfh->IsActive());
+
+  std::ignore = new_rfh->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  EXPECT_TRUE(new_rfh->HasTransientUserActivation());
+  // 4. The malicious inactive document attempts to open the chooser.
+  mojo::Remote<blink::mojom::EyeDropperChooser> chooser;
+  EyeDropperChooserImpl::Create(old_rfh.get(),
+                                chooser.BindNewPipeAndPassReceiver());
+  // 5. The receiver is dropped because the calling frame is inactive.
+  base::test::TestFuture<void> disconnect_future;
+  chooser.set_disconnect_handler(disconnect_future.GetCallback());
+  EXPECT_TRUE(disconnect_future.Wait());
+  EXPECT_FALSE(chooser.is_connected());
+  EXPECT_EQ(delegate_.open_count(), 0);
+  // 6. The new active document's transient user activation must NOT have been
+  // consumed by the inactive document's request.
+  EXPECT_TRUE(new_rfh->HasTransientUserActivation());
 }
 
 }  // namespace content

@@ -51,6 +51,11 @@ void EyeDropperChooserImpl::Create(
     mojo::PendingReceiver<blink::mojom::EyeDropperChooser> receiver) {
   CHECK(render_frame_host);
 
+  // Frame must be active to use EyeDropperChooser.
+  if (!render_frame_host->IsActive()) {
+    return;
+  }
+
   // Renderer process should already check for user activation before sending
   // this request. Double check in case of compromised renderer and consume
   // the activation.
