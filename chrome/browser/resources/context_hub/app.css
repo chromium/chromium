@@ -17,20 +17,21 @@
 }
 
 aside {
-  width: 240px;
-  border-right: 1px solid var(--cr-separator-color);
+  border-inline-end: 1px solid var(--cr-separator-color);
   box-sizing: border-box;
   flex-shrink: 0;
+  width: 240px;
 }
 
 .logo-section {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 24px 24px 0 24px;
-  margin-bottom: 32px;
+  display: flex;
   font-size: 20px;
   font-weight: 600;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding-block-start: 24px;
+  padding-inline: 24px;
 }
 
 #selector {
@@ -38,14 +39,21 @@ aside {
 }
 
 .content-area {
+  box-sizing: border-box;
   flex: 1;
   min-width: 0;
   overflow-y: auto;
-  scrollbar-width: none;
   padding: 32px;
-  box-sizing: border-box;
+  scrollbar-width: none;
 }
 
 .content-area::-webkit-scrollbar {
   display: none;
+}
+
+.cr-nav-menu-item.disabled {
+  cursor: not-allowed;
+  opacity: var(--cr-disabled-opacity, 0.38);
+  pointer-events: none !important;
+  user-select: none;
 }

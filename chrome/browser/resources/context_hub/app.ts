@@ -5,6 +5,7 @@
 import './taskbox/ai_taskbox.js';
 import './memory_banks/memory_banks.js';
 import './tab_groups/tab_groups.js';
+import './memory_bank_chat/memory_bank_chat.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
@@ -14,7 +15,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
-export type ViewType = 'ai-taskbox'|'memory-banks'|'tab-groups';
+export type ViewType =
+    'ai-taskbox'|'memory-banks'|'tab-groups'|'memory-bank-chat';
 
 const VALID_VIEWS: Set<ViewType> =
     new Set(['ai-taskbox', 'memory-banks', 'tab-groups']);

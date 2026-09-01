@@ -1,0 +1,73 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.chat-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px);
+  margin-block: 0;
+  margin-inline: auto;
+  max-width: 900px;
+}
+
+.chat-header {
+  align-items: center;
+  border-bottom: 1px solid var(--cr-separator-color);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+}
+
+.chat-header h1 {
+  color: var(--cr-primary-text-color);
+  font-family: 'Google Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.chat-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  overflow-y: auto;
+  padding-inline-end: 8px;
+}
+
+.chat-input-section {
+  align-items: center;
+  border-top: 1px solid var(--cr-separator-color);
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+#chat-input {
+  --cr-input-border-bottom: none;
+  --cr-input-border-radius: 20px;
+  --cr-input-error-display: none;
+  --cr-input-underline-display: none;
+  flex: 1;
+}
+
+.send-button {
+  --cr-icon-button-fill-color: var(--google-blue-600);
+}

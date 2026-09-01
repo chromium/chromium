@@ -15,6 +15,8 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "memory_bank_chat/memory_bank_chat.html.ts",
+    "memory_bank_chat/memory_bank_chat.ts",
     "memory_banks/memory_banks.html.ts",
     "memory_banks/memory_banks.ts",
     "memory_banks/memory_banks_entry.html.ts",
@@ -30,6 +32,7 @@ build_webui("build") {
 
   css_files = [
     "app.css",
+    "memory_bank_chat/memory_bank_chat.css",
     "memory_banks/memory_banks.css",
     "save_to_memory_bank/save_to_memory_bank.css",
     "tab_groups/tab_groups.css",
