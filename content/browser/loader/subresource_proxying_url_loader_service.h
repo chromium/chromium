@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "base/containers/hashing_lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -36,6 +38,8 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
     : public network::mojom::URLLoaderFactory {
  public:
   struct CONTENT_EXPORT BindContext : public base::RefCounted<BindContext> {
+    static constexpr size_t kMaxPrefetchIsolationInfoEntries = 16;
+
     // `factory` is a clone of the default factory bundle for document
     // subresource requests.
     BindContext(FrameTreeNodeId frame_tree_node_id,
@@ -58,14 +62,19 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
         prefetched_signed_exchange_cache;
 
     // This maps recursive prefetch tokens to IsolationInfos that they should be
-    // fetched with.
-    std::map<base::UnguessableToken, net::IsolationInfo>
-        prefetch_isolation_infos;
+    // fetched with. Bounded to a small LRU cache to limit memory usage while
+    // allowing in-flight / recent cross-origin document prefetches to resolve
+    // their recursive preload subresources.
+    base::HashingLRUCache<base::UnguessableToken, net::IsolationInfo>
+        prefetch_isolation_infos{kMaxPrefetchIsolationInfoEntries};
 
     // Upon NavigationRequest::DidCommitNavigation(), `document` will be set to
     // the document that this `BindContext` is associated with. It will become
     // null whenever the document navigates away.
     WeakDocumentPtr document;
+
+    // Total number of recursive prefetch tokens generated for this document.
+    size_t total_tokens_generated = 0;
 
     // This must be the last member.
     base::WeakPtrFactory<SubresourceProxyingURLLoaderService::BindContext>

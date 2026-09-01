@@ -21,6 +21,18 @@ class URLLoaderThrottle;
 
 namespace content {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(RecursivePrefetchTokenLookupResult)
+enum class RecursivePrefetchTokenLookupResult {
+  kSuccess = 0,
+  kTokenNotFound = 1,
+  kRejectedSameOrigin = 2,
+  kMaxValue = kRejectedSameOrigin,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/prefetch/enums.xml:RecursivePrefetchTokenLookupResult)
+
 class BrowserContext;
 
 // Contains the data and functions to handle <link rel="prefetch"> requests.
@@ -70,10 +82,6 @@ class CONTENT_EXPORT PrefetchURLLoaderServiceContext final
   void EnsureCrossOriginFactory();
   bool IsValidCrossOriginPrefetch(
       const network::ResourceRequest& resource_request);
-
-  base::UnguessableToken GenerateRecursivePrefetchToken(
-      base::WeakPtr<BindContext> bind_context,
-      const network::ResourceRequest& request);
 
   // blink::mojom::RendererPreferenceWatcher.
   void NotifyUpdate(const blink::RendererPreferences& new_prefs) override;

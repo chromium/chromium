@@ -12,11 +12,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/loader/prefetch_browsertest_base.h"
+#include "content/browser/loader/prefetch_url_loader_service_context.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -1285,6 +1287,403 @@ IN_PROC_BROWSER_TEST_F(PrefetchLoadFlagsBrowserTest,
   EXPECT_EQ(net::OK, client.completion_status().error_code);
   prefetch_waiter.Run();
   EXPECT_EQ(1, request_counter->GetRequestCount());
+}
+
+class PrefetchRecursiveBrowserTest : public PrefetchBrowserTestBase {
+ public:
+  PrefetchRecursiveBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    PrefetchBrowserTestBase::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+ protected:
+  mojo::Remote<network::mojom::URLLoaderFactory> BindFactoryForMainFrame() {
+    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame());
+    StoragePartitionImpl* partition =
+        static_cast<StoragePartitionImpl*>(rfh->GetStoragePartition());
+    mojo::Remote<network::mojom::URLLoaderFactory> remote;
+    bind_context_ =
+        partition->GetSubresourceProxyingURLLoaderService()->GetFactory(
+            remote.BindNewPipeAndPassReceiver(), rfh->GetFrameTreeNodeId(),
+            proxied_factory_.GetSafeWeakWrapper(), rfh->GetWeakPtr(),
+            /*prefetched_signed_exchange_cache=*/nullptr);
+    return remote;
+  }
+
+  // Registers a recursive-prefetch token on the current `BindContext` bound to
+  // the given origin, and points the context's cross-origin factory at
+  // `cross_origin_factory_` so forwarded requests can be observed.
+  base::UnguessableToken RegisterRecursivePrefetchToken(
+      const url::Origin& origin) {
+    CHECK(bind_context_);
+    bind_context_->cross_origin_factory =
+        cross_origin_factory_.GetSafeWeakWrapper();
+    base::UnguessableToken token = base::UnguessableToken::Create();
+    bind_context_->total_tokens_generated++;
+    bind_context_->prefetch_isolation_infos.Put(
+        token,
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   origin, origin, net::SiteForCookies()));
+    return token;
+  }
+
+  network::TestURLLoaderFactory proxied_factory_;
+  network::TestURLLoaderFactory cross_origin_factory_;
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context_;
+};
+
+// Verifies that a recursive prefetch whose request URL is cross-origin with
+// the initiating document is forwarded via the cross-origin factory using the
+// `IsolationInfo` associated with its `recursive_prefetch_token`.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       RecursivePrefetchAllowsCrossOriginTarget) {
+  base::HistogramTester histogram_tester;
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+
+  const url::Origin token_origin =
+      url::Origin::Create(GURL("https://3p.example"));
+  base::UnguessableToken token = RegisterRecursivePrefetchToken(token_origin);
+
+  const GURL target_url("https://3p.example/subresource.js");
+  network::ResourceRequest request;
+  request.url = target_url;
+  request.load_flags = net::LOAD_PREFETCH;
+  request.request_initiator = shell()
+                                  ->web_contents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetLastCommittedOrigin();
+  request.recursive_prefetch_token = token;
+
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  factory.FlushForTesting();
+
+  ASSERT_EQ(1, cross_origin_factory_.NumPending());
+  const network::ResourceRequest& forwarded =
+      cross_origin_factory_.GetPendingRequest(0)->request;
+  EXPECT_EQ(target_url, forwarded.url);
+  ASSERT_TRUE(forwarded.trusted_params);
+  EXPECT_EQ(token_origin,
+            forwarded.trusted_params->isolation_info.top_frame_origin());
+  EXPECT_EQ(token_origin,
+            forwarded.trusted_params->isolation_info.frame_origin());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.RecursivePrefetch.TokenLookupResult",
+      RecursivePrefetchTokenLookupResult::kSuccess, 1);
+}
+
+// Verifies that a recursive prefetch whose request URL is same-origin with the
+// initiating document is rejected as a bad message and not forwarded to the
+// network.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       RecursivePrefetchRejectsInitiatorOriginTarget) {
+  base::HistogramTester histogram_tester;
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+
+  const url::Origin token_origin =
+      url::Origin::Create(GURL("https://3p.example"));
+  base::UnguessableToken token = RegisterRecursivePrefetchToken(token_origin);
+
+  // Use a target URL that matches the initiating document's origin.
+  const GURL same_origin_target_url =
+      embedded_test_server()->GetURL("/subresource.js");
+  network::ResourceRequest request;
+  request.url = same_origin_target_url;
+  request.load_flags = net::LOAD_PREFETCH;
+  request.request_initiator = shell()
+                                  ->web_contents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetLastCommittedOrigin();
+  request.recursive_prefetch_token = token;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client.completion_status().error_code);
+  EXPECT_EQ("Prefetch/CreatePrefetchLoaderAndStart: initiator origin",
+            bad_message_observer.WaitForBadMessage());
+  EXPECT_EQ(0, cross_origin_factory_.NumPending());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.RecursivePrefetch.TokenLookupResult",
+      RecursivePrefetchTokenLookupResult::kRejectedSameOrigin, 1);
+}
+
+// Verifies that presenting an invalid or evicted recursive prefetch token fails
+// gracefully with ERR_INVALID_ARGUMENT and logs kTokenNotFound without crashing
+// or reporting a bad message.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       RecursivePrefetchRejectsInvalidOrEvictedToken) {
+  base::HistogramTester histogram_tester;
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+  bind_context_->cross_origin_factory =
+      cross_origin_factory_.GetSafeWeakWrapper();
+
+  const GURL target_url("https://3p.example/subresource.js");
+  network::ResourceRequest request;
+  request.url = target_url;
+  request.load_flags = net::LOAD_PREFETCH;
+  request.request_initiator = shell()
+                                  ->web_contents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetLastCommittedOrigin();
+  request.recursive_prefetch_token = base::UnguessableToken::Create();
+
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client.completion_status().error_code);
+  EXPECT_EQ(0, cross_origin_factory_.NumPending());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.RecursivePrefetch.TokenLookupResult",
+      RecursivePrefetchTokenLookupResult::kTokenNotFound, 1);
+}
+
+// Verifies that stored isolation infos for recursive prefetch tokens are managed
+// by an LRU cache, evicting older tokens when the limit is exceeded.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       RecursivePrefetchTokenLRUEviction) {
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+  ASSERT_TRUE(bind_context_);
+
+  std::vector<base::UnguessableToken> tokens;
+  constexpr size_t kNumTokens =
+      SubresourceProxyingURLLoaderService::BindContext::
+          kMaxPrefetchIsolationInfoEntries +
+      5;
+  for (size_t i = 0; i < kNumTokens; ++i) {
+    tokens.push_back(RegisterRecursivePrefetchToken(
+        url::Origin::Create(GURL(base::StringPrintf("https://%zu.example", i)))));
+  }
+
+  EXPECT_EQ(
+      SubresourceProxyingURLLoaderService::BindContext::
+          kMaxPrefetchIsolationInfoEntries,
+      bind_context_->prefetch_isolation_infos.size());
+
+  // The earliest 5 tokens should have been evicted.
+  for (size_t i = 0; i < 5; ++i) {
+    EXPECT_EQ(bind_context_->prefetch_isolation_infos.end(),
+              bind_context_->prefetch_isolation_infos.Peek(tokens[i]));
+  }
+
+  // The latest tokens should still be present.
+  for (size_t i = 5; i < kNumTokens; ++i) {
+    EXPECT_NE(bind_context_->prefetch_isolation_infos.end(),
+              bind_context_->prefetch_isolation_infos.Peek(tokens[i]));
+  }
+}
+
+// Verifies that a prefetch carrying both LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME
+// and a recursive_prefetch_token is rejected with a bad message.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       RejectsRestrictedMainFrameWithRecursiveToken) {
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+
+  const url::Origin token_origin =
+      url::Origin::Create(GURL("https://3p.example"));
+  base::UnguessableToken token = RegisterRecursivePrefetchToken(token_origin);
+
+  network::ResourceRequest request;
+  request.url = GURL("https://3p.example/target.html");
+  request.load_flags =
+      net::LOAD_PREFETCH | net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
+  request.request_initiator = shell()
+                                  ->web_contents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetLastCommittedOrigin();
+  request.recursive_prefetch_token = token;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client.completion_status().error_code);
+  EXPECT_EQ("Prefetch/CreatePrefetchLoaderAndStart: recursive token with "
+            "restricted main frame prefetch",
+            bad_message_observer.WaitForBadMessage());
+  EXPECT_EQ(0, cross_origin_factory_.NumPending());
+}
+
+// Verifies that a recursive prefetch request missing request_initiator is
+// rejected with a bad message.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       RejectsRecursivePrefetchWithoutRequestInitiator) {
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+
+  const url::Origin token_origin =
+      url::Origin::Create(GURL("https://3p.example"));
+  base::UnguessableToken token = RegisterRecursivePrefetchToken(token_origin);
+
+  network::ResourceRequest request;
+  request.url = GURL("https://3p.example/subresource.js");
+  request.load_flags = net::LOAD_PREFETCH;
+  request.request_initiator = std::nullopt;
+  request.recursive_prefetch_token = token;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client.completion_status().error_code);
+  EXPECT_EQ("Prefetch/CreatePrefetchLoaderAndStart: no request_initiator",
+            bad_message_observer.WaitForBadMessage());
+  EXPECT_EQ(0, cross_origin_factory_.NumPending());
+}
+
+// Verifies that a recursive prefetch request whose request_initiator does not
+// match the frame's committed origin is rejected with a bad message.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       RejectsRecursivePrefetchWithFrameOriginMismatch) {
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+
+  const url::Origin token_origin =
+      url::Origin::Create(GURL("https://3p.example"));
+  base::UnguessableToken token = RegisterRecursivePrefetchToken(token_origin);
+
+  network::ResourceRequest request;
+  request.url = GURL("https://3p.example/subresource.js");
+  request.load_flags = net::LOAD_PREFETCH;
+  request.request_initiator =
+      url::Origin::Create(GURL("https://attacker.example"));
+  request.recursive_prefetch_token = token;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/0,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client.completion_status().error_code);
+  EXPECT_EQ("Prefetch/CreatePrefetchLoaderAndStart: frame origin mismatch",
+            bad_message_observer.WaitForBadMessage());
+  EXPECT_EQ(0, cross_origin_factory_.NumPending());
+}
+
+// Verifies that Prefetch.RecursivePrefetch.TokensPerDocument is recorded upon
+// document navigation when tokens were generated.
+IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
+                       TokensPerDocumentHistogramRecordedOnNavigation) {
+  base::HistogramTester histogram_tester;
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path, ResponseEntry("<body></body>"));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      BindFactoryForMainFrame();
+  ASSERT_TRUE(bind_context_);
+
+  for (int i = 0; i < 3; ++i) {
+    RegisterRecursivePrefetchToken(
+        url::Origin::Create(GURL(base::StringPrintf("https://%d.example", i))));
+  }
+
+  factory.reset();
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.RecursivePrefetch.TokensPerDocument", /*sample=*/3,
+      /*expected_bucket_count=*/1);
 }
 
 class FencedFramePrefetchTest : public PrefetchBrowserTestBase {

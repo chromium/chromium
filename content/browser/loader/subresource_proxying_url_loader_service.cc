@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "content/browser/loader/prefetch_url_loader_service_context.h"
 #include "content/browser/loader/subresource_proxying_url_loader.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -30,7 +32,7 @@ SubresourceProxyingURLLoaderService::BindContext::BindContext(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache)
     : frame_tree_node_id(frame_tree_node_id),
-      factory(factory),
+      factory(std::move(factory)),
       render_frame_host(std::move(render_frame_host)),
       cross_origin_factory(nullptr),
       prefetched_signed_exchange_cache(
@@ -41,7 +43,14 @@ void SubresourceProxyingURLLoaderService::BindContext::OnDidCommitNavigation(
   document = committed_document;
 }
 
-SubresourceProxyingURLLoaderService::BindContext::~BindContext() = default;
+SubresourceProxyingURLLoaderService::BindContext::~BindContext() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (total_tokens_generated > 0) {
+    base::UmaHistogramCounts100(
+        "Prefetch.RecursivePrefetch.TokensPerDocument",
+        base::saturated_cast<int>(total_tokens_generated));
+  }
+}
 
 SubresourceProxyingURLLoaderService::SubresourceProxyingURLLoaderService(
     BrowserContext* browser_context)

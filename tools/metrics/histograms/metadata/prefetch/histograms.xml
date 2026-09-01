@@ -661,6 +661,55 @@ chromium-metrics-reviews@google.com.
       variants="ValidateResourceRequestMode"/>
 </histogram>
 
+<histogram name="Prefetch.RecursivePrefetch.TokenLookupResult"
+    enum="RecursivePrefetchTokenLookupResult" expires_after="2027-02-07">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a document prefetches a cross-origin main resource, the browser mints a
+    recursive prefetch token mapping to the target's IsolationInfo so that
+    subresources declared via Link: rel=preload can be prefetched under the
+    isolated network partition.
+
+    This histogram records the resolution outcome for each recursive prefetch
+    subresource request carrying a recursive_prefetch_token. Recorded in
+    `PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart()` when the
+    request arrives from the renderer.
+
+    Breakdown:
+
+    - kSuccess: The token was resolved in the LRU cache and the request was
+    forwarded to the network service under the isolated partition.
+
+    - kTokenNotFound: The token was not present in the LRU cache (e.g., evicted
+    due to cache capacity, or invalid). The request is cancelled with
+    ERR_INVALID_ARGUMENT without terminating the renderer.
+
+    - kRejectedSameOrigin: The token was present, but the target URL is
+    same-origin with the initiating document. The request is rejected as a bad
+    message.
+  </summary>
+</histogram>
+
+<histogram name="Prefetch.RecursivePrefetch.TokensPerDocument" units="tokens"
+    expires_after="2027-02-07">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records the total number of recursive prefetch tokens generated for a single
+    document context during its lifetime.
+
+    When a document triggers cross-origin main resource prefetches, each
+    prefetch response mints a token to manage recursive subresource prefetches
+    in an LRU cache.
+
+    Recorded once when the document's
+    `SubresourceProxyingURLLoaderService::BindContext` is destroyed upon
+    navigation away. Only recorded if at least one token was minted during the
+    lifetime of the document context (total_tokens_generated &gt; 0).
+  </summary>
+</histogram>
+
 <histogram
     name="PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck"
     units="ms" expires_after="2025-03-01">
