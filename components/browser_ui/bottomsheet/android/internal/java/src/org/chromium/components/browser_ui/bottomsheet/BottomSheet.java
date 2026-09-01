@@ -1268,16 +1268,22 @@ class BottomSheet extends BottomSheetView
         super.setSheetLayoutMode(mode);
         boolean isPopup = mode == SheetLayoutMode.DESKTOP_POPUP;
         if (isPopup) {
-            boolean showCloseButton =
-                    mSheetContent != null && mSheetContent.hasCustomScrimLifecycle();
-            setCloseButtonVisible(showCloseButton);
-            setCloseButtonClickListener(
-                    v -> setSheetState(SheetState.HIDDEN, true, StateChangeReason.CLOSE_BUTTON));
             setBottomMargin(0);
-        } else {
-            setCloseButtonVisible(false);
         }
+        updateCloseButton(isPopup, mSheetContent);
         updateContainerClipping(isPopup);
+    }
+
+    private void updateCloseButton(boolean isPopup, @Nullable BottomSheetContent content) {
+        boolean showCloseButton = isPopup && content != null && content.hasCustomScrimLifecycle();
+        mModel.set(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY, showCloseButton);
+        if (showCloseButton) {
+            mModel.set(
+                    BottomSheetProperties.CLOSE_BUTTON_CLICK_LISTENER,
+                    v -> setSheetState(SheetState.HIDDEN, true, StateChangeReason.CLOSE_BUTTON));
+        } else {
+            mModel.set(BottomSheetProperties.CLOSE_BUTTON_CLICK_LISTENER, null);
+        }
     }
 
     private boolean isLargeFormFactorFallbackUiEnabled() {
@@ -1692,6 +1698,7 @@ class BottomSheet extends BottomSheetView
         updateContentContainerHeight();
         updateBackgroundColor();
         mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, mode);
+        updateCloseButton(mode == SheetLayoutMode.DESKTOP_POPUP, content);
         mModel.set(BottomSheetProperties.GLOW_SPEC, getGlowSpecOrDefault());
         for (BottomSheetObserver o : mObservers) {
             o.onSheetContentChanged(content);
