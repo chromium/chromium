@@ -249,6 +249,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     grid_lanes = grid_lanes_data->grid_lanes;
     grid_layout_subtree = grid_lanes_data->grid_layout_subtree;
     layout_data = grid_layout_subtree->LayoutData();
+    oof_children = grid_lanes_data->oof_children;
 
     // TODO(almaher): We may need to do something here with
     // EBoxDecorationBreak::kClone.
@@ -333,10 +334,9 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     intrinsic_block_size_ = total_intrinsic_block_size;
   }
 
-  auto block_size = ComputeBlockSizeForFragment(
+  const auto block_size = ComputeBlockSizeForFragment(
       GetConstraintSpace(), Node(), BorderPadding(),
-      previously_consumed_block_size +
-          contain_intrinsic_block_size_.value_or(intrinsic_block_size_),
+      contain_intrinsic_block_size_.value_or(total_intrinsic_block_size),
       container_builder_.InlineSize());
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
@@ -424,7 +424,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   if (has_block_fragmentation) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridLanesBreakTokenData>(
-            grid_lanes, grid_layout_subtree, total_intrinsic_block_size));
+            grid_lanes, grid_layout_subtree, total_intrinsic_block_size,
+            oof_children));
   }
 
   container_builder_.HandleOofsAndSpecialDescendants();
@@ -1785,6 +1786,20 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
     const GridLayoutData& layout_data,
     LayoutUnit block_size,
     HeapVector<Member<LayoutBox>>& oof_children) {
+  DCHECK(!oof_children.empty());
+
+  HeapVector<Member<LayoutBox>> oofs;
+  std::swap(oofs, oof_children);
+
+  bool should_process_block_end = true;
+  if (InvolvedInBlockFragmentation(container_builder_)) {
+    should_process_block_end = !container_builder_.DidBreakSelf() &&
+                               !container_builder_.ShouldBreakInside();
+  }
+
+  const LayoutUnit previously_consumed_block_size =
+      GetBreakToken() ? GetBreakToken()->ConsumedBlockSize() : LayoutUnit();
+
   const auto& container_style = Style();
   const auto& node = Node();
   const auto& placement_data = node.CachedPlacementData();
@@ -1808,7 +1823,7 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
                      : (container_builder_.InlineSize() -
                         border_scrollbar_padding.inline_end);
 
-  for (LayoutBox* oof_child : oof_children) {
+  for (LayoutBox* oof_child : oofs) {
     GridItemData* out_of_flow_item = MakeGarbageCollected<GridItemData>(
         BlockNode(oof_child), container_style);
     DCHECK(out_of_flow_item->IsOutOfFlow());
@@ -1850,11 +1865,21 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
       }
     }
 
-    // TODO(kschmi): Handle fragmentation. Once fragmentation is implemented,
-    // fill-reverse offsets will also need to be applied to
-    // `oof_positioned_fragmentainer_descendants_`.
-    container_builder_.AddOutOfFlowChildCandidate(out_of_flow_item->node,
-                                                  static_pos);
+    // Make the child offset relative to our fragment.
+    static_pos.offset.block_offset -= previously_consumed_block_size;
+
+    // We will attempt to add OOFs in the fragment in which their static
+    // position belongs. However, the last fragment has the most up-to-date grid
+    // geometry information (e.g. any expanded rows, etc), so for center aligned
+    // items or items with a grid-area that is not in the first or last
+    // fragment, we could end up with an incorrect static position.
+    if (should_process_block_end ||
+        static_pos.offset.block_offset <= FragmentainerCapacityForChildren()) {
+      container_builder_.AddOutOfFlowChildCandidate(out_of_flow_item->node,
+                                                    static_pos);
+    } else {
+      oof_children.emplace_back(oof_child);
+    }
   }
 }
 
