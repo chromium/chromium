@@ -35,9 +35,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_downloader.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -829,8 +829,7 @@ int UserImageManagerImpl::GetDesiredImageSideLength() const {
 signin::IdentityManager* UserImageManagerImpl::GetIdentityManager() {
   const user_manager::User* user = GetUser();
   DCHECK(user && user->is_profile_created());
-  return IdentityManagerFactory::GetForProfile(
-      ProfileHelper::Get()->GetProfileByUser(user));
+  return ash::IdentityManagerProvider::Get().Find(user->GetAccountId());
 }
 
 network::mojom::URLLoaderFactory* UserImageManagerImpl::GetURLLoaderFactory() {

@@ -27,7 +27,6 @@ include_rules = [
   "+chrome/browser/policy/networking",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/ash/login",
@@ -35,3 +34,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "user_image_manager_browsertest\\.cc": [
+    "+chrome/browser/signin",
+  ],
+}
