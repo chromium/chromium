@@ -229,17 +229,11 @@ void PaintTimingDetector::NotifyFirstVideoFrame(
     const gfx::Rect& image_border) {
   if (NotifyImagePaint(object, intrinsic_size, media_timing,
                        current_paint_chunk_properties, image_border)) {
-    // crbug.com/434659231: Recording this as an LCP candidate and setting the
-    // presentation time (without ReportFirstFrameTimeAsRenderTime) depends on
-    // the next main frame, which we request here. This is flag-guarded for hard
-    // LCP, since it might move metrics; for soft navs, do this unconditionally
-    // since this is still experimental and we want accurate behavior for origin
-    // trial along with attributing video src changes (crbug.com/434215966).
-    if (RuntimeEnabledFeatures::RequestMainFrameAfterFirstVideoFrameEnabled() ||
-        !PaintTiming::From(object.GetDocument())
-             .GetLargestContentfulPaintManager()) {
-      object.GetFrameView()->ScheduleAnimation();
-    }
+    // crbug.com/434659231: Paint timing callbacks happen as part of paint, and
+    // since the first video frame notification happens outside of paint, this
+    // `media_timing` will not be considered until the next frame. Request a
+    // frame now to prevent delays in timing.
+    object.GetFrameView()->ScheduleAnimation();
   }
 }
 

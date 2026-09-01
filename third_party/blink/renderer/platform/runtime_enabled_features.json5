@@ -5146,10 +5146,6 @@
       status: "stable",
     },
     {
-      name: "RequestMainFrameAfterFirstVideoFrame",
-      status: "stable",
-    },
-    {
       name: "RequestStorageAccessFor",
       base_feature: "none",
     },
