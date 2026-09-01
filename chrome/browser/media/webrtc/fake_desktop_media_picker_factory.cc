@@ -22,6 +22,9 @@ FakeDesktopMediaPicker::FakeDesktopMediaPicker(
 }
 FakeDesktopMediaPicker::~FakeDesktopMediaPicker() {
   expectation_->picker_deleted = true;
+  if (picker_params_.on_picker_destroying) {
+    picker_params_.on_picker_destroying.Run();
+  }
 }
 
 // DesktopMediaPicker interface.

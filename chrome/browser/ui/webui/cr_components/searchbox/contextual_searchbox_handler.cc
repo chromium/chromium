@@ -709,8 +709,11 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
         .Run(searchbox::mojom::DriveUploadResponse::New());
   }
 #if !BUILDFLAG(IS_ANDROID)
-  if (is_capturing_ || screenshare_picker_controller_) {
+  if (IsScreenshareInProgress()) {
     NotifyScreensharePickerClosed();
+  }
+  if (pending_screenshare_callback_) {
+    std::move(pending_screenshare_callback_).Run(std::nullopt);
   }
 #endif
   // Ensure any selected tabs are cleared when shutting down.
@@ -2461,7 +2464,7 @@ void ContextualSearchboxHandler::StartScreenshare(
     bool prefer_entire_screen,
     StartScreenshareCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (screenshare_picker_controller_ || is_capturing_) {
+  if (IsScreenshareInProgress()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -2509,7 +2512,7 @@ void ContextualSearchboxHandler::StartScreenshare(
 void ContextualSearchboxHandler::CaptureRegionScreenshot(
     CaptureRegionScreenshotCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (screenshare_picker_controller_ || is_capturing_) {
+  if (IsScreenshareInProgress()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -2552,10 +2555,13 @@ void ContextualSearchboxHandler::OnNativePickerCancelled(
 void ContextualSearchboxHandler::FallbackToChromeDefaultPicker(
     bool prefer_entire_screen,
     StartScreenshareCallback callback) {
-  if (screenshare_picker_controller_ || is_capturing_) {
+  if (IsScreenshareInProgress()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
+  chrome_default_picker_destroyed_ = false;
+  pending_screenshare_source_.reset();
+  pending_screenshare_callback_.Reset();
   screenshare_picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(picker_factory_);
 
@@ -2584,6 +2590,9 @@ void ContextualSearchboxHandler::FallbackToChromeDefaultPicker(
   picker_params.preferred_display_surface =
       prefer_entire_screen ? blink::mojom::PreferredDisplaySurface::MONITOR
                            : blink::mojom::PreferredDisplaySurface::WINDOW;
+  picker_params.on_picker_destroying = base::BindRepeating(
+      &ContextualSearchboxHandler::OnChromeDefaultPickerDestroyed,
+      weak_ptr_factory_.GetWeakPtr());
 
   screenshare_picker_controller_->Show(
       picker_params, sources,
@@ -2599,11 +2608,30 @@ void ContextualSearchboxHandler::OnChromeDefaultPickerResults(
     content::DesktopMediaID source) {
   screenshare_picker_controller_.reset();
   if (source.is_null()) {
+    chrome_default_picker_destroyed_ = false;
     NotifyScreensharePickerClosed();
     std::move(callback).Run(std::nullopt);
     return;
   }
-  CaptureAndUploadScreenshot(source, std::move(callback));
+  if (chrome_default_picker_destroyed_) {
+    chrome_default_picker_destroyed_ = false;
+    CaptureAndUploadScreenshot(source, std::move(callback));
+  } else {
+    pending_screenshare_source_ = source;
+    pending_screenshare_callback_ = std::move(callback);
+  }
+}
+
+void ContextualSearchboxHandler::OnChromeDefaultPickerDestroyed() {
+  if (pending_screenshare_callback_) {
+    chrome_default_picker_destroyed_ = false;
+    content::DesktopMediaID source = pending_screenshare_source_.value();
+    pending_screenshare_source_.reset();
+    auto callback = std::move(pending_screenshare_callback_);
+    CaptureAndUploadScreenshot(source, std::move(callback));
+  } else {
+    chrome_default_picker_destroyed_ = true;
+  }
 }
 
 void ContextualSearchboxHandler::CaptureAndUploadScreenshot(
@@ -2720,5 +2748,10 @@ void ContextualSearchboxHandler::NotifyScreensharePickerClosed() {
   if (screenshare_delegate_) {
     screenshare_delegate_->OnScreensharePickerClosed();
   }
+}
+
+bool ContextualSearchboxHandler::IsScreenshareInProgress() const {
+  return screenshare_picker_controller_ || is_capturing_ ||
+         pending_screenshare_callback_;
 }
 #endif
