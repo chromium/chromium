@@ -11,6 +11,8 @@
 #include "base/time/time.h"
 #include "cc/test/skia_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_base.h"
@@ -48,15 +50,13 @@ class TestSingleAnimatedImageContainer : public SingleAnimatedImageContainer {
 class SingleAnimatedImageContainerTest : public ViewsTestBase {
  public:
   SingleAnimatedImageContainerTest()
-      : ViewsTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : ViewsTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
   ~SingleAnimatedImageContainerTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-
-    if (!gfx::Animation::ShouldRenderRichAnimation()) {
-      GTEST_SKIP() << "Animation is disabled in OS.";
-    }
 
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(
@@ -78,6 +78,7 @@ class SingleAnimatedImageContainerTest : public ViewsTestBase {
   }
 
  protected:
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
   std::unique_ptr<Widget> widget_;
   raw_ptr<LabelButton> button_;
   base::TimeDelta animation_duration_;
