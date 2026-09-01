@@ -4264,7 +4264,6 @@ void HTMLElement::HandleKeydownEvent(KeyboardEvent& event) {
   if (is_focused_contenteditable) {
     // Handles only contenteditables. TextFieldInputType and HTMLTextAreaElement
     // analogously handle the event for <input> and <textarea>.
-    GetDocument().UpdateStyleAndLayoutTree();
     if (Page* page = GetDocument().GetPage();
         page && page->GetChromeClient().HandleKeyboardEventOnEditableElement(
                     *this, event)) {
