@@ -20,3 +20,13 @@ tast.wmp.DesksTemplatesLaunch
 
 # b/312966807
 tast.inputs.InputMethodShelfInputs
+
+# b/549299789
+tast.secagentd.AuthenticationEvents
+tast.secagentd.FileEvents.cookies
+tast.secagentd.FileEvents.user_fs
+tast.secagentd.FileEvents.auth_factors
+tast.secagentd.FileEvents.user_credential
+tast.secagentd.NetworkEvents.relaxed_tcp
+tast.secagentd.NetworkEvents.relaxed_udp
+
