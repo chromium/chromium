@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/chrome_pref_names.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/version.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
@@ -19,12 +20,14 @@
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/channel/channel_info.h"
+#include "chromeos/ash/components/search_engines/template_url_service_provider.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -65,13 +68,17 @@ bool PhotosIntegrationSupported(const apps::AppUpdate& update) {
   return photos_version >= base::Version(kMinPhotosVersion);
 }
 
-bool IsLensInGalleryEnabled(Profile* profile, PrefService* pref_service) {
+bool IsLensInGalleryEnabled(const AccountId& account_id,
+                            PrefService* pref_service) {
   if (!pref_service->GetBoolean(ash::prefs::kMediaAppLensEnabled)) {
     return false;
   }
 
   const TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(profile);
+      ash::TemplateURLServiceProvider::Get().Find(account_id);
+  if (!service) {
+    return false;
+  }
   const TemplateURL* default_url = service->GetDefaultSearchProvider();
   return default_url &&
          default_url->url_ref().HasGoogleBaseURLs(service->search_terms_data());
@@ -119,8 +126,15 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
                      base::FeatureList::IsEnabled(
                          ash::features::kMediaAppImageMantisMakeASticker));
 
-  source->AddBoolean("lensInGallery",
-                     IsLensInGalleryEnabled(profile, pref_service));
+  // Guest sessions substitute their off-the-record profile for the original
+  // everywhere, including here, but the AccountId is only ever annotated on
+  // the original profile (per crbug.com/546860700 review) -- unwrap to it
+  // before looking up the annotation.
+  source->AddBoolean(
+      "lensInGallery",
+      IsLensInGalleryEnabled(CHECK_DEREF(ash::AnnotatedAccountId::Get(
+                                 profile->GetOriginalProfile())),
+                             pref_service));
   source->AddBoolean(
       "pdfReadonly",
       !pref_service->GetBoolean(ash::chrome_prefs::kPdfAnnotationsEnabled));
