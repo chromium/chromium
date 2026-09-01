@@ -28,6 +28,7 @@ class GeminiService;
 @protocol LensOverlayCommands;
 @class LensOverlayStateNotifier;
 class PrefService;
+class ProfileIOS;
 @class SceneLayoutState;
 @protocol SceneCommands;
 @protocol SettingsCommands;
@@ -107,6 +108,7 @@ class WebStateList;
                regularActionFactory:(BrowserActionFactory*)regularActionFactory
              incognitoActionFactory:
                  (BrowserActionFactory*)incognitoActionFactory
+                            profile:(ProfileIOS*)profile
                         prefService:(PrefService*)prefService
                  templateURLService:(TemplateURLService*)templateURLService
               authenticationService:

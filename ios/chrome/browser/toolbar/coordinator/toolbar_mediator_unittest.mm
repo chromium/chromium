@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -804,8 +803,8 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoEnabled) {
   [local_mediator disconnect];
 }
 
-// Tests that the assistant button is visible when signed in and location
-// is eligible (not EEA / Japan), and PageActionMenu is enabled.
+// Tests that the assistant button is visible and enabled when signed in and
+// location is eligible (not EEA / Japan), and PageActionMenu is enabled.
 TEST_P(ToolbarMediatorTest, TestAssistantButtonVisible_PageActionMenuEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
@@ -815,7 +814,42 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonVisible_PageActionMenuEnabled) {
       CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
   SignInAndSetCapability(true);
 
-  OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:NO]);
+  OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is visible and enabled for signed-out users
+// when location is eligible and sign-in is allowed.
+TEST_P(ToolbarMediatorTest, TestAssistantButtonVisible_SignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
+
+  SetLocationEligible(true);
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button remains enabled on NTP web pages when
+// visible.
+TEST_P(ToolbarMediatorTest, TestAssistantButtonVisible_NTP) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
+
+  SetLocationEligible(true);
+  std::unique_ptr<web::FakeWebState> ntp_web_state = CreateWebState();
+  ntp_web_state->SetVisibleURL(GURL("chrome://newtab"));
+  NewTabPageTabHelper::CreateForWebState(ntp_web_state.get());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(ntp_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  SignInAndSetCapability(true);
+
+  OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

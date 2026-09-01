@@ -595,13 +595,9 @@
 - (void)updateAssistantButton {
   web::WebState* activeWebState =
       _webStateList ? _webStateList->GetActiveWebState() : nullptr;
-  ProfileIOS* profile =
-      activeWebState
-          ? ProfileIOS::FromBrowserState(activeWebState->GetBrowserState())
-          : nullptr;
 
   gemini::GeminiAvailabilityResult result = gemini::IsGeminiAvailable(
-      gemini::EntryPoint::Toolbar, profile, activeWebState,
+      gemini::EntryPoint::Toolbar, /*profile=*/nullptr, activeWebState,
       _authenticationService, _prefService);
 
   [self.consumer setAssistantButtonVisible:result.visible

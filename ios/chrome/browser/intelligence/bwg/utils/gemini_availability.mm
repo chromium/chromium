@@ -8,6 +8,8 @@
 #import "components/country_codes/country_codes.h"
 #import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
@@ -18,7 +20,10 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/network_change_notifier.h"
 
 namespace {
 
@@ -35,6 +40,59 @@ bool IsInEEAOrJapan() {
   return regional_capabilities::RegionalCapabilitiesService::
              IsInAnySearchEngineChoiceScreenRegion(country_id) ||
          country_id == country_codes::CountryId("JP");
+}
+
+// Returns true if the primary identity is in an unverified state requiring
+// re-authentication / managing account approval.
+bool IsPrimaryIdentityUnverified(AuthenticationService* auth_service,
+                                 signin::IdentityManager* identity_manager) {
+  if (!auth_service || !auth_service->HasPrimaryIdentity() ||
+      !identity_manager) {
+    return false;
+  }
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+  return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      account_id);
+}
+
+// Returns whether Gemini is eligible for bar surfaces (Toolbar and AppBar).
+bool IsGeminiEligibleForBar(ProfileIOS* profile,
+                            GeminiService* gemini_service,
+                            AuthenticationService* auth_service,
+                            PrefService* pref_service) {
+  if (!IsPageActionMenuEnabled() || IsInEEAOrJapan() || !gemini_service) {
+    return false;
+  }
+
+  if (pref_service && !gemini::GeminiAllowedByPolicy(pref_service)) {
+    return false;
+  }
+
+  signin::IdentityManager* identity_manager =
+      profile ? IdentityManagerFactory::GetForProfile(profile) : nullptr;
+  bool is_signed_out = !auth_service || !auth_service->HasPrimaryIdentity();
+  bool is_unverified =
+      IsPrimaryIdentityUnverified(auth_service, identity_manager);
+  if (is_signed_out || is_unverified) {
+    // For signed-out or unverified users, optimistically show the button to
+    // encourage sign-in or verification if sign-in is allowed.
+    return auth_service && auth_service->SigninEnabled();
+  }
+
+  if (!net::NetworkChangeNotifier::IsOffline() &&
+      !gemini_service->IsWorkspacePolicyCheckPending()) {
+    std::optional<gemini::IneligibilityReasons> ineligibility_reasons =
+        gemini_service->GeminiIneligibilityForProfile();
+    if (ineligibility_reasons && ineligibility_reasons->workspace) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -70,26 +128,33 @@ GeminiAvailabilityResult IsGeminiAvailable(EntryPoint entry_point,
       tab_helper && tab_helper->IsGeminiAvailableForWebState();
 
   switch (entry_point) {
-    case EntryPoint::Toolbar: {
-      // The Toolbar Gemini button is not visible or enabled in EEA countries or
-      // Japan.
-      if (IsInEEAOrJapan()) {
+    case EntryPoint::Toolbar:
+    case EntryPoint::AppBar: {
+      if (!profile && web_state) {
+        profile = ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+      }
+      if (!profile) {
         result.visible = false;
         result.enabled = false;
         break;
       }
-
-      if (profile_eligible) {
-        result.visible = true;
-      } else if (gemini_service && auth_service &&
-                 !auth_service->HasPrimaryIdentity()) {
-        // If the profile is ineligible because the user is signed out, show the
-        // Gemini button and keep it enabled so tapping it triggers the sign-in
-        // flow, unless a local enterprise policy explicitly disables it.
-        result.visible = gemini::GeminiAllowedByPolicy(pref_service);
+      if (!gemini_service) {
+        gemini_service = GeminiServiceFactory::GetForProfile(profile);
+        if (gemini_service) {
+          result.ineligibility_reasons =
+              gemini_service->GeminiIneligibilityForProfile();
+        }
       }
-
-      result.enabled = result.visible && web_state_eligible;
+      if (!auth_service) {
+        auth_service = AuthenticationServiceFactory::GetForProfile(profile);
+      }
+      if (!pref_service) {
+        pref_service = profile->GetPrefs();
+      }
+      bool eligible = IsGeminiEligibleForBar(profile, gemini_service,
+                                             auth_service, pref_service);
+      result.visible = eligible;
+      result.enabled = eligible;
       break;
     }
 

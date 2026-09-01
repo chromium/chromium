@@ -133,6 +133,7 @@
       incognitoFullscreenBrowserAgent:incognitoAgent
                  regularActionFactory:regularActionFactory
                incognitoActionFactory:incognitoActionFactory
+                              profile:profile
                           prefService:profile->GetPrefs()
                    templateURLService:ios::TemplateURLServiceFactory::
                                           GetForProfile(

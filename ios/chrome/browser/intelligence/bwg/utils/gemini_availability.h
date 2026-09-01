@@ -44,17 +44,20 @@ struct GeminiAvailabilityResult {
 // - `entry_point`: The entry point surface being evaluated. Pass
 //   EntryPoint::Unknown to evaluate general Gemini availability for the profile
 //   and web state without enforcing entry-point-specific contextual rules.
-// - `profile`: The user profile to check eligibility for.
+// - `profile`: Optional user profile to check eligibility for. For bar surfaces
+//   (Toolbar, AppBar), if null, will be inferred from `web_state` when
+//   available.
 // - `web_state`: The WebState for tab-bound entry points (can be nullptr for
 //   non-tab-bound surfaces).
 // - `auth_service`: Optional AuthenticationService for checking user identity
-//   in certain entry points (e.g., Toolbar).
+//   in certain entry points (e.g., Toolbar, AppBar).
 // - `pref_service`: Optional PrefService for checking enterprise policy
-//   exceptions for signed-out users in certain entry points (e.g., Toolbar).
+//   exceptions for signed-out users in certain entry points (e.g., Toolbar,
+//   AppBar).
 GeminiAvailabilityResult IsGeminiAvailable(
     EntryPoint entry_point,
-    ProfileIOS* profile,
-    web::WebState* web_state,
+    ProfileIOS* profile = nullptr,
+    web::WebState* web_state = nullptr,
     AuthenticationService* auth_service = nullptr,
     PrefService* pref_service = nullptr);
 
