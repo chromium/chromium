@@ -2325,6 +2325,24 @@
             ]
         }
     ],
+    "AutofillEnableOmniboxAutofill": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableOmniboxAutofill"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnablePayNowPayLaterTabs": [
         {
             "platforms": [
