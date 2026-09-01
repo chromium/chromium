@@ -7,7 +7,7 @@ import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
-export class OpenTabsDelegate implements OrganizerListSectionDelegate {
+export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private client_?: OrganizerListSectionClient;
   private listenerIds_: number[] = [];
@@ -35,9 +35,16 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate {
     return 'Open Tabs';
   }
 
-  async getItems(): Promise<OrganizerListSectionItem[]> {
+  async getItems(): Promise<Array<OrganizerListSectionItem<Tab>>> {
     await this.updateTabs_();
     return this.tabs_.map(tab => this.tabToSectionItem_(tab));
+  }
+
+  onItemClick(item: OrganizerListSectionItem<Tab>) {
+    const tab = item.data;
+    if (tab) {
+      this.browserProxy_.handler.switchToTab({tabId: tab.tabId});
+    }
   }
 
   private async updateTabs_() {
@@ -89,7 +96,7 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate {
     return allTabs;
   }
 
-  private tabToSectionItem_(tab: Tab): OrganizerListSectionItem {
+  private tabToSectionItem_(tab: Tab): OrganizerListSectionItem<Tab> {
     const description: string[] = [];
     try {
       const url = new URL(tab.url);
@@ -108,6 +115,7 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate {
       prefixIcon: {
         urls: [tab.url],
       },
+      data: tab,
     };
   }
 }

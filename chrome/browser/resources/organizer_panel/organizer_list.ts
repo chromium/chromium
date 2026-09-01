@@ -35,7 +35,7 @@ export class OrganizerListElement extends CrLitElement {
     };
   }
 
-  accessor sectionDelegates: OrganizerListSectionDelegate[] = [];
+  accessor sectionDelegates: Array<OrganizerListSectionDelegate<unknown>> = [];
 }
 
 declare global {

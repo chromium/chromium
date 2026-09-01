@@ -44,9 +44,10 @@ export class OrganizerPanelAppElement extends CrLitElement {
   }
 
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
-  protected accessor sectionDelegates_: OrganizerListSectionDelegate[] = [
-    new OpenTabsDelegate(),
-  ];
+  protected accessor sectionDelegates_:
+      Array<OrganizerListSectionDelegate<unknown>> = [
+        new OpenTabsDelegate(),
+      ];
 }
 
 declare global {

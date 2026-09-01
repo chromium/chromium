@@ -5,13 +5,14 @@
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './organizer_list_section_item.js';
 
+import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem} from './organizer_list_section_item.js';
+import type {OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 
 /**
  * This is the number of items in a section that are rendered before the "Show
@@ -48,8 +49,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
     };
   }
 
-  accessor delegate: OrganizerListSectionDelegate|null = null;
-  accessor items: OrganizerListSectionItem[] = [];
+  accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
+  accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = false;
 
   // The panel WebUI will remain loaded but invisible when the panel is closed.
@@ -80,7 +81,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
   }
 
-  onItemsChanged(items: OrganizerListSectionItem[]) {
+  onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
     this.items = items;
   }
 
@@ -92,11 +93,11 @@ export class OrganizerListSectionElement extends CrLitElement implements
     this.items = await this.delegate.getItems();
   }
 
-  protected getInitialItems_(): OrganizerListSectionItem[] {
+  protected getInitialItems_(): Array<OrganizerListSectionItem<unknown>> {
     return this.items.slice(0, INITIAL_ITEM_COUNT);
   }
 
-  protected getRemainingItems_(): OrganizerListSectionItem[] {
+  protected getRemainingItems_(): Array<OrganizerListSectionItem<unknown>> {
     if (!this.expanded_) {
       return [];
     }
@@ -109,6 +110,12 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded_ = e.detail.value;
+  }
+
+  protected onItemClick_(e: Event) {
+    const target = e.currentTarget as OrganizerListSectionItemElement;
+    assert(target.item);
+    this.delegate?.onItemClick(target.item);
   }
 }
 

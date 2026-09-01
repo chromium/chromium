@@ -30,9 +30,9 @@ function createTab(overrides: Partial<Tab>): Tab {
 }
 
 class TestClient implements OrganizerListSectionClient {
-  items: OrganizerListSectionItem[] = [];
+  items: Array<OrganizerListSectionItem<unknown>> = [];
 
-  onItemsChanged(items: OrganizerListSectionItem[]) {
+  onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
     this.items = items;
   }
 }
@@ -123,6 +123,7 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals('www.youtube.com', items[0]!.description?.[0]);
     assertEquals(youtubeTab.lastActiveElapsedText, items[0]!.description?.[1]);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.urls?.[0]);
+    assertEquals(youtubeTab, items[0]!.data);
 
     // Second most recent tab.
     assertEquals(chromiumTab.title, items[1]!.title);
@@ -130,6 +131,7 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals('www.chromium.org', items[1]!.description?.[0]);
     assertEquals(chromiumTab.lastActiveElapsedText, items[1]!.description?.[1]);
     assertEquals(chromiumTab.url, items[1]!.prefixIcon?.urls?.[0]);
+    assertEquals(chromiumTab, items[1]!.data);
 
     // Least recent tab.
     assertEquals(googleTab.title, items[2]!.title);
@@ -137,6 +139,7 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals('www.google.com', items[2]!.description?.[0]);
     assertEquals(googleTab.lastActiveElapsedText, items[2]!.description?.[1]);
     assertEquals(googleTab.url, items[2]!.prefixIcon?.urls?.[0]);
+    assertEquals(googleTab, items[2]!.data);
   });
 
   test('notifies client when tabs are changed', async () => {
@@ -212,5 +215,19 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(2, client.items.length);
     assertEquals(chromiumTab.title, client.items[0]!.title);
     assertEquals(googleTab.title, client.items[1]!.title);
+  });
+
+  test('switches to tab when an item is clicked', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    const items = await delegate.getItems();
+    assertEquals(3, items.length);
+
+    delegate.onItemClick(items[1]!);
+
+    assertEquals(1, mockPageHandler.getCallCount('switchToTab'));
+    const args = mockPageHandler.getArgs('switchToTab')[0];
+    assertEquals(chromiumTab.tabId, args.tabId);
   });
 });

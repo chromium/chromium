@@ -22,7 +22,7 @@ export interface OrganizerListSectionItemIcon {
 }
 
 // Model for a single item in an organizer list section.
-export interface OrganizerListSectionItem {
+export interface OrganizerListSectionItem<T> {
   // Title (main line) of the item.
   title: string;
 
@@ -31,6 +31,9 @@ export interface OrganizerListSectionItem {
 
   // Icon displayed at the beginning of the item.
   prefixIcon?: OrganizerListSectionItemIcon;
+
+  // The actual data held by the item.
+  data?: T;
 }
 
 export interface OrganizerListSectionItemElement {
@@ -58,7 +61,7 @@ export class OrganizerListSectionItemElement extends CrLitElement {
     };
   }
 
-  accessor item: OrganizerListSectionItem = {
+  accessor item: OrganizerListSectionItem<unknown> = {
     title: '',
   };
 

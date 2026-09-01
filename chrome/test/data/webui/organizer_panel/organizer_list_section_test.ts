@@ -23,7 +23,7 @@ suite('OrganizerListSectionTest', () => {
   });
 
   test('renders header and items from delegate', async () => {
-    const items: OrganizerListSectionItem[] = [
+    const items: Array<OrganizerListSectionItem<unknown>> = [
       {title: 'Tab 1', description: ['tab1.com']},
       {title: 'Tab 2', description: ['tab2.com']},
     ];
@@ -44,7 +44,7 @@ suite('OrganizerListSectionTest', () => {
   test(
       'updates items and renders when a remote update is triggered',
       async () => {
-        const items: OrganizerListSectionItem[] = [
+        const items: Array<OrganizerListSectionItem<unknown>> = [
           {title: 'Tab 1', description: ['tab1.com']},
         ];
         listSection.delegate = new TestSectionDelegate('Open Tabs', items);
@@ -72,7 +72,7 @@ suite('OrganizerListSectionTest', () => {
   test(
       'renders initial items and expand button when items exceed initial count',
       async () => {
-        const items: OrganizerListSectionItem[] = [
+        const items: Array<OrganizerListSectionItem<unknown>> = [
           {title: 'Tab 1', description: ['tab1.com']},
           {title: 'Tab 2', description: ['tab2.com']},
           {title: 'Tab 3', description: ['tab3.com']},
@@ -137,7 +137,7 @@ suite('OrganizerListSectionTest', () => {
   test(
       'does not render expand button when items do not exceed initial count',
       async () => {
-        const items: OrganizerListSectionItem[] = [
+        const items: Array<OrganizerListSectionItem<unknown>> = [
           {title: 'Tab 1', description: ['tab1.com']},
           {title: 'Tab 2', description: ['tab2.com']},
           {title: 'Tab 3', description: ['tab3.com']},
@@ -149,4 +149,22 @@ suite('OrganizerListSectionTest', () => {
             listSection.shadowRoot.querySelector('cr-expand-button');
         assertEquals(null, expandButton);
       });
+
+  test('notifies delegate when an item is clicked', async () => {
+    const items: Array<OrganizerListSectionItem<unknown>> = [
+      {title: 'Tab 1', description: ['tab1.com']},
+      {title: 'Tab 2', description: ['tab2.com']},
+    ];
+    const delegate = new TestSectionDelegate('Open Tabs', items);
+    listSection.delegate = delegate;
+    await microtasksFinished();
+
+    const listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(2, listItems.length);
+
+    listItems[1]!.click();
+    assertEquals(1, delegate.getClickCount());
+    assertEquals(items[1], delegate.getLastClickedItem());
+  });
 });

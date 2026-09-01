@@ -12,7 +12,8 @@ export function getHtml(this: OrganizerListSectionElement) {
 <h2 id="header">${this.delegate?.getHeader() || ''}</h2>
 <div id="items" role="list">
   ${this.getInitialItems_().map(item => html`
-    <organizer-list-section-item .item="${item}" role="listitem">
+    <organizer-list-section-item .item="${item}" role="listitem"
+        @click="${this.onItemClick_}">
     </organizer-list-section-item>
   `)}
   ${this.hasMoreItems_() ? html`
@@ -22,7 +23,8 @@ export function getHtml(this: OrganizerListSectionElement) {
     </cr-expand-button>
   ` : ''}
   ${this.getRemainingItems_().map(item => html`
-    <organizer-list-section-item .item="${item}" role="listitem">
+    <organizer-list-section-item .item="${item}" role="listitem"
+        @click="${this.onItemClick_}">
     </organizer-list-section-item>
   `)}
 </div>
