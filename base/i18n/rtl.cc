@@ -15,7 +15,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_switches.h"
-#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/logging.h"
@@ -136,10 +135,11 @@ TextDirection GetTextDirectionInternal() {
     return forced_direction;
   }
 
+  LanguageTag icu_locale = LanguageTagConverter::GetInstance().FromIcuLocale(
+      icu::Locale::getDefault());
   static constexpr auto kRtlLanguageTags =
-      std::to_array<std::string_view>({"ar", "fa", "he", "ur"});
-  if (std::ranges::contains(kRtlLanguageTags,
-                            GetDefaultIcuLocale().language_subtag())) {
+      std::to_array<std::string_view>({"ar", "fa", "iw", "he", "ur"});
+  if (std::ranges::contains(kRtlLanguageTags, icu_locale.language_subtag())) {
     return RIGHT_TO_LEFT;
   }
   return LEFT_TO_RIGHT;
@@ -148,7 +148,6 @@ TextDirection GetTextDirectionInternal() {
 }  // namespace
 
 // Convert the ICU default locale to a string.
-// DEPRECATED: use GetDefaultIcuLocale() -> `LanguageTag`.
 std::string GetConfiguredLocale() {
   return GetLocaleString(icu::Locale::getDefault());
 }
@@ -159,7 +158,6 @@ std::string GetCanonicalLocale(std::string_view locale) {
       icu::Locale::createCanonical(std::string(locale).c_str()));
 }
 
-// DEPRECATED: use ScopedDefaultIcuLocale for tests.
 void SetICUDefaultLocale(std::string_view locale_string) {
 #if BUILDFLAG(IS_IOS)
   static base::debug::CrashKeyString* crash_key_locale =
@@ -177,10 +175,6 @@ void SetICUDefaultLocale(std::string_view locale_string) {
                << ". Falling back to en-US.";
     icu::Locale::setDefault(icu::Locale::getUS(), error_code);
   }
-  // This is being called here while we do not migrate every caller to it.
-  SetDefaultIcuLocale(DefaultIcuLocaleSetterKey(),
-                      LanguageTagConverter::GetInstance().FromIcuLocale(
-                          icu::Locale::getDefault()));
 }
 
 bool IsRTL() {

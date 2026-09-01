@@ -50,7 +50,6 @@ std::string GetApplicationLocale(std::string_view, bool);
 namespace base::i18n {
 
 class ScopedDefaultIcuLocale;
-void SetICUDefaultLocale(std::string_view);
 
 // A capability token enforcing the C++ pass-key pattern for setting the
 // mutable default ICU locale.
@@ -72,7 +71,6 @@ class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey {
   friend class ::WebEngineMainDelegate;
   friend class ::WebEngineBrowserMainParts;
   friend std::string(::l10n_util::GetApplicationLocale)(std::string_view, bool);
-  friend void SetICUDefaultLocale(std::string_view);
 
   DefaultIcuLocaleSetterKey() = default;
 };
