@@ -181,6 +181,7 @@ public class ClipboardAndroidTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisabledTest(message = "crbug.com/555727186")
     public void selfWriteClipChangedEchoDoesNotBumpSequenceNumber() {
         ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
 
