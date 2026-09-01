@@ -65,6 +65,3 @@
 # TODO(crbug.com/456675144): Disable HandleReauth, fails due to unsupported
 # window activation on Wayland/Mutter.
 -All/AttemptLoginToolInteractiveUiTest.HandleReauth/1
-
-# TODO(crbug.com/552061334): Re-enable once flakiness is fixed.
--BrowserUserEducationContextUiTest.PrefersAnchorInOriginalBrowser
