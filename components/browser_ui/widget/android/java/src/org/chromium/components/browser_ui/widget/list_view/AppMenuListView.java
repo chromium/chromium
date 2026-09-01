@@ -63,7 +63,21 @@ public class AppMenuListView extends TouchTrackingListView {
                                     return true;
                                 }
                             }
+                        } else if (currentRowPosition != AdapterView.INVALID_POSITION
+                                && nextRowPosition == AdapterView.INVALID_POSITION) {
+                            // Reached the boundary of the menu (e.g. tabbing forward past the last
+                            // item or backward past the first item).
+                            // Consume the key event instead of falling through to super, which
+                            // returns false and triggers Android's window-level fallback focus
+                            // navigation (ViewRootImpl.performFocusNavigation), causing focus to
+                            // snap back to an earlier row or loop. See https://crbug.com/555764820.
+                            return true;
                         }
+                    } else if (nextFocus == null) {
+                        // Reached the boundary of the focus hierarchy with no focusable target
+                        // found in this direction. Consume the event to prevent fallback focus
+                        // looping.
+                        return true;
                     }
                 }
             }
