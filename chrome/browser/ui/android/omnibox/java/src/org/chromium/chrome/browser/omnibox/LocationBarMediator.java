@@ -1038,7 +1038,8 @@ class LocationBarMediator
             // This only matters in scenarios where a physical keyboard is connected.
             // See handleEscPress below.
             mScrimHandler.setVisibility(
-                    mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
+                    !OmniboxCapabilities.isDesktopPlatform()
+                            && mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
         }
 
         if (mUrlCoordinator.shouldAutocomplete()) {
@@ -1549,7 +1550,9 @@ class LocationBarMediator
                     if (mScrimHandler != null) {
                         mScrimHandler.updateScrimVisualState();
                         mScrimHandler.setVisibility(
-                                mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
+                                !OmniboxCapabilities.isDesktopPlatform()
+                                        && mCurrentInput.getAutocompleteState()
+                                                == AutocompleteState.ENABLED);
                     }
                     // This logic is fragile, the UrlBar must be told before Autocomplete. The later
                     // will synchronously notify that there are suggestions if they're cached, while
