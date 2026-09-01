@@ -580,6 +580,18 @@ class ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest
+    : public ChromeFileSystemAccessPermissionContextTest {
+ public:
+  ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kFileSystemAccessSymbolicLinkCheck);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        CanShowFilePicker_BlocksGuestViews) {
   // 1. Test HTTPS Guest (should be blocked)
@@ -965,8 +977,15 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
        ConfirmSensitiveEntryAccess_UNCPath) {
+  // The synthetic UNC paths tested here do not exist on disk/network;
+  // attempting to normalize them triggers slow Windows network/SMB timeouts on
+  // non-existent hosts before returning the original path unmodified. Testing
+  // with `features::kFileSystemAccessSymbolicLinkCheck` disabled allows
+  // testing the UNC syntax and admin share parsing logic directly in memory
+  // without timeouts. Symbolic link resolution itself is tested separately in
+  // `ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest`.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(),
                 PathInfo(FILE_PATH_LITERAL("\\\\server\\share\\foo\\bar")),
@@ -1251,6 +1270,26 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
                                       HandleType::kFile, UserAction::kOpen),
       SensitiveDirectoryResult::kAbort);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_ResolveSymbolicLinkToLocalUNC) {
+  base::FilePath symlink = temp_dir_.GetPath().AppendASCII("symlink_to_unc");
+  base::FilePath target(FILE_PATH_LITERAL("\\\\localhost\\c$\\Windows"));
+
+  CreateSymbolicLinkResult result =
+      CreateSymbolicLinkForTesting(target, symlink);
+  if (result == CreateSymbolicLinkResult::kUnsupported) {
+    GTEST_SKIP();
+  }
+  ASSERT_EQ(result, CreateSymbolicLinkResult::kSucceeded);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(symlink), HandleType::kDirectory,
+                UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
