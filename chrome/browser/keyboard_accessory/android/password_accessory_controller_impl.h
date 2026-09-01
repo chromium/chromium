@@ -168,7 +168,7 @@ class PasswordAccessoryControllerImpl
   void ChangeCurrentOriginSavePasswordsStatus(bool enabled);
 
   // Always returns false for badly formed |origin|. Returns true if
-  // |suggestion| matches a credential for |origin| or if it's a plus address.
+  // |suggestion| matches a credential for |origin|.
   bool AppearsInSuggestions(const autofill::AccessorySheetField& selection,
                             const url::Origin& origin) const;
 

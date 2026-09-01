@@ -408,9 +408,6 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Test the scenario when the plus address survey delay is not configured. The
-// random delay of the survey should be between the 10s and 60s.
-
 // Test that the hats service is called with the expected params for different
 // surveys. Note that Surveys are only launched on Desktop.
 TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillAddressSurvey) {

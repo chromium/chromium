@@ -399,7 +399,7 @@ TEST(AutofillTypeTest, GetPasswordManagerType) {
 //
 //   If no:
 //   - Do you want a new getter in AutofillType? That probably means you're
-//     creating a new Autofill integrator (something like Plus Addresses).
+//     creating a new Autofill integrator.
 //
 //     If yes:
 //     Add the getter and update AutofillType::TestConstraints().
