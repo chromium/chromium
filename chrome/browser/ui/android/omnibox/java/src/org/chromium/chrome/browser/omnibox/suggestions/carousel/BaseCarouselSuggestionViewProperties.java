@@ -20,32 +20,32 @@ import java.util.List;
 /** The base set of properties for the Carousel suggestions. */
 @NullMarked
 public @interface BaseCarouselSuggestionViewProperties {
-    /** Action Icons description. */
-    WritableObjectPropertyKey<List<ListItem>> TILES = new WritableObjectPropertyKey<>();
+    /** Specifies whether carousel's background should match this used by all suggestions. */
+    ReadableBooleanPropertyKey APPLY_BACKGROUND = new ReadableBooleanPropertyKey();
+
+    ReadableIntPropertyKey BOTTOM_PADDING = new ReadableIntPropertyKey();
+
+    /** Specifies the audible description of the carousel type. */
+    ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION = new ReadableObjectPropertyKey<>();
 
     /** Specifies the width of a carousel element. */
     ReadableObjectPropertyKey<SpacingRecyclerViewItemDecoration> ITEM_DECORATION =
             new ReadableObjectPropertyKey<>();
 
-    /** Specifies the audible description of the carousel type. */
-    ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION = new ReadableObjectPropertyKey<>();
+    /** Action Icons description. */
+    WritableObjectPropertyKey<List<ListItem>> TILES = new WritableObjectPropertyKey<>();
 
     /** Specifies carousel padding dimensions. */
     ReadableIntPropertyKey TOP_PADDING = new ReadableIntPropertyKey();
 
-    ReadableIntPropertyKey BOTTOM_PADDING = new ReadableIntPropertyKey();
-
-    /** Specifies whether carousel's background should match this used by all suggestions. */
-    ReadableBooleanPropertyKey APPLY_BACKGROUND = new ReadableBooleanPropertyKey();
-
     PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
-                TOP_PADDING,
-                BOTTOM_PADDING,
                 APPLY_BACKGROUND,
-                TILES,
+                BOTTOM_PADDING,
+                CONTENT_DESCRIPTION,
                 ITEM_DECORATION,
-                CONTENT_DESCRIPTION
+                TILES,
+                TOP_PADDING
             };
 
     PropertyKey[] ALL_KEYS =

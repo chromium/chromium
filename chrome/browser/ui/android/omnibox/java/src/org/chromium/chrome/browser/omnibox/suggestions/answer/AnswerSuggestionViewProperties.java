@@ -16,6 +16,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** The properties associated with rendering the answer suggestion view. */
 @NullMarked
 @interface AnswerSuggestionViewProperties {
+    /**
+     * The right padding to apply to the answer suggestion content view. This is distinct from the
+     * padding for the containing BaseSuggestionView, which is controlled separately.
+     */
+    WritableIntPropertyKey RIGHT_PADDING = new WritableIntPropertyKey();
+
+    /** The accessibility description to be announced with this line. */
+    WritableObjectPropertyKey<String> TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     /** The maximum number of lines to be shown for the first line of text. */
     WritableIntPropertyKey TEXT_LINE_1_MAX_LINES = new WritableIntPropertyKey();
 
@@ -23,7 +33,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     WritableObjectPropertyKey<Spannable> TEXT_LINE_1_TEXT = new WritableObjectPropertyKey<>();
 
     /** The accessibility description to be announced with this line. */
-    WritableObjectPropertyKey<String> TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION =
+    WritableObjectPropertyKey<String> TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     /** The maximum number of lines to be shown for the second line of text. */
@@ -32,25 +42,15 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** The actual text content for the second line of text. */
     WritableObjectPropertyKey<Spannable> TEXT_LINE_2_TEXT = new WritableObjectPropertyKey<>();
 
-    /** The accessibility description to be announced with this line. */
-    WritableObjectPropertyKey<String> TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION =
-            new WritableObjectPropertyKey<>();
-
-    /**
-     * The right padding to apply to the answer suggestion content view. This is distinct from the
-     * padding for the containing BaseSuggestionView, which is controlled separately.
-     */
-    WritableIntPropertyKey RIGHT_PADDING = new WritableIntPropertyKey();
-
     PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
-                TEXT_LINE_1_TEXT,
-                TEXT_LINE_1_MAX_LINES,
-                TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION,
-                TEXT_LINE_2_TEXT,
-                TEXT_LINE_2_MAX_LINES,
-                TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION,
                 RIGHT_PADDING,
+                TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION,
+                TEXT_LINE_1_MAX_LINES,
+                TEXT_LINE_1_TEXT,
+                TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION,
+                TEXT_LINE_2_MAX_LINES,
+                TEXT_LINE_2_TEXT,
             };
 
     PropertyKey[] ALL_KEYS =

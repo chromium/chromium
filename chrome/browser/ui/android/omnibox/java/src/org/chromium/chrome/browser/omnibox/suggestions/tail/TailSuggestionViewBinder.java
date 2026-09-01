@@ -24,13 +24,13 @@ public class TailSuggestionViewBinder extends BaseSuggestionViewBinder<TailSugge
             PropertyModel model, TailSuggestionView view, PropertyKey propertyKey) {
         if (TailSuggestionViewProperties.ALIGNMENT_MANAGER == propertyKey) {
             view.setAlignmentManager(model.get(TailSuggestionViewProperties.ALIGNMENT_MANAGER));
-        } else if (propertyKey == TailSuggestionViewProperties.TEXT) {
-            view.setTailText(model.get(TailSuggestionViewProperties.TEXT));
-        } else if (propertyKey == TailSuggestionViewProperties.FILL_INTO_EDIT) {
-            view.setFullText(model.get(TailSuggestionViewProperties.FILL_INTO_EDIT));
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
             final @ColorInt int color = getResourceProvider(model).getSuggestionPrimaryTextColor();
             view.setTextColor(color);
+        } else if (propertyKey == TailSuggestionViewProperties.FILL_INTO_EDIT) {
+            view.setFullText(model.get(TailSuggestionViewProperties.FILL_INTO_EDIT));
+        } else if (propertyKey == TailSuggestionViewProperties.TEXT) {
+            view.setTailText(model.get(TailSuggestionViewProperties.TEXT));
         }
     }
 }
