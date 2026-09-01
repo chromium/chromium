@@ -7,11 +7,13 @@
 #import "base/check.h"
 #import "base/files/file.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/memory/read_only_shared_memory_region.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #import "components/prefs/pref_service.h"
@@ -42,6 +44,20 @@ std::unique_ptr<Scorer> CreateScorerOnBackgroundThread(
   }
   return scorer;
 }
+
+// Helper function to destroy a `Scorer` instance on a background thread.
+// Destroying `Scorer` closes open file handles (e.g. memory-mapped files),
+// which involves blocking I/O operations that are forbidden on the main thread.
+void DestroyScorerOnBackgroundThread(std::unique_ptr<Scorer> scorer) {
+  if (!scorer) {
+    return;
+  }
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                             base::DoNothingWithBoundArgs(std::move(scorer)));
+}
+
 }  // namespace
 
 ClientSideDetectionService::ClientSideDetectionService(
@@ -54,7 +70,10 @@ ClientSideDetectionService::ClientSideDetectionService(
   OnPrefsUpdated();
 }
 
-ClientSideDetectionService::~ClientSideDetectionService() = default;
+ClientSideDetectionService::~ClientSideDetectionService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DestroyScorerOnBackgroundThread(std::move(scorer_));
+}
 
 void ClientSideDetectionService::OnModelUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -120,9 +139,17 @@ void ClientSideDetectionService::OnScorerCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (generation_id != current_model_generation_) {
-    return;  // Stale task, discard.
+    // Stale task, discard.
+    DestroyScorerOnBackgroundThread(std::move(scorer));
+    return;
   }
 
+  SetScorer(std::move(scorer));
+}
+
+void ClientSideDetectionService::SetScorer(std::unique_ptr<Scorer> scorer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DestroyScorerOnBackgroundThread(std::move(scorer_));
   scorer_ = std::move(scorer);
   for (auto& observer : observers_) {
     observer.OnScorerChanged();
@@ -131,10 +158,7 @@ void ClientSideDetectionService::OnScorerCreated(
 
 void ClientSideDetectionService::ClearScorerAndNotifyObservers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scorer_.reset();
-  for (auto& observer : observers_) {
-    observer.OnScorerChanged();
-  }
+  SetScorer(nullptr);
 }
 
 Scorer* ClientSideDetectionService::GetScorer() const {
@@ -145,10 +169,7 @@ Scorer* ClientSideDetectionService::GetScorer() const {
 void ClientSideDetectionService::SetScorerForTesting(  // IN-TEST
     std::unique_ptr<Scorer> scorer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scorer_ = std::move(scorer);
-  for (auto& observer : observers_) {
-    observer.OnScorerChanged();
-  }
+  SetScorer(std::move(scorer));
 }
 
 void ClientSideDetectionService::AddObserver(Observer* observer) {
