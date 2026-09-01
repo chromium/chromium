@@ -340,26 +340,24 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
       continue;
     }
 
-    const ComputedStyle* style = layout_object->Style();
-    if (!style)
-      continue;
+    const ComputedStyle& style = layout_object->StyleRef();
 
     // If background elements are hidden, ignore their background colors.
-    if (element != top_element && style->Visibility() == EVisibility::kHidden) {
+    if (element != top_element && style.Visibility() == EVisibility::kHidden) {
       continue;
     }
 
     Color background_color =
-        style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+        style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
 
     // Opacity applies to the entire element so mix it with the alpha channel.
-    if (style->HasOpacity()) {
-      background_color.SetAlpha(background_color.Alpha() * style->Opacity());
+    if (style.HasOpacity()) {
+      background_color.SetAlpha(background_color.Alpha() * style.Opacity());
       // If the background element is the ancestor of the top element or is the
       // top element, the opacity affects the text color of the top element.
       if (element == top_element ||
           FlatTreeTraversal::IsDescendantOf(*top_element, *element)) {
-        *text_opacity *= style->Opacity();
+        *text_opacity *= style.Opacity();
       }
     }
 
@@ -380,7 +378,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
       }
     }
 
-    AddColorsFromImageStyle(*style, *layout_object, colors, found_opaque_color,
+    AddColorsFromImageStyle(style, *layout_object, colors, found_opaque_color,
                             found_non_transparent_color);
 
     bool contains = found_top_element || GetNodeRect(node).Contains(rect);
