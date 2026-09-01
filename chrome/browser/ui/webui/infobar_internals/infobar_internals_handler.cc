@@ -591,7 +591,17 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     case InfoBarType::kKeystone: {
 #if BUILDFLAG(ENABLE_UPDATER)
       profile->GetPrefs()->SetBoolean(prefs::kShowUpdatePromotionInfoBar, true);
-      ShowUpdaterPromotionInfoBar();
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC);
+      } else {
+        KeystonePromotionInfoBarDelegate::Create(web_contents);
+      }
       return true;
 #else
       return false;

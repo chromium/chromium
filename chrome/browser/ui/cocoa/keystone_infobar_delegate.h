@@ -54,12 +54,4 @@ class KeystonePromotionInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::WeakPtrFactory<KeystonePromotionInfoBarDelegate> weak_ptr_factory_;
 };
 
-// Shows an infobar asking the user to promote the updater to system scope,
-// which requires authentication. The info bar will show in the most recently
-// used Chrome tab. The info bar doesn't show if its "don't ask" button was
-// ever clicked in the profile associated with that tab, nor if the "don't
-// check default browser" command-line flag is present, nor if another info bar
-// is already showing in the active tab.
-void ShowUpdaterPromotionInfoBar();
-
 #endif  // CHROME_BROWSER_UI_COCOA_KEYSTONE_INFOBAR_DELEGATE_H_
