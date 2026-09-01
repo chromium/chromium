@@ -390,10 +390,6 @@ class BrowserWindowFeatures {
     return synced_window_delegate_.get();
   }
 
-  TabMenuModelDelegate* tab_menu_model_delegate() {
-    return tab_menu_model_delegate_.get();
-  }
-
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   // Returns a pointer to the ToastController for the browser window. This can
