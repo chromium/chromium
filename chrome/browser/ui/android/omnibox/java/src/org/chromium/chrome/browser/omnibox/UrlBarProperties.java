@@ -220,6 +220,7 @@ class UrlBarProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                // go/keep-sorted start
                 ACCESSIBILITY_WARNING,
                 ACTION_MODE_CALLBACK,
                 AI_MODE_PREF_ENABLED,
@@ -246,5 +247,6 @@ class UrlBarProperties {
                 TEXT_WRAPPED_CALLBACK,
                 URL_DIRECTION_LISTENER,
                 USE_SMALL_TEXT
+                // go/keep-sorted end
             };
 }
