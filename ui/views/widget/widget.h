@@ -1386,9 +1386,15 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // the ShouldPaintAsActive() state.
   void NotifyPaintAsActiveChanged();
 
-  // Enables input protection. Installs standard policies (occlusion, window
+  // Enables input activation protection. Installs standard policies (window
   // activation, click-spam) if `custom_protector` is nullptr. Otherwise, the
   // caller must configure the provided protector with the desired policies.
+  //
+  // Enabling this also activates occlusion protection for non-located events
+  // (e.g. keyboard action keys like Space or Return) in
+  // `OccludedWidgetInputProtector` (whereas unprotected widgets only check
+  // located pointer events).
+  //
   // See ui/views/input_protection/README.md for details on how this works.
   void EnableInputEventActivationProtection(
       std::unique_ptr<InputEventActivationProtector> custom_protector =

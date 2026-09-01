@@ -21,6 +21,8 @@
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/input_protection/occluded_widget_input_protector.h"
+#include "ui/views/metrics.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/views_features.h"
@@ -86,7 +88,8 @@ END_METADATA
 
 class InputProtectionEventHandlerTest : public ViewsTestBase {
  public:
-  InputProtectionEventHandlerTest() = default;
+  InputProtectionEventHandlerTest()
+      : ViewsTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~InputProtectionEventHandlerTest() override = default;
 
   void SetUp() override {
@@ -109,6 +112,7 @@ class InputProtectionEventHandlerTest : public ViewsTestBase {
   }
 
   void TearDown() override {
+    OccludedWidgetInputProtector::GetInstance()->ClearForTesting();
     event_generator_.reset();
     button_ = nullptr;
     widget_.reset();
@@ -228,6 +232,107 @@ TEST_F(InputProtectionEventHandlerTest, UnprotectedWidgetAllowsEvents) {
 
   const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
 
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(button_click_count(), 1);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       UnprotectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow) {
+  // Verify that widget-level input activation protection is not enabled.
+  EXPECT_FALSE(widget()->IsInputEventActivationProtectionEnabled());
+
+  // Create an always-on-top widget that occludes the button.
+  gfx::Rect aot_bounds = button()->GetBoundsInScreen();
+  aot_bounds.Outset(20);
+
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  params.remove_standard_frame = true;
+  params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
+  params.bounds = aot_bounds;
+  auto aot_widget = std::make_unique<Widget>();
+  aot_widget->Init(std::move(params));
+  aot_widget->Show();
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  ASSERT_TRUE(aot_widget->GetNonDecoratedClientAreaBoundsInScreen().Contains(
+      button_center));
+
+  // Click on the button in the unprotected widget while occluded by the AOT
+  // window. The click should be blocked by global occlusion protection.
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(button_click_count(), 0);
+
+  // Hide the AOT widget to simulate a pop-away attack.
+  aot_widget->Hide();
+
+  // Recent occlusion: Clicks during the cooldown interval after hiding the AOT
+  // window are blocked.
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(button_click_count(), 0);
+
+  // Fast-forward past the occlusion cooldown interval.
+  task_environment()->FastForwardBy(GetDoubleClickInterval() +
+                                    base::Milliseconds(1));
+
+  // Now that the occlusion has expired, the click should succeed.
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(button_click_count(), 1);
+}
+
+TEST_F(InputProtectionEventHandlerTest,
+       ProtectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow) {
+  // Configure the widget policy to allow input so that blocking is only driven
+  // by global occlusion protection.
+  EnableInputProtection(/*should_block=*/false);
+  EXPECT_TRUE(widget()->IsInputEventActivationProtectionEnabled());
+
+  // Create an always-on-top widget that occludes the button.
+  gfx::Rect aot_bounds = button()->GetBoundsInScreen();
+  aot_bounds.Outset(20);
+
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  params.remove_standard_frame = true;
+  params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
+  params.bounds = aot_bounds;
+  auto aot_widget = std::make_unique<Widget>();
+  aot_widget->Init(std::move(params));
+  aot_widget->Show();
+
+  const gfx::Point button_center = button()->GetBoundsInScreen().CenterPoint();
+  ASSERT_TRUE(aot_widget->GetNonDecoratedClientAreaBoundsInScreen().Contains(
+      button_center));
+
+  // Current occlusion: Click while occluded is blocked by global occlusion.
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(button_click_count(), 0);
+
+  // Hide the AOT widget to simulate a pop-away attack.
+  aot_widget->Hide();
+
+  // Recent occlusion: Clicks during the cooldown interval after hiding the AOT
+  // window are blocked.
+  event_generator()->MoveMouseTo(button_center);
+  event_generator()->PressLeftButton();
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(button_click_count(), 0);
+
+  // Fast-forward past the occlusion cooldown interval.
+  task_environment()->FastForwardBy(GetDoubleClickInterval() +
+                                    base::Milliseconds(1));
+
+  // Now that the occlusion has expired, the click should succeed.
   event_generator()->MoveMouseTo(button_center);
   event_generator()->PressLeftButton();
   event_generator()->ReleaseLeftButton();

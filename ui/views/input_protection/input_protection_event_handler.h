@@ -30,6 +30,8 @@ inline constexpr char kPropertyInputProtected[] = "views_input_protected";
 // Registers as a pre-target handler on the `widget` `RootView` to intercept
 // input events and evaluate whether to block them before dispatching to target
 // views.
+//
+// See ui/views/input_protection/README.md for details.
 class VIEWS_EXPORT InputProtectionEventHandler : public ui::EventHandler {
  public:
   explicit InputProtectionEventHandler(internal::RootView* root_view);

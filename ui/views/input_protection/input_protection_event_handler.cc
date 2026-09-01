@@ -13,6 +13,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/input_protection/occluded_widget_input_protector.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -26,8 +27,8 @@ bool HasInputProtectedProperty(const ui::Event& event) {
   return properties && properties->contains(kPropertyInputProtected);
 }
 
-void SetInputProtectedProperty(ui::Event* event) {
-  event->SetProperty(kPropertyInputProtected, std::vector<uint8_t>());
+void SetInputProtectedProperty(ui::Event& event) {
+  event.SetProperty(kPropertyInputProtected, std::vector<uint8_t>());
 }
 
 // Returns true if the passed `key_event` is an arrow key navigation event
@@ -43,6 +44,19 @@ bool IsArrowTraversalKeyEvent(const ui::KeyEvent& key_event) {
          key == ui::VKEY_RIGHT;
 }
 
+// Resolves the targeted View for an event. For key events, queries the
+// `FocusManager` for the currently focused view; for pointer events, returns
+// the event target.
+View* GetEventTargetView(const ui::Event& event,
+                         internal::RootView& root_view) {
+  if (event.IsKeyEvent()) {
+    FocusManager* focus_manager = root_view.GetFocusManager();
+    return focus_manager ? focus_manager->GetFocusedView()
+                         : static_cast<View*>(event.target());
+  }
+  return static_cast<View*>(event.target());
+}
+
 // Returns true if the passed `key_event` is any focus traversal event (Tab or
 // Arrow key). If the focused view requests to skip default key event processing
 // (e.g. Textfield or Button), this returns false for arrow keys.
@@ -56,10 +70,7 @@ bool IsFocusTraversalKeyEvent(const ui::KeyEvent& key_event,
     return false;
   }
 
-  FocusManager* focus_manager = root_view.GetFocusManager();
-  View* focused_view = focus_manager ? focus_manager->GetFocusedView()
-                                     : static_cast<View*>(key_event.target());
-
+  View* focused_view = GetEventTargetView(key_event, root_view);
   if (focused_view && focused_view->SkipDefaultKeyEventProcessing(key_event)) {
     return false;
   }
@@ -133,7 +144,7 @@ void InputProtectionEventHandler::MaybeBlockEvent(ui::Event* event) {
     return;
   }
 
-  Widget* widget = root_view_->GetWidget();
+  Widget* const widget = root_view_->GetWidget();
   if (!widget) {
     return;
   }
@@ -144,13 +155,35 @@ void InputProtectionEventHandler::MaybeBlockEvent(ui::Event* event) {
     return;
   }
 
-  SetInputProtectedProperty(event);
+  SetInputProtectedProperty(*event);
 
-  auto* input_protector = widget->GetInputEventActivationProtector();
-  auto* target_view = static_cast<View*>(event->target());
-  if (!input_protector ||
-      !input_protector->IsPossiblyUnintendedInteraction(
-          *event, /*allow_key_events=*/false, target_view)) {
+  View* const target_view = GetEventTargetView(*event, *root_view_);
+
+  // Check global occlusion protection:
+  // - Located events (clicks and taps): Blocked if the event coordinate is
+  //   occluded by an always-on-top window.
+  // - Non-located events (keyboard actions like Space/Enter): Blocked if the
+  //   target view (obtained using `GetEventTargetView()`) is occluded, but only
+  //   if input activation protection is enabled on the widget.
+  if (target_view &&
+      OccludedWidgetInputProtector::GetInstance()->ShouldBlockEvent(
+          *event, *target_view)) {
+    event->StopPropagation();
+    root_view_->ResetEventHandlers();
+    return;
+  }
+
+  // Additional policies only apply if the widget explicitly opted into input
+  // event activation protection.
+  if (!widget->IsInputEventActivationProtectionEnabled()) {
+    return;
+  }
+
+  // Evaluate whether any of the policies, installed on the widget input
+  // protector, blocks the event.
+  if (!widget->GetInputEventActivationProtector()
+           ->IsPossiblyUnintendedInteraction(*event, /*allow_key_events=*/false,
+                                             target_view)) {
     return;
   }
 
