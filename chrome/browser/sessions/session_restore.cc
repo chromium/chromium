@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -846,6 +847,10 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
 
 #if BUILDFLAG(IS_CHROMEOS)
         aura::Window* browser_window = browser->GetWindow()->GetNativeWindow();
+        CHECK(browser_window)
+            << "WebUI browser is "
+            << (webui_browser::IsWebUIBrowserEnabled() ? "enabled"
+                                                       : "disabled");
         if (occlusion_helper) {
           occlusion_helper->DisableWindowAnimation(browser_window);
         }
