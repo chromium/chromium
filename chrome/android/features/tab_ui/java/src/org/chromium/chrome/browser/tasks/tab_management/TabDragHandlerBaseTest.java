@@ -8,6 +8,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -18,11 +20,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
@@ -34,9 +40,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDragStateData;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabDragHandlerBase}. */
@@ -50,12 +60,21 @@ public class TabDragHandlerBaseTest {
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private DragAndDropDelegate mDragAndDropDelegate;
     @Mock private View.DragShadowBuilder mDragShadowBuilder;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private TabDragHandlerBase mTabDragHandler;
+    private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
+        when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
+        mCurrentTabModelSupplier.set(mTabModel);
+
         mTabDragHandler =
                 new TabDragHandlerBase(
                         () -> mActivity, mMultiInstanceManager, mDragAndDropDelegate) {
@@ -136,5 +155,95 @@ public class TabDragHandlerBaseTest {
 
         mTabDragHandler.startDrag(mock(View.class), mDragShadowBuilder, dropData);
         assertFalse(TabDragStateData.getOrCreateForTab(tab).getIsDraggingSupplier().get());
+    }
+
+    @Test
+    public void testCloseTab_WhenDraggingSingleTab_CancelsDrag() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        Tab tab = createMockTab(1);
+        View dragSourceView = mock(View.class);
+        var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+
+        observer.willCloseTab(tab, /* didCloseAlone= */ true);
+        verify(dragSourceView).cancelDragAndDrop();
+    }
+
+    @Test
+    public void testCloseTab_WhenDraggingDifferentTab_DoesNotCancelDrag() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        Tab tab1 = createMockTab(1);
+        Tab tab2 = createMockTab(2);
+        View dragSourceView = mock(View.class);
+        var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab1).build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+
+        observer.willCloseTab(tab2, /* didCloseAlone= */ true);
+        verify(dragSourceView, never()).cancelDragAndDrop();
+    }
+
+    @Test
+    public void testCloseTabs_WhenDraggingMultiTab_CancelsDragIfOneTabClosed() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        Tab tab1 = createMockTab(1);
+        Tab tab2 = createMockTab(2);
+        View dragSourceView = mock(View.class);
+        var dropData =
+                new ChromeMultiTabDropDataAndroid.Builder()
+                        .withTabs(Arrays.asList(tab1, tab2))
+                        .build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+
+        observer.willCloseTabs(
+                Collections.singletonList(tab2), /* isAllTabs= */ false, /* allowUndo= */ true);
+        verify(dragSourceView).cancelDragAndDrop();
+    }
+
+    @Test
+    public void testCloseTab_WhenDraggingTabGroup_CancelsDragIfOneGroupTabClosed() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        Tab tab1 = createMockTab(1);
+        Tab tab2 = createMockTab(2);
+        View dragSourceView = mock(View.class);
+        TabGroupMetadata tabGroupMetadata = mock(TabGroupMetadata.class);
+        var dropData =
+                new ChromeTabGroupDropDataAndroid.Builder()
+                        .withTabGroupMetadata(tabGroupMetadata)
+                        .withTabs(Arrays.asList(tab1, tab2))
+                        .build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+
+        observer.willCloseTab(tab1, /* didCloseAlone= */ true);
+        verify(dragSourceView).cancelDragAndDrop();
+    }
+
+    @Test
+    public void testDestroy_CleansUpObserver() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        mTabDragHandler.destroy();
+        verify(mTabModel).removeObserver(observer);
     }
 }

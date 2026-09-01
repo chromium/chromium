@@ -303,6 +303,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     /** Cleans up internal state. */
     @Override
     public void destroy() {
+        super.destroy();
         if (mMultiThumbnailCardProvider != null) {
             mMultiThumbnailCardProvider.destroy();
             mMultiThumbnailCardProvider = null;

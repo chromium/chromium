@@ -39,12 +39,14 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +67,7 @@ public abstract class TabDragHandlerBase
     protected final DragAndDropDelegate mDragAndDropDelegate;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable MonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
+    private @Nullable TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     protected @Nullable View mDragSourceView;
 
     /**
@@ -88,8 +91,22 @@ public abstract class TabDragHandlerBase
 
     /** Sets @{@link TabModelSelector} to retrieve model info. */
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
+        assert mTabModelSelector == null;
         mTabModelSelector = tabModelSelector;
         mCurrentTabModelSupplier = mTabModelSelector.getCurrentTabModelSupplier();
+        mTabModelSelectorTabModelObserver =
+                new TabModelSelectorTabModelObserver(mTabModelSelector) {
+                    @Override
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                        onTabsClosed(Collections.singletonList(tab));
+                    }
+
+                    @Override
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                        onTabsClosed(tabs);
+                    }
+                };
     }
 
     /** Whether a view drag and drop has started. */
@@ -99,7 +116,10 @@ public abstract class TabDragHandlerBase
 
     @Override
     public void destroy() {
-        // Not implemented.
+        if (mTabModelSelectorTabModelObserver != null) {
+            mTabModelSelectorTabModelObserver.destroy();
+            mTabModelSelectorTabModelObserver = null;
+        }
     }
 
     protected Activity getActivity() {
@@ -467,24 +487,50 @@ public abstract class TabDragHandlerBase
         ResettersForTesting.register(() -> sDragToken = null);
     }
 
-    private void setTabDraggingState(ChromeDropDataAndroid dropData, boolean isDragging) {
-        final List<Tab> tabs;
+    private static @Nullable List<Tab> getDraggedTabs(ChromeDropDataAndroid dropData) {
         if (dropData instanceof ChromeTabDropDataAndroid tabDropData) {
-            tabs = Collections.singletonList(tabDropData.tab);
+            return Collections.singletonList(tabDropData.tab);
         } else if (dropData instanceof ChromeMultiTabDropDataAndroid tabsDropData) {
-            tabs = tabsDropData.tabs;
+            return tabsDropData.tabs;
         } else if (dropData instanceof ChromeTabGroupDropDataAndroid groupDropData) {
-            tabs = groupDropData.tabs;
-        } else {
-            assert false : "Unsupported drop data type: " + dropData.getClass().getName();
-            return;
+            return groupDropData.tabs;
         }
 
-        if (tabs != null) {
-            for (Tab tab : tabs) {
-                if (tab != null && tab.getUserDataHost() != null) {
-                    TabDragStateData.getOrCreateForTab(tab).setIsDragging(isDragging);
+        assert false : "Unsupported drop data type: " + dropData.getClass().getName();
+        return null;
+    }
+
+    private void onTabsClosed(List<Tab> closedTabs) {
+        // No-op if not currently dragging.
+        DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
+        if (globalState == null) return;
+
+        // Check drop data type.
+        DropDataAndroid dropData = globalState.getData();
+        if (!(dropData instanceof ChromeDropDataAndroid)) return;
+
+        // Find dragged tabs.
+        List<Tab> draggedTabs = getDraggedTabs((ChromeDropDataAndroid) dropData);
+        if (draggedTabs == null || draggedTabs.isEmpty()) return;
+
+        // If closing a dragged tab, cancel the current drag.
+        for (Tab closedTab : closedTabs) {
+            for (Tab draggedTab : draggedTabs) {
+                if (closedTab.getId() == draggedTab.getId()) {
+                    cancelDrag();
+                    return;
                 }
+            }
+        }
+    }
+
+    private void setTabDraggingState(ChromeDropDataAndroid dropData, boolean isDragging) {
+        final List<Tab> tabs = getDraggedTabs(dropData);
+        if (tabs == null) return;
+
+        for (Tab tab : tabs) {
+            if (tab != null && tab.getUserDataHost() != null && !tab.isDestroyed()) {
+                TabDragStateData.getOrCreateForTab(tab).setIsDragging(isDragging);
             }
         }
     }
