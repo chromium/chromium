@@ -14383,7 +14383,35 @@
             ]
         }
     ],
-    "OptimisticDNSForTCP": [
+    "OptimisticDnsForQuic": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "QuicSlowTimerDelay": "100ms",
+                        "QuicSlowTimerMax": "1500ms",
+                        "QuicSlowTimerMin": "50ms",
+                        "QuicSlowTimerRTTMultiplier": "1.5"
+                    },
+                    "enable_features": [
+                        "AdjustQuicSlowTimerDelay",
+                        "OptimisticDnsForQuic",
+                        "QuicSlowTimerBasedOnRTT"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OptimisticDnsForTcp": [
         {
             "platforms": [
                 "android",

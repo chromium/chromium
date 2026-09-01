@@ -510,12 +510,19 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(NetFeatures.HAPPY_EYEBALLS_V2, "Enables Happy Eyeballs V2"),
         Flag.baseFeature(NetFeatures.HAPPY_EYEBALLS_V3, "Enables Happy Eyeballs V3"),
         Flag.baseFeature(NetFeatures.OPTIMISTIC_DNS_FOR_TCP, "Enables optimistic DNS for TCP"),
+        Flag.baseFeature(NetFeatures.OPTIMISTIC_DNS_FOR_QUIC, "Enables optimistic DNS for QUIC"),
         Flag.baseFeature(
                 NetFeatures.ADJUST_I_PV6_FALLBACK_TIME,
                 "Enables controlling the Happy Eyeballs slow timer (IPv6 fallback time)"),
         Flag.baseFeature(
                 NetFeatures.I_PV6_FALLBACK_BASED_ON_RTT,
                 "Enables the Happy Eyeballs slow timer to be based on the network RTT"),
+        Flag.baseFeature(
+                NetFeatures.ADJUST_QUIC_SLOW_TIMER_DELAY,
+                "Enables controlling the QUIC slow timer"),
+        Flag.baseFeature(
+                NetFeatures.QUIC_SLOW_TIMER_BASED_ON_RTT,
+                "Enables the QUIC slow timer to be based on the network RTT"),
         Flag.baseFeature(NetFeatures.ENABLE_TLS13_EARLY_DATA, "Enables TLS 1.3 Early Data"),
         Flag.baseFeature(
                 NetFeatures.HTTP_CACHE_NO_VARY_SEARCH,
