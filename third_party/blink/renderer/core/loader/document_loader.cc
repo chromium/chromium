@@ -2995,12 +2995,21 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   OriginTrialContext::AddTokensFromHeader(
       frame_->DomWindow(), response_.HttpHeaderField(http_names::kOriginTrial));
 
-  if (auto* parent = frame_->Tree().Parent()) {
-    const SecurityContext* parent_context = parent->GetSecurityContext();
+  Frame* parent_or_opener = frame_->Tree().Parent();
+  // Only the initial empty document inherits insecure request state from an
+  // opener. Later navigations must use the new document's own policy.
+  if (!parent_or_opener && commit_reason_ == CommitReason::kInitialization) {
+    parent_or_opener = frame_->Opener();
+  }
+  if (parent_or_opener) {
+    const SecurityContext* parent_or_opener_context =
+        parent_or_opener->GetSecurityContext();
     security_context.SetInsecureRequestPolicy(
-        parent_context->GetInsecureRequestPolicy());
-    for (auto to_upgrade : parent_context->InsecureNavigationsToUpgrade())
+        parent_or_opener_context->GetInsecureRequestPolicy());
+    for (auto to_upgrade :
+         parent_or_opener_context->InsecureNavigationsToUpgrade()) {
       security_context.AddInsecureNavigationUpgrade(to_upgrade);
+    }
   }
 
   String referrer_policy_header =

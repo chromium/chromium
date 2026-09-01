@@ -9778,6 +9778,132 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(popup_rwhi->IsContentRenderingTimeoutRunning());
 }
 
+class InitialEmptyDocumentInsecureRequestStateBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  InitialEmptyDocumentInsecureRequestStateBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kEnforceSameDocumentOriginInvariants);
+  }
+
+ protected:
+  void NavigateOpenerWithInsecureRequestState() {
+    GURL opener_url(embedded_test_server()->GetURL(
+        "a.com",
+        "/set-header?Content-Security-Policy: upgrade-insecure-requests; "
+        "block-all-mixed-content"));
+    ASSERT_TRUE(NavigateToURL(shell(), opener_url));
+
+    const blink::mojom::FrameReplicationState& opener_replication_state =
+        root_frame_host()->frame_tree_node()->current_replication_state();
+    EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kMaxInsecureRequestPolicy,
+              opener_replication_state.insecure_request_policy);
+    ASSERT_FALSE(opener_replication_state.insecure_navigations_set.empty());
+  }
+
+  void ExpectDefaultInsecureRequestState(RenderFrameHostImpl* rfh) {
+    const blink::mojom::FrameReplicationState& replication_state =
+        rfh->frame_tree_node()->current_replication_state();
+    EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+              replication_state.insecure_request_policy);
+    EXPECT_TRUE(replication_state.insecure_navigations_set.empty());
+  }
+
+  void ExpectSameInsecureRequestState(RenderFrameHostImpl* expected_rfh,
+                                      RenderFrameHostImpl* actual_rfh) {
+    const blink::mojom::FrameReplicationState& expected_state =
+        expected_rfh->frame_tree_node()->current_replication_state();
+    const blink::mojom::FrameReplicationState& actual_state =
+        actual_rfh->frame_tree_node()->current_replication_state();
+    EXPECT_EQ(expected_state.insecure_request_policy,
+              actual_state.insecure_request_policy);
+    EXPECT_EQ(expected_state.insecure_navigations_set,
+              actual_state.insecure_navigations_set);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InitialEmptyDocumentInsecureRequestStateBrowserTest,
+                       PopupInheritsInsecureRequestStateFromOpener) {
+  NavigateOpenerWithInsecureRequestState();
+
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecJs(shell(), "window.popup = window.open();"));
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  ASSERT_TRUE(WaitForLoadStop(popup_contents));
+
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(popup_rfh->frame_tree_node()->is_on_initial_empty_document());
+  ExpectSameInsecureRequestState(root_frame_host(), popup_rfh);
+
+  EXPECT_TRUE(
+      ExecJs(popup_rfh, "history.pushState({}, '', 'about:blank#same-doc')"));
+  EXPECT_TRUE(popup_rfh->IsRenderFrameLive());
+
+  GURL clean_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(popup, clean_url));
+  popup_rfh = popup_contents->GetPrimaryMainFrame();
+  EXPECT_FALSE(popup_rfh->frame_tree_node()->is_on_initial_empty_document());
+  ExpectDefaultInsecureRequestState(popup_rfh);
+}
+
+IN_PROC_BROWSER_TEST_F(InitialEmptyDocumentInsecureRequestStateBrowserTest,
+                       NoopenerPopupDoesNotInheritInsecureRequestState) {
+  NavigateOpenerWithInsecureRequestState();
+
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(
+      ExecJs(shell(), "window.open('about:blank', '_blank', 'noopener');"));
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  ASSERT_TRUE(WaitForLoadStop(popup_contents));
+
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(nullptr, popup_rfh->frame_tree_node()->opener());
+  ExpectDefaultInsecureRequestState(popup_rfh);
+}
+
+IN_PROC_BROWSER_TEST_F(InitialEmptyDocumentInsecureRequestStateBrowserTest,
+                       PopupInheritsInsecureRequestStateFromSubframeOpener) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_one_frame.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  ExpectDefaultInsecureRequestState(root_frame_host());
+
+  GURL subframe_url(embedded_test_server()->GetURL(
+      "b.com",
+      "/set-header?Content-Security-Policy: upgrade-insecure-requests; "
+      "block-all-mixed-content"));
+  ASSERT_TRUE(NavigateIframeToURL(web_contents(), "child0", subframe_url));
+  RenderFrameHostImpl* subframe_rfh =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
+  ASSERT_TRUE(subframe_rfh);
+  const blink::mojom::FrameReplicationState& subframe_replication_state =
+      subframe_rfh->frame_tree_node()->current_replication_state();
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kMaxInsecureRequestPolicy,
+            subframe_replication_state.insecure_request_policy);
+  ASSERT_FALSE(subframe_replication_state.insecure_navigations_set.empty());
+  ExpectDefaultInsecureRequestState(root_frame_host());
+
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecJs(subframe_rfh, "window.open();"));
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  ASSERT_TRUE(WaitForLoadStop(popup_contents));
+
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(popup_rfh->frame_tree_node()->is_on_initial_empty_document());
+  EXPECT_EQ(subframe_rfh->frame_tree_node(),
+            popup_rfh->frame_tree_node()->opener());
+  ExpectSameInsecureRequestState(subframe_rfh, popup_rfh);
+}
+
 // Tests that paint holding is not used when an opener-created popup that is
 // still on its initial empty document navigates cross-origin without user
 // activation. Similar to the test above, but checks the case where the opener
