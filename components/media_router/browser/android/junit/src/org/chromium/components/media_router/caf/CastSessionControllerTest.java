@@ -35,7 +35,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.media_router.CastSessionUtil;
@@ -47,7 +46,6 @@ import java.util.List;
 
 /** Robolectric tests for CastSessionController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CastSessionControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private CastDevice mCastDevice;

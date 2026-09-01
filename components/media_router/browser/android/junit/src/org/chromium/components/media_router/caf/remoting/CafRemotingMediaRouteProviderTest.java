@@ -42,7 +42,6 @@ import org.chromium.components.media_router.caf.ShadowMediaRouter;
 /** Robolectric tests for CafRemotingMediaRouteProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {ShadowMediaRouter.class},
         // Required to mock final.
         instrumentedPackages = {"androidx.mediarouter.media.MediaRouteSelector"})

@@ -22,7 +22,6 @@ import androidx.mediarouter.media.MediaRouter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -32,7 +31,6 @@ import java.util.List;
 
 /** Robolectric tests for DiscoveryCallback. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     protected DiscoveryDelegate mDiscoveryDelegate;
 

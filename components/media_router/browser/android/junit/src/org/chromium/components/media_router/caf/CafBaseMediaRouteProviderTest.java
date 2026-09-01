@@ -59,7 +59,6 @@ import java.util.List;
 /** Robolectric tests for CafBaseMediaRouteProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
-        manifest = Config.NONE,
         shadows = {ShadowMediaRouter.class, ShadowCastContext.class, ShadowLooper.class},
         // Required to mock final.
         instrumentedPackages = {"androidx.mediarouter.media.MediaRouteSelector"})

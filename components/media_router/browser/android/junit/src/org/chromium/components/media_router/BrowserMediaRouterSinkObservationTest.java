@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -22,7 +21,6 @@ import java.util.List;
 
 /** Sink observation tests for BrowserMediaRouter. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})

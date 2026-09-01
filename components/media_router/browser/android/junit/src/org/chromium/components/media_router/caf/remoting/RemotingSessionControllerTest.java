@@ -32,9 +32,7 @@ import org.chromium.components.media_router.caf.ShadowMediaRouter;
 
 /** Robolectric tests for RemotingSessionController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowMediaRouter.class, ShadowCastContext.class})
+@Config(shadows = {ShadowMediaRouter.class, ShadowCastContext.class})
 public class RemotingSessionControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MediaRouterTestHelper mMediaRouterHelper;

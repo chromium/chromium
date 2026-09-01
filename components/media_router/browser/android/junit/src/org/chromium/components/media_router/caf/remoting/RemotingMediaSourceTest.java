@@ -11,13 +11,11 @@ import android.util.Base64;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Robolectric tests for RemotingMediaSource. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class RemotingMediaSourceTest {
     @Test
     public void testFrom() {
