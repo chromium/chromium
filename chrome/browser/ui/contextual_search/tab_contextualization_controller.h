@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_runner.h"
+#include "base/timer/timer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -95,6 +96,10 @@ class TabContextualizationController : public content::WebContentsObserver {
       const GURL& url,
       const std::vector<optimization_guide::FrameMetadata>& frame_metadata);
 
+  // Performs actual page context retrieval after WebContents load completes.
+  // Virtual for testing.
+  virtual void FetchPageContextInternal(GetPageContextCallback callback);
+
  private:
   // Creates the eligibility API if it has not been created.
   void CreatePageContextEligibilityAPI();
@@ -113,8 +118,6 @@ class TabContextualizationController : public content::WebContentsObserver {
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
-  // Performs actual page context retrieval after WebContents load completes.
-  void FetchPageContextInternal(GetPageContextCallback callback);
   void FlushPendingPageContextCallbacks();
 
   // Gets the annotated page content from the page context eligibility API.
@@ -187,6 +190,10 @@ class TabContextualizationController : public content::WebContentsObserver {
   // Page content extraction is deferred until the loading completes after which
   // these callbacks will be used.
   std::vector<GetPageContextCallback> pending_page_context_callbacks_;
+
+  // Timer to flush pending page context callbacks if page load completion is
+  // not received within the timeout period.
+  base::OneShotTimer pending_page_context_timer_;
 
   base::WeakPtrFactory<TabContextualizationController> weak_ptr_factory_{this};
 };

@@ -30,6 +30,10 @@
 #include "pdf/mojom/pdf.mojom.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace lens {
 
 DEFINE_USER_DATA(TabContextualizationController);
@@ -78,6 +82,7 @@ void TabContextualizationController::OnPageContextEligibilityAPILoaded(
 
 void TabContextualizationController::PrimaryPageChanged(content::Page& page) {
   is_page_context_eligible_ = false;
+  pending_page_context_timer_.Stop();
 }
 
 void TabContextualizationController::DidFinishLoad(
@@ -89,6 +94,7 @@ void TabContextualizationController::DidFinishLoad(
 }
 
 void TabContextualizationController::FlushPendingPageContextCallbacks() {
+  pending_page_context_timer_.Stop();
   std::vector<GetPageContextCallback> callbacks =
       std::move(pending_page_context_callbacks_);
   pending_page_context_callbacks_.clear();
@@ -222,6 +228,23 @@ void TabContextualizationController::GetPageContext(
 
   if (web_contents->IsLoading()) {
     pending_page_context_callbacks_.push_back(std::move(callback));
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            chrome::android::
+                kOnDemandBackgroundTabContextCaptureOptimization)) {
+      int timeout_sec =
+          chrome::android::
+              kOnDemandBackgroundTabContextCaptureOverallFlushTimeoutSeconds
+                  .Get();
+      if (timeout_sec > 0 && !pending_page_context_timer_.IsRunning()) {
+        pending_page_context_timer_.Start(
+            FROM_HERE, base::Seconds(timeout_sec),
+            base::BindOnce(&TabContextualizationController::
+                               FlushPendingPageContextCallbacks,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     return;
   }
 

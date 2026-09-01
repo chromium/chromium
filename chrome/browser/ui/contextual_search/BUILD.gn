@@ -55,7 +55,10 @@ source_set("contextual_search") {
   }
 
   if (is_android) {
-    deps += [ "//chrome/browser/android:tabs_public" ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/flags:flags_android",
+    ]
   }
 }
 

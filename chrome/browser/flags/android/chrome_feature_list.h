@@ -410,6 +410,33 @@ inline constexpr base::FeatureParam<int> kGestureUserEducationPageDelay(
     "gesture-user-education-page-delay",
     /*default_value=*/4000);
 
+// The initial fallback delay in seconds for TabContextCaptureRequest before
+// triggering page context capture if page load events do not arrive.
+inline constexpr base::FeatureParam<int>
+    kOnDemandBackgroundTabContextCaptureInitialFallbackDelaySeconds(
+        &kOnDemandBackgroundTabContextCaptureOptimization,
+        "initial_fallback_delay_seconds",
+        /*default_value=*/25);
+
+// The overall flush timeout in seconds for TabContextualizationController to
+// flush pending page context callbacks if primary main frame load completion
+// does not arrive within this duration, preventing indefinite hangs on pages
+// with continuous subframe/ad loading.
+inline constexpr base::FeatureParam<int>
+    kOnDemandBackgroundTabContextCaptureOverallFlushTimeoutSeconds(
+        &kOnDemandBackgroundTabContextCaptureOptimization,
+        "overall_flush_timeout_seconds",
+        /*default_value=*/5);
+
+// The overall hard timeout in seconds for TabContextCaptureRequest covering
+// the entire capture lifecycle (load wait, APC extraction, and screenshot)
+// before aborting with UnableToCapture().
+inline constexpr base::FeatureParam<int>
+    kOnDemandBackgroundTabContextCaptureOverallTimeoutSeconds(
+        &kOnDemandBackgroundTabContextCaptureOptimization,
+        "overall_timeout_seconds",
+        /*default_value=*/35);
+
 inline constexpr base::FeatureParam<int> kProtectRecentlyVisibleTabDuration(
     &kProtectRecentlyVisibleTab,
     "duration_in_seconds",

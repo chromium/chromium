@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace lens {
@@ -48,10 +49,14 @@ class TabContextCaptureRequest : content::WebContentsObserver {
   void ScheduleCapture(const base::TimeDelta& delay);
   void UnableToCapture();
   void TriggerCapture();
+  void OnPageContextRetrieved(std::unique_ptr<lens::ContextualInputData> data);
   void DeleteSoon();
 
   // The current scheduled capture, if any.
   base::CancelableOnceClosure scheduled_capture_;
+
+  // Master timeout covering page load, APC extraction, and screenshot capture.
+  base::OneShotTimer overall_timeout_timer_;
 
   // This is assumed to exist so long as `weak_tab_` is valid.
   raw_ptr<lens::TabContextualizationController>
