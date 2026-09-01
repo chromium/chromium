@@ -110,6 +110,8 @@ class CORE_EXPORT XMLDocumentParserRs final : public ScriptableDocumentParser,
 
   void CheckIfBlockingStyleSheetAdded();
 
+  bool ShouldMarkScriptAlreadyStarted() const;
+
   Member<XMLParserScriptRunner> script_runner_;
   TextPosition script_start_position_;
   bool saw_error_ = false;

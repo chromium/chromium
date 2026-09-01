@@ -201,6 +201,8 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
   void CheckIfBlockingStyleSheetAdded();
 
+  bool ShouldMarkScriptAlreadyStarted() const;
+
   SegmentedString original_source_for_transform_;
 
   xmlParserCtxtPtr Context() const {

@@ -506,10 +506,7 @@ void XMLDocumentParserRs::StartElementNs(
   CreateElementFlags flags =
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
                         : CreateElementFlags::ByParser(document_);
-  if (RuntimeEnabledFeatures::DOMParserXmlScriptAlreadyStartedEnabled() &&
-      document_->IsDOMParserDocument() &&
-      (q_name.Matches(html_names::kScriptTag) ||
-       q_name.Matches(svg_names::kScriptTag))) {
+  if (ShouldMarkScriptAlreadyStarted()) {
     flags.SetAlreadyStarted(true);
   }
 
@@ -841,6 +838,24 @@ void XMLDocumentParserRs::CheckIfBlockingStyleSheetAdded() {
   added_pending_parser_blocking_stylesheet_ = false;
   waiting_for_stylesheets_ = true;
   PauseParsing();
+}
+
+bool XMLDocumentParserRs::ShouldMarkScriptAlreadyStarted() const {
+  if (!RuntimeEnabledFeatures::DOMParserXmlScriptAlreadyStartedEnabled()) {
+    return false;
+  }
+
+  // The cases below parse XML documents with "XML scripting support disabled":
+  // See:
+  // https://html.spec.whatwg.org/multipage/xhtml.html#xml-scripting-support-disabled
+  return
+      // DOMParser.parseFromString parses with XML scripting support disabled:
+      // See: https://html.spec.whatwg.org/#dom-domparser-parsefromstring
+      //      step 3, "Otherwise", step 1.
+      document_->IsDOMParserDocument() ||
+      // XMLHTTPRequest.responseXML parses with XML scripting support disabled:
+      // See: https://xhr.spec.whatwg.org/#document-response, step 6
+      document_->IsXHRDocument();
 }
 
 void XMLDocumentParserRs::ExecuteScriptsWaitingForResources() {
