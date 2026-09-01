@@ -162,14 +162,14 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
     EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
               transaction->CheckValue("path1", &string_1));
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
-              transaction->CheckValue("path1", NULL));
+              transaction->CheckValue("path1", nullptr));
 
     transaction->StoreHash("path1", &string_1);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
-    EXPECT_EQ(ValueState::CLEARED, transaction->CheckValue("path1", NULL));
-    transaction->StoreHash("path1", NULL);
-    EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckValue("path1", NULL));
+    EXPECT_EQ(ValueState::CLEARED, transaction->CheckValue("path1", nullptr));
+    transaction->StoreHash("path1", nullptr);
+    EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckValue("path1", nullptr));
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));
 
     base::Value dict_val(base::Value::Type::DICT);
@@ -197,7 +197,7 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
     EXPECT_EQ(ValueState::TRUSTED_UNKNOWN_VALUE,
               transaction->CheckValue("new_path", &string_2));
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
-              transaction->CheckValue("new_path", NULL));
+              transaction->CheckValue("new_path", nullptr));
   }
 
   // Manually corrupt the super MAC.
@@ -214,7 +214,7 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
     EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
               transaction->CheckValue("new_path", &string_2));
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
-              transaction->CheckValue("new_path", NULL));
+              transaction->CheckValue("new_path", nullptr));
   }
 }
 
@@ -261,7 +261,7 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     // The effects of the clear should be immediately visible.
     ASSERT_FALSE(transaction->HasHash("path1"));
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
-              transaction->CheckValue("path1", NULL));
+              transaction->CheckValue("path1", nullptr));
     EXPECT_EQ(ValueState::TRUSTED_UNKNOWN_VALUE,
               transaction->CheckValue("path1", &string_1));
   }
@@ -309,7 +309,7 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     transaction->ClearHash("path1");
 
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
-              transaction->CheckValue("path1", NULL));
+              transaction->CheckValue("path1", nullptr));
     EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
               transaction->CheckValue("path1", &string_1));
   }
@@ -450,7 +450,7 @@ TEST_F(PrefHashStoreImplTest, SplitHashStoreAndCheck) {
 
     // Verify NULL or empty dicts are declared as having been cleared.
     EXPECT_EQ(ValueState::CLEARED,
-              transaction->CheckSplitValue("path1", NULL, &invalid_keys));
+              transaction->CheckSplitValue("path1", nullptr, &invalid_keys));
 
     // invalid_keys should contain the keys that were removed.
     std::vector<std::string> expected_cleared_keys;
@@ -570,16 +570,16 @@ TEST_F(PrefHashStoreImplTest, EmptyAndNULLSplitDict) {
     // Verify stored empty dictionary matches NULL and empty dictionary back.
     transaction->StoreSplitHash("path1", &empty_dict);
     EXPECT_EQ(ValueState::UNCHANGED,
-              transaction->CheckSplitValue("path1", NULL, &invalid_keys));
+              transaction->CheckSplitValue("path1", nullptr, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
     EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckSplitValue(
                                          "path1", &empty_dict, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
 
     // Same when storing NULL directly.
-    transaction->StoreSplitHash("path1", NULL);
+    transaction->StoreSplitHash("path1", nullptr);
     EXPECT_EQ(ValueState::UNCHANGED,
-              transaction->CheckSplitValue("path1", NULL, &invalid_keys));
+              transaction->CheckSplitValue("path1", nullptr, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
     EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckSplitValue(
                                          "path1", &empty_dict, &invalid_keys));
