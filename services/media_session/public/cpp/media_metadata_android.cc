@@ -23,7 +23,10 @@ base::android::ScopedJavaLocalRef<jobject> MediaMetadata::CreateJavaObject(
       base::android::ConvertUTF16ToJavaString(env, artist));
   ScopedJavaLocalRef<jstring> j_album(
       base::android::ConvertUTF16ToJavaString(env, album));
-  return Java_MediaMetadata_create(env, j_title, j_artist, j_album);
+  ScopedJavaLocalRef<jstring> j_source_title(
+      base::android::ConvertUTF16ToJavaString(env, source_title));
+  return Java_MediaMetadata_create(env, j_title, j_artist, j_album,
+                                   j_source_title);
 }
 
 }  // namespace media_session

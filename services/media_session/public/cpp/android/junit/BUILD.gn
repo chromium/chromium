@@ -7,8 +7,10 @@ import("//build/config/android/rules.gni")
 robolectric_binary("media_session_junit_tests") {
   enable_android_resources = false
   testonly = true
-  sources =
-      [ "src/org/chromium/services/media_session/MediaPositionUnitTest.java" ]
+  sources = [
+    "src/org/chromium/services/media_session/MediaMetadataUnitTest.java",
+    "src/org/chromium/services/media_session/MediaPositionUnitTest.java",
+  ]
 
   deps = [
     "//base:base_java",

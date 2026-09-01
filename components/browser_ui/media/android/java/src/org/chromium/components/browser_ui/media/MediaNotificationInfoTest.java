@@ -133,4 +133,22 @@ public class MediaNotificationInfoTest {
         assertEquals(original.supportsStop(), copy.supportsStop());
         assertEquals(original.mediaSessionActions, copy.mediaSessionActions);
     }
+
+    @Test
+    public void testBuilderWithSourceTitle() {
+        MediaNotificationInfo.Builder builder = new MediaNotificationInfo.Builder();
+        builder.setOrigin("https://example.com");
+        builder.setMetadata(new MediaMetadata("title", "artist", "album", "example.com"));
+        builder.setListener(mListener);
+        builder.setInstanceId(0);
+        builder.setId(0);
+
+        MediaNotificationInfo info = builder.build();
+        assertNotNull(info);
+        assertEquals("https://example.com", info.origin);
+        assertEquals("title", info.metadata.getTitle());
+        assertEquals("artist", info.metadata.getArtist());
+        assertEquals("album", info.metadata.getAlbum());
+        assertEquals("example.com", info.metadata.getSourceTitle());
+    }
 }

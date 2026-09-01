@@ -32,7 +32,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.browser_ui.media.MediaSessionUma.MediaSessionActionSource;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -70,7 +69,9 @@ public class MediaSessionHelper implements MediaImageCallback {
     private @Nullable Bitmap mPageMediaImage;
     @VisibleForTesting public @Nullable Bitmap mFavicon;
     private @Nullable Bitmap mCurrentMediaImage;
-    private @Nullable String mOrigin;
+    // The origin of the media session. Defaults to an empty string to guarantee
+    // a non-null origin when constructing MediaNotificationInfo before the origin is resolved.
+    private String mOrigin = "";
     private int mPreviousVolumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE;
     @VisibleForTesting public MediaNotificationInfo.@Nullable Builder mNotificationInfoBuilder;
     // The fallback title if |mPageMetadata| is null or its title is empty.
@@ -323,15 +324,14 @@ public class MediaSessionHelper implements MediaImageCallback {
                     return;
                 }
                 assumeNonNull(mWebContents);
-                assumeNonNull(mOrigin);
 
-                Intent contentIntent = mDelegate.createBringTabToFrontIntent();
-
-                if (mFallbackTitle == null) mFallbackTitle = sanitizeMediaTitle(mOrigin);
+                // Initialize fallback title from origin if no page title was set yet.
+                maybeSetFallbackTitleFromOrigin(null);
 
                 mCurrentMetadata = getMetadata();
                 mCurrentMediaImage = getCachedNotificationImage();
                 rebaseMediaPosition(isPaused);
+                Intent contentIntent = mDelegate.createBringTabToFrontIntent();
                 mNotificationInfoBuilder =
                         mDelegate
                                 .createMediaNotificationInfoBuilder()
@@ -370,6 +370,11 @@ public class MediaSessionHelper implements MediaImageCallback {
             @Override
             public void mediaSessionMetadataChanged(@Nullable MediaMetadata metadata) {
                 mPageMetadata = metadata;
+                String previousOrigin = mOrigin;
+                mOrigin = (metadata != null) ? metadata.getSourceTitle() : "";
+                // If mFallbackTitle was previously tracking the old origin, update it to
+                // the new origin without overriding any page title set via titleWasSet().
+                maybeSetFallbackTitleFromOrigin(previousOrigin);
                 updateNotificationMetadata();
             }
 
@@ -442,9 +447,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                             return;
                         }
 
-                        mOrigin =
-                                UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
-                                        webContents.getVisibleUrl().getOrigin().getSpec());
+                        mOrigin = "";
                         mFavicon = null;
                         mPageMediaImage = null;
                         mPageMetadata = null;
@@ -694,6 +697,18 @@ public class MediaSessionHelper implements MediaImageCallback {
     }
 
     /**
+     * Updates {@link #mFallbackTitle} to track {@link #mOrigin} if uninitialized or if previously
+     * derived from {@code previousOrigin}. Preserves real page titles set via {@link #titleWasSet}.
+     */
+    private void maybeSetFallbackTitleFromOrigin(@Nullable String previousOrigin) {
+        if (TextUtils.isEmpty(mFallbackTitle)
+                || (!TextUtils.isEmpty(previousOrigin)
+                        && TextUtils.equals(mFallbackTitle, sanitizeMediaTitle(previousOrigin)))) {
+            mFallbackTitle = sanitizeMediaTitle(mOrigin);
+        }
+    }
+
+    /**
      * Updates the metadata in media notification. This method should be called whenever
      * |mPageMetadata| or |mFallbackTitle| is changed.
      */
@@ -705,6 +720,7 @@ public class MediaSessionHelper implements MediaImageCallback {
 
         mCurrentMetadata = newMetadata;
         mNotificationInfoBuilder.setMetadata(mCurrentMetadata);
+        mNotificationInfoBuilder.setOrigin(mOrigin);
         showNotification();
     }
 
@@ -716,7 +732,11 @@ public class MediaSessionHelper implements MediaImageCallback {
     private MediaMetadata getMetadata() {
         String artist = "";
         String album = "";
+        String sourceTitle = mOrigin;
         if (mPageMetadata != null) {
+            if (!TextUtils.isEmpty(mPageMetadata.getSourceTitle())) {
+                sourceTitle = mPageMetadata.getSourceTitle();
+            }
             if (!TextUtils.isEmpty(mPageMetadata.getTitle())) return mPageMetadata;
 
             artist = mPageMetadata.getArtist();
@@ -726,11 +746,12 @@ public class MediaSessionHelper implements MediaImageCallback {
         if (mCurrentMetadata != null
                 && TextUtils.equals(mFallbackTitle, mCurrentMetadata.getTitle())
                 && TextUtils.equals(artist, mCurrentMetadata.getArtist())
-                && TextUtils.equals(album, mCurrentMetadata.getAlbum())) {
+                && TextUtils.equals(album, mCurrentMetadata.getAlbum())
+                && TextUtils.equals(sourceTitle, mCurrentMetadata.getSourceTitle())) {
             return mCurrentMetadata;
         }
 
-        return new MediaMetadata(mFallbackTitle, artist, album);
+        return new MediaMetadata(mFallbackTitle, artist, album, sourceTitle);
     }
 
     private void updateNotificationActions() {

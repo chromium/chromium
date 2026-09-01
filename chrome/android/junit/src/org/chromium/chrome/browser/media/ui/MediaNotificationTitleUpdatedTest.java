@@ -317,6 +317,66 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
         assertEquals("title2", getDisplayedTitle());
     }
 
+    @Test
+    public void testOriginUpdatedFromSourceTitle() {
+        mTabHolder.simulateNavigation("about:blank", false);
+        mTabHolder.simulateMediaSessionStateChanged(true, false);
+        mTabHolder.simulateMediaSessionMetadataChanged(
+                new MediaMetadata("title2", "artist", "album", "example.com"));
+        mTabHolder.simulateMediaSessionActionsChanged(DEFAULT_ACTIONS);
+        advanceTimeByMillis(THROTTLE_MILLIS);
+
+        assertEquals("example.com", getController().mMediaNotificationInfo.origin);
+    }
+
+    @Test
+    public void testOriginUpdatedFromSourceTitle_NullMetadata() {
+        mTabHolder.simulateNavigation("about:blank", false);
+        mTabHolder.simulateMediaSessionStateChanged(true, false);
+        mTabHolder.simulateMediaSessionMetadataChanged(null);
+        mTabHolder.simulateMediaSessionActionsChanged(DEFAULT_ACTIONS);
+        advanceTimeByMillis(THROTTLE_MILLIS);
+
+        assertEquals("", getController().mMediaNotificationInfo.origin);
+    }
+
+    @Test
+    public void testFallbackTitleFromSourceTitle_WhenPageTitleEmpty() {
+        mTabHolder.simulateNavigation("about:blank", false);
+        mTabHolder.simulateTitleUpdated("");
+        mTabHolder.simulateMediaSessionStateChanged(true, false);
+        mTabHolder.simulateMediaSessionMetadataChanged(
+                new MediaMetadata("", "artist", "album", "example.com"));
+        mTabHolder.simulateMediaSessionActionsChanged(DEFAULT_ACTIONS);
+        advanceTimeByMillis(THROTTLE_MILLIS);
+
+        assertEquals("example.com", getController().mMediaNotificationInfo.origin);
+        assertEquals("example.com", getDisplayedTitle());
+    }
+
+    @Test
+    public void testFallbackTitleUpdatesWhenSourceTitleChanges_WhenPageTitleEmpty() {
+        mTabHolder.simulateNavigation("about:blank", false);
+        mTabHolder.simulateTitleUpdated("");
+        mTabHolder.simulateMediaSessionStateChanged(true, false);
+        mTabHolder.simulateMediaSessionMetadataChanged(
+                new MediaMetadata("", "artist", "album", "first.example.com"));
+        mTabHolder.simulateMediaSessionActionsChanged(DEFAULT_ACTIONS);
+        advanceTimeByMillis(THROTTLE_MILLIS);
+
+        assertEquals("first.example.com", getController().mMediaNotificationInfo.origin);
+        assertEquals("first.example.com", getDisplayedTitle());
+
+        // Metadata updates with new sourceTitle on untitled session.
+        mTabHolder.simulateMediaSessionMetadataChanged(
+                new MediaMetadata("", "artist", "album", "second.example.com"));
+        mTabHolder.simulateMediaSessionActionsChanged(DEFAULT_ACTIONS);
+        advanceTimeByMillis(THROTTLE_MILLIS);
+
+        assertEquals("second.example.com", getController().mMediaNotificationInfo.origin);
+        assertEquals("second.example.com", getDisplayedTitle());
+    }
+
     private CharSequence getDisplayedTitle() {
         Notification notification = getController().mNotificationBuilder.build();
         ShadowNotification shadowNotification = Shadows.shadowOf(notification);

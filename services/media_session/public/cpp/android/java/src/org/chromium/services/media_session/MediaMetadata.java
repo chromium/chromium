@@ -4,8 +4,6 @@
 
 package org.chromium.services.media_session;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
@@ -27,6 +25,8 @@ public final class MediaMetadata {
 
     private String mAlbum;
 
+    private final String mSourceTitle;
+
     /** Returns the title associated with the media session. */
     public @Nullable String getTitle() {
         return mTitle;
@@ -42,8 +42,14 @@ public final class MediaMetadata {
         return mAlbum;
     }
 
+    /** Returns the source title (origin/app name) associated with the media session. */
+    public String getSourceTitle() {
+        return mSourceTitle;
+    }
+
     /**
      * Sets the title associated with the media session.
+     *
      * @param title The title to use for the media session.
      */
     public void setTitle(@Nullable String title) {
@@ -51,8 +57,9 @@ public final class MediaMetadata {
     }
 
     /**
-     * Sets the arstist name associated with the media session.
-     * @param arstist The artist name to use for the media session.
+     * Sets the artist name associated with the media session.
+     *
+     * @param artist The artist name to use for the media session.
      */
     public void setArtist(String artist) {
         mArtist = artist;
@@ -67,19 +74,26 @@ public final class MediaMetadata {
     }
 
     /**
-     * Creates a new MediaMetadata from the C++ code. This is exactly like the
-     * constructor below apart that it can be called by native code.
+     * Creates a new MediaMetadata from C++ code. This is equivalent to the constructor below,
+     * except that it can be called by native code.
      */
     @CalledByNative
-    private static MediaMetadata create(@Nullable String title, String artist, String album) {
-        return new MediaMetadata(title, artist, album);
+    private static MediaMetadata create(
+            @Nullable String title, String artist, String album, String sourceTitle) {
+        return new MediaMetadata(title, artist, album, sourceTitle);
     }
 
     /** Creates a new MediaMetadata. */
     public MediaMetadata(@Nullable String title, String artist, String album) {
+        this(title, artist, album, "");
+    }
+
+    /** Creates a new MediaMetadata with source title. */
+    public MediaMetadata(@Nullable String title, String artist, String album, String sourceTitle) {
         mTitle = title;
         mArtist = artist;
         mAlbum = album;
+        mSourceTitle = sourceTitle;
     }
 
     /** Comparing MediaMetadata is expensive and should be used sparingly */
@@ -91,19 +105,20 @@ public final class MediaMetadata {
         MediaMetadata other = (MediaMetadata) obj;
         return TextUtils.equals(mTitle, other.mTitle)
                 && TextUtils.equals(mArtist, other.mArtist)
-                && TextUtils.equals(mAlbum, other.mAlbum);
+                && TextUtils.equals(mAlbum, other.mAlbum)
+                && TextUtils.equals(mSourceTitle, other.mSourceTitle);
     }
 
     /**
      * @return The hash code of this {@link MediaMetadata}. The method uses the same algorithm in
-     * {@link java.util.List} for combinine hash values.
+     *     {@link java.util.List} for combining hash values.
      */
     @Override
     public int hashCode() {
-        assumeNonNull(mTitle);
-        int result = mTitle.hashCode();
+        int result = mTitle != null ? mTitle.hashCode() : 0;
         result = 31 * result + mArtist.hashCode();
         result = 31 * result + mAlbum.hashCode();
+        result = 31 * result + mSourceTitle.hashCode();
         return result;
     }
 }
