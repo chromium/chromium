@@ -46,14 +46,20 @@ class PollingStateObserver : public StateObserver<M> {
                polling_interval,
                base::BindRepeating(&PollingStateObserver<T>::OnPoll,
                                    base::Unretained(this))) {
-    timer_.Reset();
   }
 
   ~PollingStateObserver() override = default;
 
   // StateObserver:
   M GetStateObserverInitialState() const final {
-    return M(poll_callback_.Run());
+    M initial_value = M(poll_callback_.Run());
+    // We start the timer after computing the initial value to avoid it
+    // immediately triggering OnPoll if the computation runs long ---
+    // if the computation involves a nested event loop, that nested event loop
+    // can end up processing the initial value and destroying `this` from
+    // within `OnPoll`.
+    timer_.Reset();
+    return initial_value;
   }
 
  private:
@@ -65,7 +71,7 @@ class PollingStateObserver : public StateObserver<M> {
   PollCallback poll_callback_;
 
   // This timer will fire every `polling_interval`
-  base::RepeatingTimer timer_;
+  mutable base::RepeatingTimer timer_;
 };
 
 // Need out-of-line declaration of static class variables on some platforms.
