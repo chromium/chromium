@@ -254,16 +254,14 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
     return false;
   }
 
-  // We create a system caret regardless of accessibility mode since not all
+  // Create a system caret regardless of accessibility mode since not all
   // assistive software that makes use of a caret is classified as a screen
   // reader, e.g. the built-in Windows Magnifier.
-  ax_system_caret_ = std::make_unique<ui::AXSystemCaretWin>(hwnd());
-
-  // If we failed to create the child, then return false.
-  if (!::IsWindow(hwnd())) {
-    delete this;
+  auto ax_system_caret = std::make_unique<ui::AXSystemCaretWin>(hwnd());
+  if (!ref) {
     return false;
   }
+  ax_system_caret_ = std::move(ax_system_caret);
 
   // Ignore failure from this call. Some SKUs of Windows such as Hololens do not
   // support MSAA, and this call failing should not stop us from initializing
