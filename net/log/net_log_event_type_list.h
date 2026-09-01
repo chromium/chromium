@@ -2605,6 +2605,8 @@ EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOTS_SWAPPED)
 //                             attempt, if there was one>,
 //     "canceled_ip_endpoint": <IP endpoint of the other connector's canceled
 //                              attempt, if there was one>,
+//     "canceled_attempts": <List of dictionaries containing "attempt_id" and
+//                           "ip_endpoint" for all canceled attempts, if any>,
 //   }
 EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_CONNECTOR_SETTLED_JOB)
 

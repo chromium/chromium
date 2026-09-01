@@ -31,14 +31,20 @@ QuicSessionPool::AsyncDnsJob::ConnectionState::~ConnectionState() = default;
 
 QuicSessionPool::AsyncDnsJob::ConnectionState&
 QuicSessionPool::AsyncDnsJob::GetState(const EndpointConnector& connector) {
-  CHECK(!connector.is_stale());
+  if (&connector == stale_state_.primary_connector.get() ||
+      &connector == stale_state_.secondary_connector.get()) {
+    return stale_state_;
+  }
   return fresh_state_;
 }
 
 const QuicSessionPool::AsyncDnsJob::ConnectionState&
 QuicSessionPool::AsyncDnsJob::GetState(
     const EndpointConnector& connector) const {
-  CHECK(!connector.is_stale());
+  if (&connector == stale_state_.primary_connector.get() ||
+      &connector == stale_state_.secondary_connector.get()) {
+    return stale_state_;
+  }
   return fresh_state_;
 }
 
@@ -155,6 +161,10 @@ void QuicSessionPool::AsyncDnsJob::SetRequestExpectations(
        fresh_state_.primary_connector->AwaitingSessionCreation()) ||
       (fresh_state_.secondary_connector &&
        fresh_state_.secondary_connector->AwaitingSessionCreation()) ||
+      (stale_state_.primary_connector &&
+       stale_state_.primary_connector->AwaitingSessionCreation()) ||
+      (stale_state_.secondary_connector &&
+       stale_state_.secondary_connector->AwaitingSessionCreation()) ||
       held_session_creation_result_.has_value()) {
     request->ExpectQuicSessionCreation();
   }
@@ -180,7 +190,9 @@ void QuicSessionPool::AsyncDnsJob::PopulateNetErrorDetails(
   // are filled.
   for (const EndpointConnector* connector :
        {fresh_state_.primary_connector.get(),
-        fresh_state_.secondary_connector.get()}) {
+        fresh_state_.secondary_connector.get(),
+        stale_state_.primary_connector.get(),
+        stale_state_.secondary_connector.get()}) {
     if (connector && connector->has_attempt()) {
       connector->PopulateNetErrorDetails(details);
       return;
@@ -256,14 +268,22 @@ void QuicSessionPool::AsyncDnsJob::CompleteJob(int rv) {
   RecordMetrics(rv);
   LogJobComplete(rv);
   fresh_state_.slow_timer.Stop();
-  if (!session_creation_notified_ &&
-      held_session_creation_result_.has_value()) {
-    // The job is completing, so no later attempt can replace this result.
-    // Deliver the held failure now.
-    auto weak_this = weak_factory_.GetWeakPtr();
-    NotifyRequestsOfSessionCreation(*held_session_creation_result_);
-    if (!weak_this) {
-      return;
+  stale_state_.slow_timer.Stop();
+  if (!session_creation_notified_) {
+    if (rv == OK) {
+      auto weak_this = weak_factory_.GetWeakPtr();
+      NotifyRequestsOfSessionCreation(OK);
+      if (!weak_this) {
+        return;
+      }
+    } else if (held_session_creation_result_.has_value()) {
+      // The job is completing, so no later attempt can replace this result.
+      // Deliver the held failure now.
+      auto weak_this = weak_factory_.GetWeakPtr();
+      NotifyRequestsOfSessionCreation(*held_session_creation_result_);
+      if (!weak_this) {
+        return;
+      }
     }
   }
   if (!callback_.is_null()) {
@@ -349,8 +369,19 @@ QuicSessionPool::AsyncDnsJob::GetAttemptParams() const {
 }
 
 bool QuicSessionPool::AsyncDnsJob::MaybePoolToExistingSession() {
+  if (service_endpoint_request_) {
+    if (service_endpoint_request_->IsStaleWhileRefreshing()) {
+      stale_endpoints_evaluated_for_pooling_ = true;
+    } else if (stale_endpoints_evaluated_for_pooling_) {
+      stale_endpoints_evaluated_for_pooling_ = false;
+      num_endpoints_evaluated_for_pooling_ = 0;
+    }
+  }
+
   const std::vector<UsableEndpoint>& usable_endpoints = GetUsableEndpoints();
-  for (const UsableEndpoint& usable : usable_endpoints) {
+  for (size_t i = num_endpoints_evaluated_for_pooling_;
+       i < usable_endpoints.size(); ++i) {
+    const UsableEndpoint& usable = usable_endpoints[i];
     if (QuicChromiumClientSession* session =
             pool_->HasMatchingIpSessionForServiceEndpoint(
                 key_, usable.endpoint,
@@ -364,6 +395,7 @@ bool QuicSessionPool::AsyncDnsJob::MaybePoolToExistingSession() {
       return true;
     }
   }
+  num_endpoints_evaluated_for_pooling_ = usable_endpoints.size();
 
   // Record misses only for the first endpoints checked. Re-checks on later
   // results would inflate the recorded misses.
@@ -378,6 +410,10 @@ std::optional<QuicSessionPool::AsyncDnsJob::Candidate>
 QuicSessionPool::AsyncDnsJob::TakeNextCandidate(
     const EndpointConnector& connector) {
   ConnectionState& state = GetState(connector);
+  if (&state == &stale_state_ &&
+      !service_endpoint_request_->IsStaleWhileRefreshing()) {
+    return std::nullopt;
+  }
 
   // While the secondary slot is empty the primary connector may use both
   // families, and every visible IPv6 candidate ranks above any IPv4 one.
@@ -403,10 +439,10 @@ QuicSessionPool::AsyncDnsJob::TakeNextCandidate(
       for (const IPEndPoint& ip_endpoint : ip_endpoints) {
         Candidate candidate{ip_endpoint, usable.endpoint.metadata,
                             usable.quic_version};
-        if (std::ranges::contains(claimed_candidates_, candidate)) {
+        if (std::ranges::contains(state.claimed_candidates_, candidate)) {
           continue;
         }
-        claimed_candidates_.push_back(candidate);
+        state.claimed_candidates_.push_back(candidate);
         return candidate;
       }
     }
@@ -498,11 +534,10 @@ void QuicSessionPool::AsyncDnsJob::OnConnectorComplete(
     return;
   }
 
-  // This connector ran out of candidates. Keep the job going while the other
+  // This connector ran out of candidates. Keep the job going while any other
   // connector still runs an attempt, and while DNS can still deliver more
   // candidates.
-  const EndpointConnector* other = OtherConnector(connector);
-  if (!resolution_finished_ || (other && other->has_attempt())) {
+  if (!resolution_finished_ || HasAttemptInFlight()) {
     return;
   }
   CompleteJob(LastFailureResult().value_or(rv));
@@ -541,8 +576,10 @@ int QuicSessionPool::AsyncDnsJob::OnAttemptStarted(
             .Set("quic_version",
                  quic::ParsedQuicVersionToString(candidate.quic_version))
             .Set("metadata", candidate.metadata.ToValue())
-            .Set("resolution_in_flight", !resolution_finished_);
+            .Set("resolution_in_flight", !resolution_finished_)
+            .Set("is_stale", connector.is_stale());
       });
+  MaybeStartSlowTimer(GetState(connector));
   return attempt_id;
 }
 
@@ -581,10 +618,14 @@ void QuicSessionPool::AsyncDnsJob::LogServiceEndpointRequestFinished(
       NetLogEventType::
           QUIC_SESSION_POOL_ASYNC_DNS_JOB_SERVICE_ENDPOINT_REQUEST_FINISHED,
       [&] {
+        const bool fresh_attempt_started =
+            (fresh_state_.primary_connector &&
+             fresh_state_.primary_connector->attempts_started() > 0) ||
+            (fresh_state_.secondary_connector &&
+             fresh_state_.secondary_connector->attempts_started() > 0);
         return base::DictValue()
             .Set("net_error", rv)
-            .Set("ignored_late_error",
-                 rv != OK && fresh_state_.primary_connector != nullptr);
+            .Set("ignored_late_error", rv != OK && fresh_attempt_started);
       });
 }
 
@@ -658,16 +699,42 @@ void QuicSessionPool::AsyncDnsJob::DestroyOtherConnector(
         }
         dict.Set("completion_reason",
                  connector.has_attempt() ? "attempt_succeeded" : "ip_pooling");
-        const EndpointConnector* other = OtherConnector(connector);
-        if (other && other->has_attempt()) {
-          CHECK(other->attempt_id().has_value());
-          dict.Set("canceled_attempt_id", *other->attempt_id());
-          dict.Set("canceled_ip_endpoint",
-                   other->attempt_ip_endpoint()->ToString());
+        base::ListValue canceled_attempts;
+        for (const EndpointConnector* other :
+             {fresh_state_.primary_connector.get(),
+              fresh_state_.secondary_connector.get(),
+              stale_state_.primary_connector.get(),
+              stale_state_.secondary_connector.get()}) {
+          if (other && other != &connector && other->has_attempt()) {
+            CHECK(other->attempt_id().has_value());
+            if (!dict.contains("canceled_attempt_id")) {
+              dict.Set("canceled_attempt_id", *other->attempt_id());
+              dict.Set("canceled_ip_endpoint",
+                       other->attempt_ip_endpoint()->ToString());
+            }
+            base::DictValue canceled_dict;
+            canceled_dict.Set("attempt_id", *other->attempt_id());
+            canceled_dict.Set("ip_endpoint",
+                              other->attempt_ip_endpoint()->ToString());
+            canceled_attempts.Append(std::move(canceled_dict));
+          }
+        }
+        if (!canceled_attempts.empty()) {
+          dict.Set("canceled_attempts", std::move(canceled_attempts));
         }
         return dict;
       });
   ConnectionState& state = GetState(connector);
+  ConnectionState& other_state =
+      (&state == &fresh_state_) ? stale_state_ : fresh_state_;
+
+  // Abort the opposing race entirely (i.e. fresh vs stale) to ensure no
+  // background tasks or socket attempts outlive the job resolution.
+  other_state.slow_timer.Stop();
+  other_state.primary_connector.reset();
+  other_state.secondary_connector.reset();
+
+  // Cleanup the losing connector in the winning state.
   if (&connector == state.primary_connector.get()) {
     state.secondary_connector.reset();
     return;
@@ -709,6 +776,11 @@ void QuicSessionPool::AsyncDnsJob::MaybeStartSlowTimer(ConnectionState& state) {
     // candidates by itself.
     return;
   }
+  base::TimeTicks start_time = state.primary_connector->attempt_start_time();
+  if (!start_time.is_null()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
+    delay = std::max(base::TimeDelta(), delay - elapsed);
+  }
   state.slow_timer_started = true;
   state.slow_timer.Start(FROM_HERE, delay,
                          base::BindOnce(&AsyncDnsJob::OnSlowTimer,
@@ -726,7 +798,7 @@ void QuicSessionPool::AsyncDnsJob::OnSlowTimer(ConnectionState* state) {
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_FIRED);
 
   state->secondary_connector = std::make_unique<EndpointConnector>(
-      this, "second", /*created_by_slow_timer=*/true, /*is_stale=*/false);
+      this, "second", /*created_by_slow_timer=*/true);
   if (!state->primary_connector->is_attempting_ipv6()) {
     // The connector in the primary slot is not on IPv6, either because it
     // attempts IPv4 or because it waits for a candidate. The slots decide the
@@ -744,29 +816,25 @@ void QuicSessionPool::AsyncDnsJob::OnSlowTimer(ConnectionState* state) {
   }
 }
 
-bool QuicSessionPool::AsyncDnsJob::HasWaitingConnector() const {
-  return (fresh_state_.primary_connector &&
-          fresh_state_.primary_connector->is_waiting_on_dns()) ||
-         (fresh_state_.secondary_connector &&
-          fresh_state_.secondary_connector->is_waiting_on_dns());
+bool QuicSessionPool::AsyncDnsJob::HasWaitingConnector(
+    const ConnectionState& state) const {
+  return (state.primary_connector &&
+          state.primary_connector->is_waiting_on_dns()) ||
+         (state.secondary_connector &&
+          state.secondary_connector->is_waiting_on_dns());
 }
 
 bool QuicSessionPool::AsyncDnsJob::HasAttemptInFlight() const {
   return (fresh_state_.primary_connector &&
           fresh_state_.primary_connector->has_attempt()) ||
          (fresh_state_.secondary_connector &&
-          fresh_state_.secondary_connector->has_attempt());
+          fresh_state_.secondary_connector->has_attempt()) ||
+         (stale_state_.primary_connector &&
+          stale_state_.primary_connector->has_attempt()) ||
+         (stale_state_.secondary_connector &&
+          stale_state_.secondary_connector->has_attempt());
 }
 
-const QuicSessionPool::EndpointConnector*
-QuicSessionPool::AsyncDnsJob::OtherConnector(
-    const EndpointConnector& connector) const {
-  const ConnectionState& state = GetState(connector);
-  if (&connector == state.primary_connector.get()) {
-    return state.secondary_connector.get();
-  }
-  return state.primary_connector.get();
-}
 
 std::optional<int> QuicSessionPool::AsyncDnsJob::LastFailureResult() const {
   if (!last_attempt_failure_.has_value()) {
@@ -781,6 +849,10 @@ int QuicSessionPool::AsyncDnsJob::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority_;
   parameters.secure_dns_policy = key_.session_key().secure_dns_policy();
+  if (base::FeatureList::IsEnabled(features::kOptimisticDnsForQuic)) {
+    parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+        STALE_ALLOWED_WHILE_REFRESHING;
+  }
   service_endpoint_request_ = host_resolver_->CreateServiceEndpointRequest(
       HostResolver::Host(key_.destination()),
       key_.session_key().network_anonymization_key(),
@@ -793,24 +865,113 @@ int QuicSessionPool::AsyncDnsJob::DoResolveHostComplete(int rv) {
   resolution_finished_time_ = base::TimeTicks::Now();
   MaybeSetDnsResolutionEndTime();
 
-  // A resolver error fails the job only while no attempt has run. Once a
-  // connector exists the attempts decide the outcome.
-  if (rv != OK && !fresh_state_.primary_connector) {
+  // A resolver error fails the job immediately unless a fresh attempt is
+  // somehow already running. Stale attempts are speculative and should not
+  // override a hard DNS error, so we abort them here (consistent with
+  // TcpConnectJob).
+  const bool fresh_attempt_started =
+      (fresh_state_.primary_connector &&
+       fresh_state_.primary_connector->attempts_started() > 0) ||
+      (fresh_state_.secondary_connector &&
+       fresh_state_.secondary_connector->attempts_started() > 0);
+  if (rv != OK && !fresh_attempt_started) {
+    stale_state_.slow_timer.Stop();
+    stale_state_.primary_connector.reset();
+    stale_state_.secondary_connector.reset();
     return rv;
   }
 
   return ProcessServiceEndpointResults().value_or(
-      ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+      rv != OK ? rv : ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+}
+
+void QuicSessionPool::AsyncDnsJob::MaybePromoteStaleConnectors() {
+  if (!service_endpoint_request_ ||
+      service_endpoint_request_->IsStaleWhileRefreshing()) {
+    return;
+  }
+
+  stale_state_.slow_timer.Stop();
+
+  // Stale connectors whose in-flight attempts target endpoints present in fresh
+  // DNS results are promoted to the fresh state machine. If an in-flight stale
+  // attempt targets an endpoint absent from fresh DNS, it is intentionally not
+  // promoted, but is allowed to complete its current attempt in the background
+  // (consistent with TcpConnectJob behavior).
+  auto try_promote = [&](std::unique_ptr<EndpointConnector>& stale_connector) {
+    if (stale_connector && stale_connector->has_attempt_in_flight()) {
+      const std::optional<IPEndPoint> address =
+          stale_connector->attempt_ip_endpoint();
+      if (address && IsEndpointInFreshList(*address)) {
+        if (!fresh_state_.primary_connector ||
+            !fresh_state_.primary_connector->has_attempt_in_flight()) {
+          fresh_state_.primary_connector = std::move(stale_connector);
+        } else if (!fresh_state_.secondary_connector ||
+                   !fresh_state_.secondary_connector->has_attempt_in_flight()) {
+          fresh_state_.secondary_connector = std::move(stale_connector);
+        }
+
+        // Ensure the fresh state knows it has already tried this endpoint,
+        // whether promotion succeeded or was blocked by busy fresh slots.
+        for (const UsableEndpoint& usable : GetUsableEndpoints()) {
+          if (std::ranges::contains(usable.endpoint.ipv4_endpoints, *address) ||
+              std::ranges::contains(usable.endpoint.ipv6_endpoints, *address)) {
+            Candidate fresh_candidate{*address, usable.endpoint.metadata,
+                                      usable.quic_version};
+            if (!std::ranges::contains(fresh_state_.claimed_candidates_,
+                                       fresh_candidate)) {
+              fresh_state_.claimed_candidates_.push_back(fresh_candidate);
+            }
+          }
+        }
+      }
+    }
+  };
+
+  try_promote(stale_state_.primary_connector);
+  try_promote(stale_state_.secondary_connector);
+
+  if (fresh_state_.primary_connector && fresh_state_.secondary_connector) {
+    if (!fresh_state_.primary_connector->is_attempting_ipv6() &&
+        fresh_state_.secondary_connector->is_attempting_ipv6()) {
+      std::swap(fresh_state_.primary_connector,
+                fresh_state_.secondary_connector);
+      net_log_.AddEvent(
+          NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOTS_SWAPPED);
+    }
+  }
+
+  // If a secondary connector is now present in the fresh state (e.g. promoted
+  // from stale), cancel any pending slow timer to prevent OnSlowTimer from
+  // asserting CHECK(!state->secondary_connector).
+  if (fresh_state_.secondary_connector) {
+    fresh_state_.slow_timer.Stop();
+  }
+}
+
+bool QuicSessionPool::AsyncDnsJob::IsStaleConnector(
+    const EndpointConnector& connector) const {
+  return &GetState(connector) == &stale_state_;
+}
+
+bool QuicSessionPool::AsyncDnsJob::IsEndpointInFreshList(
+    const IPEndPoint& endpoint) const {
+  for (const UsableEndpoint& usable : GetUsableEndpoints()) {
+    if (std::ranges::contains(usable.endpoint.ipv4_endpoints, endpoint) ||
+        std::ranges::contains(usable.endpoint.ipv6_endpoints, endpoint)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::optional<int>
 QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
-  // Nothing to do while every connector keeps an attempt in flight. A
-  // connector reads the new results when it advances, and re-checks IP
-  // pooling before its next attempt.
-  if (fresh_state_.primary_connector && !HasWaitingConnector()) {
-    return ERR_IO_PENDING;
-  }
+  MaybePromoteStaleConnectors();
+
+  ConnectionState& state = service_endpoint_request_->IsStaleWhileRefreshing()
+                               ? stale_state_
+                               : fresh_state_;
 
   // If another request pooled to an existing session and activated the key
   // while we were waiting for async DNS resolution, this job will be
@@ -834,6 +995,14 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
     return OK;
   }
 
+  // We already checked for eager pooling matches. Since none were found,
+  // there is nothing to do while every connector keeps an attempt in flight.
+  // A connector will read the new results if/when it advances.
+  if (state.primary_connector && !HasWaitingConnector(state)) {
+    MaybeStartSlowTimer(state);
+    return ERR_IO_PENDING;
+  }
+
   if (GetUsableEndpoints().empty()) {
     // Nothing is visible to attempt. An attempt that is still in flight can
     // settle the job by itself.
@@ -852,12 +1021,12 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
   // connectors.
   MaybeSetDnsResolutionEndTime();
 
-  if (!fresh_state_.primary_connector) {
-    fresh_state_.primary_connector = std::make_unique<EndpointConnector>(
-        this, "first", /*created_by_slow_timer=*/false, /*is_stale=*/false);
+  if (!state.primary_connector) {
+    state.primary_connector = std::make_unique<EndpointConnector>(
+        this, "first", /*created_by_slow_timer=*/false);
   }
 
-  std::optional<int> result = AdvanceConnectors(fresh_state_);
+  std::optional<int> result = AdvanceConnectors(state);
   if (result.has_value()) {
     return result;
   }
@@ -866,6 +1035,9 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
   // finished. Until then more candidates may arrive.
   if (!resolution_finished_) {
     return std::nullopt;
+  }
+  if (HasAttemptInFlight()) {
+    return ERR_IO_PENDING;
   }
   return LastFailureResult();
 }

@@ -47,6 +47,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kOptimisticDnsForTcp);
 NET_EXPORT extern const base::FeatureParam<bool>
     kUseStaleConnectorsForOptimisticDns;
 
+// Enables optimistic DNS for QUIC.
+NET_EXPORT BASE_DECLARE_FEATURE(kOptimisticDnsForQuic);
+
 // Caches UDP connect() results in AddressSorterPosix.
 NET_EXPORT BASE_DECLARE_FEATURE(kAddressSorterConnectCache);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,

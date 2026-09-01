@@ -20,12 +20,12 @@ namespace net {
 QuicSessionPool::EndpointConnector::EndpointConnector(
     AsyncDnsJob* job,
     const char* name,
-    bool created_by_slow_timer,
-    bool is_stale)
-    : job_(job),
-      name_(name),
-      created_by_slow_timer_(created_by_slow_timer),
-      is_stale_(is_stale) {}
+    bool created_by_slow_timer)
+    : job_(job), name_(name), created_by_slow_timer_(created_by_slow_timer) {}
+
+bool QuicSessionPool::EndpointConnector::is_stale() const {
+  return job_->IsStaleConnector(*this);
+}
 
 QuicSessionPool::EndpointConnector::~EndpointConnector() {
   if (attempt_in_flight_) {
@@ -67,7 +67,7 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
         params.use_dns_aliases, std::move(params.dns_aliases),
         /*crypto_client_config_handle=*/nullptr,
         params.session_creation_initiator, params.quic_connection_reuse_details,
-        params.connection_management_config, is_stale_);
+        params.connection_management_config, is_stale());
 
     int rv = attempt_->Start(base::BindOnce(
         &EndpointConnector::OnAttemptComplete, weak_factory_.GetWeakPtr()));
