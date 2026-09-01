@@ -790,7 +790,7 @@ FT_BEGIN_HEADER
    * by allowing glyphs to be composed from other glyphs with variable
    * transformations and axis value overrides.
    */
-#define TT_CONFIG_OPTION_VARC
+#undef TT_CONFIG_OPTION_VARC
 
 
   /**************************************************************************
