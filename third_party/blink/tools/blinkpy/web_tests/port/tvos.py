@@ -182,10 +182,18 @@ class TVOSPort(base.Port):
         # ensure it is up to date.
         self.host.executive.run_command(self.reinstall_cmd_line())
 
+    def get_platform_tags(self):
+        # tvOS is an iOS subset, so also match iOS tags to inherit
+        # IOSTestExpectations.
+        return super(TVOSPort, self).get_platform_tags() | {'ios26-simulator'}
+
     def used_expectations_files(self):
         files = super(TVOSPort, self).used_expectations_files()
+        ios_expectations_file = self._filesystem.join(self.web_tests_dir(),
+                                                      'IOSTestExpectations')
         tvos_additional_expectations_files = self._filesystem.join(
             self.web_tests_dir(), 'TVOSTestExpectations')
+        files.append(ios_expectations_file)
         files.append(tvos_additional_expectations_files)
         return files
 
