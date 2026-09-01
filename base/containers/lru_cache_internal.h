@@ -7,12 +7,19 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <atomic>
 #include <concepts>
 #include <list>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 
 namespace base {
 namespace trace_event::internal {
@@ -31,9 +38,14 @@ struct GetKeyFromKVPair {
   }
 };
 
+inline bool IsLRUCacheMemoryConsumerEnabled() {
+  return base::FeatureList::GetInstance() &&
+         base::FeatureList::IsEnabled(kLRUCacheMemoryConsumer);
+}
+
 // Base class for the LRU cache specializations defined below.
 template <class ValueType, class GetKeyFromValue, class KeyIndexTemplate>
-class LRUCacheBase {
+class LRUCacheBase : public PassiveMemoryConsumer {
  public:
   // The contents of the list. This must contain a copy of the key (that may be
   // extracted via `GetKeyFromValue()(value)` so we can efficiently delete
@@ -61,24 +73,67 @@ class LRUCacheBase {
   // example, maybe it has special work to do when something is evicted), it
   // can pass NO_AUTO_EVICT to not restrict the cache size.
   explicit LRUCacheBase(std::optional<size_type> max_size)
-      : max_size_(max_size) {}
+      : baseline_max_size_(max_size) {
+    MaybeCreateOrRemoveRegistration();
+  }
 
   // In theory, LRUCacheBase could be copyable, but since copying `ValueList`
   // might be costly, it's currently move-only to ensure users don't
   // accidentally incur performance penalties. If you need this to become
   // copyable, talk to base/ OWNERS.
-  LRUCacheBase(LRUCacheBase&&) noexcept = default;
-  LRUCacheBase& operator=(LRUCacheBase&&) noexcept = default;
+  LRUCacheBase(LRUCacheBase&& other) noexcept
+      : ordering_(std::move(other.ordering_)),
+        index_(std::move(other.index_)),
+        baseline_max_size_(
+            std::exchange(other.baseline_max_size_, std::nullopt)),
+        current_memory_limit_(
+            other.current_memory_limit_.load(std::memory_order_relaxed)) {
+    other.registration_.reset();
+    MaybeCreateOrRemoveRegistration();
+  }
 
-  ~LRUCacheBase() = default;
+  LRUCacheBase& operator=(LRUCacheBase&& other) noexcept {
+    if (this != &other) {
+      ordering_ = std::move(other.ordering_);
+      index_ = std::move(other.index_);
+      baseline_max_size_ =
+          std::exchange(other.baseline_max_size_, std::nullopt);
+      current_memory_limit_.store(
+          other.current_memory_limit_.load(std::memory_order_relaxed),
+          std::memory_order_relaxed);
+      other.registration_.reset();
+      registration_.reset();
+      MaybeCreateOrRemoveRegistration();
+    }
+    return *this;
+  }
+
+  ~LRUCacheBase() override = default;
 
   // Returns the maximum size of the cache. Valid to call only if there is a max
   // size (NO_AUTO_EVICT was *not* used).
-  size_type max_size() const { return max_size_.value(); }
+  size_type max_size() const {
+    CHECK(baseline_max_size_.has_value());
+
+    if (!registration_ || baseline_max_size_.value() == 0) {
+      return baseline_max_size_.value();
+    }
+
+    // Some callers (mostly tests) set a max size of 0. We can't support 0
+    // out-of-the box for all callers, because some of them depend on insertions
+    // being guaranteed to work. Because of this, the max size imposed by
+    // MemoryCoordinator is >= 1, but we still need to honor a caller-passed max
+    // size of 0.
+    return std::max<size_type>(
+        1, ScaleByMemoryLimit(
+               baseline_max_size_.value(),
+               current_memory_limit_.load(std::memory_order_relaxed)));
+  }
 
   void UpdateMaxSize(size_type new_max_size) {
-    max_size_ = new_max_size;
-    ShrinkToSize(new_max_size);
+    baseline_max_size_ = new_max_size;
+    MaybeCreateOrRemoveRegistration();
+    ShrinkToSize(max_size());
   }
 
   // Inserts an item into the list. If an existing item has the same key, it is
@@ -94,16 +149,18 @@ class LRUCacheBase {
       // Erase the reference to it. The index reference will be replaced in the
       // code below.
       Erase(index_iter->second);
-    } else if (max_size_.has_value()) {
+    }
+
+    if (baseline_max_size_.has_value()) {
       // The only way an insertion can fail is if max size is zero. In other
       // cases, another item will be evicted to make room for the new item.
-      if (max_size_.value() == 0u) {
+      if (max_size() == 0u) {
         return end();
       }
 
       // New item is being inserted which might make it larger than the maximum
       // size: kick the oldest thing out if necessary.
-      ShrinkToSize(max_size_.value() - 1);
+      ShrinkToSize(max_size() - 1);
     }
 
     ordering_.push_front(std::move(value));
@@ -163,7 +220,14 @@ class LRUCacheBase {
   void Swap(LRUCacheBase& other) {
     ordering_.swap(other.ordering_);
     index_.swap(other.index_);
-    std::swap(max_size_, other.max_size_);
+    std::swap(baseline_max_size_, other.baseline_max_size_);
+    int this_limit = current_memory_limit_.load(std::memory_order_relaxed);
+    int other_limit =
+        other.current_memory_limit_.load(std::memory_order_relaxed);
+    current_memory_limit_.store(other_limit, std::memory_order_relaxed);
+    other.current_memory_limit_.store(this_limit, std::memory_order_relaxed);
+    MaybeCreateOrRemoveRegistration();
+    other.MaybeCreateOrRemoveRegistration();
   }
 
   // Erases the item referenced by the given iterator. An iterator to the item
@@ -245,17 +309,43 @@ class LRUCacheBase {
 
   bool empty() const { return ordering_.empty(); }
 
+ protected:
+  // PassiveMemoryConsumer:
+  void OnUpdateMemoryLimit() override {
+    current_memory_limit_.store(memory_limit(), std::memory_order_relaxed);
+  }
+
  private:
   template <class LruCacheType>
   friend size_t trace_event::internal::DoEstimateMemoryUsageForLruCache(
       const LruCacheType&);
 
+  static constexpr MemoryConsumerTraits kDefaultTraits =
+      MemoryConsumerTraits(MemoryConsumerTraits::ConsumerType::kPassive);
+
+  void MaybeCreateOrRemoveRegistration() {
+    if (IsLRUCacheMemoryConsumerEnabled()) {
+      if (baseline_max_size_.has_value() && !registration_) {
+        registration_.emplace("LRUCache", kDefaultTraits, this);
+      }
+
+      if (!baseline_max_size_.has_value() && registration_) {
+        registration_.reset();
+      }
+    }
+  }
+
   ValueList ordering_;
   KeyIndex index_;
 
-  // Indicates the maximum size of the cache. If nullopt, there is no maximum
-  // size and eviction is not done automatically.
-  std::optional<size_type> max_size_;
+  // Indicates the requested maximum size of the cache. If nullopt, there is no
+  // maximum size and eviction is not done automatically.
+  std::optional<size_type> baseline_max_size_;
+
+  // Caches the current memory limit reported by the MemoryCoordinator.
+  std::atomic<int> current_memory_limit_{MemoryConsumer::kDefaultMemoryLimit};
+
+  std::optional<AsyncMemoryConsumerRegistration> registration_;
 };
 
 }  // namespace internal

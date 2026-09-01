@@ -7,5 +7,6 @@
 namespace base {
 
 BASE_FEATURE(kStatefulMemoryPressure, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLRUCacheMemoryConsumer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace base

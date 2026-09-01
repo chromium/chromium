@@ -22,7 +22,7 @@ class ContentLRUCache
   ContentLRUCache(const ContentLRUCache&) = delete;
   ContentLRUCache& operator=(const ContentLRUCache&) = delete;
 
-  ~ContentLRUCache();
+  ~ContentLRUCache() override;
 
   // Initialize the LRU cache in the supplied order.
   void Init(std::list<PathContextPair> initial_order);

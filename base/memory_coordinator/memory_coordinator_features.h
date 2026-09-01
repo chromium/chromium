@@ -15,6 +15,11 @@ namespace base {
 // pressure, instead of simply evicting entries.
 BASE_EXPORT BASE_DECLARE_FEATURE(kStatefulMemoryPressure);
 
+// When enabled, LRUCache instances with a max_size will register as a
+// MemoryConsumer with the MemoryCoordinator to adapt their size to memory
+// pressure.
+BASE_EXPORT BASE_DECLARE_FEATURE(kLRUCacheMemoryConsumer);
+
 }  // namespace base
 
 #endif  // BASE_MEMORY_COORDINATOR_MEMORY_COORDINATOR_FEATURES_H_

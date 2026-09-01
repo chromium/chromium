@@ -299,7 +299,7 @@ void AppShimController::PreInitFeatureState(
       std::move(feature_list),
       {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
        "CacheGurlSchemeIsHttpOrHttpsResult", "DcheckIsFatal",
-       "DisallowSpaceCharacterInURLHostParsing",
+       "DisallowSpaceCharacterInURLHostParsing", "LRUCacheMemoryConsumer",
        "NonSpecialLeadingSlashHandling", "PreservePercentEncodedDotInPath",
        "UseIDNAContextJRules", "MojoBindingsInlineSLS", "MojoIpcz",
        "MojoIpczMemV2", "MojoFixGeometricBufferGrowth",
