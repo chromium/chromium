@@ -229,7 +229,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             category.setKey("autofill_section_title");
             screen.addPreference(category);
         }
-        // LINT.IfChange(AddAutofillSwitch)
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
         ChromeSwitchPreference autofillSwitch =
@@ -239,8 +238,14 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         // Failing to set this to false causes Android's PreferenceManager to override
         // setChecked() with cached SharedPreferences values upon binding.
         autofillSwitch.setPersistent(false);
+
+        // LINT.IfChange(AddAutofillSwitch)
+        // For testing.
+        autofillSwitch.setKey(SAVE_AND_FILL_ADDRESSES);
         autofillSwitch.setTitle(R.string.autofill_enable_profiles_toggle_label);
         autofillSwitch.setSummary(R.string.autofill_enable_profiles_toggle_sublabel);
+        // LINT.ThenChange(:DynamicAutofillSwitch)
+
         boolean disabledSettings = disabledSettingsInThirdPartyMode(getProfile());
         autofillSwitch.setEnabled(!disabledSettings);
         autofillSwitch.setChecked(
@@ -257,9 +262,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                         return personalDataManager.isAutofillProfileManaged();
                     }
                 });
-        // For testing.
-        autofillSwitch.setKey(SAVE_AND_FILL_ADDRESSES);
-        // LINT.ThenChange(:DynamicAutofillSwitch)
 
         screen.addPreference(autofillSwitch);
     }
