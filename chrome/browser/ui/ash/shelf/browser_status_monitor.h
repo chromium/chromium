@@ -18,8 +18,6 @@
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 
-class Browser;
-
 namespace ash {
 class BrowserDelegate;
 }
@@ -75,13 +73,13 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
 
  private:
   // Add a windowed browser-based app to the shelf.
-  void AddAppBrowserToShelf(ash::BrowserDelegate* browser_delegate);
+  void AddAppBrowserToShelf(ash::BrowserDelegate* browser);
 
   // Remove a windowed browser-based app from the shelf.
-  void RemoveAppBrowserFromShelf(ash::BrowserDelegate* browser_delegate);
+  void RemoveAppBrowserFromShelf(ash::BrowserDelegate* browser);
 
   // Check if an application is currently in the shelf by browser or app id.
-  bool IsAppBrowserInShelf(BrowserWindowInterface* browser);
+  bool IsAppBrowserInShelf(ash::BrowserDelegate* browser);
   bool IsAppBrowserInShelfWithAppId(const std::string& app_id);
 
   class LocalWebContentsObserver;
@@ -100,7 +98,7 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
                                           content::WebContents* web_contents);
 
   raw_ptr<ChromeShelfController> shelf_controller_;
-  std::map<raw_ptr<BrowserWindowInterface>, std::string> browser_to_app_id_map_;
+  std::map<raw_ptr<ash::BrowserDelegate>, std::string> browser_to_app_id_map_;
   std::map<content::WebContents*, std::unique_ptr<LocalWebContentsObserver>>
       webcontents_to_observer_map_;
   base::ScopedObservation<ash::BrowserController,
