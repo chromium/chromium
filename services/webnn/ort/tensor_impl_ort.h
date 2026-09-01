@@ -31,6 +31,7 @@ class TensorImplOrt final : public WebNNTensorImpl {
                 RepresentationPtr representation,
                 size_t size,
                 ScopedOrtExternalMemoryHandle d3d_heap_external_memory_handle,
+                Microsoft::WRL::ComPtr<ID3D12Resource> mapped_d3d12_buffer,
                 ScopedOrtValue tensor);
 
   TensorImplOrt(const TensorImplOrt&) = delete;
@@ -63,6 +64,11 @@ class TensorImplOrt final : public WebNNTensorImpl {
   // Valid if the tensor was created with the ORT interop API. Must be kept
   // alive for the lifetime of the OrtValue.
   const ScopedOrtExternalMemoryHandle d3d_heap_external_memory_handle_;
+  // Exists only on the mapped-fallback interop path; keeps the buffer backing
+  // `tensor_`'s raw pointer alive independent of `representation_`. Must be
+  // declared before `tensor_` so it is destroyed after, since `tensor_` holds
+  // a raw pointer into this buffer's mapping.
+  const Microsoft::WRL::ComPtr<ID3D12Resource> mapped_d3d12_buffer_;
   const ScopedOrtValue tensor_ GUARDED_BY_CONTEXT(sequence_checker_);
   const size_t size_;
 };

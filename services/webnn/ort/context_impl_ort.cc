@@ -552,11 +552,6 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
                           "WebGPU interop is not supported."));
   }
 
-  ComPtr<ID3D12Resource> d3d12_buffer = representation->GetD3D12Buffer();
-
-  CHECK(d3d12_buffer)
-      << "[WebNN] Failed to get D3D12 buffer from shared image.";
-
   // Validate the shared image logical size matches TensorInfo.
   // The logical size must equal PackedByteLength() since read/write access
   // requires an exact buffer size. Only the backing heap allocation may be
@@ -622,8 +617,15 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
   }
 
   // If external resource importer is not available or import fails, fall back
-  // to using mapped D3D12 buffer.
+  // to using mapped D3D12 buffer. ORT holds no reference of its own to the
+  // buffer in this case, so `d3d12_buffer` is kept below and passed to
+  // TensorImplOrt to keep the buffer alive independent of `representation`.
+  ComPtr<ID3D12Resource> d3d12_buffer;
   if (tensor.get() == nullptr) {
+    d3d12_buffer = representation->GetD3D12Buffer();
+    CHECK(d3d12_buffer)
+        << "[WebNN] Failed to get D3D12 buffer from shared image.";
+
     void* mapped_ptr = nullptr;
     HRESULT hr = d3d12_buffer->Map(0, nullptr, &mapped_ptr);
     if (FAILED(hr)) {
@@ -659,7 +661,8 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
   return base::MakeRefCounted<TensorImplOrt>(
       std::move(receiver), *this, std::move(tensor_info),
       std::move(representation), shared_image_byte_size,
-      std::move(external_memory_handle), std::move(tensor));
+      std::move(external_memory_handle), std::move(d3d12_buffer),
+      std::move(tensor));
 }
 
 std::string_view ContextImplOrt::GetBackendName() const {

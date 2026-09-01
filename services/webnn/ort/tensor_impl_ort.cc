@@ -41,6 +41,7 @@ TensorImplOrt::TensorImplOrt(
     RepresentationPtr representation,
     size_t size,
     ScopedOrtExternalMemoryHandle d3d_heap_external_memory_handle,
+    Microsoft::WRL::ComPtr<ID3D12Resource> mapped_d3d12_buffer,
     ScopedOrtValue tensor)
     : WebNNTensorImpl(std::move(receiver),
                       context,
@@ -48,6 +49,7 @@ TensorImplOrt::TensorImplOrt(
                       std::move(representation)),
       d3d_heap_external_memory_handle_(
           std::move(d3d_heap_external_memory_handle)),
+      mapped_d3d12_buffer_(std::move(mapped_d3d12_buffer)),
       tensor_(std::move(tensor)),
       size_(size) {}
 
