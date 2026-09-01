@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
@@ -170,9 +171,14 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
                                 Objects.equals(id, mCurrentFolderId))
                         .with(
                                 NavigationPaneProperties.ON_CLICK_HANDLER,
-                                () -> mBookmarkDelegate.openFolder(id))
+                                () -> onFolderItemClicked(id))
                         .build();
         return new ListItem(NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM, model);
+    }
+
+    private void onFolderItemClicked(BookmarkId id) {
+        RecordUserAction.record("MobileBookmarkManagerSidePanelFolderOpened");
+        mBookmarkDelegate.openFolder(id);
     }
 
     private ListItem createHeaderItem(String title) {

@@ -19327,6 +19327,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerSidePanelFolderOpened">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <description>
+    Recorded when a user clicks a folder item in the desktop bookmarks side
+    navigation pane to open/navigate to that folder.
+  </description>
+</action>
+
 <action name="MobileBookmarkManagerTapToggleSelect">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>

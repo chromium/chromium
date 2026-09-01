@@ -32,6 +32,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -184,12 +185,17 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
 
     @Test
     public void testClickHandling() {
+        var userActionTester = new UserActionTester();
         assertEquals(4, mModelList.size());
         ListItem item = mModelList.get(0);
         Runnable onClick = item.model.get(NavigationPaneProperties.ON_CLICK_HANDLER);
         onClick.run();
 
         verify(mBookmarkDelegate).openFolder(mBookmarkModel.getDesktopFolderId());
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("MobileBookmarkManagerSidePanelFolderOpened"));
     }
 
     @Test
