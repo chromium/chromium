@@ -579,6 +579,7 @@ public class OmniboxTest {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
+    @DisabledTest(message = "crbug.com/555870875")
     public void testPersistedEditingState() {
         mActivityTestRule.startOnBlankPage();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
