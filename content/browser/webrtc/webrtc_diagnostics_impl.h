@@ -123,33 +123,35 @@ class CONTENT_EXPORT WebRtcDiagnosticsImpl : public WebRtcDiagnostics,
     // Returns the state for `context`, or null if it has none.
     static PerContext* GetIfExists(BrowserContext* context);
 
-    bool has_clients() const { return !clients.empty(); }
+    bool has_clients() const { return !clients_.empty(); }
+
+   private:
+    friend class WebRtcDiagnosticsImpl;
+
+    static const void* UserDataKey();
 
     // Client ID to the origin filter registered with StartCaptureForClient. An
     // empty vector means unfiltered.
-    std::map<std::string, std::vector<url::Origin>, std::less<>> clients;
+    std::map<std::string, std::vector<url::Origin>, std::less<>> clients_;
 
     // Peer connection ID to metadata, used to filter removal events.
-    std::map<std::string, PeerConnectionInfo, std::less<>> pc_metadata;
+    std::map<std::string, PeerConnectionInfo, std::less<>> pc_metadata_;
 
     // Local copies of the WebRTCInternals data belonging to this profile, so
     // that WebRTCInternals itself is never modified.
-    base::ListValue get_user_media_requests;
-    base::ListValue peer_connection_data;
+    base::ListValue get_user_media_requests_;
+    base::ListValue peer_connection_data_;
 
-    base::ObserverList<WebRtcDiagnostics::Observer> observers;
+    base::ObserverList<WebRtcDiagnostics::Observer> observers_;
 
     // Truncation bookkeeping for this profile. The counters are cumulative
     // totals since the profile last went idle, and are what
-    // OnSnapshotTruncated reports. `last_truncation_notification` rate
+    // OnSnapshotTruncated reports. `last_truncation_notification_` rate
     // limits that notification to one every 5 seconds.
-    base::TimeTicks last_truncation_notification;
-    int dropped_log_entries = 0;
-    int dropped_stats_entries = 0;
-    int dropped_media_entries = 0;
-
-   private:
-    static const void* UserDataKey();
+    base::TimeTicks last_truncation_notification_;
+    int dropped_log_entries_ = 0;
+    int dropped_stats_entries_ = 0;
+    int dropped_media_entries_ = 0;
 
     raw_ptr<WebRtcDiagnosticsImpl> owner_;
     raw_ptr<BrowserContext> context_;

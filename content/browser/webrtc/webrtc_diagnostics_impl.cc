@@ -206,23 +206,23 @@ WebRtcDiagnosticsImpl::StartCaptureForClient(BrowserContext* context,
     return StartCaptureResult::kUnavailable;
   }
 
-  if (state->clients.find(client_id) != state->clients.end()) {
+  if (state->clients_.find(client_id) != state->clients_.end()) {
     return StartCaptureResult::kAlreadyCapturing;
   }
 
   const bool context_was_idle = !state->has_clients();
-  state->clients.emplace(client_id, std::move(origins));
+  state->clients_.emplace(client_id, std::move(origins));
 
   if (context_was_idle) {
     // Start from a clean cache for this profile so a session never sees data
     // captured before it began.
-    state->get_user_media_requests.clear();
-    state->peer_connection_data.clear();
-    state->pc_metadata.clear();
-    state->dropped_log_entries = 0;
-    state->dropped_stats_entries = 0;
-    state->dropped_media_entries = 0;
-    state->last_truncation_notification = base::TimeTicks();
+    state->get_user_media_requests_.clear();
+    state->peer_connection_data_.clear();
+    state->pc_metadata_.clear();
+    state->dropped_log_entries_ = 0;
+    state->dropped_stats_entries_ = 0;
+    state->dropped_media_entries_ = 0;
+    state->last_truncation_notification_ = base::TimeTicks();
   }
 
   UpdateInternalsRegistration(context_was_idle ? state : nullptr);
@@ -240,30 +240,30 @@ WebRtcDiagnosticsImpl::StopCaptureForClient(BrowserContext* context,
     return StopCaptureResult::kNotCapturing;
   }
 
-  auto it = state->clients.find(client_id);
-  if (it == state->clients.end()) {
+  auto it = state->clients_.find(client_id);
+  if (it == state->clients_.end()) {
     return StopCaptureResult::kNotCapturing;
   }
 
   // Copy the id: erasing the entry invalidates the string_view that callers
   // may have obtained from the map.
   const std::string stopped_client_id = it->first;
-  state->clients.erase(it);
+  state->clients_.erase(it);
 
-  for (auto& observer : state->observers) {
+  for (auto& observer : state->observers_) {
     observer.OnCaptureStopped(stopped_client_id);
   }
 
   if (!state->has_clients()) {
     // Nothing can read this profile's cache once its last session ends:
     // GetSnapshot rejects any client that is no longer in `clients`.
-    state->get_user_media_requests.clear();
-    state->peer_connection_data.clear();
-    state->pc_metadata.clear();
-    state->dropped_log_entries = 0;
-    state->dropped_stats_entries = 0;
-    state->dropped_media_entries = 0;
-    state->last_truncation_notification = base::TimeTicks();
+    state->get_user_media_requests_.clear();
+    state->peer_connection_data_.clear();
+    state->pc_metadata_.clear();
+    state->dropped_log_entries_ = 0;
+    state->dropped_stats_entries_ = 0;
+    state->dropped_media_entries_ = 0;
+    state->last_truncation_notification_ = base::TimeTicks();
   }
 
   UpdateInternalsRegistration(nullptr);
@@ -304,8 +304,9 @@ void WebRtcDiagnosticsImpl::UpdateInternalsRegistration(
 
 void WebRtcDiagnosticsImpl::UpdateStatsTimer() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const bool want = std::ranges::any_of(
-      contexts_, [](PerContext* state) { return !state->pc_metadata.empty(); });
+  const bool want = std::ranges::any_of(contexts_, [](PerContext* state) {
+    return !state->pc_metadata_.empty();
+  });
   if (want && !stats_timer_.IsRunning()) {
     stats_timer_.Start(FROM_HERE, kStatsPollInterval, this,
                        &WebRtcDiagnosticsImpl::RequestStats);
@@ -346,7 +347,7 @@ void WebRtcDiagnosticsImpl::RebuildMetadataFor(PerContext* state,
     if (url_str) {
       origin = url::Origin::Create(GURL(*url_str));
     }
-    state->pc_metadata[MakePeerConnectionId(*rid, *lid)] =
+    state->pc_metadata_[MakePeerConnectionId(*rid, *lid)] =
         PeerConnectionInfo(origin, ChildProcessId::FromUnsafeValue(*rid));
   }
 }
@@ -375,8 +376,8 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
   if (!state) {
     return false;
   }
-  auto client = state->clients.find(client_id);
-  if (client == state->clients.end()) {
+  auto client = state->clients_.find(client_id);
+  if (client == state->clients_.end()) {
     return false;
   }
 
@@ -413,7 +414,7 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
 
   // Add getUserMedia log.
   base::ListValue filtered_list;
-  for (const auto& item : state->get_user_media_requests) {
+  for (const auto& item : state->get_user_media_requests_) {
     const base::DictValue* item_dict = item.GetIfDict();
     if (item_dict && EntryMatchesFilter(*item_dict, kOriginKey, effective)) {
       filtered_list.Append(item.Clone());
@@ -423,7 +424,7 @@ bool WebRtcDiagnosticsImpl::GetSnapshot(
 
   // Add peer connection data.
   base::DictValue filtered_dict;
-  for (const auto& pc_value : state->peer_connection_data) {
+  for (const auto& pc_value : state->peer_connection_data_) {
     const base::DictValue* pc_dict = pc_value.GetIfDict();
     if (!pc_dict) {
       continue;
@@ -465,7 +466,7 @@ bool WebRtcDiagnosticsImpl::IsCapturingForClient(BrowserContext* context,
                                                  std::string_view client_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PerContext* state = PerContext::GetIfExists(context);
-  return state && state->clients.find(client_id) != state->clients.end();
+  return state && state->clients_.find(client_id) != state->clients_.end();
 }
 
 std::vector<std::string> WebRtcDiagnosticsImpl::GetCapturingClients(
@@ -476,8 +477,8 @@ std::vector<std::string> WebRtcDiagnosticsImpl::GetCapturingClients(
   if (!state) {
     return clients;
   }
-  clients.reserve(state->clients.size());
-  for (const auto& pair : state->clients) {
+  clients.reserve(state->clients_.size());
+  for (const auto& pair : state->clients_) {
     clients.push_back(pair.first);
   }
   return clients;
@@ -487,7 +488,7 @@ void WebRtcDiagnosticsImpl::AddObserver(BrowserContext* context,
                                         WebRtcDiagnostics::Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (PerContext* state = PerContext::GetOrCreate(this, context)) {
-    state->observers.AddObserver(observer);
+    state->observers_.AddObserver(observer);
   }
 }
 
@@ -496,22 +497,22 @@ void WebRtcDiagnosticsImpl::RemoveObserver(
     WebRtcDiagnostics::Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (PerContext* state = PerContext::GetIfExists(context)) {
-    state->observers.RemoveObserver(observer);
+    state->observers_.RemoveObserver(observer);
   }
 }
 
 void WebRtcDiagnosticsImpl::NotifySnapshotTruncated(PerContext* state) {
   base::TimeTicks now = base::TimeTicks::Now();
-  if (!state->last_truncation_notification.is_null() &&
-      now - state->last_truncation_notification < base::Seconds(5)) {
+  if (!state->last_truncation_notification_.is_null() &&
+      now - state->last_truncation_notification_ < base::Seconds(5)) {
     return;
   }
-  state->last_truncation_notification = now;
+  state->last_truncation_notification_ = now;
 
-  for (auto& observer : state->observers) {
-    observer.OnSnapshotTruncated(state->dropped_log_entries,
-                                 state->dropped_stats_entries,
-                                 state->dropped_media_entries);
+  for (auto& observer : state->observers_) {
+    observer.OnSnapshotTruncated(state->dropped_log_entries_,
+                                 state->dropped_stats_entries_,
+                                 state->dropped_media_entries_);
   }
 }
 
@@ -523,8 +524,8 @@ WebRtcDiagnosticsImpl::GetFilterOriginsForClient(BrowserContext* context,
   if (!state) {
     return std::nullopt;
   }
-  auto it = state->clients.find(client_id);
-  if (it == state->clients.end()) {
+  auto it = state->clients_.find(client_id);
+  if (it == state->clients_.end()) {
     return std::nullopt;
   }
   return it->second;
@@ -538,8 +539,8 @@ std::optional<url::Origin> WebRtcDiagnosticsImpl::GetOriginForPeerConnection(
   if (!state) {
     return std::nullopt;
   }
-  auto it = state->pc_metadata.find(pc_id);
-  if (it != state->pc_metadata.end()) {
+  auto it = state->pc_metadata_.find(pc_id);
+  if (it != state->pc_metadata_.end()) {
     return it->second.origin;
   }
   return std::nullopt;
@@ -554,8 +555,8 @@ WebRtcDiagnosticsImpl::GetRenderProcessIdForPeerConnection(
   if (!state) {
     return std::nullopt;
   }
-  auto it = state->pc_metadata.find(pc_id);
-  if (it != state->pc_metadata.end() &&
+  auto it = state->pc_metadata_.find(pc_id);
+  if (it != state->pc_metadata_.end() &&
       !it->second.render_process_id.is_null()) {
     return it->second.render_process_id;
   }
@@ -581,8 +582,8 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     // Rebuilding rather than merging is also the only path that prunes peer
     // connections that have since closed.
     for (PerContext* state : contexts_) {
-      state->peer_connection_data.clear();
-      state->pc_metadata.clear();
+      state->peer_connection_data_.clear();
+      state->pc_metadata_.clear();
     }
     for (const auto& item : event_data->GetList()) {
       const base::DictValue* item_dict = item.GetIfDict();
@@ -593,7 +594,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
       if (!state) {
         continue;
       }
-      state->peer_connection_data.Append(item.Clone());
+      state->peer_connection_data_.Append(item.Clone());
       RebuildMetadataFor(state, *item_dict);
     }
     UpdateStatsTimer();
@@ -613,9 +614,9 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     return;
   }
 
-  const int initial_dropped_log = state->dropped_log_entries;
-  const int initial_dropped_stats = state->dropped_stats_entries;
-  const int initial_dropped_media = state->dropped_media_entries;
+  const int initial_dropped_log = state->dropped_log_entries_;
+  const int initial_dropped_stats = state->dropped_stats_entries_;
+  const int initial_dropped_media = state->dropped_media_entries_;
 
   if (event_name == kAddMedia) {
     std::optional<int> rid = dict.FindInt(kRidKey);
@@ -625,7 +626,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     // into a context that has just started capturing cannot duplicate entries.
     base::Value* existing = nullptr;
     if (rid && request_id) {
-      for (auto& item : state->get_user_media_requests) {
+      for (auto& item : state->get_user_media_requests_) {
         if (!item.is_dict()) {
           continue;
         }
@@ -640,13 +641,13 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     if (existing) {
       *existing = event_data->Clone();
     } else {
-      state->get_user_media_requests.Append(event_data->Clone());
-      if (state->get_user_media_requests.size() > kMaxMediaEntries) {
+      state->get_user_media_requests_.Append(event_data->Clone());
+      if (state->get_user_media_requests_.size() > kMaxMediaEntries) {
         // O(n) shift on overflow. Acceptable at the current cap (1000); if the
         // cap is raised significantly, migrate to base::circular_deque.
-        state->get_user_media_requests.erase(
-            state->get_user_media_requests.begin());
-        state->dropped_media_entries++;
+        state->get_user_media_requests_.erase(
+            state->get_user_media_requests_.begin());
+        state->dropped_media_entries_++;
       }
     }
   } else if (event_name == kUpdateMedia) {
@@ -654,7 +655,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     std::optional<int> request_id = dict.FindInt(kRequestIdKey);
 
     if (rid && request_id) {
-      for (auto& item : state->get_user_media_requests) {
+      for (auto& item : state->get_user_media_requests_) {
         if (!item.is_dict()) {
           continue;
         }
@@ -683,7 +684,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
 
       // Upsert, for the same reason as add-media.
       bool found = false;
-      for (auto& pc_value : state->peer_connection_data) {
+      for (auto& pc_value : state->peer_connection_data_) {
         if (!pc_value.is_dict()) {
           continue;
         }
@@ -695,12 +696,12 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
         }
       }
       if (!found) {
-        state->peer_connection_data.Append(event_data->Clone());
+        state->peer_connection_data_.Append(event_data->Clone());
       }
       RebuildMetadataFor(state, dict);
       UpdateStatsTimer();
 
-      for (auto& observer : state->observers) {
+      for (auto& observer : state->observers_) {
         observer.OnPeerConnectionAdded(id, *event_data);
       }
     } else {
@@ -712,18 +713,18 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     if (rid && lid) {
       const std::string id = MakePeerConnectionId(*rid, *lid);
 
-      for (auto& observer : state->observers) {
+      for (auto& observer : state->observers_) {
         observer.OnPeerConnectionRemoved(id);
       }
 
       // Drop the closed connection's data as well as its metadata. Retaining
       // it would grow without bound over a long session and would keep SDP and
       // ICE candidates for calls that have already ended.
-      state->peer_connection_data.EraseIf([&rid, &lid](const base::Value& v) {
+      state->peer_connection_data_.EraseIf([&rid, &lid](const base::Value& v) {
         return v.is_dict() && v.GetDict().FindInt(kRidKey) == rid &&
                v.GetDict().FindInt(kLidKey) == lid;
       });
-      state->pc_metadata.erase(id);
+      state->pc_metadata_.erase(id);
       UpdateStatsTimer();
     } else {
       DLOG(WARNING) << "remove-peer-connection missing rid or lid";
@@ -737,7 +738,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     std::optional<double> timestamp = dict.FindDouble(kTimestampKey);
 
     if (rid && lid && type && value) {
-      for (auto& pc_value : state->peer_connection_data) {
+      for (auto& pc_value : state->peer_connection_data_) {
         if (!pc_value.is_dict()) {
           continue;
         }
@@ -767,7 +768,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
           // O(n) shift on overflow. Acceptable at the current cap (1000); if
           // the cap is raised significantly, migrate to base::circular_deque.
           log_list->erase(log_list->begin());
-          state->dropped_log_entries++;
+          state->dropped_log_entries_++;
         }
         break;
       }
@@ -781,7 +782,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     std::optional<double> timestamp = dict.FindDouble(kTimestampKey);
 
     if (rid && lid && reports) {
-      for (auto& pc_value : state->peer_connection_data) {
+      for (auto& pc_value : state->peer_connection_data_) {
         if (!pc_value.is_dict()) {
           continue;
         }
@@ -807,7 +808,7 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
           // O(n) shift on overflow. Acceptable at the current cap (1000); if
           // the cap is raised significantly, migrate to base::circular_deque.
           stats_list->erase(stats_list->begin());
-          state->dropped_stats_entries++;
+          state->dropped_stats_entries_++;
         }
         break;
       }
@@ -816,9 +817,9 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     }
   }
 
-  if (state->dropped_log_entries != initial_dropped_log ||
-      state->dropped_stats_entries != initial_dropped_stats ||
-      state->dropped_media_entries != initial_dropped_media) {
+  if (state->dropped_log_entries_ != initial_dropped_log ||
+      state->dropped_stats_entries_ != initial_dropped_stats ||
+      state->dropped_media_entries_ != initial_dropped_media) {
     NotifySnapshotTruncated(state);
   }
 }
@@ -829,14 +830,14 @@ void WebRtcDiagnosticsImpl::ResetForTesting() {
   // callers may destroy contexts between tests.
   std::vector<PerContext*> contexts(contexts_.begin(), contexts_.end());
   for (PerContext* state : contexts) {
-    state->clients.clear();
-    state->pc_metadata.clear();
-    state->get_user_media_requests.clear();
-    state->peer_connection_data.clear();
-    state->dropped_log_entries = 0;
-    state->dropped_stats_entries = 0;
-    state->dropped_media_entries = 0;
-    state->last_truncation_notification = base::TimeTicks();
+    state->clients_.clear();
+    state->pc_metadata_.clear();
+    state->get_user_media_requests_.clear();
+    state->peer_connection_data_.clear();
+    state->dropped_log_entries_ = 0;
+    state->dropped_stats_entries_ = 0;
+    state->dropped_media_entries_ = 0;
+    state->last_truncation_notification_ = base::TimeTicks();
   }
   stats_timer_.Stop();
   if (registered_with_internals_) {
