@@ -367,8 +367,8 @@ const ParseTestCase DocumentPolicyParserTest::kCases[] = {
         },
         /* messages */
         {{mojom::blink::ConsoleMessageLevel::kWarning,
-          "Parameter for feature f-double should be single item, but get list "
-          "of items(length=0)."}},
+          "Parameter for feature f-double should be single item, but got inner "
+          "list."}},
     },
     {
         "TooManyFeatureValueItems",
@@ -380,8 +380,8 @@ const ParseTestCase DocumentPolicyParserTest::kCases[] = {
         },
         /* messages */
         {{mojom::blink::ConsoleMessageLevel::kWarning,
-          "Parameter for feature f-double should be single item, but get list "
-          "of items(length=2)."}},
+          "Parameter for feature f-double should be single item, but got inner "
+          "list."}},
     },
     {
         "ReportToParameterValueTypeShouldBeTokenInsteadOf"

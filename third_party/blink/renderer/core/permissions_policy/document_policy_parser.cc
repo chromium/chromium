@@ -90,11 +90,10 @@ std::optional<ParsedFeature> ParseFeature(
   ParsedFeature parsed_feature;
 
   const std::string& feature_name = directive.first;
-  if (directive.second.member_is_inner_list) {
-    logger.Warn(
-        Format("Parameter for feature {} should be single item, but get list "
-               "of items(length={}).",
-               feature_name, directive.second.member.size()));
+  const auto item_and_params = directive.second.GetWithParamsIfItem();
+  if (!item_and_params.has_value()) {
+    logger.Warn(StrCat({"Parameter for feature ", feature_name.c_str(),
+                        " should be single item, but got inner list."}));
     return std::nullopt;
   }
 
@@ -110,8 +109,8 @@ std::optional<ParsedFeature> ParseFeature(
 
   auto expected_policy_value_type =
       feature_info_map.at(parsed_feature.feature).default_value.Type();
-  const net::structured_headers::Item& item =
-      directive.second.member.front().item;
+  const net::structured_headers::Item& item = item_and_params->first;
+  const net::structured_headers::Parameters& params = item_and_params->second;
   std::optional<PolicyValue> policy_value = ItemToPolicyValue(
       item, expected_policy_value_type, parsed_feature.feature);
   if (!policy_value) {
@@ -123,7 +122,7 @@ std::optional<ParsedFeature> ParseFeature(
   }
   parsed_feature.policy_value = *policy_value;
 
-  for (const auto& param : directive.second.params) {
+  for (const auto& param : params) {
     const std::string& param_name = param.first;
     // Handle "report-to" param. "report-to" is an optional param for
     // Document-Policy header that specifies the endpoint group that the policy
