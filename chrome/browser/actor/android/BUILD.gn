@@ -269,6 +269,7 @@ android_library("unit_device_javatests") {
 android_library("javatests") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/actor/ActorBackgroundActuationIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorNotificationClickIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTabStateHelperIntegrationTest.java",
@@ -282,6 +283,7 @@ android_library("javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabpersistence:java",
     "//chrome/browser/tabwindow:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
@@ -291,6 +293,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_core_core_pip_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
