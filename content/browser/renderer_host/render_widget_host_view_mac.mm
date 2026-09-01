@@ -1424,24 +1424,26 @@ RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
   // If firstRectForCharacterRange in WebFrame is failed in renderer,
   // ImeCompositionRangeChanged will be sent with empty vector.
   if (!composition_info || composition_info->character_bounds.empty()) {
-    if (base::FeatureList::IsEnabled(
-            features::kCachedFirstRectMoreSelectionFallbacks)) {
-      return GetFirstRectFromSelection(requested_range, selection, rect,
-                                       actual_range);
-    }
-    return GetCachedFirstRectResult::kNoCompositionBounds;
+    // TODO(crbug.com/449764056): Modify this fallback when/if an async
+    // equivalent of NSTextInputClient becomes available. Return
+    // kNoCompositionBounds if the caller can make an async query to the
+    // renderer, and use the selection rect as a fallback if the caller can only
+    // make a sync query.
+    return GetFirstRectFromSelection(requested_range, selection, rect,
+                                     actual_range);
   }
 
   const gfx::Range request_range_in_composition =
       ConvertCharacterRangeToCompositionRange(requested_range,
                                               composition_info);
   if (request_range_in_composition == gfx::Range::InvalidRange()) {
-    if (base::FeatureList::IsEnabled(
-            features::kCachedFirstRectMoreSelectionFallbacks)) {
-      return GetFirstRectFromSelection(requested_range, selection, rect,
-                                       actual_range);
-    }
-    return GetCachedFirstRectResult::kInvalidCompositionRange;
+    // TODO(crbug.com/449764056): Modify this fallback when/if an async
+    // equivalent of NSTextInputClient becomes available. Return
+    // kInvalidCompositionRange if the caller can make an async query to the
+    // renderer, and use the selection rect as a fallback if the caller can only
+    // make a sync query.
+    return GetFirstRectFromSelection(requested_range, selection, rect,
+                                     actual_range);
   }
 
   CHECK_EQ(composition_info->character_bounds.size(),
@@ -1470,16 +1472,15 @@ RenderWidgetHostViewMac::GetFirstRectFromSelection(
     gfx::Rect* rect,
     gfx::Range* actual_range) {
   CHECK(selection);
-  // An invalid range will fail the IsBoundedBy() check, but needs to be tested
-  // separately in case the check is skipped.
-  if (!base::FeatureList::IsEnabled(
-          features::kCachedFirstRectAllowInvalidSelection) &&
-      !selection->range().IsValid()) {
-    return GetCachedFirstRectResult::kInvalidSelection;
-  }
+  // TODO(crbug.com/449764056): Remove this feature check when/if an async
+  // equivalent of NSTextInputClient becomes available. Instead, check the
+  // selection bounds if the caller can make an async query to the renderer, and
+  // skip the check (potentially returning an empty result if the selection is
+  // invalid) if the caller can only make a sync query.
   if (!base::FeatureList::IsEnabled(
           features::kCachedFirstRectAllowRangeOutsideSelection) &&
       !requested_range.IsBoundedBy(selection->range())) {
+    // An invalid range will always fail the IsBoundedBy() check.
     return selection->range().IsValid()
                ? GetCachedFirstRectResult::kNotBoundedBySelection
                : GetCachedFirstRectResult::kInvalidSelection;

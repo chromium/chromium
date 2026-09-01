@@ -12,7 +12,6 @@
 
 #include <limits>
 #include <string>
-#include <tuple>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -85,7 +84,6 @@
 
 using testing::_;
 using testing::Bool;
-using testing::Combine;
 
 @interface InvalidReplacementRangeRenderWidgetHostViewCocoa
     : RenderWidgetHostViewCocoa
@@ -631,22 +629,16 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
 
 class RenderWidgetHostViewMacCachedFirstRectTest
     : public RenderWidgetHostViewMacTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  protected:
   using GetCachedFirstRectResult =
       RenderWidgetHostViewMac::GetCachedFirstRectResult;
 
   RenderWidgetHostViewMacCachedFirstRectTest() {
-    std::tie(more_selection_fallbacks_, allow_range_outside_selection_,
-             allow_invalid_selection_) = GetParam();
-    scoped_feature_list_.InitWithFeatureStates({
-        {features::kCachedFirstRectMoreSelectionFallbacks,
-         more_selection_fallbacks_},
-        {features::kCachedFirstRectAllowRangeOutsideSelection,
-         allow_range_outside_selection_},
-        {features::kCachedFirstRectAllowInvalidSelection,
-         allow_invalid_selection_},
-    });
+    allow_range_outside_selection_ = GetParam();
+    scoped_feature_list_.InitWithFeatureState(
+        features::kCachedFirstRectAllowRangeOutsideSelection,
+        allow_range_outside_selection_);
   }
 
   // Expect that the result of GetCachedFirstRectForCharacterRange() is
@@ -688,28 +680,20 @@ class RenderWidgetHostViewMacCachedFirstRectTest
   }
 
   GetCachedFirstRectResult InvalidSelectionResult() const {
-    // No range can be bounded by an invalid selection range, so invalid
-    // selections only return kFound if BOTH features are enabled.
-    if (allow_invalid_selection_ && allow_range_outside_selection_) {
+    if (allow_range_outside_selection_) {
       return GetCachedFirstRectResult::kFound;
     }
     return GetCachedFirstRectResult::kInvalidSelection;
   }
 
-  bool more_selection_fallbacks() const { return more_selection_fallbacks_; }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  bool more_selection_fallbacks_;
   bool allow_range_outside_selection_;
-  bool allow_invalid_selection_;
 };
 
 INSTANTIATE_TEST_SUITE_P(OptimizeCachedFirstRect,
                          RenderWidgetHostViewMacCachedFirstRectTest,
-                         Combine(/*more_selection_fallbacks=*/Bool(),
-                                 /*allow_range_outside_selection=*/Bool(),
-                                 /*allow_invalid_selection=*/Bool()));
+                         Bool());
 
 TEST_F(RenderWidgetHostViewMacTest, Basic) {
 }
@@ -921,12 +905,9 @@ TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
   rwhv_mac_->ImeCompositionRangeChanged(gfx::Range(2, 12),
                                         std::vector<gfx::Rect>());
 
-  // If more_selection_fallbacks() is enabled, empty composition range will fall
-  // back to the selection, which doesn't exist.
-  ExpectCachedFirstRect(gfx::Range(2, 11),
-                        more_selection_fallbacks()
-                            ? InvalidSelectionResult()
-                            : GetCachedFirstRectResult::kNoCompositionBounds,
+  // Empty composition range will fall back to the selection, which doesn't
+  // exist.
+  ExpectCachedFirstRect(gfx::Range(2, 11), InvalidSelectionResult(),
                         gfx::Rect(), gfx::Range::InvalidRange());
 
   // If there's a selection, maybe fall back to it.
@@ -942,15 +923,9 @@ TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
                                     focus_rect, base::i18n::LEFT_TO_RIGHT,
                                     gfx::Rect(), false);
 
-  ExpectCachedFirstRect(gfx::Range(2, 4),
-                        more_selection_fallbacks()
-                            ? GetCachedFirstRectResult::kFound
-                            : GetCachedFirstRectResult::kNoCompositionBounds,
+  ExpectCachedFirstRect(gfx::Range(2, 4), GetCachedFirstRectResult::kFound,
                         caret_rect, caret_range);
-  ExpectCachedFirstRect(gfx::Range(2, 11),
-                        more_selection_fallbacks()
-                            ? RangeOutsideSelectionResult()
-                            : GetCachedFirstRectResult::kNoCompositionBounds,
+  ExpectCachedFirstRect(gfx::Range(2, 11), RangeOutsideSelectionResult(),
                         caret_rect, caret_range);
 }
 
@@ -972,22 +947,15 @@ TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
                                &composition_bounds);
   rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds);
 
-  // If more_selection_fallbacks() is enabled, invalid composition range will
-  // fall back to the selection, which doesn't exist.
-  const GetCachedFirstRectResult invalid_composition_range_result =
-      more_selection_fallbacks()
-          ? InvalidSelectionResult()
-          : GetCachedFirstRectResult::kInvalidCompositionRange;
-
-  // Out of range requests.
-  ExpectCachedFirstRect(gfx::Range(0, 0), invalid_composition_range_result,
-                        gfx::Rect(), gfx::Range::InvalidRange());
-  ExpectCachedFirstRect(gfx::Range(1, 1), invalid_composition_range_result,
-                        gfx::Rect(), gfx::Range::InvalidRange());
-  ExpectCachedFirstRect(gfx::Range(1, 2), invalid_composition_range_result,
-                        gfx::Rect(), gfx::Range::InvalidRange());
-  ExpectCachedFirstRect(gfx::Range(2, 2), invalid_composition_range_result,
-                        gfx::Rect(), gfx::Range::InvalidRange());
+  // Out of range requests will fall back to the selection, which doesn't exist.
+  ExpectCachedFirstRect(gfx::Range(0, 0), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(1, 1), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(1, 2), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(2, 2), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
 
   // If there's a selection, maybe fall back to it.
   const std::u16string kDummyString = u"hogehoge";
@@ -1002,24 +970,15 @@ TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
                                     focus_rect, base::i18n::LEFT_TO_RIGHT,
                                     gfx::Rect(), false);
 
-  // Out of composition range but inside selection.
-  const GetCachedFirstRectResult outside_composition_result =
-      more_selection_fallbacks()
-          ? GetCachedFirstRectResult::kFound
-          : GetCachedFirstRectResult::kInvalidCompositionRange;
   // Out of composition range and outside selection.
-  const GetCachedFirstRectResult outside_composition_and_selection_result =
-      more_selection_fallbacks()
-          ? RangeOutsideSelectionResult()
-          : GetCachedFirstRectResult::kInvalidCompositionRange;
-  ExpectCachedFirstRect(gfx::Range(0, 0),
-                        outside_composition_and_selection_result, caret_rect,
-                        caret_range);
-  ExpectCachedFirstRect(gfx::Range(1, 1), outside_composition_result,
+  ExpectCachedFirstRect(gfx::Range(0, 0), RangeOutsideSelectionResult(),
                         caret_rect, caret_range);
-  ExpectCachedFirstRect(gfx::Range(1, 2), outside_composition_result,
+  // Out of composition range but inside selection.
+  ExpectCachedFirstRect(gfx::Range(1, 1), GetCachedFirstRectResult::kFound,
                         caret_rect, caret_range);
-  ExpectCachedFirstRect(gfx::Range(2, 2), outside_composition_result,
+  ExpectCachedFirstRect(gfx::Range(1, 2), GetCachedFirstRectResult::kFound,
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(2, 2), GetCachedFirstRectResult::kFound,
                         caret_rect, caret_range);
 
   // Inside composition range. Selection is ignored.
@@ -2647,11 +2606,8 @@ class FakeTextInputClientMacDelegate
 
 TEST_F(RenderWidgetHostViewMacTest, SyncGetFirstRectForRange_Clamped) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          features::kCachedFirstRectAllowRangeOutsideSelection,
-          features::kCachedFirstRectAllowInvalidSelection});
+  feature_list.InitAndDisableFeature(
+      features::kCachedFirstRectAllowRangeOutsideSelection);
 
   // Focus the root frame tree node so GetFocusedRenderFrameHostImpl succeeds.
   contents()->GetPrimaryFrameTree().SetFocusedFrame(

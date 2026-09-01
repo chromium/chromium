@@ -132,18 +132,11 @@ BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
 BASE_FEATURE(kHidePastePopupOnGSB, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-
 #if BUILDFLAG(IS_MAC)
-// If enabled, handle more cache misses by falling back to the selection.
-BASE_FEATURE(kCachedFirstRectMoreSelectionFallbacks,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // If true, whenever the cache lookup falls back to the selection, allow the
-// fallback even if the requested range is outside the selection.
+// fallback even if the requested range is outside the selection. If the
+// selection is invalid, returns an empty result.
 BASE_FEATURE(kCachedFirstRectAllowRangeOutsideSelection,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// If true, whenever the cache lookup falls back to the selection, return an
-// empty result instead of an error when there's no valid selection.
-BASE_FEATURE(kCachedFirstRectAllowInvalidSelection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCancelCompositionWhenWindowLosesFocus,
