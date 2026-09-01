@@ -634,16 +634,15 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_AccessKeys) {
   // Alt+D should move the focus to the location entry.
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestAccessD));
 
-  // TODO(isherman): This is an experimental change to help diagnose
-  // http://crbug.com/41219367
-  content::RunAllPendingInMessageLoop();
-  EXPECT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return IsViewFocused(VIEW_ID_OMNIBOX); }));
   // No element should be focused, as Alt+D was handled by the browser.
   EXPECT_NO_FATAL_FAILURE(CheckFocusedElement(tab_index, ""));
 
   // Move the focus back to the web page.
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
-  ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsViewFocused(VIEW_ID_TAB_CONTAINER); }));
 
   // Make sure no element is focused.
   EXPECT_NO_FATAL_FAILURE(CheckFocusedElement(tab_index, ""));
