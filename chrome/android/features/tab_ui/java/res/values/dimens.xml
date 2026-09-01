@@ -259,6 +259,7 @@ found in the LICENSE file.
     <!-- Dimens for Vertical Tabs Header. -->
     <dimen name="vertical_tabs_desktop_window_spacer_height">40dp</dimen>
     <dimen name="vertical_tabs_header_margin_vertical">0dp</dimen>
+    <dimen name="vertical_tabs_header_margin_top">8dp</dimen>
     <dimen name="vertical_tabs_header_padding_vertical">0dp</dimen>
     <dimen name="vertical_tabs_header_button_size">32dp</dimen>
     <dimen name="vertical_tabs_header_button_padding">4dp</dimen>
