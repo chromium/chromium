@@ -403,6 +403,13 @@ void OmniboxPopupUI::CreatePageHandler(
   }
 }
 
+ContextualSearchboxHandler* OmniboxPopupUI::GetContextualSearchboxHandler() {
+  if (composebox_handler_) {
+    return composebox_handler_.get();
+  }
+  return omnibox_handler_.get();
+}
+
 contextual_search::ContextualSearchSessionHandle*
 OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
   if (!shared_session_handle_) {

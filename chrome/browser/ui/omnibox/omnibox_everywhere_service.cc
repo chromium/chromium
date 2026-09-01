@@ -173,6 +173,18 @@ void OmniboxEverywhereService::ShowRegionSelectOverlay(
   std::move(callback).Run(SkBitmap());
 }
 
+void OmniboxEverywhereService::OnFileChooserOpened() {
+  if (ui_manager()) {
+    ui_manager()->OnFileChooserOpened();
+  }
+}
+
+void OmniboxEverywhereService::OnFileChooserClosed() {
+  if (ui_manager()) {
+    ui_manager()->OnFileChooserClosed();
+  }
+}
+
 void OmniboxEverywhereService::OpenUrl(const GURL& url,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition) {

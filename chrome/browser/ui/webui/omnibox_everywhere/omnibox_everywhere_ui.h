@@ -125,6 +125,12 @@ class OmniboxEverywhereUI
   }
   OmniboxEverywhereHandler* omnibox_handler() { return omnibox_handler_.get(); }
 
+  // TODO(b/555331826): Clean up handler retrieval to avoid inspecting handler
+  // instantiation state.
+  // Returns the active ContextualSearchboxHandler (either composebox_handler_
+  // or omnibox_handler_).
+  ContextualSearchboxHandler* GetContextualSearchboxHandler();
+
   // ContextualSearchboxHandler::ScreenshareDelegate:
   void ShowScreenshotMenu(
       const gfx::Rect& anchor_rect,
@@ -142,11 +148,11 @@ class OmniboxEverywhereUI
   bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdVisible(int command_id) const override;
 
- private:
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
   void ClearContextualSessionHandle();
 
+ private:
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<ComposeboxEverywhereHandler> composebox_handler_;
