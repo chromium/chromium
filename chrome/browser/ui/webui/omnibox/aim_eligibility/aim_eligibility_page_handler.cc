@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -109,7 +108,9 @@ AimEligibilityPageHandler::QueryEligibilityState() {
       aim_eligibility_service_->IsServerEligibilityEnabled();
   if (state->is_server_eligibility_enabled) {
     const auto& response = aim_eligibility_service_->GetMostRecentResponse();
-    state->is_eligible_by_server = response.is_eligible();
+    state->is_aim_eligible_by_server = response.is_eligible();
+    state->is_fusebox_eligible_by_server = response.is_fusebox_eligible();
+    state->is_cobrowse_eligible_by_server = response.is_cobrowse_eligible();
     std::string response_string;
     response.SerializeToString(&response_string);
     state->eligibility_response_base64_encoded =
@@ -126,13 +127,6 @@ AimEligibilityPageHandler::QueryEligibilityState() {
         break;
       case AimEligibilityService::AuthenticationMethod::kNone:
         break;
-    }
-    if (response.has_searchbox_config()) {
-      std::string config_string;
-      response.searchbox_config().SerializeToString(&config_string);
-      base::Base64UrlEncode(config_string,
-                            base::Base64UrlEncodePolicy::OMIT_PADDING,
-                            &state->searchbox_config_base64_url_encoded);
     }
   }
 
