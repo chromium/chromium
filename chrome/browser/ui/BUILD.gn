@@ -476,6 +476,7 @@ if (!is_android) {
       deps += [ "//ui/ozone" ]
     }
   }
+
   source_set("collected_cookies_infobar_delegate") {
     public = [ "collected_cookies_infobar_delegate.h" ]
     sources = [ "collected_cookies_infobar_delegate.cc" ]
@@ -491,6 +492,7 @@ if (!is_android) {
     ]
   }
 }
+
 source_set("enterprise_startup_dialog") {
   public = [ "enterprise_startup_dialog.h" ]
   public_deps = [ "//base" ]
@@ -1795,7 +1797,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/omnibox_popup",
 
       # tab_search includes browser.h, browser_window.h,
-      # plural_string_handler.h, and tab_ui_helper.h from //chrome/browser/ui.
+      # plural_string_handler.h from //chrome/browser/ui.
       "//chrome/browser/ui/webui/tab_search",
     ]
 
@@ -2928,9 +2930,6 @@ static_library("ui") {
       # c/b/ui/browser_tabstrip.h
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
 
-      # c/b/ui/tab_ui_helper.h
-      "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
-
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
       # c/b/ui/views/frame/browser_view.h, contents_web_view.h
@@ -3170,7 +3169,6 @@ static_library("ui") {
       # - c/b/ui/browser_commands.h
       # - c/b/ui/browser_tabstrip.h
       # - c/b/ui/browser_window.h
-      # - c/b/ui/tab_ui_helper.h
       # - c/b/ui/unload_controller.h
       # - c/b/ui/views/frame/browser_frame_view.h
       # - c/b/ui/views/frame/browser_view.h
@@ -3188,7 +3186,6 @@ static_library("ui") {
       # following headers get componentized:
       # - c/b/ui/browser_tabstrip.h
       # - c/b/ui/browser_window.h
-      # - c/b/ui/tab_ui_helper.h
       # - c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/tabs/groups:impl",
 
@@ -3367,7 +3364,6 @@ static_library("ui") {
       "//chrome/browser/ui/aura/accessibility",
       "//chrome/browser/ui/aura/accessibility:impl",
       "//chrome/browser/ui/aura/tab_contents",
-      "//chrome/browser/ui/aura/tab_contents:impl",
       "//chrome/browser/ui/views:theme_profile_key",
       "//chrome/browser/ui/views/renderer_context_menu",
       "//chrome/browser/ui/views/renderer_context_menu:impl",
@@ -3384,10 +3380,6 @@ static_library("ui") {
     # Any circular includes must depend on the target
     # "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
-      # TODO(361027501): //c/b/u/v/t/chrome_web_contents_view_delegate_views.cc
-      # includes //c/b/u/a/t/web_drag_bookmark_handler_aura.cc
-      "//chrome/browser/ui/aura/tab_contents:impl",
-
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
       # c/b/ui/views/frame/browser_view.h
