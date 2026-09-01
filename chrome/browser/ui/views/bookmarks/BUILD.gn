@@ -261,6 +261,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/gcm",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_controller_factory",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/views/commerce",

@@ -19,6 +19,9 @@ class DesktopBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
   void OpenAppsPage(WindowOpenDisposition disposition) override;
   void OpenBookmark(int64_t node_id,
                     WindowOpenDisposition disposition) override;
+  void NotifyFolderOpened() override;
+  void OpenFolderNodes(const bookmarks_api::BookmarkParentFolderId& folder,
+                       WindowOpenDisposition disposition) override;
 
  private:
   raw_ptr<BrowserWindowInterface> browser_;

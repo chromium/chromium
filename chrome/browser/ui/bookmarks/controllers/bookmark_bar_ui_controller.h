@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "chrome/browser/bookmarks/bookmark_parent_folder_types.h"
+
 enum class WindowOpenDisposition;
 
 class BookmarkBarUIClient;
@@ -22,6 +24,8 @@ class BookmarkBarUIController {
   virtual void OpenAppsPage(WindowOpenDisposition disposition) = 0;
   virtual void OpenBookmark(int64_t node_id,
                             WindowOpenDisposition disposition) = 0;
+  virtual void OpenFolder(const bookmarks_api::BookmarkParentFolderId& folder,
+                          WindowOpenDisposition disposition) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_H_

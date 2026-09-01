@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder_types.h"
 
 namespace bookmarks {
 class BookmarkNode;
@@ -17,14 +18,7 @@ class BookmarkNode;
 // Holds a `PermanentFolderType` or a non-permanent node folder `BookmarkNode`.
 // `PermanentFolderType/ const BookmarkNode*` should be passed by value.
 struct BookmarkParentFolder {
-  // Represents a combined view of account and local bookmark permanent nodes.
-  // Note: Managed node is an exception as it has only local data.
-  enum class PermanentFolderType {
-    kBookmarkBarNode,
-    kOtherNode,
-    kMobileNode,
-    kManagedNode
-  };
+  using PermanentFolderType = bookmarks::PermanentFolderType;
 
   static BookmarkParentFolder BookmarkBarFolder();
   static BookmarkParentFolder OtherFolder();

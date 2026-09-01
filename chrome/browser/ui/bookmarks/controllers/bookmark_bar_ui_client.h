@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CLIENT_H_
 #define CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CLIENT_H_
 
+#include "chrome/browser/bookmarks/bookmark_parent_folder_types.h"
+
 class BookmarkBarUIClient {
  public:
   virtual ~BookmarkBarUIClient() = default;
@@ -12,6 +14,8 @@ class BookmarkBarUIClient {
   virtual void SetAppsPageShortcutVisibility(bool visible) = 0;
   virtual void SetSavedTabGroupsVisibility(bool visible) = 0;
   virtual void SetManagedBookmarksFolderVisibility(bool visible) = 0;
+  virtual void ShowFolderMenu(
+      const bookmarks_api::BookmarkParentFolderId& folder) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CLIENT_H_

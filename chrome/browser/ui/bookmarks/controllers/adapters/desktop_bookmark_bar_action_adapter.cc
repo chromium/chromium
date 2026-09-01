@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/bookmarks/controllers/adapters/desktop_bookmark_bar_action_adapter.h"
 
+#include "base/containers/to_vector.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -54,4 +58,33 @@ void DesktopBookmarkBarActionAdapter::OpenBookmark(
       BookmarkLaunchLocation::kAttachedBar,
       profile_metrics::GetBrowserProfileType(browser_->GetProfile()));
   chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
+}
+
+void DesktopBookmarkBarActionAdapter::NotifyFolderOpened() {
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
+  RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);
+}
+
+void DesktopBookmarkBarActionAdapter::OpenFolderNodes(
+    const bookmarks_api::BookmarkParentFolderId& folder_id,
+    WindowOpenDisposition disposition) {
+  BookmarkParentFolder folder = chrome::ToFolder(
+      folder_id,
+      BookmarkModelFactory::GetForBrowserContext(browser_->GetProfile()));
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
+
+  RecordBookmarkFolderLaunch(BookmarkLaunchLocation::kAttachedBar);
+  BookmarkMergedSurfaceService* service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  auto nodes = base::ToVector(
+      service->GetUnderlyingNodes(folder),
+      [](const bookmarks::BookmarkNode* node) {
+        return raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>(node);
+      });
+
+  bookmarks::OpenAllIfAllowed(
+      browser_, nodes, disposition, bookmarks::OpenAllBookmarksContext::kNone,
+      GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
+      {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
 }

@@ -79,3 +79,18 @@ void BookmarkBarUIControllerImpl::OpenBookmark(
     WindowOpenDisposition disposition) {
   injector_->GetActionAdapter()->OpenBookmark(node_id, disposition);
 }
+
+void BookmarkBarUIControllerImpl::OpenFolder(
+    const bookmarks_api::BookmarkParentFolderId& folder,
+    WindowOpenDisposition disposition) {
+  // Clicking the middle mouse button or clicking with Control/Command key down
+  // opens all bookmarks in the folder in new tabs.
+  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+    injector_->GetActionAdapter()->NotifyFolderOpened();
+    if (client_) {
+      client_->ShowFolderMenu(folder);
+    }
+  } else {
+    injector_->GetActionAdapter()->OpenFolderNodes(folder, disposition);
+  }
+}

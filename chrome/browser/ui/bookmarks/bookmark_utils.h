@@ -17,10 +17,12 @@
 
 class GURL;
 class Profile;
-
 struct BookmarkParentFolder;
 
+#include "chrome/browser/bookmarks/bookmark_parent_folder_types.h"
+
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
 struct BookmarkNodeData;
@@ -123,6 +125,13 @@ gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
     ui::ColorVariant color,
     ui::ColorProvider* color_provider);
 #endif
+
+BookmarkParentFolder ToFolder(
+    const bookmarks_api::BookmarkParentFolderId& folder_id,
+    bookmarks::BookmarkModel* model);
+
+bookmarks_api::BookmarkParentFolderId ToFolderId(
+    const BookmarkParentFolder& folder);
 
 }  // namespace chrome
 

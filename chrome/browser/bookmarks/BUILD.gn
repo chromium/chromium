@@ -5,6 +5,10 @@
 import("//build/config/ui.gni")
 import("//components/offline_pages/buildflags/features.gni")
 
+source_set("types") {
+  public = [ "bookmark_parent_folder_types.h" ]
+}
+
 source_set("bookmarks") {
   public = [
     "bookmark_bar_policy_handler.h",
@@ -25,6 +29,7 @@ source_set("bookmarks") {
   ]
 
   public_deps = [
+    ":types",
     "//base",
     "//chrome/browser/profiles",
     "//components/bookmarks/browser",

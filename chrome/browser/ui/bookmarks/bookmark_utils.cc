@@ -16,6 +16,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -23,6 +24,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
@@ -396,5 +398,36 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
   return ui::ImageModel::FromVectorIcon(*icon_id, color);
 }
 #endif
+
+BookmarkParentFolder ToFolder(
+    const bookmarks_api::BookmarkParentFolderId& folder_id,
+    bookmarks::BookmarkModel* model) {
+  if (std::holds_alternative<int64_t>(folder_id)) {
+    const bookmarks::BookmarkNode* node =
+        bookmarks::GetBookmarkNodeByID(model, std::get<int64_t>(folder_id));
+    CHECK(node);
+    return BookmarkParentFolder::FromFolderNode(node);
+  }
+  auto type = std::get<BookmarkParentFolder::PermanentFolderType>(folder_id);
+  switch (type) {
+    case BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode:
+      return BookmarkParentFolder::BookmarkBarFolder();
+    case BookmarkParentFolder::PermanentFolderType::kOtherNode:
+      return BookmarkParentFolder::OtherFolder();
+    case BookmarkParentFolder::PermanentFolderType::kMobileNode:
+      return BookmarkParentFolder::MobileFolder();
+    case BookmarkParentFolder::PermanentFolderType::kManagedNode:
+      return BookmarkParentFolder::ManagedFolder();
+  }
+  NOTREACHED();
+}
+
+bookmarks_api::BookmarkParentFolderId ToFolderId(
+    const BookmarkParentFolder& folder) {
+  if (folder.HoldsNonPermanentFolder()) {
+    return folder.as_non_permanent_folder()->id();
+  }
+  return folder.as_permanent_folder().value();
+}
 
 }  // namespace chrome

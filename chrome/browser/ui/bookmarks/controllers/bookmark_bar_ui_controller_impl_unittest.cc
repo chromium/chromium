@@ -26,6 +26,10 @@ class MockBookmarkBarUIClient : public BookmarkBarUIClient {
   MOCK_METHOD(void, SetAppsPageShortcutVisibility, (bool), (override));
   MOCK_METHOD(void, SetSavedTabGroupsVisibility, (bool), (override));
   MOCK_METHOD(void, SetManagedBookmarksFolderVisibility, (bool), (override));
+  MOCK_METHOD(void,
+              ShowFolderMenu,
+              (const bookmarks_api::BookmarkParentFolderId&),
+              (override));
 };
 
 class MockBookmarkBarPrefsAdapter : public BookmarkBarPrefsAdapter {
@@ -52,6 +56,12 @@ class MockBookmarkBarActionAdapter : public BookmarkBarActionAdapter {
  public:
   MOCK_METHOD(void, OpenAppsPage, (WindowOpenDisposition), (override));
   MOCK_METHOD(void, OpenBookmark, (int64_t, WindowOpenDisposition), (override));
+  MOCK_METHOD(void, NotifyFolderOpened, (), (override));
+  MOCK_METHOD(void,
+              OpenFolderNodes,
+              (const bookmarks_api::BookmarkParentFolderId&,
+               WindowOpenDisposition),
+              (override));
 };
 
 class MockBookmarkBarUIControllerInjector
@@ -158,6 +168,23 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkDelegates) {
   EXPECT_CALL(mock_action_adapter_,
               OpenBookmark(42, WindowOpenDisposition::NEW_WINDOW));
   controller_->OpenBookmark(42, WindowOpenDisposition::NEW_WINDOW);
+}
+
+TEST_F(BookmarkBarUIControllerImplTest, OpenFolderCurrentTabShowsMenu) {
+  controller_->Bind(&mock_client_);
+  bookmarks_api::BookmarkParentFolderId folder_id = int64_t{42};
+  EXPECT_CALL(mock_action_adapter_, NotifyFolderOpened());
+  EXPECT_CALL(mock_client_, ShowFolderMenu(folder_id));
+  controller_->OpenFolder(folder_id, WindowOpenDisposition::CURRENT_TAB);
+}
+
+TEST_F(BookmarkBarUIControllerImplTest, OpenFolderOtherDispositionOpensNodes) {
+  controller_->Bind(&mock_client_);
+  bookmarks_api::BookmarkParentFolderId folder_id = int64_t{42};
+  EXPECT_CALL(mock_action_adapter_,
+              OpenFolderNodes(folder_id, WindowOpenDisposition::NEW_WINDOW));
+  EXPECT_CALL(mock_client_, ShowFolderMenu(testing::_)).Times(0);
+  controller_->OpenFolder(folder_id, WindowOpenDisposition::NEW_WINDOW);
 }
 
 }  // namespace

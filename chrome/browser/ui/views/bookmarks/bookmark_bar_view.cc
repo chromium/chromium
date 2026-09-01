@@ -34,6 +34,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -44,17 +45,14 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
-#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1410,9 +1408,8 @@ bool BookmarkBarView::CanStartDragForView(views::View* sender,
 }
 
 void BookmarkBarView::AppsPageShortcutPressed(const ui::Event& event) {
-  if (controller_) {
-    controller_->OpenAppsPage(ui::DispositionFromEventFlags(event.flags()));
-  }
+  CHECK(controller_);
+  controller_->OpenAppsPage(ui::DispositionFromEventFlags(event.flags()));
 }
 
 void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
@@ -1420,38 +1417,25 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   // Only URL nodes have regular buttons on the bookmarks bar; folder clicks
   // are directed to ::OnMenuButtonPressed().
   DCHECK(node->is_url());
-  if (controller_) {
-    controller_->OpenBookmark(node->id(),
-                              ui::DispositionFromEventFlags(event.flags()));
-  }
+  CHECK(controller_);
+  controller_->OpenBookmark(node->id(),
+                            ui::DispositionFromEventFlags(event.flags()));
 }
 
 void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
                                           const ui::Event& event) {
-  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
-  // Clicking the middle mouse button or clicking with Control/Command key down
-  // opens all bookmarks in the folder in new tabs.
-  if ((event.flags() & ui::EF_MIDDLE_MOUSE_BUTTON) ||
-      (event.flags() & ui::EF_PLATFORM_ACCELERATOR)) {
-    RecordBookmarkFolderLaunch(BookmarkLaunchLocation::kAttachedBar);
-    auto nodes = ToRawPtrVector(bookmark_service_->GetUnderlyingNodes(folder));
-
-    bookmarks::OpenAllIfAllowed(
-        browser_, nodes, ui::DispositionFromEventFlags(event.flags()),
-        bookmarks::OpenAllBookmarksContext::kNone,
-        GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
-        {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
-  } else {
-    RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);
-    ShowFolderMenuForFolder(folder);
-  }
+  CHECK(controller_);
+  controller_->OpenFolder(chrome::ToFolderId(folder),
+                          ui::DispositionFromEventFlags(event.flags()));
 }
 
 bool BookmarkBarView::OnMenuButtonAccessibleAction(
     const BookmarkParentFolder& folder,
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kExpand) {
-    ShowFolderMenuForFolder(folder);
+    CHECK(controller_);
+    controller_->OpenFolder(chrome::ToFolderId(folder),
+                            WindowOpenDisposition::CURRENT_TAB);
     return true;
   }
   if (action_data.action == ax::mojom::Action::kCollapse) {
@@ -2402,6 +2386,12 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
 
 bool BookmarkBarView::HasDropInfo() const {
   return drop_info_.get();
+}
+
+void BookmarkBarView::ShowFolderMenu(
+    const bookmarks_api::BookmarkParentFolderId& folder_id) {
+  ShowFolderMenuForFolder(
+      chrome::ToFolder(folder_id, bookmark_service_->bookmark_model()));
 }
 
 BEGIN_METADATA(BookmarkBarView)
