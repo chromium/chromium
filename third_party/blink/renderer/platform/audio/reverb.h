@@ -46,15 +46,16 @@ class PLATFORM_EXPORT Reverb final {
   USING_FAST_MALLOC(Reverb);
 
  public:
+  Reverb(const Reverb&) = delete;
+  Reverb& operator=(const Reverb&) = delete;
+
   // |render_slice_size| is a rendering hint, so the FFTs can be optimized to
   // not all occur at the same time (very bad when rendering on a real-time
   // thread).
-  Reverb(AudioBus* impulse_response_buffer,
-         unsigned render_slice_size,
-         unsigned max_fft_size,
-         bool normalize);
-  Reverb(const Reverb&) = delete;
-  Reverb& operator=(const Reverb&) = delete;
+  static std::unique_ptr<Reverb> TryCreate(AudioBus* impulse_response_buffer,
+                                           unsigned render_slice_size,
+                                           unsigned max_fft_size,
+                                           bool normalize);
 
   void Process(const AudioBus* source_bus,
                AudioBus* destination_bus,
@@ -65,15 +66,18 @@ class PLATFORM_EXPORT Reverb final {
   size_t LatencyFrames() const;
 
  private:
-  void Initialize(AudioBus* impulse_response_buffer,
+  Reverb() = default;
+
+  // Returns false if memory failed to allocate.
+  bool Initialize(AudioBus* impulse_response_buffer,
                   unsigned render_slice_size,
                   unsigned max_fft_size,
                   float scale);
 
-  size_t impulse_response_length_;
-  // The actual number of channels in the response.  This can be less
-  // than the number of ReverbConvolver's in |m_convolvers|.
-  unsigned number_of_response_channels_;
+  size_t impulse_response_length_ = 0;
+  // The actual number of channels in the response. This can be less
+  // than the number of ReverbConvolver's in `convolvers_`.
+  unsigned number_of_response_channels_ = 0;
 
   Vector<std::unique_ptr<ReverbConvolver>> convolvers_;
 

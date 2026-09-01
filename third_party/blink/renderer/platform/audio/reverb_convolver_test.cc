@@ -30,8 +30,11 @@ TEST(ReverbConvolverTest, CustomRenderSliceSize) {
   for (size_t convolver_render_phase : {0u, 64u, 128u}) {
     for (unsigned render_slice_size :
          {16u, 32u, 64u, 100u, 128u, 256u, 512u, 1025u}) {
-      ReverbConvolver convolver(impulse_response->Channel(0), render_slice_size,
-                                max_fft_size, convolver_render_phase, scale);
+      std::unique_ptr<ReverbConvolver> convolver =
+          ReverbConvolver::TryCreate(impulse_response->Channel(0),
+                                     render_slice_size, max_fft_size,
+                                     convolver_render_phase, scale);
+      ASSERT_NE(convolver, nullptr);
 
       scoped_refptr<AudioBus> source_bus =
           AudioBus::Create(1, render_slice_size);
@@ -41,8 +44,8 @@ TEST(ReverbConvolverTest, CustomRenderSliceSize) {
       destination_bus->Zero();
 
       for (int i = 0; i < 2; ++i) {
-        convolver.Process(source_bus->Channel(0), destination_bus->Channel(0),
-                          render_slice_size);
+        convolver->Process(source_bus->Channel(0), destination_bus->Channel(0),
+                           render_slice_size);
       }
     }
   }
@@ -64,8 +67,11 @@ TEST(ReverbConvolverTest, DiracImpulseResponse) {
 
   for (size_t convolver_render_phase : {0u, 128u, 256u}) {
     for (unsigned render_slice_size : {64u, 128u, 256u, 512u}) {
-      ReverbConvolver convolver(impulse_response->Channel(0), render_slice_size,
-                                max_fft_size, convolver_render_phase, scale);
+      std::unique_ptr<ReverbConvolver> convolver =
+          ReverbConvolver::TryCreate(impulse_response->Channel(0),
+                                     render_slice_size, max_fft_size,
+                                     convolver_render_phase, scale);
+      ASSERT_NE(convolver, nullptr);
 
       scoped_refptr<AudioBus> source_bus =
           AudioBus::Create(1, render_slice_size);
@@ -80,8 +86,8 @@ TEST(ReverbConvolverTest, DiracImpulseResponse) {
         }
 
         destination_bus->Zero();
-        convolver.Process(source_bus->Channel(0), destination_bus->Channel(0),
-                          render_slice_size);
+        convolver->Process(source_bus->Channel(0), destination_bus->Channel(0),
+                           render_slice_size);
 
         auto dest_span = destination_bus->Channel(0)->Span();
         for (unsigned i = 0; i < render_slice_size; ++i) {
@@ -109,8 +115,10 @@ TEST(ReverbConvolverTest, DelayedImpulseResponse) {
   impulse_response->Channel(0)->MutableSpan()[delay_frames] = 1.0f;
 
   for (unsigned render_slice_size : {64u, 128u, 256u}) {
-    ReverbConvolver convolver(impulse_response->Channel(0), render_slice_size,
-                              max_fft_size, 0, scale);
+    std::unique_ptr<ReverbConvolver> convolver = ReverbConvolver::TryCreate(
+        impulse_response->Channel(0), render_slice_size, max_fft_size, 0,
+        scale);
+    ASSERT_NE(convolver, nullptr);
 
     scoped_refptr<AudioBus> source_bus = AudioBus::Create(1, render_slice_size);
     scoped_refptr<AudioBus> destination_bus =
@@ -133,8 +141,8 @@ TEST(ReverbConvolverTest, DelayedImpulseResponse) {
       }
 
       destination_bus->Zero();
-      convolver.Process(source_bus->Channel(0), destination_bus->Channel(0),
-                        render_slice_size);
+      convolver->Process(source_bus->Channel(0), destination_bus->Channel(0),
+                         render_slice_size);
 
       auto dest_span = destination_bus->Channel(0)->Span();
       for (unsigned i = 0; i < render_slice_size; ++i) {

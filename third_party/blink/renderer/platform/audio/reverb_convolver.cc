@@ -31,24 +31,44 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
 
-namespace {
+std::unique_ptr<ReverbConvolver> ReverbConvolver::TryCreate(
+    AudioChannel* impulse_response,
+    unsigned render_slice_size,
+    unsigned max_fft_size,
+    size_t convolver_render_phase,
+    float scale) {
+  auto convolver = base::WrapUnique(new ReverbConvolver());
+  if (!convolver->Initialize(impulse_response, render_slice_size, max_fft_size,
+                             convolver_render_phase, scale)) {
+    return nullptr;
+  }
+  return convolver;
+}
 
-constexpr unsigned kMinFFTSize = 128;
-
-}  // namespace
-
-ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
+bool ReverbConvolver::Initialize(AudioChannel* impulse_response,
                                  unsigned render_slice_size,
                                  unsigned max_fft_size,
                                  size_t convolver_render_phase,
-                                 float scale)
-    : impulse_response_length_(impulse_response->length()),
-      accumulation_buffer_(impulse_response->length() + render_slice_size) {
+                                 float scale) {
+  impulse_response_length_ = impulse_response->length();
+
+  uint32_t total_length = 0;
+  if (!base::CheckAdd(impulse_response->length(), render_slice_size)
+           .AssignIfValid(&total_length)) {
+    return false;
+  }
+
+  if (!accumulation_buffer_.TryAllocate(total_length)) {
+    return false;
+  }
+
   uint32_t total_response_length = impulse_response->length();
 
   // The total latency is zero because the direct-convolution is used in the
@@ -78,10 +98,14 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
     bool use_direct_convolver = !stage_offset;
 
     std::unique_ptr<ReverbConvolverStage> stage =
-        std::make_unique<ReverbConvolverStage>(
+        ReverbConvolverStage::TryCreate(
             impulse_response->Span(), reverb_total_latency, stage_offset,
             stage_size, fft_size, render_phase, render_slice_size,
             &accumulation_buffer_, scale, use_direct_convolver);
+
+    if (!stage) {
+      return false;
+    }
 
     stages_.push_back(std::move(stage));
 
@@ -97,6 +121,8 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
       fft_size = max_fft_size;
     }
   }
+
+  return true;
 }
 
 void ReverbConvolver::Process(const AudioChannel* source_channel,

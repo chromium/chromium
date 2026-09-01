@@ -44,9 +44,11 @@ class ReverbAccumulationBuffer final {
   DISALLOW_NEW();
 
  public:
-  explicit ReverbAccumulationBuffer(uint32_t length);
+  ReverbAccumulationBuffer();
   ReverbAccumulationBuffer(const ReverbAccumulationBuffer&) = delete;
   ReverbAccumulationBuffer& operator=(const ReverbAccumulationBuffer&) = delete;
+
+  bool TryAllocate(uint32_t length);
 
   // This will read from, then clear-out numberOfFrames
   void ReadAndClear(base::span<float> destination);

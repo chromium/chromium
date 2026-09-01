@@ -37,9 +37,11 @@
 #include "third_party/blink/renderer/platform/audio/reverb_accumulation_buffer.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
+#include "base/memory/ptr_util.h"
+
 namespace blink {
 
-ReverbConvolverStage::ReverbConvolverStage(
+std::unique_ptr<ReverbConvolverStage> ReverbConvolverStage::TryCreate(
     base::span<const float> impulse_response,
     size_t reverb_total_latency,
     size_t stage_offset,
@@ -49,11 +51,35 @@ ReverbConvolverStage::ReverbConvolverStage(
     unsigned render_slice_size,
     ReverbAccumulationBuffer* accumulation_buffer,
     float scale,
+    bool direct_mode) {
+  auto stage = base::WrapUnique(
+      new ReverbConvolverStage(accumulation_buffer, direct_mode));
+  if (!stage->Initialize(impulse_response, reverb_total_latency, stage_offset,
+                         stage_length, fft_size, render_phase,
+                         render_slice_size, scale)) {
+    return nullptr;
+  }
+  return stage;
+}
+
+ReverbConvolverStage::ReverbConvolverStage(
+    ReverbAccumulationBuffer* accumulation_buffer,
     bool direct_mode)
     : accumulation_buffer_(accumulation_buffer),
       accumulation_read_index_(0),
       direct_mode_(direct_mode) {
   DCHECK(accumulation_buffer);
+}
+
+bool ReverbConvolverStage::Initialize(
+    base::span<const float> impulse_response,
+    size_t reverb_total_latency,
+    size_t stage_offset,
+    unsigned stage_length,
+    unsigned fft_size,
+    size_t render_phase,
+    unsigned render_slice_size,
+    float scale) {
 
   if (!direct_mode_) {
     DCHECK_LE(stage_length + stage_offset, impulse_response.size());
@@ -86,7 +112,9 @@ ReverbConvolverStage::ReverbConvolverStage(
     direct_convolver_ = std::make_unique<DirectConvolver>(
         render_slice_size, std::move(direct_kernel));
   }
-  temporary_buffer_.Allocate(render_slice_size);
+  if (!temporary_buffer_.TryAllocate(render_slice_size)) {
+    return false;
+  }
 
   // The convolution stage at offset stageOffset needs to have a corresponding
   // delay to cancel out the offset.
@@ -124,7 +152,10 @@ ReverbConvolverStage::ReverbConvolverStage(
       pre_delay_length_ < fft_size ? fft_size : pre_delay_length_;
   delay_buffer_size = delay_buffer_size < render_slice_size ? render_slice_size
                                                             : delay_buffer_size;
-  pre_delay_buffer_.Allocate(delay_buffer_size);
+  if (!pre_delay_buffer_.TryAllocate(delay_buffer_size)) {
+    return false;
+  }
+  return true;
 }
 
 void ReverbConvolverStage::Process(base::span<const float> source) {

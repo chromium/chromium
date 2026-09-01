@@ -47,18 +47,20 @@ class PLATFORM_EXPORT ReverbConvolver final {
   USING_FAST_MALLOC(ReverbConvolver);
 
  public:
-  // maxFFTSize can be adjusted (e.g. 2048 to 8192) depending on performance and
-  // precision trade-offs. Larger FFT sizes amortize transform costs over longer
-  // intervals but increase phase error with single-precision floats and cause
-  // heavier CPU load spikes per FFT slice.
-  ReverbConvolver(AudioChannel* impulse_response,
-                  unsigned render_slice_size,
-                  unsigned max_fft_size,
-                  size_t convolver_render_phase,
-                  float scale);
   ReverbConvolver(const ReverbConvolver&) = delete;
   ReverbConvolver& operator=(const ReverbConvolver&) = delete;
   ~ReverbConvolver() = default;
+
+  // max_fft_size can be adjusted (e.g. 2048 to 8192) depending on performance
+  // and precision trade-offs. Larger FFT sizes amortize transform costs over
+  // longer intervals but increase phase error with single-precision floats and
+  // cause heavier CPU load spikes per FFT slice.
+  static std::unique_ptr<ReverbConvolver> TryCreate(
+      AudioChannel* impulse_response,
+      unsigned render_slice_size,
+      unsigned max_fft_size,
+      size_t convolver_render_phase,
+      float scale);
 
   void Process(const AudioChannel* source_channel,
                AudioChannel* destination_channel,
@@ -68,8 +70,19 @@ class PLATFORM_EXPORT ReverbConvolver final {
   size_t LatencyFrames() const;
 
  private:
+  static constexpr unsigned kMinFFTSize = 128;
+
+  ReverbConvolver() = default;
+
+  // Returns false if memory allocation fails.
+  bool Initialize(AudioChannel* impulse_response,
+                  unsigned render_slice_size,
+                  unsigned max_fft_size,
+                  size_t convolver_render_phase,
+                  float scale);
+
   Vector<std::unique_ptr<ReverbConvolverStage>> stages_;
-  const size_t impulse_response_length_;
+  size_t impulse_response_length_ = 0;
 
   ReverbAccumulationBuffer accumulation_buffer_;
 };

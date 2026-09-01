@@ -34,6 +34,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
+
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -91,20 +93,27 @@ static float CalculateNormalizationScale(AudioBus* response) {
   return scale;
 }
 
-Reverb::Reverb(AudioBus* impulse_response,
-               unsigned render_slice_size,
-               unsigned max_fft_size,
-               bool normalize) {
+std::unique_ptr<Reverb> Reverb::TryCreate(AudioBus* impulse_response,
+                                          unsigned render_slice_size,
+                                          unsigned max_fft_size,
+                                          bool normalize) {
   float scale = 1;
 
   if (normalize) {
     scale = CalculateNormalizationScale(impulse_response);
   }
 
-  Initialize(impulse_response, render_slice_size, max_fft_size, scale);
+  auto reverb = base::WrapUnique(new Reverb());
+
+  if (!reverb->Initialize(impulse_response, render_slice_size, max_fft_size,
+                          scale)) {
+    return nullptr;
+  }
+
+  return reverb;
 }
 
-void Reverb::Initialize(AudioBus* impulse_response_buffer,
+bool Reverb::Initialize(AudioBus* impulse_response_buffer,
                         unsigned render_slice_size,
                         unsigned max_fft_size,
                         float scale) {
@@ -121,10 +130,12 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
     AudioChannel* channel = impulse_response_buffer->Channel(
         std::min(i, number_of_response_channels_ - 1));
 
-    std::unique_ptr<ReverbConvolver> convolver =
-        std::make_unique<ReverbConvolver>(channel, render_slice_size,
-                                          max_fft_size, convolver_render_phase,
-                                          scale);
+    auto convolver = ReverbConvolver::TryCreate(
+        channel, render_slice_size, max_fft_size, convolver_render_phase,
+        scale);
+    if (!convolver) {
+      return false;
+    }
     convolvers_.push_back(std::move(convolver));
 
     convolver_render_phase += render_slice_size;
@@ -134,8 +145,13 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
   // repeatedly allocating it in the process() method.  It can be bad to
   // allocate memory in a real-time thread.
   if (number_of_response_channels_ == 4) {
-    temp_buffer_ = AudioBus::Create(2, render_slice_size);
+    temp_buffer_ = AudioBus::TryCreate(2, render_slice_size);
+    if (!temp_buffer_) {
+      return false;
+    }
   }
+
+  return true;
 }
 
 void Reverb::Process(const AudioBus* source_bus,

@@ -177,9 +177,15 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   buffer_bus->SetSampleRate(buffer->sampleRate());
 
   // Create the reverb with the given impulse response.
-  std::unique_ptr<Reverb> reverb = std::make_unique<Reverb>(
+  std::unique_ptr<Reverb> reverb = Reverb::TryCreate(
       buffer_bus.get(), GetDeferredTaskHandler().RenderQuantumFrames(),
       kMaxFftSize, normalize_);
+  if (!reverb) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Not enough memory to create convolver.");
+    return;
+  }
 
   {
     // The context must be locked since changing the buffer can
