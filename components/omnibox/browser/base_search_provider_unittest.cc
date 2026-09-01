@@ -852,3 +852,73 @@ TEST_F(BaseSearchProviderTest, AnswerAndImageOnlyPopulatedForGoogle) {
               map.begin()->second.image_url.spec());
   }
 }
+
+TEST_F(BaseSearchProviderTest, EntityImageMustBeHostedBySearchEngine) {
+  // A search engine may supply an entity image that it hosts itself: while it
+  // is in use it already observes what is typed into the omnibox, so fetching
+  // such an image tells it nothing new. Naming a host it does not control is a
+  // different matter, and stays blocked.
+  struct {
+    const char* search_url;
+    const char* image_url;
+    bool expected_allowed;
+  } kCases[] = {
+      // Images are commonly served from a dedicated subdomain, so the
+      // comparison is by registrable domain rather than by origin.
+      {"https://search.brave.com/search?q={searchTerms}",
+       "https://imgs.search.brave.com/a.png", true},
+      {"https://search.brave.com/search?q={searchTerms}",
+       "https://search.brave.com/a.png", true},
+      // A different site, however it is dressed up.
+      {"https://search.brave.com/search?q={searchTerms}",
+       "https://evil.com/a.png", false},
+      {"https://search.brave.com/search?q={searchTerms}",
+       "https://brave.com.evil.com/a.png", false},
+      // Not https. Requests like the second one are the reason for the check.
+      {"https://search.brave.com/search?q={searchTerms}",
+       "http://search.brave.com/a.png", false},
+      {"https://search.brave.com/search?q={searchTerms}",
+       "http://192.168.0.1/a.png", false},
+      {"https://search.brave.com/search?q={searchTerms}", "not a url", false},
+      {"https://search.brave.com/search?q={searchTerms}", "", false},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.image_url);
+
+    omnibox::EntityInfo entity_info;
+    entity_info.set_image_url(test_case.image_url);
+    entity_info.set_dominant_color("#ffffff");
+
+    std::u16string query = u"weather";
+    SearchSuggestionParser::SuggestResult result(
+        query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_QUERY,
+        /*subtypes=*/{}, /*from_keyword=*/false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
+        /*relevance=*/1300, /*relevance_from_server=*/true,
+        /*input_text=*/query);
+    result.SetEntityInfo(entity_info);
+
+    TemplateURLData data;
+    data.SetURL(test_case.search_url);
+    auto turl = std::make_unique<TemplateURL>(data);
+
+    TestBaseSearchProvider::MatchMap map;
+    provider_->AddMatchToMap(
+        result, AutocompleteInput(), turl.get(),
+        client_->GetTemplateURLService()->search_terms_data(),
+        TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+    ASSERT_EQ(1U, map.size());
+    const AutocompleteMatch& match = map.begin()->second;
+
+    EXPECT_EQ(test_case.expected_allowed, !match.image_url.is_empty());
+    if (test_case.expected_allowed) {
+      EXPECT_EQ(test_case.image_url, match.image_url.spec());
+      EXPECT_EQ("#ffffff", match.image_dominant_color);
+    } else {
+      EXPECT_TRUE(match.image_dominant_color.empty());
+    }
+    // Answers remain Google-only.
+    EXPECT_FALSE(match.answer_template.has_value());
+  }
+}
