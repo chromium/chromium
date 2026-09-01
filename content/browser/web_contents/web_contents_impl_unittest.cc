@@ -3807,29 +3807,38 @@ TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {
   testing::NiceMock<MockPageBroadcast> mock_page_broadcast(
       broadcast_remote.BindNewEndpointAndPassDedicatedReceiver());
   contents()->GetRenderViewHost()->BindPageBroadcast(broadcast_remote.Unbind());
-  blink::ColorProviderColorMaps color_maps =
-      contents()->GetColorProviderColorMaps();
-  mock_page_broadcast.FlushForTesting();
 
-  // Set a new source, which should broadcast a change.
-  color_maps.light_colors_map = color_provider_source.GetRendererColorMap(
-      ui::ColorProviderKey::ColorMode::kLight,
-      ui::ColorProviderKey::ForcedColors::kNone);
-  color_maps.dark_colors_map = color_provider_source.GetRendererColorMap(
-      ui::ColorProviderKey::ColorMode::kDark,
-      ui::ColorProviderKey::ForcedColors::kNone);
-  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_maps));
+  blink::ColorProviderColorMaps expected_color_maps{
+      color_provider_source.GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kLight,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      color_provider_source.GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kDark,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      contents()->GetColorProviderColorMaps().forced_colors_map};
+
+  // Setting a new source should broadcast a change.
+  base::test::TestFuture<blink::ColorProviderColorMaps> setup_future;
+  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(::testing::_))
+      .WillOnce([&](const blink::ColorProviderColorMaps& maps) {
+        setup_future.SetValue(maps);
+      });
   contents()->SetColorProviderSource(&color_provider_source);
-  mock_page_broadcast.FlushForTesting();
+  EXPECT_EQ(setup_future.Take(), expected_color_maps);
   ::testing::Mock::VerifyAndClearExpectations(&mock_page_broadcast);
 
   // Change something, then notify, which should broadcast another change. (If
   // nothing has changed, the broadcast won't occur.)
-  color_maps.light_colors_map.swap(color_maps.dark_colors_map);
-  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_maps));
+  expected_color_maps.light_colors_map.swap(
+      expected_color_maps.dark_colors_map);
+  base::test::TestFuture<blink::ColorProviderColorMaps> run_future;
+  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(::testing::_))
+      .WillOnce([&](const blink::ColorProviderColorMaps& maps) {
+        run_future.SetValue(maps);
+      });
   color_provider_source.SwapMaps();
   color_provider_source.NotifyColorProviderChanged();
-  mock_page_broadcast.FlushForTesting();
+  EXPECT_EQ(run_future.Take(), expected_color_maps);
 }
 
 TEST_F(WebContentsImplTest, ColorRelatedStateChangesCoalesced) {
