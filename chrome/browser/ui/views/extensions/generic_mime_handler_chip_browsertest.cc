@@ -7,13 +7,13 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_test_accessor.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -40,23 +40,18 @@ base::FilePath PdfOwnerExtensionDir() {
       .AppendASCII("pdf/extension_with_pdf");
 }
 
-LocationIconView* GetLocationIconView(const BrowserWindowInterface* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->GetLocationBarView()
-      ->location_icon_view();
-}
-
 void ExpectExtensionChipShowing(BrowserWindowInterface* browser,
                                 std::u16string_view name) {
-  LocationIconView* icon = GetLocationIconView(browser);
-  EXPECT_TRUE(icon->GetShowText());
-  EXPECT_EQ(name, icon->GetText());
+  LocationIconTestAccessor icon(browser);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return icon.IsShowingText(); }));
+  EXPECT_EQ(name, icon.GetText());
 }
 
 void ExpectExtensionChipNotShowing(BrowserWindowInterface* browser,
                                    std::u16string_view name) {
-  LocationIconView* icon = GetLocationIconView(browser);
-  EXPECT_NE(name, icon->GetText());
+  LocationIconTestAccessor icon(browser);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !icon.IsShowingText(); }));
+  EXPECT_NE(name, icon.GetText());
 }
 
 }  // namespace
@@ -226,9 +221,8 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
                             embedded_test_server()->GetURL(kTestPdfPath)));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  LocationIconView* icon = GetLocationIconView(browser());
-  ui::test::TestEvent event;
-  ASSERT_TRUE(icon->ShowBubble(event));
+  LocationIconTestAccessor icon(browser());
+  ASSERT_TRUE(icon.ShowBubble());
 
   EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleViewBase::GetShownBubbleType());

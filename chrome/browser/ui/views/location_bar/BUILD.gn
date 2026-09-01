@@ -388,6 +388,7 @@ source_set("test_support") {
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/page_info",
     "//chrome/browser/ui/views/toolbar",
+    "//content/test:test_support",
     "//ui/events:test_support",
   ]
   public_deps = [ "//base" ]
