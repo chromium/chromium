@@ -9,7 +9,6 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_tone_mapping.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_tone_mapping_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
@@ -587,21 +586,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
-  gfx::HDRMetadata hdr_metadata;
-  if (descriptor->hasToneMapping() && descriptor->toneMapping()->hasMode()) {
-    tone_mapping_mode_ = descriptor->toneMapping()->mode().AsEnum();
-    switch (tone_mapping_mode_) {
-      case V8CanvasToneMappingMode::Enum::kStandard:
-        break;
-      case V8CanvasToneMappingMode::Enum::kExtended:
-        hdr_metadata.extended_range.emplace(
-            /*current_headroom=*/gfx::HdrMetadataExtendedRange::
-                kDefaultHdrHeadroom,
-            /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
-                kDefaultHdrHeadroom);
-        break;
-    }
-  }
+  ParseCanvasToneMapping(descriptor->toneMapping(), hdr_metadata_);
 
   const wgpu::DawnTextureInternalUsageDescriptor* internal_usage_desc = nullptr;
   if (const wgpu::ChainedStruct* next_in_chain =
@@ -618,7 +603,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       swap_texture_descriptor_.usage, internal_usage,
-      swap_texture_descriptor_.format, color_space_, hdr_metadata,
+      swap_texture_descriptor_.format, color_space_, hdr_metadata_,
       kTopLeft_GrSurfaceOrigin));
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't
@@ -678,10 +663,7 @@ GPUCanvasConfiguration* GPUCanvasContext::getConfiguration() {
 
   configuration->setColorSpace(PredefinedColorSpaceToV8(color_space_));
   configuration->setAlphaMode(alpha_mode_);
-
-  CanvasToneMapping* tone_mapping = CanvasToneMapping::Create();
-  tone_mapping->setMode(tone_mapping_mode_);
-  configuration->setToneMapping(tone_mapping);
+  configuration->setToneMapping(CanvasToneMappingToV8(hdr_metadata_));
 
   return configuration;
 }

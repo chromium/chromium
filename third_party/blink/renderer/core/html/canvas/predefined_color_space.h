@@ -14,6 +14,7 @@
 namespace blink {
 
 class CanvasHighDynamicRangeOptions;
+class CanvasToneMapping;
 class V8PredefinedColorSpace;
 
 // Convert from a V8PredefinedColorSpace to a PredefinedColorSpace. Note that
@@ -31,9 +32,20 @@ V8PredefinedColorSpace CORE_EXPORT
 PredefinedColorSpaceToV8(PredefinedColorSpace color_space);
 
 // Convert from CanvasHighDynamicRangeOptions to gfx::HDRMetadata.
+// TODO(https://crbug.com/448552449): Remove ParseCanvasHighDynamicRangeOptions.
+// The experimental HTMLCanvasElement-level HDR API will be removed once its
+// replacements are added.
 void CORE_EXPORT
 ParseCanvasHighDynamicRangeOptions(const CanvasHighDynamicRangeOptions* options,
                                    gfx::HDRMetadata& hdr_metadata);
+
+// Convert from CanvasToneMapping to gfx::HDRMetadata.
+void CORE_EXPORT ParseCanvasToneMapping(const CanvasToneMapping* tone_mapping,
+                                        gfx::HDRMetadata& hdr_metadata);
+
+// Convert from gfx::HDRMetadata to CanvasToneMapping.
+CORE_EXPORT CanvasToneMapping* CanvasToneMappingToV8(
+    const gfx::HDRMetadata& hdr_metadata);
 
 }  // namespace blink
 

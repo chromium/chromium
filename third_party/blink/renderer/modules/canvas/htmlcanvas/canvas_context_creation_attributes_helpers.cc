@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_tone_mapping.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_context_creation_attributes_module.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_pixel_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
@@ -25,8 +26,9 @@ bool ToCanvasContextCreationAttributes(
                                     exception_state)) {
     return false;
   }
-  // TODO(https://crbug.com/40206688): Parse attrs->toneMapping into
-  // result.hdr_metadata.
+  if (RuntimeEnabledFeatures::CanvasToneMappingEnabled()) {
+    ParseCanvasToneMapping(attrs->toneMapping(), result.hdr_metadata);
+  }
   result.depth = attrs->depth();
   result.fail_if_major_performance_caveat =
       attrs->failIfMajorPerformanceCaveat();
@@ -96,6 +98,9 @@ CanvasRenderingContext2DSettings* ToCanvasRenderingContext2DSettings(
             V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUnorm8));
         break;
     }
+  }
+  if (RuntimeEnabledFeatures::CanvasToneMappingEnabled()) {
+    settings->setToneMapping(CanvasToneMappingToV8(attrs.hdr_metadata));
   }
   settings->setDesynchronized(attrs.desynchronized_specified);
 
