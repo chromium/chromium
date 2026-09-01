@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/observer_list_types.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -274,6 +275,8 @@ void AuthTextfield::ShowText() {
   }
   SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
+  SetTextInputFlags(GetTextInputFlags() |
+                    ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
   switch (auth_type_) {
     case AuthType::kPassword:
       SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);

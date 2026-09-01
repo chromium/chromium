@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -536,6 +537,8 @@ bool LoginPasswordView::OnKeyPressed(const ui::KeyEvent& event) {
 
 void LoginPasswordView::InvertPasswordDisplayingState() {
   if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    textfield_->SetTextInputFlags(textfield_->GetTextInputFlags() |
+                                  ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
     textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
     display_password_button_->SetToggled(true);
     textfield_->UpdateFontListAndCursor();
