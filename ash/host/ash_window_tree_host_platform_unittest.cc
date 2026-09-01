@@ -63,18 +63,13 @@ class AshWindowTreeHostPlatformTest : public AshTestBase {
   ~AshWindowTreeHostPlatformTest() override = default;
 };
 
+// test ScopedEnableUnadjustedMouseEvents
 TEST_F(AshWindowTreeHostPlatformTest, UnadjustedMovement) {
-  FakeAshWindowTreeHostDelegate fake_delegate;
-  auto stub = std::make_unique<ui::StubWindow>(gfx::Rect());
-  auto* stub_ptr = stub.get();
-  AshWindowTreeHostPlatform host(std::move(stub), &fake_delegate);
-  stub_ptr->InitDelegate(&host, false);
-
   auto test_input_controller = std::make_unique<TestInputController>();
-  host.input_controller_ = test_input_controller.get();
-
   std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
-      unadjusted_movement_context = host.RequestUnadjustedMovement();
+      unadjusted_movement_context =
+          std::make_unique<ScopedEnableUnadjustedMouseEventsOzone>(
+              test_input_controller.get());
   EXPECT_TRUE(unadjusted_movement_context.get() != nullptr);
   EXPECT_TRUE(test_input_controller->GetAccelerationSuspended());
   unadjusted_movement_context.reset();

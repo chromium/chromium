@@ -354,6 +354,10 @@ void WindowTreeHostManager::ShutdownRoundedDisplays() {
 void WindowTreeHostManager::Shutdown() {
   effective_resolution_UMA_timer_->Reset();
 
+  for (auto& [display_id, host] : window_tree_hosts_) {
+    host->PrepareForShutdown();
+  }
+
   cursor_window_controller_.reset();
   mirror_window_controller_.reset();
 
