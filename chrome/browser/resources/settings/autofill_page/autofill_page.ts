@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/prefs/prefs.js';
+import '../privacy_icons.html.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 // <if expr="_google_chrome">
