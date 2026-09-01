@@ -39,7 +39,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       public RunLoop::NestingObserver {
  public:
   static void InitializeFeatures();
-  static void ResetFeatures();
+  static void ResetFeaturesForTesting();
 
   ThreadControllerWithMessagePumpImpl(
       std::unique_ptr<MessagePump> message_pump,

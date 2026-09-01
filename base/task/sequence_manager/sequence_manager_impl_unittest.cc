@@ -237,7 +237,7 @@ class FixtureWithMockMessagePump : public Fixture {
     call_counting_clock_.Reset();
   }
   ~FixtureWithMockMessagePump() override {
-    ThreadControllerWithMessagePumpImpl::ResetFeatures();
+    ThreadControllerWithMessagePumpImpl::ResetFeaturesForTesting();
   }
 
   void AdvanceMockTickClock(TimeDelta delta) override {

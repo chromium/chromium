@@ -53,7 +53,7 @@ BASE_FEATURE(kAvoidScheduleWorkDuringNativeEventProcessing,
 BASE_FEATURE(kCurrentTaskRunnerInheritsThreadType,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-std::atomic_bool g_run_tasks_by_batches = false;
+std::atomic_bool g_run_tasks_by_batches = true;
 std::atomic_bool g_avoid_schedule_calls_during_native_event_processing = false;
 std::atomic_bool g_current_task_runner_inherits_thread_type = false;
 
@@ -79,10 +79,8 @@ void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
 }
 
 // static
-void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
-  g_run_tasks_by_batches.store(
-      base::kRunTasksByBatches.default_state == FEATURE_ENABLED_BY_DEFAULT,
-      std::memory_order_relaxed);
+void ThreadControllerWithMessagePumpImpl::ResetFeaturesForTesting() {
+  g_run_tasks_by_batches.store(true, std::memory_order_relaxed);
 }
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(

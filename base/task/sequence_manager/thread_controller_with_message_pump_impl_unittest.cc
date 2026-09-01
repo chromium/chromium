@@ -263,6 +263,7 @@ class ThreadControllerWithMessagePumpTestBase : public testing::Test {
   void TearDown() override {
     ThreadControllerPowerMonitor::ResetForTesting();
     LockMetricsRecorder::DisableRecordingOnCurrentThreadForTesting();
+    ThreadControllerWithMessagePumpImpl::ResetFeaturesForTesting();
   }
 
   TimeTicks FromNow(TimeDelta delta) { return clock_.NowTicks() + delta; }
@@ -313,28 +314,22 @@ TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
   testing::Mock::VerifyAndClearExpectations(message_pump_);
 
   // Call DoWork after the expiration of the delay.
-  // Expect that |task1| runs and the return value indicates that |task2| can
-  // run immediately.
+  // Expect that `task1` and `task2` run in a batch and the delayed run time of
+  // `task3` is returned.
   clock_.Advance(Seconds(6));
   EXPECT_CALL(task1, Run()).Times(1);
-  {
-    auto next_work_info = thread_controller_.DoWork();
-    EXPECT_TRUE(next_work_info.is_immediate());
-  }
-  testing::Mock::VerifyAndClearExpectations(&task1);
-
-  // Call DoWork. Expect |task2| to be run and the delayed run time of
-  // |task3| to be returned.
   EXPECT_CALL(task2, Run()).Times(1);
   {
     auto next_work_info = thread_controller_.DoWork();
     EXPECT_FALSE(next_work_info.is_immediate());
     EXPECT_EQ(next_work_info.delayed_run_time, FromNow(Seconds(9)));
   }
+  testing::Mock::VerifyAndClearExpectations(&task1);
   testing::Mock::VerifyAndClearExpectations(&task2);
 
   // Call DoWork for the last task and expect to be told
-  // about the lack of further delayed work (next run time being TimeTicks()).
+  // about the lack of further delayed work (next run time being
+  // TimeTicks::Max()).
   clock_.Advance(Seconds(10));
   EXPECT_CALL(task3, Run()).Times(1);
   {
@@ -393,8 +388,6 @@ TEST_F(ThreadControllerWithMessagePumpTest, NestedExecution) {
       .WillOnce([&log, this](MessagePump::Delegate* delegate) {
         log.push_back("entering top-level runloop");
         EXPECT_EQ(delegate, &thread_controller_);
-        EXPECT_TRUE(delegate->DoWork().is_immediate());
-        EXPECT_TRUE(delegate->DoWork().is_immediate());
         EXPECT_EQ(delegate->DoWork().delayed_run_time, TimeTicks::Max());
         log.push_back("exiting top-level runloop");
       })
@@ -466,7 +459,6 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         log.push_back("entering nested runloop");
         EXPECT_EQ(delegate, &thread_controller_);
         EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
-        EXPECT_TRUE(delegate->DoWork().is_immediate());
         EXPECT_EQ(delegate->DoWork().delayed_run_time, TimeTicks::Max());
         log.push_back("exiting nested runloop");
       });
@@ -660,7 +652,6 @@ TEST_F(ThreadControllerWithMessagePumpTest, EarlyQuit) {
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce([this](MessagePump::Delegate* delegate) {
         EXPECT_EQ(delegate, &thread_controller_);
-        EXPECT_TRUE(delegate->DoWork().is_immediate());
         EXPECT_EQ(delegate->DoWork().delayed_run_time, TimeTicks::Max());
       });
 
@@ -727,7 +718,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
   // Simulate a PostTask that enters a native nested message loop.
   EXPECT_CALL(*message_pump_, ScheduleWork());
   thread_controller_.ScheduleWork();
-  EXPECT_TRUE(thread_controller_.DoWork().is_immediate());
+  EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks::Max());
   EXPECT_TRUE(did_run);
 }
 
@@ -884,10 +875,10 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   // Simulate a power resume.
   thread_controller_.ThreadControllerPowerMonitorForTesting()->OnResume();
 
-  // No longer in suspended state. Controller should process both delayed tasks.
+  // No longer in suspended state. Controller should process both delayed tasks
+  // in a batch.
   EXPECT_CALL(task1, Run()).Times(1);
   EXPECT_CALL(task2, Run()).Times(1);
-  EXPECT_TRUE(thread_controller_.DoWork().is_immediate());
   EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks::Max());
   testing::Mock::VerifyAndClearExpectations(&task1);
   testing::Mock::VerifyAndClearExpectations(&task2);
@@ -933,6 +924,13 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           EXPECT_CALL(task, Run());
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     TimeTicks::Max());
 
@@ -973,26 +971,36 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         for (auto& t : tasks) {
           task_source_.AddTask(FROM_HERE, t.Get());
         }
+        // The first pass begins with a kPumpOverhead phase as the
+        // RunLoop::Run() begins active.
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+
         for (size_t i = 0; i < std::size(tasks); ++i) {
-          const TimeTicks expected_delayed_run_time =
-              i < std::size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();
-
-          // The first pass begins with a kPumpOverhead phase as the
-          // RunLoop::Run() begins active and the subsequent ones also do
-          // (between the end of the last kChromeTask and the next
-          // kSelectingApplicationTask).
-          EXPECT_CALL(*thread_controller_.trace_observer_,
-                      OnPhaseRecorded(ThreadController::kPumpOverhead));
-
+          if (i > 0) {
+            EXPECT_CALL(*thread_controller_.trace_observer_,
+                        OnPhaseRecorded(ThreadController::kPumpOverhead));
+          }
           EXPECT_CALL(
               *thread_controller_.trace_observer_,
               OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
           EXPECT_CALL(tasks[i], Run());
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kApplicationTask));
-          EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
-                    expected_delayed_run_time);
         }
+
+        // When running in batches, the batch loop checks for another task
+        // before finishing.
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
+
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
 
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kIdleWork));
@@ -1073,7 +1081,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatches) {
   thread_controller_.DoWork();
 
   EXPECT_EQ(task_counter, 2);
-  ThreadControllerWithMessagePumpImpl::ResetFeatures();
+  ThreadControllerWithMessagePumpImpl::ResetFeaturesForTesting();
 }
 
 TEST_F(ThreadControllerWithMessagePumpNoBatchesTest, DoWorkBatches) {
@@ -1093,7 +1101,7 @@ TEST_F(ThreadControllerWithMessagePumpNoBatchesTest, DoWorkBatches) {
   // Only one task should run because the SequenceManager was configured to
   // disallow batches.
   EXPECT_EQ(task_counter, 1);
-  ThreadControllerWithMessagePumpImpl::ResetFeatures();
+  ThreadControllerWithMessagePumpImpl::ResetFeaturesForTesting();
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
@@ -1114,19 +1122,11 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
   thread_controller_.DoWork();
 
   EXPECT_EQ(task_counter, 2);
-  ThreadControllerWithMessagePumpImpl::ResetFeatures();
+  ThreadControllerWithMessagePumpImpl::ResetFeaturesForTesting();
 }
 
-// TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ThreadControllerActiveAdvancedNesting \
-  DISABLED_ThreadControllerActiveAdvancedNesting
-#else
-#define MAYBE_ThreadControllerActiveAdvancedNesting \
-  ThreadControllerActiveAdvancedNesting
-#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       MAYBE_ThreadControllerActiveAdvancedNesting) {
+       ThreadControllerActiveAdvancedNesting) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1147,9 +1147,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         //     D: Run the next task (remain nested active)
         //     E: Go idle (exit active)
         //     F: Post 2 tasks
-        //     G: Run one (enter nested active)
+        //     G: Run both in a batch (enter nested active)
         //     H: exit nested loop (exit nested active)
-        // I: Run the next one, go idle (remain active, exit active)
+        // I: Go idle (exit active)
         // J: Post/run one more task, go idle (enter active, exit active)
         // 😅
 
@@ -1193,8 +1193,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                 EXPECT_CALL(*thread_controller_.trace_observer_,
                             OnThreadControllerActiveBegin);
                 EXPECT_CALL(tasks[2], Run());
+                EXPECT_CALL(tasks[3], Run());
                 EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
-                          TimeTicks());
+                          TimeTicks::Max());
                 testing::Mock::VerifyAndClearExpectations(
                     &*thread_controller_.trace_observer_);
 
@@ -1208,29 +1209,28 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                 EXPECT_CALL(
                     *thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kApplicationTask));
+                // And the batch empty check in the top-level `DoWork()`
+                // executes.
+                EXPECT_CALL(*thread_controller_.trace_observer_,
+                            OnPhaseRecorded(ThreadController::kPumpOverhead));
+                EXPECT_CALL(*thread_controller_.trace_observer_,
+                            OnPhaseRecorded(
+                                ThreadController::kSelectingApplicationTask));
+                EXPECT_CALL(
+                    *thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
               });
           RunLoop(RunLoop::Type::kNestableTasksAllowed).Run();
         });
 
         // B:
-        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
-        testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer_);
-
-        // I:
-        EXPECT_CALL(*thread_controller_.trace_observer_,
-                    OnPhaseRecorded(ThreadController::kPumpOverhead));
-        EXPECT_CALL(
-            *thread_controller_.trace_observer_,
-            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[3], Run());
-        EXPECT_CALL(*thread_controller_.trace_observer_,
-                    OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
         testing::Mock::VerifyAndClearExpectations(
             &*thread_controller_.trace_observer_);
 
+        // I: `tasks[3]` was already executed in a batch with `tasks[2]` during
+        // step G, so no tasks remain to be run here.
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
@@ -1247,6 +1247,13 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[4], Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
@@ -1266,16 +1273,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
-// TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ThreadControllerActiveNestedNativeLoop \
-  DISABLED_ThreadControllerActiveNestedNativeLoop
-#else
-#define MAYBE_ThreadControllerActiveNestedNativeLoop \
-  ThreadControllerActiveNestedNativeLoop
-#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       MAYBE_ThreadControllerActiveNestedNativeLoop) {
+       ThreadControllerActiveNestedNativeLoop) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1362,6 +1361,14 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // doesn't resume as task (B) is done.
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kNested));
+          // And the batch empty check in the top-level `DoWork()` executes.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           thread_controller_.SetTaskExecutionAllowedInNativeNestedLoop(false);
         });
 
@@ -1384,16 +1391,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
-// TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ThreadControllerActiveUnusedNativeLoop \
-  DISABLED_ThreadControllerActiveUnusedNativeLoop
-#else
-#define MAYBE_ThreadControllerActiveUnusedNativeLoop \
-  ThreadControllerActiveUnusedNativeLoop
-#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       MAYBE_ThreadControllerActiveUnusedNativeLoop) {
+       ThreadControllerActiveUnusedNativeLoop) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1409,10 +1408,10 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         std::array<MockCallback<OnceClosure>, 2> tasks;
 
         // A: Post 2 application tasks
-        // B: Run one of them (enter active)
+        // B: Run both of them in a batch (enter active)
         //   C: Allow entering a native loop but don't enter one (no-op)
-        //   D: Complete the task without having entered a native loop (no-op)
-        // E: Run an application task (remain nested active)
+        //   D: Complete task 0 without having entered a native loop (no-op)
+        //   E: Run task 1 (remain active)
         // F: Go idle (exit active)
 
         // A:
@@ -1434,22 +1433,28 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.SetTaskExecutionAllowedInNativeNestedLoop(false);
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kApplicationTask));
+
+          // E: Running in batches, `tasks[1]` runs in the same `DoWork()` call.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(tasks[1], Run());
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
+
+          // And the batch empty check in `DoWork()` executes.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
         });
 
         // B:
-        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
-        testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer_);
-
-        // E:
-        EXPECT_CALL(*thread_controller_.trace_observer_,
-                    OnPhaseRecorded(ThreadController::kPumpOverhead));
-        EXPECT_CALL(
-            *thread_controller_.trace_observer_,
-            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[1], Run());
-        EXPECT_CALL(*thread_controller_.trace_observer_,
-                    OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
         testing::Mock::VerifyAndClearExpectations(
@@ -1468,16 +1473,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
-// TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ThreadControllerActiveNestedNativeLoopWithoutAllowance \
-  DISABLED_ThreadControllerActiveNestedNativeLoopWithoutAllowance
-#else
-#define MAYBE_ThreadControllerActiveNestedNativeLoopWithoutAllowance \
-  ThreadControllerActiveNestedNativeLoopWithoutAllowance
-#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       MAYBE_ThreadControllerActiveNestedNativeLoopWithoutAllowance) {
+       ThreadControllerActiveNestedNativeLoopWithoutAllowance) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1499,7 +1496,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         //      application tasks in B.)
         //     D: Run a native task (enter nested active)
         // E: End task C. (which implicitly means the native loop is over).
-        // F: Run an application task (remain active)
+        // F: Run application task 1 in the same batch (remain active)
         // G: Go idle (exit active)
 
         // A:
@@ -1529,24 +1526,32 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                       OnThreadControllerActiveEnd);
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kNested));
+
+          // In batch mode, `tasks[1]` runs in the same `DoWork()` batch.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(tasks[1], Run());
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
+
+          // And the batch empty check executes.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
         });
 
         // B:
-        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
-        testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer_);
-
-        // F:
-        EXPECT_CALL(*thread_controller_.trace_observer_,
-                    OnPhaseRecorded(ThreadController::kPumpOverhead));
-        EXPECT_CALL(
-            *thread_controller_.trace_observer_,
-            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[1], Run());
-        EXPECT_CALL(*thread_controller_.trace_observer_,
-                    OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // G:
         EXPECT_CALL(*thread_controller_.trace_observer_,
@@ -1561,16 +1566,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
-// TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask \
-  DISABLED_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask
-#else
-#define MAYBE_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask \
-  ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask
-#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       MAYBE_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask) {
+       ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1636,6 +1633,15 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                       OnThreadControllerActiveEnd);
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kNested));
+
+          // And the batch empty check executes.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
         });
 
         // B:
@@ -1657,16 +1663,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
-// TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ThreadControllerActiveNativeLoopsReachingIdle \
-  DISABLED_ThreadControllerActiveNativeLoopsReachingIdle
-#else
-#define MAYBE_ThreadControllerActiveNativeLoopsReachingIdle \
-  ThreadControllerActiveNativeLoopsReachingIdle
-#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       MAYBE_ThreadControllerActiveNativeLoopsReachingIdle) {
+       ThreadControllerActiveNativeLoopsReachingIdle) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1749,6 +1747,15 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                       OnThreadControllerActiveEnd);
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kNested));
+
+          // And the batch empty check executes.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
         });
 
         // B:
@@ -1770,16 +1777,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
-// TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ThreadControllerActiveQuitNestedWhileApplicationIdle \
-  DISABLED_ThreadControllerActiveQuitNestedWhileApplicationIdle
-#else
-#define MAYBE_ThreadControllerActiveQuitNestedWhileApplicationIdle \
-  ThreadControllerActiveQuitNestedWhileApplicationIdle
-#endif
 TEST_F(ThreadControllerWithMessagePumpTest,
-       MAYBE_ThreadControllerActiveQuitNestedWhileApplicationIdle) {
+       ThreadControllerActiveQuitNestedWhileApplicationIdle) {
   SingleThreadTaskRunner::CurrentDefaultHandle handle(
       MakeRefCounted<FakeTaskRunner>());
 
@@ -1844,6 +1843,15 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // H:
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnPhaseRecorded(ThreadController::kNested));
+
+          // And the batch empty check executes.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
         });
 
         // B:
@@ -2096,14 +2104,23 @@ TEST_F(ThreadControllerWithMessagePumpTest, MessagePumpPhasesWithQueuingTime) {
         EXPECT_CALL(task1, Run());
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kApplicationTask));
-        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
 
+        // When running in batches, task2 runs in the same DoWork() call.
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kPumpOverhead));
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(task2, Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
+
+        // The batch loop checks for another task before finishing.
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
@@ -2165,8 +2182,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
       .WillOnce([&](MessagePump::Delegate* delegate) {
         delegate->DoWork();
         // Each task will increment work id by 2, once on begin work and another
-        // on end work.
-        EXPECT_EQ(work_id_provider->GetWorkId(), 4u);
+        // on end work. Checking for another task in the batch when none is
+        // available also counts as a work item (incrementing by 2).
+        EXPECT_EQ(work_id_provider->GetWorkId(), 6u);
       });
 
   for (int task_count = 0; task_count < 2; task_count++) {
