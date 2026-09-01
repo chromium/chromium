@@ -11075,6 +11075,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-actor-cursor", flag_descriptions::kGlicActorCursorName,
      flag_descriptions::kGlicActorCursorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicActorUiMagicCursor)},
+    {"glic-actor-localhost-is-sensitive",
+     flag_descriptions::kGlicActorLocalhostIsSensitiveName,
+     flag_descriptions::kGlicActorLocalhostIsSensitiveDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(actor::kGlicActorLocalhostIsSensitive)},
     {"glic-actor-script-tools",
      flag_descriptions::kGlicActorEnableScriptToolsName,
      flag_descriptions::kGlicActorEnableScriptToolsDescription, kOsDesktop,
@@ -13205,7 +13210,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch4Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch4)},
 #endif
-
 
     {"autofill-enable-wallet-branding-v2",
      flag_descriptions::kAutofillEnableWalletBrandingV2Name,

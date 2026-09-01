@@ -1758,6 +1758,10 @@ inline constexpr char kGlicActorEnableScriptToolsName[] =
     "Glic actor script tools";
 inline constexpr char kGlicActorEnableScriptToolsDescription[] =
     "Enables script tools for the Glic actor.";
+inline constexpr char kGlicActorLocalhostIsSensitiveName[] =
+    "Treat localhost URLs as sensitive";
+inline constexpr char kGlicActorLocalhostIsSensitiveDescription[] =
+    "When enabled, treats localhost URLs as sensitive origins for the actor.";
 inline constexpr char kGlicActorTransientTasksName[] =
     "Glic actor transient tasks";
 inline constexpr char kGlicActorTransientTasksDescription[] =

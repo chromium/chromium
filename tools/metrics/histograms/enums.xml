@@ -17075,6 +17075,7 @@ from previous Chrome versions.
   <int value="731593144" label="ReadPrinterCapabilitiesWithXps:enabled"/>
   <int value="731607958"
       label="PasswordCompromiseWarningInDetailsCard:disabled"/>
+  <int value="731712764" label="GlicActorLocalhostIsSensitive:disabled"/>
   <int value="731757746" label="ArcEnableDocumentsProviderInFilesApp:disabled"/>
   <int value="731775657" label="DownloadsAutoResumptionNative:disabled"/>
   <int value="731779469" label="BlinkHeapUnifiedGarbageCollection:enabled"/>
@@ -18620,6 +18621,7 @@ from previous Chrome versions.
   <int value="1217907443" label="spurious-power-button-keyboard-accel"/>
   <int value="1218064484" label="ImmersiveReadAnything:disabled"/>
   <int value="1219199527" label="InsertKeyToggleMode:enabled"/>
+  <int value="1219211987" label="GlicActorLocalhostIsSensitive:enabled"/>
   <int value="1219317631" label="ContextualSuggestionsAboveArticles:disabled"/>
   <int value="1219412037" label="AutofillAiCreateEntityDataManager:disabled"/>
   <int value="1219628795" label="PrintScaling:disabled"/>

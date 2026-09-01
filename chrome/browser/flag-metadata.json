@@ -5704,6 +5704,14 @@
     "expiry_milestone": 154
   },
   {
+    "name": "glic-actor-localhost-is-sensitive",
+    "owners": [
+      "mfoltz@chromium.org",
+      "robertogden@chromium.org"
+    ],
+    "expiry_milestone": 178
+  },
+  {
     "name": "glic-actor-script-tools",
     "owners": [
       "mfoltz@chromium.org",
