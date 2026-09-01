@@ -45,12 +45,14 @@ QuicSessionPool::Job::Job(
     QuicSessionAliasKey key,
     std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
     RequestPriority priority,
+    MultiplexedSessionCreationInitiator session_creation_initiator,
     QuicConnectionReuseDetails quic_connection_reuse_details,
     const NetLogWithSource& net_log)
     : pool_(pool),
       key_(std::move(key)),
       client_config_handle_(std::move(client_config_handle)),
       priority_(priority),
+      session_creation_initiator_(session_creation_initiator),
       net_log_(net_log),
       quic_connection_reuse_details_(quic_connection_reuse_details) {
   net_log_.BeginEvent(NetLogEventType::QUIC_SESSION_POOL_JOB,

@@ -345,7 +345,6 @@ class QuicSessionPool::AsyncDnsJob
   const bool require_dns_https_alpn_;
   const int cert_verify_flags_;
   const bool retry_on_alternate_network_before_handshake_;
-  const MultiplexedSessionCreationInitiator session_creation_initiator_;
   const std::optional<ConnectionManagementConfig> connection_management_config_;
 
   // Set when the resolver reported its final result.

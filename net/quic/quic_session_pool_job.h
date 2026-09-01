@@ -12,6 +12,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 
 namespace net {
 
@@ -35,6 +36,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
       QuicSessionAliasKey key,
       std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
       RequestPriority priority,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
       QuicConnectionReuseDetails quic_connection_reuse_details,
       const NetLogWithSource& net_log);
 
@@ -97,6 +99,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   const QuicSessionAliasKey key_;
   const std::unique_ptr<CryptoClientConfigHandle> client_config_handle_;
   RequestPriority priority_;
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
   const NetLogWithSource net_log_;
   std::set<raw_ptr<QuicSessionRequest, SetExperimental>> requests_;
   const QuicConnectionReuseDetails quic_connection_reuse_details_;

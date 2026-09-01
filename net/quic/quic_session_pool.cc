@@ -1843,6 +1843,7 @@ bool QuicSessionPool::HasActiveJob(const QuicSessionKey& session_key) const {
 
 QuicConnectionReuseDetails QuicSessionPool::DetermineQuicConnectionReuseDetails(
     const QuicSessionKey& session_key) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QuicConnectionReuseDetails details;
   bool has_preconnect = false;
   bool has_non_preconnect = false;
@@ -1850,32 +1851,49 @@ QuicConnectionReuseDetails QuicSessionPool::DetermineQuicConnectionReuseDetails(
   bool has_disconnected = false;
   bool has_other_going_away = false;
 
+  bool has_inflight_preconnect = false;
+  bool has_inflight_non_preconnect = false;
+  std::optional<QuicSessionKey> mismatched_inflight_key;
+
   // Step 1: Check if one or more sessions with the exact matching
   // `quic_session_key()` already exist in `all_sessions_`.
   // Note: Since `DetermineQuicConnectionReuseDetails()` is only called when no
   // active session could be reused directly from `active_sessions_`, any
   // matching session found here must be in a non-active state (e.g. draining,
-  // disconnected, or received a GOAWAY frame).
+  // disconnected, or received a GOAWAY frame) or still in the process of
+  // connecting / handshaking.
   for (const auto& session : all_sessions_) {
     if (session_key == session->quic_session_key()) {
       if (!session->OneRttKeysAvailable()) {
-        // Ignore sessions that are still connecting / handshake in progress.
-        continue;
-      }
-      if (session->session_creation_initiator() ==
-          MultiplexedSessionCreationInitiator::kPreconnect) {
-        has_preconnect = true;
+        if (session->connection() && session->connection()->connected()) {
+          if (session->session_creation_initiator() ==
+              MultiplexedSessionCreationInitiator::kPreconnect) {
+            has_inflight_preconnect = true;
+          } else {
+            has_inflight_non_preconnect = true;
+          }
+        }
       } else {
-        has_non_preconnect = true;
+        if (session->session_creation_initiator() ==
+            MultiplexedSessionCreationInitiator::kPreconnect) {
+          has_preconnect = true;
+        } else {
+          has_non_preconnect = true;
+        }
+        if (session->goaway_received()) {
+          has_goaway = true;
+        } else if (!session->connection() ||
+                   !session->connection()->connected()) {
+          has_disconnected = true;
+        } else {
+          has_other_going_away = true;
+        }
       }
-      if (session->goaway_received()) {
-        has_goaway = true;
-      } else if (!session->connection() ||
-                 !session->connection()->connected()) {
-        has_disconnected = true;
-      } else {
-        has_other_going_away = true;
-      }
+    } else if (!session->OneRttKeysAvailable() && session->connection() &&
+               session->connection()->connected() &&
+               session_key.server_id() == session->server_id() &&
+               !mismatched_inflight_key) {
+      mismatched_inflight_key = session->quic_session_key();
     }
   }
 
@@ -1904,13 +1922,20 @@ QuicConnectionReuseDetails QuicSessionPool::DetermineQuicConnectionReuseDetails(
   } else if (has_non_preconnect) {
     details.establishment_reason =
         QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect;
+  } else if (has_inflight_preconnect) {
+    details.establishment_reason =
+        QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect;
+  } else if (has_inflight_non_preconnect) {
+    details.establishment_reason =
+        QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect;
   } else {
     details.establishment_reason =
         QuicSessionEstablishmentReason::kNoSessionExisted;
   }
 
-  // If matching session(s) existed in `all_sessions_`, we have already
-  // determined both the establishment reason and the non-reuse reason.
+  // If matching session(s) existed in `all_sessions_` (established or
+  // in-flight), we have already determined the establishment reason (and
+  // non-reuse reason for established sessions).
   if (details.establishment_reason !=
       QuicSessionEstablishmentReason::kNoSessionExisted) {
     return details;
@@ -1924,6 +1949,9 @@ QuicConnectionReuseDetails QuicSessionPool::DetermineQuicConnectionReuseDetails(
       GetActiveSessionToServerId(session_key);
   if (!active_key) {
     active_key = GetActiveJobToServerId(session_key);
+  }
+  if (!active_key) {
+    active_key = mismatched_inflight_key;
   }
 
   if (active_key) {
