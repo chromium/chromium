@@ -63,14 +63,6 @@ ASH_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
 ASH_EXPORT void RecordAmbientModeTopicSource(
     ash::personalization_app::mojom::TopicSource topic_source);
 
-ASH_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
-
-ASH_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
-
-ASH_EXPORT void RecordAmbientModeAnimationSmoothness(
-    int smoothness,
-    const AmbientUiSettings& ui_settings);
-
 ASH_EXPORT void RecordAmbientModeStartupTime(
     base::TimeDelta startup_time,
     const AmbientUiSettings& ui_settings);

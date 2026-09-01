@@ -22,11 +22,7 @@ AmbientConsumerSessionMetricsDelegate::AmbientConsumerSessionMetricsDelegate(
 AmbientConsumerSessionMetricsDelegate::
     ~AmbientConsumerSessionMetricsDelegate() = default;
 
-void AmbientConsumerSessionMetricsDelegate::RecordInitStatus(bool success) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Ash.AmbientMode.Init.", ui_settings_.ToString()}),
-      success);
-}
+void AmbientConsumerSessionMetricsDelegate::RecordInitStatus(bool success) {}
 
 void AmbientConsumerSessionMetricsDelegate::RecordStartupTime(
     base::TimeDelta startup_time) {

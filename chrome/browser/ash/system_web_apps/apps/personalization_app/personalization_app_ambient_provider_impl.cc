@@ -297,11 +297,6 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       } else {
         settings_->topic_source = mojom::TopicSource::kGooglePhotos;
       }
-
-      ash::ambient::RecordAmbientModeTotalNumberOfAlbums(
-          personal_albums_.albums.size());
-      ash::ambient::RecordAmbientModeSelectedNumberOfAlbums(
-          settings_->selected_album_ids.size());
       break;
     }
     case (mojom::TopicSource::kArtGallery): {

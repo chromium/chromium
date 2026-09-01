@@ -117,29 +117,6 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTimeFailedToStart) {
   histogram_tester.ExpectUniqueTimeSample(
       base::StrCat({"Ash.AmbientMode.StartupTime.", GetParam().ToString()}),
       kFailedStartupTime, 1);
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
-      /*sample=*/0, /*expected_count=*/1);
-}
-
-TEST_P(AmbientSessionMetricsRecorderTest, InitStatusSuccess) {
-  base::HistogramTester histogram_tester;
-  AmbientSessionMetricsRecorder recorder(CreateDelegate());
-  recorder.SetInitStatus(true);
-  recorder.RegisterScreen();
-  recorder.RegisterScreen();
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
-      /*sample=*/1, /*expected_count=*/1);
-}
-
-TEST_P(AmbientSessionMetricsRecorderTest, InitStatusFailed) {
-  base::HistogramTester histogram_tester;
-  AmbientSessionMetricsRecorder recorder(CreateDelegate());
-  recorder.SetInitStatus(false);
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
-      /*sample=*/0, /*expected_count=*/1);
 }
 
 }  // namespace ash

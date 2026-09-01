@@ -46,8 +46,6 @@ void AmbientModeMetricsProvider::ProvideCurrentSessionData(
   bool enabled =
       pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);
 
-  base::UmaHistogramBoolean("Ash.AmbientMode.Enabled", enabled);
-
   if (!enabled)
     return;
 

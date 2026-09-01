@@ -1042,21 +1042,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedVideo) {
                          /*new_mexico_selected=*/true);
 }
 
-TEST_F(PersonalizationAppAmbientProviderImplTest, TestAlbumNumbersAreRecorded) {
-  FetchSettings();
-  ReplyFetchSettingsAndAlbums(/*success=*/true);
-
-  ash::personalization_app::mojom::AmbientModeAlbumPtr album =
-      ash::personalization_app::mojom::AmbientModeAlbum::New();
-  album->id = '0';
-  album->topic_source = mojom::TopicSource::kGooglePhotos;
-  SetAlbumSelected(album->id, album->topic_source, album->checked);
-  histogram_tester().ExpectTotalCount("Ash.AmbientMode.TotalNumberOfAlbums",
-                                      /*count=*/1);
-  histogram_tester().ExpectTotalCount("Ash.AmbientMode.SelectedNumberOfAlbums",
-                                      /*count=*/1);
-}
-
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        TestEnabledPrefChangeUpdatesSettings) {
   // Simulate initial page request.
