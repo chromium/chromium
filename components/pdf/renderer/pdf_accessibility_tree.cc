@@ -799,8 +799,7 @@ bool PdfAccessibilityTree::RecursiveFindNodeOffset(
     if (iter == node_id_to_page_char_index_.end()) {
       return false;
     }
-    uint32_t len =
-        node->GetStringAttribute(ax::mojom::StringAttribute::kName).size();
+    uint32_t len = node->GetTextContentLengthUTF16();
     if (std::optional<uint32_t> offset = GetCharOffsetInRun(
             end_of_selection, page_char_index, iter->second.char_index, len)) {
       *out_node_id = node->id();
@@ -820,8 +819,7 @@ bool PdfAccessibilityTree::RecursiveFindNodeOffset(
     // All inline text box children created in `PdfAccessibilityTreeBuilder`
     // are guaranteed to be registered in `node_id_to_page_char_index_`.
     CHECK(iter != node_id_to_page_char_index_.end());
-    uint32_t child_len =
-        child->GetStringAttribute(ax::mojom::StringAttribute::kName).size();
+    uint32_t child_len = child->GetTextContentLengthUTF16();
     if (std::optional<uint32_t> offset =
             GetCharOffsetInRun(end_of_selection, page_char_index,
                                iter->second.char_index, child_len)) {
@@ -851,8 +849,7 @@ bool PdfAccessibilityTree::FindCharacterOffset(
         node.GetAllChildren();
     for (size_t i = 0; i < children.size(); ++i) {
       ui::AXNode* child = children[i];
-      uint32_t child_len =
-          child->GetStringAttribute(ax::mojom::StringAttribute::kName).size();
+      uint32_t child_len = child->GetTextContentLengthUTF16();
       bool is_last_child = (i == children.size() - 1);
       // Identify which child inline text box contains `remaining_offset`.
       if (remaining_offset < child_len || is_last_child) {

@@ -2231,6 +2231,117 @@ TEST_P(PdfAccessibilityTreeStructuredModeTest,
 }
 
 TEST_P(PdfAccessibilityTreeStructuredModeTest,
+       FindCharacterOffset_MultiLineStaticTextWithNonAscii) {
+  CreatePdfAccessibilityTree();
+
+  // Create two text runs representing two lines in a paragraph.
+  // Line 1 contains a multibyte Unicode character (right single quote '’'
+  // U+2019). Line 1 ("It’s a cat ") has 11 chars starting at index 0 (13 UTF-8
+  // bytes). Line 2 ("named Oliver") has 12 chars starting at index 11.
+  chrome_pdf::AccessibilityTextRunInfo run1 = {
+      /*start_index=*/0, /*len=*/11, gfx::RectF(0.0f, 0.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+  chrome_pdf::AccessibilityTextRunInfo run2 = {
+      /*start_index=*/11, /*len=*/12, gfx::RectF(0.0f, 10.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+
+  text_runs_ = {run1, run2};
+
+  constexpr std::u16string_view kText = u"It’s a cat named Oliver";
+  for (char16_t c : kText) {
+    chars_.push_back({static_cast<uint32_t>(c), 10.0f});
+  }
+
+  BuildAndSetAccessibilityTree();
+
+  ui::AXNode* static_text = FindFirstStaticTextNode();
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  chrome_pdf::PageCharacterIndex page_char_index;
+
+  // Offset 0 (start of Line 1 "It’s a cat ") -> PDFium char index 0.
+  EXPECT_TRUE(pdf_accessibility_tree_->FindCharacterOffset(*static_text, 0,
+                                                           page_char_index));
+  EXPECT_EQ(0u, page_char_index.char_index);
+
+  // Offset 11 (start of Line 2 "named Oliver") -> PDFium char index 11.
+  EXPECT_TRUE(pdf_accessibility_tree_->FindCharacterOffset(*static_text, 11,
+                                                           page_char_index));
+  EXPECT_EQ(11u, page_char_index.char_index);
+
+  // Offset 12 (second char of Line 2 'a') -> PDFium char index 12.
+  EXPECT_TRUE(pdf_accessibility_tree_->FindCharacterOffset(*static_text, 12,
+                                                           page_char_index));
+  EXPECT_EQ(12u, page_char_index.char_index);
+}
+
+TEST_P(PdfAccessibilityTreeStructuredModeTest,
+       FindNodeOffset_MultiLineStaticTextWithNonAscii) {
+  CreatePdfAccessibilityTree();
+
+  // Create two text runs representing two lines in a paragraph.
+  // Line 1 contains a multibyte Unicode character (right single quote '’'
+  // U+2019). Line 1 ("It’s a cat ") has 11 chars starting at index 0 (13 UTF-8
+  // bytes). Line 2 ("named Oliver") has 12 chars starting at index 11.
+  chrome_pdf::AccessibilityTextRunInfo run1 = {
+      /*start_index=*/0, /*len=*/11, gfx::RectF(0.0f, 0.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+  chrome_pdf::AccessibilityTextRunInfo run2 = {
+      /*start_index=*/11, /*len=*/12, gfx::RectF(0.0f, 10.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+
+  text_runs_ = {run1, run2};
+
+  constexpr std::u16string_view kText = u"It’s a cat named Oliver";
+  for (char16_t c : kText) {
+    chars_.push_back({static_cast<uint32_t>(c), 10.0f});
+  }
+
+  BuildAndSetAccessibilityTree();
+
+  ui::AXNode* static_text = FindFirstStaticTextNode();
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+
+  int32_t out_node_id = -1;
+  int32_t out_node_char_index = -1;
+
+  // Offset 0 (start of Line 1 "It’s a cat ") -> static text char index 0.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 0, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(0, out_node_char_index);
+
+  // Offset 11 (start of Line 2 "named Oliver") -> static text char index 11.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 11, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(11, out_node_char_index);
+
+  // Offset 11 as end of selection (end of Line 1) -> static text char index 11.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/true, 0, 11, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(11, out_node_char_index);
+
+  // Offset 12 (second char of Line 2 'a') -> static text char index 12.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 12, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(12, out_node_char_index);
+
+  // Offset 23 as end of selection (end of Line 2) -> static text char index 23.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/true, 0, 23, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(23, out_node_char_index);
+}
+
+TEST_P(PdfAccessibilityTreeStructuredModeTest,
        CreateInlineTextBoxNode_FiltersControlCharacters) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
