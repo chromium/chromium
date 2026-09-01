@@ -273,10 +273,11 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     // This works because bubbles on Mac are always toplevel.
     EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 #else
-    // Elsewhere, click on the omnibox. Note that with aura, the browser may be
-    // "active" the entire time when the popup is not a toplevel window. It's
-    // aura::Window::Focus() that determines where key events go in this case.
-    ui_test_utils::ClickOnView(browser(), VIEW_ID_OMNIBOX);
+    // Elsewhere, click on the tab container. Note that with aura, the browser
+    // may be "active" the entire time when the popup is not a toplevel window.
+    // It's aura::Window::Focus() that determines where key events go in this
+    // case.
+    ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
 #endif
 
     // The window disappears immediately.
