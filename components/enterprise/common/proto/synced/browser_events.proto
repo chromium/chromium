@@ -65,6 +65,15 @@ message SecurityAgent {
   }
 }
 
+// Represents the entity that initiated the event.
+message Actor {
+  oneof actor {
+    // Populated when the event was driven by a Chrome extension.
+    safe_browsing.ExtensionTelemetryReportRequest.ExtensionInfo chrome_extension =
+        1;
+  }
+}
+
 // Information about the algorithm/detector used to match sensitive data.
 message MatchedDetector {
   // Unique identifier for this detector.
