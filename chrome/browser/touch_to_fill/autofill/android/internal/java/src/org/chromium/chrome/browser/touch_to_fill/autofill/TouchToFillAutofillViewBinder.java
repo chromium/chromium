@@ -28,6 +28,8 @@ final class TouchToFillAutofillViewBinder {
             view.setSettingsLinkHandler(model.get(SETTINGS_LINK_HANDLER));
         } else if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
+        } else {
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 

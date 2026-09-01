@@ -193,7 +193,7 @@ final class TouchToFillPaymentMethodViewBinder {
                 }
             }
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -307,7 +307,7 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == CARD_ART_URL || propertyKey == CARD_ICON_ID) {
             // Intentionally ignored. These are used by the mediator to match fetched images.
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -331,7 +331,7 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == ON_IBAN_CLICK_ACTION) {
             view.setOnClickListener(_ -> model.get(ON_IBAN_CLICK_ACTION).run());
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -351,7 +351,7 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == ON_LOYALTY_CARD_CLICK_ACTION) {
             view.setOnClickListener(_ -> model.get(ON_LOYALTY_CARD_CLICK_ACTION).run());
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -408,7 +408,7 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == TITLE_STRING) {
             sheetHeaderTitle.setText(model.get(TITLE_STRING));
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -457,7 +457,7 @@ final class TouchToFillPaymentMethodViewBinder {
             sheetHeaderImage.setContentDescription(
                     view.getContext().getString(model.get(ICON_CONTENT_DESCRIPTION_ID)));
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -493,7 +493,7 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == BNPL_ON_BACK_BUTTON_CLICKED) {
             backButton.setOnClickListener(_ -> model.get(BNPL_ON_BACK_BUTTON_CLICKED).run());
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -557,7 +557,7 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == ON_CLICK_ACTION) {
             button.setOnClickListener(_ -> model.get(ON_CLICK_ACTION).run());
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -584,7 +584,7 @@ final class TouchToFillPaymentMethodViewBinder {
             TextView termsLabelTextView = view.findViewById(R.id.touch_to_fill_terms_label);
             termsLabelTextView.setText(model.get(TERMS_LABEL_TEXT_ID));
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -639,7 +639,7 @@ final class TouchToFillPaymentMethodViewBinder {
                         new TextViewCollectionInfoAccessibilityDelegate(collectionInfo));
             }
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -680,7 +680,7 @@ final class TouchToFillPaymentMethodViewBinder {
                 issuerIcon.setAlpha(COMPLETE_OPACITY_ALPHA);
             }
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -710,7 +710,7 @@ final class TouchToFillPaymentMethodViewBinder {
             progressSpinner.setContentDescription(
                     view.getContext().getString(model.get(PROGRESS_CONTENT_DESCRIPTION_ID)));
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -739,7 +739,7 @@ final class TouchToFillPaymentMethodViewBinder {
                     view.findViewById(R.id.touch_to_fill_error_description);
             errorDescriptionTextView.setText(model.get(ERROR_DESCRIPTION_STRING));
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -760,7 +760,7 @@ final class TouchToFillPaymentMethodViewBinder {
             textView.setText(model.get(DESCRIPTION_TEXT), TextView.BufferType.SPANNABLE);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -793,7 +793,7 @@ final class TouchToFillPaymentMethodViewBinder {
             setCallbackForButton(
                     view, R.id.open_management_ui, model.get(OPEN_MANAGEMENT_UI_CALLBACK));
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -828,7 +828,7 @@ final class TouchToFillPaymentMethodViewBinder {
                             }));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -866,7 +866,7 @@ final class TouchToFillPaymentMethodViewBinder {
             }
             termsLabel.setLongClickable(false);
         } else {
-            assert false : "Unhandled update to property:" + propertyKey;
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
