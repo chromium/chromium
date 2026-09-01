@@ -78,6 +78,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"

@@ -32,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/input_method.h"
