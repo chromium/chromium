@@ -7,13 +7,16 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/media/redirection_connector.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace media_router {
 
 RedirectionServiceHost::RedirectionServiceHost() = default;
 
-RedirectionServiceHost::~RedirectionServiceHost() = default;
+RedirectionServiceHost::~RedirectionServiceHost() {
+  RedirectionConnector::Get()->StoppingRedirection();
+}
 
 void RedirectionServiceHost::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -30,16 +33,28 @@ void RedirectionServiceHost::Start() {
                                              weak_factory_.GetWeakPtr()));
 }
 
+void RedirectionServiceHost::CreateRedirectionSession(
+    mojo::PendingReceiver<redirection::mojom::RedirectionSessionHost>
+        session_host,
+    mojo::PendingReceiver<media::mojom::Remoter> remoter,
+    mojo::PendingRemote<media::mojom::RemotingSource> source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/525333080): Implement call to redirection service once the
+  // service is implemented.
+}
+
 void RedirectionServiceHost::OnStarted(
     media::mojom::RemotingSinkMetadataPtr sink_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/525729343) Add the sink metadata to the
-  // RedirectionConnector to support remoting video through redirection service.
+  RedirectionConnector::Get()->StartingRedirection(
+      base::BindRepeating(&RedirectionServiceHost::CreateRedirectionSession,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void RedirectionServiceHost::OnDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   redirection_service_.reset();
+  RedirectionConnector::Get()->StoppingRedirection();
 }
 
 }  // namespace media_router

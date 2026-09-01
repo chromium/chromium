@@ -150,9 +150,10 @@ class CastRemotingConnectorTest : public ::testing::Test {
     mojo::PendingRemote<media::mojom::RemotingSource> source_pending_remote;
     source->Bind(source_pending_remote.InitWithNewPipeAndPassReceiver());
     mojo::PendingRemote<media::mojom::Remoter> remoter_pending_remote;
+    RemotingBridge::Client* clients[] = {connector_.get()};
     mojo::MakeSelfOwnedReceiver(
-        std::make_unique<RemotingBridge>(std::move(source_pending_remote),
-                                         connector_.get()),
+        std::make_unique<RemotingBridge>(clients,
+                                         std::move(source_pending_remote)),
         remoter_pending_remote.InitWithNewPipeAndPassReceiver());
     return remoter_pending_remote;
   }

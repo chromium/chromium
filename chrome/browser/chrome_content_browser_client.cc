@@ -727,7 +727,10 @@
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 #include "chrome/browser/media/cast_remoting_connector.h"
 #include "chrome/browser/media/remoting_bridge.h"
-#endif
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+#include "chrome/browser/media/redirection_connector.h"
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -5734,8 +5737,23 @@ void ChromeContentBrowserClient::CreateMediaRemoter(
   if (!contents) {
     return;
   }
-  RemotingBridge::CreateMediaRemoter(CastRemotingConnector::Get(contents),
-                                     std::move(source), std::move(receiver));
+  // A null connector means Media Router is disabled for this profile, in which
+  // case no remoting path is available for this source.
+  auto* const cast_connector = CastRemotingConnector::Get(contents);
+  if (!cast_connector) {
+    return;
+  }
+  // The remoting paths that can serve this source, in order of preference.
+  std::vector<RemotingBridge::Client*> clients = {cast_connector};
+#if BUILDFLAG(ENABLE_MEDIA_REMOTING_REDIRECTION)
+  // Without the provider there is no route to start redirection, so the
+  // connector would never have a session to offer.
+  if (media_router::RedirectionMediaRouteProviderEnabled()) {
+    clients.push_back(RedirectionConnector::Get());
+  }
+#endif
+  RemotingBridge::CreateMediaRemoter(clients, std::move(source),
+                                     std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 

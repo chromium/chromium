@@ -8,6 +8,12 @@ import "media/mojo/mojom/remoting_common.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
+// Control interface for the redirection session backing a single remoting
+// source. The session in the utility process lives as long as this pipe is
+// open; closing the pipe tears it down.
+interface RedirectionSessionHost {
+};
+
 // This interface is used to discover and control a Multimedia Redirection (MMR)
 // session, which redirects remoted video playback to a platform-provided
 // redirection sink.

@@ -8,7 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/redirection/public/mojom/redirection_service.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace media_router {
@@ -27,6 +30,13 @@ class RedirectionServiceHost {
   virtual void Start();
 
  private:
+  // Creates a redirection session for a single remoting source.
+  void CreateRedirectionSession(
+      mojo::PendingReceiver<redirection::mojom::RedirectionSessionHost>
+          session_host,
+      mojo::PendingReceiver<media::mojom::Remoter> remoter,
+      mojo::PendingRemote<media::mojom::RemotingSource> source);
+
   void OnStarted(media::mojom::RemotingSinkMetadataPtr sink_metadata);
   void OnDisconnected();
 

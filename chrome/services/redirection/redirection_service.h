@@ -8,7 +8,9 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/redirection/public/mojom/redirection_service.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace redirection {

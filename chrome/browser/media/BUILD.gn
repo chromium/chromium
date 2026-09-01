@@ -141,6 +141,10 @@ source_set("unittests") {
       "//content/test:test_support",
       "//media/mojo/mojom:remoting",
     ]
+
+    if (enable_media_remoting_redirection) {
+      sources += [ "redirection_connector_unittest.cc" ]
+    }
   }
 
   if (is_android || is_chromeos || is_win) {
@@ -333,6 +337,11 @@ source_set("media") {
       "//media/mojo/mojom:remoting",
       "//mojo/public/cpp/bindings",
     ]
+
+    if (enable_media_remoting_redirection) {
+      public += [ "redirection_connector.h" ]
+      public_deps += [ "//chrome/services/redirection/public/mojom" ]
+    }
   }
 
   if (enable_extensions) {
@@ -478,6 +487,15 @@ source_set("impl") {
       "//chrome/browser/media/router:media_router_feature",
       "//media/mojo/mojom:remoting",
     ]
+
+    if (enable_media_remoting_redirection) {
+      sources += [
+        "redirection_connector.cc",
+        "redirection_remoting_source_bridge.cc",
+        "redirection_remoting_source_bridge.h",
+      ]
+      deps += [ "//chrome/services/redirection/public/mojom" ]
+    }
 
     if (toolkit_views) {
       deps += [ "//chrome/browser/ui/views/media_router" ]

@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/android/features/media_router/jni_headers",
+  "+chrome/services/redirection/public/mojom",
   "+components/cdm/common",
   "+components/webrtc",
   "+media/audio",
