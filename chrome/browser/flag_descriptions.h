@@ -860,7 +860,8 @@ inline constexpr char kAutofillAndroidDesktopSuppressAccessoryOnEmptyName[] =
 inline constexpr char
     kAutofillAndroidDesktopSuppressAccessoryOnEmptyDescription[] =
         "When enabled, Autofill will suppress keyboard accessory when the form "
-        "field does not have any autofill suggestions.";
+        "field is not a username/password field and does not have any autofill "
+        "suggestions. ";
 
 inline constexpr char kAutofillEnableAutofillSettingsEnterprisePolicyName[] =
     "Enable Autofill settings enterprise policy";
