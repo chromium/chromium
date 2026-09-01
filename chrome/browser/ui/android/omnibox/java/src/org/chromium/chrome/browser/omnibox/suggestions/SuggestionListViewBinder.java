@@ -53,10 +53,10 @@ class SuggestionListViewBinder
 
         if (SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED.equals(propertyKey)) {
             updateContainerVisibility(model, view);
-        } else if (SuggestionListProperties.SELECTION_MODE.equals(propertyKey)) {
-            view.dropdown.setSelectionMode(model.get(SuggestionListProperties.SELECTION_MODE));
         } else if (SuggestionListProperties.ALPHA.equals(propertyKey)) {
             view.dropdown.setChildAlpha(model.get(SuggestionListProperties.ALPHA));
+        } else if (SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR.equals(propertyKey)) {
+            updateContainerMargin(model, view);
         } else if (SuggestionListProperties.APPLY_VERTICAL_PADDING.equals(propertyKey)) {
             updateVerticalPadding(model, view);
         } else if (SuggestionListProperties.CHILD_TRANSLATION_Y.equals(propertyKey)) {
@@ -104,13 +104,10 @@ class SuggestionListViewBinder
             view.container.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
-        } else if (SuggestionListProperties.IS_LARGE_SCREEN.equals(propertyKey)
-                || SuggestionListProperties.ROUND_TOP_CORNERS.equals(propertyKey)) {
-            updateColorScheme(model, view);
-            boolean isLargeScreen = model.get(SuggestionListProperties.IS_LARGE_SCREEN);
-            boolean roundTopCorners = model.get(SuggestionListProperties.ROUND_TOP_CORNERS);
-            view.container.setShouldRoundTopCorners(roundTopCorners);
-            view.container.setShouldClipToOutline(isLargeScreen || roundTopCorners);
+        } else if (SuggestionListProperties.IS_LARGE_SCREEN.equals(propertyKey)) {
+            updateRoundingAndClipping(model, view);
+        } else if (SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX.equals(propertyKey)) {
+            updateContainerMargin(model, view);
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChangedAnnouncement();
@@ -127,6 +124,10 @@ class SuggestionListViewBinder
         } else if (SuggestionListProperties.RESOURCE_PROVIDER.equals(propertyKey)) {
             view.dropdown.setResourceProvider(
                     model.get(SuggestionListProperties.RESOURCE_PROVIDER));
+        } else if (SuggestionListProperties.ROUND_TOP_CORNERS.equals(propertyKey)) {
+            updateRoundingAndClipping(model, view);
+        } else if (SuggestionListProperties.SELECTION_MODE.equals(propertyKey)) {
+            view.dropdown.setSelectionMode(model.get(SuggestionListProperties.SELECTION_MODE));
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
             listItems.addObserver(
@@ -147,10 +148,15 @@ class SuggestionListViewBinder
             // When the suggestions list is installed for the first time, it may already contain
             // elements. Be sure to capture and reflect this fact appropriately.
             updateContainerVisibility(model, view);
-        } else if (SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR.equals(propertyKey)
-                || SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX.equals(propertyKey)) {
-            updateContainerMargin(model, view);
         }
+    }
+
+    private void updateRoundingAndClipping(PropertyModel model, SuggestionListViewHolder holder) {
+        updateColorScheme(model, holder);
+        boolean isLargeScreen = model.get(SuggestionListProperties.IS_LARGE_SCREEN);
+        boolean roundTopCorners = model.get(SuggestionListProperties.ROUND_TOP_CORNERS);
+        holder.container.setShouldRoundTopCorners(roundTopCorners);
+        holder.container.setShouldClipToOutline(isLargeScreen || roundTopCorners);
     }
 
     private void updateColorScheme(PropertyModel model, SuggestionListViewHolder holder) {
