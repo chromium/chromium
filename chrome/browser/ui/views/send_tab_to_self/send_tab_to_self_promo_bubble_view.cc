@@ -150,10 +150,9 @@ views::View* SendTabToSelfSignInPromoBubbleView::GetInitiallyFocusedView() {
 
 void SendTabToSelfSignInPromoBubbleView::HandleSignInButtonClicked() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  GlobalBrowserCollection::GetInstance()
-      ->FindBrowserWithTab(web_contents())
-      ->GetFeatures()
-      .signin_view_controller()
+  SigninViewController::From(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents()))
       ->ShowDiceAddAccountTab(signin_metrics::AccessPoint::kSendTabToSelfPromo,
                               /*email_hint=*/std::string());
 #else

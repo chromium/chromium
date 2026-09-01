@@ -92,5 +92,5 @@ void SigninErrorHandler::CloseDialog() {
 }
 
 void SigninErrorHandler::CloseBrowserModalSigninDialog() {
-  browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
+  SigninViewController::From(browser_)->CloseModalSignin();
 }

@@ -199,12 +199,10 @@ void IdentityAPI::MaybeShowChromeSigninDialog(
   }
   on_chrome_signin_dialog_completed_.push_back(std::move(on_complete));
   is_chrome_signin_dialog_open_ = true;
-  browser->GetFeatures()
-      .signin_view_controller()
-      ->MaybeShowChromeSigninDialogForExtensions(
-          extension_name_for_display,
-          base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
-                         weak_ptr_factory_.GetWeakPtr()));
+  SigninViewController::From(browser)->MaybeShowChromeSigninDialogForExtensions(
+      extension_name_for_display,
+      base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IdentityAPI::OnChromeSigninDialogDestroyed() {

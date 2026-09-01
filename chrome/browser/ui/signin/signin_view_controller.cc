@@ -298,8 +298,8 @@ void HandleSignoutConfirmationChoice(
       if (!accounts_in_cookies.AreAccountsFresh() ||
           !accounts_in_cookies.GetPotentiallyInvalidSignedInAccounts()
                .empty()) {
-        browser->GetFeatures().signin_view_controller()->ShowGaiaLogoutTab(
-            token_signout_source);
+        SigninViewController::From(browser.get())
+            ->ShowGaiaLogoutTab(token_signout_source);
       }
 
       // In Uno, Gaia logout tab invalidating the account will lead to a sign
@@ -375,10 +375,19 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController, kSigninErrorViewId);
 
+DEFINE_USER_DATA(SigninViewController);
+
+// static
+SigninViewController* SigninViewController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 SigninViewController::SigninViewController(BrowserWindowInterface* browser,
                                            Profile* profile,
                                            TabStripModel* tab_strip_model)
-    : browser_(CHECK_DEREF(browser)),
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
+      browser_(CHECK_DEREF(browser)),
       profile_(CHECK_DEREF(profile)),
       tab_strip_model_(CHECK_DEREF(tab_strip_model)) {}
 

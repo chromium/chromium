@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class BrowserWindowFeatures;
+class BrowserWindowInterface;
 
 // The LoginUIService helps track per-profile information for the login related
 // UIs - for example, whether there is login UI currently on-screen.
@@ -88,7 +88,7 @@ class LoginUIService : public KeyedService {
   // If `error.message()` is not empty, displays login error message in the
   // Modal Signin Error dialog of the browser associated with
   // `browser_window_features`.
-  void DisplayLoginResult(BrowserWindowFeatures& browser_window_features,
+  void DisplayLoginResult(BrowserWindowInterface& browser_window,
                           const SigninUIError& error);
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -521,8 +521,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   tab_list_bridge_ = std::make_unique<TabListBridge>(
       *tab_strip_model_, browser->GetUnownedUserDataHost());
 
-  signin_view_controller_ = std::make_unique<SigninViewController>(
-      browser, profile, tab_strip_model_);
+  signin_view_controller_ =
+      GetUserDataFactory().CreateInstance<SigninViewController>(
+          *browser, browser, profile, tab_strip_model_);
 
   {
     auto adapter = std::make_unique<TabDragWindowAdapterImpl>(browser);

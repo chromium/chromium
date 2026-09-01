@@ -30,7 +30,7 @@ void ShowLoginErrorForBrowser(const SigninUIError& error,
     return;
   }
   LoginUIServiceFactory::GetForProfile(browser->GetProfile())
-      ->DisplayLoginResult(browser->GetFeatures(), error);
+      ->DisplayLoginResult(*browser, error);
 }
 
 }  // namespace

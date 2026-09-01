@@ -274,9 +274,9 @@ void FamilyLiveTest::TearDownOnMainThread() {
     // notify this client. Explicit sign-out is critical, otherwise server-side
     // data structures can still think that the current client should receive
     // sync updates.
-    user->browser().GetFeatures().signin_view_controller()->ShowGaiaLogoutTab(
-        signin_metrics::SourceForRefreshTokenOperation::
-            kUserMenu_SignOutAllAccounts);
+    SigninViewController::From(&user->browser())
+        ->ShowGaiaLogoutTab(signin_metrics::SourceForRefreshTokenOperation::
+                                kUserMenu_SignOutAllAccounts);
   }
 #endif
 

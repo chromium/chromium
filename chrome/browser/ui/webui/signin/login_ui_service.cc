@@ -41,9 +41,8 @@ void LoginUIService::SyncConfirmationUIClosed(
   }
 }
 
-void LoginUIService::DisplayLoginResult(
-    BrowserWindowFeatures& browser_window_features,
-    const SigninUIError& error) {
+void LoginUIService::DisplayLoginResult(BrowserWindowInterface& browser_window,
+                                        const SigninUIError& error) {
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
   NOTREACHED();
@@ -51,8 +50,7 @@ void LoginUIService::DisplayLoginResult(
   last_login_error_ = error;
   // TODO(crbug.com/40225985): Check if the condition should be `!error.IsOk()`
   if (!error.message().empty()) {
-    browser_window_features.signin_view_controller()
-        ->ShowModalSigninErrorDialog();
+    SigninViewController::From(&browser_window)->ShowModalSigninErrorDialog();
   }
 #endif
 }

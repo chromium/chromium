@@ -265,7 +265,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
   }
 
   SigninViewController* controller() {
-    return browser()->GetFeatures().signin_view_controller();
+    return SigninViewController::From(browser());
   }
 
   SigninInterceptFirstRunExperienceDialog* dialog() {

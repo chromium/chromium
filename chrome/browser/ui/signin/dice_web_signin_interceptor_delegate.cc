@@ -70,8 +70,7 @@ class OidcEnterpriseSigninInterceptionHandle
     DCHECK(callback_);
     CHECK(bubble_parameters.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC);
-    browser_->GetFeatures()
-        .signin_view_controller()
+    SigninViewController::From(browser_.get())
         ->ShowModalManagedUserNoticeDialog(
             std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
                 bubble_parameters.intercepted_account,
@@ -84,17 +83,16 @@ class OidcEnterpriseSigninInterceptionHandle
                                    OnEnterpriseInterceptionUserChoice,
                                weak_ptr_factory_.GetWeakPtr()),
                 /*done_callback=*/
-                base::BindOnce(&SigninViewController::CloseModalSignin,
-                               browser_->GetFeatures()
-                                   .signin_view_controller()
-                                   ->AsWeakPtr())
+                base::BindOnce(
+                    &SigninViewController::CloseModalSignin,
+                    SigninViewController::From(browser_.get())->AsWeakPtr())
                     .Then(std::move(dialog_closed_closure)),
                 /*retry_callback=*/std::move(retry_callback)));
   }
 
   ~OidcEnterpriseSigninInterceptionHandle() override {
     if (browser_) {
-      browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
+      SigninViewController::From(browser_.get())->CloseModalSignin();
     }
     if (callback_) {
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
@@ -153,8 +151,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         callback_(std::move(callback)) {
     DCHECK(browser_);
     DCHECK(callback_);
-    browser_->GetFeatures()
-        .signin_view_controller()
+    SigninViewController::From(browser_.get())
         ->ShowModalManagedUserNoticeDialog(
             std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
                 bubble_parameters.intercepted_account,
@@ -167,17 +164,16 @@ class ForcedEnterpriseSigninInterceptionHandle
                 base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                                    OnEnterpriseInterceptionDialogClosed,
                                weak_ptr_factory_.GetWeakPtr()),
-                base::BindOnce(&SigninViewController::CloseModalSignin,
-                               browser_->GetFeatures()
-                                   .signin_view_controller()
-                                   ->AsWeakPtr())));
+                base::BindOnce(
+                    &SigninViewController::CloseModalSignin,
+                    SigninViewController::From(browser_.get())->AsWeakPtr())));
   }
 
   ~ForcedEnterpriseSigninInterceptionHandle() override {
     if (!browser_) {
       return;
     }
-    browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
+    SigninViewController::From(browser_.get())->CloseModalSignin();
     if (callback_) {
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
           bubble_parameters_, browser_->GetProfile(),
@@ -301,8 +297,7 @@ void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
     BrowserWindowInterface* browser,
     const CoreAccountId& account_id,
     WebSigninInterceptor::SigninInterceptionType interception_type) {
-  browser->GetFeatures()
-      .signin_view_controller()
+  SigninViewController::From(browser)
       ->ShowModalInterceptFirstRunExperienceDialog(
           account_id,
           interception_type ==
@@ -325,7 +320,7 @@ void DiceWebSigninInterceptorDelegate::ShowSigninError(
 
   LoginUIServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-      ->DisplayLoginResult(browser->GetFeatures(), error);
+      ->DisplayLoginResult(*browser, error);
 }
 
 // static

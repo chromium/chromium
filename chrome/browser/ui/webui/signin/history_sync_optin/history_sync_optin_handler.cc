@@ -156,8 +156,7 @@ void HistorySyncOptinHandler::MaybeGetAccountInfo() {
 
 void HistorySyncOptinHandler::UpdateDialogHeight(uint32_t height) {
   if (browser_) {
-    browser_->GetFeatures().signin_view_controller()->SetModalSigninHeight(
-        height);
+    SigninViewController::From(browser_.get())->SetModalSigninHeight(height);
   }
 }
 
@@ -169,7 +168,7 @@ void HistorySyncOptinHandler::FinishAndCloseDialog(
   auto callback = std::move(history_optin_completed_callback_);
 
   if (browser_ && should_close_modal_dialog_.value_or(false)) {
-    browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
+    SigninViewController::From(browser_.get())->CloseModalSignin();
   }
   if (!callback->is_null()) {
     std::move(callback.value()).Run(result);

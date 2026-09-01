@@ -27,9 +27,7 @@ void ShowBubble(BrowserWindowInterface* bwi,
     case ProfileCustomizationBubbleSyncController::Outcome::kAbort:
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kShowBubble:
-      bwi->GetFeatures()
-          .signin_view_controller()
-          ->ShowModalProfileCustomizationDialog();
+      SigninViewController::From(bwi)->ShowModalProfileCustomizationDialog();
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kSkipBubble:
       // If the customization bubble is not shown, show the IPH now. Otherwise

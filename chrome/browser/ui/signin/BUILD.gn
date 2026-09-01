@@ -25,6 +25,7 @@ source_set("signin") {
     "//components/signin/public/base",
     "//components/sync/base",
     "//ui/base/interaction",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 

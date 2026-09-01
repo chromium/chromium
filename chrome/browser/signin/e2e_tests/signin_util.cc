@@ -199,8 +199,7 @@ void SignInFunctions::SignOut() {
 
   SignInTestObserver clear_observer(
       id_manager, account_reconcilor(browser_.Run()), ConsentLevel::kSignin);
-  auto* signin_view_controller =
-      browser_.Run()->GetFeatures().signin_view_controller();
+  auto* signin_view_controller = SigninViewController::From(browser_.Run());
   signin_view_controller->SignoutOrReauthWithPrompt(
       signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt,
       signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,

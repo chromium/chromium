@@ -86,7 +86,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
       LoginUIService::SyncConfirmationUIClosedResult result) override {
     login_ui_service_observation_.Reset();
     result_ = result;
-    browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
+    SigninViewController::From(browser_)->CloseModalSignin();
     run_loop_.Quit();
   }
 
@@ -117,7 +117,7 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
-  browser()->GetFeatures().signin_view_controller()->ShowSignin(
+  SigninViewController::From(browser())->ShowSignin(
       signin_metrics::AccessPoint::kSettings);
 
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
@@ -170,9 +170,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
   RunTestSequence(
       // Show the dialog and verify that it has shown.
       Do([&] {
-        browser()
-            ->GetFeatures()
-            .signin_view_controller()
+        SigninViewController::From(browser())
             ->ShowModalSigninEmailConfirmationDialog(
                 "alice@gmail.com", "bob@gmail.com",
                 base::BindLambdaForTesting(
@@ -183,10 +181,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
                     }));
       }),
       WaitForShow(kConstrainedDialogWebViewElementId), Check([&] {
-        return browser()
-            ->GetFeatures()
-            .signin_view_controller()
-            ->ShowsModalDialog();
+        return SigninViewController::From(browser())->ShowsModalDialog();
       }),
 
       // Confirm the dialog.
@@ -213,9 +208,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
           RunSubsequence(WaitForHide(kConstrainedDialogWebViewElementId),
                          CheckResult(
                              [&] {
-                               return browser()
-                                   ->GetFeatures()
-                                   .signin_view_controller()
+                               return SigninViewController::From(browser())
                                    ->ShowsModalDialog();
                              },
                              false))));
@@ -228,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content::TestNavigationObserver content_observer(
       GURL("chrome://signin-error/"));
   content_observer.StartWatchingNewWebContents();
-  auto* signin_view_controller =
-      browser()->GetFeatures().signin_view_controller();
+  auto* signin_view_controller = SigninViewController::From(browser());
   signin_view_controller->ShowModalSigninErrorDialog();
   EXPECT_TRUE(signin_view_controller->ShowsModalDialog());
   content_observer.Wait();
@@ -350,12 +342,9 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinViewControllerInteractiveBrowserTest,
   RunTestSequence(
       // Show the dialog and verify that it has shown.
       Do([&] {
-        browser()
-            ->GetFeatures()
-            .signin_view_controller()
-            ->ShowModalHistorySyncOptInDialog(
-                should_close_modal_dialog,
-                std::move(history_optin_completed_callback));
+        SigninViewController::From(browser())->ShowModalHistorySyncOptInDialog(
+            should_close_modal_dialog,
+            std::move(history_optin_completed_callback));
       }),
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,

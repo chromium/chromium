@@ -47,10 +47,8 @@ void HistorySyncOptinServiceDefaultDelegate::ShowHistorySyncOptinScreen(
         .Run(HistorySyncOptinHelper::ScreenChoiceResult::kScreenSkipped);
     return;
   }
-  browser->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalHistorySyncOptInDialog(/*should_close_modal_dialog=*/true,
-                                        std::move(callback));
+  SigninViewController::From(browser)->ShowModalHistorySyncOptInDialog(
+      /*should_close_modal_dialog=*/true, std::move(callback));
 }
 
 void HistorySyncOptinServiceDefaultDelegate::ShowAccountManagementScreen(

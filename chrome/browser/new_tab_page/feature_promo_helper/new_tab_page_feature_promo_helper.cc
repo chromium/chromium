@@ -194,9 +194,7 @@ bool NewTabPageFeaturePromoHelper::IsSigninModalDialogOpen(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   // `browser` might be NULL if the new tab is immediately dragged out of the
   // window.
-  return browser ? browser->GetFeatures()
-                       .signin_view_controller()
-                       ->ShowsModalDialog()
+  return browser ? SigninViewController::From(browser)->ShowsModalDialog()
                  : false;
 #else
   return false;

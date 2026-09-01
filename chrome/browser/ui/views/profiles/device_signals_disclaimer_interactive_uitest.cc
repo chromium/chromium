@@ -71,8 +71,7 @@ class DeviceSignalsDisclaimerInteractiveTest : public SigninBrowserTestBase {
  protected:
   content::WebContents* GetModalDialogWebContents(
       BrowserWindowInterface* browser) {
-    return browser->GetFeatures()
-        .signin_view_controller()
+    return SigninViewController::From(browser)
         ->GetModalDialogWebContentsForTesting();
   }
 
@@ -88,14 +87,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest,
   base::test::TestFuture<signin::DeviceSignalsDisclaimerResult> result_future;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(
-          signin::EnterpriseProfileCreationDialogParams::
-              CreateForDeviceSignalsDisclaimer(account_info,
-                                               result_future.GetCallback(),
-                                               /*is_modal_dialog=*/true));
+  SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+      signin::EnterpriseProfileCreationDialogParams::
+          CreateForDeviceSignalsDisclaimer(account_info,
+                                           result_future.GetCallback(),
+                                           /*is_modal_dialog=*/true));
 
   views::Widget* modal_widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(modal_widget);

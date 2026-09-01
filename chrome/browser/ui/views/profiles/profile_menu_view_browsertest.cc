@@ -682,8 +682,7 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (observer.get()) {
       observer->Wait();
-      auto* signin_view_controller =
-          browser()->GetFeatures().signin_view_controller();
+      auto* signin_view_controller = SigninViewController::From(browser());
       auto* signout_ui = SignoutConfirmationUI::GetForTesting(
           signin_view_controller->GetModalDialogWebContentsForTesting());
       if (!signout_ui) {

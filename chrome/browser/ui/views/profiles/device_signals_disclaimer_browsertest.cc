@@ -160,22 +160,17 @@ class DeviceSignalsDisclaimerModalPixelTest
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
 
-    browser()
-        ->GetFeatures()
-        .signin_view_controller()
-        ->ShowModalManagedUserNoticeDialog(
-            signin::EnterpriseProfileCreationDialogParams::
-                CreateForDeviceSignalsDisclaimer(
-                    account_info,
-                    signin::DeviceSignalsDisclaimerCallback(base::DoNothing()),
-                    /*is_modal_dialog=*/true));
+    SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+        signin::EnterpriseProfileCreationDialogParams::
+            CreateForDeviceSignalsDisclaimer(
+                account_info,
+                signin::DeviceSignalsDisclaimerCallback(base::DoNothing()),
+                /*is_modal_dialog=*/true));
 
     widget_waiter.WaitIfNeededAndGet();
 
     content::WebContents* web_contents =
-        browser()
-            ->GetFeatures()
-            .signin_view_controller()
+        SigninViewController::From(browser())
             ->GetModalDialogWebContentsForTesting();
     WaitForWebContentsLoaded(web_contents);
   }
@@ -345,8 +340,7 @@ class DeviceSignalsDisclaimerInteractiveTest : public SigninBrowserTestBase {
  protected:
   content::WebContents* GetModalDialogWebContents(
       BrowserWindowInterface* browser) {
-    return browser->GetFeatures()
-        .signin_view_controller()
+    return SigninViewController::From(browser)
         ->GetModalDialogWebContentsForTesting();
   }
 
@@ -361,14 +355,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest, ClickProceed) {
   base::test::TestFuture<signin::DeviceSignalsDisclaimerResult> result_future;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(
-          signin::EnterpriseProfileCreationDialogParams::
-              CreateForDeviceSignalsDisclaimer(account_info,
-                                               result_future.GetCallback(),
-                                               /*is_modal_dialog=*/true));
+  SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+      signin::EnterpriseProfileCreationDialogParams::
+          CreateForDeviceSignalsDisclaimer(account_info,
+                                           result_future.GetCallback(),
+                                           /*is_modal_dialog=*/true));
 
   std::ignore = widget_waiter.WaitIfNeededAndGet();
   content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
@@ -388,14 +379,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest, ClickCancel) {
   base::test::TestFuture<signin::DeviceSignalsDisclaimerResult> result_future;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(
-          signin::EnterpriseProfileCreationDialogParams::
-              CreateForDeviceSignalsDisclaimer(account_info,
-                                               result_future.GetCallback(),
-                                               /*is_modal_dialog=*/true));
+  SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+      signin::EnterpriseProfileCreationDialogParams::
+          CreateForDeviceSignalsDisclaimer(account_info,
+                                           result_future.GetCallback(),
+                                           /*is_modal_dialog=*/true));
 
   std::ignore = widget_waiter.WaitIfNeededAndGet();
   content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
@@ -415,14 +403,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest, CloseBrowser) {
   base::test::TestFuture<signin::DeviceSignalsDisclaimerResult> result_future;
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(
-          signin::EnterpriseProfileCreationDialogParams::
-              CreateForDeviceSignalsDisclaimer(account_info,
-                                               result_future.GetCallback(),
-                                               /*is_modal_dialog=*/true));
+  SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+      signin::EnterpriseProfileCreationDialogParams::
+          CreateForDeviceSignalsDisclaimer(account_info,
+                                           result_future.GetCallback(),
+                                           /*is_modal_dialog=*/true));
 
   std::ignore = widget_waiter.WaitIfNeededAndGet();
 
@@ -481,7 +466,7 @@ class DeviceSignalsDisclaimerStartupInteractiveTest
   }
 
   bool ShowsModalDialog(BrowserWindowInterface* browser) {
-    return browser->GetFeatures().signin_view_controller()->ShowsModalDialog();
+    return SigninViewController::From(browser)->ShowsModalDialog();
   }
 
   void WaitForModalDialog(BrowserWindowInterface* browser) {
@@ -563,10 +548,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   // dialog). This should close the existing disclaimer dialog.
   views::NamedWidgetShownWaiter error_dialog_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalSigninErrorDialog();
+  SigninViewController::From(browser())->ShowModalSigninErrorDialog();
   error_dialog_waiter.WaitIfNeededAndGet();
 
   EXPECT_TRUE(ShowsModalDialog(browser()));
@@ -578,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
 
   // Now handle and close the new dialog.
-  browser()->GetFeatures().signin_view_controller()->CloseModalSignin();
+  SigninViewController::From(browser())->CloseModalSignin();
   EXPECT_FALSE(ShowsModalDialog(browser()));
 
   // Simulate Browser Activated event when the user clicks/focuses the browser.

@@ -204,8 +204,7 @@ SignoutConfirmationHandler::~SignoutConfirmationHandler() = default;
 
 void SignoutConfirmationHandler::UpdateViewHeight(uint32_t height) {
   if (browser_) {
-    browser_->GetFeatures().signin_view_controller()->SetModalSigninHeight(
-        height);
+    SigninViewController::From(browser_.get())->SetModalSigninHeight(height);
   }
 }
 
@@ -241,7 +240,7 @@ void SignoutConfirmationHandler::FinishAndCloseDialog(
 
   std::move(completion_callback_).Run(choice, uninstall_account_extensions);
   if (browser_) {
-    browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
+    SigninViewController::From(browser_.get())->CloseModalSignin();
   }
 }
 

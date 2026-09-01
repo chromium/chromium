@@ -299,12 +299,10 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
               &ManagedProfileCreationController::OnManagementDisclaimerResult,
               weak_ptr_factory_.GetWeakPtr()),
           /*done_callback=*/
-          base::BindOnce(
-              &SigninViewController::CloseModalSignin,
-              browser->GetFeatures().signin_view_controller()->AsWeakPtr()));
-  browser->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(std::move(dialog_params));
+          base::BindOnce(&SigninViewController::CloseModalSignin,
+                         SigninViewController::From(browser)->AsWeakPtr()));
+  SigninViewController::From(browser)->ShowModalManagedUserNoticeDialog(
+      std::move(dialog_params));
 }
 
 void ManagedProfileCreationController::OnManagementDisclaimerResult(

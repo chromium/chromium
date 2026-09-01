@@ -570,11 +570,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
 
   // Show the profile customization dialog.
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalProfileCustomizationDialog(
-          /*is_local_profile_creation=*/true);
+  SigninViewController::From(browser())->ShowModalProfileCustomizationDialog(
+      /*is_local_profile_creation=*/true);
 
   // Navigate to a URL
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(

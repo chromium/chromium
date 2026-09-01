@@ -56,7 +56,7 @@ class ChromeSignoutConfirmationPromptPixelTest
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
 
-    auto* controller = browser()->GetFeatures().signin_view_controller();
+    auto* controller = SigninViewController::From(browser());
     controller->ShowSignoutConfirmationPrompt(
         GetVariant(), GetUnsyncedDataCount(),
         base::BindOnce([](ChromeSignoutConfirmationChoice choice,

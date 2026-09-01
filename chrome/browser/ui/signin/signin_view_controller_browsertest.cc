@@ -212,8 +212,7 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
     content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
-    auto* signin_view_controller =
-        browser()->GetFeatures().signin_view_controller();
+    auto* signin_view_controller = SigninViewController::From(browser());
     signin_view_controller->SignoutOrReauthWithPrompt(
         kTestAccessPoint,
         signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
@@ -283,9 +282,7 @@ class SigninViewControllerBrowserTest
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{},
         "ChromeSigninChoiceForExtensionsPrompt");
-    browser()
-        ->GetFeatures()
-        .signin_view_controller()
+    SigninViewController::From(browser())
         ->MaybeShowChromeSigninDialogForExtensions(kTestExtensionName,
                                                    std::move(on_complete));
 
@@ -490,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
               CREDENTIALS_REJECTED_BY_SERVER));
 
   // Trigger the Chrome signout action.
-  browser()->GetFeatures().signin_view_controller()->SignoutOrReauthWithPrompt(
+  SigninViewController::From(browser())->SignoutOrReauthWithPrompt(
       kTestAccessPoint,
       signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
       signin_metrics::SourceForRefreshTokenOperation::
@@ -784,9 +781,7 @@ IN_PROC_BROWSER_TEST_F(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   base::test::TestFuture<void> future;
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
+  SigninViewController::From(browser())
       ->MaybeShowChromeSigninDialogForExtensions(kTestExtensionName,
                                                  future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -796,9 +791,7 @@ IN_PROC_BROWSER_TEST_F(
     SigninViewControllerBrowserTest,
     ShowChromeSigninDialogForExtensionsPromptNotShownNoAccounts) {
   base::test::TestFuture<void> future;
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
+  SigninViewController::From(browser())
       ->MaybeShowChromeSigninDialogForExtensions(kTestExtensionName,
                                                  future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -807,14 +800,14 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
                        UpdateAccessPointOfSignInTab) {
   // Request a sign in tab, which will open a new tab.
-  browser()->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
       signin_metrics::AccessPoint::kPasswordBubble, std::string());
   EXPECT_TRUE(IsSigninTab(browser()->GetTabStripModel()->GetActiveWebContents(),
                           signin_metrics::AccessPoint::kPasswordBubble));
 
   // Request a sign in tab with a different access point, which will update the
   // existing sign in tab's access point.
-  browser()->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
       signin_metrics::AccessPoint::kAddressBubble, std::string());
   EXPECT_TRUE(IsSigninTab(browser()->GetTabStripModel()->GetActiveWebContents(),
                           signin_metrics::AccessPoint::kAddressBubble));
@@ -905,7 +898,7 @@ class SigninViewControllerSignInBanner
 };
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBanner, Visibility) {
-  browser()->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
       signin_metrics::AccessPoint::kSettings, std::string());
 
   mock_bluetooth_adapter_->SetInitialized(true);
@@ -930,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBanner, Visibility) {
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBanner,
                        NavigateAwayBeforeBluetoothResolved) {
-  browser()->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
       signin_metrics::AccessPoint::kSettings, std::string());
 
   content::WebContents* active_contents =
@@ -952,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBanner,
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBanner,
                        BluetoothResolvedAfterNavigationCommitted) {
-  browser()->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
       signin_metrics::AccessPoint::kSettings, std::string());
 
   content::WebContents* active_contents =
@@ -1008,7 +1001,7 @@ class SigninViewControllerSignInBannerNoBluetooth
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBannerNoBluetooth,
                        BluetoothUnavailable) {
-  browser()->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
       signin_metrics::AccessPoint::kSettings, std::string());
 
   content::WebContents* active_contents =
@@ -1108,10 +1101,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   // Before showing, there should be no explicit state.
   EXPECT_FALSE(avatar_button->HasExplicitButtonState());
 
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      closing_callback.Get());
 
   views::Widget* bubble_widget = widget_future.Get();
   ASSERT_TRUE(bubble_widget);
@@ -1176,10 +1167,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   observer.set_shown_callback(widget_future.GetRepeatingCallback());
 
   base::MockCallback<base::OnceClosure> closing_callback;
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      closing_callback.Get());
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);
@@ -1199,10 +1188,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   observer.set_shown_callback(widget_future.GetRepeatingCallback());
 
   base::MockCallback<base::OnceClosure> closing_callback;
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      closing_callback.Get());
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);
@@ -1222,10 +1209,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   observer.set_shown_callback(widget_future.GetRepeatingCallback());
 
   base::MockCallback<base::OnceClosure> closing_callback;
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      closing_callback.Get());
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);
@@ -1248,41 +1233,33 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   base::MockCallback<signin::SigninChoiceCallback>
       mock_process_user_choice_callback;
   base::MockCallback<base::OnceClosure> mock_done_callback;
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(
-          std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
-              account_info,
-              /*is_oidc_account=*/false,
-              /*user_already_signed_in=*/false,
-              /*profile_creation_required_by_policy=*/false,
-              /*show_link_data_option=*/false,
-              /*process_user_choice_callback=*/
-              mock_process_user_choice_callback.Get(),
-              mock_done_callback.Get()));
+  SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info,
+          /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
   EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
       browser()->GetProfile()));
-  browser()->GetFeatures().signin_view_controller()->CloseModalSignin();
+  SigninViewController::From(browser())->CloseModalSignin();
   EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
       browser()->GetProfile()));
 
-  browser()
-      ->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(
-          std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
-              account_info,
-              /*is_oidc_account=*/false,
-              /*user_already_signed_in=*/false,
-              /*profile_creation_required_by_policy=*/true,
-              /*show_link_data_option=*/false,
-              /*process_user_choice_callback=*/
-              mock_process_user_choice_callback.Get(),
-              mock_done_callback.Get()));
+  SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info,
+          /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/true,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
   EXPECT_TRUE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
       browser()->GetProfile()));
-  browser()->GetFeatures().signin_view_controller()->CloseModalSignin();
+  SigninViewController::From(browser())->CloseModalSignin();
   EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
       browser()->GetProfile()));
 }
@@ -1344,23 +1321,16 @@ class SigninViewControllerInteractiveBrowserTest
   auto ShowAndInstrumentSignoutConfirmationDialog() {
     return Steps(
         Do([&] {
-          browser()
-              ->GetFeatures()
-              .signin_view_controller()
-              ->SignoutOrReauthWithPrompt(
-                  kTestAccessPoint,
-                  signin_metrics::ProfileSignout::
-                      kUserClickedSignoutProfileMenu,
-                  signin_metrics::SourceForRefreshTokenOperation::
-                      kUserMenu_SignOutAllAccounts);
+          SigninViewController::From(browser())->SignoutOrReauthWithPrompt(
+              kTestAccessPoint,
+              signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+              signin_metrics::SourceForRefreshTokenOperation::
+                  kUserMenu_SignOutAllAccounts);
         }),
         WaitForShow(
             SigninViewController::kSignoutConfirmationDialogViewElementId),
         Check([&] {
-          return browser()
-              ->GetFeatures()
-              .signin_view_controller()
-              ->ShowsModalDialog();
+          return SigninViewController::From(browser())->ShowsModalDialog();
         }),
         InstrumentNonTabWebView(
             kWebContentsId,
@@ -1396,10 +1366,7 @@ class SigninViewControllerInteractiveBrowserTest
             SigninViewController::kSignoutConfirmationDialogViewElementId),
         CheckResult(
             [&] {
-              return browser()
-                  ->GetFeatures()
-                  .signin_view_controller()
-                  ->ShowsModalDialog();
+              return SigninViewController::From(browser())->ShowsModalDialog();
             },
             false),
         // Verify that the user has signed out.

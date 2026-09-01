@@ -26,11 +26,11 @@ void ShowDiceTab(BrowserWindowInterface* browser,
     return;
 
   if (enable_sync) {
-    browser->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
+    SigninViewController::From(browser)->ShowDiceEnableSyncTab(
         access_point, promo_action, email);
   } else {
-    browser->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
-        access_point, email);
+    SigninViewController::From(browser)->ShowDiceAddAccountTab(access_point,
+                                                               email);
   }
 }
 
@@ -67,9 +67,8 @@ void SigninUiDelegateImplDice::ShowCrossDeviceSigninQrBubble(
     }
     return;
   }
-  browser->GetFeatures()
-      .signin_view_controller()
-      ->ShowCrossDeviceSigninQrBubble(std::move(closing_callback));
+  SigninViewController::From(browser)->ShowCrossDeviceSigninQrBubble(
+      std::move(closing_callback));
 }
 
 }  // namespace signin_ui_util

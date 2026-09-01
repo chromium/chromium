@@ -24,6 +24,7 @@
 #include "components/sync/base/data_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -66,6 +67,11 @@ class NewTabWebContentsObserver;
 // Chrome OS has its own sign-in flow and doesn't use DICE.
 class SigninViewController {
  public:
+  DECLARE_USER_DATA(SigninViewController);
+
+  // Returns the controller for `browser`, or null if it does not have one.
+  static SigninViewController* From(BrowserWindowInterface* browser);
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kSignoutConfirmationDialogViewElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinViewId);
@@ -240,6 +246,8 @@ class SigninViewController {
   SigninModalDialog* GetModalDialogForTesting();
 
  private:
+  ui::ScopedUnownedUserData<SigninViewController> scoped_unowned_user_data_;
+
   friend class ChromeSignoutConfirmationPromptPixelTest;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

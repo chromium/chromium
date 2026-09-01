@@ -335,8 +335,7 @@ IN_PROC_BROWSER_TEST_P(
     new_profile = future.Get<Profile*>();
   }
 
-  auto* signin_view_controller =
-      browser()->GetFeatures().signin_view_controller();
+  auto* signin_view_controller = SigninViewController::From(browser());
   if (!GetParam().is_managed) {
     base::RunLoop().RunUntilIdle();
     ASSERT_FALSE(signin_view_controller->ShowsModalDialog());
@@ -513,8 +512,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
 
   Profile* new_profile = nullptr;
 
-  auto* signin_view_controller =
-      browser()->GetFeatures().signin_view_controller();
+  auto* signin_view_controller = SigninViewController::From(browser());
 
   if (GetParam().user_choice.has_value()) {
     base::test::TestFuture<Profile*, bool> future;
@@ -1041,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   SigninViewController* signin_view_controller =
-      browser()->GetFeatures().signin_view_controller();
+      SigninViewController::From(browser());
   ASSERT_TRUE(signin_view_controller->ShowsModalDialog());
   content::WebContents* dialog_web_contents =
       signin_view_controller->GetModalDialogWebContentsForTesting();

@@ -93,7 +93,7 @@ void CloseModalSigninInBrowser(
     return;
   }
 
-  browser->GetFeatures().signin_view_controller()->CloseModalSignin();
+  SigninViewController::From(browser.get())->CloseModalSignin();
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(browser.get());
   if (browser_view) {

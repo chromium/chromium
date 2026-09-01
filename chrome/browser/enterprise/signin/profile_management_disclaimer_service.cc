@@ -394,7 +394,7 @@ void ProfileManagementDisclaimerService::MaybeShowDeviceSignalsDisclaimerDialog(
   }
 
   // The management notice dialog or another modal dialog is already open.
-  if (browser->GetFeatures().signin_view_controller()->ShowsModalDialog()) {
+  if (SigninViewController::From(browser)->ShowsModalDialog()) {
     base::UmaHistogramEnumeration(
         kEnterpriseSignalsDisclaimerNotShownReason,
         EnterpriseSignalsDisclaimerNotShownReason::kOtherModalDialogShown);
@@ -403,17 +403,15 @@ void ProfileManagementDisclaimerService::MaybeShowDeviceSignalsDisclaimerDialog(
 
   base::UmaHistogramBoolean(kEnterpriseSignalsDisclaimerModalShown, true);
 
-  browser->GetFeatures()
-      .signin_view_controller()
-      ->ShowModalManagedUserNoticeDialog(
-          signin::EnterpriseProfileCreationDialogParams::
-              CreateForDeviceSignalsDisclaimer(
-                  GetPrimaryAccountInfo(),
-                  base::BindOnce(&ProfileManagementDisclaimerService::
-                                     HandleDeviceSignalsDisclaimerChoice,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 browser->GetWeakPtr()),
-                  /*is_modal_dialog=*/true));
+  SigninViewController::From(browser)->ShowModalManagedUserNoticeDialog(
+      signin::EnterpriseProfileCreationDialogParams::
+          CreateForDeviceSignalsDisclaimer(
+              GetPrimaryAccountInfo(),
+              base::BindOnce(&ProfileManagementDisclaimerService::
+                                 HandleDeviceSignalsDisclaimerChoice,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             browser->GetWeakPtr()),
+              /*is_modal_dialog=*/true));
   opened_device_signals_disclaimers_.push_back(browser->GetWeakPtr());
 }
 
@@ -434,7 +432,7 @@ void ProfileManagementDisclaimerService::HandleDeviceSignalsDisclaimerChoice(
         if (browser) {
           // This will trigger `HandleDeviceSignalsDisclaimerChoice` with
           // `kDismissed` for any other dialogs.
-          browser->GetFeatures().signin_view_controller()->CloseModalSignin();
+          SigninViewController::From(browser.get())->CloseModalSignin();
         }
       }
 

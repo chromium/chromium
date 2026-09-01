@@ -127,7 +127,7 @@ void SetInitializedModalHeight(BrowserWindowInterface* browser,
   }
 
   double height = args[0].GetDouble();
-  browser->GetFeatures().signin_view_controller()->SetModalSigninHeight(
+  SigninViewController::From(browser)->SetModalSigninHeight(
       static_cast<int>(height));
 }
 

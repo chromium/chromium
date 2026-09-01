@@ -335,7 +335,7 @@ class SigninViewControllerTestUtil {
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
-        browser->GetFeatures().signin_view_controller();
+        SigninViewController::From(browser);
     DCHECK(signin_view_controller);
     if (!signin_view_controller->ShowsModalDialog()) {
       return false;
@@ -369,7 +369,7 @@ class SigninViewControllerTestUtil {
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
-        browser->GetFeatures().signin_view_controller();
+        SigninViewController::From(browser);
     DCHECK(signin_view_controller);
     if (!signin_view_controller->ShowsModalDialog()) {
       return false;
@@ -395,7 +395,7 @@ class SigninViewControllerTestUtil {
 #if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
-    return browser->GetFeatures().signin_view_controller()->ShowsModalDialog();
+    return SigninViewController::From(browser)->ShowsModalDialog();
 #endif
   }
 
@@ -405,7 +405,7 @@ class SigninViewControllerTestUtil {
                                     const std::string& app,
                                     const std::string& button_id) {
     SigninViewController* signin_view_controller =
-        browser->GetFeatures().signin_view_controller();
+        SigninViewController::From(browser);
     DCHECK(signin_view_controller);
     if (!signin_view_controller->ShowsModalDialog()) {
       return false;
@@ -508,12 +508,12 @@ bool SignInWithUI(BrowserWindowInterface* browser,
 
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
-      browser->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
+      SigninViewController::From(browser)->ShowDiceAddAccountTab(
           access_point,
           /*email_hint=*/std::string());
       break;
     case signin::ConsentLevel::kSync:
-      browser->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
+      SigninViewController::From(browser)->ShowDiceEnableSyncTab(
           access_point,
           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
           /*email_hint=*/std::string());
@@ -571,7 +571,7 @@ class SiginInModalDialogObserver : public SigninViewController::Observer {
   explicit SiginInModalDialogObserver(BrowserWindowInterface* browser) {
     CHECK(SigninViewControllerTestUtil::ShowsModalDialog(browser));
     signin_view_controller_observation_.Observe(
-        browser->GetFeatures().signin_view_controller());
+        SigninViewController::From(browser));
   }
 
   void WaitForModalDialogClosed() {

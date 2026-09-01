@@ -66,8 +66,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 // Regression test for https://crbug.com/40191339.
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
                        CloseImmediately) {
-  SigninViewController* controller =
-      browser()->GetFeatures().signin_view_controller();
+  SigninViewController* controller = SigninViewController::From(browser());
   controller->ShowModalSyncConfirmationDialog(
       /*is_signin_intercept=*/false, /*is_sync_promo=*/false);
   content::WebContentsDestroyedWatcher watcher(

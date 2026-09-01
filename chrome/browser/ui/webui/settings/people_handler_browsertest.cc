@@ -182,8 +182,7 @@ IN_PROC_BROWSER_TEST_F(PeopleHandlerSignoutTest, Signout) {
   EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
 
   CreatePeopleHandler();
-  EXPECT_FALSE(
-      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog());
+  EXPECT_FALSE(SigninViewController::From(browser())->ShowsModalDialog());
 
   // Set up observer to wait for the signout confirmation dialog.
   auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
@@ -199,8 +198,7 @@ IN_PROC_BROWSER_TEST_F(PeopleHandlerSignoutTest, Signout) {
 
   // The signout confirmation dialog is shown.
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(
-      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog());
+  EXPECT_TRUE(SigninViewController::From(browser())->ShowsModalDialog());
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

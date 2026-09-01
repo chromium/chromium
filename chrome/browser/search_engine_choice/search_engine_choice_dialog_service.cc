@@ -424,11 +424,10 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
     return SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall;
   }
 
-  BrowserWindowFeatures& browser_features = browser.GetFeatures();
   // To avoid conflict, the dialog should not be shown if a sign-in dialog is
   // currently displayed or is about to be displayed.
   bool signin_dialog_displayed_or_pending =
-      browser_features.signin_view_controller()->ShowsModalDialog();
+      SigninViewController::From(&browser)->ShowsModalDialog();
 #if !BUILDFLAG(IS_CHROMEOS)
   signin_dialog_displayed_or_pending =
       signin_dialog_displayed_or_pending ||

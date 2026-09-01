@@ -87,7 +87,7 @@ class HistorySyncOptinUIDialogPixelTest
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
 
-    auto* controller = browser()->GetFeatures().signin_view_controller();
+    auto* controller = SigninViewController::From(browser());
     controller->ShowModalHistorySyncOptInDialog(
         should_close_modal_dialog_,
         HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));

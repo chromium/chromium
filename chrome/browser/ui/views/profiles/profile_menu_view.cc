@@ -435,11 +435,12 @@ void ProfileMenuView::OnSignoutButtonClicked() {
     return;
   }
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-  browser().GetFeatures().signin_view_controller()->SignoutOrReauthWithPrompt(
-      signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt,
-      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-      signin_metrics::SourceForRefreshTokenOperation::
-          kUserMenu_SignOutAllAccounts);
+  SigninViewController::From(&browser())
+      ->SignoutOrReauthWithPrompt(
+          signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt,
+          signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+          signin_metrics::SourceForRefreshTokenOperation::
+              kUserMenu_SignOutAllAccounts);
 }
 
 void ProfileMenuView::OnOtherProfileSelected(
