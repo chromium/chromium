@@ -385,21 +385,37 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Search engine changed"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidSearchEngineChoiceEventsV2) -->
+
 <enum name="AndroidSearchEngineChoiceEventsV2">
   <summary>Events related to Search Engine Choice V2 feature.</summary>
-  <int value="0" label="Request received from play"/>
-  <int value="1"
-      label="User skipped (didn't complete) Search Engine Choice flow"/>
-  <int value="2" label="Play API returned empty list of providers"/>
-  <int value="3" label="User selected valid search provider"/>
-  <int value="4" label="Search engine metadata value was null"/>
-  <int value="5" label="Failed to parse search engine metadata JSON"/>
-  <int value="6"
-      label="Previous attempt to persist search engine metadata failed"/>
-  <int value="7" label="Request success"/>
-  <int value="8" label="Choice was already applied"/>
-  <int value="9" label="Choice renewal was skipped"/>
+  <int value="0" label="CHOICE_REQUEST_RECEIVED">
+    Request received from play
+  </int>
+  <int value="1" label="CHOICE_SKIPPED">
+    User skipped (didn't complete) Search Engine Choice flow
+  </int>
+  <int value="2" label="CHOICE_REQUEST_NO_DATA">
+    Play API returned empty list of providers
+  </int>
+  <int value="3" label="CHOICE_REQUEST_VALID">
+    User selected valid search provider
+  </int>
+  <int value="4" label="CHOICE_REQUEST_METADATA_NULL">
+    Search engine metadata value was null
+  </int>
+  <int value="5" label="CHOICE_REQUEST_PARSE_FAILED">
+    Failed to parse search engine metadata JSON
+  </int>
+  <int value="6" label="PREVIOUS_CHOICE_REQUEST_FAILED">
+    Previous attempt to persist search engine metadata failed
+  </int>
+  <int value="7" label="CHOICE_REQUEST_SUCCESS">Request success</int>
+  <int value="8" label="CHOICE_ALREADY_APPLIED">Choice was already applied</int>
+  <int value="9" label="CHOICE_RENEWAL_SKIPPED">Choice renewal was skipped</int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java:AndroidSearchEngineChoiceEventsV2) -->
 
 <enum name="AndroidSeccompSandboxStatus">
   <int value="0" label="Not Supported"/>

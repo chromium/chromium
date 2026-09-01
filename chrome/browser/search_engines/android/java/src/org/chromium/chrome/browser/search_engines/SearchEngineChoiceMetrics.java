@@ -40,6 +40,7 @@ public class SearchEngineChoiceMetrics {
      * are persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
+    // LINT.IfChange(AndroidSearchEngineChoiceEventsV2)
     @IntDef({
         EventsV2.CHOICE_REQUEST_RECEIVED,
         EventsV2.CHOICE_SKIPPED,
@@ -66,6 +67,7 @@ public class SearchEngineChoiceMetrics {
         int CHOICE_RENEWAL_SKIPPED = 9;
         int COUNT = 10;
     }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidSearchEngineChoiceEventsV2)
 
     /**
      * Records an event to the search choice histogram. See {@link Events} and histograms.xml for
