@@ -359,6 +359,64 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithGroup) {
   CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 2u);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       MoveTabsToNewWindow_FromContextMenuWithGroup) {
+  // Two tabs with second tab in a group.
+  AddTabs(1);
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({1});
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group_id, tab_groups::TabGroupVisualData(
+                    u"Test Group", tab_groups::TabGroupColorId::kGrey));
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  EXPECT_TRUE(browser()->tab_strip_model()->IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandMoveTabsToNewWindow));
+  browser()->tab_strip_model()->ExecuteContextMenuCommand(
+      1, TabStripModel::CommandMoveTabsToNewWindow);
+  const BrowserWindowInterface* const second_browser =
+      browser_created_observer.Wait();
+
+  // Original browser has one tab and no group.
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
+  EXPECT_FALSE(
+      browser()->GetTabStripModel()->group_model()->ContainsTabGroup(group_id));
+
+  // New browser has one tab with the tab group.
+  EXPECT_EQ(1, second_browser->GetTabStripModel()->count());
+  CheckBrowserContainsTabGroupWithSize(second_browser, group_id, 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       MoveSingleTabFromMultiTabGroupToNewWindow) {
+  // Three tabs with first two in a group.
+  AddTabs(2);
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group_id, tab_groups::TabGroupVisualData(
+                    u"Test Group", tab_groups::TabGroupColorId::kGrey));
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  EXPECT_TRUE(browser()->tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandMoveTabsToNewWindow));
+  browser()->tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandMoveTabsToNewWindow);
+  const BrowserWindowInterface* const second_browser =
+      browser_created_observer.Wait();
+
+  // Original browser has two tabs with the tab group having 1 tab.
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_TRUE(
+      browser()->GetTabStripModel()->group_model()->ContainsTabGroup(group_id));
+  CheckBrowserContainsTabGroupWithSize(browser(), group_id, 1u);
+
+  // New browser has one ungrouped tab.
+  EXPECT_EQ(1, second_browser->GetTabStripModel()->count());
+  EXPECT_EQ(std::nullopt,
+            second_browser->GetTabStripModel()->GetTabAtIndex(0)->GetGroup());
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow_WithSplitView) {
   // Three tabs with last two in a group
   AddTabs(2);

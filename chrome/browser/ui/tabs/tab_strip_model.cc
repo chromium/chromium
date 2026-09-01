@@ -2994,20 +2994,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(
           UserMetricsAction("TabContextMenu_MoveTabToNewWindow"));
 
-      std::vector<int> indices_to_move = GetIndicesForCommand(context_index);
-      std::vector<tab_groups::TabGroupId> groups_to_delete =
-          GetGroupsDestroyedFromRemovingIndices(indices_to_move);
-      MarkTabGroupsForClosing(groups_to_delete);
-
-      base::OnceCallback<void()> callback =
-          base::BindOnce(&TabStripModelDelegate::MoveTabsToNewWindow,
-                         base::Unretained(delegate()), indices_to_move);
-      if (!groups_to_delete.empty()) {
-        return delegate_->OnRemovingAllTabsFromGroups(groups_to_delete,
-                                                      std::move(callback));
-      } else {
-        std::move(callback).Run();
-      }
+      delegate()->MoveTabsToNewWindow(GetIndicesForCommand(context_index));
       break;
     }
 
