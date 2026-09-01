@@ -97,6 +97,7 @@
   "chromium.angle": {
     "android-angle-chromium-arm64-builder": "ci/android-angle-chromium-arm64-builder/gn-args.json",
     "fuchsia-angle-builder": "ci/fuchsia-angle-builder/gn-args.json",
+    "ios-angle-arm64-builder": "ci/ios-angle-arm64-builder/gn-args.json",
     "ios-angle-builder": "ci/ios-angle-builder/gn-args.json",
     "linux-angle-chromium-builder": "ci/linux-angle-chromium-builder/gn-args.json",
     "mac-angle-chromium-builder": "ci/mac-angle-chromium-builder/gn-args.json",
@@ -653,6 +654,7 @@
     "android-angle-chromium-try": "try/android-angle-chromium-try/gn-args.json",
     "fuchsia-angle-try": "try/fuchsia-angle-try/gn-args.json",
     "ios-angle-try-intel": "try/ios-angle-try-intel/gn-args.json",
+    "ios-angle-try-m2": "try/ios-angle-try-m2/gn-args.json",
     "linux-angle-chromium-try": "try/linux-angle-chromium-try/gn-args.json",
     "mac-angle-chromium-try": "try/mac-angle-chromium-try/gn-args.json",
     "win-angle-chromium-arm64-try": "try/win-angle-chromium-arm64-try/gn-args.json",

@@ -333,8 +333,10 @@ ci/fuchsia-netstack2-x64-cast-receiver-rel
 ci/fuchsia-x64-cast-receiver-dbg
 ci/fuchsia-x64-cast-receiver-rel
 ci/fuchsia-x64-perf-cast-receiver-rel
+ci/ios-angle-arm64-builder
 ci/ios-angle-builder
 ci/ios-angle-intel
+ci/ios-angle-m2
 ci/ios-asan
 ci/ios-catalyst
 ci/ios-device
@@ -584,6 +586,7 @@ try/gpu-try-mac-amd-retina-dbg
 try/gpu-try-mac-intel-dbg
 try/gpu-try-win-nvidia-dbg
 try/ios-angle-try-intel
+try/ios-angle-try-m2
 try/ios-asan
 try/ios-catalyst
 try/ios-device

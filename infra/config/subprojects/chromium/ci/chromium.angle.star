@@ -516,6 +516,47 @@ ci.thin_tester(
 )
 
 shared_gpu.ci.mac_builder(
+    name = "ios-angle-arm64-builder",
+    description_html = "Compiles ANGLE test binaries for iOS/ARM64 using ToT ANGLE and a known good Chromium revision.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = [
+                "angle_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "arm64",
+            "dcheck_always_on",
+            "ios_simulator",
+            "minimal_symbols",
+            "release_builder",
+            "remoteexec",
+            "xctest",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS|Builder|ANGLE",
+        short_name = "a64",
+    ),
+    contact_team_email = "angle-team@google.com",
+    xcode = xcode.xcode_default,
+)
+
+shared_gpu.ci.mac_builder(
     name = "ios-angle-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -602,6 +643,54 @@ ci.thin_tester(
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Intel|ANGLE",
         short_name = "x64",
+    ),
+    contact_team_email = "angle-team@google.com",
+)
+
+ci.thin_tester(
+    name = "ios-angle-m2",
+    description_html = "Tests ANGLE on iOS simulators running on M2 hardware.",
+    parent = "ios-angle-arm64-builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = [
+                "angle_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_angle_ios_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "mac_arm64_apple_m2_retina_gpu_stable",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
+            "xctest",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.MAC,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS|Apple|ANGLE",
+        short_name = "m2",
     ),
     contact_team_email = "angle-team@google.com",
 )

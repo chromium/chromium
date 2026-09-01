@@ -1,8 +1,10 @@
 ci/android-angle-chromium-arm64-builder
 ci/android-angle-chromium-arm64-pixel2
 ci/fuchsia-angle-builder
+ci/ios-angle-arm64-builder
 ci/ios-angle-builder
 ci/ios-angle-intel
+ci/ios-angle-m2
 ci/linux-angle-chromium-amd
 ci/linux-angle-chromium-builder
 ci/linux-angle-chromium-intel
@@ -18,6 +20,7 @@ ci/win10-angle-chromium-x64-nvidia
 ci/win11-angle-chromium-arm64-qualcomm-snapdragonxelite
 try/android-angle-chromium-try
 try/fuchsia-angle-try
+try/ios-angle-try-m2
 try/linux-angle-chromium-try
 try/mac-angle-chromium-try
 try/win-angle-chromium-arm64-try
