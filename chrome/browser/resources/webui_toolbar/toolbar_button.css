@@ -22,7 +22,7 @@
   width: var(--button-width);
 }
 
-:host([overflow-display-none]) {
+:host(.overflow-display-none) {
   display: none !important;
 }
 

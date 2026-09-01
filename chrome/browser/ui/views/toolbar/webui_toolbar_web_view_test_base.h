@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace content {
 class WebContents;
@@ -20,6 +21,10 @@ class WebContents;
 
 namespace extensions {
 class Extension;
+}
+
+namespace ui {
+class TrackedElement;
 }
 
 class ToolbarView;
@@ -51,6 +56,23 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
   // Note that first adding the spacer will likely add some extra
   // margins/padding in addition to `width`.
   [[nodiscard]] content::EvalJsResult SetSpacerWidth(int width);
+
+  // Gets the specified tracked element.
+  ui::TrackedElement* GetTrackedElement(ui::ElementIdentifier id);
+
+  // Waits until all `visible` elements are visible and all `hidden` elements
+  // are hidden.
+  [[nodiscard]] bool WaitForTrackedElements(
+      const std::vector<ui::ElementIdentifier>& visible,
+      const std::vector<ui::ElementIdentifier>& hidden = {});
+
+  // Waits until the specified tracked element is visible. Returns null on
+  // failure, or if it's detected as visible, but is then hidden before the
+  // function returns.
+  ui::TrackedElement* WaitForTrackedElementVisible(ui::ElementIdentifier id);
+
+  // Waits until the specified tracked element is hidden (or destroyed).
+  [[nodiscard]] bool WaitForTrackedElementHidden(ui::ElementIdentifier id);
 
  protected:
   WebUIToolbarWebViewTestBase(

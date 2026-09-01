@@ -2460,45 +2460,6 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
   }
   ~WebUIToolbarFullyEnabledInteractiveUiTest() override = default;
 
-  // Gets the specified tracked element.
-  ui::TrackedElement* GetTrackedElement(ui::ElementIdentifier id) {
-    return ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-        id, views::ElementTrackerViews::GetContextForView(GetToolbarView()));
-  }
-
-  // Waits until all `visible` elements are visible and all `hidden` elements
-  // are hidden.
-  [[nodiscard]] bool WaitForTrackedElements(
-      const std::vector<ui::ElementIdentifier>& visible,
-      const std::vector<ui::ElementIdentifier>& hidden = {}) {
-    return base::test::RunUntil([&]() -> bool {
-      for (const auto& id : visible) {
-        if (!GetTrackedElement(id)) {
-          return false;
-        }
-      }
-      for (const auto& id : hidden) {
-        if (GetTrackedElement(id)) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }
-
-  // Waits until the specified tracked element is visible. Returns null on
-  // failure, or if it's detected as visible, but is then hidden before the
-  // function returns.
-  ui::TrackedElement* WaitForTrackedElementVisible(ui::ElementIdentifier id) {
-    EXPECT_TRUE(WaitForTrackedElements({id}));
-    return GetTrackedElement(id);
-  }
-
-  // Waits until the specified tracked element is hidden (or destroyed).
-  [[nodiscard]] bool WaitForTrackedElementHidden(ui::ElementIdentifier id) {
-    return WaitForTrackedElements({}, {id});
-  }
-
   // Waits until the overflow button location is available, clicks it, and spins
   // until the menu is created.
   [[nodiscard]] OverflowMenu* OpenOverflowMenu() {

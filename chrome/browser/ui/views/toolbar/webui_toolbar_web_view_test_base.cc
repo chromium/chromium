@@ -6,8 +6,10 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +27,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase()
     : WebUIToolbarWebViewTestBase(
@@ -72,6 +77,41 @@ content::EvalJsResult WebUIToolbarWebViewTestBase::SetSpacerWidth(int width) {
         return true;
       })();)",
                                                     width));
+}
+
+ui::TrackedElement* WebUIToolbarWebViewTestBase::GetTrackedElement(
+    ui::ElementIdentifier id) {
+  return ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+      id, views::ElementTrackerViews::GetContextForView(GetToolbarView()));
+}
+
+bool WebUIToolbarWebViewTestBase::WaitForTrackedElements(
+    const std::vector<ui::ElementIdentifier>& visible,
+    const std::vector<ui::ElementIdentifier>& hidden) {
+  return base::test::RunUntil([&]() -> bool {
+    for (const auto& id : visible) {
+      if (!GetTrackedElement(id)) {
+        return false;
+      }
+    }
+    for (const auto& id : hidden) {
+      if (GetTrackedElement(id)) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+ui::TrackedElement* WebUIToolbarWebViewTestBase::WaitForTrackedElementVisible(
+    ui::ElementIdentifier id) {
+  EXPECT_TRUE(WaitForTrackedElements({id}));
+  return GetTrackedElement(id);
+}
+
+bool WebUIToolbarWebViewTestBase::WaitForTrackedElementHidden(
+    ui::ElementIdentifier id) {
+  return WaitForTrackedElements({}, {id});
 }
 
 WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase(

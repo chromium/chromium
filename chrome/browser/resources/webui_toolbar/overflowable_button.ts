@@ -65,13 +65,13 @@ export const OverflowableButtonMixin =
 
         // The minimum width hides the button using `overflow-display-none`.
         setToMinWidth() {
-          this.toggleAttribute('overflow-display-none', true);
+          this.classList.add('overflow-display-none');
         }
 
         // For a button, the preferred width has the button displayed, so
-        // removes the "overflow-display-none" property, checks if the parent
+        // removes the "overflow-display-none" class, checks if the parent
         // element fits in the window, and if not, adds back the
-        // "overflow-display-none" property. Expects only to be called after an
+        // "overflow-display-none" class. Expects only to be called after an
         // initial setToMinWidth() call, and only if shouldBeShown() returns
         // true.
         expandUpToPreferredWidth() {
@@ -89,14 +89,14 @@ export const OverflowableButtonMixin =
         // button not to be hidden due to overflow; it does not affect
         // `shouldBeShown()`.
         setToPreferredWidth() {
-          this.toggleAttribute('overflow-display-none', false);
+          this.classList.remove('overflow-display-none');
         }
 
         controlsToAddToOverflowMenu(): OverflowMenuItem[] {
           // If this element is hidden or has not overflowed, nothing to add to
           // the overflow menu.
           if (!this.shouldBeShown() ||
-              !this.hasAttribute('overflow-display-none')) {
+              !this.classList.contains('overflow-display-none')) {
             return [];
           }
 
