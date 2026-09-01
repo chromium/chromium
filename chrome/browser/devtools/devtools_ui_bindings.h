@@ -169,6 +169,12 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
     RegisterExtensionsAPI(origin, script);
   }
 
+  void ShowDevToolsInfoBarForTesting(
+      const std::u16string& message,
+      DevToolsInfoBarDelegate::Callback callback) {
+    ShowDevToolsInfoBar(message, std::move(callback));
+  }
+
   static base::DictValue GetSyncInformationForProfile(Profile* profile);
 
  protected:

@@ -322,6 +322,22 @@ void RegisterInfoBars() {
   }
 #endif
 
+  if (IsInfoBarMigrated(InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE)
+            // The message and the decision callback come in per show via
+            // InfoBarShowParams.
+            .AddOkButton(
+                l10n_util::GetStringUTF16(IDS_DEV_TOOLS_CONFIRM_ALLOW_BUTTON),
+                base::DoNothing())
+            .AddCancelButton(
+                l10n_util::GetStringUTF16(IDS_DEV_TOOLS_CONFIRM_DENY_BUTTON),
+                base::DoNothing())
+            .SetScope(InfoBarScope::kGlobal)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
   if (IsInfoBarMigrated(
           InfoBarDelegate::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE)) {
     auto spec =

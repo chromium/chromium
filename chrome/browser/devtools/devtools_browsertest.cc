@@ -42,6 +42,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
+#include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/devtools/features.h"
@@ -4812,6 +4813,162 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
 
   ASSERT_NE(webcontents->GetPrimaryMainFrame()->GetProcess(),
             webcontents2->GetPrimaryMainFrame()->GetProcess());
+}
+
+class DevToolsConfirmInfoBarTest : public DevToolsTest,
+                                   public testing::WithParamInterface<bool> {
+ protected:
+  DevToolsConfirmInfoBarTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{"MigratedDevToolsConfirm", "true"}});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DevToolsConfirmInfoBarTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
+
+IN_PROC_BROWSER_TEST_P(DevToolsConfirmInfoBarTest, AllowRunsCallbackOnce) {
+  DevToolsWindow* window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), true);
+  DevToolsUIBindings* bindings = DevToolsUIBindings::ForWebContents(
+      DevToolsWindowTesting::Get(window)->main_web_contents());
+  ASSERT_TRUE(bindings);
+
+  std::vector<bool> decisions;
+  bindings->ShowDevToolsInfoBarForTesting(
+      u"DevTools requests access",
+      base::BindLambdaForTesting(
+          [&](bool allowed) { decisions.push_back(allowed); }));
+
+  // Both paths show the confirmation on the inspected tab.
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(GetInspectedTab());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  auto* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_EQ(infobars::InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE,
+            delegate->GetIdentifier());
+  EXPECT_EQ(u"DevTools requests access", delegate->GetMessageText());
+
+  // Allowing answers the caller exactly once with true.
+  delegate->Accept();
+  EXPECT_THAT(decisions, testing::ElementsAre(true));
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+  EXPECT_EQ(1u, decisions.size());
+}
+
+IN_PROC_BROWSER_TEST_P(DevToolsConfirmInfoBarTest, DenyRunsCallbackOnce) {
+  DevToolsWindow* window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), true);
+  DevToolsUIBindings* bindings = DevToolsUIBindings::ForWebContents(
+      DevToolsWindowTesting::Get(window)->main_web_contents());
+  ASSERT_TRUE(bindings);
+
+  std::vector<bool> decisions;
+  bindings->ShowDevToolsInfoBarForTesting(
+      u"DevTools requests access",
+      base::BindLambdaForTesting(
+          [&](bool allowed) { decisions.push_back(allowed); }));
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(GetInspectedTab());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  auto* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+
+  // Canceling/denying answers the caller with false.
+  delegate->Cancel();
+  EXPECT_THAT(decisions, testing::ElementsAre(false));
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+  EXPECT_THAT(decisions, testing::ElementsAre(false));
+}
+
+IN_PROC_BROWSER_TEST_P(DevToolsConfirmInfoBarTest,
+                       DismissalRunsCallbackOnceWithFalse) {
+  DevToolsWindow* window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), true);
+  DevToolsUIBindings* bindings = DevToolsUIBindings::ForWebContents(
+      DevToolsWindowTesting::Get(window)->main_web_contents());
+  ASSERT_TRUE(bindings);
+
+  std::vector<bool> decisions;
+  bindings->ShowDevToolsInfoBarForTesting(
+      u"DevTools requests access",
+      base::BindLambdaForTesting(
+          [&](bool allowed) { decisions.push_back(allowed); }));
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(GetInspectedTab());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  auto* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+
+  // Dismissing the infobar (e.g. clicking 'X') resolves with false.
+  delegate->InfoBarDismissed();
+  EXPECT_THAT(decisions, testing::ElementsAre(false));
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+  EXPECT_THAT(decisions, testing::ElementsAre(false));
+}
+
+IN_PROC_BROWSER_TEST_P(DevToolsConfirmInfoBarTest, ConcurrentRequestHandling) {
+  DevToolsWindow* window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), true);
+  DevToolsUIBindings* bindings = DevToolsUIBindings::ForWebContents(
+      DevToolsWindowTesting::Get(window)->main_web_contents());
+  ASSERT_TRUE(bindings);
+
+  std::vector<bool> decisions1;
+  bindings->ShowDevToolsInfoBarForTesting(
+      u"First request", base::BindLambdaForTesting([&](bool allowed) {
+        decisions1.push_back(allowed);
+      }));
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(GetInspectedTab());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+
+  std::vector<bool> decisions2;
+  bindings->ShowDevToolsInfoBarForTesting(
+      u"Second request", base::BindLambdaForTesting([&](bool allowed) {
+        decisions2.push_back(allowed);
+      }));
+
+  if (GetParam()) {
+    // Under the centralized infobar framework, a second concurrent request
+    // is synchronously denied instead of stacking another infobar.
+    EXPECT_THAT(decisions2, testing::ElementsAre(false));
+    EXPECT_EQ(1u, infobar_manager->infobars().size());
+  }
+
+  // Resolving the first infobar should not trigger callbacks multiple times.
+  auto* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  delegate->Accept();
+
+  EXPECT_THAT(decisions1, testing::ElementsAre(true));
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
 // Runs against the legacy and the centralized infobar; behavior must match.

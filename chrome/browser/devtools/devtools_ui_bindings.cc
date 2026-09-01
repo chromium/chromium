@@ -46,6 +46,9 @@
 #include "chrome/browser/devtools/devtools_select_file_dialog.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/url_constants.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -2812,6 +2815,33 @@ void DevToolsUIBindings::ShowDevToolsInfoBar(
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
+    auto split = base::SplitOnceCallback(std::move(callback));
+    infobars::InfoBarShowParams params;
+    params.message_text = message;
+    // Allow maps to kAccepted; every other terminal result is a deny.
+    params.result_callback = base::BindRepeating(
+        [](DevToolsInfoBarDelegate::Callback& callback, content::WebContents*,
+           infobars::InfoBarResult result) {
+          if (callback) {
+            std::move(callback).Run(result ==
+                                    infobars::InfoBarResult::kAccepted);
+          }
+        },
+        base::OwnedRef(std::move(split.first)));
+    if (!browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE,
+            std::move(params))) {
+      // Nothing was shown (another confirmation is already up). Answer
+      // the caller with deny rather than hang.
+      std::move(split.second).Run(false);
+    }
+    return;
+  }
   if (!delegate_->GetInfoBarManager()) {
     std::move(callback).Run(false);
     return;
