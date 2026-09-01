@@ -71,7 +71,6 @@ public class NetLogsFragmentTest {
     public BaseActivityTestRule<MainActivity> mRule =
             new BaseActivityTestRule<>(MainActivity.class);
 
-    private static final String TAG = "NetLogsFragmentTest";
     private static final String JSON_TAG = ".json";
     private static final String MOCK_PID = "1234_";
     private static final String MOCK_PACKAGE_NAME = "package.name";

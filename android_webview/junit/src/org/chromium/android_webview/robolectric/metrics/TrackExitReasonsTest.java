@@ -45,7 +45,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
 public class TrackExitReasonsTest {
-    private static final String TAG = "ExitReasonsTest";
     private final MockAwContentsLifecycleNotifier mMockNotifier =
             new MockAwContentsLifecycleNotifier();
 

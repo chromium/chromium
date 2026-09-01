@@ -45,7 +45,6 @@ public class AwDarkModeTest extends AwParameterizedTest {
     private TestWebServer mWebServer;
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;
-    private final CallbackHelper mCallbackHelper = new CallbackHelper();
     private AwContents mAwContents;
 
     public AwDarkModeTest(AwSettingsMutation param) {

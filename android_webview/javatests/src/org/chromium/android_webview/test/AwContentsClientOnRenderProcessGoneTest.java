@@ -42,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest {
-    private static final String TAG = "AwRendererGone";
     @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestWebServer mWebServer;

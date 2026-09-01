@@ -65,7 +65,6 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
         }
     }
 
-    static final int PICTURE_TIMEOUT = 5000;
     static final String TEST_URL = "www.example.com";
     static final String REALM = "www.example.com";
     static final String ACCOUNT = "account";
