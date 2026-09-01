@@ -123,8 +123,6 @@ found in the LICENSE file.
                       android:id="@+id/readaloud_player_publisher_container"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:minWidth="@dimen/button_size"
-                      android:minHeight="@dimen/button_size"
                       android:layout_gravity="center_horizontal"
                       android:layout_marginVertical="@dimen/readaloud_expanded_player_publisher_container_margin_vertical"
                       android:background="@drawable/secondary_gray_rounded"
