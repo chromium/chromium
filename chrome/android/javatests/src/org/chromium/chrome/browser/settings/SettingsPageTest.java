@@ -44,7 +44,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -473,7 +472,6 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
-    @DisabledTest(message = "crbug.com/555361598")
     public void testSearchInSingleColumnThenRotateToLandscapeAndExitSearch() {
         // Ensure starting in portrait (usually single-column mode on tablet).
         ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
