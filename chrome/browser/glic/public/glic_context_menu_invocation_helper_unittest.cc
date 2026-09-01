@@ -26,6 +26,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
+#endif
+
 namespace glic {
 
 class GlicContextMenuInvocationHelperUnittest : public testing::Test {
@@ -207,5 +211,68 @@ TEST_F(GlicContextMenuInvocationHelperUnittest, HandleClickDisabled) {
       .Times(0);
   GlicContextMenuInvocationHelper::HandleContextualMenuClick(&mock_tab);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class FakePageContextEligibilityHelper
+    : public tabs::PageContextEligibilityHelper {
+ public:
+  explicit FakePageContextEligibilityHelper(tabs::TabInterface& tab)
+      : tabs::PageContextEligibilityHelper(tab) {}
+  optimization_guide::PageContextEligibilityStatus IsPageContextEligible()
+      const override {
+    return optimization_guide::PageContextEligibilityStatus::kEligible;
+  }
+};
+
+TEST_F(GlicContextMenuInvocationHelperUnittest,
+       HandleClickWithTextSelectionDefaultTrustFirst) {
+  feature_list_.InitWithFeatures({features::kGlic, features::kGlicContextMenu,
+                                  features::kGlicTextSelectionContextMenu},
+                                 {});
+
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  FakePageContextEligibilityHelper fake_helper(mock_tab);
+
+  EXPECT_CALL(*mock_service_,
+              Invoke(TargetTabAndFreOverride(
+                  &mock_tab, glic::mojom::FreOverride::kTrustFirstClick)))
+      .Times(1);
+  GlicContextMenuInvocationHelper::HandleContextualMenuClick(
+      &mock_tab, u"Selected text to ask Gemini");
+}
+
+TEST_F(GlicContextMenuInvocationHelperUnittest,
+       HandleClickWithTextSelectionMessageFirst) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kGlic, {}},
+       {features::kGlicContextMenu, {}},
+       {features::kGlicTextSelectionContextMenu,
+        {{features::kGlicTextSelectionContextMenuMessageFirstFre.name,
+          "true"}}}},
+      {});
+
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  FakePageContextEligibilityHelper fake_helper(mock_tab);
+
+  EXPECT_CALL(*mock_service_,
+              Invoke(TargetTabAndFreOverride(
+                  &mock_tab, glic::mojom::FreOverride::kTrustFirstInline)))
+      .Times(1);
+  GlicContextMenuInvocationHelper::HandleContextualMenuClick(
+      &mock_tab, u"Selected text to ask Gemini");
+}
+#endif
 
 }  // namespace glic

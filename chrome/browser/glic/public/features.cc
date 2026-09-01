@@ -121,6 +121,8 @@ const base::FeatureParam<bool> kGlicContextMenuWithOnboarding{
 BASE_FEATURE(kGlicContextMenuBelowSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicTextSelectionContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicTextSelectionContextMenuMessageFirstFre{
+    &kGlicTextSelectionContextMenu, "message_first_fre", false};
 
 BASE_FEATURE(kGlicTieredRolloutV2, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers{

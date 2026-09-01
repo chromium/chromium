@@ -77,7 +77,10 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
 
       options.additional_context = glic::AdditionalTabContext(
           std::move(context), rfh_id, glic::PolicyCheck::kClipboard);
-      options.fre_override = glic::mojom::FreOverride::kTrustFirstClick;
+      options.fre_override =
+          features::kGlicTextSelectionContextMenuMessageFirstFre.Get()
+              ? glic::mojom::FreOverride::kTrustFirstInline
+              : glic::mojom::FreOverride::kTrustFirstClick;
 
       glic_service->Invoke(std::move(options));
       return;
