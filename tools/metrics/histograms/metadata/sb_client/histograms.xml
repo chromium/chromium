@@ -241,7 +241,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
-    expires_after="2026-10-13">
+    expires_after="2027-04-13">
   <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -344,8 +344,9 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
-    enum="BooleanHasUserGesture" expires_after="2026-10-15">
+    enum="BooleanHasUserGesture" expires_after="2027-04-15">
   <owner>xinghuilu@chromium.org</owner>
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the download was triggered by user gesture when a download
