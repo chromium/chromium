@@ -48,6 +48,10 @@ template("generate_profile_test") {
       "//components:components_perftests",
       "//testing:run_perf_test",
       "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+
+      # Needed by the browser wrapper script to install bundles, see
+      # add_java_to_path in generate_profile.py.
+      "//third_party/jdk:java_data",
     ]
 
     # This avoids generate_profile.py attempting to download it on demand.

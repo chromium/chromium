@@ -25,6 +25,7 @@ and with chrome_pgo_phase _not_ set. (It defaults to =2 in official builds.)
 
 import argparse
 import glob
+import json
 import logging
 import os
 import pathlib
@@ -56,6 +57,41 @@ _UPDATE_PY = f'{_THIS_DIR}/../clang/scripts/update.py'
 _LLVM_DIR = f'{_ROOT_DIR}/third_party/llvm-build/Release+Asserts'
 _PROFDATA = f'{_LLVM_DIR}/bin/llvm-profdata{_EXE_EXT}'
 
+# Root of the per-package PGO profile directories on an Android device. The
+# full path is `{root}/{package}/{_ANDROID_PGO_CACHE_SUFFIX}`. This split is
+# needed because crossbench's chromium_pgo probe takes the root and appends the
+# package itself, while telemetry's --fetch-data-path-device takes a full path.
+_ANDROID_PGO_ROOT = '/data_mirror/data_ce/null/0'
+_ANDROID_PGO_CACHE_SUFFIX = 'cache/pgo_profiles'
+
+# Installing a bundle through its wrapper script resolves `java` from PATH,
+# see devil's bundletool wrapper in
+# third_party/catapult/devil/devil/android/sdk/bundletool.py. Use Chromium's
+# hermetic JDK, brought into the isolate by //third_party/jdk:java_data (a
+# data_dep of //tools/pgo's script tests).
+_JDK_BIN_DIR = f'{_ROOT_DIR}/third_party/jdk/current/bin'
+
+# Telemetry sets these on every benchmark run, on top of the field trial config,
+# see GetFromBrowserOptions in //third_party/catapult/telemetry/telemetry/
+# internal/backends/chrome/chrome_startup_args.py. Keep them in sync so that
+# crossbench profiles the same browser configuration telemetry does.
+_TELEMETRY_STARTUP_BROWSER_ARGS = (
+    # Stops the hang watcher from generating dumps, see
+    # https://crbug.com/425223287.
+    '--disable-features=EnableHangWatcher,EnableHangWatcherOnGpuProcess',
+)
+
+# Benchmark files to serve from a local HTTP file server, since devices in
+# isolated lab environments have no access to the live benchmark URLs. The
+# version has to match the one crossbench resolves for the benchmark name, see
+# the `aliases()` of the classes in
+# third_party/crossbench/crossbench/benchmarks/{speedometer,jetstream}/. Names
+# absent from this map keep crossbench's default (live) URL.
+_CROSSBENCH_LOCAL_BENCHMARK_DIRS = {
+    'speedometer3': 'third_party/speedometer/v3.1',
+    'jetstream2': 'third_party/jetstream/v2.2',
+}
+
 # This is necessary to get proper logging on bots and locally. If this script is
 # run through run_isolated_script_test.py, a root logger would have already been
 # set up. Thus for this script's logging to appear (and not disrupt other
@@ -77,6 +113,9 @@ class Benchmark:
     disable_features: List[str] = field(default_factory=list)
     pageset_repeat: int = 1
 
+    def is_crossbench(self) -> bool:
+        return self.name.endswith('.crossbench')
+
     def ReplaceStoryArg(self, story: str):
         copy_args = [a for a in self.args if not IsStoryFlag(a)]
         # Insert story as the second argument to make it easier to understand
@@ -89,14 +128,12 @@ class Benchmark:
             self.disable_features.copy(),
         )
 
-    def ProduceArgs(self, extra_disabled_features: Optional[List[str]] = None):
+    def ProduceBrowserArgs(
+        self, extra_disabled_features: Optional[List[str]] = None
+    ):
+        '''Returns the browser flags this benchmark needs.'''
         if extra_disabled_features is None:
             extra_disabled_features = []
-
-        if any(a.startswith('--extra-browser-args') for a in self.args):
-            raise RuntimeError(
-                '--extra-browser-args was added to benchmark args.'
-            )
 
         all_disabled_features = self.disable_features + extra_disabled_features
 
@@ -108,22 +145,34 @@ class Benchmark:
                 f'Features {intersect_features} were both enabled and disabled.'
             )
 
-        extra_browser_args = []
+        browser_args = []
         if self.enable_features:
-            extra_browser_args.append(
+            browser_args.append(
                 '--enable-features=' + ','.join(self.enable_features)
             )
         if all_disabled_features:
-            extra_browser_args.append(
+            browser_args.append(
                 '--disable-features=' + ','.join(all_disabled_features)
             )
+        return browser_args
+
+    def ProduceBenchmarkArgs(
+        self,
+        extra_disabled_features: Optional[List[str]] = None,
+        browser_args: Optional[List[str]] = None,
+    ):
+        if any(a.startswith('--extra-browser-args') for a in self.args):
+            raise RuntimeError(
+                '--extra-browser-args was added to benchmark args.'
+            )
+
+        if browser_args is None:
+            browser_args = self.ProduceBrowserArgs(extra_disabled_features)
 
         final_args = self.args.copy()
-        if extra_browser_args:
+        if browser_args:
             # No quotes around the space separated arguments is needed.
-            final_args.append(
-                f'--extra-browser-args={" ".join(extra_browser_args)}'
-            )
+            final_args.append(f'--extra-browser-args={" ".join(browser_args)}')
 
         return final_args
 
@@ -144,6 +193,11 @@ class OptionsNamespace(argparse.Namespace):
     keep_temps: bool
     android_browser: Optional[str]
     android_device_path: Optional[str]
+    # Not an argument: the package of `android_browser`, resolved in
+    # parse_args() and only set when `android_browser` is set.
+    # TODO(crbug.com/479547498): Plumb this separately instead, or create a new
+    # object that is not OptionsNamespace.
+    android_package: Optional[str]
     skip_profdata: bool
     run_public_benchmarks_only: bool
     temporal_trace_length: Optional[int]
@@ -237,9 +291,7 @@ def parse_args():
         '--repeats',
         type=int,
         default=5,
-        help=(
-            'Number of times to attempt each benchmark if it fails, default 5.'
-        ),
+        help='Number of times to attempt each benchmark if it fails, default 5',
     )
     parser.add_argument(
         '-v',
@@ -279,19 +331,21 @@ def parse_args():
     args.builddir = os.path.realpath(args.builddir)
     _LOGGER.info(f"Build directory: {args.builddir}")
 
+    args.android_package = None
     if args.android_browser:
         _LOGGER.info(f"Android browser: {args.android_browser}")
+        for settings in _ANDROID_SETTINGS:
+            if settings.browser_type == args.android_browser:
+                args.android_package = settings.package
+                break
+        else:
+            raise ValueError(f'Unable to find {args.android_browser} settings.')
+
         if not args.android_device_path:
-            for settings in _ANDROID_SETTINGS:
-                if settings.browser_type == args.android_browser:
-                    package = settings.package
-                    break
-            else:
-                raise ValueError(
-                    f'Unable to find {args.android_browser} settings.'
-                )
             args.android_device_path = (
-                f'/data_mirror/data_ce/null/0/{package}/cache/pgo_profiles'
+                f'{_ANDROID_PGO_ROOT}/'
+                f'{args.android_package}/'
+                f'{_ANDROID_PGO_CACHE_SUFFIX}'
             )
             _LOGGER.info(
                 f"Using default Android device path: {args.android_device_path}"
@@ -359,11 +413,202 @@ def get_max_internal_block_count(file_name):
     return None
 
 
+def get_crossbench_local_file_server_args(benchmark_name: str):
+    '''Returns the --local-file-server args for a crossbench benchmark.'''
+    local_dir = _CROSSBENCH_LOCAL_BENCHMARK_DIRS.get(benchmark_name)
+    if not local_dir:
+        raise FileNotFoundError(f"Local files for {benchmark_name} are missing")
+
+    local_path = os.path.abspath(f'{_ROOT_DIR}/{local_dir}')
+    if not os.path.isdir(local_path):
+        raise FileNotFoundError(
+            f'{local_path} is missing, cannot serve {benchmark_name} locally. '
+            'It should be brought in by //tools/perf:perf, see '
+            '//tools/perf/BUILD.gn.'
+        )
+    return [f'--local-file-server={local_path}']
+
+
+def get_crossbench_browser_path(args: OptionsNamespace):
+    '''Returns the browser wrapper script to pass to crossbench.
+
+    Crossbench only accepts wrapper names it knows, see
+    CHROME_APK_HELPER_NAMES in
+    third_party/crossbench/crossbench/cli/config/apk_helper.py. All browsers
+    used for PGO generation are in that list.
+    '''
+    assert args.android_browser
+    name = args.android_browser.removeprefix('android-').replace('-', '_')
+    path = os.path.join(args.builddir, 'bin', name)
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            f'{path} does not exist, is {args.android_browser} built?'
+        )
+    return path
+
+
+def get_crossbench_driver_path(args: OptionsNamespace):
+    '''Returns the chromedriver crossbench should use, if it was built.'''
+    # //tools/perf:perf depends on chromedriver for the host toolchain, which
+    # for Android builds ends up in the host toolchain subdirectory.
+    for path in (
+        f'{args.builddir}/clang_x64/chromedriver{_EXE_EXT}',
+        f'{args.builddir}/chromedriver{_EXE_EXT}',
+    ):
+        if os.path.exists(path):
+            return path
+
+    raise FileNotFoundError(f"chromedriver not found for {args.builddir}")
+
+
+def build_crossbench_flags_dict(browser_args: List[str]):
+    '''Turns `--flag` / `--flag=value` strings into crossbench's dict form.
+
+    Valueless flags map to ''. Rejects anything else (e.g. a space-separated
+    `--flag value` pair, which would arrive here as two arguments) instead of
+    letting it silently turn into a broken flag, and rejects conflicting
+    duplicates instead of silently keeping the last value.
+    '''
+    flags = {}
+    for flag in browser_args:
+        name, _, value = flag.partition('=')
+        if not name.startswith('-') or ' ' in name:
+            raise ValueError(
+                f'Browser flag {flag!r} is not in --flag[=value] '
+                'form, cannot pass it to crossbench.'
+            )
+        if name in flags and flags[name] != value:
+            raise ValueError(
+                f'Browser flag {name} set twice, with values '
+                f'{flags[name]!r} and {value!r}.'
+            )
+        flags[name] = value
+    return flags
+
+
+def write_crossbench_browser_config(
+    args: OptionsNamespace, browser_args: List[str], config_path: str
+):
+    '''Writes a crossbench browser config and returns the args selecting it.'''
+    # TODO(crbug.com/479547498): Support passing flags directly as a list in
+    # crossbench's browser config. Currently, inline strings starting with "--"
+    # are parsed with a regex that fails on complex flags like
+    # --force-fieldtrial-params, whereas a top-level {name: value} flag group
+    # skips regex parsing.
+    # Note: crossbench's ChromeFeatures drops the `<Study` association from
+    # --disable-features entries (it keeps it for --enable-features). The
+    # features stay disabled and the studies are still forced via
+    # --force-fieldtrials, only the trial-activation attribution of the
+    # disabled features is lost, which does not affect the profiled code.
+    driver = {
+        'type': 'adb',
+        'path': get_crossbench_driver_path(args),
+    }
+    if args.android_hostname:
+        driver['device_id'] = args.android_hostname
+
+    config = {
+        'flags': {
+            'pgo': build_crossbench_flags_dict(browser_args),
+        },
+        'browsers': {
+            'pgo': {
+                'path': get_crossbench_browser_path(args),
+                'driver': driver,
+                'flags': ['pgo'],
+            },
+        },
+    }
+    with open(config_path, 'w') as f:
+        json.dump(config, f, indent=2)
+    _LOGGER.debug(f'Wrote crossbench browser config to {config_path}')
+    return [f'--browser-config={config_path}']
+
+
+def get_crossbench_variations_browser_args(browser_args: List[str]):
+    '''Returns `browser_args` plus the field trials telemetry applies.'''
+    # Telemetry enables the field trial testing config for every perf benchmark.
+    # On Android it cannot use --enable-field-trial-config, because the config's
+    # compiled out of Chrome-branded Android builds (FIELDTRIAL_TESTING_ENABLED,
+    # see //components/variations/service/BUILD.gn), so it expands the config
+    # into explicit flags on the host instead. Do exactly the same here,
+    # otherwise crossbench would profile a different set of features than
+    # telemetry did. See PerfBenchmark._GetVariationsBrowserArgs in
+    # //tools/perf/core/perf_benchmark.py.
+    variations_dir = os.path.abspath(f'{_ROOT_DIR}/tools/variations')
+    if variations_dir not in sys.path:
+        sys.path.append(variations_dir)
+    # pylint: disable=import-outside-toplevel,import-error
+    import fieldtrial_util
+
+    config_path = os.path.abspath(
+        f'{_ROOT_DIR}/testing/variations/fieldtrial_testing_config.json'
+    )
+    # Passing browser_args makes GenerateArgs skip the experiments that conflict
+    # with the features this script sets.
+    generated_args = fieldtrial_util.GenerateArgs(
+        config_path, 'android', browser_args
+    )
+    if not generated_args:
+        raise RuntimeError(f'No field trial args generated from {config_path}.')
+
+    # Merge, so that the duplicate --enable-features/--disable-features coming
+    # from the three sources become a single flag each. Chrome keeps only the
+    # last value of a repeated switch, so leaving them separate would silently
+    # drop features. Telemetry adds _TELEMETRY_STARTUP_BROWSER_ARGS after
+    # generating the field trial args, so they are deliberately not part of the
+    # override set above.
+    return fieldtrial_util.MergeFeaturesAndFieldTrialsArgs(
+        browser_args + generated_args + list(_TELEMETRY_STARTUP_BROWSER_ARGS)
+    )
+
+
+def add_java_to_path(env: dict):
+    '''Puts Chromium's hermetic JDK on PATH for the browser wrapper script.
+
+    The browser wrapper script calls devil's bundletool wrapper to install
+    bundles, which resolves `java` from PATH. Crossbench itself resolves `adb`
+    from Chromium's checkout without needing it on PATH.
+    '''
+    tool_dir = os.path.abspath(_JDK_BIN_DIR)
+    if not os.path.exists(os.path.join(tool_dir, f'java{_EXE_EXT}')):
+        # Not fatal: a tool already on PATH still works.
+        _LOGGER.warning(
+            'No java in %s, relying on PATH already having one.',
+            tool_dir,
+        )
+        return
+    env['PATH'] = tool_dir + os.pathsep + env.get('PATH', '')
+    _LOGGER.debug(f'Prepended {tool_dir} to PATH for crossbench')
+
+
+def get_crossbench_pgo_probe_args(args: OptionsNamespace):
+    '''Returns the --probe args that make crossbench collect PGO profiles.'''
+    # Without this probe nothing dumps the profiles: crossbench tears the
+    # browser down with `am force-stop`, which kills the renderers before they
+    # can write their .profraw files. The probe triggers
+    # NativeProfiling.dumpProfilingDataOfAllProcesses over DevTools and pulls
+    # the result, all of it before the browser's data directory goes away (the
+    # apk is uninstalled at the end of a run). This is the crossbench
+    # equivalent of telemetry's CHROME_PGO_PROFILING + --fetch-device-data.
+    assert args.android_device_path and args.android_package
+    suffix = f'/{args.android_package}/{_ANDROID_PGO_CACHE_SUFFIX}'
+    if not args.android_device_path.endswith(suffix):
+        raise ValueError(
+            f'--android-device-path={args.android_device_path} is not '
+            f'supported with crossbench benchmarks: it has to end with '
+            f'{suffix}, since crossbench\'s chromium_pgo probe appends that '
+            'to the root path itself.'
+        )
+    root = args.android_device_path[: -len(suffix)]
+    return [f'--probe=chromium_pgo:{{remote_pgo_root_path: "{root}"}}']
+
+
 def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
     global _android_browser_installed
 
-    is_crossbench = benchmark.name.endswith('.crossbench')
+    is_crossbench = benchmark.is_crossbench()
 
     disabled_features = [
         # Disabling spare renderer features when profiling prevent dumping
@@ -373,7 +618,15 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
         'AndroidWarmUpSpareRendererWithTimeout',
     ]
 
-    benchmark_args = benchmark.ProduceArgs(disabled_features)
+    # With crossbench, Android browser flags go into a crossbench browser
+    # config instead, see write_crossbench_browser_config().
+    uses_browser_config = is_crossbench and args.android_browser
+    browser_args = benchmark.ProduceBrowserArgs(disabled_features)
+    if uses_browser_config:
+        browser_args = get_crossbench_variations_browser_args(browser_args)
+    benchmark_args = benchmark.ProduceBenchmarkArgs(
+        browser_args=[] if uses_browser_config else browser_args
+    )
 
     pageset_repeat_str = (
         f' with pageset_repeat={benchmark.pageset_repeat}'
@@ -384,8 +637,12 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
         f"Running benchmark: {' '.join(benchmark_args)}{pageset_repeat_str}"
     )
 
-    # Include the first 2 args since per-story benchmarks use [name, --story=s].
-    name = '_'.join(benchmark_args[:2])
+    # Include the story since per-story benchmarks use [name, --story=s]. The
+    # remaining args are browser flags, which are far too long to name a
+    # directory after now that they carry the field trial config.
+    name = benchmark_args[0]
+    if len(benchmark_args) > 1 and IsStoryFlag(benchmark_args[1]):
+        name += f'_{benchmark_args[1]}'
 
     # Clean up intermediate files from previous runs.
     profraw_path = f'{args.profiledir}/{name}/raw'
@@ -406,9 +663,14 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
 
     env = os.environ.copy()
     if args.android_browser:
-        env['CHROME_PGO_PROFILING'] = '1'
-        _LOGGER.debug("Set environment variable CHROME_PGO_PROFILING=1")
-
+        if is_crossbench:
+            add_java_to_path(env)
+        else:
+            # Read by telemetry's android_browser_backend to dump the profiles
+            # before closing the browser. Crossbench uses the chromium_pgo
+            # probe instead, see get_crossbench_pgo_probe_args().
+            env['CHROME_PGO_PROFILING'] = '1'
+            _LOGGER.debug("Set environment variable CHROME_PGO_PROFILING=1")
     else:
         env['LLVM_PROFILE_FILE'] = f'{profraw_path}/default-%2m.profraw'
         _LOGGER.debug(
@@ -424,9 +686,25 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
                 '-r',
                 str(benchmark.pageset_repeat),
                 '--no-splash',
-                '--fast',
+                # Crossbench otherwise fills its output directory with symlinked
+                # views of the same results (per run/session/story). Those make
+                # the profraw glob below return each file hundreds of times
+                # over, and merging a profile with itself multiplies its
+                # counters by a factor that depends on the benchmark's story
+                # count, which skews how the benchmarks are weighted against
+                # each other in the final profile.
+                '--no-symlinks',
+                # Crossbench asserts that its output directory does not exist
+                # yet, so point it inside (not at) the already created
+                # profraw_path.
+                '--out-dir',
+                f'{profraw_path}/crossbench',
             ]
         )
+        # In isolated lab environments (e.g. Android trybots), devices do not
+        # have internet access to the live benchmark URLs, so serve the
+        # benchmark files from a local HTTP file server instead.
+        cmd += get_crossbench_local_file_server_args(benchmark_args[0])
     else:
         cmd = (
             ['vpython3', 'tools/perf/run_benchmark']
@@ -437,8 +715,7 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
                 f'--pageset-repeat={benchmark.pageset_repeat}',
                 # Abort immediately when any story fails, since a failed story
                 # fails to produce valid profdata. Fail fast and rely on repeats
-                # to get a
-                # valid profdata.
+                # to get a valid profdata.
                 '--max-failures=0',
             ]
         )
@@ -447,23 +724,29 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
     cmd += ['-v'] * args.verbose + ['-q'] * args.quiet
 
     if args.android_browser:
-        cmd += [
-            f'--browser={args.android_browser}',
-            '--fetch-device-data',
-            '--fetch-device-data-platform=android',
-            f'--fetch-data-path-device={args.android_device_path}',
-            f'--fetch-data-path-local={profraw_path}',
-        ]
-        if _android_browser_installed:
-            cmd += ['--assume-browser-already-installed']
+        if is_crossbench:
+            cmd += write_crossbench_browser_config(
+                args, browser_args, f'{args.profiledir}/browser_config.json'
+            )
+            cmd += get_crossbench_pgo_probe_args(args)
         else:
-            _android_browser_installed = True
-
-        if args.android_hostname:
             cmd += [
-                "--connect-to-device-over-network",
-                f"--device={args.android_hostname}",
+                f'--browser={args.android_browser}',
+                '--fetch-device-data',
+                '--fetch-device-data-platform=android',
+                f'--fetch-data-path-device={args.android_device_path}',
+                f'--fetch-data-path-local={profraw_path}',
             ]
+            if _android_browser_installed:
+                cmd += ['--assume-browser-already-installed']
+            else:
+                _android_browser_installed = True
+
+            if args.android_hostname:
+                cmd += [
+                    "--connect-to-device-over-network",
+                    f"--device={args.android_hostname}",
+                ]
 
         _LOGGER.debug(
             f"Running benchmark on Android with command: {' '.join(cmd)}"
@@ -543,6 +826,12 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
     # pgo_profiles/*). Since the naming of profraw files can vary, pull the
     # directory and check subdirectories recursively for .profraw files.
     profraw_files = glob.glob(f'{profraw_path}/**/*.profraw', recursive=True)
+    if is_crossbench:
+        # Deduplicate by real path: crossbench's output directory may contain
+        # symlinked views of the same results, and passing the same profile to
+        # llvm-profdata more than once silently multiplies its counters
+        # instead of failing.
+        profraw_files = sorted({os.path.realpath(p) for p in profraw_files})
     _LOGGER.debug(f"Found {len(profraw_files)} profraw files")
     if not profraw_files:
         raise RuntimeError(f'No profraw files found in {profraw_path}')
@@ -606,7 +895,8 @@ def run_benchmark_with_repeats(benchmark: Benchmark, args: OptionsNamespace):
             if idx < args.repeats - 1:
                 _LOGGER.warning('%s', e)
                 _LOGGER.warning(
-                    f'Retry attempt {idx + 1} for {benchmark.ProduceArgs()}'
+                    f'Retry attempt {idx + 1} for '
+                    f'{benchmark.ProduceBenchmarkArgs()}'
                 )
             else:
                 _LOGGER.error(f'Failed {args.repeats} times')
@@ -656,7 +946,15 @@ def run_benchmarks(benchmarks: List[Benchmark], args: OptionsNamespace):
     fail_count = 0
     for benchmark in benchmarks:
         _LOGGER.info(f"Starting benchmark: {benchmark.name}")
-        if not args.android_browser:
+        # Telemetry wipes /data/data/<package>/* when it sets up the browser for
+        # a story, which drops the profiles collected by the preceding story. On
+        # Android its benchmarks are therefore split into one run per story, so
+        # that every story's profile is kept (see https://crrev.com/c/5718532).
+        # Crossbench benchmarks do not need this: speedometer3 and jetstream2
+        # run all their substories within a single page load, and the
+        # chromium_pgo probe collects the profiles per run, before the browser
+        # is torn down.
+        if not args.android_browser or benchmark.is_crossbench():
             fail_count += run_benchmark_with_repeats(benchmark, args)
         else:
             stories = get_stories(benchmark, args)
@@ -773,8 +1071,8 @@ def main():
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
     benchmarks: list[Benchmark] = [
-        Benchmark('speedometer3', ['speedometer3']),
-        Benchmark('jetstream2', ['jetstream2']),
+        Benchmark('speedometer3.crossbench', ['speedometer3']),
+        Benchmark('jetstream2.crossbench', ['jetstream2']),
     ]
 
     if args.run_jetstream3:
