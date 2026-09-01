@@ -31,7 +31,6 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
     private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
     private final @ContextMenuMode int mContextMenuMode;
     private final List<CustomContentAction> mCustomContentActions;
-    private final Supplier<Integer> mLeftSideUiWidthSupplier;
     private @Nullable ContextMenuItemDelegate mItemDelegate;
 
     /**
@@ -44,28 +43,20 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
      * @param contextMenuMode Defines the context menu mode.
      * @param customContentActions List of {@link CustomContentAction} defined by the developer to
      *     show in CCTs.
-     * @param leftSideUiWidthSupplier Supplier providing the left side UI width in px.
      */
     public ChromeContextMenuPopulatorFactory(
             @Nullable ContextMenuItemDelegate itemDelegate,
             Supplier<@Nullable ShareDelegate> shareDelegate,
             @ContextMenuMode int contextMenuMode,
-            List<CustomContentAction> customContentActions,
-            Supplier<Integer> leftSideUiWidthSupplier) {
+            List<CustomContentAction> customContentActions) {
         mItemDelegate = itemDelegate;
         mShareDelegateSupplier = shareDelegate;
         mContextMenuMode = contextMenuMode;
-        mLeftSideUiWidthSupplier = leftSideUiWidthSupplier;
         if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
             mCustomContentActions = customContentActions;
         } else {
             mCustomContentActions = List.of();
         }
-    }
-
-    @Override
-    public Supplier<Integer> getLeftSideUiWidthSupplier() {
-        return mLeftSideUiWidthSupplier;
     }
 
     @Override

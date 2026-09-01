@@ -12,8 +12,6 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 
-import java.util.function.Supplier;
-
 /**
  * A simple wrapper around a {@link ContextMenuPopulatorFactory} for creating {@link
  * TabContextMenuPopulator} which is able to handle observer notifications.
@@ -42,11 +40,6 @@ class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     @Override
     public boolean isEnabled() {
         return mPopulatorFactory != null;
-    }
-
-    @Override
-    public Supplier<Integer> getLeftSideUiWidthSupplier() {
-        return mPopulatorFactory != null ? mPopulatorFactory.getLeftSideUiWidthSupplier() : () -> 0;
     }
 
     @Override

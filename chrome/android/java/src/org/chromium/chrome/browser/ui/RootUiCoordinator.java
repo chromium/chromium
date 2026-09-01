@@ -1376,8 +1376,7 @@ public class RootUiCoordinator
                             /* itemDelegate= */ null,
                             mShareDelegateSupplier,
                             ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
-                            /* customContentActions= */ Collections.emptyList(),
-                            getLeftSideUiWidthSupplier());
+                            /* customContentActions= */ Collections.emptyList());
             mEphemeralTabCoordinatorSupplier.set(
                     new EphemeralTabCoordinator(
                             mActivity,
@@ -3018,21 +3017,5 @@ public class RootUiCoordinator
      */
     protected @Nullable OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
         return null;
-    }
-
-    /**
-     * Returns the supplier for the left side UI width in px.
-     *
-     * <p>If the current Activity does not have left side UI, the supplier will always supply 0
-     *
-     * <p>NOTE: Always prefer {@link SideUiStateProvider} rather than this supplier. This supplier
-     * is created because some components can't depend on {@link SideUiStateProvider}, such as
-     * {@link ContextMenuPopulatorFactory}.
-     *
-     * <p>TOOD(crbug.com/543470110): Fix the dependency issue and remove this supplier.
-     */
-    @Deprecated
-    public Supplier<Integer> getLeftSideUiWidthSupplier() {
-        return () -> 0;
     }
 }

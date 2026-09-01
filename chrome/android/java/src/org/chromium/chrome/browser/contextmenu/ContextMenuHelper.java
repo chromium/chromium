@@ -35,7 +35,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /** A helper class that handles generating and dismissing context menus for {@link WebContents}. */
 @NullMarked
@@ -220,17 +219,9 @@ public class ContextMenuHelper {
                 ChromeFeatureList.sCctContextualMenuItems.isEnabled()
                         && mCurrentPopulator.hasCustomItems();
 
-        Supplier<Integer> leftSideUiWidthSupplier =
-                mPopulatorFactory != null
-                        ? mPopulatorFactory.getLeftSideUiWidthSupplier()
-                        : () -> 0;
         final ContextMenuCoordinator menuCoordinator =
                 new ContextMenuCoordinator(
-                        activity,
-                        topContentOffsetPx,
-                        mCurrentNativeDelegate,
-                        isCustomItemPresent,
-                        leftSideUiWidthSupplier);
+                        activity, topContentOffsetPx, mCurrentNativeDelegate, isCustomItemPresent);
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
 
