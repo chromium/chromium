@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
 import org.chromium.base.supplier.SupplierUtils;
@@ -30,6 +31,7 @@ public class NtpSigninPromoCoordinator {
     private final SigninPromoCoordinator mSigninPromoCoordinator;
     private final ViewStub mSigninPromoViewContainerStub;
     private @Nullable PersonalizedSigninPromoView mSigninPromoView;
+    private @Nullable Integer mLateralMargin;
 
     /**
      * Creates an instance of the {@link NtpSigninPromoCoordinator}.
@@ -86,6 +88,20 @@ public class NtpSigninPromoCoordinator {
         mSigninPromoCoordinator.destroy();
     }
 
+    /** Updates the lateral margins of the promo. */
+    public void setLateralMargins(int margin) {
+        if (mSigninPromoView != null) {
+            MarginLayoutParams layoutParams =
+                    (MarginLayoutParams) mSigninPromoView.getLayoutParams();
+            if (layoutParams == null) return;
+            layoutParams.setMarginStart(margin);
+            layoutParams.setMarginEnd(margin);
+            mSigninPromoView.setLayoutParams(layoutParams);
+        } else {
+            mLateralMargin = margin;
+        }
+    }
+
     private void onPromoStateChange() {
         final boolean canShowPromo = mSigninPromoCoordinator.canShowPromo();
         if (canShowPromo && mSigninPromoView == null) {
@@ -100,6 +116,9 @@ public class NtpSigninPromoCoordinator {
         assert mSigninPromoView == null;
         mSigninPromoView = (PersonalizedSigninPromoView) mSigninPromoViewContainerStub.inflate();
         mSigninPromoView.setCardBackgroundResource(R.drawable.home_surface_ui_background);
+        if (mLateralMargin != null) {
+            setLateralMargins(mLateralMargin);
+        }
         mSigninPromoCoordinator.setView(mSigninPromoView);
     }
 }

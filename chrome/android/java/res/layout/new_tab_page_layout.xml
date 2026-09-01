@@ -57,6 +57,7 @@ found in the LICENSE file.
         android:id="@+id/signin_promo_view_container_stub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/content_suggestions_card_bottom_margin"
         android:layout="@layout/signin_promo_view_new_tab_page" />
 
     <ViewStub

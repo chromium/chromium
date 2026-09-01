@@ -517,6 +517,41 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    public void testSigninPromoLateralMargins_NarrowWindowOnTablet() {
+        when(mUiConfig.getCurrentDisplayStyle())
+                .thenReturn(
+                        new UiConfig.DisplayStyle(
+                                HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR));
+        createCoordinator(/* isLff= */ true);
+
+        mCoordinator.onMeasure(1000);
+
+        int expectedMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
+        assertEquals(expectedMargin, mCoordinator.getStartMargin());
+    }
+
+    @Test
+    public void testSigninPromoLateralMargins_Phone() {
+        when(mUiConfig.getCurrentDisplayStyle())
+                .thenReturn(
+                        new UiConfig.DisplayStyle(
+                                HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR));
+        createCoordinator(/* isLff= */ false);
+
+        mCoordinator.onMeasure(1000);
+
+        int expectedMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
+        assertEquals(expectedMargin, mCoordinator.getStartMargin());
+    }
+
+    @Test
     public void testSetSearchProviderTopMargin_WithLogo() {
         setupMockSubCoordinators();
         mCoordinator.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);

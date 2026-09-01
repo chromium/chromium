@@ -1481,6 +1481,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mMostVisitedTilesCoordinator.updateMvtWidth(boundedSearchBoxWidth);
         }
 
+        if (mSigninPromoCoordinator != null) {
+            mSigninPromoCoordinator.setLateralMargins(getStartMargin());
+        }
+
         mContextMenuStartPosition = null;
     }
 
