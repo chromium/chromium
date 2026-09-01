@@ -108,7 +108,7 @@ DecisionAttribution MakeAttribution(DecisionSource source) {
 }
 
 DecisionAttribution MakeAttribution(const CustomPredicate& predicate) {
-  return DecisionAttribution(predicate.name());
+  return DecisionAttribution(predicate.attribution());
 }
 
 }  // namespace
@@ -271,8 +271,8 @@ std::optional<Decision> OriginGatingChecker::EvaluateSinglePredicate(
                         &OriginGatingChecker::OnEvaluatedAsyncPredicate,
                         weak_ptr_factory_.GetWeakPtr(), std::move(context),
                         current_and_rest.subspan(1U),
-                        DecisionAttribution(custom_predicate.name()),
-                        std::move(input), std::move(callback)));
+                        MakeAttribution(custom_predicate), std::move(input),
+                        std::move(callback)));
                 return std::nullopt;
               },
           [&](const CustomPredicate::SyncPredicate& predicate)

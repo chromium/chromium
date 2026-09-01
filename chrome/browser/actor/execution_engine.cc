@@ -114,23 +114,66 @@ using tabs::TabInterface;
 
 namespace actor {
 
+// Individual custom predicates that the actor framework supports in addition to
+// those provided by the origin_gating framework.
+enum class ActorCustomPredicate {
+  kSafetyList,
+  kSensitiveUrl,
+  kSensitiveUrlPromptsDisabled,
+  kLookalikeUrl,
+  kSafeBrowsing,
+  kSafetyChecksDisabled,
+  kTabErrorDocument,
+  kTabSafeBrowsingObserver,
+  kDangerousMimeType,
+};
+
+}  // namespace actor
+
+template <>
+const origin_gating::CustomPredicateDomain origin_gating::
+    CustomPredicateDomain::kInstance<actor::ActorCustomPredicate>{};
+
+namespace actor {
 namespace {
 
-constexpr char kSafetyListPredicateName[] = "actor_safety_list_check";
-constexpr char kSensitiveUrlPredicateName[] = "actor_sensitive_url_check";
-constexpr char kSensitiveUrlPromptsDisabledPredicateName[] =
-    "actor_sensitive_url_prompts_disabled_check";
-constexpr char kLookalikeUrlPredicateName[] = "actor_lookalike_url_check";
-constexpr char kSafeBrowsingPredicateName[] =
-    "actor_safe_browsing_enabled_check";
-constexpr char kSafetyChecksDisabledPredicateName[] =
-    "actor_safety_checks_disabled";
-constexpr char kTabErrorDocumentPredicateName[] =
-    "actor_tab_error_document_check";
-constexpr char kTabSafeBrowsingObserverPredicateName[] =
-    "actor_tab_safe_browsing_observer_check";
-constexpr char kDangerousMimeTypePredicateName[] =
-    "actor_dangerous_mime_type_check";
+constexpr std::string_view ActorCustomPredicateToString(
+    ActorCustomPredicate predicate) {
+  switch (predicate) {
+    case ActorCustomPredicate::kSafetyList:
+      return "actor_safety_list_check";
+    case ActorCustomPredicate::kSensitiveUrl:
+      return "actor_sensitive_url_check";
+    case ActorCustomPredicate::kSensitiveUrlPromptsDisabled:
+      return "actor_sensitive_url_prompts_disabled_check";
+    case ActorCustomPredicate::kLookalikeUrl:
+      return "actor_lookalike_url_check";
+    case ActorCustomPredicate::kSafeBrowsing:
+      return "actor_safe_browsing_enabled_check";
+    case ActorCustomPredicate::kSafetyChecksDisabled:
+      return "actor_safety_checks_disabled";
+    case ActorCustomPredicate::kTabErrorDocument:
+      return "actor_tab_error_document_check";
+    case ActorCustomPredicate::kTabSafeBrowsingObserver:
+      return "actor_tab_safe_browsing_observer_check";
+    case ActorCustomPredicate::kDangerousMimeType:
+      return "actor_dangerous_mime_type_check";
+  }
+  NOTREACHED();
+}
+
+std::string DecisionAttributionToString(
+    const origin_gating::DecisionAttribution& decision_attribution) {
+  switch (decision_attribution.type()) {
+    case origin_gating::DecisionAttribution::Type::kDecisionSource:
+      return origin_gating::DecisionSourceToString(
+          decision_attribution.Source());
+    case origin_gating::DecisionAttribution::Type::kCustomPredicate:
+      return std::string(ActorCustomPredicateToString(
+          decision_attribution.CustomPredicateId<ActorCustomPredicate>()));
+  }
+  NOTREACHED();
+}
 
 constexpr GateableEventSet kRequestsAndPageActions = {
     GateableEvent::kNavigationRequest, GateableEvent::kPageAction};
@@ -308,7 +351,7 @@ CustomPredicate CreateSafetyListPredicate() {
             return origin_gating::Decision::kBlocked;
         }
       }),
-      kSafetyListPredicateName);
+      ActorCustomPredicate::kSafetyList);
 }
 
 // Returns whether the given `url` is considered non-sensitive. Caches the
@@ -507,19 +550,21 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
           NOTREACHED();
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
-      if (decision.attribution == kSafetyListPredicateName) {
-        return decision.is_allowed
-                   ? ExecutionEngine::GatingDecision::kAllowByStaticList
-                   : ExecutionEngine::GatingDecision::kBlockByStaticList;
+      switch (decision.attribution.CustomPredicateId<ActorCustomPredicate>()) {
+        case ActorCustomPredicate::kSafetyList:
+          return decision.is_allowed
+                     ? ExecutionEngine::GatingDecision::kAllowByStaticList
+                     : ExecutionEngine::GatingDecision::kBlockByStaticList;
+        case ActorCustomPredicate::kSensitiveUrlPromptsDisabled:
+          return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
+        case ActorCustomPredicate::kDangerousMimeType:
+          return ExecutionEngine::GatingDecision::kBlockByDangerousMimeType;
+        default:
+          NOTREACHED() << "Unrecognized custom predicate attribution: "
+                       << static_cast<int>(
+                              decision.attribution
+                                  .CustomPredicateId<ActorCustomPredicate>());
       }
-      if (decision.attribution == kSensitiveUrlPromptsDisabledPredicateName) {
-        return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
-      }
-      if (decision.attribution == kDangerousMimeTypePredicateName) {
-        return ExecutionEngine::GatingDecision::kBlockByDangerousMimeType;
-      }
-      NOTREACHED() << "Unrecognized custom predicate attribution: "
-                   << decision.attribution.CustomPredicateName();
   }
 }
 
@@ -553,32 +598,28 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
                        << static_cast<int>(decision.attribution.Source());
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
-      if (decision.attribution == kSafetyListPredicateName) {
-        return MayActOnUrlBlockReason::kBlockedByStaticList;
+      switch (decision.attribution.CustomPredicateId<ActorCustomPredicate>()) {
+        case ActorCustomPredicate::kSafetyList:
+          return MayActOnUrlBlockReason::kBlockedByStaticList;
+        case ActorCustomPredicate::kDangerousMimeType:
+          return MayActOnUrlBlockReason::kDangerousMimeType;
+        case ActorCustomPredicate::kSensitiveUrl:
+        case ActorCustomPredicate::kSensitiveUrlPromptsDisabled:
+          return MayActOnUrlBlockReason::kOptimizationGuideBlock;
+        case ActorCustomPredicate::kLookalikeUrl:
+          return MayActOnUrlBlockReason::kLookalikeDomain;
+        case ActorCustomPredicate::kSafeBrowsing:
+          return MayActOnUrlBlockReason::kSafeBrowsing;
+        case ActorCustomPredicate::kTabErrorDocument:
+          return MayActOnUrlBlockReason::kTabIsErrorDocument;
+        case ActorCustomPredicate::kTabSafeBrowsingObserver:
+          return MayActOnUrlBlockReason::kSafeBrowsing;
+        default:
+          NOTREACHED() << "Unrecognized custom predicate attribution: "
+                       << static_cast<int>(
+                              decision.attribution
+                                  .CustomPredicateId<ActorCustomPredicate>());
       }
-      if (decision.attribution == kDangerousMimeTypePredicateName) {
-        return MayActOnUrlBlockReason::kDangerousMimeType;
-      }
-      if (decision.attribution == kSensitiveUrlPredicateName) {
-        return MayActOnUrlBlockReason::kOptimizationGuideBlock;
-      }
-      if (decision.attribution == kSensitiveUrlPromptsDisabledPredicateName) {
-        return MayActOnUrlBlockReason::kOptimizationGuideBlock;
-      }
-      if (decision.attribution == kLookalikeUrlPredicateName) {
-        return MayActOnUrlBlockReason::kLookalikeDomain;
-      }
-      if (decision.attribution == kSafeBrowsingPredicateName) {
-        return MayActOnUrlBlockReason::kSafeBrowsing;
-      }
-      if (decision.attribution == kTabErrorDocumentPredicateName) {
-        return MayActOnUrlBlockReason::kTabIsErrorDocument;
-      }
-      if (decision.attribution == kTabSafeBrowsingObserverPredicateName) {
-        return MayActOnUrlBlockReason::kSafeBrowsing;
-      }
-      NOTREACHED() << "Unrecognized custom predicate attribution: "
-                   << decision.attribution.CustomPredicateName();
   }
 }
 
@@ -594,7 +635,7 @@ MayActOnUrlBlockReason ResolveGatingDecision(
           .Add("origin", url::Origin::Create(url).Serialize())
           .Add("event", origin_gating::GateableEventToString(event))
           .Add("decision", decision.is_allowed ? "allowed" : "blocked")
-          .Add("attribution", decision.attribution.ToString())
+          .Add("attribution", DecisionAttributionToString(decision.attribution))
           .Build());
 
   return MapGatingDecisionToBlockReason(decision, url);
@@ -687,12 +728,12 @@ ExecutionEngine::ExecutionEngine(
           origin_gating::OriginGatingConfiguration(
               {
                   {CustomPredicate(base::BindRepeating(&BlockTabErrorDocument),
-                                   kTabErrorDocumentPredicateName),
+                                   ActorCustomPredicate::kTabErrorDocument),
                    {GateableEvent::kPageAction}},
                   {CustomPredicate(
                        base::BindRepeating(
                            &BlockSafeBrowsingWarningIfSafetyChecksEnabled),
-                       kTabSafeBrowsingObserverPredicateName),
+                       ActorCustomPredicate::kTabSafeBrowsingObserver),
                    {GateableEvent::kPageAction}},
                   // If localhost should be treated as sensitive, only
                   // auto-allow for navigation requests.
@@ -713,22 +754,22 @@ ExecutionEngine::ExecutionEngine(
                    kRequestsAndPageActions},
                   {CustomPredicate(
                        base::BindRepeating(&AllowIfSafetyChecksDisabled),
-                       kSafetyChecksDisabledPredicateName),
+                       ActorCustomPredicate::kSafetyChecksDisabled),
                    origin_gating::GateableEventSet::All()},
                   {CustomPredicate(
                        base::BindRepeating(&BlockIfSafeBrowsingDisabled,
                                            task_->GetProfile()),
-                       kSafeBrowsingPredicateName),
+                       ActorCustomPredicate::kSafeBrowsing),
                    kRequestsAndPageActions},
                   {CustomPredicate(base::BindRepeating(&BlockDangerousMimeType),
-                                   kDangerousMimeTypePredicateName),
+                                   ActorCustomPredicate::kDangerousMimeType),
                    {GateableEvent::kNavigationResponse}},
                   {DecisionSource::kEnterprisePolicy,
                    {GateableEvent::kNavigationResponse,
                     GateableEvent::kPageAction}},
                   {CustomPredicate(base::BindRepeating(&BlockLookalikeUrl,
                                                        task_->GetProfile()),
-                                   kLookalikeUrlPredicateName),
+                                   ActorCustomPredicate::kLookalikeUrl),
                    kRequestsAndPageActions},
                   {DecisionSource::kActorContainerConfig,
                    {GateableEvent::kNavigationResponse,
@@ -744,14 +785,15 @@ ExecutionEngine::ExecutionEngine(
                        base::BindRepeating(
                            &BlockSensitiveUrlWhenNavigationGatingDisabled,
                            task_->GetProfile()),
-                       kSensitiveUrlPredicateName),
+                       ActorCustomPredicate::kSensitiveUrl),
                    {GateableEvent::kNavigationRequest}},
                   {DecisionSource::kCacheWithoutUserConfirmation,
                    {GateableEvent::kNavigationResponse}},
-                  {CustomPredicate(base::BindRepeating(
-                                       &BlockSensitiveUrlWhenPromptsDisabled,
-                                       task_->GetProfile()),
-                                   kSensitiveUrlPromptsDisabledPredicateName),
+                  {CustomPredicate(
+                       base::BindRepeating(
+                           &BlockSensitiveUrlWhenPromptsDisabled,
+                           task_->GetProfile()),
+                       ActorCustomPredicate::kSensitiveUrlPromptsDisabled),
                    {GateableEvent::kNavigationResponse,
                     GateableEvent::kPageAction}},
               },
@@ -920,7 +962,7 @@ void ExecutionEngine::OnComputedGatingDecision(
                initiator.transform(&url::Origin::Serialize).value_or("none"))
           .Add("event", origin_gating::GateableEventToString(event))
           .Add("decision", decision.is_allowed ? "allowed" : "blocked")
-          .Add("attribution", decision.attribution.ToString())
+          .Add("attribution", DecisionAttributionToString(decision.attribution))
           .Add("mime_type",
                response_context->response_mime_type.value_or("null"))
           .Build());

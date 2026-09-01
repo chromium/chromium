@@ -25,7 +25,15 @@ namespace {
 constexpr char kAllowlistKey[] = "allowlist";
 constexpr char kBlocklistKey[] = "blocklist";
 
+enum class DevToolsCustomPredicate {
+  kDevToolsNavigationGatingRuleset,
+};
+
 }  // namespace
+
+template <>
+const origin_gating::CustomPredicateDomain
+    origin_gating::CustomPredicateDomain::kInstance<DevToolsCustomPredicate>{};
 
 // static
 DevToolsNavigationGatingRuleManager&
@@ -56,7 +64,8 @@ DevToolsNavigationGatingRuleManager::DevToolsNavigationGatingRuleManager(
                            // `this`, so the callback is guaranteed to be
                            // destroyed before `this` is.
                            base::Unretained(this)),
-                       "DevToolsNavigationGatingRules"),
+                       DevToolsCustomPredicate::
+                           kDevToolsNavigationGatingRuleset),
                    origin_gating::GateableEventSet::All()},
               },
               /*use_site_keyed_cache=*/false)) {

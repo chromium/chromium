@@ -4,7 +4,9 @@
 
 #include "components/origin_gating/core/types.h"
 
+#include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 
@@ -51,8 +53,9 @@ std::string DecisionSourceToString(DecisionSource source) {
 DecisionAttribution::DecisionAttribution(DecisionSource source)
     : attribution_(source) {}
 
-DecisionAttribution::DecisionAttribution(std::string custom_predicate_name)
-    : attribution_(std::move(custom_predicate_name)) {}
+DecisionAttribution::DecisionAttribution(
+    const CustomPredicateAttribution& attribution)
+    : attribution_(attribution) {}
 
 DecisionAttribution::~DecisionAttribution() = default;
 
@@ -77,29 +80,8 @@ DecisionSource DecisionAttribution::Source() const {
   return std::get<DecisionSource>(attribution_);
 }
 
-const std::string& DecisionAttribution::CustomPredicateName() const {
-  CHECK(is_custom_predicate());
-  return std::get<std::string>(attribution_);
-}
-
 bool DecisionAttribution::operator==(DecisionSource source) const {
   return is_source() && Source() == source;
-}
-
-bool DecisionAttribution::operator==(std::string_view name) const {
-  return is_custom_predicate() && CustomPredicateName() == name;
-}
-
-bool DecisionAttribution::operator==(const DecisionAttribution& other) const =
-    default;
-
-std::string DecisionAttribution::ToString() const {
-  switch (type()) {
-    case Type::kDecisionSource:
-      return DecisionSourceToString(Source());
-    case Type::kCustomPredicate:
-      return CustomPredicateName();
-  }
 }
 
 }  // namespace origin_gating

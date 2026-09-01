@@ -10,6 +10,7 @@ source_set("core") {
     "actor_container_config.h",
     "actor_container_config_slot.cc",
     "actor_container_config_slot.h",
+    "concepts.h",
     "origin_gating_cache.cc",
     "origin_gating_cache.h",
     "origin_gating_checker.cc",

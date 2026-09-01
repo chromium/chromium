@@ -22,12 +22,15 @@ constexpr DecisionSource kForbiddenPredicates[] = {
 
 }  // namespace
 
-CustomPredicate::CustomPredicate(AsyncPredicate predicate,
-                                 std::string_view name)
-    : predicate_(std::move(predicate)), name_(name) {}
+CustomPredicate::CustomPredicate(
+    AsyncPredicate predicate,
+    const DecisionAttribution::CustomPredicateAttribution& attribution)
+    : predicate_(std::move(predicate)), attribution_(attribution) {}
 
-CustomPredicate::CustomPredicate(SyncPredicate predicate, std::string_view name)
-    : predicate_(std::move(predicate)), name_(name) {}
+CustomPredicate::CustomPredicate(
+    SyncPredicate predicate,
+    const DecisionAttribution::CustomPredicateAttribution& attribution)
+    : predicate_(std::move(predicate)), attribution_(attribution) {}
 
 CustomPredicate::~CustomPredicate() = default;
 

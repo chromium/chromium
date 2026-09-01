@@ -10,8 +10,11 @@
 #include <string_view>
 #include <variant>
 
+#include "base/check.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
+#include "components/origin_gating/core/concepts.h"
 
 namespace origin_gating {
 
@@ -84,6 +87,13 @@ enum class DecisionSource {
 
 std::string DecisionSourceToString(DecisionSource source);
 
+// An opaque domain tag identifying an enum type used for custom predicates.
+// Each enum type provides a singleton `kInstance<E>` value.
+struct CustomPredicateDomain {
+  template <typename T>
+  static const CustomPredicateDomain kInstance;
+};
+
 // Encapsulates the source of any positive/negative gating verdict.
 class DecisionAttribution {
  public:
@@ -92,9 +102,31 @@ class DecisionAttribution {
     kCustomPredicate,
   };
 
+  class CustomPredicateAttribution {
+   public:
+    template <IsIntCompatibleEnum E>
+    explicit CustomPredicateAttribution(E id)
+        : id_(static_cast<int>(id)),
+          domain_(CustomPredicateDomain::kInstance<E>) {}
+
+    friend bool operator==(const CustomPredicateAttribution&,
+                           const CustomPredicateAttribution&) = default;
+
+    // CHECKs that `domain_` matches `E`.
+    template <IsIntCompatibleEnum E>
+    E GetId() const {
+      CHECK_EQ(&domain_.get(), &CustomPredicateDomain::kInstance<E>);
+      return static_cast<E>(id_);
+    }
+
+   private:
+    int id_ = 0;
+    raw_ref<const CustomPredicateDomain> domain_;
+  };
+
   DecisionAttribution() = delete;
   explicit DecisionAttribution(DecisionSource source);
-  explicit DecisionAttribution(std::string custom_predicate_name);
+  explicit DecisionAttribution(const CustomPredicateAttribution& attribution);
 
   ~DecisionAttribution();
   DecisionAttribution(const DecisionAttribution&);
@@ -108,21 +140,33 @@ class DecisionAttribution {
   // `Type::kDecisionSource`.
   DecisionSource Source() const;
 
-  // Returns the custom predicate name. Safe to call only when `type()` is
-  // `Type::kCustomPredicate`.
-  const std::string& CustomPredicateName() const;
+  // Returns the custom predicate ID. Safe to call only when `type()` is
+  // `Type::kCustomPredicate`. `E` must be the same type that was used to create
+  // the corresponding `CustomPredicate`.
+  template <IsIntCompatibleEnum E>
+  E CustomPredicateId() const {
+    CHECK(is_custom_predicate());
+    return std::get<CustomPredicateAttribution>(attribution_).GetId<E>();
+  }
 
   bool operator==(DecisionSource source) const;
-  bool operator==(std::string_view name) const;
-  bool operator==(const DecisionAttribution& other) const;
 
-  std::string ToString() const;
+  // Compares against a given source enum. Returns false if the enum type
+  // doesn't match the type used to create the corresponding `CustomPredicate`.
+  template <IsIntCompatibleEnum E>
+  bool operator==(E id) const {
+    if (!is_custom_predicate()) {
+      return false;
+    }
+    return std::get<CustomPredicateAttribution>(attribution_) ==
+           CustomPredicateAttribution(id);
+  }
 
  private:
   bool is_source() const { return type() == Type::kDecisionSource; }
   bool is_custom_predicate() const { return type() == Type::kCustomPredicate; }
 
-  std::variant<DecisionSource, std::string> attribution_;
+  std::variant<DecisionSource, CustomPredicateAttribution> attribution_;
 };
 
 // Struct wrapping the final gating verdict and its resolution metadata.

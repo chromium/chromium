@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/origin_gating/core/actor_container_config.h"
@@ -33,6 +34,28 @@ namespace {
 
 using DecisionWithMetadata =
     OriginGatingChecker::Delegate::DecisionWithMetadata;
+
+enum class TestCustomPredicate {
+  kCustom1,
+  kCustom2,
+};
+
+enum class OtherTestCustomPredicate {
+  kOtherCustom1,
+  kOtherCustom2,
+};
+
+}  // namespace
+
+template <>
+const CustomPredicateDomain
+    CustomPredicateDomain::kInstance<TestCustomPredicate>{};
+
+template <>
+const CustomPredicateDomain&
+    CustomPredicateDomain::kInstance<OtherTestCustomPredicate>{};
+
+namespace {
 
 class MockDelegate : public OriginGatingChecker::Delegate {
  public:
@@ -916,7 +939,7 @@ TEST_F(OriginGatingCheckerTest, AsyncCustomPredicate_Allowed_ShortCircuits) {
         EXPECT_EQ(destination, GURL("https://foo.com"));
         std::move(callback).Run(Decision::kAllowed);
       }),
-      "my_custom_predicate");
+      TestCustomPredicate::kCustom1);
 
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
@@ -933,7 +956,32 @@ TEST_F(OriginGatingCheckerTest, AsyncCustomPredicate_Allowed_ShortCircuits) {
       checker, nullptr, source, destination);
 
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, "my_custom_predicate");
+  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       CustomPredicate_AttributionDoesNotMatchDifferentEnumTypeWithSameValue) {
+  CustomPredicate custom(
+      base::BindRepeating([](GatingDecisionContext*, const GURL&, const GURL&) {
+        return Decision::kAllowed;
+      }),
+      TestCustomPredicate::kCustom1);
+
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, GURL("https://example.com"), GURL("https://foo.com"));
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom1);
+  EXPECT_EQ(decision.attribution.CustomPredicateId<TestCustomPredicate>(),
+            TestCustomPredicate::kCustom1);
+
+  EXPECT_NE(decision.attribution, OtherTestCustomPredicate::kOtherCustom1);
+  EXPECT_CHECK_DEATH(
+      decision.attribution.CustomPredicateId<OtherTestCustomPredicate>());
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -944,7 +992,7 @@ TEST_F(OriginGatingCheckerTest,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kNoDecision);
       }),
-      "my_custom_predicate");
+      TestCustomPredicate::kCustom1);
 
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
@@ -973,7 +1021,7 @@ TEST_F(OriginGatingCheckerTest, SyncCustomPredicate_Allowed_ShortCircuits) {
         EXPECT_EQ(destination, GURL("https://foo.com"));
         return Decision::kAllowed;
       }),
-      "my_custom_predicate");
+      TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
@@ -990,7 +1038,7 @@ TEST_F(OriginGatingCheckerTest, SyncCustomPredicate_Allowed_ShortCircuits) {
       checker, nullptr, source, destination);
 
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, "my_custom_predicate");
+  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom2);
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -999,7 +1047,7 @@ TEST_F(OriginGatingCheckerTest,
       base::BindRepeating([](GatingDecisionContext*, const GURL&, const GURL&) {
         return Decision::kNoDecision;
       }),
-      "my_custom_predicate");
+      TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
@@ -1118,7 +1166,7 @@ TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
-      "page_action_only");
+      TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration(
@@ -1156,7 +1204,7 @@ TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
-      "page_action_only");
+      TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration(
@@ -1178,7 +1226,7 @@ TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
                                 destination, future.GetCallback());
   GatingDecision decision = future.Get<1>();
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, "page_action_only");
+  EXPECT_EQ(decision.attribution, TestCustomPredicate::kCustom2);
 }
 
 TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
@@ -1190,7 +1238,7 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kNoDecision);
       }),
-      "observing_predicate");
+      TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration(
