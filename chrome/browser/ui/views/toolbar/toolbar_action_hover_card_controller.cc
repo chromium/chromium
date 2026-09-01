@@ -255,18 +255,20 @@ void ToolbarActionHoverCardController::UpdateHoverCardContent(
     hover_card_->SetTextFade(0.0);
   }
 
-  std::u16string extension_name = action_view->view_model()->GetActionName();
-  std::u16string action_title =
-      action_view->view_model()->GetActionTitle(web_contents);
+  ToolbarActionViewModel* const action_view_model = action_view->view_model();
+  std::u16string extension_name = action_view_model->GetActionName();
+  std::u16string action_title = action_view_model->GetActionTitle(web_contents);
   // Hover card only uses the action title when it's different than the
   // extension name.
   action_title =
       extension_name == action_title ? std::u16string() : action_title;
   ToolbarActionViewModel::HoverCardState state =
-      action_view->view_model()->GetHoverCardState(web_contents);
+      action_view_model->GetHoverCardState(web_contents);
+  ToolbarActionViewModel::HoverCardUiState ui_state =
+      action_view_model->GetHoverCardUiState(state, web_contents);
 
-  hover_card_->UpdateCardContent(extension_name, action_title, state,
-                                 web_contents);
+  hover_card_->UpdateCardContent(extension_name, action_title,
+                                 std::move(ui_state));
 }
 
 void ToolbarActionHoverCardController::CreateHoverCard(

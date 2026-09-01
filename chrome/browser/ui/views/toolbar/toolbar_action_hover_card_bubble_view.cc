@@ -10,14 +10,12 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -30,8 +28,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-
-using HoverCardState = ToolbarActionViewModel::HoverCardState;
 
 // Hover card fixed width. Toolbar actions are not visible when window is too
 // small to display them, therefore hover cards wouldn't be displayed if the
@@ -54,7 +50,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
     : BubbleDialogDelegateView(action_view,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW),
-      action_view_model_(action_view->view_model()),
       controller_(controller) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
@@ -164,8 +159,7 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     const std::u16string& extension_name,
     const std::u16string& action_title,
-    ToolbarActionViewModel::HoverCardState state,
-    content::WebContents* web_contents) {
+    ToolbarActionViewModel::HoverCardUiState ui_state) {
   title_label_->SetData({extension_name, /*is_filename=*/false});
 
   // We need to adjust the bottom margin of `title_label_` depending on
@@ -184,9 +178,6 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     action_title_label_->SetVisible(true);
   }
 
-  ToolbarActionViewModel::HoverCardUiState ui_state =
-      action_view_model_->GetHoverCardUiState(state, web_contents);
-
   DCHECK(ui_state.site_access_title.has_value() ==
          ui_state.site_access_description.has_value());
   bool show_site_access_labels = ui_state.site_access_title.has_value();
@@ -198,16 +189,17 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
   site_access_description_label_->SetVisible(show_site_access_labels);
   if (show_site_access_labels) {
     site_access_title_label_->SetData(
-        {ui_state.site_access_title.value(), /*is_filename=*/false});
+        {std::move(ui_state.site_access_title).value(), /*is_filename=*/false});
     site_access_description_label_->SetData(
-        {ui_state.site_access_description.value(), /*is_filename=*/false});
+        {std::move(ui_state.site_access_description).value(),
+         /*is_filename=*/false});
   }
 
   policy_separator_->SetVisible(show_policy_label);
   policy_label_->SetVisible(show_policy_label);
   if (show_policy_label) {
     policy_label_->SetData(
-        {ui_state.policy_text.value(), /*is_filename=*/false});
+        {std::move(ui_state.policy_text).value(), /*is_filename=*/false});
   }
 }
 
