@@ -31,7 +31,6 @@ interface Placeholder {
   screenRect: TextBoxRect;
   rotations: number;
   label: string;
-  zIndex: number;
 }
 
 export class InkTextAnnotationsElement extends CrLitElement {
@@ -123,7 +122,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
 
     for (const page of sortedPages) {
       const pageAnnotationsMap = manager.annotations.get(page);
-      if (!pageAnnotationsMap) {
+      if (!pageAnnotationsMap || pageAnnotationsMap.size === 0) {
         continue;
       }
       const pageAnnotations = Array.from(pageAnnotationsMap.values());
@@ -142,16 +141,15 @@ export class InkTextAnnotationsElement extends CrLitElement {
 
   private updatePlaceholders_() {
     assert(this.viewport);
+    const viewport = this.viewport;
+    const clockwiseRotations = viewport.getClockwiseRotations();
     this.placeholders_ = this.annotations_.map(annotation => {
       const screenRect = pageToScreenCoordinates(
-          annotation.pageIndex, annotation.textBoxRect, this.viewport!);
+          annotation.pageIndex, annotation.textBoxRect, viewport);
       return {
         screenRect,
         label: annotation.text,
-        rotations: (this.viewport!.getClockwiseRotations() +
-                    annotation.textOrientation) %
-            4,
-        zIndex: annotation.id,
+        rotations: (clockwiseRotations + annotation.textOrientation) % 4,
       };
     });
   }
@@ -162,7 +160,6 @@ export class InkTextAnnotationsElement extends CrLitElement {
       --top: ${placeholder.screenRect.locationY}px;
       --width: ${placeholder.screenRect.width}px;
       --height: ${placeholder.screenRect.height}px;
-      z-index: ${placeholder.zIndex};
     `;
   }
 
@@ -175,50 +172,23 @@ export class InkTextAnnotationsElement extends CrLitElement {
     this.scrollToShowTextBox_(placeholder.screenRect);
   }
 
-  protected async onPlaceholderClick_(e: MouseEvent) {
-    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    await this.activateAnnotationByIndex_(index);
-  }
-
   protected async onPlaceholderKeydown_(e: KeyboardEvent) {
     if (e.key !== 'Enter' && e.key !== ' ') {
       return;
     }
     e.preventDefault();
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    await this.activateAnnotationByIndex_(index);
-  }
-
-  private async activateAnnotationByIndex_(index: number) {
-    // Grab the annotation first, since committing may update the annotations
-    // list and make `index` refer to a different annotation than intended.
     const annotation = this.annotations_[index];
     assert(annotation);
 
     if (this.activeAnnotation_) {
-      // The requested annotation is already active. This also ensures that if
-      // committing deletes an annotation, it isn't the one being activated.
       if (this.activeAnnotation_.id === annotation.id) {
         return;
       }
       await this.$.textBox.commitTextAnnotation();
     }
 
-    assert(this.viewport);
-
-    // Convert box to screen coordinates.
-    const screenRect = pageToScreenCoordinates(
-        annotation.pageIndex, annotation.textBoxRect, this.viewport);
-
-    // Create a copy of the annotation with screen coordinates for the textbox.
-    const annotationToActivate = structuredClone(annotation);
-    annotationToActivate.textBoxRect = screenRect;
-
-    // Notify the backend.
-    Ink2Manager.getInstance().reactivateTextAnnotation(annotation);
-    this.activeAnnotation_ = annotationToActivate;
-    this.activePageDimensions_ =
-        this.viewport.getPageScreenRect(annotation.pageIndex);
+    Ink2Manager.getInstance().activateAnnotationById(annotation.id);
   }
 
   commitActiveAnnotation(): Promise<void> {

@@ -669,12 +669,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
-  private maybeCreateTextAnnotation_(location?: Point): Promise<void> {
-    if (this.textboxState_ !== TextBoxState.INACTIVE) {
-      return this.maybeCommitActiveTextbox_();
+  private async maybeCreateTextAnnotation_(location?: Point): Promise<void> {
+    const hasActive = this.isTextboxActive_();
+    if (hasActive) {
+      await this.maybeCommitActiveTextbox_();
     }
-    Ink2Manager.getInstance().initializeTextAnnotation(location);
-    return Promise.resolve();
+
+    Ink2Manager.getInstance().initializeTextAnnotation(
+        location, /*onlyExisting=*/ hasActive);
   }
 
   private recordEnterExitAnnotationModeMetrics_(

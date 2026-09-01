@@ -16,7 +16,6 @@ export function getHtml(this: InkTextAnnotationsElement) {
         role="listitem" aria-label="${placeholder.label}"
         tabindex="${this.activeAnnotation_ ? '-1' : '0'}"
         @focus="${this.onPlaceholderFocus_}"
-        @click="${this.onPlaceholderClick_}"
         @keydown="${this.onPlaceholderKeydown_}">
     </div>
   `)}

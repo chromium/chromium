@@ -100,12 +100,15 @@ export class Ink2Manager extends EventTarget {
     this.stack_.resetForTesting();
   }
 
-  // Initialize a new empty text annotation at `location` in screen coordinates.
-  // No-op if there is no PDF page at `location`.
-  // If `location` is not provided, creates the annotation at the center of the
-  // visible portion of the most visible page.
-  // Returns true if an annotation was initialized, and false otherwise.
-  initializeTextAnnotation(location?: Point): boolean {
+  // Initialize a text annotation at `location` in screen coordinates.
+  // If a text annotation already exists at `location`, activates it for
+  // editing. If `location` is not provided, creates the annotation at the
+  // center of the visible portion of the most visible page. If `onlyExisting`
+  // is true, only existing annotations will be activated; no new annotation
+  // will be created if none exists at `location`. Returns true if an annotation
+  // was initialized or activated, and false otherwise.
+  initializeTextAnnotation(location?: Point, onlyExisting: boolean = false):
+      boolean {
     assert(this.isTextInitializationComplete());
     assert(this.viewport_);
 
@@ -114,6 +117,35 @@ export class Ink2Manager extends EventTarget {
                             this.viewport_.getMostVisiblePage();
     if (page === -1) {
       // Don't initialize an annotation if the click isn't on the PDF itself.
+      return false;
+    }
+
+    if (location) {
+      const annotationsMap = this.annotations_.get(page);
+      if (annotationsMap && annotationsMap.size > 0) {
+        let candidate: TextAnnotation|null = null;
+        let candidateScreenRect: TextBoxRect|null = null;
+        for (const annotation of annotationsMap.values()) {
+          const screenRect = pageToScreenCoordinates(
+              page, annotation.textBoxRect, this.viewport_);
+          if (location.x >= screenRect.locationX &&
+              location.x <= screenRect.locationX + screenRect.width &&
+              location.y >= screenRect.locationY &&
+              location.y <= screenRect.locationY + screenRect.height) {
+            if (!candidate || annotation.id > candidate.id) {
+              candidate = annotation;
+              candidateScreenRect = screenRect;
+            }
+          }
+        }
+        if (candidate) {
+          assert(candidateScreenRect);
+          return this.activateAnnotation_(candidate, candidateScreenRect);
+        }
+      }
+    }
+
+    if (onlyExisting) {
       return false;
     }
 
@@ -189,11 +221,49 @@ export class Ink2Manager extends EventTarget {
     return true;
   }
 
+  // Activates an existing text annotation with `id` for editing.
+  // Returns true if the annotation was found and activated, and false
+  // otherwise.
+  activateAnnotationById(id: number): boolean {
+    assert(this.isTextInitializationComplete());
+    for (const pageAnnotations of this.annotations_.values()) {
+      const annotation = pageAnnotations.get(id);
+      if (annotation) {
+        assert(this.viewport_);
+        const screenRect = pageToScreenCoordinates(
+            annotation.pageIndex, annotation.textBoxRect, this.viewport_);
+        return this.activateAnnotation_(annotation, screenRect);
+      }
+    }
+    return false;
+  }
+
+  // Activates an existing text annotation for editing.
+  private activateAnnotation_(
+      annotation: TextAnnotation, screenRect: TextBoxRect): boolean {
+    assert(this.viewport_);
+    const pageDimensions =
+        this.viewport_.getPageScreenRect(annotation.pageIndex);
+    if (!pageDimensions) {
+      return false;
+    }
+
+    const annotationToActivate = structuredClone(annotation);
+    annotationToActivate.textBoxRect = screenRect;
+
+    this.initializeTextBox_(
+        annotationToActivate, pageDimensions, /*isPaste=*/ false,
+        /*isExisting=*/ true);
+    this.pluginController_.editTextAnnotation(annotation.id);
+    return true;
+  }
+
   private initializeTextBox_(
       annotation: TextAnnotation, pageDimensions: ViewportRect,
-      isPaste: boolean) {
-    this.existingAnnotationAttributes_ =
-        isPaste ? structuredClone(annotation.textAttributes) : null;
+      isPaste: boolean, isExisting: boolean = false) {
+    this.existingAnnotationAttributes_ = (isPaste || isExisting) ?
+        structuredClone(annotation.textAttributes) :
+        null;
 
     this.dispatchEvent(new CustomEvent('initialize-text-box', {
       detail: {
@@ -282,15 +352,6 @@ export class Ink2Manager extends EventTarget {
 
     this.initializeTextBox_(annotation, pageDimensions, /*isPaste=*/ true);
     return true;
-  }
-
-  // Reactivate an existing text annotation for editing.
-  reactivateTextAnnotation(annotation: TextAnnotation) {
-    assert(this.isTextInitializationComplete());
-    this.pluginController_.editTextAnnotation(annotation.id);
-    this.existingAnnotationAttributes_ =
-        structuredClone(annotation.textAttributes);
-    this.fireAttributesChanged_();
   }
 
   isInitializationStarted(): boolean {

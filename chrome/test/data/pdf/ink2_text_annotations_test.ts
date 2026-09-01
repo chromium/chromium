@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DEFAULT_TEXTBOX_WIDTH, Ink2Manager, PdfViewerPrivateProxyImpl, TextBoxState, TextStyle, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {InkTextAnnotationsElement, TextAnnotationMessageData} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {InkTextAnnotationsElement, TextAnnotationMessageData, TextBoxInit} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
@@ -29,6 +29,7 @@ function setUpTest(): TestContext {
   Ink2Manager.setInstance(null);
   const context = setUpInkTestContext();
   const viewport = context.viewport;
+  viewport.setZoom(1.0);
   const mockPlugin = context.mockPlugin;
 
   const privateProxy = new TestPdfViewerPrivateProxy();
@@ -140,13 +141,6 @@ chrome.test.runTests([
     chrome.test.assertEq('43px', style2.top);
     chrome.test.assertEq('124px', style2.width);
     chrome.test.assertEq('40px', style2.height);
-    chrome.test.assertEq('2', style2.zIndex);
-
-    const style1 = window.getComputedStyle(placeholders[1]!);
-    chrome.test.assertEq('1', style1.zIndex);
-
-    const style3 = window.getComputedStyle(placeholders[2]!);
-    chrome.test.assertEq('3', style3.zIndex);
 
     chrome.test.succeed();
   },
@@ -482,7 +476,7 @@ chrome.test.runTests([
     // (4) Re-activate this annotation.
     const placeholders = getPlaceholders(annotationsElement);
     chrome.test.assertEq(1, placeholders.length);
-    placeholders[0]!.click();
+    manager.initializeTextAnnotation({x: 100, y: 60});
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     chrome.test.assertEq('Hello', textbox.$.textbox.value);
@@ -653,18 +647,26 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testActivatePlaceholder() {
+  // Verify activating a placeholder with keyboard (Enter and Space) triggers
+  // activation on Ink2Manager and notifies the plugin.
+  async function testActivatePlaceholderFromKeyboard() {
     const {manager, viewport, mockPlugin} = setUpTest();
 
-    // Add one annotation to create a placeholder.
-    const testAnnotation = getTestAnnotation(0);
-    testAnnotation.text = 'Hello World';
-    testAnnotation.textBoxRect.width = DEFAULT_TEXTBOX_WIDTH;
-    testAnnotation.textBoxRect.height = DEFAULT_HEIGHT;
-    // Position: x=60, y=25, w=200, h=24. Page offsets: x=55, y=3.
-    // Screen position: x=115, y=28, w=200, h=24.
+    // Add two annotations to create placeholders.
+    const testAnnotation1 = getTestAnnotation(0);
+    testAnnotation1.text = 'Hello World';
+    testAnnotation1.textBoxRect.width = DEFAULT_TEXTBOX_WIDTH;
+    testAnnotation1.textBoxRect.height = DEFAULT_HEIGHT;
+
+    const testAnnotation2 = getTestAnnotation(1);
+    testAnnotation2.text = 'Goodbye Moon';
+    testAnnotation2.textBoxRect.width = DEFAULT_TEXTBOX_WIDTH;
+    testAnnotation2.textBoxRect.height = DEFAULT_HEIGHT;
+    testAnnotation2.textBoxRect.locationX = 60;
+    testAnnotation2.textBoxRect.locationY = 100;
+
     mockPlugin.setMessageReply('getAllTextAnnotations', {
-      annotations: [testAnnotation],
+      annotations: [testAnnotation1, testAnnotation2],
     });
     await manager.initializeTextAnnotations();
 
@@ -672,80 +674,64 @@ chrome.test.runTests([
     await microtasksFinished();
 
     const placeholders = getPlaceholders(annotationsElement);
-    chrome.test.assertEq(1, placeholders.length);
-    const placeholder = placeholders[0]!;
+    chrome.test.assertEq(2, placeholders.length);
 
-    function verifyEditTextAnnotation(expected: boolean, id: number = 0) {
-      const editTextAnnotationMessage =
-          mockPlugin.findMessage<{type: string, data: number}>(
-              'editTextAnnotation');
-      chrome.test.assertEq(expected, editTextAnnotationMessage !== undefined);
-      if (expected) {
-        chrome.test.assertEq(
-            'editTextAnnotation', editTextAnnotationMessage!.type);
-        chrome.test.assertEq(id, editTextAnnotationMessage!.data);
-      }
-    }
-
-    // 1. Verify click activates it.
+    // 1. Verify Keyboard (Enter) on placeholder 0 fires initialize-text-box on
+    // Ink2Manager and sends editTextAnnotation to the plugin.
     mockPlugin.clearMessages();
-    placeholder.click();
-    await microtasksFinished();
+    let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    placeholders[0]!.focus();
+    placeholders[0]!.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+    let initEvent = await whenInitEvent;
 
-    // Verify textbox is active with the correct annotation (in screen coords).
-    chrome.test.assertFalse(annotationsElement.$.textBox.hidden);
-    const activeAnnotation1 = annotationsElement.$.textBox.annotation;
-    chrome.test.assertTrue(activeAnnotation1 !== null);
-    chrome.test.assertEq(testAnnotation.id, activeAnnotation1.id);
-    chrome.test.assertEq(testAnnotation.text, activeAnnotation1.text);
-    // Screen coords: x = 60 + 55 = 115, y = 25 + 3 = 28.
-    chrome.test.assertEq(115, activeAnnotation1.textBoxRect.locationX);
-    chrome.test.assertEq(28, activeAnnotation1.textBoxRect.locationY);
+    chrome.test.assertEq(testAnnotation1.id, initEvent.detail.annotation.id);
     chrome.test.assertEq(
-        DEFAULT_TEXTBOX_WIDTH, activeAnnotation1.textBoxRect.width);
-    chrome.test.assertEq(DEFAULT_HEIGHT, activeAnnotation1.textBoxRect.height);
-    // Verify manager was notified.
-    verifyEditTextAnnotation(true, testAnnotation.id);
+        testAnnotation1.text, initEvent.detail.annotation.text);
+    // Screen coords: x = 60 + 55 = 115, y = 25 + 3 = 28.
+    chrome.test.assertEq(
+        115, initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(28, initEvent.detail.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
+    chrome.test.assertEq(
+        DEFAULT_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
 
-    // Deactivate it.
-    annotationsElement.$.textBox.dispatchEvent(
-        new CustomEvent('state-changed', {
-          detail: TextBoxState.INACTIVE,
-        }));
-    await microtasksFinished();
-    chrome.test.assertTrue(annotationsElement.$.textBox.hidden);
+    let editTextAnnotationMessage =
+        mockPlugin.findMessage<{type: string, data: number}>(
+            'editTextAnnotation');
+    assert(editTextAnnotationMessage);
+    chrome.test.assertEq('editTextAnnotation', editTextAnnotationMessage.type);
+    chrome.test.assertEq(testAnnotation1.id, editTextAnnotationMessage.data);
 
-    // 2. Verify Keyboard (Enter) activates it.
+    // 2. Verify Keyboard (Space) on placeholder 1 activates annotation 2.
     mockPlugin.clearMessages();
-    placeholder.focus();
-    placeholder.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await microtasksFinished();
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    placeholders[1]!.focus();
+    placeholders[1]!.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+    initEvent = await whenInitEvent;
 
-    chrome.test.assertFalse(annotationsElement.$.textBox.hidden);
-    const activeAnnotation2 = annotationsElement.$.textBox.annotation;
-    chrome.test.assertTrue(activeAnnotation2 !== null);
-    chrome.test.assertEq(testAnnotation.id, activeAnnotation2.id);
-    verifyEditTextAnnotation(true, testAnnotation.id);
+    chrome.test.assertEq(testAnnotation2.id, initEvent.detail.annotation.id);
+    chrome.test.assertEq(
+        testAnnotation2.text, initEvent.detail.annotation.text);
+    // Screen coords: x = 60 + 55 = 115, y = 100 + 3 = 103.
+    chrome.test.assertEq(
+        115, initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        103, initEvent.detail.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
+    chrome.test.assertEq(
+        DEFAULT_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
 
-    // Deactivate it.
-    annotationsElement.$.textBox.dispatchEvent(
-        new CustomEvent('state-changed', {
-          detail: TextBoxState.INACTIVE,
-        }));
-    await microtasksFinished();
-    chrome.test.assertTrue(annotationsElement.$.textBox.hidden);
-
-    // 3. Verify Keyboard (Space) activates it.
-    mockPlugin.clearMessages();
-    placeholder.focus();
-    placeholder.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
-    await microtasksFinished();
-
-    chrome.test.assertFalse(annotationsElement.$.textBox.hidden);
-    const activeAnnotation3 = annotationsElement.$.textBox.annotation;
-    chrome.test.assertTrue(activeAnnotation3 !== null);
-    chrome.test.assertEq(testAnnotation.id, activeAnnotation3.id);
-    verifyEditTextAnnotation(true, testAnnotation.id);
+    editTextAnnotationMessage =
+        mockPlugin.findMessage<{type: string, data: number}>(
+            'editTextAnnotation');
+    assert(editTextAnnotationMessage);
+    chrome.test.assertEq('editTextAnnotation', editTextAnnotationMessage.type);
+    chrome.test.assertEq(testAnnotation2.id, editTextAnnotationMessage.data);
 
     chrome.test.succeed();
   },
@@ -910,7 +896,7 @@ chrome.test.runTests([
     chrome.test.assertEq(1, placeholders.length);
 
     // Activate the annotation for editing.
-    placeholders[0]!.click();
+    manager.initializeTextAnnotation({x: 105, y: 53});
     await microtasksFinished();
 
     // Trigger Copy shortcut (Ctrl+C / Cmd+C).
@@ -996,7 +982,7 @@ chrome.test.runTests([
     chrome.test.assertEq(1, placeholders.length);
 
     // Activate the annotation for editing.
-    placeholders[0]!.click();
+    manager.initializeTextAnnotation({x: 105, y: 53});
     await microtasksFinished();
 
     // Trigger Cut shortcut (Ctrl+X / Cmd+X).

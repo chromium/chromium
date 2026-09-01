@@ -28,8 +28,6 @@
 
 .placeholder {
   position: absolute;
-  pointer-events: auto;
-  cursor: text;
   border: var(--viewer-text-annotation-border-width) solid transparent;
   box-sizing: border-box;
   outline: none;
@@ -40,10 +38,10 @@
   --padding-x: var(--viewer-text-annotation-padding-x);
   --padding-y: var(--viewer-text-annotation-padding-y);
 
-  left: calc(var(--left) - var(--offset-x));
-  top: calc(var(--top) - var(--offset-y));
-  width: calc(var(--width) + var(--padding-x));
-  height: calc(var(--height) + var(--padding-y));
+  left: calc(var(--left, 0px) - var(--offset-x));
+  top: calc(var(--top, 0px) - var(--offset-y));
+  width: calc(var(--width, 0px) + var(--padding-x));
+  height: calc(var(--height, 0px) + var(--padding-y));
 }
 
 .placeholder[data-rotations='1'],
