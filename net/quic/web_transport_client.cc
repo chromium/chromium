@@ -31,6 +31,9 @@ class FailedWebTransportClient : public WebTransportClient {
   }
 
   quic::WebTransportSession* session() override { return nullptr; }
+  std::optional<quic::QuicByteCount> GetMaxDatagramSize() const override {
+    return std::nullopt;
+  }
 
  private:
   WebTransportError error_;

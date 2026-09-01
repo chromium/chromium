@@ -68,6 +68,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void CloseIfNonceMatches(base::UnguessableToken nonce) override;
 
   quic::WebTransportSession* session() override;
+  std::optional<quic::QuicByteCount> GetMaxDatagramSize() const override;
 
   handles::NetworkHandle target_network() const { return target_network_; }
 

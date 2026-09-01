@@ -119,14 +119,16 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
       const std::optional<std::string>& selected_applicaton_protocol,
-      network::mojom::WebTransportStatsPtr initial_stats) override {
+      network::mojom::WebTransportStatsPtr initial_stats,
+      std::optional<uint32_t> max_datagram_size) override {
     if (tracker_) {
       tracker_->OnHandshakeEstablished();
     }
 
     remote_->OnConnectionEstablished(
         std::move(transport), std::move(client), response_headers,
-        selected_applicaton_protocol, std::move(initial_stats));
+        selected_applicaton_protocol, std::move(initial_stats),
+        max_datagram_size);
   }
   void OnHandshakeFailed(
       const std::optional<net::WebTransportError>& error) override {

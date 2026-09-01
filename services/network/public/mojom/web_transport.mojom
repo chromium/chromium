@@ -236,12 +236,16 @@ interface WebTransportHandshakeClient {
   // strategies.
   OnBeforeConnect(IPEndPoint server_address);
 
-  // Called when the handshake succeeds.
+  // Called when the handshake succeeds. |max_datagram_size| is the largest
+  // outgoing datagram payload supported by the established session. Null means
+  // that the implementation-defined initial value should be retained; 0 means
+  // that no non-empty outgoing Datagram payload fits.
   OnConnectionEstablished(pending_remote<WebTransport> transport,
                           pending_receiver<WebTransportClient> client,
                           HttpResponseHeaders response_headers,
                           string? selected_application_protocol,
-                          WebTransportStats initial_stats);
+                          WebTransportStats initial_stats,
+                          uint32? max_datagram_size);
 
   // Called when the handshake fails.
   // |error| contains the error details. The actual error information issued

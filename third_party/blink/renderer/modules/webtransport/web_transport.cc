@@ -255,13 +255,30 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
       return;
     }
     DCHECK(web_transport_->transport_remote_.is_bound());
+    HeapDeque<Member<ScriptPromiseResolver<IDLUndefined>>>
+        sent_datagram_resolvers;
+    HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
+        dropped_datagram_resolvers;
     for (const auto& datagram : pending_datagrams_) {
+      CHECK(!pending_datagrams_resolvers_.empty());
+      auto resolver = pending_datagrams_resolvers_.TakeFirst();
+      if (datagram.size() > datagrams_->maxDatagramSize()) {
+        dropped_datagram_resolvers.push_back(resolver);
+        continue;
+      }
+      sent_datagram_resolvers.push_back(resolver);
       web_transport_->transport_remote_->SendDatagram(
           base::span(datagram),
           BindOnce(&DatagramUnderlyingSink::OnDatagramProcessed,
                    WrapWeakPersistent(this)));
     }
+    CHECK(pending_datagrams_resolvers_.empty());
+    pending_datagrams_resolvers_.Swap(sent_datagram_resolvers);
     pending_datagrams_.clear();
+    for (auto& resolver : dropped_datagram_resolvers) {
+      resolver->Resolve();
+    }
+    MaybeReleasePendingWriteRetention();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -296,6 +313,12 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
  private:
   ScriptPromise<IDLUndefined> SendDatagram(ScriptState* script_state,
                                            base::span<const uint8_t> data) {
+    if (data.size() > datagrams_->maxDatagramSize()) {
+      // The specification compares each write with the current maximum, even
+      // while connecting, and silently discards oversized Datagrams.
+      return ToResolvedUndefinedPromise(script_state);
+    }
+
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
     pending_datagrams_resolvers_.push_back(resolver);
@@ -1224,7 +1247,8 @@ void WebTransport::OnConnectionEstablished(
         client_receiver,
     const scoped_refptr<net::HttpResponseHeaders>& response_headers,
     const String& selected_application_protocol,
-    network::mojom::blink::WebTransportStatsPtr initial_stats) {
+    network::mojom::blink::WebTransportStatsPtr initial_stats,
+    std::optional<uint32_t> max_datagram_size) {
   DVLOG(1) << "WebTransport::OnConnectionEstablished() this=" << this;
   connector_.reset();
   handshake_client_receiver_.reset();
@@ -1273,6 +1297,9 @@ void WebTransport::OnConnectionEstablished(
   }
 
   latest_stats_ = ConvertStatsFromMojom(std::move(initial_stats));
+  if (max_datagram_size) {
+    datagrams_->SetMaxDatagramSize(*max_datagram_size);
+  }
 
   for (auto& sink : datagram_underlying_sinks_) {
     if (sink) {

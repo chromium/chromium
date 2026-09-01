@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -760,12 +761,17 @@ void WebTransport::OnConnected(
   filtered_response_headers->RemoveHeader("Set-Cookie");
   filtered_response_headers->RemoveHeader("Set-Cookie2");
 
+  auto max_datagram_size =
+      transport_->GetMaxDatagramSize().transform([](quic::QuicByteCount size) {
+        return base::saturated_cast<uint32_t>(size);
+      });
   handshake_client_->OnConnectionEstablished(
       receiver_.BindNewPipeAndPassRemote(),
       client_.BindNewPipeAndPassReceiver(),
       std::move(filtered_response_headers),
       transport_->session()->GetNegotiatedSubprotocol(),
-      StatsToMojom(transport_->session()->GetSessionStats()));
+      StatsToMojom(transport_->session()->GetSessionStats()),
+      max_datagram_size);
 
   handshake_client_.reset();
   // We set the disconnect handler for `receiver_`, not `client_`, in order

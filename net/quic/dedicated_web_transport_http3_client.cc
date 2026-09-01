@@ -28,6 +28,7 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/web_transport/web_transport_headers.h"
@@ -479,6 +480,14 @@ quic::WebTransportSession* DedicatedWebTransportHttp3Client::session() {
   if (web_transport_session_ == nullptr)
     return nullptr;
   return web_transport_session_;
+}
+
+std::optional<quic::QuicByteCount>
+DedicatedWebTransportHttp3Client::GetMaxDatagramSize() const {
+  if (!session_ || !web_transport_session_ || !session_->SupportsH3Datagram()) {
+    return std::nullopt;
+  }
+  return web_transport_session_->GetMaxDatagramSize();
 }
 
 void DedicatedWebTransportHttp3Client::DoLoop(int rv) {

@@ -174,8 +174,15 @@ class NET_EXPORT WebTransportClient {
 
   virtual void CloseIfNonceMatches(base::UnguessableToken nonce) = 0;
 
-  // session() can be nullptr in states other than CONNECTED.
+  // session() can be nullptr in states other than CONNECTED. Do not call
+  // session()->GetMaxDatagramSize() directly because malformed peer settings
+  // can violate its QUICHE-side preconditions. Use GetMaxDatagramSize().
   virtual quic::WebTransportSession* session() = 0;
+
+  // Returns nullopt when the maximum cannot be determined. Zero is a valid
+  // established-session value indicating no non-empty outgoing Datagram
+  // payload fits.
+  virtual std::optional<quic::QuicByteCount> GetMaxDatagramSize() const = 0;
 };
 
 // Creates a WebTransport client for |url| accessed from |origin| with the

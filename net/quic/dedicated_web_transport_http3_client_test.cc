@@ -175,12 +175,18 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   }
 
   void StartServer(std::unique_ptr<quic::ProofSource> proof_source = nullptr) {
+    StartServerWithConfig(quic::QuicConfig(), std::move(proof_source));
+  }
+
+  void StartServerWithConfig(
+      quic::QuicConfig config,
+      std::unique_ptr<quic::ProofSource> proof_source = nullptr) {
     if (proof_source == nullptr) {
       proof_source = quic::test::crypto_test_utils::ProofSourceForTesting();
     }
     backend_.set_enable_webtransport(true);
     server_ = std::make_unique<QuicSimpleServer>(
-        std::move(proof_source), quic::QuicConfig(),
+        std::move(proof_source), std::move(config),
         quic::QuicCryptoServerConfig::ConfigOptions(),
         AllSupportedQuicVersions(), &backend_);
     ASSERT_TRUE(server_->CreateUDPSocketAndListen(
@@ -221,12 +227,64 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
       GetURL("/echo"), origin_, &visitor_, anonymization_key_,
       handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+  EXPECT_EQ(client_->GetMaxDatagramSize(), std::nullopt);
 
   EXPECT_CALL(visitor_, OnBeforeConnect);
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
   client_->Connect();
   Run();
   ASSERT_TRUE(client_->session() != nullptr);
+  const auto max_datagram_size = client_->GetMaxDatagramSize();
+  ASSERT_TRUE(max_datagram_size);
+  EXPECT_GT(*max_datagram_size, 0u);
+
+  client_->Close(std::nullopt);
+  EXPECT_CALL(visitor_, OnClosed(_)).WillOnce(StopRunning());
+  Run();
+}
+
+TEST_F(DedicatedWebTransportHttp3Test,
+       ZeroQuicDatagramLimitReturnsZeroMaxDatagramSize) {
+  // Zero is the transport parameter default, so QUICHE omits it. This emulates
+  // a peer that advertises HTTP Datagrams without QUIC Datagram capacity.
+  quic::QuicConfig config;
+  config.SetMaxDatagramFrameSizeToSend(0);
+  StartServerWithConfig(std::move(config));
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+  // The regression signal is also the absence of QUICHE's QUIC_BUG in
+  // DCHECK-enabled builds.
+  EXPECT_THAT(client_->GetMaxDatagramSize(), Optional(0u));
+
+  client_->Close(std::nullopt);
+  EXPECT_CALL(visitor_, OnClosed(_)).WillOnce(StopRunning());
+  Run();
+}
+
+TEST_F(DedicatedWebTransportHttp3Test,
+       TinyQuicDatagramLimitUsesActualStreamIdPrefix) {
+  quic::QuicConfig config;
+  config.SetMaxDatagramFrameSizeToSend(3);
+  StartServerWithConfig(std::move(config));
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+  // Three bytes minus the QUIC DATAGRAM frame type and one-byte Quarter
+  // Stream ID leaves one byte for the WebTransport payload.
+  EXPECT_THAT(client_->GetMaxDatagramSize(), Optional(1u));
 
   client_->Close(std::nullopt);
   EXPECT_CALL(visitor_, OnClosed(_)).WillOnce(StopRunning());

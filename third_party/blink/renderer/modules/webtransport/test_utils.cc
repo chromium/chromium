@@ -115,7 +115,8 @@ void TestWebTransportCreator::Connect(
       client_remote.InitWithNewPipeAndPassReceiver(),
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
           .Build(),
-      String(), network::mojom::blink::WebTransportStats::New());
+      String(), network::mojom::blink::WebTransportStats::New(),
+      /*max_datagram_size=*/1024);
   client_remote_.Bind(std::move(client_remote));
 }
 

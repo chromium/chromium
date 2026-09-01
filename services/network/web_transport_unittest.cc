@@ -171,12 +171,14 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
       mojo::PendingReceiver<mojom::WebTransportClient> client_receiver,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
       const std::optional<std::string>& selected_application_protocol,
-      mojom::WebTransportStatsPtr initial_stats) override {
+      mojom::WebTransportStatsPtr initial_stats,
+      std::optional<uint32_t> max_datagram_size) override {
     transport_ = std::move(transport);
     client_receiver_ = std::move(client_receiver);
     has_seen_connection_establishment_ = true;
     receiver_.reset();
     selected_application_protocol_ = selected_application_protocol;
+    max_datagram_size_ = max_datagram_size;
     response_headers_ = response_headers;
     std::move(callback_).Run();
   }
@@ -217,6 +219,9 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   std::optional<std::string> selected_application_protocol() const {
     return selected_application_protocol_;
   }
+  std::optional<uint32_t> max_datagram_size() const {
+    return max_datagram_size_;
+  }
   const scoped_refptr<net::HttpResponseHeaders>& response_headers() const {
     return response_headers_;
   }
@@ -232,6 +237,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   bool has_seen_mojo_connection_error_ = false;
   std::optional<net::WebTransportError> handshake_error_;
   std::optional<std::string> selected_application_protocol_;
+  std::optional<uint32_t> max_datagram_size_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
 
@@ -533,6 +539,8 @@ TEST_F(WebTransportTest, ConnectSuccessfully) {
   EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
   EXPECT_EQ(test_handshake_client.selected_application_protocol(),
             std::nullopt);
+  ASSERT_TRUE(test_handshake_client.max_datagram_size().has_value());
+  EXPECT_GT(*test_handshake_client.max_datagram_size(), 0u);
   EXPECT_EQ(1u, network_context().NumOpenWebTransports());
 }
 

@@ -131,7 +131,8 @@ class MODULES_EXPORT WebTransport final
       mojo::PendingReceiver<network::mojom::blink::WebTransportClient>,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
       const String& selected_application_protocol,
-      network::mojom::blink::WebTransportStatsPtr initial_stats) override;
+      network::mojom::blink::WebTransportStatsPtr initial_stats,
+      std::optional<uint32_t> max_datagram_size) override;
   void OnHandshakeFailed(network::mojom::blink::WebTransportErrorPtr) override;
 
   // WebTransportClient implementation
