@@ -1156,6 +1156,7 @@ void BoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
     const PhysicalFragment& child_fragment = *child;
+    CHECK(!child_fragment.IsLayoutObjectDestroyedOrMoved());
     DCHECK(child_fragment.IsBox());
     if (child_fragment.HasSelfPaintingLayer()) {
       if (paint_info.phase != PaintPhase::kTextClip) {
@@ -1227,6 +1228,7 @@ void BoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
   while (*cursor) {
     const FragmentItem* item = cursor->Current().Item();
     DCHECK(item);
+    CHECK(!item->IsLayoutObjectDestroyedOrMoved());
     const PhysicalBoxFragment* child_fragment = item->BoxFragment();
     if (!child_fragment) {
       cursor->MoveToNext();
@@ -1265,6 +1267,7 @@ void BoxFragmentPainter::PaintFloatingChildren(
 
   for (const PhysicalFragmentLink& child : container.Children()) {
     const PhysicalFragment& child_fragment = *child;
+    CHECK(!child_fragment.IsLayoutObjectDestroyedOrMoved());
     if (child_fragment.HasSelfPaintingLayer())
       continue;
 
@@ -1748,6 +1751,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
     const PhysicalOffset& paint_offset) {
   while (*children) {
     const FragmentItem* item = children->Current().Item();
+    CHECK(!item->IsLayoutObjectDestroyedOrMoved());
     if (const PhysicalLineBoxFragment* line = item->LineBoxFragment()) {
       if (!line->IsBlockInInline()) {
         children->MoveToNextSkippingChildren();
@@ -1842,11 +1846,7 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
   while (*cursor) {
     const FragmentItem* item = cursor->CurrentItem();
     DCHECK(item);
-    if (item->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
-      // TODO(crbug.com/1099613): This should not happen, as long as it is
-      // really layout-clean.
-      NOTREACHED();
-    }
+    CHECK(!item->IsLayoutObjectDestroyedOrMoved());
     switch (item->Type()) {
       case FragmentItem::kText:
       case FragmentItem::kGeneratedText:
@@ -1914,6 +1914,7 @@ void BoxFragmentPainter::PaintLineBoxChildItems(
   for (; *children; children->MoveToNextSkippingChildren()) {
     const FragmentItem* child_item = children->CurrentItem();
     DCHECK(child_item);
+    CHECK(!child_item->IsLayoutObjectDestroyedOrMoved());
     if (child_item->IsFloating())
       continue;
 
