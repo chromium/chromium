@@ -6,6 +6,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "chrome/browser/permissions/system/media_authorization_wrapper_mac.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
@@ -20,7 +22,10 @@ class SystemMediaPermissionCacheMacTestHelper::Impl
     SetIsScreenCaptureAllowedForTesting(true);
   }
 
-  ~Impl() override { SetMediaAuthorizationWrapperForTesting(nullptr); }
+  ~Impl() override {
+    SetMediaAuthorizationWrapperForTesting(nullptr);
+    SetIsScreenCaptureAllowedForTesting(std::nullopt);
+  }
 
   AVAuthorizationStatus AuthorizationStatusForMediaType(
       AVMediaType media_type) override {

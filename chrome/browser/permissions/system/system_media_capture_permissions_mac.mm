@@ -175,7 +175,8 @@ void SetMediaAuthorizationWrapperForTesting(
   g_media_authorization_wrapper_for_tests = wrapper;
 }
 
-void SetIsScreenCaptureAllowedForTesting(bool is_screen_capture_allowed) {
+void SetIsScreenCaptureAllowedForTesting(
+    std::optional<bool> is_screen_capture_allowed) {
   g_is_screen_capture_allowed_for_testing = is_screen_capture_allowed;
 }
 

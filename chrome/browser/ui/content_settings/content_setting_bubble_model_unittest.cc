@@ -73,6 +73,10 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/permissions/system/system_media_permission_cache_mac_test_helper.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
 using custom_handlers::ProtocolHandler;
@@ -94,6 +98,15 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
 
     permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
         web_contents());
+#if BUILDFLAG(IS_MAC)
+    // The camera/mic bubbles reflect whatever the bot happens to have granted
+    // Chrome in macOS System Settings: when the OS denies access,
+    // `ContentSettingMediaStreamBubbleModel` swaps in the "turned off in Mac
+    // System Settings" bubble instead of the per-site one, leaving the title,
+    // message and radio group under test unset.
+    system_media_permissions_.SetCameraStatus(/*denied=*/false);
+    system_media_permissions_.SetMicStatus(/*denied=*/false);
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   content::Page& page() { return web_contents()->GetPrimaryPage(); }
@@ -102,6 +115,14 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
         HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory()}};
   }
+
+ private:
+#if BUILDFLAG(IS_MAC)
+  // Installs itself as the system media permission source on construction and
+  // uninstalls on destruction, so the stubbing is scoped to each test.
+  system_permission_settings::SystemMediaPermissionCacheMacTestHelper
+      system_media_permissions_;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 TEST_F(ContentSettingBubbleModelTest, ImageRadios) {
@@ -212,13 +233,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
         std::make_tuple(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW)));
 
-// TODO(crbug.com/522276380): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MediastreamMicAndCamera DISABLED_MediastreamMicAndCamera
-#else
-#define MAYBE_MediastreamMicAndCamera MediastreamMicAndCamera
-#endif
-TEST_F(ContentSettingBubbleModelTest, MAYBE_MediastreamMicAndCamera) {
+TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -398,13 +413,7 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   }
 }
 
-// TODO(crbug.com/514291799): Re-enable when not flakey on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MediastreamMic DISABLED_MediastreamMic
-#else
-#define MAYBE_MediastreamMic MediastreamMic
-#endif
-TEST_F(ContentSettingBubbleModelTest, MAYBE_MediastreamMic) {
+TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
   // setting bubble.
   base::test::ScopedFeatureList scoped_list;
@@ -472,13 +481,7 @@ TEST_F(ContentSettingBubbleModelTest, MAYBE_MediastreamMic) {
   EXPECT_FALSE(new_bubble_content.manage_text.empty());
 }
 
-// TODO(crbug.com/522276380): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MediastreamCamera DISABLED_MediastreamCamera
-#else
-#define MAYBE_MediastreamCamera MediastreamCamera
-#endif
-TEST_F(ContentSettingBubbleModelTest, MAYBE_MediastreamCamera) {
+TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
   // setting bubble.
   base::test::ScopedFeatureList scoped_list;
@@ -547,15 +550,7 @@ TEST_F(ContentSettingBubbleModelTest, MAYBE_MediastreamCamera) {
   EXPECT_FALSE(new_bubble_content.manage_text.empty());
 }
 
-// TODO(crbug.com/514291799): Re-enable when not flakey on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AccumulateMediastreamMicAndCamera \
-  DISABLED_AccumulateMediastreamMicAndCamera
-#else
-#define MAYBE_AccumulateMediastreamMicAndCamera \
-  AccumulateMediastreamMicAndCamera
-#endif
-TEST_F(ContentSettingBubbleModelTest, MAYBE_AccumulateMediastreamMicAndCamera) {
+TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
   // setting bubble.
   base::test::ScopedFeatureList scoped_list;

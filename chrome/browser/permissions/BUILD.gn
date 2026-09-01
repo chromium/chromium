@@ -226,9 +226,17 @@ source_set("test_support") {
     "system/mock_platform_handle.h",
   ]
 
+  if (is_mac) {
+    sources += [
+      "system/system_media_permission_cache_mac_test_helper.h",
+      "system/system_media_permission_cache_mac_test_helper.mm",
+    ]
+  }
+
   deps = [
     ":permissions",
     "//base",
+    "//chrome/browser/permissions/system",
     "//components/passage_embeddings/core:test_support",
     "//components/permissions:test_support",
     "//components/safe_browsing/core/browser/db:database_manager",
@@ -404,6 +412,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":permissions",
+      ":test_support",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions/system",
       "//chrome/browser/ui/browser_window",
@@ -416,12 +425,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac || is_win) {
       sources += [ "system/system_permission_settings_interactive_uitest.cc" ]
-    }
-    if (is_mac) {
-      sources += [
-        "system/system_media_permission_cache_mac_test_helper.h",
-        "system/system_media_permission_cache_mac_test_helper.mm",
-      ]
     }
   }
 }
