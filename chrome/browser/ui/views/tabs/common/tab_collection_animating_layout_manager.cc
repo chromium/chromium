@@ -302,6 +302,25 @@ void TabCollectionAnimatingLayoutManager::SetTargetLayout(
   }
 }
 
+void TabCollectionAnimatingLayoutManager::SetStartingLayoutToCurrent() {
+  if (animation_axis_ == AnimationAxis::kHorizontal) {
+    // `CalculateClosingViewsTargetX()` assumes the child layouts of
+    // starting_layout_ are sorted. Typically starting_layout_ is set from
+    // GetProposedLayout which is in model order, however current_layout_ is an
+    // interpolated layout based on the order of `host_view()->children()`. Sort
+    // the child layouts of `current_layout_` based on their x-position.
+    std::stable_sort(
+        current_layout_.child_layouts.begin(),
+        current_layout_.child_layouts.end(),
+        [](views::ChildLayout lhs, views::ChildLayout rhs) {
+          const int lhs_midpoint = lhs.bounds.x() + lhs.bounds.width() / 2;
+          const int rhs_midpoint = rhs.bounds.x() + rhs.bounds.width() / 2;
+          return lhs_midpoint < rhs_midpoint;
+        });
+  }
+  SetStartingLayout(current_layout_);
+}
+
 void TabCollectionAnimatingLayoutManager::UpdateCurrentLayout() {
   current_offset_ = animation_.GetCurrentValue();
   double denominator = 1.0 - starting_offset_;
@@ -385,7 +404,7 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   if (current_offset_ > kResetAnimationThreshold) {
     // We are far enough along that we should start a "fresh" animation
     // from 0% to avoid awkward slow-downs at the end of the curve.
-    SetStartingLayout(current_layout_);
+    SetStartingLayoutToCurrent();
     starting_offset_ = 0.0;
     current_offset_ = 0.0;
     animation_.Reset(0.0);
@@ -393,7 +412,7 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
     // We are still early in the animation. Simply update the starting offset.
     // The timer remains running and we just calculate a new slope in
     // LayoutImpl.
-    SetStartingLayout(current_layout_);
+    SetStartingLayoutToCurrent();
     starting_offset_ = current_offset_;
   }
 

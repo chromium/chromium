@@ -146,6 +146,10 @@ class TabCollectionAnimatingLayoutManager
   void SetStartingLayout(const views::ProposedLayout& starting_layout);
   void SetTargetLayout(const views::ProposedLayout& target_layout);
 
+  // Sets `starting_layout_` to `current_layout_`. For horizontal tabs,
+  // `current_layout_` is sorted first.
+  void SetStartingLayoutToCurrent();
+
   // Updates `current_layout_` to reflect the current state of `animation_`.
   void UpdateCurrentLayout();
 
