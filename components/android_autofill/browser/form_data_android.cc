@@ -8,7 +8,7 @@
 #include <string_view>
 #include <tuple>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/autofill_type_util.h"
@@ -139,6 +139,42 @@ void FormDataAndroid::UpdateFieldTypes(
 }
 
 std::vector<int> FormDataAndroid::UpdateFieldVisibilities(
+    const FormData& form) {
+  // TODO(crbug.com/542493825): Remove when
+  // `AutofillAndroidUseGlobalIdForFormComparison` launches.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAndroidUseGlobalIdForFormComparison)) {
+    return UpdateFieldVisibilitiesByGlobalId(form);
+  }
+  return UpdateFieldVisibilitiesByIndex(form);
+}
+
+std::vector<int> FormDataAndroid::UpdateFieldVisibilitiesByGlobalId(
+    const FormData& form) {
+  CHECK_EQ(form_.fields().size(), fields_.size());
+
+  const auto updated_fields =
+      base::MakeFlatMap<FieldGlobalId, const FormFieldData*>(
+          form.fields(), {}, [](const FormFieldData& field) {
+            return std::make_pair(field.global_id(), &field);
+          });
+  // We rarely expect to find any difference in visibility - therefore do not
+  // reserve space in the vector.
+  std::vector<int> indices;
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
+    const FormFieldData& field = form_.fields()[i];
+    const FormFieldData* updated_field =
+        base::FindPtrOrNull(updated_fields, field.global_id());
+    if (updated_field &&
+        updated_field->is_focusable() != field.is_focusable()) {
+      fields_[i]->OnFormFieldVisibilityDidChange(*updated_field);
+      indices.emplace_back(i);
+    }
+  }
+  return indices;
+}
+
+std::vector<int> FormDataAndroid::UpdateFieldVisibilitiesByIndex(
     const FormData& form) {
   CHECK_EQ(form_.fields().size(), form.fields().size());
   CHECK_EQ(form_.fields().size(), fields_.size());

@@ -81,6 +81,14 @@ class FormDataAndroid {
   // Returns `false` if the number of fields differs.
   bool SimilarFieldsAs(const FormData& form) const;
 
+  // Updates the field visibilities by matching fields by `FieldGlobalId`.
+  std::vector<int> UpdateFieldVisibilitiesByGlobalId(const FormData& form);
+
+  // Updates the field visibilities by matching fields by index.
+  // TODO(crbug.com/542493825): Remove when
+  // `AutofillAndroidUseGlobalIdForFormComparison` launches.
+  std::vector<int> UpdateFieldVisibilitiesByIndex(const FormData& form);
+
   // The session id of this form. It is used to generate virtual view ids for
   // the `ViewStructure` shared with the Android AutofillManager framework.
   const SessionId session_id_;
