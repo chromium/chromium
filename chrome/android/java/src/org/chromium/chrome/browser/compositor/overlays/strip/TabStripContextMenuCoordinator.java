@@ -130,27 +130,15 @@ public class TabStripContextMenuCoordinator {
      */
     public void showMenu(
             RectProvider anchorViewRectProvider, boolean isIncognito, Activity activity) {
-        ModelList modelList = new ModelList();
-        configureMenuItems(modelList, isIncognito);
-        if (modelList.isEmpty()) return;
+        View contentView = buildMenuView(isIncognito);
+        if (contentView == null) return;
 
         Drawable background = TabOverflowMenuCoordinator.getMenuBackground(mContext, isIncognito);
+        View decorView = activity.getWindow().getDecorView();
 
-        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
-        View contentView =
-                LayoutInflater.from(mContext)
-                        .inflate(R.layout.tab_switcher_action_menu_layout, null);
-        ListMenuUtils.clipContentViewOutline(contentView, R.attr.popupBgCornerRadius);
-
-        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
         TouchTrackingListView touchTrackingListView =
                 contentView.findViewById(R.id.tab_group_action_menu_list);
-        ListMenuItemAdapter adapter =
-                createAdapter(modelList, Set.of(), getListMenuDelegate(contentView));
-        touchTrackingListView.setItemsCanFocus(true);
-        touchTrackingListView.setAdapter(adapter);
-
-        View decorView = activity.getWindow().getDecorView();
+        ListMenuItemAdapter adapter = (ListMenuItemAdapter) touchTrackingListView.getAdapter();
 
         // Similar to Chrome Desktop (W/M/L), compute the translated strings' width
         // dynamically, clamp the value between a preselected
@@ -308,8 +296,32 @@ public class TabStripContextMenuCoordinator {
     }
 
     @VisibleForTesting
-    @Nullable AnchoredPopupWindow getPopupWindow() {
+    @Nullable
+    public AnchoredPopupWindow getPopupWindow() {
         return mMenuWindow;
+    }
+
+    @VisibleForTesting
+    public @Nullable View buildMenuView(boolean isIncognito) {
+        ModelList modelList = new ModelList();
+        configureMenuItems(modelList, isIncognito);
+        if (modelList.isEmpty()) return null;
+
+        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
+        View contentView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.tab_switcher_action_menu_layout, null);
+        ListMenuUtils.clipContentViewOutline(contentView, R.attr.popupBgCornerRadius);
+
+        // TODO (crbug.com/436283175): Update the name of this resource for generic use.
+        TouchTrackingListView touchTrackingListView =
+                contentView.findViewById(R.id.tab_group_action_menu_list);
+        ListMenuItemAdapter adapter =
+                createAdapter(modelList, Set.of(), getListMenuDelegate(contentView));
+        touchTrackingListView.setItemsCanFocus(true);
+        touchTrackingListView.setAdapter(adapter);
+
+        return contentView;
     }
 
     @VisibleForTesting

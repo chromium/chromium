@@ -14,6 +14,7 @@ import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_MOBI
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -30,6 +31,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,10 +51,17 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -67,9 +76,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -79,6 +90,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -89,6 +101,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 // TODO(crbug.com/521987032): Add tests for nested children with actor indicator.
@@ -97,6 +110,7 @@ import java.util.List;
 /** Render tests for Vertical Tabs UI (TabVerticalViewBinder). */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class VerticalTabListRenderTest {
@@ -131,6 +145,7 @@ public class VerticalTabListRenderTest {
     private Activity mActivity;
     private FrameLayout mRenderView;
     private int mPinnedItemWidthPx;
+    private int mOriginalSmallestScreenWidthDp;
 
     public VerticalTabListRenderTest(boolean isNightModeEnabled, boolean isIncognito) {
         mIsIncognito = isIncognito;
@@ -150,6 +165,25 @@ public class VerticalTabListRenderTest {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
+
+        mOriginalSmallestScreenWidthDp =
+                mActivity.getResources().getConfiguration().smallestScreenWidthDp;
+    }
+
+    @After
+    public void tearDown() {
+        // Reset smallestScreenWidthDp.
+        if (mOriginalSmallestScreenWidthDp != 0 && mActivity != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Configuration config = mActivity.getResources().getConfiguration();
+                        config.smallestScreenWidthDp = mOriginalSmallestScreenWidthDp;
+                        mActivity
+                                .getResources()
+                                .updateConfiguration(
+                                        config, mActivity.getResources().getDisplayMetrics());
+                    });
+        }
     }
 
     private ViewGroup inflateAndAttachView(int layoutResId) {
@@ -954,6 +988,146 @@ public class VerticalTabListRenderTest {
                 /* memoryUsageBytes= */ 100_000_000L,
                 createThumbnailBitmap(Color.RED),
                 "tab_hover_card_alert_and_memory_usage");
+    }
+
+    // =========================================================================================
+    // Empty Space Context Menu (TabStripContextMenuCoordinator) Tests
+    // =========================================================================================
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testEmptySpaceContextMenu_Standard() throws IOException {
+        testEmptySpaceContextMenu(
+                /* tabCount= */ 3,
+                TabModel.RecentlyClosedEntryType.TAB,
+                /* canToggleLayout= */ true,
+                "tab_strip_empty_space_context_menu_standard");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testEmptySpaceContextMenu_SingleTab() throws IOException {
+        // If tabCount == 1, "Bookmark all tabs" should be greyed out.
+        // If incognito == true, then "Bookmark all tabs" shouldn't appear at all in general.
+        testEmptySpaceContextMenu(
+                /* tabCount= */ 1,
+                TabModel.RecentlyClosedEntryType.TAB,
+                /* canToggleLayout= */ true,
+                "tab_strip_empty_space_context_menu_single_tab");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testEmptySpaceContextMenu_LayoutToggleDisabled() throws IOException {
+        // If canToggleLayout == false, "Show Tabs Horizontally" should be greyed out.
+        testEmptySpaceContextMenu(
+                /* tabCount= */ 3,
+                TabModel.RecentlyClosedEntryType.TAB,
+                /* canToggleLayout= */ false,
+                "tab_strip_empty_space_context_menu_layout_toggle_disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testEmptySpaceContextMenu_NoRecentlyClosed() throws IOException {
+        // If RecentlyClosedEntryType.NONE, "Reopen closed tab" should be greyed out.
+        testEmptySpaceContextMenu(
+                /* tabCount= */ 2,
+                TabModel.RecentlyClosedEntryType.NONE,
+                /* canToggleLayout= */ true,
+                "tab_strip_empty_space_context_menu_no_recently_closed");
+    }
+
+    private void testEmptySpaceContextMenu(
+            int tabCount,
+            @TabModel.RecentlyClosedEntryType int recentlyClosedType,
+            boolean canToggleLayout,
+            String goldenName)
+            throws IOException {
+        FrameLayout[] renderContainer = new FrameLayout[1];
+        // To ensure "Name window" is included in the render output.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+
+                    // Force the -sw600dp resource qualifier bucket so DeviceFormFactor
+                    // detects SCREEN_BUCKET_TABLET on CQ phone bots.
+                    Configuration config = mActivity.getResources().getConfiguration();
+                    config.smallestScreenWidthDp = 600;
+                    mActivity
+                            .getResources()
+                            .updateConfiguration(
+                                    config, mActivity.getResources().getDisplayMetrics());
+
+                    // Configure the TabModel mock.
+                    Profile mockProfile = mock(Profile.class);
+                    TabModel tabModel = mock(TabModel.class);
+                    when(tabModel.isIncognitoBranded()).thenReturn(mIsIncognito);
+                    when(tabModel.getCount()).thenReturn(tabCount);
+                    when(tabModel.getProfile()).thenReturn(mockProfile);
+                    when(tabModel.getMostRecentlyClosedEntryType()).thenReturn(recentlyClosedType);
+
+                    MultiInstanceManager multiInstanceManager = mock(MultiInstanceManager.class);
+                    SnackbarManager snackbarManager = mock(SnackbarManager.class);
+
+                    WindowAndroid windowAndroid = mock(WindowAndroid.class);
+                    when(windowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+                    when(windowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
+
+                    TabStripContextMenuCoordinator coordinator =
+                            TabStripContextMenuCoordinator.createContextMenuCoordinator(
+                                    tabModel,
+                                    multiInstanceManager,
+                                    windowAndroid,
+                                    snackbarManager,
+                                    /* onNewTabClick= */ () -> {},
+                                    /* canActivateTabLayoutToggleMenuSupplier= */ () ->
+                                            canToggleLayout,
+                                    TabContextMenuCoordinator.TabStripLayoutType.VERTICAL);
+
+                    // Generate the complete menu list with all rows, dividers, text, click
+                    // delegates.
+                    View menuContentView = coordinator.buildMenuView(mIsIncognito);
+
+                    // Since this is a render test, instead of depending on the Android Popup
+                    // Window, wrap the contentView (a transparent list of menu rows) in a
+                    // FrameLayout with the same background drawable to replicate the popup
+                    // container.
+                    renderContainer[0] = new FrameLayout(mActivity);
+                    Drawable background =
+                            TabOverflowMenuCoordinator.getMenuBackground(mActivity, mIsIncognito);
+                    renderContainer[0].setBackground(background);
+
+                    // User the same minWidthPx used in TabStripContextMenuCoordinator.
+                    int minWidthPx =
+                            mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.tab_strip_context_menu_min_width);
+
+                    renderContainer[0].addView(
+                            menuContentView,
+                            new FrameLayout.LayoutParams(
+                                    minWidthPx, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    // Attach renderContainer to the BlankUiTestActivity window hierarchy to measure
+                    // dimensions and draw pixels to the canvas.
+                    mActivity.setContentView(
+                            renderContainer[0],
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                });
+        // Verify that the Android layout engine has measured the view hierarchy and assigned a
+        // non-zero height.
+        CriteriaHelper.pollUiThread(() -> renderContainer[0].getHeight() > 0);
+        // Capture the pixel bitmap.
+        mRenderTestRule.render(renderContainer[0], goldenName + (mIsIncognito ? "_incognito" : ""));
     }
 
     private void testTabGroupSpine(boolean isCollapsed, boolean isRtl, boolean isHeaderOffScreen)
