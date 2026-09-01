@@ -3264,6 +3264,119 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+    AllowlistedMainFrameWithRestrictedExtensionIframeBlocked) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL allowed_url(embedded_test_server()->GetURL("/title1.html"));
+
+  base::ListValue allowlist;
+  allowlist.Append(allowed_url.spec());
+  profile()->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
+                                 std::move(allowlist));
+
+  base::FilePath extension_path =
+      test_data_dir_.AppendASCII("web_accessible_resources")
+          .AppendASCII("subframe");
+  const Extension* extension = InstallExtension(
+      extension_path, 1, ManifestLocation::kExternalPolicyDownload);
+  ASSERT_TRUE(extension);
+  std::string extension_id = extension->id();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(profile(), web_contents));
+
+  GURL extension_url("chrome-extension://" + extension_id +
+                     "/web_accessible_page.html");
+  content::TestNavigationObserver nav_observer(extension_url);
+  nav_observer.WatchExistingWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents->GetPrimaryMainFrame(),
+      content::JsReplace("let iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         extension_url)));
+  nav_observer.Wait();
+
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(profile(), web_contents));
+
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsOpenedByAction::kUnknown);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+  EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+
+  scoped_refptr<content::DevToolsAgentHost> subframe_agent_host;
+  for (const auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetURL() == extension_url) {
+      subframe_agent_host = host;
+      break;
+    }
+  }
+  ASSERT_TRUE(subframe_agent_host);
+  EXPECT_FALSE(IsInspectionAllowed(profile(), subframe_agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+    AllowlistedMainFrameWithRestrictedExtensionIframeAllowedWhenPolicyAllowed) {
+  AllowDevTools(browser_window_interface());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL allowed_url(embedded_test_server()->GetURL("/title1.html"));
+
+  base::ListValue allowlist;
+  allowlist.Append("chrome-extension://*");
+  allowlist.Append(allowed_url.spec());
+  profile()->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
+                                 std::move(allowlist));
+
+  base::FilePath extension_path =
+      test_data_dir_.AppendASCII("web_accessible_resources")
+          .AppendASCII("subframe");
+  const Extension* extension = InstallExtension(
+      extension_path, 1, ManifestLocation::kExternalPolicyDownload);
+  ASSERT_TRUE(extension);
+  std::string extension_id = extension->id();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(profile(), web_contents));
+
+  GURL extension_url("chrome-extension://" + extension_id +
+                     "/web_accessible_page.html");
+  content::TestNavigationObserver nav_observer(extension_url);
+  nav_observer.WatchExistingWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents->GetPrimaryMainFrame(),
+      content::JsReplace("let iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         extension_url)));
+  nav_observer.Wait();
+
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(profile(), web_contents));
+
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsOpenedByAction::kUnknown);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+  EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+
+  scoped_refptr<content::DevToolsAgentHost> subframe_agent_host;
+  for (const auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetURL() == extension_url) {
+      subframe_agent_host = host;
+      break;
+    }
+  }
+  ASSERT_TRUE(subframe_agent_host);
+  EXPECT_TRUE(IsInspectionAllowed(profile(), subframe_agent_host.get()));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class DevToolsAllowedByCommandLineSwitch
