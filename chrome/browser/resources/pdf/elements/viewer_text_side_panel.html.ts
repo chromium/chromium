@@ -15,21 +15,20 @@ export function getHtml(this: ViewerTextSidePanelElement) {
   return html`<!--_html_template_start_-->
 <div class="side-panel-content">
   <h2>$i18n{ink2TextFont}</h2>
-  <select class="md-select" @change="${this.onTypefaceChange_}"
+  <select id="typefaceSelect" class="md-select"
+      @change="${this.onTypefaceChange_}" .value="${this.currentTypeface}"
       aria-label="$i18n{ink2TextFont}">
     ${this.fontNames.map(typeface => html`
-      <option value="${typeface}"
-          ?selected="${this.isSelectedTypeface(typeface)}">
+      <option value="${typeface}">
         ${this.i18n(this.getLabelForTypeface(typeface))}
       </option>
     `)}
   </select>
-  <select class="md-select" @change="${this.onSizeChange_}"
+  <select id="sizeSelect" class="md-select" @change="${this.onSizeChange_}"
+      .value="${this.currentSize.toString()}"
       aria-label="$i18n{ink2TextFontSize}">
     ${this.sizes.map(size => html`
-      <option value="${size}" ?selected="${this.isSelectedSize(size)}">
-        ${size}
-      </option>
+      <option value="${size}">${size}</option>
     `)}
   </select>
 </div>

@@ -18,15 +18,18 @@ export function getHtml(this: TextAlignmentSelectorElement) {
 <cr-radio-group aria-label="$i18n{ink2TextAlignment}"
     selectable-elements="selectable-icon-button"
     .selected="${this.currentAlignment_}"
-    @selected-changed="${this.onAlignmentSelectedChanged_}">
+    @keydown="${this.onAlignmentKeydown_}">
   <selectable-icon-button icon="pdf-ink:format-align-left"
-      name="${TextAlignment.LEFT}" label="$i18n{ink2TextAlignLeft}">
+      name="${TextAlignment.LEFT}" label="$i18n{ink2TextAlignLeft}"
+      @click="${this.onAlignmentClick_}">
   </selectable-icon-button>
   <selectable-icon-button icon="pdf-ink:format-align-center"
-      name="${TextAlignment.CENTER}" label="$i18n{ink2TextAlignCenter}">
+      name="${TextAlignment.CENTER}" label="$i18n{ink2TextAlignCenter}"
+      @click="${this.onAlignmentClick_}">
   </selectable-icon-button>
   <selectable-icon-button icon="pdf-ink:format-align-right"
-      name="${TextAlignment.RIGHT}" label="$i18n{ink2TextAlignRight}">
+      name="${TextAlignment.RIGHT}" label="$i18n{ink2TextAlignRight}"
+      @click="${this.onAlignmentClick_}">
   </selectable-icon-button>
 </cr-radio-group>
 <!--_html_template_end_-->`;

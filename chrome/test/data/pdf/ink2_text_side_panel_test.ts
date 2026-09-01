@@ -34,23 +34,24 @@ chrome.test.runTests([
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
     chrome.test.assertTrue(!!sidePanel);
 
-    // Font is the first select.
-    const fontSelect = sidePanel.shadowRoot.querySelector('select');
-    chrome.test.assertTrue(!!fontSelect);
+    const typefaceSelect =
+        sidePanel.shadowRoot.querySelector<HTMLSelectElement>(
+            '#typefaceSelect');
+    chrome.test.assertTrue(!!typefaceSelect);
     const initialFont =
         Ink2Manager.getInstance().getCurrentTextAttributes().typeface;
-    chrome.test.assertEq(initialFont, fontSelect.value);
+    chrome.test.assertEq(initialFont, typefaceSelect.value);
 
     const whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
         'attributes-changed', Ink2Manager.getInstance());
     const newValue = TextTypeface.SERIF;
-    fontSelect.focus();
-    fontSelect.value = newValue;
-    fontSelect.dispatchEvent(new CustomEvent('change'));
+    typefaceSelect.focus();
+    typefaceSelect.value = newValue;
+    typefaceSelect.dispatchEvent(new CustomEvent('change'));
     const changedEvent = await whenChanged;
     chrome.test.assertEq(newValue, changedEvent.detail.typeface);
     await microtasksFinished();
-    chrome.test.assertEq(newValue, fontSelect.value);
+    chrome.test.assertEq(newValue, typefaceSelect.value);
 
     chrome.test.succeed();
   },
@@ -61,10 +62,9 @@ chrome.test.runTests([
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
     chrome.test.assertTrue(!!sidePanel);
 
-    // Size is the second select.
-    const selects = sidePanel.shadowRoot.querySelectorAll('select');
-    chrome.test.assertEq(2, selects.length);
-    const sizeSelect = selects[1]!;
+    const sizeSelect =
+        sidePanel.shadowRoot.querySelector<HTMLSelectElement>('#sizeSelect');
+    chrome.test.assertTrue(!!sizeSelect);
     const initialSize =
         Ink2Manager.getInstance().getCurrentTextAttributes().size;
     chrome.test.assertEq(initialSize.toString(), sizeSelect.value);

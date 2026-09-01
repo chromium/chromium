@@ -81,6 +81,7 @@ build_webui_tests("build") {
       "ink2_text_box_test_utils.ts",
       "ink2_text_box_viewport_test.ts",
       "ink2_text_side_panel_test.ts",
+      "ink2_text_state_management_test.ts",
       "ink2_text_styles_selector_test.ts",
       "ink2_viewer_toolbar_test.ts",
       "ink_text_annotation_utils_test.ts",

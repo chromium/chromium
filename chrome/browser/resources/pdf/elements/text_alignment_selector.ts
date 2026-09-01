@@ -47,8 +47,46 @@ export class TextAlignmentSelectorElement extends
     selectedButton.focus();
   }
 
-  protected onAlignmentSelectedChanged_(e: CustomEvent<{value: string}>) {
-    const newAlignment = e.detail.value as TextAlignment;
+  protected onAlignmentClick_(e: Event) {
+    const button = e.currentTarget as HTMLElement;
+    const newAlignment = button.getAttribute('name') as TextAlignment;
+    assert(newAlignment);
+    this.setAlignment_(newAlignment);
+  }
+
+  protected onAlignmentKeydown_(e: KeyboardEvent) {
+    if (!['ArrowLeft',
+          'ArrowRight',
+          'ArrowUp',
+          'ArrowDown',
+          'Home',
+          'End',
+          ' ',
+          'Enter',
+    ].includes(e.key)) {
+      return;
+    }
+
+    // Wait for cr-radio-group to handle the keyboard navigation and update its
+    // `selected` property before updating the alignment in Ink2Manager.
+    setTimeout(() => {
+      const radioGroup = this.shadowRoot.querySelector('cr-radio-group');
+      assert(radioGroup);
+      if (radioGroup.selected) {
+        this.setAlignment_(radioGroup.selected as TextAlignment);
+      }
+    }, 0);
+  }
+
+  private setAlignment_(newAlignment: TextAlignment) {
+    if (newAlignment === this.currentAlignment_) {
+      return;
+    }
+
+    this.currentAlignment_ = newAlignment;
+    // Intentionally only update Ink2Manager when alignment is changed from user
+    // interaction (click/keydown), and not whenever it is updated from
+    // onTextAttributesChanged via property binding.
     Ink2Manager.getInstance().setTextAlignment(newAlignment);
   }
 

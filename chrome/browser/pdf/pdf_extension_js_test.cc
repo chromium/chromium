@@ -706,6 +706,32 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, InkTextAnnotations) {
   RunTestsInJsModule("ink2_text_annotations_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest,
+                       Ink2TextStateManagementBottomToolbar) {
+  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
+  // GuestView PDF is fully deprecated.
+  if (!UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  // The window must be smaller than 960px to show the bottom toolbar.
+  GetActiveWebContents()->Resize({0, 0, 959, 1000});
+  RunTestsInJsModule("ink2_text_state_management_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest,
+                       Ink2TextStateManagementSidePanel) {
+  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
+  // GuestView PDF is fully deprecated.
+  if (!UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  // The window must be at least 960px to show the text side panel.
+  GetActiveWebContents()->Resize({0, 0, 1200, 1000});
+  RunTestsInJsModule("ink2_text_state_management_test.js", "test.pdf");
+}
+
 class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
  public:
   // OOPIF PDF only, since MimeHandler handles the beforeunload event instead.

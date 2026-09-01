@@ -39,10 +39,7 @@ export class InkColorSelectorElement extends InkColorSelectorElementBase {
   static override get properties() {
     return {
       colors: {type: Array},
-      currentColor: {
-        notify: true,
-        type: Object,
-      },
+      currentColor: {type: Object},
       label: {type: String},
     };
   }
@@ -88,6 +85,9 @@ export class InkColorSelectorElement extends InkColorSelectorElementBase {
     }
 
     this.currentColor = newColor;
+    // Intentionally only dispatch an event when the color is changed from the
+    // UI, and not whenever it is changed from the parent via property binding.
+    this.fire('current-color-changed', {value: newColor});
   }
 }
 

@@ -5,7 +5,7 @@
 import type {TextAttributes} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {hexToColor, Ink2Manager, InkAnnotationTextMixin, TEXT_COLORS, TEXT_SIZES, TextAlignment, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertDeepEquals, setupTestMockPluginForInk} from './test_util.js';
 
@@ -21,11 +21,13 @@ class TestDummyElement extends TestDummyElementBase {
 
   override render() {
     return html`
-      <select @change="${this.onTypefaceSelected}">
+      <select id="typefaceSelect" .value="${this.currentTypeface}"
+          @change="${this.onTypefaceSelected}">
         <option value="${TextTypeface.SANS_SERIF}"></option>
         <option value="${TextTypeface.SERIF}"></option>
       </select>
-      <select @change="${this.onSizeSelected}">
+      <select id="sizeSelect" .value="${this.currentSize.toString()}"
+          @change="${this.onSizeSelected}">
         <option value="${TEXT_SIZES[0]}"></option>
         <option value="${TEXT_SIZES[1]}"></option>
       </select>
@@ -67,22 +69,25 @@ chrome.test.runTests([
 
     // Test firing a change event from a <select> with onTypefaceSelected
     // registered as the listener calls the manager and results in an event.
-    const selects = testElement.shadowRoot.querySelectorAll('select');
-    chrome.test.assertEq(2, selects.length);
+    const typefaceSelect =
+        testElement.shadowRoot.querySelector<HTMLSelectElement>(
+            '#typefaceSelect');
+    chrome.test.assertTrue(!!typefaceSelect);
     whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
         'attributes-changed', manager);
-    const fontSelect = selects[0]!;
-    fontSelect.value = TextTypeface.SERIF;
-    fontSelect.dispatchEvent(
+    typefaceSelect.value = TextTypeface.SERIF;
+    typefaceSelect.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
     changedEvent = await whenChanged;
     chrome.test.assertEq(TextTypeface.SERIF, changedEvent.detail.typeface);
 
     // Test firing a change event from a <select> with onSizeSelected
     // registered as the listener calls the manager and results in an event.
+    const sizeSelect =
+        testElement.shadowRoot.querySelector<HTMLSelectElement>('#sizeSelect');
+    chrome.test.assertTrue(!!sizeSelect);
     whenChanged = eventToPromise<CustomEvent<TextAttributes>>(
         'attributes-changed', manager);
-    const sizeSelect = selects[1]!;
     sizeSelect.value = `${TEXT_SIZES[1]!}`;
     sizeSelect.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
@@ -118,22 +123,27 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  function testIsSelected() {
-    // Test that isSelectedSize returns the expected value.
-    chrome.test.assertTrue(testElement.isSelectedSize(TEXT_SIZES[1]!));
-    chrome.test.assertFalse(testElement.isSelectedSize(TEXT_SIZES[0]!));
-    testElement.currentSize = TEXT_SIZES[0]!;
-    chrome.test.assertFalse(testElement.isSelectedSize(TEXT_SIZES[1]!));
-    chrome.test.assertTrue(testElement.isSelectedSize(TEXT_SIZES[0]!));
+  async function testSelectValues() {
+    const typefaceSelect =
+        testElement.shadowRoot.querySelector<HTMLSelectElement>(
+            '#typefaceSelect');
+    chrome.test.assertTrue(!!typefaceSelect);
+    const sizeSelect =
+        testElement.shadowRoot.querySelector<HTMLSelectElement>('#sizeSelect');
+    chrome.test.assertTrue(!!sizeSelect);
 
-    // Test that isSelectedTypeface returns the expected value.
-    chrome.test.assertTrue(testElement.isSelectedTypeface(TextTypeface.SERIF));
-    chrome.test.assertFalse(
-        testElement.isSelectedTypeface(TextTypeface.SANS_SERIF));
+    // Initial values from testOnTextAttributesChanged:
+    // currentTypeface = SERIF, currentSize = TEXT_SIZES[1].
+    chrome.test.assertEq(TextTypeface.SERIF, typefaceSelect.value);
+    chrome.test.assertEq(TEXT_SIZES[1]!.toString(), sizeSelect.value);
+
+    // Update currentSize and currentTypeface and verify select values update.
+    testElement.currentSize = TEXT_SIZES[0]!;
     testElement.currentTypeface = TextTypeface.SANS_SERIF;
-    chrome.test.assertFalse(testElement.isSelectedTypeface(TextTypeface.SERIF));
-    chrome.test.assertTrue(
-        testElement.isSelectedTypeface(TextTypeface.SANS_SERIF));
+    await microtasksFinished();
+
+    chrome.test.assertEq(TextTypeface.SANS_SERIF, typefaceSelect.value);
+    chrome.test.assertEq(TEXT_SIZES[0]!.toString(), sizeSelect.value);
 
     chrome.test.succeed();
   },

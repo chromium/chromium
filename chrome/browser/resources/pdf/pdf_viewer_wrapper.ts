@@ -61,6 +61,7 @@ export {ViewerSaveToDriveControlsElement} from './elements/viewer_save_to_drive_
 // <if expr="enable_pdf_ink2">
 export {ViewerSidePanelElement} from './elements/viewer_side_panel.js';
 export {ViewerTextBottomToolbarElement} from './elements/viewer_text_bottom_toolbar.js';
+export {ViewerTextSidePanelElement} from './elements/viewer_text_side_panel.js';
 // </if>
 export {LANDSCAPE_WIDTH, PAINTED_ATTRIBUTE, PORTRAIT_WIDTH, ViewerThumbnailElement} from './elements/viewer_thumbnail.js';
 export {ViewerThumbnailBarElement} from './elements/viewer_thumbnail_bar.js';
@@ -86,7 +87,7 @@ export type {PdfViewerPrivateProxy} from './pdf_viewer_private_proxy.js';
 // </if>
 // <if expr="enable_pdf_ink2">
 export {convertRotatedCoordinates, pageToScreenCoordinates, screenToPageCoordinates} from './ink_text_annotation_utils.js';
-export {hexToColor} from './pdf_viewer_utils.js';
+export {colorsEqual, hexToColor} from './pdf_viewer_utils.js';
 // </if>
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 // <if expr="enable_pdf_save_to_drive">
