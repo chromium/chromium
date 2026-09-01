@@ -972,10 +972,12 @@ public class PdfCoordinator
 
         @Override
         public boolean onLinkClicked(ExternalLink externalLink) {
-            if (mDelegate == null) {
-                return false;
+            if (mDelegate != null) {
+                mDelegate.onLinkClicked(externalLink.getUri());
             }
-            return mDelegate.onLinkClicked(externalLink.getUri());
+            // Always return true to consume the click event, preventing androidx.pdf from
+            // falling back to its internal startActivity() call.
+            return true;
         }
 
         @Override
@@ -2045,10 +2047,6 @@ public class PdfCoordinator
 
     @Override
     public boolean onLinkClicked(Uri uri) {
-        if (!PdfUtils.isInlinePdfV2Enabled()) {
-            PdfUtils.recordHyperlinkClickResult(PdfHyperlinkClickResult.IGNORED_V2_DISABLED);
-            return false;
-        }
         String scheme = uri.getScheme();
         if (scheme == null || !ALLOWED_LINK_SCHEMES.contains(scheme.toLowerCase(Locale.ROOT))) {
             PdfUtils.recordHyperlinkClickResult(PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME);

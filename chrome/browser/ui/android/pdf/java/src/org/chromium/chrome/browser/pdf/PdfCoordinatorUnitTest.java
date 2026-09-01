@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -49,6 +50,7 @@ import androidx.pdf.PdfDocument;
 import androidx.pdf.PdfDocument.PageInfo;
 import androidx.pdf.PdfPoint;
 import androidx.pdf.PdfWriteHandle;
+import androidx.pdf.content.ExternalLink;
 import androidx.pdf.ink.EditablePdfViewerFragment;
 import androidx.pdf.view.PdfView;
 import androidx.pdf.viewer.fragment.PdfViewerFragment;
@@ -386,15 +388,144 @@ public class PdfCoordinatorUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         createPdfCoordinator();
 
+        Uri linkUri = Uri.parse(LINK_URL);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Pdf.Hyperlink.ClickResult",
-                        PdfHyperlinkClickResult.IGNORED_V2_DISABLED);
-        assertFalse(
-                "onLinkClicked should return false when inline PDF V2 is disabled.",
-                mPdfCoordinator.onLinkClicked(Uri.parse("https://www.example.com/")));
+                        PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
+        boolean result = mPdfCoordinator.onLinkClicked(linkUri);
+        assertTrue(
+                "onLinkClicked should return true and load via NativePageHost when inline PDF V2"
+                        + " is disabled.",
+                result);
         histogramExpectation.assertExpected();
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mNativePageHost).openNewTab(captor.capture());
+        LoadUrlParams params = captor.getValue();
+        assertEquals("URL should match.", LINK_URL, params.getUrl());
+        assertEquals(
+                "Transition type should be LINK.", PageTransition.LINK, params.getTransitionType());
+        assertTrue("isRendererInitiated should be true.", params.getIsRendererInitiated());
+        assertEquals(
+                Origin.create(new GURL(PDF_URL)).toString(),
+                params.getInitiatorOrigin().toString());
+    }
+
+    @Test
+    public void testFragmentOnLinkClicked_AlwaysConsumesEvent() {
+        createPdfCoordinator();
+        ExternalLink link = mock(ExternalLink.class);
+        when(link.getUri()).thenReturn(Uri.parse(LINK_URL));
+
+        boolean handled = mPdfCoordinator.mChromePdfViewerFragment.onLinkClicked(link);
+        assertTrue("ChromePdfViewerFragment.onLinkClicked must always return true.", handled);
+
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mNativePageHost).openNewTab(captor.capture());
+        assertEquals(LINK_URL, captor.getValue().getUrl());
+        assertTrue(captor.getValue().getIsRendererInitiated());
+        assertNull(
+                "No external activity should be started directly",
+                Shadows.shadowOf(mActivity).getNextStartedActivity());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testFragmentOnLinkClicked_V2Disabled_LoadsThroughNativePageHost() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        createPdfCoordinator();
+        ExternalLink link = mock(ExternalLink.class);
+        when(link.getUri()).thenReturn(Uri.parse(LINK_URL));
+
+        boolean handled = mPdfCoordinator.mChromePdfViewerFragment.onLinkClicked(link);
+        assertTrue(
+                "ChromePdfViewerFragment.onLinkClicked must return true when V2 is disabled.",
+                handled);
+
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mNativePageHost).openNewTab(captor.capture());
+        assertEquals(LINK_URL, captor.getValue().getUrl());
+        assertTrue(captor.getValue().getIsRendererInitiated());
+        assertNull(
+                "No external activity should be started directly",
+                Shadows.shadowOf(mActivity).getNextStartedActivity());
+    }
+
+    @Test
+    public void testFragmentOnLinkClicked_DisallowedScheme_ConsumesEventAndDropsNavigation() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        createPdfCoordinator();
+
+        String[] dangerousUris = {
+            "javascript:alert('XSS')",
+            "intent://scan/#Intent;scheme=zxing;package=com.evil.app;end",
+            "file:///etc/hosts",
+            "content://com.android.contacts/contacts",
+            "chrome://flags",
+            "data:text/html,test",
+        };
+
+        for (String raw : dangerousUris) {
+            HistogramWatcher histogramExpectation =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            "Android.Pdf.Hyperlink.ClickResult",
+                            PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME);
+            ExternalLink link = mock(ExternalLink.class);
+            when(link.getUri()).thenReturn(Uri.parse(raw));
+
+            boolean handled = mPdfCoordinator.mChromePdfViewerFragment.onLinkClicked(link);
+            assertTrue(
+                    "ChromePdfViewerFragment.onLinkClicked must consume event even for dangerous"
+                            + " URI: "
+                            + raw,
+                    handled);
+            histogramExpectation.assertExpected();
+        }
         verify(mNativePageHost, never()).openNewTab(any(LoadUrlParams.class));
+        assertNull(
+                "No external activity should be started directly",
+                Shadows.shadowOf(mActivity).getNextStartedActivity());
+    }
+
+    @Test
+    public void testFragmentOnLinkClicked_NoDelegate_ConsumesEventWithoutError() {
+        PdfCoordinator.ChromePdfViewerFragment fragment =
+                new PdfCoordinator.ChromePdfViewerFragment();
+        ExternalLink link = mock(ExternalLink.class);
+        when(link.getUri()).thenReturn(Uri.parse(LINK_URL));
+
+        boolean handled = fragment.onLinkClicked(link);
+        assertTrue(
+                "ChromePdfViewerFragment.onLinkClicked must return true even with null delegate.",
+                handled);
+        assertNull(
+                "No external activity should be started directly",
+                Shadows.shadowOf(mActivity).getNextStartedActivity());
+    }
+
+    @Test
+    public void testFragmentOnLinkClicked_DelegateSetAfterRecreation_Works() {
+        createPdfCoordinator();
+        PdfCoordinator.ChromePdfViewerFragment fragment =
+                new PdfCoordinator.ChromePdfViewerFragment();
+        ExternalLink link = mock(ExternalLink.class);
+        when(link.getUri()).thenReturn(Uri.parse(LINK_URL));
+
+        // Before delegate is attached: consumes event, does not crash.
+        assertTrue(fragment.onLinkClicked(link));
+        verify(mNativePageHost, never()).openNewTab(any(LoadUrlParams.class));
+
+        // Attach delegate.
+        fragment.setDelegate(mPdfCoordinator);
+
+        // After delegate is attached: consumes event and routes navigation.
+        assertTrue(fragment.onLinkClicked(link));
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mNativePageHost).openNewTab(captor.capture());
+        assertEquals(LINK_URL, captor.getValue().getUrl());
+        assertNull(
+                "No external activity should be started directly",
+                Shadows.shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test
