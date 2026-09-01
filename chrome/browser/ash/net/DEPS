@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/net",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/login",
   "+chrome/test/base",

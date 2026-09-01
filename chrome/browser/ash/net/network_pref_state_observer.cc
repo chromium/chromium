@@ -6,11 +6,11 @@
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
+#include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service_provider.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -51,8 +51,7 @@ void NetworkPrefStateObserver::OnUserProfileLoaded(
     session_observation_.Reset();
 
     auto* wifi_sync_service =
-        WifiConfigurationSyncServiceFactory::GetForProfile(profile,
-                                                           /*create=*/false);
+        WifiConfigurationSyncServiceProvider::Get().Find(account_id);
     if (wifi_sync_service) {
       wifi_sync_service->SetNetworkMetadataStore(
           NetworkHandler::Get()->network_metadata_store()->GetWeakPtr());

@@ -48,6 +48,14 @@ static_library("sync_wifi") {
   ]
 }
 
+static_library("wifi_configuration_sync_service_provider") {
+  public = [ "wifi_configuration_sync_service_provider.h" ]
+
+  sources = [ "wifi_configuration_sync_service_provider.cc" ]
+
+  deps = [ "//base" ]
+}
+
 static_library("network_eligibility_checker") {
   sources = [
     "network_eligibility_checker.cc",

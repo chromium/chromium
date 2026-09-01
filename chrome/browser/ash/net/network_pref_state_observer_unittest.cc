@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service_provider.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -35,6 +36,18 @@ namespace {
 
 const char kUserId[] = "test@example.com";
 const char kNetworkId[] = "wifi1_guid";  // Matches FakeShillManagerClient
+
+// Installs a no-op WifiConfigurationSyncServiceProvider so the observer can
+// resolve the service without depending on the //chrome factory. The service
+// is never created in tests, matching the production create=false behavior.
+class FakeWifiConfigurationSyncServiceProvider
+    : public WifiConfigurationSyncServiceProvider {
+ public:
+  sync_wifi::WifiConfigurationSyncService* Find(
+      const AccountId& account_id) override {
+    return nullptr;
+  }
+};
 
 }  // namespace
 
@@ -83,6 +96,8 @@ class NetworkPrefStateObserverTest : public testing::Test {
   user_manager::TypedScopedUserManager<FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  FakeWifiConfigurationSyncServiceProvider
+      wifi_configuration_sync_service_provider_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
 };
 

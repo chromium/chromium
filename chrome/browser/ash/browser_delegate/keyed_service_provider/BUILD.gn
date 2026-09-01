@@ -10,6 +10,7 @@ group("keyed_service_provider") {
     ":identity_manager_provider_impl",
     ":sync_service_provider_impl",
     ":template_url_service_provider_impl",
+    ":wifi_configuration_sync_service_provider_impl",
   ]
 }
 
@@ -25,6 +26,25 @@ source_set("desk_sync_service_provider_impl") {
     "//chrome/browser/sync",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/desks_storage:desk_sync_service_provider",
+    "//components/account_id",
+    "//content/public/browser",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}
+
+source_set("wifi_configuration_sync_service_provider_impl") {
+  sources = [
+    "wifi_configuration_sync_service_provider_impl.cc",
+    "wifi_configuration_sync_service_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/sync",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/sync_wifi:wifi_configuration_sync_service_provider",
     "//components/account_id",
     "//content/public/browser",
   ]
