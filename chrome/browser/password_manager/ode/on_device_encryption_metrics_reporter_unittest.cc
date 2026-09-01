@@ -144,6 +144,22 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest,
   histogram_tester_.ExpectUniqueSample(
       kPasswordOnDeviceEncryptionStateHistogram,
       OnDeviceEncryptionStateHistogramBucket::kDeviceReady, 1);
+
+  // Transition passkey tracker to the PasswordAndPasskeySyncDisabled state.
+  raw_passkey_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled);
+  histogram_tester_.ExpectBucketCount(
+      kPasskeyOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kPasswordAndPasskeySyncDisabled,
+      1);
+
+  // Transition password tracker to the PasswordAndPasskeySyncDisabled state.
+  raw_password_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled);
+  histogram_tester_.ExpectBucketCount(
+      kPasswordOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kPasswordAndPasskeySyncDisabled,
+      1);
 }
 
 // Not all OnDeviceEncryptionState values are published to UMA (e.g.,

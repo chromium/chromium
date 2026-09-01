@@ -713,6 +713,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="On-device encryption not enabled"/>
   <int value="1" label="Device not ready"/>
   <int value="2" label="Device ready"/>
+  <int value="3" label="Password and passkey sync disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/password_manager/ode/on_device_encryption_metrics_reporter.h:OnDeviceEncryptionStateHistogramBucket) -->

@@ -146,8 +146,7 @@ INSTANTIATE_TEST_SUITE_P(
         Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
     &ParamInfoToString);
 
-// When password syncing is disabled the on-device encryption state is "not
-// enabled".
+// Testing the cases when password and passkey sync is disabled.
 INSTANTIATE_TEST_SUITE_P(
     PasswordSyncNotEnabled,
     PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
@@ -158,7 +157,7 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_trusted_vault_key_required=*/Bool(),
         /*is_passwords_data_type_active=*/Bool(),
         /*expected_state=*/
-        Values(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled)),
+        Values(OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled)),
     &ParamInfoToString);
 
 // When passphrase type is not trusted vault the on-device encryption state is

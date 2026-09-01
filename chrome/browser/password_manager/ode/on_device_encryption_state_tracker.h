@@ -25,6 +25,8 @@ enum class OnDeviceEncryptionState {
   // On-device encryption is enabled for the user, and the device is ready
   // (unlocked).
   kDeviceReady,
+  // User disabled syncing of passwords and passkeys.
+  kPasswordAndPasskeySyncDisabled,
 };
 
 // Base class that monitors and maintains the on-device encryption state for a

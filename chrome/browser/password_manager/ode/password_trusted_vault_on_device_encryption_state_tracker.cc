@@ -44,16 +44,16 @@ void PasswordTrustedVaultOnDeviceEncryptionStateTracker::ComputeState() {
   }
 
   syncer::SyncUserSettings* user_settings = sync_service()->GetUserSettings();
-  if (!user_settings ||
-      !user_settings->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords) ||
-      user_settings->GetPassphraseType() !=
-          syncer::PassphraseType::kTrustedVaultPassphrase) {
-    // If the user disabled password syncing or has a passphrase different from
-    // `kTrustedVaultPassphrase` we conclude that the on-device encryption is
-    // not enabled.
-    // TODO(crbug.com/540854648): We could distinguish the states when on-device
-    // encryption was enabled but password syncing was disabled.
+  if (!user_settings || !user_settings->GetSelectedTypes().Has(
+                            syncer::UserSelectableType::kPasswords)) {
+    // TODO(crbug.com/540854648): Consider introducing separate states for
+    // cases when sync is disabled by a user or by an enterprise policy.
+    SetState(OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled);
+    return;
+  }
+
+  if (user_settings->GetPassphraseType() !=
+      syncer::PassphraseType::kTrustedVaultPassphrase) {
     SetState(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
     return;
   }

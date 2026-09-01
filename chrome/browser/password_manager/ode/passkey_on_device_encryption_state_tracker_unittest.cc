@@ -138,8 +138,7 @@ INSTANTIATE_TEST_SUITE_P(
         Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
     &ParamInfoToString);
 
-// When passkey syncing is disabled the on-device encryption state is "not
-// enabled".
+// Testing the cases when password and passkey sync is disabled.
 INSTANTIATE_TEST_SUITE_P(
     WebauthnCredentialSyncNotEnabled,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
@@ -151,7 +150,7 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_passkey_model_empty=*/Bool(),
         /*is_enclave_ready=*/Bool(),
         /*expected_state=*/
-        Values(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled)),
+        Values(OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled)),
     &ParamInfoToString);
 
 // When passkey model is not ready the on-device encryption state can't be

@@ -122,6 +122,9 @@ OnDeviceEncryptionMetricsReporter::ToOnDeviceEncryptionStateHistogramBucket(
       return OnDeviceEncryptionStateHistogramBucket::kDeviceNotReady;
     case OnDeviceEncryptionState::kDeviceReady:
       return OnDeviceEncryptionStateHistogramBucket::kDeviceReady;
+    case OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled:
+      return OnDeviceEncryptionStateHistogramBucket::
+          kPasswordAndPasskeySyncDisabled;
   }
   NOTREACHED();
 }

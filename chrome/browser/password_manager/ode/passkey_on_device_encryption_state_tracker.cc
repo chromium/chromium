@@ -74,7 +74,9 @@ void PasskeyOnDeviceEncryptionStateTracker::ComputeState() {
   syncer::SyncUserSettings* user_settings = sync_service()->GetUserSettings();
   if (!user_settings || !user_settings->GetSelectedTypes().Has(
                             syncer::UserSelectableType::kPasswords)) {
-    SetState(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled);
+    // TODO(crbug.com/540854648): Consider introducing separate states for
+    // cases when sync is disabled by a user or by an enterprise policy.
+    SetState(OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled);
     return;
   }
 
