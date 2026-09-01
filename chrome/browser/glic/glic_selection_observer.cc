@@ -360,12 +360,7 @@ void GlicSelectionObserver::OnVisibilityChanged(
 }
 
 void GlicSelectionObserver::PrimaryPageChanged(content::Page& page) {
-  is_hidden_on_current_page_ = false;
-  UpdatePageBlockedState();
-  if (widget_delegate_) {
-    is_explaining_ = false;
-    widget_delegate_->CloseWidget();
-  }
+  ResetSelectionState();
 }
 
 void GlicSelectionObserver::PrimaryMainFrameWasResized(bool width_changed) {
@@ -717,6 +712,7 @@ void GlicSelectionObserver::UpdateSelectionState(
   if (selected_text.empty()) {
     if (widget_delegate_ && !is_explaining_) {
       widget_delegate_->CloseWidget();
+      generated_link_.reset();
     }
 
     if (has_sent_selection_context_) {
@@ -724,6 +720,7 @@ void GlicSelectionObserver::UpdateSelectionState(
       has_sent_selection_context_ = false;
     }
 
+    last_selection_frame_token_.reset();
     return;
   }
 
@@ -1348,6 +1345,16 @@ void GlicSelectionObserver::ResetShakeDetector() {
   last_shake_dir_.reset();
   direction_change_count_ = 0;
   last_direction_change_time_ = base::TimeTicks();
+}
+
+void GlicSelectionObserver::ResetSelectionState() {
+  is_hidden_on_current_page_ = false;
+  is_explaining_ = false;
+  UpdatePageBlockedState();
+  // This should close the widget and clear most selection state.
+  UpdateSelectionState(u"", false);
+  // This should clear the rest.
+  ResetPendingSelection();
 }
 
 }  // namespace glic

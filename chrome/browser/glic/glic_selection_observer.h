@@ -190,6 +190,8 @@ class GlicSelectionObserver
       std::string account,
       optimization_guide::PageContextEligibility* page_context_eligibility);
 
+  void ResetSelectionState();
+
   raw_ptr<GlicKeyedService> glic_keyed_service_;
   base::CallbackListSubscription panel_state_subscription_;
   std::u16string last_selected_text_;

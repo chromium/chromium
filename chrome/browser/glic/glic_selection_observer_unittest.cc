@@ -1109,6 +1109,11 @@ TEST_F(GlicSelectionObserverTest,
   observer->OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus::kEligible);
 
+  // We have to reset the selected text here because setting mock eligibility
+  // causes a navigation which clears the previous selected text.
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
 }
