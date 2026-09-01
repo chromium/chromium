@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -953,6 +954,62 @@ public class SelectFileDialogTest {
         task.doInBackground();
         assertEquals("///storage/emulated/0/DCIM/Camera/IMG_0.jpg", task.mFilePaths[0].toString());
         assertEquals("///storage/emulated/0/DCIM/Camera/IMG_1.jpg", task.mFilePaths[1].toString());
+    }
+
+    @Test
+    public void testMultipleFileSelectorWithCaseVariantFileUris() {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        Uri[] filePathArray =
+                new Uri[] {
+                    Uri.parse("FILE:///storage/emulated/0/DCIM/Camera/IMG_0.jpg"),
+                    Uri.parse("File:///storage/emulated/0/DCIM/Camera/IMG_1.jpg")
+                };
+        SelectFileDialog.GetDisplayNameTask task =
+                selectFileDialog
+                .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
+        task.doInBackground();
+        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_0.jpg", task.mFilePaths[0].toString());
+        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_1.jpg", task.mFilePaths[1].toString());
+    }
+
+    @Test
+    public void testMultipleFileSelectorWithCaseVariantAppDirUris() {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        File dataDir = ContextCompat.getDataDir(ContextUtils.getApplicationContext());
+        File appFile = new File(dataDir, "app_data.txt");
+        Uri[] filePathArray = new Uri[] {Uri.parse("FILE://" + appFile.getAbsolutePath())};
+        SelectFileDialog.GetDisplayNameTask task =
+                selectFileDialog
+                .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
+        assertEquals(null, task.doInBackground());
+    }
+
+    @Test
+    @DisableFeatures({UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION})
+    public void testIntentCompletedWithCaseVariantClipDataUri() {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        ClipData clipData =
+                ClipData.newUri(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        "label",
+                        Uri.parse("FILE:///storage/emulated/0/DCIM/Camera/IMG_0.jpg"));
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setClipData(clipData);
+        selectFileDialog.onIntentCompleted(Activity.RESULT_OK, intent);
+        runAllAsyncTasks();
+        assertEquals(1, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+    }
+
+    @Test
+    @DisableFeatures({UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION})
+    public void testIntentCompletedWithCaseVariantDataUri() {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("CONTENT://com.example.test/xyz"));
+        selectFileDialog.onIntentCompleted(Activity.RESULT_OK, intent);
+        runAllAsyncTasks();
+        assertEquals(1, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
     }
 
     @Test

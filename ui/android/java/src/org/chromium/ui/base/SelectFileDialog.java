@@ -1015,7 +1015,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
             Uri[] filePathArray = new Uri[itemCount];
             for (int i = 0; i < itemCount; ++i) {
-                filePathArray[i] = clipData.getItemAt(i).getUri();
+                filePathArray[i] = clipData.getItemAt(i).getUri().normalizeScheme();
                 // Check if the caller has permission to access the uri if it is a content uri.
                 if (ContentResolver.SCHEME_CONTENT.equals(filePathArray[i].getScheme())
                         && !doesCallerHavePermissionForUri(filePathArray[i])) {
@@ -1030,6 +1030,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             return;
         }
 
+        uri = uri.normalizeScheme();
         if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
             String filePath = uri.getPath();
             if (!TextUtils.isEmpty(filePath)) {
@@ -1041,7 +1042,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             }
         }
 
-        if (ContentResolver.SCHEME_CONTENT.equals(results.getScheme())) {
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             // Check if the caller has permission to access the uri.
             if (!doesCallerHavePermissionForUri(uri)) {
                 onFileNotSelected();
@@ -1280,7 +1281,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         public GetDisplayNameTask(Context context, boolean isMultiple, Uri[] uris) {
             mContext = context;
             mIsMultiple = isMultiple;
-            mUris = uris;
+            mUris = new Uri[uris.length];
+            for (int i = 0; i < uris.length; i++) {
+                mUris[i] = uris[i].normalizeScheme();
+            }
             mFilePaths = new String[mUris.length];
         }
 
