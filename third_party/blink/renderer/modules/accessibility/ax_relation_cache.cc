@@ -331,7 +331,9 @@ AXObject* AXRelationCache::ValidatedAriaOwner(const AXObject* child) {
   if (!owner || IsValidOwnsRelation(owner, *child->GetNode())) {
     return owner;
   }
-  RemoveOwnedRelation(child->AXObjectID());
+  AXID child_axid = child->AXObjectID();
+  RemoveOwnedRelation(child_axid);
+  MaybeRestoreParentOfOwnedChild(child_axid);
   return nullptr;
 }
 

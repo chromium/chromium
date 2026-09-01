@@ -48,7 +48,8 @@ class AXRelationCache {
   bool IsAriaOwned(const AXObject*, bool check = true) const;
 
   // Returns the parent of the given object due to aria-owns, if valid,
-  // otherwise, removes the child from maps indicating that it is owned.
+  // otherwise, removes the child from maps indicating that it is owned and
+  // restores its natural parent.
   AXObject* ValidatedAriaOwner(const AXObject*);
 
   // Returns the validated owned children of this element with aria-owns.

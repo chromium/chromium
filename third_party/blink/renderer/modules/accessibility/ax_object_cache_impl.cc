@@ -5067,6 +5067,9 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     if (IsA<HTMLSelectElement>(element)) {
       DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChangedOnSelect, element);
     }
+  } else if (attr_name == html_names::kContenteditableAttr &&
+             AXObject::HasARIAOwns(element)) {
+    DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, element);
   } else if (attr_name == html_names::kAltAttr) {
     TextChanged(element);
   } else if (attr_name == html_names::kTitleAttr) {

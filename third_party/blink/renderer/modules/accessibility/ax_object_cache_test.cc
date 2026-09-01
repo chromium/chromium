@@ -951,6 +951,72 @@ TEST_F(AccessibilityTest, RestoreAriaOwnsAfterAriaHiddenRemoved) {
   EXPECT_EQ(list, item2->ParentObject());
 }
 
+// Regression test for crbug.com/503872382.
+TEST_F(AccessibilityTest, ReleaseAriaOwnedChildWhenOwnerBecomesEditable) {
+  SetBodyInnerHTML(R"HTML(
+      <ul id="list" aria-owns="item"></ul>
+      <li id="item">Item</li>
+  )HTML");
+
+  AXObject* item = GetAXObjectByElementId("item");
+  ASSERT_NE(nullptr, item);
+  EXPECT_EQ(GetAXObjectByElementId("list"), item->ParentObject());
+
+  // The element with aria-owns stops being a valid owner.
+  Element* list_element = GetElementById("list");
+  list_element->setAttribute(html_names::kContenteditableAttr, g_empty_atom);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  AXObject* list = GetAXObjectByElementId("list");
+  item = GetAXObjectByElementId("item");
+  ASSERT_NE(nullptr, list);
+  ASSERT_NE(nullptr, item);
+  EXPECT_EQ(0u, list->ChildrenIncludingIgnored().size());
+  EXPECT_EQ(GetAXBodyObject(), item->ParentObject());
+
+  // The element with aria-owns becomes a valid owner again.
+  list_element->removeAttribute(html_names::kContenteditableAttr);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  list = GetAXObjectByElementId("list");
+  item = GetAXObjectByElementId("item");
+  ASSERT_NE(nullptr, list);
+  ASSERT_NE(nullptr, item);
+  EXPECT_EQ(list, item->ParentObject());
+  EXPECT_TRUE(list->ChildrenIncludingIgnored().Contains(item));
+}
+
+// Regression test for crbug.com/503872382.
+TEST_F(AccessibilityTest, LazyRemovalOfInvalidAriaOwnsRestoresParent) {
+  SetBodyInnerHTML(R"HTML(
+      <ul id="list" aria-owns="item"></ul>
+      <li id="item">Item</li>
+  )HTML");
+
+  // Hold a cache reference, as each GetAXObjectCache() runs a lifecycle update.
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  AXObject* item = GetAXObjectByElementId("item");
+  ASSERT_NE(nullptr, item);
+  EXPECT_EQ(GetAXObjectByElementId("list"), item->ParentObject());
+
+  // The element with aria-owns stops being a valid owner.
+  GetElementById("list")->setAttribute(html_names::kContenteditableAttr,
+                                       g_empty_atom);
+
+  // Lazy revalidation (which requires clean layout) detaches the child from
+  // its invalid owner; its natural parent will be restored by the next update.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  ASSERT_TRUE(cache.IsAriaOwned(item));
+  EXPECT_EQ(nullptr, cache.ValidatedAriaOwner(item));
+  EXPECT_EQ(nullptr, item->ParentObjectIfPresent());
+
+  cache.UpdateAXForAllDocuments();
+
+  item = GetAXObjectByElementId("item");
+  ASSERT_NE(nullptr, item);
+  EXPECT_EQ(GetAXBodyObject(), item->ParentObject());
+}
+
 #if AX_FAIL_FAST_BUILD()
 // Regression test for crbug.com/511730260: the cache's included node count and
 // the serializer's client tree count may diverge when an included node is left
