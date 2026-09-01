@@ -4301,7 +4301,6 @@ targets.bundle(
         # Android/ARM only runs Ganesh tests since older devices that we
         # typically use for 32-bit testing do not have good Vulkan support
         # for Graphite.
-        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
         "webcodecs_validating_ganesh_tests",
@@ -4321,6 +4320,7 @@ targets.bundle(
         "screenshot_sync_passthrough_tests",
         "webgl2_conformance_gles_passthrough_tests",
         "webgl2_conformance_validating_tests",
+        "webgl_conformance_gles_passthrough_ganesh_tests",
     ],
 )
 
@@ -4696,22 +4696,6 @@ targets.bundle(
     targets = [
         "webcodecs_graphite_tests",
     ],
-)
-
-targets.bundle(
-    name = "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
-    targets = [
-        "webgl_conformance_gles_passthrough_ganesh_tests",
-    ],
-    per_test_modifications = {
-        "webgl_conformance_gles_passthrough_ganesh_tests": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 6,
-                ),
-            ),
-        ],
-    },
 )
 
 targets.bundle(
