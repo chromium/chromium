@@ -31,6 +31,20 @@ void ExpectFCP(const base::HistogramTester& histogram_tester,
   }
 }
 
+void ExpectLCP(const base::HistogramTester& histogram_tester,
+               const std::string& suffix,
+               std::optional<int> lcp) {
+  const std::string name =
+      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                    "NavigationToLargestContentfulPaint2.",
+                    suffix});
+  if (lcp) {
+    histogram_tester.ExpectUniqueTimeSample(name, base::Milliseconds(*lcp), 1);
+  } else {
+    histogram_tester.ExpectTotalCount(name, 0);
+  }
+}
+
 // Verifies metrics recording for a standard navigation without preloading.
 TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
      NavigationWithoutPreload) {
@@ -41,6 +55,9 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
       content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/false);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555), content::UsedInstantLoad::kNoInstantLoad,
+      "Other", /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {334});
   ExpectFCP(histogram_tester, "WithPrefetch", {});
@@ -66,6 +83,16 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
             {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
+
+  ExpectLCP(histogram_tester, "All.All.All", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "All.All.Prefetch", {});
+  ExpectLCP(histogram_tester, "All.All.Prerender", {});
+
+  ExpectLCP(histogram_tester, "Other.All.All", {555});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch", {});
+  ExpectLCP(histogram_tester, "Other.All.Prerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
@@ -123,6 +150,9 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
       content::UsedInstantLoad::kBFCache, "Backward", /*is_url_srp=*/false);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555), content::UsedInstantLoad::kBFCache, "Backward",
+      /*is_url_srp=*/false);
 
   histogram_tester.ExpectBucketCount("PreloadServingMetrics.Backward.All",
                                      3 /* kBFCache */, 1);
@@ -132,6 +162,8 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
   ExpectFCP(histogram_tester, "All.All.All", {});
+
+  ExpectLCP(histogram_tester, "All.All.All", {});
 }
 
 // Verifies metrics recording for SRP navigation.
@@ -143,6 +175,9 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest, NavigationWithSRP) {
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
       content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/true);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555), content::UsedInstantLoad::kNoInstantLoad,
+      "Other", /*is_url_srp=*/true);
 
   ExpectFCP(histogram_tester, "All.All.All", {334});
   ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {334});
@@ -165,6 +200,16 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest, NavigationWithSRP) {
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.All", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.SRP.NoInstantLoad",
             {334});
+
+  ExpectLCP(histogram_tester, "All.All.All", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "All.SRP.All", {555});
+  ExpectLCP(histogram_tester, "All.SRP.NoInstantLoad", {555});
+
+  ExpectLCP(histogram_tester, "Other.All.All", {555});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "Other.SRP.All", {555});
+  ExpectLCP(histogram_tester, "Other.SRP.NoInstantLoad", {555});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
@@ -228,6 +273,10 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest, NavigationWithPrefetch) {
       base::Milliseconds(334), /*is_in_foreground=*/true,
       content::UsedInstantLoad::kPrefetchWithoutPrePrefetch, "Other",
       /*is_url_srp=*/false);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555),
+      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch, "Other",
+      /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {});
   ExpectFCP(histogram_tester, "WithPrefetch", {334});
@@ -267,6 +316,20 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest, NavigationWithPrefetch) {
             "WithoutFiltering.Other.All.Prefetch.WithoutPrePrefetch", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
 
+  ExpectLCP(histogram_tester, "All.All.All", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "All.All.Prefetch", {555});
+  ExpectLCP(histogram_tester, "All.All.Prefetch.WithPrePrefetch", {});
+  ExpectLCP(histogram_tester, "All.All.Prefetch.WithoutPrePrefetch", {555});
+  ExpectLCP(histogram_tester, "All.All.Prerender", {});
+
+  ExpectLCP(histogram_tester, "Other.All.All", {555});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch", {555});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch.WithPrePrefetch", {});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch.WithoutPrePrefetch", {555});
+  ExpectLCP(histogram_tester, "Other.All.Prerender", {});
+
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       1 /* kPrefetch */, 1);
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
@@ -284,6 +347,10 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
       /*is_url_srp=*/false);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
+      content::UsedInstantLoad::kPrefetchWithPrePrefetch, "Other",
+      /*is_url_srp=*/false);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555),
       content::UsedInstantLoad::kPrefetchWithPrePrefetch, "Other",
       /*is_url_srp=*/false);
 
@@ -325,6 +392,20 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
             "WithoutFiltering.Other.All.Prefetch.WithoutPrePrefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
 
+  ExpectLCP(histogram_tester, "All.All.All", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "All.All.Prefetch", {555});
+  ExpectLCP(histogram_tester, "All.All.Prefetch.WithPrePrefetch", {555});
+  ExpectLCP(histogram_tester, "All.All.Prefetch.WithoutPrePrefetch", {});
+  ExpectLCP(histogram_tester, "All.All.Prerender", {});
+
+  ExpectLCP(histogram_tester, "Other.All.All", {555});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch", {555});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch.WithPrePrefetch", {555});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch.WithoutPrePrefetch", {});
+  ExpectLCP(histogram_tester, "Other.All.Prerender", {});
+
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       1 /* kPrefetch */, 1);
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
@@ -343,6 +424,9 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
       base::Milliseconds(334), /*is_in_foreground=*/true,
       content::UsedInstantLoad::kNoInstantLoad, "TestInitiator",
       /*is_url_srp=*/true);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555), content::UsedInstantLoad::kNoInstantLoad,
+      "TestInitiator", /*is_url_srp=*/true);
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.TestInitiator.All",
                                       0 /* kNoInstantLoad */, 1);
@@ -370,6 +454,16 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   ExpectFCP(histogram_tester, "WithoutFiltering.TestInitiator.SRP.All", {334});
   ExpectFCP(histogram_tester,
             "WithoutFiltering.TestInitiator.SRP.NoInstantLoad", {334});
+
+  ExpectLCP(histogram_tester, "All.All.All", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "All.SRP.All", {555});
+  ExpectLCP(histogram_tester, "All.SRP.NoInstantLoad", {555});
+
+  ExpectLCP(histogram_tester, "TestInitiator.All.All", {555});
+  ExpectLCP(histogram_tester, "TestInitiator.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "TestInitiator.SRP.All", {555});
+  ExpectLCP(histogram_tester, "TestInitiator.SRP.NoInstantLoad", {555});
 }
 
 // Verifies metrics recording for navigation with prerender.
@@ -382,6 +476,9 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
       content::UsedInstantLoad::kPrerender, "Other", /*is_url_srp=*/false);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555), content::UsedInstantLoad::kPrerender, "Other",
+      /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {});
   ExpectFCP(histogram_tester, "WithPrefetch", {});
@@ -406,6 +503,16 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {334});
+
+  ExpectLCP(histogram_tester, "All.All.All", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "All.All.Prefetch", {});
+  ExpectLCP(histogram_tester, "All.All.Prerender", {555});
+
+  ExpectLCP(histogram_tester, "Other.All.All", {555});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch", {});
+  ExpectLCP(histogram_tester, "Other.All.Prerender", {555});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       2 /* kPrerender */, 1);

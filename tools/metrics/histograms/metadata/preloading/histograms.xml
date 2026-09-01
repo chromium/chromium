@@ -517,6 +517,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToLargestContentfulPaint2.{InitiatorLocation}.{NavigationDestinationSuffix}.{UsedInstantLoad}"
+    units="ms" expires_after="2027-02-07">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    LargestContentfulPaint.
+
+    Recorded when {InitiatorLocation}, {NavigationDestinationSuffix}, and
+    {UsedInstantLoad}.
+  </summary>
+  <token key="InitiatorLocation" variants="InitiatorLocation"/>
+  <token key="NavigationDestinationSuffix"
+      variants="NavigationDestinationSuffix"/>
+  <token key="UsedInstantLoad" variants="UsedInstantLoad"/>
+</histogram>
+
+<histogram
     name="PreloadServingMetrics.{ChromeInitiatorLocation}.{NavigationDestinationSuffix}"
     enum="UsedInstantLoad" expires_after="2027-02-07">
   <owner>robertlin@chromium.org</owner>

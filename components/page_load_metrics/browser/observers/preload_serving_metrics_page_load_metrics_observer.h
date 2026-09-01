@@ -28,9 +28,15 @@ void RecordFirstContentfulPaint(
     std::string_view navigation_initiator_string,
     bool is_url_srp);
 
+void RecordLargestContentfulPaint(
+    base::TimeDelta corrected_largest_contentful_paint,
+    content::UsedInstantLoad used_instant_load,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp);
+
 }  // namespace page_load_metrics_internal
 
-// Records FirstContentfulPaint for `PreloadServingMetrics`
+// Records metrics using `PreloadServingMetrics`.
 //
 // See `PreloadServingMetrics` for more details.
 class PreloadServingMetricsPageLoadMetricsObserver

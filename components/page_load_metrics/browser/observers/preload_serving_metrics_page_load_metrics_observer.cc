@@ -7,6 +7,7 @@
 #include <array>
 #include <string_view>
 
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -148,6 +149,20 @@ bool GetServedByLegacySearchPrefetch(
   return user_data && user_data->is_served_by_legacy_search_prefetch();
 }
 
+bool IsEventInForeground(
+    const std::optional<base::TimeDelta>& event_time,
+    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
+  const bool is_prerender =
+      delegate.GetPrerenderingState() !=
+      page_load_metrics::PrerenderingState::kNoPrerendering;
+  return is_prerender ? page_load_metrics::
+                            WasActivatedInForegroundOptionalEventInForeground(
+                                event_time, delegate)
+                      : page_load_metrics::
+                            WasStartedInForegroundOptionalEventInForeground(
+                                event_time, delegate);
+}
+
 }  // namespace
 
 namespace page_load_metrics_internal {
@@ -273,6 +288,66 @@ void RecordFirstContentfulPaint(
   }
 }
 
+void RecordLargestContentfulPaint(
+    base::TimeDelta corrected_largest_contentful_paint,
+    content::UsedInstantLoad used_instant_load,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp) {
+  // BFCache restores are filtered out in `MaybeRecord()`, but unit tests can
+  // call this function directly.
+  if (used_instant_load == content::UsedInstantLoad::kBFCache) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  const char* used_instant_load_string =
+      ToString(ToUsedInstantLoadUma(used_instant_load));
+
+  const std::array<std::string_view, 2> navigation_initiators = {
+      "All", navigation_initiator_string};
+  static constexpr std::string_view kAllOnly[] = {"All"};
+  static constexpr std::string_view kAllAndSrp[] = {"All", "SRP"};
+  const base::span<const std::string_view> srp_alls =
+      is_url_srp ? base::span<const std::string_view>(kAllAndSrp)
+                 : base::span<const std::string_view>(kAllOnly);
+  const std::array<std::string_view, 2> used_instant_loads = {
+      "All", used_instant_load_string};
+
+  for (const auto navigation_initiator : navigation_initiators) {
+    for (const auto srp_all : srp_alls) {
+      for (const auto instant_load : used_instant_loads) {
+        PAGE_LOAD_HISTOGRAM(
+            base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                          "NavigationToLargestContentfulPaint2.",
+                          navigation_initiator, ".", srp_all, ".",
+                          instant_load}),
+            corrected_largest_contentful_paint);
+      }
+    }
+  }
+
+  if (IsPrefetch(used_instant_load)) {
+    if (base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
+      const char* pre_prefetch_suffix =
+          used_instant_load ==
+                  content::UsedInstantLoad::kPrefetchWithPrePrefetch
+              ? ".WithPrePrefetch"
+              : ".WithoutPrePrefetch";
+      for (const auto navigation_initiator : navigation_initiators) {
+        for (const auto srp_all : srp_alls) {
+          PAGE_LOAD_HISTOGRAM(
+              base::StrCat(
+                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                   "NavigationToLargestContentfulPaint2.",
+                   navigation_initiator, ".", srp_all, ".Prefetch",
+                   pre_prefetch_suffix}),
+              corrected_largest_contentful_paint);
+        }
+      }
+    }
+  }
+}
+
 }  // namespace page_load_metrics_internal
 
 PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData() =
@@ -377,16 +452,8 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     return;
   }
 
-  const bool is_prerender =
-      GetDelegate().GetPrerenderingState() !=
-      page_load_metrics::PrerenderingState::kNoPrerendering;
-  const bool is_in_foreground =
-      is_prerender
-          ? page_load_metrics::
-                WasActivatedInForegroundOptionalEventInForeground(
-                    timing.paint_timing->first_contentful_paint, GetDelegate())
-          : page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-                timing.paint_timing->first_contentful_paint, GetDelegate());
+  bool is_in_foreground = IsEventInForeground(
+      timing.paint_timing->first_contentful_paint, GetDelegate());
   base::TimeDelta corrected =
       page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
@@ -450,4 +517,26 @@ void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
       used_instant_load, navigation_data_->navigation_initiator_string,
       navigation_data_->is_url_srp);
+
+  if (!navigation_data_->used_bfcache) {
+    const page_load_metrics::ContentfulPaintTimingInfo&
+        all_frames_largest_contentful_paint =
+            GetDelegate()
+                .GetLargestContentfulPaintHandler()
+                .MergeMainFrameAndSubframes();
+    if (all_frames_largest_contentful_paint.ContainsValidTime()) {
+      const bool is_in_foreground = IsEventInForeground(
+          all_frames_largest_contentful_paint.Time(), GetDelegate());
+      if (is_in_foreground) {
+        base::TimeDelta corrected =
+            page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+                GetDelegate(),
+                all_frames_largest_contentful_paint.Time().value());
+        page_load_metrics_internal::RecordLargestContentfulPaint(
+            corrected, used_instant_load,
+            navigation_data_->navigation_initiator_string,
+            navigation_data_->is_url_srp);
+      }
+    }
+  }
 }
