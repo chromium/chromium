@@ -51,15 +51,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeManageDevices,
 };
 
-@interface SendTabToSelfTableViewController () {
-  // The list of devices with thier names, cache_guids, device types,
-  // and active times.
-  std::vector<send_tab_to_self::TargetDeviceInfo> _targetDeviceList;
-}
+@interface SendTabToSelfTableViewController ()
+
 // Item that holds the currently selected device.
 @property(nonatomic, strong) SendTabToSelfImageDetailTextItem* selectedItem;
 
-// Delegate to handle dismisal and event actions.
+// Delegate to handle dismissal and event actions.
 @property(nonatomic, weak) id<SendTabToSelfModalDelegate> delegate;
 
 // Avatar of the account sharing a tab.
@@ -71,7 +68,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong) TableViewTextButtonItem* sendToDevice;
 @end
 
-@implementation SendTabToSelfTableViewController
+@implementation SendTabToSelfTableViewController {
+  // The list of devices with their names, cache_guids, device types,
+  // and active times.
+  std::vector<send_tab_to_self::TargetDeviceInfo> _targetDeviceList;
+}
 
 - (instancetype)initWithDeviceList:
                     (std::vector<send_tab_to_self::TargetDeviceInfo>)
