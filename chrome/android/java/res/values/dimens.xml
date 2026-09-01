@@ -127,7 +127,6 @@ found in the LICENSE file.
     <dimen name="tab_strip_glic_button_corner_radius">10dp</dimen>
     <dimen name="tab_strip_glic_button_inner_corner_radius">2dp</dimen>
     <dimen name="tab_strip_glic_actor_button_gap">2dp</dimen>
-    <dimen name="tab_strip_window_controls_divider_width">2dp</dimen>
     <item name="tab_strip_glic_button_bg_hover_alpha" format="float" type="dimen">0.20</item>
     <item name="tab_strip_glic_button_bg_pressed_alpha" format="float" type="dimen">0.30</item>
     <item name="tab_strip_glic_button_icon_unfocused_alpha" format="float" type="dimen">0.65</item>

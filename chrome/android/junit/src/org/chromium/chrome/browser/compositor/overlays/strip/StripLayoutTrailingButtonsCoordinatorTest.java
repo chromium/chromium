@@ -1165,28 +1165,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     }
 
     @Test
-    public void testShouldShowDivider() {
-        // Initially mCoordinator is created with isAppInDesktopWindow = false,
-        // and shouldShowDivider should return false.
-        assertFalse(
-                "Divider should not be shown when not in desktop windowing.",
-                mCoordinator.shouldShowDivider());
-
-        // Update isAppInDesktopWindow = true.
-        mCoordinator.updateGlicButtonOpacity(
-                /* isAppInDesktopWindow= */ true, /* isTopResumedActivity= */ true);
-        assertTrue(
-                "Divider should be shown when in desktop windowing.",
-                mCoordinator.shouldShowDivider());
-
-        // Hide Glic button.
-        mCoordinator.setGlicButtonVisible(false);
-        assertFalse(
-                "Divider should not be shown when Glic button is not visible.",
-                mCoordinator.shouldShowDivider());
-    }
-
-    @Test
     public void testGetTrailingButtonsWidthWithPadding() {
         // 1. No buttons visible.
         mCoordinator.setGlicButtonVisible(false);
@@ -1204,7 +1182,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 mCoordinator.getTrailingButtonsWidthWithPadding(),
                 0.0);
 
-        // 3. MSB (48) + Glic (width(42) + startSlop(4) + endOffset(6)) = 100.
+        // 3. MSB (48) + Glic (width(42) + startSlop(4) + endSlop(6)) = 100.
         showGlicButton();
         assertEquals(
                 "Width should match MSB + Glic.",

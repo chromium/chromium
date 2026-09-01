@@ -173,13 +173,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         Resources res = layoutHelper.getContext().getResources();
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
-        boolean shouldShowDivider = trailingButtonsCoordinator.shouldShowDivider();
-        int dividerResId = R.drawable.bg_tabstrip_tab_divider;
-        int dividerTint =
-                TabUiThemeUtil.getDividerTint(
-                        layoutHelper.getContext(), layoutHelper.isIncognito());
-        float dividerY =
-                (StripLayoutTab.getTopMargin() + StripLayoutTab.getContentOffsetY()) * mDpToPx;
         TabStripSceneLayerJni.get()
                 .updateTabStripLayer(
                         mNativePtr,
@@ -191,11 +184,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         scrimOpacity,
                         leftPaddingPx,
                         rightPaddingPx,
-                        topPaddingPx,
-                        dividerY,
-                        shouldShowDivider,
-                        dividerResId,
-                        dividerTint);
+                        topPaddingPx);
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         boolean newTabButtonVisible = newTabButton.isVisible();
@@ -533,11 +522,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float scrimOpacity,
                 float leftPaddingPx,
                 float rightPaddingPx,
-                float topPaddingPx,
-                float dividerY,
-                boolean shouldShowDivider,
-                int dividerResourceId,
-                int dividerTint);
+                float topPaddingPx);
 
         void updateNewTabButton(
                 long nativeTabStripSceneLayer,

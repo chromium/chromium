@@ -1200,7 +1200,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (!LocalizationUtils.isLayoutRtl()) {
             float rightSideAnchor = mWidth - mRightPadding;
             if (isGlicButtonVisible()) {
-                rightSideAnchor -= getGlicButtonEndOffset();
+                rightSideAnchor -= GLIC_BUTTON_END_SLOP_DP;
                 if (isGlicActorButtonVisible()) {
                     mGlicActorButton.setDrawX(rightSideAnchor - mGlicActorButton.getWidth());
                     rightSideAnchor -=
@@ -1230,7 +1230,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         } else {
             float leftSideAnchor = mLeftPadding;
             if (isGlicButtonVisible()) {
-                leftSideAnchor += getGlicButtonEndOffset();
+                leftSideAnchor += GLIC_BUTTON_END_SLOP_DP;
                 if (isGlicActorButtonVisible()) {
                     mGlicActorButton.setDrawX(leftSideAnchor);
                     leftSideAnchor +=
@@ -1348,7 +1348,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             width += getButtonTouchTargetSizeDp(mContext);
         }
         if (isGlicButtonVisible()) {
-            width += mGlicButton.getWidth() + GLIC_BUTTON_START_SLOP_DP + getGlicButtonEndOffset();
+            width += mGlicButton.getWidth() + GLIC_BUTTON_START_SLOP_DP + GLIC_BUTTON_END_SLOP_DP;
 
             if (isGlicActorButtonVisible()) {
                 width +=
@@ -1541,23 +1541,6 @@ public class StripLayoutTrailingButtonsCoordinator {
             mStateController.updateObservations(mProfile);
         }
         return mStateController;
-    }
-
-    /** Returns whether the window controls divider should be shown. */
-    public boolean shouldShowDivider() {
-        return isGlicButtonVisible() && mIsAppInDesktopWindow;
-    }
-
-    /**
-     * Returns the layout space offset at the end of the Glic button in DP. This includes the base
-     * end slop (6dp) to keep touch targets within valid bounds, plus the window controls divider
-     * width (2dp) if visible.
-     */
-    private float getGlicButtonEndOffset() {
-        return GLIC_BUTTON_END_SLOP_DP
-                + (shouldShowDivider()
-                        ? getDimensionDp(mContext, R.dimen.tab_strip_window_controls_divider_width)
-                        : 0.f);
     }
 
     private float getGlicButtonBgWidthDp() {
