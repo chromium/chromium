@@ -650,6 +650,7 @@ source_set("tests") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 
   if (is_ct_supported) {

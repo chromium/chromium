@@ -1347,7 +1347,8 @@ void WebTransport::OnDatagramReceived(base::span<const uint8_t> data) {
 }
 
 void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
-                                          bool fin_received) {
+                                          bool fin_received,
+                                          uint64_t /*bytes_received*/) {
   DVLOG(1) << "WebTransport::OnIncomingStreamClosed(" << stream_id << ", "
            << fin_received << ") this=" << this;
   // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
@@ -1395,7 +1396,8 @@ wtf_size_t WebTransport::DatagramSinksWithPendingWritesSizeForTesting() const {
 }
 
 void WebTransport::OnReceivedResetStream(uint32_t stream_id,
-                                         uint32_t stream_error_code) {
+                                         uint32_t stream_error_code,
+                                         uint64_t /*bytes_received*/) {
   DVLOG(1) << "WebTransport::OnReceivedResetStream(" << stream_id << ", "
            << stream_error_code << ") this=" << this;
   auto it = incoming_stream_map_.find(stream_id);

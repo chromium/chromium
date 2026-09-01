@@ -196,6 +196,8 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
       SetStreamPriority,
       void(uint32_t stream_id,
            network::mojom::blink::WebTransportStreamPriorityPtr priority));
+  MOCK_METHOD2(GetReceiveStreamStats,
+               void(uint32_t, GetReceiveStreamStatsCallback));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD2(Close, void(uint32_t, String));
 
@@ -2438,7 +2440,8 @@ TEST_F(WebTransportTest, PendingIncomingStreamCloseConsumedOnceStreamExists) {
   constexpr uint32_t kStreamId = 0;
   EXPECT_FALSE(web_transport->HasPendingClosedStreamForTesting(kStreamId));
 
-  web_transport->OnIncomingStreamClosed(kStreamId, /*fin_received=*/true);
+  web_transport->OnIncomingStreamClosed(kStreamId, /*fin_received=*/true,
+                                        /*bytes_received=*/0);
   EXPECT_TRUE(web_transport->HasPendingClosedStreamForTesting(kStreamId));
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
@@ -2480,7 +2483,8 @@ TEST_F(WebTransportTest, CloseIgnoredAfterLocalAbort) {
 
   // Now simulate OnIncomingStreamClosed arriving after the local abort.
   // This should be ignored because the stream_id is in the tracking set.
-  web_transport->OnIncomingStreamClosed(kStreamId, /*fin_received=*/true);
+  web_transport->OnIncomingStreamClosed(kStreamId, /*fin_received=*/true,
+                                        /*bytes_received=*/0);
 
   // The close should NOT be added to closed_potentially_pending_streams_
   // because the stream was already forgotten and tracked.
@@ -2516,7 +2520,8 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
   ASSERT_TRUE(receive_stream);
 
   client_remote_->OnIncomingStreamClosed(/*stream_id=*/0,
-                                         /*fin_received=*/false);
+                                         /*fin_received=*/false,
+                                         /*bytes_received=*/0);
 
   test::RunPendingTasks();
 
@@ -2550,7 +2555,8 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteCloseReverse) {
   ASSERT_TRUE(receive_stream);
 
   client_remote_->OnIncomingStreamClosed(/*stream_id=*/0,
-                                         /*fin_received=*/false);
+                                         /*fin_received=*/false,
+                                         /*bytes_received=*/0);
 
   test::RunPendingTasks();
 
@@ -2613,7 +2619,8 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
   EXPECT_EQ(producer->WriteAllData(base::as_byte_span(data)), MOJO_RESULT_OK);
 
   producer.reset();
-  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+  web_transport->OnIncomingStreamClosed(
+      /*stream_id=*/0, true, /*bytes_received=*/0);
 
   auto* reader = receive_stream->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -2885,7 +2892,8 @@ TEST_F(WebTransportTest, ReceivedResetStream) {
       scope.GetIsolate(), tester.Value().V8Value());
   EXPECT_TRUE(bidirectional_stream);
 
-  web_transport->OnReceivedResetStream(kStreamId, kCode);
+  web_transport->OnReceivedResetStream(kStreamId, kCode,
+                                       /*bytes_received=*/0);
 
   ASSERT_TRUE(bidirectional_stream->readable()->IsErrored());
   v8::Local<v8::Value> error_value =
@@ -3836,7 +3844,8 @@ TEST_F(WebTransportTest, IncomingUnidirectionalStreamIsReceiveStream) {
   EXPECT_TRUE(receive_stream->GetIncomingStream());
 
   producer.reset();
-  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+  web_transport->OnIncomingStreamClosed(
+      /*stream_id=*/0, true, /*bytes_received=*/0);
 }
 
 TEST_F(WebTransportTest, IncomingUnidirectionalStreamFlagOffIsLegacyReceive) {
@@ -3857,7 +3866,8 @@ TEST_F(WebTransportTest, IncomingUnidirectionalStreamFlagOffIsLegacyReceive) {
   EXPECT_FALSE(DynamicTo<WebTransportReceiveStream>(readable));
 
   producer.reset();
-  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+  web_transport->OnIncomingStreamClosed(
+      /*stream_id=*/0, true, /*bytes_received=*/0);
 }
 
 TEST_F(WebTransportTest, ReceiveStreamGetStatsReturnsZeroedStub) {
@@ -3899,7 +3909,8 @@ TEST_F(WebTransportTest, ReceiveStreamGetStatsReturnsZeroedStub) {
   EXPECT_EQ(bytes_read->IntegerValue(context).ToChecked(), 0);
 
   producer.reset();
-  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+  web_transport->OnIncomingStreamClosed(
+      /*stream_id=*/0, true, /*bytes_received=*/0);
 }
 
 TEST_F(WebTransportTest, BidirectionalStreamReadableIsReceiveStream) {

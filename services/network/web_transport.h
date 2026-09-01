@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -90,6 +91,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
       mojom::WebTransportStreamPriorityPtr priority) override;
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
   void GetStats(GetStatsCallback callback) override;
+  void GetReceiveStreamStats(uint32_t stream_id,
+                             GetReceiveStreamStatsCallback callback) override;
   void Close(mojom::WebTransportCloseInfoPtr close_info) override;
 
   // WebTransportClientVisitor implementation:
@@ -112,6 +115,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void OnDatagramProcessed(std::optional<quic::DatagramStatus> status) override;
 
   bool torn_down() const { return torn_down_; }
+  bool HasFinalReceiveStreamStatsForTesting(uint32_t stream_id) const {
+    return final_receive_stream_stats_.Peek(stream_id) !=
+           final_receive_stream_stats_.end();
+  }
 
  private:
   void TearDown();
@@ -130,6 +137,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   // Destroy `streams_` before `closing_` and `torn_down_`; its destructor
   // calls back into `WebTransport` to check those flags.
   std::map<uint32_t, std::unique_ptr<Stream>> streams_;
+  // Maps a stream ID to its final received bytes after the renderer closes its
+  // data pipe. The renderer requests these stats before sending StopSending(),
+  // which erases the entry. If the renderer disconnects before then, Dispose()
+  // destroys this WebTransport and the map with it. Entries cannot be erased
+  // when Stream is disposed because the stats request and data-pipe closure
+  // arrive on independently ordered Mojo pipes. Capped to
+  // kMaxFinalReceiveStreamStatsEntries, in order to avoid unbounded memory
+  // growth if the renderer never calls stop sending data.
+  base::LRUCache<uint32_t, uint64_t> final_receive_stream_stats_;
 
   // These callbacks must be destroyed after |client_| because of mojo callback
   // destruction checks, so they are declared first.

@@ -77,6 +77,18 @@ struct WebTransportStats {
   uint64 datagrams_lost_outgoing;
 };
 
+// Stats for a WebTransport receive stream.
+// https://w3c.github.io/webtransport/#dictdef-webtransportreceivestreamstats
+struct WebTransportReceiveStreamStats {
+  // Total contiguous application-stream bytes received for this stream.
+  // Retransmitted QUIC data is deduplicated by the sequencer. Maps to
+  // WebTransportReceiveStreamStats.bytesReceived.
+  //
+  // Note: bytesRead (bytes consumed by the application) is tracked by the
+  // renderer's WebTransportReceiveStream.
+  uint64 bytes_received;
+};
+
 // Represents the priority of a WebTransport stream.
 // https://w3c.github.io/webtransport/#dictdef-webtransportsendoptions
 // Default values (null send_group_id, send_order=0) match QUICHE's
@@ -167,6 +179,15 @@ interface WebTransport {
   // Provides the latest stats for the session.
   GetStats() => (WebTransportStats? stats);
 
+  // Provides the latest stats for a receive (incoming) stream. Final stats for
+  // peer-closed and reset streams are delivered with the corresponding
+  // WebTransportClient notification. During client cancellation, stats remain
+  // available until StopSending() arrives. Returns null if `stream_id`
+  // identifies neither a tracked stream nor a snapshot of a cancelled stream.
+  // https://w3c.github.io/webtransport/#dom-webtransportreceivestream-getstats
+  GetReceiveStreamStats(uint32 stream_id)
+      => (WebTransportReceiveStreamStats? stats);
+
   // https://w3c.github.io/webtransport/#session-terminate
   // This is the last message and it is not allowed to call methods after
   // calling this.
@@ -186,9 +207,13 @@ interface WebTransportClient {
 
   // Notifies that the server will not write data to the Stream for |stream_id|.
   // |fin_received| is true when FIN is received from the server.
+  // |bytes_received| is the final number of contiguous application bytes
+  // received for the stream.
   // Note that OnIncomingStreamClosed and OnOutgoingStreamClosed can both be
   // dispatched to the same stream, if it is a bidirectional stream.
-  OnIncomingStreamClosed(uint32 stream_id, bool fin_received);
+  OnIncomingStreamClosed(uint32 stream_id,
+                         bool fin_received,
+                         uint64 bytes_received);
 
   // Notifies that all outstanding data has been received by the server on the
   // Stream for |stream_id| and it is now closed.
@@ -204,7 +229,11 @@ interface WebTransportClient {
   // https://w3c.github.io/webtransport/#stream-signal-reset
   // `stream_error_code` is an error code as described at
   // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-resetting-data-streams.
-  OnReceivedResetStream(uint32 stream_id, uint32 stream_error_code);
+  // `bytes_received` is the final number of contiguous application bytes
+  // received before the reset.
+  OnReceivedResetStream(uint32 stream_id,
+                        uint32 stream_error_code,
+                        uint64 bytes_received);
 
   // Called when the session is terminated cleanly.
   // https://w3c.github.io/webtransport/#session-terminated
