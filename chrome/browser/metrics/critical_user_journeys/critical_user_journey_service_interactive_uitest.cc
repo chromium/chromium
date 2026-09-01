@@ -103,14 +103,14 @@ class TestCriticalUserJourneyService : public CriticalUserJourneyService {
             })
             .Build());
 
-    // AnyOf Start Journey: Click New Tab button or Location Icon (triggers
+    // AnyOf Start Journey: Click New Tab button or Tab Search Button (triggers
     // start), then click the App Menu Button.
     registry->AddJourney(
         CriticalUserJourney::Builder(&kAnyOfStartJourney)
             .AddAnyOf({
                 Branch(kNewTabButtonElementId,
                        ui::InteractionSequence::StepType::kActivated, 1),
-                Branch(kLocationIconElementId,
+                Branch(kTabSearchButtonElementId,
                        ui::InteractionSequence::StepType::kActivated, 2),
             })
             .AddStep(kToolbarAppMenuButtonElementId,
@@ -330,8 +330,8 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       base::StrCat({GetMetricJourneyPrefix(kAnyOfStartJourney), ".Result"});
 
   RunTestSequence(
-      // Step 1: Click the Location Icon (triggers start).
-      PressButton(kLocationIconElementId),
+      // Step 1: Click the Tab Search Button (triggers start).
+      PressButton(kTabSearchButtonElementId),
 
       // Step 2: Click the App Menu Button.
       PressButton(kToolbarAppMenuButtonElementId));
