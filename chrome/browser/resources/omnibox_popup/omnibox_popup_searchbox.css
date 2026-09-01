@@ -370,6 +370,7 @@ omnibox-popup-contextual-entrypoint {
   position: static;
   scale: 1;
   transform: none;
+  visibility: visible;
   width: 15px;
 }
 
