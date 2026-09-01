@@ -39,7 +39,6 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
-#include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/progress_reporter.h"
 #include "ui/gl/scoped_make_current.h"
@@ -1192,11 +1191,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     CheckErrorCallbackState();
   }
 
-  // Register this object as a GPU switching observer.
-  if (feature_info_->IsWebGLContext()) {
-    ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
-  }
-
   // Deprecation warning for SwiftShader WebGL fallback
   if (feature_info_->IsWebGLContext() &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
@@ -1314,11 +1308,6 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
     }
   }
   deschedule_until_finished_fences_.clear();
-
-  // Unregister this object as a GPU switching observer.
-  if (feature_info_->IsWebGLContext()) {
-    ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
-  }
 
   // Destroy the surface before the context, some surface destructors make GL
   // calls.
@@ -1720,11 +1709,6 @@ void GLES2DecoderPassthroughImpl::MarkContextLost(
 
 gpu::gles2::Logger* GLES2DecoderPassthroughImpl::GetLogger() {
   return &logger_;
-}
-
-void GLES2DecoderPassthroughImpl::OnGpuSwitched() {
-  // Send OnGpuSwitched notification to renderer process via decoder client.
-  client()->OnGpuSwitched();
 }
 
 void GLES2DecoderPassthroughImpl::BeginDecoding() {

@@ -12,8 +12,6 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/events/devices/input_device_event_observer.h"
-#include "ui/gl/gpu_switching_manager.h"
-#include "ui/gl/gpu_switching_observer.h"
 
 namespace content {
 
@@ -35,8 +33,7 @@ class CONTENT_EXPORT SlowWebPreferenceCacheObserver
 //
 // This is not thread safe. This is expected to be accessed on the main thread.
 class CONTENT_EXPORT SlowWebPreferenceCache
-    : public ui::InputDeviceEventObserver,
-      public ui::GpuSwitchingObserver {
+    : public ui::InputDeviceEventObserver {
  public:
   SlowWebPreferenceCache(const SlowWebPreferenceCache&) = delete;
   SlowWebPreferenceCache& operator=(const SlowWebPreferenceCache&) = delete;
@@ -48,8 +45,6 @@ class CONTENT_EXPORT SlowWebPreferenceCache
 
   // InputDeviceEventObserver implementation
   void OnInputDeviceConfigurationChanged(uint8_t) override;
-  // GpuSwitchingObserver implementation
-  void OnGpuSwitched() override;
 
  private:
   friend base::NoDestructor<SlowWebPreferenceCache>;
@@ -64,12 +59,6 @@ class CONTENT_EXPORT SlowWebPreferenceCache
 
   bool is_initialized_ = false;
   base::ObserverList<SlowWebPreferenceCacheObserver> observers_;
-  // TODO(crbug.com/494157380): ensure that SlowWebPreferenceCache is
-  // destroyed before ui::GpuSwitchingManager, or stop using a scoped
-  // observation if the object is intended to be leaked (singleton).
-  base::ScopedObservation<ui::GpuSwitchingManager,
-                          ui::GpuSwitchingObserver>::LeakedDanglingUntriaged
-      gpu_switch_observation_{this};
 
   bool touch_event_feature_detection_enabled_ = false;
   int available_pointer_types_ = 0;

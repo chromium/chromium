@@ -35,7 +35,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
-#include "ui/gl/gpu_switching_observer.h"
 
 namespace gl {
 class GLFence;
@@ -137,9 +136,7 @@ struct PassthroughResources {
 // so we can stack-allocate load/store ops.
 static constexpr GLsizei kPassthroughMaxPLSPlanes = 8;
 
-class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
-    : public GLES2Decoder,
-      public ui::GpuSwitchingObserver {
+class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
  public:
   GLES2DecoderPassthroughImpl(DecoderClient* client,
                               CommandBufferServiceBase* command_buffer_service,
@@ -329,9 +326,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Update lost context state for use when making calls to the GL context
   // directly, and needing to know if they failed due to loss.
   bool CheckResetStatus() override;
-
-  // Implement GpuSwitchingObserver.
-  void OnGpuSwitched() override;
 
   Logger* GetLogger() override;
 

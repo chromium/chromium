@@ -25,10 +25,6 @@ void GpuSwitchingManager::RemoveObserver(GpuSwitchingObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void GpuSwitchingManager::NotifyGpuSwitched() {
-  observer_list_.Notify(&GpuSwitchingObserver::OnGpuSwitched);
-}
-
 void GpuSwitchingManager::NotifyDisplayAdded() {
   observer_list_.Notify(&GpuSwitchingObserver::OnDisplayAdded);
 }

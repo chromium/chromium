@@ -8,12 +8,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "build/blink_buildflags.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/pointer/pointer_device.h"
-#include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/events/devices/input_device_observer_win.h"
@@ -53,8 +53,6 @@ enum class PrimaryPointerType {
 SlowWebPreferenceCacheObserver::~SlowWebPreferenceCacheObserver() = default;
 
 SlowWebPreferenceCache::SlowWebPreferenceCache() {
-  gpu_switch_observation_.Observe(ui::GpuSwitchingManager::GetInstance());
-
 #if BUILDFLAG(IS_WIN)
   ui::InputDeviceObserverWin::GetInstance()->AddObserver(this);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -118,14 +116,6 @@ void SlowWebPreferenceCache::Load(blink::web_pref::WebPreferences* prefs) {
 }
 
 void SlowWebPreferenceCache::OnInputDeviceConfigurationChanged(uint8_t) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (Update()) {
-    observers_.Notify(
-        &SlowWebPreferenceCacheObserver::OnSlowWebPreferenceChanged);
-  }
-}
-
-void SlowWebPreferenceCache::OnGpuSwitched() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (Update()) {
     observers_.Notify(
