@@ -459,6 +459,8 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
     }
 
     MinMaxSizesFloatInput child_float_input;
+    child_float_input.constrained_inline_size =
+        float_input.constrained_inline_size;
     if (child.IsInline() || child.IsAnonymousBlockFlow()) {
       child_float_input.float_left_inline_size = float_left_inline_size;
       child_float_input.float_right_inline_size = float_right_inline_size;
@@ -480,15 +482,6 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
 
     MinMaxSizesResult child_result;
     if (child.IsInline()) {
-      if (child.Style().IsInShrinkToFitSubtree() &&
-          GetConstraintSpace().AvailableSize().inline_size != kIndefiniteSize) {
-        // TODO(crbgu.com/537526308): Constrain the size with a call to
-        // ComputeMinMaxInlineSizes to support `max-width`, etc.
-        child_float_input.constrained_inline_size =
-            (GetConstraintSpace().AvailableSize().inline_size -
-             BorderScrollbarPadding().InlineSum())
-                .ClampNegativeToZero();
-      }
       // From |BlockLayoutAlgorithm| perspective, we can handle |InlineNode|
       // almost the same as |BlockNode|, because an |InlineNode| includes
       // all inline nodes following |child| and their descendants, and produces

@@ -1,29 +1,55 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
 <meta name="flags" content="ahem">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
 <style>
 #outer {
-  width:160px;
+  width: 160px;
 }
 
-#target {
+#outer > div {
   max-content-sizing: shrink-to-fit;
   font: 20px/1 Ahem;
+  width: fit-content;
+}
+
+#outer2 {
+  max-content-sizing: shrink-to-fit;
+  width: fit-content;
+  font: 20px/1 Ahem;
+}
+#outer2 > div {
+  width: fit-content;
+  max-width: 100px;
+}
+#outer2 > div > div {
   width: fit-content;
 }
 </style>
 
 <div id="outer">
-<div id="target">abc defgh</div>
+<!-- Fit to the line "defgh". -->
+<div title="The target width should be shrunk"
+     data-expected-width="100">abc defgh</div>
+
+<div title="The target width should not be smaller than min-width"
+     style="min-width: 120px;"
+     data-expected-width="120">abc defgh</div>
+
+<div title="The target width should not be larger than max-width"
+     style="max-width: 80px;"
+     data-expected-width="80">abc defgh</div>
+</div>
+
+<div id="outer2">
+  <div>
+    <div title="The target width should not be larger than max-width"
+         data-expected-width="60">abc abc abc</div>
+  </div>
 </div>
 
 <script>
-promise_test(async () => {
-  await document.fonts.ready;
-  const target = document.querySelector('#target');
-  // Fit to the line "defgh".
-  assert_equals(target.offsetWidth, 20 * 5);
-}, 'The target width should be shrunk');
+document.fonts.ready.then(() => checkLayout('[data-expected-width]'));
 </script>

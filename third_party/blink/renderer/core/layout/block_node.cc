@@ -1043,7 +1043,29 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
 
   std::optional<MinMaxSizesResult> result;
 
-  if (CanUseCachedIntrinsicInlineSizes(constraint_space, float_input, *this)) {
+  MinMaxSizesFloatInput updated_input = float_input;
+  if (Style().IsInShrinkToFitSubtree()) {
+    const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
+    const BoxStrut border_padding =
+        fragment_geometry.border + fragment_geometry.padding;
+    const MinMaxSizes min_max = ComputeMinMaxInlineSizes(
+        constraint_space, *this, border_padding,
+        /* auto_min_length */ nullptr, [](SizeType) -> MinMaxSizesResult {
+          return {{kIndefiniteSize, kIndefiniteSize},
+                  /* depends_on_block_constraints */ false};
+        });
+    const LayoutUnit available_inline_size =
+        constraint_space.AvailableSize().inline_size == kIndefiniteSize
+            ? float_input.constrained_inline_size
+            : constraint_space.AvailableSize().inline_size;
+    updated_input.constrained_inline_size =
+        (min_max.ClampSizeToMinAndMax(available_inline_size) -
+         (border_padding + fragment_geometry.scrollbar).InlineSum())
+            .ClampNegativeToZero();
+  }
+
+  if (CanUseCachedIntrinsicInlineSizes(constraint_space, updated_input,
+                                       *this)) {
     if (!box_->IntrinsicLogicalWidthsDependsOnBlockConstraints()) {
       // If we don't have a descendant which depends on our block constraints,
       // we can use the cached sizes directly. This means we can avoid
@@ -1071,7 +1093,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     result = ComputeMinMaxSizesWithAlgorithm(
         LayoutAlgorithmParams(*this, fragment_geometry, constraint_space),
-        float_input);
+        updated_input);
 
     const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
