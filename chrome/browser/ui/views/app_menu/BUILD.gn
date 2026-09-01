@@ -11,6 +11,7 @@ source_set("app_menu") {
     "action_app_menu.h",
     "action_app_menu_footer_view.h",
     "action_app_menu_manager.h",
+    "action_app_menu_search_bar_view.h",
     "action_app_menu_zoom_view.h",
     "app_menu_footer_button.h",
     "block_menu_entry_button.h",
@@ -42,6 +43,7 @@ source_set("impl") {
     "action_app_menu.cc",
     "action_app_menu_footer_view.cc",
     "action_app_menu_manager.cc",
+    "action_app_menu_search_bar_view.cc",
     "action_app_menu_zoom_view.cc",
     "app_menu_footer_button.cc",
     "block_menu_entry_button.cc",
@@ -74,6 +76,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_live_tab_context",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
@@ -110,6 +113,10 @@ source_set("impl") {
     "//ui/gfx",
     "//ui/views",
   ]
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
 }
 
 if (toolkit_views) {
@@ -118,6 +125,7 @@ if (toolkit_views) {
 
     sources = [
       "action_app_menu_manager_unittest.cc",
+      "action_app_menu_search_bar_view_unittest.cc",
       "action_app_menu_test_base.cc",
       "action_app_menu_test_base.h",
       "action_app_menu_unittest.cc",
@@ -133,6 +141,7 @@ if (toolkit_views) {
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/test:test_support",
       "//components/saved_tab_groups/public",

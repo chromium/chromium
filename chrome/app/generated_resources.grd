@@ -1513,6 +1513,9 @@ are declared in tools/grit/grit_args.gni.
 
       <!-- Page menu. Android has separate strings for its menu -->
       <if expr="not is_android">
+        <message name="IDS_APP_MENU_SEARCH_PLACEHOLDER" desc="Placeholder text for the search bar in the app menu.">
+          Search menu, or type an action
+        </message>
         <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and Actions section in the main App Menu">
           Tools and Actions
         </message>
