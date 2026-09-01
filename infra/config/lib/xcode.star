@@ -11,7 +11,4 @@ xcode = struct(
 
     # Xcode beta version used on beta bots.
     xcode_beta = _xcode.for_ios("27a5252f"),
-
-    # Xcode 26.5 version used on Intel bots that don't support Xcode 27.
-    xcode_26 = _xcode.for_ios("17f42"),
 )

@@ -556,9 +556,7 @@ shared_gpu.ci.mac_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
-    # Xcode 27 is not supported on Intel Macs, so this bot is held back on
-    # Xcode 26 and will miss out on Xcode 27 compile and iOS 27 simulators.
-    xcode = xcode.xcode_26,
+    xcode = xcode.xcode_default,
 )
 
 ci.thin_tester(
@@ -594,7 +592,7 @@ ci.thin_tester(
             "isolate_profile_data",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_26_main",
+            "xcode_16_main",
             "xctest",
         ],
     ),

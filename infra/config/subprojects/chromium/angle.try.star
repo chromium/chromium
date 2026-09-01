@@ -63,5 +63,4 @@ angle_ios_builder(
     os = os.MAC_15,
     cpu = cpu.X86_64,
     max_concurrent_builds = 1,
-    xcode = xcode.xcode_26,
 )
