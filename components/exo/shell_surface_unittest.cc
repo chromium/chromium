@@ -3377,7 +3377,7 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
   ASSERT_TRUE(shadow);
 
   // Window shadow radius needs to match the window radius.
-  EXPECT_EQ(shadow->rounded_corners_for_testing(), gfx::RoundedCornersF());
+  EXPECT_EQ(shadow->rounded_corners(), gfx::RoundedCornersF());
 
   // Have a window with radius of 12dp.
   shell_surface->SetWindowCornersRadii(
@@ -3386,7 +3386,7 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
 
   shadow = wm::ShadowController::GetShadowForWindow(window);
   ASSERT_TRUE(shadow);
-  EXPECT_EQ(shadow->rounded_corners_for_testing(),
+  EXPECT_EQ(shadow->rounded_corners(),
             gfx::RoundedCornersF(kWindowCornerRadius));
 
   // Have a window with radius of 0dp.
@@ -3395,7 +3395,7 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
 
   shadow = wm::ShadowController::GetShadowForWindow(window);
   ASSERT_TRUE(shadow);
-  EXPECT_EQ(shadow->rounded_corners_for_testing(), gfx::RoundedCornersF());
+  EXPECT_EQ(shadow->rounded_corners(), gfx::RoundedCornersF());
 }
 
 TEST_F(ShellSurfaceTest, RoundedWindows) {

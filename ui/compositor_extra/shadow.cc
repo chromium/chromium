@@ -34,7 +34,7 @@ Shadow::~Shadow() = default;
 
 void Shadow::Init(int elevation) {
   DCHECK_GE(elevation, 0);
-  desired_elevation_ = elevation;
+  elevation_ = elevation;
   SetLayer(std::make_unique<ui::LayerNotDrawn>());
   layer()->SetName("Shadow Parent Container");
   RecreateShadowLayer();
@@ -56,10 +56,11 @@ void Shadow::SetContentBounds(const gfx::Rect& content_bounds) {
 
 void Shadow::SetElevation(int elevation) {
   DCHECK_GE(elevation, 0);
-  if (desired_elevation_ == elevation)
+  if (elevation_ == elevation) {
     return;
+  }
 
-  desired_elevation_ = elevation;
+  elevation_ = elevation;
 
   // Stop waiting for any as yet unfinished implicit animations.
   StopObservingImplicitAnimations();
@@ -98,7 +99,7 @@ void Shadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
   UpdateShadowAppearance();
 }
 
-void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
+void Shadow::SetStyle(gfx::ShadowStyle style) {
   if (style_ == style)
     return;
 
@@ -106,7 +107,7 @@ void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
   UpdateShadowAppearance();
 }
 
-void Shadow::SetElevationToColorsMap(const ElevationToColorsMap& color_map) {
+void Shadow::SetColorMap(const ElevationToColorsMap& color_map) {
   color_map_ = color_map;
   UpdateShadowAppearance();
 }
@@ -183,11 +184,10 @@ void Shadow::UpdateShadowAppearance() {
                            size_adjusted_rounded_corners.lower_right(),
                            size_adjusted_rounded_corners.lower_left()})) /
                 4;
-  const int size_adjusted_elevation =
-      std::min(max_safe_elevation, static_cast<int>(desired_elevation_));
+  const int size_adjusted_elevation = std::min(max_safe_elevation, elevation_);
   CHECK_GE(size_adjusted_elevation, 0);
 
-  auto iter = color_map_.find(desired_elevation_);
+  auto iter = color_map_.find(elevation_);
   const auto& details =
       (iter == color_map_.end())
           ? gfx::ShadowDetails::Get(size_adjusted_elevation,
@@ -195,8 +195,9 @@ void Shadow::UpdateShadowAppearance() {
                                     is_pill_shaped, style_)
           : gfx::ShadowDetails::Get(
                 size_adjusted_elevation, size_adjusted_rounded_corners,
-                /*key_color=*/iter->second.first,
-                /*ambient_color=*/iter->second.second, is_pill_shaped, style_);
+                /*key_color=*/iter->second.key_color,
+                /*ambient_color=*/iter->second.ambient_color, is_pill_shaped,
+                style_);
 
   const gfx::Insets aperture_insets =
       gfx::ShadowDetails::GetNineboxApertureInsets(

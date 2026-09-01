@@ -32,7 +32,7 @@ class SystemShadowImpl : public SystemShadow, public ui::LayerOwner::Observer {
                    const LayerRecreatedCallback& layer_recreated_callback)
       : layer_recreated_callback_(layer_recreated_callback) {
     shadow_.Init(SystemShadow::GetElevationFromType(type));
-    shadow_.SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+    shadow_.SetStyle(gfx::ShadowStyle::kChromeOSSystemUI);
 
     if (layer_recreated_callback) {
       shadow_observation_.Observe(&shadow_);
@@ -71,7 +71,7 @@ class SystemViewShadow : public SystemShadow, public views::ViewObserver {
  public:
   SystemViewShadow(views::View* view, SystemShadow::Type type)
       : view_shadow_(view, SystemShadow::GetElevationFromType(type)) {
-    view_shadow_.shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+    view_shadow_.shadow()->SetStyle(gfx::ShadowStyle::kChromeOSSystemUI);
     view_observation_.Observe(view);
     if (auto* widget = view->GetWidget()) {
       ObserveColorProviderSource(widget);
@@ -232,7 +232,7 @@ const gfx::ShadowValues SystemShadow::GetShadowValuesForTesting() const {
 }
 
 void SystemShadow::UpdateShadowColors(const ui::ColorProvider* color_provider) {
-  shadow()->SetElevationToColorsMap(
+  shadow()->SetColorMap(
       StyleUtil::CreateShadowElevationToColorsMap(color_provider));
 }
 

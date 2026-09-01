@@ -12,6 +12,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/shadow_util.h"
@@ -21,9 +22,16 @@ namespace ui {
 // Simple class that draws a drop shadow around content at given bounds.
 class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
  public:
-  // Mapping from elevation to key and ambient shadow colors. The first color is
-  // the key shadow color and the second is the ambient shadow color.
-  using ElevationToColorsMap = base::flat_map<int, std::pair<SkColor, SkColor>>;
+  // Key and ambient shadow colors for an elevation.
+  struct ElevationColors {
+    SkColor key_color = gfx::kPlaceholderColor;
+    SkColor ambient_color = gfx::kPlaceholderColor;
+
+    bool operator==(const ElevationColors&) const = default;
+  };
+
+  // Mapping from elevation to key and ambient shadow colors.
+  using ElevationToColorsMap = base::flat_map<int, ElevationColors>;
 
   Shadow();
 
@@ -49,37 +57,37 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
     return layer ? layer->AsNinePatch() : nullptr;
   }
 
-  const gfx::Rect& content_bounds() const { return content_bounds_; }
-  int desired_elevation() const { return desired_elevation_; }
-  const ElevationToColorsMap& color_map() const { return color_map_; }
-
   // Moves and resizes the shadow layer to frame |content_bounds|.
   // This should be used to adjust the shadow's size and position (rather than
   // applying transformations to the `layer()` of this Shadow).
   void SetContentBounds(const gfx::Rect& content_bounds);
+  const gfx::Rect& content_bounds() const { return content_bounds_; }
 
   // Sets the shadow's appearance, animating opacity as necessary.
   void SetElevation(int elevation);
+  int elevation() const { return elevation_; }
 
   // Sets the radii for the rounded corners to take into account when
   // adjusting the shadow layer to frame |content_bounds|.
   void SetRoundedCorners(const gfx::RoundedCornersF& radii);
+  const gfx::RoundedCornersF& rounded_corners() const {
+    return rounded_corners_;
+  }
 
   // Set shadow style.
-  void SetShadowStyle(gfx::ShadowStyle style);
+  void SetStyle(gfx::ShadowStyle style);
+  gfx::ShadowStyle style() const { return style_; }
 
   // Set customized key and ambient shadows color map for certain elevations.
-  void SetElevationToColorsMap(const ElevationToColorsMap& color_map);
+  void SetColorMap(const ElevationToColorsMap& color_map);
+  const ElevationToColorsMap& color_map() const { return color_map_; }
+
+  // ui::ImplicitAnimationObserver overrides:
+  void OnImplicitAnimationsCompleted() override;
 
   const gfx::ShadowDetails* details_for_testing() const {
     return details_ ? &details_.value() : nullptr;
   }
-  const gfx::RoundedCornersF& rounded_corners_for_testing() const {
-    return rounded_corners_;
-  }
-
-  // ui::ImplicitAnimationObserver overrides:
-  void OnImplicitAnimationsCompleted() override;
 
  private:
   // A shadow layer owner that correctly updates the nine patch layer details
@@ -112,7 +120,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // dictates the shadow's display characteristics and is proportional to the
   // size of the blur and its offset. This may not match reality if the window
   // isn't big enough to support it.
-  int desired_elevation_ = 0;
+  int elevation_ = 0;
 
   // Rounded corners are drawn on top of the window's content layer,
   // we need to exclude them from the occlusion area.

@@ -347,7 +347,7 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   MaybeSetShadowRadiusForWindow(window);
   shadow->Init(GetShadowElevationForActiveState(window));
 #if BUILDFLAG(IS_CHROMEOS)
-  shadow->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+  shadow->SetStyle(gfx::ShadowStyle::kChromeOSSystemUI);
 #endif
   shadow->SetContentBounds(gfx::Rect(window->bounds().size()));
   shadow->layer()->SetVisible(ShouldShowShadowForWindow(window));
@@ -393,19 +393,21 @@ ui::Shadow* ShadowController::GetShadowForWindow(aura::Window* window) {
 ui::Shadow::ElevationToColorsMap ShadowController::GenerateShadowColorsMap(
     const ui::ColorProvider* color_provider) {
   ui::Shadow::ElevationToColorsMap color_map;
-  color_map[kShadowElevationPopup] = std::make_pair(
-      color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationFour),
-      color_provider->GetColor(
-          ui::kColorShadowValueAmbientShadowElevationFour));
-  color_map[kShadowElevationInactiveWindow] = std::make_pair(
-      color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationTwelve),
-      color_provider->GetColor(
-          ui::kColorShadowValueAmbientShadowElevationTwelve));
-  color_map[kShadowElevationActiveWindow] = std::make_pair(
-      color_provider->GetColor(
+  color_map[kShadowElevationPopup] = ui::Shadow::ElevationColors{
+      .key_color =
+          color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationFour),
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationFour)};
+  color_map[kShadowElevationInactiveWindow] = ui::Shadow::ElevationColors{
+      .key_color = color_provider->GetColor(
+          ui::kColorShadowValueKeyShadowElevationTwelve),
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwelve)};
+  color_map[kShadowElevationActiveWindow] = ui::Shadow::ElevationColors{
+      .key_color = color_provider->GetColor(
           ui::kColorShadowValueKeyShadowElevationTwentyFour),
-      color_provider->GetColor(
-          ui::kColorShadowValueAmbientShadowElevationTwentyFour));
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwentyFour)};
   return color_map;
 }
 

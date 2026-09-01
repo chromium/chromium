@@ -58,16 +58,16 @@ ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
   if (color_provider) {
     switch (shadow) {
       case BubbleBorder::Shadow::STANDARD_SHADOW:
-        colors_map[3] = std::make_pair(
-            color_provider->GetColor(
+        colors_map[3] = ui::Shadow::ElevationColors{
+            .key_color = color_provider->GetColor(
                 ui::kColorShadowValueKeyShadowElevationThree),
-            color_provider->GetColor(
-                ui::kColorShadowValueAmbientShadowElevationThree));
-        colors_map[16] = std::make_pair(
-            color_provider->GetColor(
+            .ambient_color = color_provider->GetColor(
+                ui::kColorShadowValueAmbientShadowElevationThree)};
+        colors_map[16] = ui::Shadow::ElevationColors{
+            .key_color = color_provider->GetColor(
                 ui::kColorShadowValueKeyShadowElevationSixteen),
-            color_provider->GetColor(
-                ui::kColorShadowValueAmbientShadowElevationSixteen));
+            .ambient_color = color_provider->GetColor(
+                ui::kColorShadowValueAmbientShadowElevationSixteen)};
         break;
 #if BUILDFLAG(IS_CHROMEOS)
       case BubbleBorder::Shadow::CHROMEOS_SYSTEM_UI_SHADOW:
@@ -83,7 +83,8 @@ ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
   const SkColor default_color =
       color_provider ? color_provider->GetColor(ui::kColorShadowBase)
                      : gfx::kPlaceholderColor;
-  colors_map[kDefaultShadowType] = std::make_pair(default_color, default_color);
+  colors_map[kDefaultShadowType] = ui::Shadow::ElevationColors{
+      .key_color = default_color, .ambient_color = default_color};
   return colors_map;
 }
 
@@ -166,19 +167,19 @@ const gfx::ShadowValues& GetShadowValues(
                                         : shadow_colors_map[kDefaultShadowType];
     switch (shadow_type) {
       case BubbleBorder::Shadow::STANDARD_SHADOW:
-        shadows = gfx::ShadowValue::MakeShadowValues(elevation.value(),
-                                                     key_ambient_colors.first,
-                                                     key_ambient_colors.second);
+        shadows = gfx::ShadowValue::MakeShadowValues(
+            elevation.value(), key_ambient_colors.key_color,
+            key_ambient_colors.ambient_color);
         break;
 #if BUILDFLAG(IS_CHROMEOS)
       case BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW:
-        if (key_ambient_colors.first == key_ambient_colors.second) {
+        if (key_ambient_colors.key_color == key_ambient_colors.ambient_color) {
           shadows = gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
-              elevation.value(), key_ambient_colors.first);
+              elevation.value(), key_ambient_colors.key_color);
         } else {
           shadows = gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
-              elevation.value(), key_ambient_colors.first,
-              key_ambient_colors.second);
+              elevation.value(), key_ambient_colors.key_color,
+              key_ambient_colors.ambient_color);
         }
         break;
 #endif

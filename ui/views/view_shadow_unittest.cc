@@ -121,7 +121,7 @@ TEST_F(ViewShadowTest, SetRoundedCorners) {
 
   const gfx::RoundedCornersF radii(10, 20, 30, 40);
   shadow.SetRoundedCorners(radii);
-  EXPECT_EQ(radii, shadow.shadow()->rounded_corners_for_testing());
+  EXPECT_EQ(radii, shadow.shadow()->rounded_corners());
 }
 
 }  // namespace views

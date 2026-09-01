@@ -354,9 +354,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests the shadow colors are updated when setting elevation to colors map.
 TEST_P(ShadowColorTest, ElevationToColorsMap) {
+  using ElevationColors = Shadow::ElevationColors;
   Shadow shadow;
   shadow.Init(kElevationSmall);
-  shadow.SetShadowStyle(GetParam());
+  shadow.SetStyle(GetParam());
   // Set the content bounds which is big enough for the large elevation.
   shadow.SetContentBounds(gfx::Rect(GetMinContentSize(kElevationLarge)));
 
@@ -372,33 +373,32 @@ TEST_P(ShadowColorTest, ElevationToColorsMap) {
   const SkColor large_ambient_color = SkColorSetA(SK_ColorYELLOW, 0x26);
   Shadow::ElevationToColorsMap color_map;
   color_map[kElevationSmall] =
-      std::make_pair(small_key_color, small_ambient_color);
+      ElevationColors{small_key_color, small_ambient_color};
   color_map[kElevationLarge] =
-      std::make_pair(large_key_color, large_ambient_color);
-  shadow.SetElevationToColorsMap(color_map);
+      ElevationColors{large_key_color, large_ambient_color};
+  shadow.SetColorMap(color_map);
 
   // A lambda to get key and ambient shadow colors.
-  auto get_colors =
-      [](const ui::Shadow& shadow) -> std::pair<SkColor, SkColor> {
+  auto get_colors = [](const ui::Shadow& shadow) -> ElevationColors {
     const auto& values = shadow.details_for_testing()->values;
-    return std::make_pair(values[0].color(), values[1].color());
+    return ElevationColors{values[0].color(), values[1].color()};
   };
 
   // Check if shadow colors are updated.
-  EXPECT_THAT(get_colors(shadow),
-              FieldsAre(small_key_color, small_ambient_color));
+  EXPECT_EQ(get_colors(shadow),
+            (ElevationColors{small_key_color, small_ambient_color}));
 
   // Check if shadow colors are updated when the shadow changes to another
   // specified elevation.
   shadow.SetElevation(kElevationLarge);
-  EXPECT_THAT(get_colors(shadow),
-              FieldsAre(large_key_color, large_ambient_color));
+  EXPECT_EQ(get_colors(shadow),
+            (ElevationColors{large_key_color, large_ambient_color}));
 
   // Check if the shadow colors change back to default colors when the shadow
   // changes to a non-specified elevation.
   shadow.SetElevation(kElevationSmall + 1);
-  EXPECT_THAT(get_colors(shadow),
-              FieldsAre(default_key_color, default_ambient_color));
+  EXPECT_EQ(get_colors(shadow),
+            (ElevationColors{default_key_color, default_ambient_color}));
 }
 
 }  // namespace

@@ -229,24 +229,23 @@ ui::Shadow::ElevationToColorsMap StyleUtil::CreateShadowElevationToColorsMap(
     const ui::ColorProvider* color_provider) {
   ui::Shadow::ElevationToColorsMap colors_map;
   colors_map[SystemShadow::GetElevationFromType(
-      SystemShadow::Type::kElevation4)] =
-      std::make_pair(
+      SystemShadow::Type::kElevation4)] = ui::Shadow::ElevationColors{
+      .key_color =
           color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationFour),
-          color_provider->GetColor(
-              ui::kColorShadowValueAmbientShadowElevationFour));
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationFour)};
   colors_map[SystemShadow::GetElevationFromType(
-      SystemShadow::Type::kElevation12)] =
-      std::make_pair(color_provider->GetColor(
-                         ui::kColorShadowValueKeyShadowElevationTwelve),
-                     color_provider->GetColor(
-                         ui::kColorShadowValueAmbientShadowElevationTwelve));
+      SystemShadow::Type::kElevation12)] = ui::Shadow::ElevationColors{
+      .key_color = color_provider->GetColor(
+          ui::kColorShadowValueKeyShadowElevationTwelve),
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwelve)};
   colors_map[SystemShadow::GetElevationFromType(
-      SystemShadow::Type::kElevation24)] =
-      std::make_pair(
-          color_provider->GetColor(
-              ui::kColorShadowValueKeyShadowElevationTwentyFour),
-          color_provider->GetColor(
-              ui::kColorShadowValueAmbientShadowElevationTwentyFour));
+      SystemShadow::Type::kElevation24)] = ui::Shadow::ElevationColors{
+      .key_color = color_provider->GetColor(
+          ui::kColorShadowValueKeyShadowElevationTwentyFour),
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwentyFour)};
   return colors_map;
 }
 

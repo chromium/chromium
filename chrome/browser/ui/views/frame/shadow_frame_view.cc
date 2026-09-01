@@ -82,22 +82,18 @@ void ShadowFrameView::UpdateShadowColors() {
   }
   was_dark_ = is_dark;
 
-  const std::pair<SkColor, SkColor> shadow_colors =
-      is_dark
-          ? std::make_pair(
-                SkColorSetARGB(base::ClampRound(255.0 * shadow_alpha_.dark_key),
-                               0, 0, 0),
-                SkColorSetARGB(
-                    base::ClampRound(255.0 * shadow_alpha_.dark_ambient), 0, 0,
-                    0))
-          : std::make_pair(
-                SkColorSetARGB(
-                    base::ClampRound(255.0 * shadow_alpha_.light_key), 0, 0, 0),
-                SkColorSetARGB(
-                    base::ClampRound(255.0 * shadow_alpha_.light_ambient), 0, 0,
-                    0));
+  auto make_shadow_color = [](double alpha) {
+    return SkColorSetARGB(base::ClampRound(255.0 * alpha), 0, 0, 0);
+  };
+
+  const ui::Shadow::ElevationColors shadow_colors{
+      .key_color = make_shadow_color(is_dark ? shadow_alpha_.dark_key
+                                             : shadow_alpha_.light_key),
+      .ambient_color = make_shadow_color(
+          is_dark ? shadow_alpha_.dark_ambient : shadow_alpha_.light_ambient)};
+
   const ui::Shadow::ElevationToColorsMap map{
       {shadow_elevation_, shadow_colors}};
-  view_shadow_->shadow()->SetElevationToColorsMap(map);
+  view_shadow_->shadow()->SetColorMap(map);
   SchedulePaint();
 }
