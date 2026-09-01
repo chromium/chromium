@@ -89,17 +89,6 @@ class CORE_EXPORT FindTaskController final
                        const String& search_text,
                        const mojom::blink::FindOptions& options);
 
-  enum class RequestEndState {
-    // The find-in-page request got aborted before going through every text in
-    // the document.
-    ABORTED,
-    // The find-in-page request finished going through every text in the
-    // document.
-    FINISHED,
-  };
-
-  void RecordRequestMetrics(RequestEndState request_end_state);
-
   Member<WebLocalFrameImpl> owner_frame_;
 
   Member<TextFinder> text_finder_;
