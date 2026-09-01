@@ -34,6 +34,17 @@ build_webui("build") {
     "organizer_list_section_item.css",
   ]
 
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings_ts__generator",
+    "//components/tab_groups/public/mojom:mojo_bindings_ts__generator",
+    "//components/tabs/public/mojom:mojom_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/tab_search/tab_search.mojom-webui.ts",
+    "$root_gen_dir/components/tabs/public/mojom/tabs.mojom-webui.ts",
+    "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
+  ]
+
   webui_context_type = "trusted"
   ts_composite = true
 
@@ -41,6 +52,7 @@ build_webui("build") {
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   optimize = optimize_webui

@@ -11,7 +11,7 @@ export function getHtml(this: OrganizerListSectionItemElement) {
   return html`<!--_html_template_start_-->
 <!-- TODO(b/549796273): Use custom title and description element. -->
 <cr-url-list-item id="crUrlListItem" .title="${this.item.title}"
-    .description="${this.item.description || ''}"
+    .description="${this.getDescription_()}"
     .url="${this.getUrl_() || nothing}">
   ${this.item.prefixIcon?.element ? html`
     <div slot="customIcon">

@@ -22,14 +22,14 @@ suite('OrganizerListSectionItemTest', () => {
   test('renders title and description', async () => {
     listItem.item = {
       title: 'Google Search',
-      description: 'google.com',
+      description: ['google.com', '5 mins ago'],
     };
     await microtasksFinished();
 
     const crUrlListItem = listItem.$.crUrlListItem;
     assertTrue(!!crUrlListItem);
     assertEquals('Google Search', crUrlListItem.title);
-    assertEquals('google.com', crUrlListItem.description);
+    assertEquals('google.com · 5 mins ago', crUrlListItem.description);
   });
 
   test('renders prefix icon with URL', async () => {

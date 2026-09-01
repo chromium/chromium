@@ -11,7 +11,7 @@ export function getHtml(this: OrganizerListSectionElement) {
   return html`<!--_html_template_start_-->
 <h2 id="header">${this.delegate?.getHeader() || ''}</h2>
 <div id="items" role="list">
-  ${this.delegate?.getItems()?.map(item => html`
+  ${this.items.map(item => html`
     <organizer-list-section-item .item="${item}" role="listitem">
     </organizer-list-section-item>
   `)}

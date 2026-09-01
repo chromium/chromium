@@ -27,7 +27,7 @@ export interface OrganizerListSectionItem {
   title: string;
 
   // Description (secondary line) of the item.
-  description?: string;
+  description?: string[];
 
   // Icon displayed at the beginning of the item.
   prefixIcon?: OrganizerListSectionItemIcon;
@@ -61,6 +61,10 @@ export class OrganizerListSectionItemElement extends CrLitElement {
   accessor item: OrganizerListSectionItem = {
     title: '',
   };
+
+  protected getDescription_(): string {
+    return this.item.description?.join(' · ') || '';
+  }
 
   protected getUrl_(): string|undefined {
     // TODO(b/549786784): Support multiple URLs for stacked favicons.
