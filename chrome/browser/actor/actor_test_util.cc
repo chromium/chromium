@@ -542,6 +542,21 @@ Actions MakeMediaControl(tabs::TabHandle tab_handle,
   return action;
 }
 
+Actions MakeTranslatePage(tabs::TabHandle tab_handle,
+                          std::string target_language,
+                          std::optional<actor::TaskId> task_id) {
+  Actions action;
+  auto* translate_page_action = action.add_actions()->mutable_translate_page();
+  translate_page_action->set_tab_id(tab_handle.raw_value());
+  if (!target_language.empty()) {
+    translate_page_action->set_target_language(target_language);
+  }
+  if (task_id.has_value()) {
+    action.set_task_id(task_id->value());
+  }
+  return action;
+}
+
 PageTarget MakeTarget(content::RenderFrameHost& rfh, int content_node_id) {
   std::string document_identifier =
       *DocumentIdentifierUserData::GetDocumentIdentifier(

@@ -109,6 +109,9 @@ TEST_F(ActorActionsRunnerTest, TabIdInjection) {
   auto* navigate_action = actions.add_actions();
   navigate_action->mutable_navigate()->set_url("https://example.com");
 
+  auto* translate_action = actions.add_actions();
+  translate_action->mutable_translate_page()->set_target_language("fr");
+
   actions.set_skip_async_observation_collection(true);
 
   constexpr int32_t kTestTabId = 42;

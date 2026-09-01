@@ -194,6 +194,10 @@ optimization_guide::proto::Actions MakeMediaControl(
     tabs::TabHandle tab_handle,
     MediaControl media_control,
     std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeTranslatePage(
+    tabs::TabHandle tab_handle,
+    std::string target_language = "",
+    std::optional<actor::TaskId> task_id = std::nullopt);
 
 /////////////////////////
 // ToolRequest action makers

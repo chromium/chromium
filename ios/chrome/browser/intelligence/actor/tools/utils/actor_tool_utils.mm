@@ -98,6 +98,8 @@ std::optional<std::string> ActorActionCaseToToolName(Action::ActionCase tool) {
       return "LoadAndExtractContentTool";
     case Action::kAttemptOtpFilling:
       return "AttemptOtpFillingTool";
+    case Action::kTranslatePage:
+      return "TranslatePageTool";
     case Action::ACTION_NOT_SET:
     default:
       return std::nullopt;
