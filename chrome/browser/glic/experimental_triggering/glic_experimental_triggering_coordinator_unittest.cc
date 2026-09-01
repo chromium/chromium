@@ -189,7 +189,14 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest, NoTaskMetadata) {
   request.payload = TriggerActuationRequest{.initial_prompt = "hello"};
 
   auto response = SendRequest(request);
-  EXPECT_FALSE(response.has_value());
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data_type,
+            TaskUpdate::DataType::kErrorMessage);
+  EXPECT_EQ(response->task_update->data,
+            "Received GlicExperimentalTriggering message with missing task "
+            "metadata.");
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest, NoServerChannelConfig) {

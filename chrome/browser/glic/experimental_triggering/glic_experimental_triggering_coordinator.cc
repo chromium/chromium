@@ -222,7 +222,12 @@ class ExperimentalTriggeringUpdatesHandler
     if (!request.task_metadata.has_value()) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kMissingTaskMetadata);
-      return std::nullopt;
+      return CreateResponseMessage(
+          context_id_, TaskUpdate::State::kFailed,
+          TaskUpdate::DataType::kErrorMessage,
+          "Received GlicExperimentalTriggering message with missing task "
+          "metadata.",
+          /*request_task_metadata=*/nullptr, sequence_generator_.GetNext());
     }
 
     if (request.task_metadata->sender_sequence_number.has_value()) {
