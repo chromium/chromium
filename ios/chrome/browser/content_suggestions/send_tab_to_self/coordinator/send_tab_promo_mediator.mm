@@ -41,7 +41,9 @@
 - (void)disconnect {
   _faviconLoader = nullptr;
   _prefService = nullptr;
-  _sendTabPromoConfig = nullptr;
+  _sendTabPromoConfig = nil;
+  _delegate = nil;
+  _notificationsDelegate = nil;
 }
 
 - (SendTabPromoConfig*)sendTabPromoConfigToShow {
@@ -81,7 +83,7 @@
 
 // Fetches the favicon for the page at `tabURL`.
 - (void)fetchFaviconForUrl:(GURL)tabURL {
-  _sendTabPromoConfig = nullptr;
+  _sendTabPromoConfig = nil;
   __weak SendTabPromoMediator* weakSelf = self;
 
   _faviconLoader->FaviconForPageUrl(
