@@ -14,10 +14,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -27,6 +31,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -64,7 +69,11 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
   ~CookieControlsInteractiveTestBase() override = default;
 
   void SetUp() override {
-    disabled_features_.InitWithFeatures(EnabledFeatures(), DisabledFeatures());
+    std::vector<base::test::FeatureRef> enabled = EnabledFeatures();
+    std::vector<base::test::FeatureRef> disabled = DisabledFeatures();
+    if (!enabled.empty() || !disabled.empty()) {
+      disabled_features_.InitWithFeatures(enabled, disabled);
+    }
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
 
@@ -96,6 +105,14 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
+    if (features::IsWebUILocationBarEnabled()) {
+      auto* webview = ToolbarButtonProvider::From(browser())
+                          ->GetWebUIToolbarViewForTesting();
+      if (webview && webview->GetLocationBar()) {
+        webview->GetLocationBar()->SetSuppressionThresholdForTesting(
+            base::TimeDelta());
+      }
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -256,8 +273,10 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, RemoveException) {
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
       CheckStateForException(),
       PressButton(CookieControlsContentView::kToggleButton),
-      CheckViewProperty(kCookieControlsIconElementId,
-                        &IconLabelBubbleView::is_animating_label, false),
+      If([&]() { return !features::IsWebUILocationBarEnabled(); },
+         Then(CheckViewProperty(kCookieControlsIconElementId,
+                                &IconLabelBubbleView::is_animating_label,
+                                false))),
       CheckStateForNoException());
 }
 
@@ -300,12 +319,16 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadViewTimeout) {
   // must be configured shorter than the test timeout.
   BlockThirdPartyCookies();
   RunTestSequence(
-      /*context(),*/ InstrumentTab(kWebContentsElementId),
-      EnterText(kOmniboxElementId,
-                base::UTF8ToUTF16(
-                    "https://" +
-                    third_party_cookie_page_url(/*slow=*/true).GetContent())),
-      Confirm(kOmniboxElementId),
+      /*context(),*/ InstrumentTab(kWebContentsElementId), Do([this]() {
+        content::NavigationController::LoadURLParams params(
+            third_party_cookie_page_url(/*slow=*/true));
+        params.transition_type = ui::PAGE_TRANSITION_TYPED;
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetController()
+            .LoadURLWithParams(params);
+      }),
       InAnyContext(WaitForShow(kCookieControlsIconElementId)),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
