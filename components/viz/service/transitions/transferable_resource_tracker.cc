@@ -93,12 +93,13 @@ void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
   }
 }
 
-void TransferableResourceTracker::RefResource(ResourceId id) {
+bool TransferableResourceTracker::RefResource(ResourceId id) {
   if (!managed_resources_.contains(id)) {
-    return;
+    return false;
   }
 
   id_tracker_->RefId(id, /*count=*/1);
+  return true;
 }
 
 bool TransferableResourceTracker::UnrefResource(

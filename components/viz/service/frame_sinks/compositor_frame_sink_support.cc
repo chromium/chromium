@@ -38,6 +38,7 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/trees_in_viz_timing.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/common/viz_utils.h"
@@ -440,11 +441,36 @@ void CompositorFrameSinkSupport::OnSurfacePresented(
 
 void CompositorFrameSinkSupport::RefResources(
     const std::vector<TransferableResource>& resources) {
-  for (auto& [_, manager] : view_transition_token_to_animation_manager_) {
-    manager->RefResources(resources);
+  std::vector<TransferableResource> unhandled_resources =
+      surface_resource_holder_.RefResources(resources);
+
+  if (unhandled_resources.empty()) {
+    return;
   }
 
-  surface_resource_holder_.RefResources(resources);
+  // `SurfaceAnimationManager` removes anything it owns from
+  // `unhandled_resources`.
+  for (auto& [_, manager] : view_transition_token_to_animation_manager_) {
+    manager->RefResources(unhandled_resources);
+  }
+
+  // Any remaining reserved resource IDs in `unhandled_resources` were not
+  // claimed by any active `SurfaceAnimationManager` (e.g. because the manager
+  // was destroyed upon receiving a kRelease directive before all in-flight
+  // frames were drawn). If the cleanup feature is enabled, directly ref them on
+  // the `ReservedResourceIdTracker` so that when the display compositor returns
+  // them, the ref counts match.
+  if (base::FeatureList::IsEnabled(kCleanupOrphanedReservedResourceIds)) {
+    auto* id_tracker = frame_sink_manager_->reserved_resource_id_tracker();
+    for (const auto& resource : unhandled_resources) {
+      // SurfaceResourceHolder will only leave reserved range resources
+      // unhandled.
+      CHECK_GE(resource.id, kVizReservedRangeStartId);
+      if (id_tracker->IsTracked(resource.id)) {
+        id_tracker->RefId(resource.id, /*count=*/1);
+      }
+    }
+  }
 }
 
 void CompositorFrameSinkSupport::UnrefResources(
@@ -468,11 +494,13 @@ void CompositorFrameSinkSupport::UnrefResources(
   // claimed by any active `SurfaceAnimationManager` (e.g. because the delegate
   // was destroyed upon receiving a kRelease directive before the in-flight
   // frame resources were returned). If the cleanup feature is enabled, directly
-  // unref them on the central `ReservedResourceIdTracker` to prevent leaking
-  // IDs.
+  // unref them on the `ReservedResourceIdTracker` to prevent leaking IDs.
   if (base::FeatureList::IsEnabled(kCleanupOrphanedReservedResourceIds)) {
     auto* id_tracker = frame_sink_manager_->reserved_resource_id_tracker();
     for (const auto& resource : unhandled_resources) {
+      // SurfaceResourceHolder will only leave reserved range resources
+      // unhandled.
+      CHECK_GE(resource.id, kVizReservedRangeStartId);
       if (id_tracker->IsTracked(resource.id)) {
         id_tracker->UnrefId(resource.id, resource.count);
       }

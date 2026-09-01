@@ -66,7 +66,9 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   bool Animate();
 
   void ReceiveFromChild(const std::vector<TransferableResource>& resources);
-  void RefResources(const std::vector<TransferableResource>& resources);
+  // Refs resources managed by this animation manager and removes handled
+  // resources from `resources`.
+  void RefResources(std::vector<TransferableResource>& resources);
   // Unrefs resources managed by this animation manager and removes handled
   // resources from `resources`.
   void UnrefResources(std::vector<ReturnedResourceViz>& resources);
