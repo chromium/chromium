@@ -52,29 +52,23 @@ GapData<int> AutoRepeater(Vector<int> values) {
   return GapData<int>(repeater);
 }
 
-// Asserts that `GapDataListValueAccessor::ValueAt` (random access) agrees
-// with `GapDataListIterator::Next()` (sequential access) at every index, for
-// `gap_count` gaps.
-void ExpectAccessorMatchesIterator(const GapDataVector& gap_data_list,
-                                   wtf_size_t gap_count) {
-  GapDataListValueAccessor<int> accessor(gap_data_list, gap_count);
-  GapDataListIterator<int> iterator(gap_data_list, gap_count);
-  for (wtf_size_t i = 0; i < gap_count; ++i) {
-    EXPECT_EQ(accessor.ValueAt(i), iterator.Next()) << "at index " << i;
+void ExpectAccessorValues(const GapDataVector& gap_data_list,
+                          const Vector<int>& expected_values) {
+  GapDataListValueAccessor<int> accessor(gap_data_list, expected_values.size());
+  for (wtf_size_t i = 0; i < expected_values.size(); ++i) {
+    EXPECT_EQ(accessor.ValueAt(i), expected_values[i]) << "at index " << i;
   }
 }
 
 }  // namespace
 
-TEST(GapDataListTest, IteratorSkipsZeroSlotAutoRepeater) {
+TEST(GapDataListTest, ValueAccessorSkipsZeroSlotAutoRepeater) {
   GapDataVector gap_data_list;
   gap_data_list.push_back(AutoRepeater({5}));
   gap_data_list.push_back(GapData<int>(9));
   gap_data_list.push_back(GapData<int>(10));
 
-  GapDataListIterator<int> iterator(gap_data_list, /*gap_count=*/2);
-  EXPECT_EQ(iterator.Next(), 9);
-  EXPECT_EQ(iterator.Next(), 10);
+  ExpectAccessorValues(gap_data_list, {9, 10});
 }
 
 TEST(GapDataListTest, ValueAccessorLeadingOnlyList) {
@@ -84,7 +78,7 @@ TEST(GapDataListTest, ValueAccessorLeadingOnlyList) {
   gap_data_list.push_back(GapData<int>(1));
   gap_data_list.push_back(GapData<int>(2));
   gap_data_list.push_back(GapData<int>(3));
-  ExpectAccessorMatchesIterator(gap_data_list, /*gap_count=*/7);
+  ExpectAccessorValues(gap_data_list, {1, 2, 3, 1, 2, 3, 1});
 }
 
 TEST(GapDataListTest, ValueAccessorIntegerRepeaterInLeadingRegion) {
@@ -92,13 +86,13 @@ TEST(GapDataListTest, ValueAccessorIntegerRepeaterInLeadingRegion) {
   gap_data_list.push_back(GapData<int>(1));
   gap_data_list.push_back(IntegerRepeater({7, 8}, /*repeat_count=*/2));
   gap_data_list.push_back(GapData<int>(9));
-  ExpectAccessorMatchesIterator(gap_data_list, /*gap_count=*/8);
+  ExpectAccessorValues(gap_data_list, {1, 7, 8, 7, 8, 9, 1, 7});
 }
 
 TEST(GapDataListTest, ValueAccessorAutoRepeaterOnly) {
   GapDataVector gap_data_list;
   gap_data_list.push_back(AutoRepeater({10, 20}));
-  ExpectAccessorMatchesIterator(gap_data_list, /*gap_count=*/5);
+  ExpectAccessorValues(gap_data_list, {10, 20, 10, 20, 10});
 }
 
 TEST(GapDataListTest, ValueAccessorLeadingAutoAndTrailingRegions) {
@@ -106,7 +100,7 @@ TEST(GapDataListTest, ValueAccessorLeadingAutoAndTrailingRegions) {
   gap_data_list.push_back(GapData<int>(1));
   gap_data_list.push_back(AutoRepeater({5, 6}));
   gap_data_list.push_back(GapData<int>(9));
-  ExpectAccessorMatchesIterator(gap_data_list, /*gap_count=*/8);
+  ExpectAccessorValues(gap_data_list, {1, 5, 6, 5, 6, 5, 6, 9});
 }
 
 TEST(GapDataListTest, ValueAccessorAutoRegionSquashedByFixedRegions) {
@@ -117,7 +111,7 @@ TEST(GapDataListTest, ValueAccessorAutoRegionSquashedByFixedRegions) {
   gap_data_list.push_back(GapData<int>(2));
   gap_data_list.push_back(AutoRepeater({5, 6}));
   gap_data_list.push_back(GapData<int>(9));
-  ExpectAccessorMatchesIterator(gap_data_list, /*gap_count=*/3);
+  ExpectAccessorValues(gap_data_list, {1, 2, 9});
 }
 
 }  // namespace blink

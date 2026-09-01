@@ -336,27 +336,22 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     (*flex_cross_gap_sizes_)[index] = size;
   }
 
-  void AddFragmentedFlexCrossGapDecorationIndex(wtf_size_t decoration_index,
-                                                wtf_size_t total_gap_count) {
-    CHECK_LT(decoration_index, total_gap_count);
+  void AddFragmentedFlexCrossGapDecorationIndex(
+      wtf_size_t decoration_value_index,
+      wtf_size_t gap_slot_count) {
+    CHECK_LT(decoration_value_index, gap_slot_count);
     if (fragmented_flex_cross_gap_decoration_indices_.empty()) {
-      fragmented_flex_cross_gap_count_ = total_gap_count;
+      fragmented_flex_cross_gap_count_ = gap_slot_count;
     }
-    CHECK_EQ(fragmented_flex_cross_gap_count_, total_gap_count);
-    fragmented_flex_cross_gap_decoration_indices_.push_back(decoration_index);
+    CHECK_EQ(fragmented_flex_cross_gap_count_, gap_slot_count);
+    fragmented_flex_cross_gap_decoration_indices_.push_back(
+        decoration_value_index);
     CHECK_EQ(fragmented_flex_cross_gap_decoration_indices_.size(),
              cross_gaps_.size());
   }
 
   bool HasFragmentedFlexCrossGapDecorationIndices() const {
     return !fragmented_flex_cross_gap_decoration_indices_.empty();
-  }
-
-  wtf_size_t FragmentedFlexCrossGapDecorationIndexAt(
-      wtf_size_t cross_gap_index) const {
-    CHECK_LT(cross_gap_index,
-             fragmented_flex_cross_gap_decoration_indices_.size());
-    return fragmented_flex_cross_gap_decoration_indices_[cross_gap_index];
   }
 
   wtf_size_t FragmentedFlexCrossGapCount() const {
@@ -384,27 +379,33 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     flex_gap_placement_reversal_.emplace(reversal);
   }
 
-  // Returns whether gap-decoration values use a different order from geometric
-  // paint order in `track_direction`.
-  bool HasNonIdentityDecorationOrder(
-      GridTrackSizingDirection track_direction) const;
+  // Returns true if gap-decoration values are processed in the default order,
+  // meaning no reversals are applied.
+  bool IsDefaultDecorationOrder(GridTrackSizingDirection track_direction) const;
 
-  // Returns the gap-decoration list index for a `MainGap`.
-  // `stitched_geometric_index` is the gap's index in the full container's
-  // `MainGap` list.
-  wtf_size_t DecorationIndexForMainGap(wtf_size_t stitched_geometric_index,
-                                       wtf_size_t total_gap_count) const;
+  // Gap decoration colors, styles, and widths can each contain a list of
+  // values. Returns the current gap's index in the resolved value sequences.
+  // * `fragment_relative_gap_index` is its index in this fragment's `MainGap`
+  // or `CrossGap` vector.
+  // * `stitched_gap_index` is its index in the complete container, in the order
+  // gaps are stored and painted.
+  // * `gap_slot_count` is the total number of gap slots used to resolve each
+  // decoration value list, including slots in other fragments.
+  // * `cross_gap_owner_index` identifies the flex line or grid lane that owns a
+  // cross gap.
+  wtf_size_t DecorationValueIndexForGap(
+      GridTrackSizingDirection track_direction,
+      wtf_size_t fragment_relative_gap_index,
+      wtf_size_t stitched_gap_index,
+      wtf_size_t gap_slot_count,
+      std::optional<wtf_size_t> cross_gap_owner_index) const;
 
-  // Returns the gap-decoration list index for a `CrossGap`.
-  // `stitched_geometric_index` is the gap's index in the full container's
-  // flattened `CrossGap` list. `line_range` is its flex line's range in that
-  // list.
-  wtf_size_t DecorationIndexForCrossGap(wtf_size_t stitched_geometric_index,
-                                        GapIndexRange line_range,
-                                        wtf_size_t total_gap_count) const;
-
-  // Returns one flex line's range in this geometry's flattened `CrossGap` list.
-  GapIndexRange FlexLineCrossGapRange(wtf_size_t owning_main_gap_index) const;
+  // Returns the decoration value index for a `CrossGap`.
+  // `stitched_gap_index` is the gap's index in the full container's flattened
+  // `CrossGap` list. `line_range` is its flex line's range in that list.
+  wtf_size_t DecorationValueIndexForCrossGap(wtf_size_t stitched_gap_index,
+                                             GapIndexRange line_range,
+                                             wtf_size_t gap_slot_count) const;
 
   void SetMainDirection(GridTrackSizingDirection direction) {
     main_direction_ = direction;
@@ -597,6 +598,27 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // synthetic main gap that represents a spanner boundary.
   bool IsMulticolSpannerBoundaryIntersection(wtf_size_t intersection_index,
                                              bool is_main_gap) const;
+
+  // Returns the saved value index for a fragmented flex `CrossGap`.
+  wtf_size_t FragmentedFlexCrossGapDecorationValueIndexAt(
+      wtf_size_t cross_gap_index) const {
+    CHECK_LT(cross_gap_index,
+             fragmented_flex_cross_gap_decoration_indices_.size());
+    return fragmented_flex_cross_gap_decoration_indices_[cross_gap_index];
+  }
+
+  // Maps a `MainGap`'s index in geometric paint order to its decoration value
+  // index when `flex-wrap: wrap-reverse` reverses flex-line placement.
+  // TODO(javiercon): Add grid-lanes main-gap assignment handling to
+  // `DecorationValueIndexForGap()`.
+  wtf_size_t DecorationValueIndexForReversedMainGap(
+      wtf_size_t stitched_gap_index,
+      wtf_size_t gap_slot_count) const;
+
+  // Returns one flex line's range in this geometry's flattened `CrossGap` list.
+  // `owning_main_gap_index` identifies the main gap after the line, or
+  // `main_gaps_.size()` for the last flex line.
+  GapIndexRange FlexLineCrossGapRange(wtf_size_t owning_main_gap_index) const;
 
   // Fills `intersections` for a main gap at `gap_index`. The list includes:
   // - container content start
