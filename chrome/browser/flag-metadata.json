@@ -10410,7 +10410,7 @@
   {
     "name": "web-app-short-edges-cutout-mode",
     "owners": [ "pwa-team@google.com", "helmut@januschka.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 156
   },
   {
     "name": "web-authentication-ambient-signin",
