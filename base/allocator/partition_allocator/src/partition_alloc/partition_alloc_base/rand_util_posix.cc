@@ -83,7 +83,9 @@ namespace partition_alloc::internal::base {
 // build/test/performance issues with dcheng's CL
 // (https://chromium-review.googlesource.com/c/chromium/src/+/1545096) and land
 // it or some form of it.
-void RandBytes(void* output, size_t output_length) {
+// PRECONDITION: `output` must be non-null and must point to a valid span of
+// `output_length` bytes.
+PA_UNSAFE_BUFFER_USAGE void RandBytes(void* output, size_t output_length) {
 #if PA_BUILDFLAG(IS_MAC)
   PA_BASE_CHECK(getentropy(output, output_length) == 0);
 #elif PA_BUILDFLAG(IS_APPLE)
@@ -128,8 +130,11 @@ void RandBytes(void* output, size_t output_length) {
   //    sandbox::ProcUtil::CountOpenFds(proc_fd_.get()) (6 vs. 7)
   //    ```
   const int urandom_fd = GetUrandomFD();
-  const bool success =
-      ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
+  // SAFETY: `output` is a valid pointer to a buffer of `output_length` bytes by
+  // the function precondition.
+  const bool success = ReadFromFD(
+      urandom_fd,
+      PA_UNSAFE_BUFFERS(span<char>(static_cast<char*>(output), output_length)));
   PA_BASE_CHECK(success);
 #endif  // PA_BUILDFLAG(IS_MAC)
 }

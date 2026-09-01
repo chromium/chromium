@@ -15,6 +15,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 
 #if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #include <sys/stat.h>
@@ -25,11 +26,11 @@ namespace partition_alloc::internal::base {
 
 #if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 
-// Read exactly |bytes| bytes from file descriptor |fd|, storing the result
-// in |buffer|. This function is protected against EINTR and partial reads.
-// Returns true iff |bytes| bytes have been successfully read from |fd|.
+// Reads exactly as many bytes as `buffer` can hold from file descriptor `fd`
+// into `buffer`. This function is protected against EINTR and partial reads.
+// Returns true iff `buffer` was successfully filled with bytes read from `fd`.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
-bool ReadFromFD(int fd, char* buffer, size_t bytes);
+bool ReadFromFD(int fd, span<char> buffer);
 
 #endif  // PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 
