@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -117,7 +116,10 @@ UpgradeDetectorImpl::UpgradeDetectorImpl(const base::Clock* clock,
       simulating_outdated_(SimulatingOutdated()),
       is_testing_(simulating_outdated_ || IsTesting()),
       build_date_(base::GetBuildTime()) {
-  if (base::features::IsReducePPMsEnabled()) {
+  // A BEST_EFFORT task runner has been measured as beneficial for performance.
+  // Use the default task runner in unit tests where BrowserThread::UI doesn't
+  // exist.
+  if (content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI)) {
     upgrade_notification_timer_.SetTaskRunner(
         content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
   }
