@@ -1334,8 +1334,7 @@ class LocationBarMediator
             // Should only have been visible when in any aim type.
             assert ToolModeUtils.isAimRequest(mCurrentInput.getRequestType());
 
-            boolean hasAttachments =
-                    mFuseboxAttachmentModelList != null && !mFuseboxAttachmentModelList.isEmpty();
+            boolean hasAttachments = fuseboxHasAttachments();
             boolean hasCustomTool =
                     mCurrentInput.getRequestType() != AutocompleteRequestType.AI_MODE;
             boolean hasText = !TextUtils.isEmpty(mCurrentInput.getUserText());
@@ -2364,11 +2363,29 @@ class LocationBarMediator
         }
     }
 
+    /** Returns whether the fusebox attachment model list is non-null and has attachments. */
+    private boolean fuseboxHasAttachments() {
+        return mFuseboxAttachmentModelList != null && !mFuseboxAttachmentModelList.isEmpty();
+    }
+
     /**
      * @see FuseboxAttachmentChangeListener#onAttachmentListChanged()
      */
     @Override
     public void onAttachmentListChanged() {
+        // When attachments are added to the Fusebox (e.g. attaching a tab from the tab picker),
+        // promote to SUGGESTIONS so the Fusebox expands to show the attachment shelf. In Incognito
+        // mode, AI mode autocomplete is disabled, so onSuggestionsChanged() is never called and
+        // the Omnibox would otherwise remain stuck in DRAFTING.
+        //
+        // Note: This is fragile. It relies on onAttachmentListChanged() never being triggered
+        // during beginInput() (e.g. via setAttachmentModelList() when switching tabs or
+        // initializing sessions). If this signal were triggered on beginInput, it would
+        // prematurely promote the display state to SUGGESTIONS.
+        // TODO(b/555311270): Decouple attachment shelf expansion from onAttachmentListChanged.
+        if (mCurrentInput != null && fuseboxHasAttachments()) {
+            mCurrentInput.setDisplayState(DisplayState.SUGGESTIONS);
+        }
         updateNavigateButtonVisibility();
     }
 

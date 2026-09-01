@@ -3920,6 +3920,30 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testOnAttachmentListChanged_withAttachments_promotesDisplayStateToSuggestions() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        setupSession(DisplayState.DRAFTING, false);
+
+        doReturn(false).when(mFuseboxAttachmentModelList).isEmpty();
+        mMediator.setAttachmentModelList(mFuseboxAttachmentModelList);
+
+        mMediator.onAttachmentListChanged();
+        assertDisplayState(DisplayState.SUGGESTIONS);
+    }
+
+    @Test
+    public void testOnAttachmentListChanged_emptyAttachments_doesNotPromoteDisplayState() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        setupSession(DisplayState.DRAFTING, false);
+
+        doReturn(true).when(mFuseboxAttachmentModelList).isEmpty();
+        mMediator.setAttachmentModelList(mFuseboxAttachmentModelList);
+
+        mMediator.onAttachmentListChanged();
+        assertDisplayState(DisplayState.DRAFTING);
+    }
+
+    @Test
     public void testDeleteButton_mobile_doesNotRevertCustomToolToAiMode() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mMediator.onFinishNativeInitialization();
