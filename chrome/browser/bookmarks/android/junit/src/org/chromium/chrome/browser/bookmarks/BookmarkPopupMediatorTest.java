@@ -32,6 +32,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.bookmarks.BookmarkDesktopPopupMetrics.BookmarkDesktopPopupOutcome;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -241,6 +243,13 @@ public class BookmarkPopupMediatorTest {
 
     @Test
     public void testOnRemoveClicked() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.DesktopPopup.Edit.Outcome",
+                                BookmarkDesktopPopupOutcome.REMOVED)
+                        .build();
+
         mMediator.show(mBookmarkId, false);
 
         Runnable removeClickListener =
@@ -249,10 +258,20 @@ public class BookmarkPopupMediatorTest {
 
         verify(mBookmarkModel).deleteBookmark(mBookmarkId);
         verify(mDismissRunnable).run();
+
+        mMediator.destroy();
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testOnDoneClicked() {
+    public void testOnDoneClicked_Edit() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.DesktopPopup.Edit.Outcome",
+                                BookmarkDesktopPopupOutcome.SAVED)
+                        .build();
+
         mMediator.show(mBookmarkId, false);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
@@ -267,11 +286,46 @@ public class BookmarkPopupMediatorTest {
 
         verify(mBookmarkModel).setBookmarkTitle(mBookmarkId, "New Title");
         verify(mDismissRunnable).run();
+
+        mMediator.destroy();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnDoneClicked_Add() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.DesktopPopup.Add.Outcome",
+                                BookmarkDesktopPopupOutcome.SAVED)
+                        .build();
+
+        mMediator.show(mBookmarkId, true);
+
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+
+        Runnable doneClickListener =
+                mPropertyModel.get(BookmarkPopupProperties.DONE_BUTTON_CLICK_LISTENER);
+        doneClickListener.run();
+
+        verify(mDismissRunnable).run();
+
+        mMediator.destroy();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testOnFolderRowClicked() {
-        mMediator.show(mBookmarkId, false);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.DesktopPopup.Add.Outcome",
+                                BookmarkDesktopPopupOutcome.EDIT_DIALOG_OPENED)
+                        .build();
+
+        mMediator.show(mBookmarkId, true);
 
         Runnable folderRowClickListener =
                 mPropertyModel.get(BookmarkPopupProperties.FOLDER_ROW_CLICK_LISTENER);
@@ -279,15 +333,30 @@ public class BookmarkPopupMediatorTest {
 
         verify(mBookmarkManagerOpener).startEditActivity(mActivity, mProfile, mBookmarkId);
         verify(mDismissRunnable).run();
+
+        mMediator.destroy();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testOnCloseClicked() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.DesktopPopup.Edit.Outcome",
+                                BookmarkDesktopPopupOutcome.DISMISSED)
+                        .build();
+
+        mMediator.show(mBookmarkId, false);
+
         Runnable closeClickListener =
                 mPropertyModel.get(BookmarkPopupProperties.CLOSE_BUTTON_CLICK_LISTENER);
         closeClickListener.run();
 
         verify(mDismissRunnable).run();
+
+        mMediator.destroy();
+        histogramWatcher.assertExpected();
     }
 
     @Test

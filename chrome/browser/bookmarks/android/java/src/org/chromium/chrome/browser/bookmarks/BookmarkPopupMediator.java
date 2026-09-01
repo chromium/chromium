@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkDesktopPopupMetrics.BookmarkDesktopPopupOutcome;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -39,6 +40,8 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
     private @Nullable BookmarkId mBookmarkId;
     private @Nullable CommerceSubscription mSubscription;
     private String mCurrentTitle = "";
+    private boolean mIsNewBookmark;
+    private boolean mOutcomeRecorded;
 
     /**
      * Constructs the BookmarkPopupMediator. This logic controller is responsible for binding
@@ -91,6 +94,8 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
 
     /** Destroys the mediator, cancelling any pending callbacks. */
     public void destroy() {
+        recordOutcome(BookmarkDesktopPopupOutcome.DISMISSED);
+
         mCallbackController.destroy();
         mBookmarkImageFetcher.destroy();
 
@@ -106,6 +111,8 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
      * @param isNewBookmark Whether this popup is for a newly added bookmark.
      */
     public void show(BookmarkId bookmarkId, boolean isNewBookmark) {
+        mIsNewBookmark = isNewBookmark;
+        mOutcomeRecorded = false;
         mBookmarkId = bookmarkId;
         mPropertyModel.set(
                 BookmarkPopupProperties.HEADER_TEXT,
@@ -225,6 +232,7 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
     }
 
     private void onRemoveClicked() {
+        recordOutcome(BookmarkDesktopPopupOutcome.REMOVED);
         if (mBookmarkId != null) {
             mBookmarkModel.deleteBookmark(mBookmarkId);
         }
@@ -232,6 +240,7 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
     }
 
     private void onFolderRowClicked() {
+        recordOutcome(BookmarkDesktopPopupOutcome.EDIT_DIALOG_OPENED);
         if (mBookmarkId != null) {
             mBookmarkManagerOpener.startEditActivity(mContext, mProfile, mBookmarkId);
         }
@@ -239,9 +248,16 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
     }
 
     private void onDoneClicked() {
+        recordOutcome(BookmarkDesktopPopupOutcome.SAVED);
         if (mBookmarkId != null && mCurrentTitle != null) {
             mBookmarkModel.setBookmarkTitle(mBookmarkId, mCurrentTitle);
         }
         mDismissRunnable.run();
+    }
+
+    private void recordOutcome(@BookmarkDesktopPopupOutcome int outcome) {
+        if (mOutcomeRecorded) return;
+        mOutcomeRecorded = true;
+        BookmarkDesktopPopupMetrics.recordOutcome(outcome, mIsNewBookmark);
     }
 }

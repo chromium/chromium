@@ -499,6 +499,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.DesktopPopup.{PopupType}.Outcome"
+    enum="BookmarkDesktopPopupOutcome" expires_after="2027-01-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Recorded when an Android desktop bookmark popup session completes for a
+    {PopupType}, logging the terminal outcome (saved, removed, edit dialog
+    opened, or dismissed).
+  </summary>
+  <token key="PopupType">
+    <variant name="Add" summary="newly added bookmark"/>
+    <variant name="Edit" summary="previously bookmarked page"/>
+  </token>
+</histogram>
+
 <histogram name="Bookmarks.Edit.{BookmarkType}.Outcome"
     enum="BookmarkEditOutcome" expires_after="2027-01-01">
   <owner>wylieb@google.com</owner>
