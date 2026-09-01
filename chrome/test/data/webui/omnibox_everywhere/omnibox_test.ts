@@ -533,12 +533,12 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     const composeButton =
         omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton');
     assertTrue(!!composeButton);
-    assertEquals('12px', window.getComputedStyle(composeButton).top);
+    assertEquals('16px', window.getComputedStyle(composeButton).top);
 
     const profileIcon =
         omnibox.shadowRoot.querySelector<HTMLElement>('#profileIcon');
     assertTrue(!!profileIcon);
-    assertEquals('12px', window.getComputedStyle(profileIcon).top);
+    assertEquals('16px', window.getComputedStyle(profileIcon).top);
   });
 
   test(
