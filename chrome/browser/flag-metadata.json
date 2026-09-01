@@ -5058,42 +5058,42 @@
   {
     "name": "fedcm-active-mode-multiple-identity-providers",
     "owners": [ "ryqin@google.com", "web-identity-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-ambient-ui",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-autofill",
     "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-delegation",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-lightweight-mode",
     "owners": ["ekovac@google.com", "web-identity-eng@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-metrics-endpoint",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-native-idps",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-navigation-interception",
@@ -5101,27 +5101,27 @@
       "goto@chromium.org",
       "web-identity-eng@google.com"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-nonce-in-params",
     "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
-     "expiry_milestone": 155
+     "expiry_milestone": 165
    },
   {
     "name": "fedcm-segmentation-platform",
     "owners": ["tanzachary@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-web-identity-subdomain",
     "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "fedcm-well-known-endpoint-validation",
     "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
-     "expiry_milestone": 155
+     "expiry_milestone": 165
    },
   {
     "name": "fedcm-without-well-known-enforcement",
