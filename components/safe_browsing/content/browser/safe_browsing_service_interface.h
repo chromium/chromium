@@ -65,15 +65,6 @@ class SafeBrowsingServiceInterface
       content::WebContents* web_contents) = 0;
 #endif
 
-  // Report the external app redirect to Safe Browsing if the following
-  // conditions are met:
-  // - User is opted in to ESB and not Incognito
-  // - The user has not redirected to this app recently
-  // - Neither the current page nor the destination app are allowlisted.
-  virtual void ReportExternalAppRedirect(content::WebContents* web_contents,
-                                         std::string_view app_name,
-                                         std::string_view uri) = 0;
-
   void SetAddProfileTasksCompletedClosureForTesting(
       base::OnceClosure completion_closure) {
     add_profile_tasks_completed_closure_for_testing_ =

@@ -288,12 +288,6 @@ inline constexpr char kExtensionTelemetrySearchHijackingSerpLandingCount[] =
 inline constexpr char kHashPrefixRealTimeChecksAllowedByPolicy[] =
     "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
 
-// Records a mapping from app names to most recent redirect to that
-// app. This is used to avoid sending reports of external app redirects
-// for common apps.
-inline constexpr char kExternalAppRedirectTimestamps[] =
-    "safe_browsing.external_app_redirect_timestamps";
-
 // Integer that maps to SecuritySettingsBundleSetting. Indicates what bundle
 // the user is in.
 inline constexpr char kSecuritySettingsBundle[] = "safebrowsing.bundle";

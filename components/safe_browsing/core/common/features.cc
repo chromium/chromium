@@ -326,10 +326,6 @@ constexpr base::FeatureParam<int>
     kExtensionTelemetrySearchHijackingSignalHeuristicThreshold{
         &kExtensionTelemetrySearchHijackingSignal, "HeuristicThreshold", 2};
 
-BASE_FEATURE(kExternalAppRedirectTelemetry,
-             "SafeBrowsingExternalAppRedirectTelemetry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGeminiAntiscamProtectionForMetricsCollection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<double>
@@ -568,7 +564,6 @@ base::ListValue GetFeatureStatusList() {
       &kEnterprisePasswordReuseUiRefresh,
       &kEsbAsASyncedSetting,
       &kExtensionBlocklistSkipNetworkQuery,
-      &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,
       &kLocalListsUseSBv5,
       &kMigrateEnhancedSbUserToEnhancedBundle,

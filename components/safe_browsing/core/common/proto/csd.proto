@@ -1847,7 +1847,7 @@ message ClientSafeBrowsingReportRequest {
     URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY = 27;
     // Triggered by a redirect to an external app, either through an
     // external protocol scheme (e.g. mailto://) or an Intent.
-    EXTERNAL_APP_REDIRECT = 28;
+    EXTERNAL_APP_REDIRECT = 28 [deprecated = true];
     // Analogous to DANGEROUS_DOWNLOAD_RECOVERY and DANGEROUS_DOWNLOAD_WARNING,
     // but used only for download warnings in Chrome on Android.
     DANGEROUS_DOWNLOAD_WARNING_ANDROID = 29;

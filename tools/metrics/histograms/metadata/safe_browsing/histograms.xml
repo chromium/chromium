@@ -726,7 +726,6 @@ useful for Chirp alerts (go/crca-alerts). -->
         summary="DangerousDownloadWarning"/>
     <variant name="DangerousDownloadWarningAndroid"
         summary="DangerousDownloadWarningAndroid"/>
-    <variant name="ExternalAppRedirect" summary="ExternalAppRedirect"/>
     <variant name="NotificationPermissionAccepted"
         summary="NotificationPermissionAccepted"/>
     <variant name="PhishySiteInteractions" summary="PhishySiteInteractions"/>

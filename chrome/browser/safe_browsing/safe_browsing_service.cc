@@ -37,7 +37,6 @@
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
-#include "chrome/browser/safe_browsing/external_app_redirect_checking.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
@@ -510,25 +509,6 @@ V4ProtocolConfig SafeBrowsingServiceImpl::GetV4ProtocolConfig() const {
   return safe_browsing::GetV4ProtocolConfig();
 }
 
-void SafeBrowsingServiceImpl::ReportExternalAppRedirect(
-    content::WebContents* web_contents,
-    std::string_view app_name,
-    std::string_view uri) {
-  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
-      MakeExternalAppRedirectReport(web_contents, uri);
-
-  if (!report) {
-    return;
-  }
-
-  ShouldReportExternalAppRedirect(
-      database_manager(), web_contents, app_name, uri,
-      base::BindOnce(
-          &SafeBrowsingServiceImpl::MaybeSendExternalAppRedirectReport, this,
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-          std::string(app_name), std::move(report)));
-}
-
 void SafeBrowsingServiceImpl::SetDatabaseManagerForTest(
     SafeBrowsingDatabaseManager* database_manager) {
   services_delegate_->SetDatabaseManagerForTest(database_manager);
@@ -657,8 +637,6 @@ void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
   SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)->StartLogging();
 
   CreateServicesForProfile(profile);
-
-  CleanupExternalAppRedirectTimestamps(*pref_service);
 
   // Post task to isolate enhanced-security-bundle migration from other code
   // which reads settings controlled by the bundle on startup. Migration should
@@ -977,21 +955,6 @@ bool SafeBrowsingServiceImpl::IsURLAllowlisted(
                                     /*navigation_id=*/std::nullopt,
                                     SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
                                     safe_browsing::ThreatSource::UNKNOWN);
-}
-
-void SafeBrowsingServiceImpl::MaybeSendExternalAppRedirectReport(
-    Profile* profile,
-    const std::string& app_name,
-    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
-    bool should_send) {
-  LogExternalAppRedirectTimestamp(*profile->GetPrefs(), app_name);
-
-  if (!should_send) {
-    return;
-  }
-
-  ChromePingManagerFactory::GetForBrowserContext(profile)->ReportThreatDetails(
-      std::move(report));
 }
 
 // The default SafeBrowsingServiceFactory.  Global, made a singleton so we

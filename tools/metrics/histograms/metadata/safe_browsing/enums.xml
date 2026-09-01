@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="dangerous download auto deleted"/>
   <int value="26" label="dangerous download canceled on profile closure"/>
   <int value="27" label="URL real-time and hash real-time discrepancy"/>
-  <int value="28" label="External app redirect"/>
+  <int value="28" label="(Obsolete) External app redirect"/>
   <int value="29" label="dangerous download warning (Android)"/>
   <int value="30" label="Service worker behaviors"/>
 </enum>

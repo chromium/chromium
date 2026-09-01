@@ -1005,6 +1005,8 @@ constexpr char kTrackingProtection3pcdEnabled[] =
     "tracking_protection.tracking_protection_3pcd_enabled";
 constexpr char kBlockAll3pcToggleEnabled[] =
     "tracking_protection.block_all_3pc_toggle_enabled";
+inline constexpr char kExternalAppRedirectTimestamps[] =
+    "safe_browsing.external_app_redirect_timestamps";
 
 #if !BUILDFLAG(IS_ANDROID)
 // Deprecated 08/2026.
@@ -1436,6 +1438,7 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2026.
   registry->RegisterStringPref(kUkmLoggingUserSecret, std::string());
   registry->RegisterTimePref(kUkmLoggingUserSecretCreationTime, base::Time());
+  registry->RegisterDictionaryPref(kExternalAppRedirectTimestamps);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Deprecated 08/2026.
@@ -2787,6 +2790,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kShowRollbackUiModeB);
   profile_prefs->ClearPref(kBlockAll3pcToggleEnabled);
   profile_prefs->ClearPref(kTrackingProtection3pcdEnabled);
+  profile_prefs->ClearPref(kExternalAppRedirectTimestamps);
 
   // Added 08/2026.
   profile_prefs->ClearPref(kUkmLoggingUserSecret);

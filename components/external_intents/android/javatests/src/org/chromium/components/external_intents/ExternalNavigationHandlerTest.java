@@ -3447,24 +3447,6 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testReportToSafeBrowsing() {
-        // Because this test uses a TestContext, we don't actually send
-        // the intent for real. This does, however, ensure we call
-        // ExternalNavigationHandler.doStartActivity, which triggers the
-        // report to Safe Browsing.
-        mUrlHandler.sendIntentsForReal();
-
-        checkUrl("tel:012345678", redirectHandlerForLinkClick())
-                .expecting(
-                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
-
-        Assert.assertEquals(
-                "tel:012345678", mDelegate.intentReportedToSafeBrowsing().getDataString());
-    }
-
-    @Test
-    @SmallTest
     public void testHttpBlockBypassedByMarketCategory() {
         mDelegate.setAllowExternalNavigationForHttpProtocols(false);
 
@@ -3881,11 +3863,6 @@ public class ExternalNavigationHandlerTest {
         public void notifyCctPasswordSavingRecorderOfExternalNavigation() {}
 
         @Override
-        public void reportIntentToSafeBrowsing(Intent intent) {
-            mSafeBrowsingIntent = intent;
-        }
-
-        @Override
         public Intent createIntentToPreventIncognitoAccess(GURL url) {
             return null;
         }
@@ -4006,10 +3983,6 @@ public class ExternalNavigationHandlerTest {
             mShouldReturnAsActivityResult = returnResult;
         }
 
-        public Intent intentReportedToSafeBrowsing() {
-            return mSafeBrowsingIntent;
-        }
-
         public boolean startIncognitoIntentCalled;
         public boolean maybeSetRequestMetadataCalled;
         public Callback<Boolean> incognitoDialogUserDecisionCallback;
@@ -4033,7 +4006,6 @@ public class ExternalNavigationHandlerTest {
         private boolean mResolvesToMarketApp;
         private boolean mShouldDisableAllExternalIntents;
         private boolean mShouldReturnAsActivityResult;
-        private Intent mSafeBrowsingIntent;
     }
 
     private void checkIntentValidity(Intent intent, String name) {

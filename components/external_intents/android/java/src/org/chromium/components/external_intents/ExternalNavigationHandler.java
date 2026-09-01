@@ -2543,7 +2543,6 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             if (debug()) Log.i(TAG, "startActivity");
             context.startActivity(intent);
             recordExternalNavigationDispatched(intent);
-            mDelegate.reportIntentToSafeBrowsing(intent);
             return OverrideUrlLoadingResult.forExternalIntent();
         } catch (SecurityException e) {
             // https://crbug.com/808494: Handle the URL internally if dispatching to another

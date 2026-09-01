@@ -196,9 +196,6 @@ std::string_view GetReportTypeSuffix(
         ClientSafeBrowsingReportRequest_ReportType_URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY:
       return "URLRealTimeAndHashRealTimeDiscrepancy";
     case safe_browsing::
-        ClientSafeBrowsingReportRequest_ReportType_EXTERNAL_APP_REDIRECT:
-      return "ExternalAppRedirect";
-    case safe_browsing::
         ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_WARNING_ANDROID:
       return "DangerousDownloadWarningAndroid";
     case safe_browsing::
@@ -209,6 +206,8 @@ std::string_view GetReportTypeSuffix(
         ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_MALWARE:
     case safe_browsing::
         ClientSafeBrowsingReportRequest_ReportType_HASH_PREFIX_REAL_TIME_EXPERIMENT:
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_EXTERNAL_APP_REDIRECT:
       NOTREACHED();
   }
 }

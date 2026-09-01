@@ -4,17 +4,13 @@
 
 package org.chromium.chrome.browser.safe_browsing;
 
-import android.content.Intent;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.content_public.browser.WebContents;
 
 /** Bridge providing access to native-side Safe Browsing data. */
 @JNINamespace("safe_browsing")
@@ -94,31 +90,6 @@ public final class SafeBrowsingBridge {
         return SafeBrowsingBridgeJni.get().isHashRealTimeLookupEligibleInSession();
     }
 
-    /**
-     * Report an intent sent to open an external app. This may be summarized and sent to Safe
-     * Browsing.
-     *
-     * @param webContents The WebContents that triggered the intent
-     * @param intent The intent Chrome generated
-     */
-    public static void reportIntent(WebContents webContents, Intent intent) {
-        String packageName;
-        if (intent.getComponent() != null) {
-            packageName = intent.getComponent().getPackageName();
-        } else if (intent.getPackage() != null) {
-            packageName = intent.getPackage();
-        } else {
-            packageName = "";
-        }
-
-        String uri = "";
-        if (intent.getData() != null) {
-            uri = intent.getData().toString();
-        }
-
-        SafeBrowsingBridgeJni.get().reportIntent(webContents, packageName, uri);
-    }
-
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -140,10 +111,5 @@ public final class SafeBrowsingBridge {
         boolean isSafeBrowsingManaged(Profile profile);
 
         boolean isHashRealTimeLookupEligibleInSession();
-
-        void reportIntent(
-                @JniType("content::WebContents*") WebContents webContents,
-                @JniType("std::string") String packageName,
-                @JniType("std::string") String uri);
     }
 }

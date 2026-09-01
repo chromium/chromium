@@ -53,10 +53,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#endif
-
 namespace {
 
 // Anti-flood protection controls whether we accept requests for launching
@@ -171,15 +167,9 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
     content::WeakDocumentPtr initiator_document,
     ExternalProtocolHandler::Delegate* delegate) {
   if (delegate) {
-    delegate->ReportExternalAppRedirectToSafeBrowsing(url, web_contents);
     delegate->LaunchUrlWithoutSecurityCheck(url, web_contents);
     return;
   }
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  g_browser_process->safe_browsing_service()->ReportExternalAppRedirect(
-      web_contents, url.GetScheme(), url.possibly_invalid_spec());
-#endif
 
   // |web_contents| is only passed in to find browser context. Do not assume
   // that the external protocol request came from the main frame.

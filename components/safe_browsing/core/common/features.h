@@ -307,9 +307,6 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<int>
     kExtensionTelemetrySearchHijackingSignalHeuristicThreshold;
 
-// Enables reporting of external app redirects
-BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
-
 // Enables querying server-side Gemini model for scam detection.
 BASE_DECLARE_FEATURE(kGeminiAntiscamProtectionForMetricsCollection);
 // The minimum scam score required to log page content to MQLS.

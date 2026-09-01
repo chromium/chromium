@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.externalnav;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -36,7 +35,6 @@ import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsRecorderBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -293,11 +291,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         if (cctSavingMetricsRecorder != null) {
             cctSavingMetricsRecorder.onExternalNavigation();
         }
-    }
-
-    @Override
-    public void reportIntentToSafeBrowsing(Intent intent) {
-        SafeBrowsingBridge.reportIntent(assertNonNull(mTab.getWebContents()), intent);
     }
 
     @Override

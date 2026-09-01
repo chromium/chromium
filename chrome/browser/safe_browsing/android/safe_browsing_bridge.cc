@@ -100,16 +100,6 @@ static bool JNI_SafeBrowsingBridge_IsHashRealTimeLookupEligibleInSession(
       IsHashRealTimeLookupEligibleInSession();
 }
 
-static void JNI_SafeBrowsingBridge_ReportIntent(
-    JNIEnv* env,
-    content::WebContents* web_contents,
-    const std::string& package_name,
-    const std::string& uri) {
-  reinterpret_cast<SafeBrowsingServiceInterface*>(
-      g_browser_process->safe_browsing_service())
-      ->ReportExternalAppRedirect(web_contents, package_name, uri);
-}
-
 }  // namespace safe_browsing
 
 DEFINE_JNI(SafeBrowsingBridge)
