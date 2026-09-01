@@ -136,24 +136,14 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
 
   bool IsContentSettingImageVisible(
       ContentSettingImageModel::ImageType image_type) {
-    if (features::IsWebUILocationBarEnabled()) {
-      auto* const browser_view =
-          BrowserView::GetBrowserViewForBrowser(browser());
-      if (auto* const provider = browser_view->toolbar_button_provider()) {
-        if (auto* const webui_view =
-                provider->GetWebUIToolbarViewForTesting()) {
-          if (auto* const webui_loc_bar = webui_view->GetLocationBar()) {
-            if (auto* model =
-                    webui_loc_bar->content_setting_image_control().GetModel(
-                        image_type)) {
-              return model->is_visible();
-            }
-          }
-        }
-      }
-      return false;
-    }
-    return GetContentSettingImageView(image_type).GetVisible();
+    auto* location_bar =
+        BrowserWindow::FromBrowser(browser())->GetLocationBar();
+    CHECK(location_bar);
+    auto* testing = location_bar->GetLocationBarForTesting();
+    CHECK(testing);
+    return testing->IsContentSettingImageVisible(
+        ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
+            image_type));
   }
 
   raw_ptr<ZoomBubbleCoordinator> zoom_bubble_coordinator_;

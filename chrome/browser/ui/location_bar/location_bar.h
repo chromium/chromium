@@ -257,6 +257,9 @@ class LocationBarTesting {
   // Returns if the content setting image at |index| is displaying a bubble.
   virtual bool IsContentSettingBubbleShowing(size_t index) = 0;
 
+  // Returns if the content setting image at |index| is currently visible.
+  virtual bool IsContentSettingImageVisible(size_t index) = 0;
+
  protected:
   virtual ~LocationBarTesting() = default;
 };

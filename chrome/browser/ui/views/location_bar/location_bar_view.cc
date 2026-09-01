@@ -1591,6 +1591,11 @@ bool LocationBarView::IsContentSettingBubbleShowing(size_t index) {
          content_setting_views_[index]->IsBubbleShowing();
 }
 
+bool LocationBarView::IsContentSettingImageVisible(size_t index) {
+  return index < content_setting_views_.size() &&
+         content_setting_views_[index]->GetVisible();
+}
+
 void LocationBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   RefreshBackground();
   NotifyBoundsChanged();

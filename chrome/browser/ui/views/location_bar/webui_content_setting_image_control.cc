@@ -262,3 +262,8 @@ bool WebUIContentSettingImageControl::IsBubbleShowing(size_t index) const {
   return IsBubbleShowing() &&
          last_tracked_bubble_type_ == models_[index]->image_type();
 }
+
+bool WebUIContentSettingImageControl::IsContentSettingImageVisible(
+    size_t index) const {
+  return index < models_.size() && models_[index]->is_visible();
+}

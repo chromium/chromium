@@ -18,6 +18,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -322,18 +323,14 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, AppendsXGeoHeader) {
   // that use Views (Linux, Windows, ChromeOS) while safely skipping it on
   // Mac (if not using Views).
 #if defined(TOOLKIT_VIEWS)
-  LocationBarView* location_bar_view = static_cast<LocationBarView*>(
-      BrowserWindow::FromBrowser(browser())->GetLocationBar());
-  const auto& image_views = location_bar_view->GetContentSettingViewsForTest();
-  bool geo_icon_visible = false;
-  for (const auto& view : image_views) {
-    if (view->GetType() ==
-        toolbar_ui_api::mojom::ContentSettingImageType::kGeolocation) {
-      geo_icon_visible = view->GetVisible();
-      break;
-    }
-  }
-  EXPECT_TRUE(geo_icon_visible)
+  LocationBarTesting* location_bar_testing =
+      BrowserWindow::FromBrowser(browser())
+          ->GetLocationBar()
+          ->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar_testing);
+  EXPECT_TRUE(location_bar_testing->IsContentSettingImageVisible(
+      ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
+          ContentSettingImageModel::ImageType::kGeolocation)))
       << "Geolocation usage indicator icon should be visible in the Omnibox.";
 #endif
   histogram_tester.ExpectUniqueSample("Omnibox.Search.XGeoHeaderAttached", true,
