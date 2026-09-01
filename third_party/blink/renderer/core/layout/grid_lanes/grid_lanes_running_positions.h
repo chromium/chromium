@@ -316,20 +316,6 @@ class CORE_EXPORT GridLanesRunningPositions {
   LayoutUnit GetAvailableAlignmentSpaceForItem(const GridItemData* item,
                                                const GridSpan& span) const;
 
-  // Struct to keep track of a span of tracks' start lines and their
-  // max-positions, where the max-position of a span represents the maximum
-  // running position of all tracks in a span. This will always be used in
-  // conjunction with a span size, so we can calculate the ending line using
-  // `start_line` and a given span size.
-  struct MaxPositionSpan {
-    bool operator==(const MaxPositionSpan& other) const {
-      return (start_line == other.start_line) && (max_pos == other.max_pos);
-    }
-
-    wtf_size_t start_line;
-    LayoutUnit max_pos;
-  };
-
   // This struct is used to hold a path of eligible track openings.
   // `starting_track_index` refers to the first track index in the path, and
   // corresponds to the first dimension of `track_collection_openings_`. Each

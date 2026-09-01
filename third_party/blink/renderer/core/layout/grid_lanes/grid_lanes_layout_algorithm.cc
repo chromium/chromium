@@ -1450,7 +1450,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     const auto& item_node = grid_lanes_item.node;
     const auto& item_style = item_node.Style();
     const LayoutResult* result =
-        is_for_layout ? result = item_node.Layout(space)
+        is_for_layout ? item_node.Layout(space)
                       : LayoutGridItemForMeasure(grid_lanes_item, space,
                                                  *sizing_constraint);
 
