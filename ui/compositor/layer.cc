@@ -413,8 +413,15 @@ void Layer::Remove(Layer* child) {
 }
 
 void Layer::StackAtTop(Layer* child) {
-  if (children_.size() <= 1 || child == children_.back())
+  // `child` must be a direct child of this layer to be restacked. This is a
+  // no-op if `child` is null or does not belong to this layer, which occurs
+  // during transient UI lifecycle states (e.g. reparenting or animations).
+  if (!child || child->parent() != this) {
+    return;
+  }
+  if (children_.size() <= 1 || child == children_.back()) {
     return;  // Already in front.
+  }
   StackAbove(child, children_.back());
 }
 
@@ -423,8 +430,15 @@ void Layer::StackAbove(Layer* child, Layer* other) {
 }
 
 void Layer::StackAtBottom(Layer* child) {
-  if (children_.size() <= 1 || child == children_.front())
+  // `child` must be a direct child of this layer to be restacked. This is a
+  // no-op if `child` is null or does not belong to this layer, which occurs
+  // during transient UI lifecycle states (e.g. reparenting or animations).
+  if (!child || child->parent() != this) {
+    return;
+  }
+  if (children_.size() <= 1 || child == children_.front()) {
     return;  // Already on bottom.
+  }
   StackBelow(child, children_.front());
 }
 
@@ -1278,12 +1292,24 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   DCHECK_EQ(this, child->parent());
   DCHECK_EQ(this, other->parent());
 
+  // Restacking requires both layers to be distinct direct children of this
+  // layer. If either layer does not belong to this layer (e.g. during
+  // reparenting or animation transitions), no restacking can be performed.
+  if (!child || !other || child == other || child->parent() != this ||
+      other->parent() != this) {
+    return;
+  }
+
   const size_t child_i =
       std::ranges::find(children_, child) - children_.begin();
   const size_t other_i =
       std::ranges::find(children_, other) - children_.begin();
   DCHECK_LT(child_i, children_.size()) << " child not in vector";
   DCHECK_LT(other_i, children_.size()) << " other not in vector";
+  if (child_i >= children_.size() || other_i >= children_.size()) {
+    return;
+  }
+
   if ((above && child_i == other_i + 1) || (!above && child_i + 1 == other_i))
     return;
 
