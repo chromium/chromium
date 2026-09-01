@@ -15,8 +15,6 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "gpu/config/gpu_feature_info.h"
-#include "gpu/config/gpu_feature_type.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper.h"
@@ -45,12 +43,6 @@ WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
       recorder_for_external_draws_(std::make_unique<MemoryManagedPaintRecorder>(
           shared_image_wrapper_->Size(),
           /*client=*/nullptr)) {
-  if (shared_image_wrapper_->context_provider_wrapper_->ContextProvider()
-          .GetGpuFeatureInfo()
-          .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-      gpu::kGpuFeatureStatusEnabled) {
-    recorder_for_external_draws_->DisableLineDrawingAsPaths();
-  }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
