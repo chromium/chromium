@@ -22,21 +22,20 @@ import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 def PrintOwners(root):
   assert root.tag == 'histogram-configuration'
-  root_children = root.getchildren()
   histograms = None
-  for node in root_children:
+  for node in root:
     if node.tag == 'histograms':
       histograms = node
       break
   assert histograms
 
-  for histogram in histograms.getchildren():
+  for histogram in histograms:
     if histogram.tag != 'histogram':
       continue
 
     name = histogram.attrib['name']
     owners = []
-    for node in histogram.getchildren():
+    for node in histogram:
       if node.tag != 'owner':
         continue
       owners.append(node.text)

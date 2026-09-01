@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from unittest import mock
 from typing import Tuple
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -43,7 +44,6 @@ _BASE_DIR = str(path_util.METRICS_TOOLS_PATH / 'histograms')
 _TOP_LEVEL_ENUMS_PATH = str(
   path_util.METRICS_TOOLS_PATH / 'histograms' / 'enums.xml'
 )
-
 
 _INITIAL_HISTOGRAMS_CONTENT = '<histogram name="Foo" enum="Boolean" />'
 _MODIFIED_HISTOGRAMS_CONTENT = '<histogram name="Foo" units="Boolean" />'
@@ -697,9 +697,7 @@ class MetricsPresubmitTest(unittest.TestCase):
         action='M',
       ),
     ]
-    with self.assertRaises(
-      (ValueError, __import__('xml').parsers.expat.ExpatError)
-    ):
+    with self.assertRaises((ValueError, ET.ParseError)):
       PRESUBMIT.CheckHistogramsChanges(
         mock_input_api, PRESUBMIT_test_mocks.MockOutputApi()
       )
@@ -721,9 +719,7 @@ class MetricsPresubmitTest(unittest.TestCase):
         action='M',
       ),
     ]
-    with self.assertRaises(
-      (ValueError, __import__('xml').parsers.expat.ExpatError)
-    ):
+    with self.assertRaises((ValueError, ET.ParseError)):
       PRESUBMIT.CheckHistogramsChanges(
         mock_input_api, PRESUBMIT_test_mocks.MockOutputApi()
       )

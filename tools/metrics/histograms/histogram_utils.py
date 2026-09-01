@@ -3,12 +3,12 @@
 # found in the LICENSE file.
 """Utility functions for parsing and processing histogram XML files."""
 
+import copy
 import os
 import pathlib
 import re
-from typing import Callable, cast, Iterable, List, Set
-import xml.dom.minidom
-import xml.parsers.expat
+from typing import Callable, Iterable, List, Set
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -29,20 +29,20 @@ def get_names(xml_files):
   Returns:
     The set of histogram names.
   """
-  doc = merge_xml.MergeFilesDeprecated(files=xml_files)
-  histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
+  root = merge_xml.MergeFiles(files=xml_files)
+  histograms, had_errors = extract_histograms.ExtractHistogramsFromXmlET(root)
   if had_errors:
     raise ValueError('Error parsing inputs.')
   return set(extract_histograms.ExtractNames(histograms))
 
 
-def _parse_default_variants() -> xml.dom.minidom.Document:
+def _parse_default_variants() -> ET.Element:
   variants_path = os.path.join(os.path.dirname(__file__), 'variants.xml')
-  return xml.dom.minidom.parse(variants_path)
+  return ET.parse(variants_path).getroot()
 
 
 def get_names_from_contents(
-  contents: Iterable[str], variants_doc: xml.dom.minidom.Document
+  contents: Iterable[str], variants_doc: ET.Element
 ) -> Set[str]:
   """Returns all histogram names from the given contents.
 
@@ -51,7 +51,7 @@ def get_names_from_contents(
 
   Args:
     contents: An iterable of strings from the raw histograms xml file.
-    variants_doc: Pre-parsed variants.xml DOM Document to use for
+    variants_doc: Pre-parsed variants.xml ElementTree root to use for
       expansion.
 
   Returns:
@@ -61,18 +61,18 @@ def get_names_from_contents(
   if not joined_contents.strip():
     return set()
 
-  content_doc = xml.dom.minidom.parseString(joined_contents)
-  doc = _merge_histograms_with_variants(content_doc, variants_doc)
+  root = ET.fromstring(joined_contents)
+  doc = _merge_histograms_with_variants(root, variants_doc)
 
-  histograms, _ = extract_histograms.ExtractHistogramsFromDom(doc)
+  histograms, _ = extract_histograms.ExtractHistogramsFromXmlET(doc)
   return set(extract_histograms.ExtractNames(histograms))
 
 
 def _merge_histograms_with_variants(
-  content_doc: xml.dom.minidom.Document, variants_doc: xml.dom.minidom.Document
-) -> xml.dom.minidom.Document:
-  variants_clone = variants_doc.cloneNode(True)
-  return merge_xml.MergeTreesDeprecated(
+  content_doc: ET.Element, variants_doc: ET.Element
+) -> ET.Element:
+  variants_clone = copy.deepcopy(variants_doc)
+  return merge_xml.MergeTrees(
     [content_doc, variants_clone], should_expand_owners=False
   )
 
@@ -99,7 +99,7 @@ def get_modified_variants_blocks(
   def _get_variants(content):
     if not content.strip():
       return {}
-    doc = xml.dom.minidom.parseString(content)
+    doc = ET.fromstring(content)
     xml_utils.NormalizeAllAttributeValues(doc)
     variants, _ = extract_histograms.ExtractVariantsFromXmlTree(doc)
     return variants
@@ -119,7 +119,7 @@ def get_modified_variants_blocks(
 
 
 def _histogram_references_global_variant_from_list(
-  histogram: xml.dom.minidom.Element, variant_names: Set[str]
+  histogram: ET.Element, variant_names: Set[str]
 ) -> bool:
   """Returns whether |histogram| references a global variant in |variant_names|.
 
@@ -133,10 +133,9 @@ def _histogram_references_global_variant_from_list(
     variant_names: Names of global `<variants>` blocks to match.
   """
   tokens = list(xml_utils.IterElementsWithTag(histogram, 'token', 1))
-  token_keys = {token.getAttribute('key') for token in tokens}
-  for match in TOKEN_PLACEHOLDER_PATTERN.finditer(
-    histogram.getAttribute('name')
-  ):
+  token_keys = {token.get('key') for token in tokens if token.get('key')}
+  hist_name = histogram.get('name') or ''
+  for match in TOKEN_PLACEHOLDER_PATTERN.finditer(hist_name):
     token_name = match.group(1)
     # The placeholder names a global variant from the provided list and is not
     # overridden by a local token.
@@ -145,28 +144,19 @@ def _histogram_references_global_variant_from_list(
 
   for token in tokens:
     # The local token explicitly references a global variant from the list.
-    if (
-      token.hasAttribute('variants')
-      and token.getAttribute('variants') in variant_names
-    ):
+    variant_attr = token.get('variants')
+    if variant_attr and variant_attr in variant_names:
       return True
 
   return False
 
 
-def _remove_element_from_dom(element: xml.dom.minidom.Element) -> None:
-  parent_node = element.parentNode
-  if parent_node:
-    cast(xml.dom.minidom.Element, parent_node).removeChild(element)
-  element.unlink()
-
-
-def _remove_affected_histogram_references_from_dom(
-  content_dom: xml.dom.minidom.Document, histogram_names: Set[str]
+def _remove_affected_histogram_references_from_tree(
+  root: ET.Element, histogram_names: Set[str]
 ) -> None:
-  """Removes matching `<affected-histogram>` elements from |content_dom|.
+  """Removes matching `<affected-histogram>` elements from |root|.
 
-  This modifies |content_dom| in place after
+  This modifies |root| in place after
   `get_names_using_variants_from_contents()` filters its `<histogram>`
   elements. Removing references to filtered histograms prevents suffix
   expansion from logging an error about a missing histogram.
@@ -174,55 +164,54 @@ def _remove_affected_histogram_references_from_dom(
   if not histogram_names:
     return
 
-  affected_histograms_to_remove = [
-    affected_histogram
-    for affected_histogram in xml_utils.IterElementsWithTag(
-      content_dom, 'affected-histogram'
-    )
-    if affected_histogram.getAttribute('name') in histogram_names
-  ]
-  for affected_histogram in affected_histograms_to_remove:
-    _remove_element_from_dom(affected_histogram)
+  for suffixes in xml_utils.IterElementsWithTag(root, 'histogram_suffixes', 2):
+    for affected in list(
+      xml_utils.IterElementsWithTag(suffixes, 'affected-histogram', 1)
+    ):
+      if affected.get('name') in histogram_names:
+        suffixes.remove(affected)
 
 
 def get_names_using_variants_from_contents(
   contents: Iterable[str],
-  variants_doc: xml.dom.minidom.Document,
+  variants_doc: ET.Element,
   variant_names: Set[str],
 ) -> Set[str]:
   """Returns expanded names from one histogram XML file using |variant_names|.
 
   |contents| is the raw line sequence for one histogram XML file. The function
-  parses it into a temporary DOM, removes histograms that do not reference a
-  changed global variants block, then merges the remaining DOM with
+  parses it into a temporary ElementTree, removes histograms that do not
+  reference a changed global variants block, then merges the remaining tree with
   |variants_doc| and expands their names.
 
   Args:
     contents: Raw lines from one histogram XML file.
-    variants_doc: Merged global variants DOM used for name expansion.
+    variants_doc: Merged global variants ElementTree root used for name
+      expansion.
     variant_names: Names of changed global `<variants>` blocks.
   """
   joined_contents = '\n'.join(contents)
   if not joined_contents.strip() or not variant_names:
     return set()
 
-  content_doc = xml.dom.minidom.parseString(joined_contents)
-  histograms_to_remove = [
-    histogram
-    for histogram in xml_utils.IterElementsWithTag(content_doc, 'histogram')
-    if not _histogram_references_global_variant_from_list(
-      histogram, variant_names
-    )
-  ]
-  histogram_names = {
-    histogram.getAttribute('name') for histogram in histograms_to_remove
-  }
-  for histogram in histograms_to_remove:
-    _remove_element_from_dom(histogram)
-  _remove_affected_histogram_references_from_dom(content_doc, histogram_names)
+  content_doc = ET.fromstring(joined_contents)
+  histogram_names = set()
+  for histograms in xml_utils.IterElementsWithTag(content_doc, 'histograms', 2):
+    for histogram in list(
+      xml_utils.IterElementsWithTag(histograms, 'histogram', 1)
+    ):
+      if not _histogram_references_global_variant_from_list(
+        histogram, variant_names
+      ):
+        name = histogram.get('name')
+        if name:
+          histogram_names.add(name)
+        histograms.remove(histogram)
 
-  merged_dom = _merge_histograms_with_variants(content_doc, variants_doc)
-  histograms_dict, _ = extract_histograms.ExtractHistogramsFromDom(merged_dom)
+  _remove_affected_histogram_references_from_tree(content_doc, histogram_names)
+
+  merged_et = _merge_histograms_with_variants(content_doc, variants_doc)
+  histograms_dict, _ = extract_histograms.ExtractHistogramsFromXmlET(merged_et)
   return set(extract_histograms.ExtractNames(histograms_dict))
 
 

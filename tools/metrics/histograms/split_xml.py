@@ -10,7 +10,7 @@ Intended to be used to split up the large histograms.xml or enums.xml file.
 import os
 from pathlib import Path
 import re
-from xml.dom import minidom
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -80,13 +80,11 @@ _PREDEFINED_NAMES_MAPPING = {
 
 def _ParseMergedXML():
   """Parses merged xml into different types of nodes"""
-  merged_histograms = merge_xml.MergeFilesDeprecated(
-    histogram_paths.HISTOGRAMS_XMLS
-  )
-  histogram_nodes = merged_histograms.getElementsByTagName('histogram')
-  variants_nodes = merged_histograms.getElementsByTagName('variants')
-  histogram_suffixes_nodes = merged_histograms.getElementsByTagName(
-    'histogram_suffixes'
+  merged_histograms = merge_xml.MergeFiles(histogram_paths.HISTOGRAMS_XMLS)
+  histogram_nodes = list(merged_histograms.findall('.//histogram'))
+  variants_nodes = list(merged_histograms.findall('.//variants'))
+  histogram_suffixes_nodes = list(
+    merged_histograms.findall('.//histogram_suffixes')
   )
   return histogram_nodes, variants_nodes, histogram_suffixes_nodes
 
@@ -103,35 +101,33 @@ def _CreateXMLFile(comment, parent_node_string, nodes, output_dir, filename):
         which will then be added on top of each split xml.
     parent_node_string: The name of the the second-level parent node, e.g.
         <histograms> or <histogram_suffixes_list>.
-    nodes: A DOM NodeList object or a list containing <histogram> or
+    nodes: A list of ET.Element objects containing <histogram> or
         <histogram_suffixes> that will be inserted under the parent node.
     output_dir: The output directory.
     filename: The output filename.
   """
-  doc = minidom.Document()
-
-  doc.appendChild(doc.createComment(FIRST_TOP_LEVEL_COMMENT_TEMPLATE))
-  doc.appendChild(
-    doc.createComment(SECOND_TOP_LEVEL_COMMENT_TEMPLATE % comment)
-  )
-
-  # Create the <histogram-configuration> node for the new histograms.xml file.
-  histogram_config_element = doc.createElement('histogram-configuration')
-  doc.appendChild(histogram_config_element)
-  parent_element = doc.createElement(parent_node_string)
-  histogram_config_element.appendChild(parent_element)
-
-  # Under the parent node, append the children nodes.
+  root = ET.Element('histogram-configuration')
+  parent_element = ET.SubElement(root, parent_node_string)
   for node in nodes:
-    parent_element.appendChild(node)
+    parent_element.append(node)
+
+  xml_string = ET.tostring(root, encoding='utf-8')
+  if isinstance(xml_string, bytes):
+    xml_string = xml_string.decode('utf-8')
+
+  first_comment = f'<!--{FIRST_TOP_LEVEL_COMMENT_TEMPLATE}-->'
+  second_comment = f'<!--{SECOND_TOP_LEVEL_COMMENT_TEMPLATE % comment}-->'
+  full_xml_string = f'{first_comment}\n{second_comment}\n{xml_string}'
 
   output_path = str(Path(output_dir) / filename)
   if os.path.exists(output_path):
     os.remove(output_path)
 
   # Use the model to get pretty-printed XML string and write into file.
-  with open(output_path, 'w') as output_file:
-    pretty_xml_string = histogram_configuration_model.PrettifyTree(doc)
+  with open(output_path, 'w', encoding='utf-8', newline='\n') as output_file:
+    pretty_xml_string = histogram_configuration_model.PrettifyTree(
+      full_xml_string
+    )
     output_file.write(pretty_xml_string)
 
 
@@ -154,7 +150,7 @@ def _GetCamelCaseName(node, depth=0):
     The camelcase name part at specified depth. If the number of name parts is
     less than the depth, return 'others'.
   """
-  name = node.getAttribute('name')
+  name = node.get('name')
   split_string_list = name.split('.')
   if len(split_string_list) <= depth:
     return 'others'

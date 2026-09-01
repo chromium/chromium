@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import logging
-from xml.dom import minidom
+import xml.etree.ElementTree as ET
 
 
 import setup_modules  # pylint: disable=unused-import
@@ -24,13 +24,10 @@ def _get_enums_referenced_by_metric_nodes(files: list[str]) -> set[str]:
   enums_used_in_files = set()
 
   for file_path in files:
-    with open(file_path, 'r') as f:
-      document = minidom.parse(f)
-
-    for node in document.getElementsByTagName('metric'):
-      if not 'enum' in node.attributes:
-        continue
-      enums_used_in_files.add(node.attributes['enum'].value)
+    root = ET.parse(file_path).getroot()
+    for node in root.findall('.//metric'):
+      if 'enum' in node.attrib:
+        enums_used_in_files.add(node.attrib['enum'])
 
   return enums_used_in_files
 
@@ -63,6 +60,6 @@ def get_all_used_enums(
 def get_enums_used_in_files() -> set[str]:
   """Finds referenced enum names from all XML files."""
   logging.info('Reading histogram XML files...')
-  merged = merge_xml.MergeFilesDeprecated(histogram_paths.ALL_XMLS)
-  histograms, _ = extract_histograms.ExtractHistogramsFromDom(merged)
+  merged = merge_xml.MergeFiles(histogram_paths.ALL_XMLS)
+  histograms, _ = extract_histograms.ExtractHistogramsFromXmlET(merged)
   return get_all_used_enums(histograms)

@@ -17,7 +17,7 @@ import io
 import logging
 import os
 import sys
-from xml.dom import minidom
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -66,8 +66,8 @@ ENUMS_PATH = path_util.GetInputFile('tools/metrics/histograms/enums.xml')
 
 def _get_enums_from_files(files):
   """Finds the names of all referenced enums from the specified XML files."""
-  merged = merge_xml.MergeFilesDeprecated(files)
-  histograms, _ = extract_histograms.ExtractHistogramsFromDom(merged)
+  merged = merge_xml.MergeFiles(files)
+  histograms, _ = extract_histograms.ExtractHistogramsFromXmlET(merged)
   enums_used_in_file = set()
   for _, data in histograms.items():
     # Skip non-enum histograms.
@@ -80,38 +80,35 @@ def _get_enums_from_files(files):
 
 def _extract_enum_nodes_by_names(enum_names):
   """Returns the <enum> nodes corresponding to the specified names."""
-  with io.open(ENUMS_PATH, 'r', encoding='utf-8') as f:
-    document = minidom.parse(f)
+  root = ET.parse(ENUMS_PATH).getroot()
+  enums_node = root.find('enums')
 
   enum_nodes = []
-  for enum_node in document.getElementsByTagName('enum'):
-    if enum_node.attributes['name'].value in enum_names:
+  for enum_node in list(enums_node):
+    if enum_node.get('name') in enum_names:
       enum_nodes.append(enum_node)
+      enums_node.remove(enum_node)
 
-  for node in enum_nodes:
-    node.parentNode.removeChild(node)
-
-  xml_with_nodes_removed = histogram_configuration_model.PrettifyTree(document)
+  xml_with_nodes_removed = histogram_configuration_model.PrettifyTree(root)
   return enum_nodes, xml_with_nodes_removed
 
 
 def _read_enums_xml_or_blank_template(path):
-  """Reads the enums XML file as minidom or a blank template if not found."""
+  """Reads the enums XML file as ET Element or a blank template if not found."""
   if not os.path.isfile(path):
     print(f'No existing file at {path}, creating it.')
-    return minidom.parseString(ENUMS_XML_TEMPLATE)
-  with io.open(path, 'r', encoding='utf-8') as f:
-    print(f'Oppening existing file {path}...')
-    return minidom.parse(f)
+    return ET.fromstring(ENUMS_XML_TEMPLATE)
+  print(f'Opening existing file {path}...')
+  return ET.parse(path).getroot()
 
 
 def _move_enums_to_file(enum_nodes, enums_file):
   """Adds enum nodes to `enums_file` and returns the updated XML."""
-  document = _read_enums_xml_or_blank_template(enums_file)
-  enums_node = document.getElementsByTagName('enums')[0]
+  root = _read_enums_xml_or_blank_template(enums_file)
+  enums_node = root.find('enums')
   for node in enum_nodes:
-    enums_node.appendChild(document.importNode(node, True))
-  return histogram_configuration_model.PrettifyTree(document)
+    enums_node.append(node)
+  return histogram_configuration_model.PrettifyTree(root)
 
 
 def _split_enums(dir_name):

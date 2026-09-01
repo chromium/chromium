@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import unittest
-from xml.dom import minidom
+import xml.etree.ElementTree as ET
 
 from parameterized import parameterized  # type: ignore
 import setup_modules  # pylint: disable=unused-import
@@ -20,9 +20,8 @@ class SplitXmlTest(unittest.TestCase):
     ]
   )
   def testGetCamelCaseName(self, _, name, expected_name):
-    doc = minidom.Document()
-    node = doc.createElement('histogram')
-    node.setAttribute('name', name)
+    node = ET.Element('histogram')
+    node.set('name', name)
     result = split_xml._GetCamelCaseName(node)
     self.assertEqual(expected_name, result)
 

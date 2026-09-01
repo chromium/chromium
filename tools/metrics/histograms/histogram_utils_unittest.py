@@ -4,7 +4,7 @@
 
 import unittest
 from unittest import mock
-import xml.dom.minidom
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -115,7 +115,7 @@ class HistogramUtilsTest(unittest.TestCase):
 </variants>
 </histogram-configuration>
 """
-    variants_doc = xml.dom.minidom.parseString(variants_xml)
+    variants_doc = ET.fromstring(variants_xml)
     names = histogram_utils.get_names_from_contents(
       contents.splitlines(), variants_doc
     )
@@ -150,7 +150,7 @@ class HistogramUtilsTest(unittest.TestCase):
 </variants>
 </histogram-configuration>
 """
-    variants_doc = xml.dom.minidom.parseString(variants_xml)
+    variants_doc = ET.fromstring(variants_xml)
 
     # The mock verifies that filtering out the unrelated histogram also removes
     # its suffix reference instead of logging a missing-histogram error.
@@ -185,7 +185,7 @@ class HistogramUtilsTest(unittest.TestCase):
 </variants>
 </histogram-configuration>
 """
-    variants_doc = xml.dom.minidom.parseString(variants_xml)
+    variants_doc = ET.fromstring(variants_xml)
 
     all_names = histogram_utils.get_names_from_contents(
       contents.splitlines(), variants_doc

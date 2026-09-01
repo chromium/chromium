@@ -13,7 +13,7 @@ import dataclasses
 import pathlib
 import re
 from typing import Callable, List, Set, Tuple
-import xml.dom.minidom
+import xml.etree.ElementTree as ET
 
 import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils
 import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
@@ -44,8 +44,8 @@ class GetOldAndNewVariantsResult:
 @dataclasses.dataclass
 class GetFilesToCheckResult:
   files_to_check: List[HistogramFileState]
-  old_variants_doc: xml.dom.minidom.Document | None
-  new_variants_doc: xml.dom.minidom.Document | None
+  old_variants_doc: ET.Element | None
+  new_variants_doc: ET.Element | None
   modified_variants_blocks: Set[str]
 
 
@@ -161,8 +161,8 @@ def get_files_to_check(
     old_content = res.old_variants.strip()
     new_content = res.new_variants.strip()
 
-    old_doc = xml.dom.minidom.parseString(old_content) if old_content else None
-    new_doc = xml.dom.minidom.parseString(new_content) if new_content else None
+    old_doc = ET.fromstring(old_content) if old_content else None
+    new_doc = ET.fromstring(new_content) if new_content else None
     if old_doc:
       old_variants_trees.append(old_doc)
     if new_doc:
@@ -181,16 +181,12 @@ def get_files_to_check(
       )
 
   old_variants_doc = (
-    merge_xml.MergeTreesDeprecated(
-      old_variants_trees, should_expand_owners=False
-    )
+    merge_xml.MergeTrees(old_variants_trees, should_expand_owners=False)
     if old_variants_trees
     else None
   )
   new_variants_doc = (
-    merge_xml.MergeTreesDeprecated(
-      new_variants_trees, should_expand_owners=False
-    )
+    merge_xml.MergeTrees(new_variants_trees, should_expand_owners=False)
     if new_variants_trees
     else None
   )
@@ -220,15 +216,13 @@ def get_files_to_check(
   )
 
 
-def _empty_variants_doc() -> xml.dom.minidom.Document:
-  return xml.dom.minidom.parseString(
-    '<variants-configuration></variants-configuration>'
-  )
+def _empty_variants_doc() -> ET.Element:
+  return ET.fromstring('<variants-configuration></variants-configuration>')
 
 
 def get_histogram_names(
   files_contents: List[List[str]],
-  variants: xml.dom.minidom.Document | None,
+  variants: ET.Element | None,
 ) -> Set[str]:
   """Returns all expanded histogram names from the given files contents."""
   all_histograms = set()
@@ -242,8 +236,8 @@ def get_histogram_names(
 
 def get_histograms_with_modified_variants(
   files_to_check: List[HistogramFileState],
-  old_variants: xml.dom.minidom.Document | None,
-  new_variants: xml.dom.minidom.Document | None,
+  old_variants: ET.Element | None,
+  new_variants: ET.Element | None,
   modified_variants_blocks: Set[str],
 ) -> Set[str]:
   """Returns existing histograms that reference modified `<variants>` blocks."""
