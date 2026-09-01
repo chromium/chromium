@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -620,6 +621,10 @@ void WebSettingsImpl::SetPictureInPictureEnabled(bool enabled) {
 
 void WebSettingsImpl::SetWebAppScope(const WebString& scope) {
   settings_->SetWebAppScope(scope);
+}
+
+void WebSettingsImpl::SetWebAppCustomManifestUrl(const WebURL& url) {
+  settings_->SetWebAppCustomManifestUrl(KURL(url).GetString());
 }
 
 void WebSettingsImpl::SetIsInitialProfile(bool is_initial_profile) {

@@ -15,7 +15,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -25,8 +27,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -48,6 +52,26 @@ class IsolatedWebAppDevToolsTest : public base::test::WithFeatureOverride,
   IsolatedWebAppDevToolsTest()
       : base::test::WithFeatureOverride(::features::kWebAppInstallDialog) {}
 
+  void TearDownOnMainThread() override {
+    if (devtools_client_) {
+      devtools_client_->DetachProtocolClient();
+      devtools_client_.reset();
+    }
+    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
+  }
+
+  void AttachDevTools(content::WebContents* web_contents) {
+    if (devtools_client_) {
+      devtools_client_->DetachProtocolClient();
+    }
+    devtools_client_ = std::make_unique<content::TestDevToolsProtocolClient>();
+    devtools_client_->AttachToWebContents(web_contents);
+  }
+
+  content::TestDevToolsProtocolClient* devtools_client() {
+    return devtools_client_.get();
+  }
+
  protected:
   IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
     auto app =
@@ -57,6 +81,9 @@ class IsolatedWebAppDevToolsTest : public base::test::WithFeatureOverride,
             .BuildBundle();
     return app->InstallChecked(profile());
   }
+
+ private:
+  std::unique_ptr<content::TestDevToolsProtocolClient> devtools_client_;
 };
 
 // TODO (crbug.com/41495909): Resolve flakiness on linux debug builds.
@@ -154,6 +181,111 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, PwaIdentifiedAsPage) {
   EXPECT_EQ(0, content::EvalJs(
                    web_contents,
                    "document.getElementById('apps-list').children.length"));
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, IwaManifestWithoutRelLink) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  BrowserWindowInterface* iwa_app =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
+  content::WebContents* web_contents =
+      iwa_app->tab_strip_model()->GetActiveWebContents();
+
+  AttachDevTools(web_contents);
+
+  // Page.getAppManifest returns the authoritative IWA manifest URL and
+  // parsed manifest.
+  const base::DictValue* manifest_result =
+      devtools_client()->SendCommandSync("Page.getAppManifest");
+  ASSERT_TRUE(manifest_result);
+  EXPECT_EQ(
+      *manifest_result->FindString("url"),
+      url_info.origin().GetURL().Resolve(".well-known/manifest.webmanifest"));
+  const base::DictValue* manifest = manifest_result->FindDict("manifest");
+  ASSERT_TRUE(manifest);
+  EXPECT_EQ(*manifest->FindString("name"), kIsolatedAppName);
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, SubAppManifestResolution) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(
+          ManifestBuilder()
+              .SetName("Parent App")
+              .SetVersion("1.0.0")
+              .AddPermissionsPolicy(
+                  network::mojom::PermissionsPolicyFeature::kSubApps,
+                  /*self=*/true,
+                  /*origins=*/{}))
+          .AddHtml("/",
+                   "<!DOCTYPE html><html><head><title>Parent</title></"
+                   "head><body>Parent App</body></html>")
+          .AddHtml("/sub1/page.html",
+                   "<!DOCTYPE html><html><head><title>Sub1</title></"
+                   "head><body>Sub1 Main Page</body></html>")
+          .AddHtml("/sub1/second_page.html",
+                   "<!DOCTYPE html><html><head><title>Sub1 Page 2</title></"
+                   "head><body>Sub1 Page 2</body></html>")
+          .AddResource("/sub1/manifest.webmanifest",
+                       R"({
+                            "name": "Sub App 1",
+                            "start_url": "/sub1/page.html",
+                            "scope": "/sub1/"
+                          })",
+                       "application/manifest+json")
+          .BuildBundle();
+  app->TrustSigningKey();
+  IsolatedWebAppUrlInfo parent_url_info = app->InstallChecked(profile());
+
+  // Install the Sub-App.
+  GURL sub_app_start_url =
+      parent_url_info.origin().GetURL().Resolve("/sub1/page.html");
+  GURL sub_app_scope = parent_url_info.origin().GetURL().Resolve("/sub1/");
+  GURL sub_app_manifest_url =
+      parent_url_info.origin().GetURL().Resolve("/sub1/manifest.webmanifest");
+
+  auto sub_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(sub_app_start_url);
+  sub_app_info->scope = sub_app_scope;
+  sub_app_info->title = u"Sub App 1";
+  sub_app_info->manifest_url = sub_app_manifest_url;
+  sub_app_info->parent_app_id = parent_url_info.app_id();
+  sub_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  webapps::AppId sub_app_id =
+      test::InstallWebApp(profile(), std::move(sub_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::SUB_APP);
+
+  // Sub-App main page (/sub1/page.html).
+  BrowserWindowInterface* sub_app_browser =
+      LaunchWebAppBrowserAndWait(sub_app_id);
+  content::WebContents* sub_app_contents =
+      sub_app_browser->tab_strip_model()->GetActiveWebContents();
+
+  AttachDevTools(sub_app_contents);
+
+  const base::DictValue* sub_manifest_result =
+      devtools_client()->SendCommandSync("Page.getAppManifest");
+  ASSERT_TRUE(sub_manifest_result);
+  EXPECT_EQ(*sub_manifest_result->FindString("url"),
+            sub_app_manifest_url.spec());
+  const base::DictValue* sub_manifest =
+      sub_manifest_result->FindDict("manifest");
+  ASSERT_TRUE(sub_manifest);
+  EXPECT_EQ(*sub_manifest->FindString("name"), "Sub App 1");
+
+  // Sub-App second page (/sub1/second_page.html).
+  GURL second_page_url =
+      parent_url_info.origin().GetURL().Resolve("/sub1/second_page.html");
+  ASSERT_TRUE(content::NavigateToURL(sub_app_contents, second_page_url));
+
+  const base::DictValue* page2_manifest_result =
+      devtools_client()->SendCommandSync("Page.getAppManifest");
+  ASSERT_TRUE(page2_manifest_result);
+  EXPECT_EQ(*page2_manifest_result->FindString("url"),
+            sub_app_manifest_url.spec());
+  const base::DictValue* page2_manifest =
+      page2_manifest_result->FindDict("manifest");
+  ASSERT_TRUE(page2_manifest);
+  EXPECT_EQ(*page2_manifest->FindString("name"), "Sub App 1");
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(IsolatedWebAppDevToolsTest);

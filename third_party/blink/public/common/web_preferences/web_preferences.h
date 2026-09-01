@@ -254,6 +254,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Representation of the Web App Manifest scope if any.
   GURL web_app_scope;
 
+  GURL web_app_custom_manifest_url;
+
   // Whether this renderer is associated with the browser's initial ("Default")
   // profile.
   bool is_initial_profile = false;

@@ -44,6 +44,7 @@ namespace blink {
 
 enum class LCDTextPreference;
 class WebString;
+class WebURL;
 
 // WebSettings is owned by the WebView and allows code to modify the settings
 // for the WebView's page without any knowledge of WebCore itself.  For the most
@@ -167,6 +168,7 @@ class WebSettings {
   virtual void SetMaxTouchPoints(int) = 0;
   virtual void SetPictureInPictureEnabled(bool) = 0;
   virtual void SetWebAppScope(const WebString&) = 0;
+  virtual void SetWebAppCustomManifestUrl(const WebURL&) = 0;
   virtual void SetIsInitialProfile(bool) = 0;
   virtual void SetPresentationRequiresUserGesture(bool) = 0;
   virtual void SetEmbeddedMediaExperienceEnabled(bool) = 0;

@@ -547,6 +547,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.web_app_scope;
   }
 
+  static const GURL& web_app_custom_manifest_url(
+      const ::blink::web_pref::WebPreferences& r) {
+    return r.web_app_custom_manifest_url;
+  }
+
   static bool is_initial_profile(const ::blink::web_pref::WebPreferences& r) {
     return r.is_initial_profile;
   }

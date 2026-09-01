@@ -290,6 +290,15 @@
       type: "String",
     },
 
+    // An authoritative fallback manifest URL provided by the embedder to use
+    // when the document does not specify a <link rel="manifest"> tag.
+    // Primarily intended for Isolated Web Apps (IWAs) and other packaged web
+    // applications whose manifests are managed out-of-band.
+    {
+      name: "webAppCustomManifestUrl",
+      type: "String",
+    },
+
     {
       name: "isInitialProfile",
       initial: false,

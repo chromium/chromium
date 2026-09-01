@@ -9,6 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -154,6 +155,40 @@ TEST_F(ManifestManagerTest, NotifyManifestChange) {
   frame_test_helpers::LoadFrame(frame, base_url_ + "link-manifest-change.html");
 
   EXPECT_EQ(14, client.GetNotifier()->ManifestChangeCount());
+}
+
+TEST_F(ManifestManagerTest,
+       RequestManifestDebugInfoWithCustomManifestUrlSetting) {
+  RegisterMockedURL(base_url_, "link-manifest-fetch.json");
+  RegisterMockedURL(base_url_, "bar.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  auto* frame = web_view_helper.GetWebView()->MainFrameImpl();
+  frame_test_helpers::LoadFrame(frame, base_url_ + "bar.html");
+
+  KURL custom_url(
+      AtomicString((base_url_ + "link-manifest-fetch.json").c_str()));
+  web_view_helper.GetWebView()->GetSettings()->SetWebAppCustomManifestUrl(
+      WebURL(custom_url));
+
+  ManifestManager* manifest_manager =
+      ManifestManager::From(*frame->GetFrame()->DomWindow());
+
+  bool callback_called = false;
+  manifest_manager->RequestManifestDebugInfo(base::BindOnce(
+      [](bool* callback_called, const KURL& expected_url,
+         const KURL& manifest_url, mojom::blink::ManifestPtr manifest,
+         mojom::blink::ManifestDebugInfoPtr debug_info) {
+        *callback_called = true;
+        EXPECT_EQ(expected_url, manifest_url);
+        EXPECT_EQ(u"Super Racer 2000", manifest->name);
+      },
+      &callback_called, custom_url));
+
+  url_test_helpers::ServeAsynchronousRequests();
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace blink

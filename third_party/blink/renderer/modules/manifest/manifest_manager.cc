@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -359,11 +360,21 @@ void ManifestManager::ResolveCallbacks(Result result) {
 }
 
 KURL ManifestManager::ManifestURL() const {
-  HTMLLinkElement* link_element =
-      GetSupplementable()->document()->LinkManifest();
-  if (!link_element)
-    return KURL();
-  return link_element->Href();
+  if (HTMLLinkElement* link_element =
+          GetSupplementable()->document()->LinkManifest()) {
+    return link_element->Href();
+  }
+
+  LocalDOMWindow* window = GetSupplementable();
+  if (window->GetFrame() && window->GetFrame()->GetSettings()) {
+    if (const String& custom_manifest_url =
+            window->GetFrame()->GetSettings()->GetWebAppCustomManifestUrl();
+        !custom_manifest_url.empty()) {
+      return KURL(custom_manifest_url);
+    }
+  }
+
+  return KURL();
 }
 
 bool ManifestManager::ManifestUseCredentials() const {

@@ -593,10 +593,12 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"  // nogncheck
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -627,7 +629,6 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chromeos/ash/components/quickoffice/quickoffice_prefs.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -1504,8 +1505,23 @@ bool ShouldGrantWindowManagementPrivilegesToIwaChildWindow(
                          blink::PermissionType::WINDOW_MANAGEMENT),
                  opener_frame) == blink::mojom::PermissionStatus::GRANTED;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 
+std::optional<GURL> GetIwaCustomManifestUrl(
+    content::WebContents* web_contents) {
+  if (const auto* app_id = web_app::WebAppTabHelper::GetAppId(web_contents)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    const auto& registrar =
+        web_app::WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
+    if (const auto* web_app = registrar.GetAppById(
+            *app_id, web_app::WebAppFilter::IsIsolatedApp() |
+                         web_app::WebAppFilter::IsIsolatedSubApp())) {
+      return web_app->manifest_url();
+    }
+  }
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 // static
@@ -4920,6 +4936,14 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
                                                             main_frame_site)) {
     web_prefs->allow_unrestricted_window_focus = true;
     prefs_changed = true;
+  }
+
+  if (std::optional<GURL> manifest_url =
+          GetIwaCustomManifestUrl(web_contents)) {
+    if (web_prefs->web_app_custom_manifest_url != *manifest_url) {
+      web_prefs->web_app_custom_manifest_url = std::move(*manifest_url);
+      prefs_changed = true;
+    }
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 

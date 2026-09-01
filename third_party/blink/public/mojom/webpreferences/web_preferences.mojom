@@ -282,6 +282,9 @@ struct WebPreferences {
   // Representation of the Web App Manifest scope if any.
   url.mojom.Url web_app_scope;
 
+  // Custom Web App Manifest URL if specified by embedder (e.g. for IWAs).
+  url.mojom.Url web_app_custom_manifest_url;
+
   // Whether this renderer is associated with the browser's initial ("Default")
   // profile.
   bool is_initial_profile;

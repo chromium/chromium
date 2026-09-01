@@ -417,6 +417,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/web_preferences/',
+            'third_party/blink/public/common/web_preferences/',
+        ],
+        'allowed': [
+            'GURL',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/common/context_menu_data/',
             'third_party/blink/common/input/',
         ],
