@@ -57,6 +57,9 @@ void ConvertToVariantFn::Apply(const ExitFullscreenToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
 #endif
+void ConvertToVariantFn::Apply(const FileUploadToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
 void ConvertToVariantFn::Apply(const FindAndHighlightToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

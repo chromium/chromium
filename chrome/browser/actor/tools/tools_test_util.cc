@@ -33,6 +33,9 @@
 
 namespace actor {
 
+MockToolDelegate::MockToolDelegate() = default;
+MockToolDelegate::~MockToolDelegate() = default;
+
 actor_login::Credential MakeTestCredential(
     const std::u16string& username,
     const GURL& url,

@@ -556,6 +556,15 @@ enum ActionResultCode {
   // The requested text could not be found or highlighted on the page.
   kFindAndHighlightTextNotFound = 1700,
 
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1800-1899: Action results for file upload.
+
+  // The file was not authorized in the session allowlist.
+  kFileUploadUnauthorizedFile = 1800,
+
+  // No files were provided for the file upload action.
+  kFileUploadEmptyFileList = 1801,
+
   // Please see the comment above about adding new values.
 };
 

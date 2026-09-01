@@ -82,6 +82,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DragAndRelease" summary="Drag And Release"/>
   <variant name="EnterFullscreen" summary="Enter Fullscreen"/>
   <variant name="ExitFullscreen" summary="Exit Fullscreen"/>
+  <variant name="FileUpload" summary="File Upload"/>
   <variant name="FindAndHighlight" summary="Find And Highlight"/>
   <variant name="History" summary="History"/>
   <variant name="LoadAndExtractContent" summary="Load And Extract Content"/>

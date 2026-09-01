@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/tools/bookmark_management_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
+#include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
@@ -55,6 +56,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const ExitFullscreenToolRequest&) = 0;
 #endif
   virtual void Apply(const DragAndReleaseToolRequest&) = 0;
+  virtual void Apply(const FileUploadToolRequest&) = 0;
   virtual void Apply(const FindAndHighlightToolRequest&) = 0;
   virtual void Apply(const HistoryToolRequest&) = 0;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
