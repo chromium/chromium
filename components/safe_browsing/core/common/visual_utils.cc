@@ -4,12 +4,14 @@
 
 #include "components/safe_browsing/core/common/visual_utils.h"
 
+#include <algorithm>
 #include <unordered_map>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
@@ -23,6 +25,11 @@
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gfx/image/image_util.h"
+#endif
 
 namespace safe_browsing::visual_utils {
 
@@ -102,9 +109,23 @@ bool GetBlurredImage(const SkBitmap& image,
   // average to be consistent with the backend.
   // TODO(drubery): Investigate whether this is necessary for performance or
   // not.
-  SkBitmap downsampled = skia::ImageOperations::Resize(
-      image, skia::ImageOperations::RESIZE_GOOD, GetPHashDownsampleWidth(),
-      GetPHashDownsampleHeight());
+  SkBitmap downsampled;
+  if (image.width() == GetPHashDownsampleWidth() &&
+      image.height() == GetPHashDownsampleHeight()) {
+    // If the input bitmap has already been pre-downscaled to the target pHash
+    // dimensions (e.g. via `GetBitmapForVisualFeatures()` on iOS), bypass
+    // `skia::ImageOperations::Resize()` to avoid redundant software scaling
+    // overhead.
+    downsampled = image;
+  } else {
+    // If dimensions do not match exactly (e.g. on non-iOS platforms, or
+    // if Finch feature parameters like `kVisualFeaturesSizes` configure
+    // dimensions that are not cleanly divisible by the display scale), fall
+    // back to resizing here.
+    downsampled = skia::ImageOperations::Resize(
+        image, skia::ImageOperations::RESIZE_GOOD, GetPHashDownsampleWidth(),
+        GetPHashDownsampleHeight());
+  }
 
   std::unique_ptr<SkBitmap> blurred =
       BlockMeanAverage(downsampled, kPHashBlockSize);
@@ -234,16 +255,38 @@ CanExtractVisualFeaturesResult CanExtractVisualFeatures(bool is_user_opted_in,
   return CanExtractVisualFeaturesResult::kCanExtractVisualFeatures;
 }
 
-std::unique_ptr<VisualFeatures> ExtractVisualFeatures(const gfx::Image& image) {
-  auto features = std::make_unique<VisualFeatures>();
-  GetBlurredImage(image.AsBitmap(), features->mutable_image());
-  return features;
+SkBitmap GetBitmapForVisualFeatures(const gfx::Image& image) {
+#if BUILDFLAG(IS_IOS)
+  if (image.IsEmpty() || image.Size().IsEmpty()) {
+    return SkBitmap();
+  }
+
+  // `gfx::ResizedImage()` on iOS accepts dimensions in DIPs, while
+  // `AsBitmap()` multiplies DIPs by the maximum supported resource scale
+  // factor (e.g. 2x/3x) when converting back to an `SkBitmap`. Divide target
+  // pixel dimensions by the scale factor so the resulting `SkBitmap` matches
+  // the exact target pHash pixel dimensions.
+  // Note: If Finch feature parameters (e.g. `kVisualFeaturesSizes`) configure
+  // pixel dimensions that are not cleanly divisible by `scale`, integer
+  // rounding in `base::ClampRound()` may produce pixel dimensions that differ
+  // slightly from the target pHash dimensions. `GetBlurredImage()` handles
+  // this gracefully by falling back to `skia::ImageOperations::Resize()` if
+  // dimensions do not match exactly.
+  const float scale =
+      std::max(1.0f, ui::GetScaleForMaxSupportedResourceScaleFactor());
+  gfx::Size target_size_dips(
+      std::max(1, base::ClampRound(GetPHashDownsampleWidth() / scale)),
+      std::max(1, base::ClampRound(GetPHashDownsampleHeight() / scale)));
+  gfx::Image downsampled_image = gfx::ResizedImage(image, target_size_dips);
+  return downsampled_image.AsBitmap();
+#else
+  return image.AsBitmap();
+#endif
 }
 
-std::unique_ptr<VisualFeatures> ExtractVisualFeatures(
-    const SkBitmap& screenshot) {
+std::unique_ptr<VisualFeatures> ExtractVisualFeatures(const SkBitmap& bitmap) {
   auto features = std::make_unique<VisualFeatures>();
-  GetBlurredImage(screenshot, features->mutable_image());
+  GetBlurredImage(bitmap, features->mutable_image());
   return features;
 }
 

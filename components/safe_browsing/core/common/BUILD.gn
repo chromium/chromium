@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx",
     "//ui/gfx:color_utils",
     "//url",
   ]
@@ -85,6 +86,7 @@ source_set("visual_utils") {
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//skia",
+    "//ui/base",
     "//ui/gfx",
     "//ui/gfx:color_utils",
   ]

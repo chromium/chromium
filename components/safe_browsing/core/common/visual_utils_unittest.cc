@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image.h"
 
 namespace safe_browsing::visual_utils {
 
@@ -243,6 +244,41 @@ TEST_F(VisualUtilsTest, NonSquareBlurredImage) {
     EXPECT_EQ('\xff', blurred.data()[3 * i + 1]);
     EXPECT_EQ('\xff', blurred.data()[3 * i + 2]);
   }
+}
+
+// Tests that GetBitmapForVisualFeatures downsamples the image to pHash
+// dimensions on iOS and preserves the original dimensions on non-iOS platforms.
+TEST_F(VisualUtilsTest, GetBitmapForVisualFeatures) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kVisualFeaturesSizes, {{"phash_width", "108"}, {"phash_height", "192"}});
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1000, 1000);
+  bitmap.eraseColor(SK_ColorWHITE);
+  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  SkBitmap prepared_bitmap = GetBitmapForVisualFeatures(image);
+#if BUILDFLAG(IS_IOS)
+  // `GetBitmapForVisualFeatures()` should shrink the image to the phash width
+  // and height on iOS.
+  EXPECT_EQ(108, prepared_bitmap.width());
+  EXPECT_EQ(192, prepared_bitmap.height());
+#else
+  // `GetBitmapForVisualFeatures()` should not modify the dimensions on non-iOS
+  // platforms.
+  EXPECT_EQ(1000, prepared_bitmap.width());
+  EXPECT_EQ(1000, prepared_bitmap.height());
+#endif
+
+  // Prepared bitmap can be passed to GetBlurredImage successfully.
+  VisualFeatures::BlurredImage blurred;
+  EXPECT_TRUE(GetBlurredImage(prepared_bitmap, &blurred));
+
+  // Empty image should return empty bitmap.
+  gfx::Image empty_image;
+  SkBitmap empty_bitmap = GetBitmapForVisualFeatures(empty_image);
+  EXPECT_TRUE(empty_bitmap.drawsNothing());
 }
 
 TEST_F(VisualUtilsTest, EncodeScreenshot) {

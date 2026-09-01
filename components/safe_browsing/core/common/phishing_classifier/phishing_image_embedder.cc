@@ -108,10 +108,8 @@ void PhishingImageEmbedder::OnImageEmbeddingDone(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(
-            static_cast<std::unique_ptr<VisualFeatures> (*)(const SkBitmap&)>(
-                &visual_utils::ExtractVisualFeatures),
-            image_.AsBitmap()),
+        base::BindOnce(&visual_utils::ExtractVisualFeatures,
+                       visual_utils::GetBitmapForVisualFeatures(image_)),
         base::BindOnce(&PhishingImageEmbedder::OnVisualFeaturesExtracted,
                        weak_factory_.GetWeakPtr(),
                        std::move(image_feature_embedding)));

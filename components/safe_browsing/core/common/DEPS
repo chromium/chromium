@@ -11,6 +11,7 @@ include_rules = [
   "+skia/ext",
   "+third_party/opencv",
   "+third_party/skia/include",
+  "+ui/base/resource/resource_scale_factor.h",
   "+ui/gfx",
   "+url",
 ]

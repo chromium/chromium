@@ -60,11 +60,16 @@ CanExtractVisualFeaturesResult CanExtractVisualFeatures(bool is_user_opted_in,
                                                         double zoom_level);
 #endif
 
-// Extract a VisualFeatures proto from the given `image`.
-std::unique_ptr<VisualFeatures> ExtractVisualFeatures(const gfx::Image& image);
+// Converts and prepares a `gfx::Image` into an `SkBitmap` for visual feature
+// extraction. Must be called on the sequence that owns `image`.
+// On iOS, this uses platform-native hardware downscaling before bitmap
+// conversion to avoid allocating full-resolution intermediate bitmaps. On other
+// platforms, this returns the image's `SkBitmap` representation directly
+// without performing any downscaling.
+SkBitmap GetBitmapForVisualFeatures(const gfx::Image& image);
 
 // Extract a VisualFeatures proto from the given `bitmap` (used by password
-// protection).
+// protection and client-side phishing detection).
 std::unique_ptr<VisualFeatures> ExtractVisualFeatures(const SkBitmap& bitmap);
 
 }  // namespace safe_browsing::visual_utils
