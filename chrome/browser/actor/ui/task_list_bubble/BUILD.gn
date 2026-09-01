@@ -12,14 +12,17 @@ source_set("controller") {
   sources = [ "actor_task_list_bubble_controller.h" ]
   deps = [
     "//base",
+    "//chrome/browser/actor",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:chrome_features",
+    "//chrome/common:mojo_bindings",
     "//components/actor/core:task_id",
     "//components/tabs:public",
+    "//third_party/abseil-cpp:absl",
     "//ui/base/unowned_user_data",
   ]
 }
@@ -39,6 +42,9 @@ source_set("controller_impl") {
     "//chrome/browser/tab_list",
     "//ui/base",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/android:tabs_public" ]
+  }
 }
 
 if (!is_android) {

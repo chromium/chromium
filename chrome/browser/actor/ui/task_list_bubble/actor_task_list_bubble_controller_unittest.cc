@@ -452,3 +452,72 @@ TEST_F(ActorTaskListBubbleControllerTest,
   // Bubble widget should be created immediately.
   EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
 }
+
+TEST_F(ActorTaskListBubbleControllerTest,
+       GetActorTaskRowsForBubble_PriorityOrder) {
+  auto* fake_actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile_));
+
+  actor::TaskId id_1 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->PauseTaskForTesting(id_1, /*from_actor=*/true);
+
+  actor::TaskId id_2 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->PauseTaskForTesting(id_2, /*from_actor=*/true);
+
+  actor::TaskId id_3 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->StopTaskForTesting(
+      id_3, actor::ActorTask::StoppedReason::kTaskComplete);
+
+  actor::TaskId id_4 = fake_actor_service->CreateTaskForTesting();
+
+  auto rows = ActorTaskListBubbleController::GetActorTaskRowsForBubble(
+      profile_, {{id_1, true}, {id_2, false}, {id_3, true}, {id_4, false}});
+
+  ASSERT_EQ(4u, rows.size());
+  EXPECT_EQ(id_1,
+            rows[0].task_id);  // Priority 1: Unprocessed needing attention
+  EXPECT_EQ(id_2, rows[1].task_id);  // Priority 2: Processed needing attention
+  EXPECT_EQ(id_3, rows[2].task_id);  // Priority 3: Remaining needing processing
+  EXPECT_EQ(id_4, rows[3].task_id);  // Priority 4: All other tasks
+}
+
+TEST_F(ActorTaskListBubbleControllerTest,
+       GetActorTaskRowsForBubble_TieBreakByTaskIdAndContents) {
+  auto* fake_actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile_));
+
+  actor::TaskId id_1 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->PauseTaskForTesting(id_1, /*from_actor=*/true);
+
+  actor::TaskId id_2 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->PauseTaskForTesting(id_2, /*from_actor=*/true);
+
+  actor::TaskId id_exp =
+      fake_actor_service->CreateExperimentalTriggeringTaskForTesting();
+  fake_actor_service->GetTask(id_exp)->SetState(
+      actor::ActorTask::State::kActing);
+
+  // id_1 and id_2 tie on priority 1; id_exp is priority 3; 99999 does not
+  // exist.
+  auto rows = ActorTaskListBubbleController::GetActorTaskRowsForBubble(
+      profile_, {{id_2, true},
+                 {id_1, true},
+                 {id_exp, true},
+                 {actor::TaskId(99999), true}});
+
+  ASSERT_EQ(3u, rows.size());
+
+  // Tie-break by task_id ascending + verify row contents.
+  EXPECT_EQ(id_1, rows[0].task_id);
+  EXPECT_EQ("Test Task", rows[0].title);
+  EXPECT_EQ(actor::ActorTask::State::kPausedByActor, rows[0].state);
+  EXPECT_TRUE(rows[0].requires_processing);
+
+  EXPECT_EQ(id_2, rows[1].task_id);
+
+  // Experimental triggering overrides has_tab to true.
+  EXPECT_EQ(id_exp, rows[2].task_id);
+  EXPECT_EQ(glic::mojom::FeatureMode::kExperimentalTriggering,
+            rows[2].feature_mode);
+  EXPECT_TRUE(rows[2].has_tab);
+}

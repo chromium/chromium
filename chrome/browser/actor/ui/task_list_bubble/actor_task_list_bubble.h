@@ -59,7 +59,6 @@ class ActorTaskListBubble : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   raw_ptr<views::Widget> widget_ = nullptr;
-  size_t num_rows_ = 0ul;
 };
 
 #endif  // CHROME_BROWSER_ACTOR_UI_TASK_LIST_BUBBLE_ACTOR_TASK_LIST_BUBBLE_H_

@@ -7,12 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/ui/actor_ui_metrics.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,22 +30,6 @@ const int kVerticalMargin = 8;
 // Calculated as a max of 8 rows * 56 px per row. This is also inline with the
 // extensions bubble max height (448) and the downloads bubble max height (450).
 const int kMaxBubbleHeight = 448;
-
-int GetPriorityForTaskState(actor::ActorTask::State task_state,
-                            bool requires_processing,
-                            glic::mojom::FeatureMode feature_mode) {
-  // Tasks should be prioritized in the following order:
-  // 1. Unprocessed tasks needing attention
-  // 2. Processed tasks needing attention
-  // 3. Remaining tasks that need processing
-  // 4. All other tasks
-  return glic::GlicActorTaskIconManager::RequiresAttention(task_state)
-             ? (requires_processing ? 1 : 2)
-         : glic::GlicActorTaskIconManager::RequiresTaskProcessing(task_state,
-                                                                  feature_mode)
-             ? 3
-             : 4;
-}
 
 }  // namespace
 
@@ -107,7 +87,6 @@ void ActorTaskListBubble::Show(views::View* anchor_view) {
   widget_->Show();
   widget_observation_.Reset();
   widget_observation_.Observe(widget_);
-  actor::ui::RecordTaskListBubbleRows(num_rows_);
 }
 
 void ActorTaskListBubble::Close() {
@@ -129,8 +108,6 @@ void ActorTaskListBubble::OnWidgetDestroyed(views::Widget* widget) {
   }
 }
 
-// TODO(crbug.com/518584352): share the non-Views parts of this function with
-// Android.
 std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView() {
   std::unique_ptr<views::View> contents_view =
       views::Builder<views::FlexLayoutView>()
@@ -138,62 +115,16 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView() {
           .SetProperty(views::kElementIdentifierKey, kActorTaskListBubbleView)
           .Build();
 
-  auto* actor_service = actor::ActorKeyedService::Get(profile_);
-  CHECK(actor_service);
-  actor::ui::ActorUiStateManagerInterface* actor_ui_state_manager =
-      actor_service->GetActorUiStateManager();
+  std::vector<actor::ui::ActorTaskRowData> rows =
+      ActorTaskListBubbleController::GetActorTaskRowsForBubble(profile_,
+                                                               *task_list_);
 
-  // Keep track of tasks in each state for ordering tasks in the list bubble.
-  std::vector<std::pair</*priority=*/int, actor::TaskId>> row_priority_list;
-
-  // Loop through the list to assign priorities to each task.
-  for (auto [task_id, requires_processing] : *task_list_) {
-    auto task_state = actor_ui_state_manager->GetActorTaskState(task_id);
-    if (!task_state) {
-      actor::ui::RecordTaskIconError(
-          actor::ui::ActorUiTaskIconError::kBubbleTaskDoesntExist);
-      continue;
-    }
-    row_priority_list.emplace_back(
-        GetPriorityForTaskState(
-            task_state.value(), requires_processing,
-            actor_ui_state_manager->GetFeatureMode(task_id)),
-        task_id);
-  }
-
-  std::sort(row_priority_list.begin(), row_priority_list.end());
-
-  // Can now create rows in order of priority.
-  num_rows_ = 0ul;
-  for (auto [priority, task_id] : row_priority_list) {
-    auto task_state = actor_ui_state_manager->GetActorTaskState(task_id);
-    auto task_title = actor_ui_state_manager->GetActorTaskTitle(task_id);
-    auto task_tab = actor_ui_state_manager->GetLastActedOnTab(task_id);
-    auto task_interrupt_reason =
-        actor_ui_state_manager->GetActorTaskInterruptReason(task_id);
-    bool requires_processing = task_list_->at(task_id);
-    CHECK(task_state.has_value() && task_title.has_value() &&
-          task_tab.has_value());
-    bool has_tab = task_tab.value() != nullptr;
-
-    if (!has_tab && glic::GlicActorTaskIconManager::IsActiveExperimentalTask(
-                        task_state.value(),
-                        actor_ui_state_manager->GetFeatureMode(task_id))) {
-      // Treat experimental triggering tasks as having a tab even if they don't
-      // have one associated yet. This ensures they are clickable and can bring
-      // the window/tab to the foreground.
-      has_tab = true;
-    }
-
-    std::unique_ptr<ActorTaskListBubbleRowButton> row =
-        std::make_unique<ActorTaskListBubbleRowButton>(
-            base::BindRepeating(on_row_clicked_, task_id), task_state.value(),
-            base::UTF8ToUTF16(task_title.value()), requires_processing, has_tab,
-            actor_ui_state_manager->GetFeatureMode(task_id),
-            task_interrupt_reason);
-
-    contents_view->AddChildView(std::move(row));
-    ++num_rows_;
+  // Create rows in order of priority.
+  for (const auto& row_data : rows) {
+    contents_view->AddChildView(std::make_unique<ActorTaskListBubbleRowButton>(
+        base::BindRepeating(on_row_clicked_, row_data.task_id), row_data.state,
+        base::UTF8ToUTF16(row_data.title), row_data.requires_processing,
+        row_data.has_tab, row_data.feature_mode, row_data.interrupt_reason));
   }
   return contents_view;
 }

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 
+#include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -15,17 +17,132 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#endif
+
+namespace {
+
+int GetPriorityForTaskState(actor::ActorTask::State task_state,
+                            bool requires_processing,
+                            glic::mojom::FeatureMode feature_mode) {
+  // Tasks should be prioritized in the following order:
+  // 1. Unprocessed tasks needing attention
+  // 2. Processed tasks needing attention
+  // 3. Remaining tasks that need processing
+  // 4. All other tasks
+  return glic::GlicActorTaskIconManager::RequiresAttention(task_state)
+             ? (requires_processing ? 1 : 2)
+         : glic::GlicActorTaskIconManager::RequiresTaskProcessing(task_state,
+                                                                  feature_mode)
+             ? 3
+             : 4;
+}
+
+}  // namespace
+
 DEFINE_USER_DATA(ActorTaskListBubbleController);
+
+// static
+std::vector<actor::ui::ActorTaskRowData>
+ActorTaskListBubbleController::GetActorTaskRowsForBubble(
+    Profile* profile,
+    const absl::flat_hash_map<actor::TaskId, bool>& task_list) {
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  if (!actor_service) {
+    return {};
+  }
+  actor::ui::ActorUiStateManagerInterface* actor_ui_state_manager =
+      actor_service->GetActorUiStateManager();
+  if (!actor_ui_state_manager) {
+    return {};
+  }
+
+  // Gather row data and priority in a single pass.
+  std::vector<std::pair</*priority=*/int, actor::ui::ActorTaskRowData>>
+      prioritized_rows;
+  prioritized_rows.reserve(task_list.size());
+
+  for (auto [task_id, requires_processing] : task_list) {
+    auto task_state = actor_ui_state_manager->GetActorTaskState(task_id);
+    if (!task_state) {
+      actor::ui::RecordTaskIconError(
+          actor::ui::ActorUiTaskIconError::kBubbleTaskDoesntExist);
+      continue;
+    }
+
+    auto feature_mode = actor_ui_state_manager->GetFeatureMode(task_id);
+    const int priority = GetPriorityForTaskState(
+        task_state.value(), requires_processing, feature_mode);
+
+    auto task_title = actor_ui_state_manager->GetActorTaskTitle(task_id);
+    auto task_tab = actor_ui_state_manager->GetLastActedOnTab(task_id);
+    auto task_interrupt_reason =
+        actor_ui_state_manager->GetActorTaskInterruptReason(task_id);
+
+    CHECK(task_title.has_value() && task_tab.has_value());
+    bool has_tab = task_tab.value() != nullptr;
+    int tab_id = -1;
+
+#if BUILDFLAG(IS_ANDROID)
+    if (has_tab) {
+      if (TabAndroid* tab_android =
+              TabAndroid::FromTabInterface(task_tab.value())) {
+        tab_id = tab_android->GetAndroidId();
+      }
+    }
+#endif
+
+    if (!has_tab && glic::GlicActorTaskIconManager::IsActiveExperimentalTask(
+                        task_state.value(), feature_mode)) {
+      // Treat experimental triggering tasks as having a tab even if they don't
+      // have one associated yet. This ensures they are clickable and can bring
+      // the window/tab to the foreground.
+      has_tab = true;
+    }
+
+    prioritized_rows.emplace_back(
+        priority, actor::ui::ActorTaskRowData{
+                      .task_id = task_id,
+                      .title = task_title.value(),
+                      .state = task_state.value(),
+                      .requires_processing = requires_processing,
+                      .has_tab = has_tab,
+                      .tab_id = tab_id,
+                      .feature_mode = feature_mode,
+                      .interrupt_reason = task_interrupt_reason,
+                  });
+  }
+
+  // Sort rows in order of priority, breaking ties by task_id for determinism.
+  std::sort(prioritized_rows.begin(), prioritized_rows.end(),
+            [](const auto& a, const auto& b) {
+              if (a.first != b.first) {
+                return a.first < b.first;
+              }
+              return a.second.task_id < b.second.task_id;
+            });
+
+  std::vector<actor::ui::ActorTaskRowData> rows;
+  rows.reserve(prioritized_rows.size());
+  for (auto& [priority, row_data] : prioritized_rows) {
+    rows.push_back(std::move(row_data));
+  }
+
+  return rows;
+}
 
 ActorTaskListBubbleController::ActorTaskListBubbleController(
     BrowserWindowInterface* browser_window,
@@ -117,6 +234,9 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
   // All rows may be skipped, in which case the bubble will not be shown.
   if (delegate->IsActorTaskListBubbleShowing()) {
     on_bubble_shown_callback_list.Notify();
+    auto rows =
+        GetActorTaskRowsForBubble(browser_->GetProfile(), task_id_to_state);
+    actor::ui::RecordTaskListBubbleRows(rows.size());
   }
 }
 
