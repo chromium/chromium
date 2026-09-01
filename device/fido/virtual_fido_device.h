@@ -56,7 +56,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
         base::span<const uint8_t> pkcs8_private_key);
 
     // Creates a new private key for the given COSE algorithm identifier.
-    // Supports kEs256, kRs256, kEdDSA, and kInvalidForTesting.
+    // Supports kEs256, kRs256, kEdDSA, kMlDsa44, kMlDsa65, kMlDsa87, and
+    // kInvalidForTesting.
     explicit PrivateKey(CoseAlgorithmIdentifier algorithm);
 
     ~PrivateKey();

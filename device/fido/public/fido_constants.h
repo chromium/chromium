@@ -278,6 +278,7 @@ enum class CoseKeyKey : int {
   kEllipticCurve = -1,
   kEllipticX = -2,
   kEllipticY = -3,
+  kAkpPublicKey = -1,
 };
 
 // Enumerates COSE key types. See
@@ -286,6 +287,7 @@ enum class CoseKeyTypes : int {
   kOKP = 1,
   kEC2 = 2,
   kRSA = 3,
+  kAKP = 7,
   // kInvalidForTesting is a random 32-bit number used to test unknown key
   // types.
   kInvalidForTesting = 146919568,
@@ -301,6 +303,9 @@ enum class CoseCurves : int {
 enum class CoseAlgorithmIdentifier : int {
   kEs256 = -7,
   kEdDSA = -8,
+  kMlDsa44 = -48,
+  kMlDsa65 = -49,
+  kMlDsa87 = -50,
   kRs256 = -257,
   // kInvalidForTesting is a random 32-bit number used to test unknown
   // algorithms.

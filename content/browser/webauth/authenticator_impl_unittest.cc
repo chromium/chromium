@@ -4061,6 +4061,9 @@ TEST_F(AuthenticatorImplTest, GetPublicKey) {
       {device::CoseAlgorithmIdentifier::kEs256, EVP_PKEY_EC},
       {device::CoseAlgorithmIdentifier::kRs256, EVP_PKEY_RSA},
       {device::CoseAlgorithmIdentifier::kEdDSA, EVP_PKEY_ED25519},
+      {device::CoseAlgorithmIdentifier::kMlDsa44, EVP_PKEY_ML_DSA_44},
+      {device::CoseAlgorithmIdentifier::kMlDsa65, EVP_PKEY_ML_DSA_65},
+      {device::CoseAlgorithmIdentifier::kMlDsa87, EVP_PKEY_ML_DSA_87},
       {device::CoseAlgorithmIdentifier::kInvalidForTesting, std::nullopt},
   };
 
@@ -4175,6 +4178,9 @@ TEST_F(AuthenticatorImplTest, VirtualAuthenticatorPublicKeyAlgos) {
       {device::CoseAlgorithmIdentifier::kEs256, EVP_sha256()},
       {device::CoseAlgorithmIdentifier::kRs256, EVP_sha256()},
       {device::CoseAlgorithmIdentifier::kEdDSA, nullptr},
+      {device::CoseAlgorithmIdentifier::kMlDsa44, nullptr},
+      {device::CoseAlgorithmIdentifier::kMlDsa65, nullptr},
+      {device::CoseAlgorithmIdentifier::kMlDsa87, nullptr},
   };
 
   std::vector<device::CoseAlgorithmIdentifier> advertised_algorithms;

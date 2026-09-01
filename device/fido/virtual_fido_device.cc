@@ -69,6 +69,12 @@ std::optional<crypto::keypair::PrivateKey> GenerateKeyForAlgorithm(
       return crypto::keypair::PrivateKey::GenerateRsa2048();
     case CoseAlgorithmIdentifier::kEdDSA:
       return crypto::keypair::PrivateKey::GenerateEd25519();
+    case CoseAlgorithmIdentifier::kMlDsa44:
+      return crypto::keypair::PrivateKey::GenerateMldsa44();
+    case CoseAlgorithmIdentifier::kMlDsa65:
+      return crypto::keypair::PrivateKey::GenerateMldsa65();
+    case CoseAlgorithmIdentifier::kMlDsa87:
+      return crypto::keypair::PrivateKey::GenerateMldsa87();
     case CoseAlgorithmIdentifier::kInvalidForTesting:
       return std::nullopt;
   }
@@ -85,6 +91,9 @@ bool VirtualFidoDevice::PrivateKey::IsAlgorithmSupported(int32_t algorithm) {
     case CoseAlgorithmIdentifier::kEs256:
     case CoseAlgorithmIdentifier::kRs256:
     case CoseAlgorithmIdentifier::kEdDSA:
+    case CoseAlgorithmIdentifier::kMlDsa44:
+    case CoseAlgorithmIdentifier::kMlDsa65:
+    case CoseAlgorithmIdentifier::kMlDsa87:
     case CoseAlgorithmIdentifier::kInvalidForTesting:
       return true;
     default:
@@ -107,6 +116,12 @@ VirtualFidoDevice::PrivateKey::FromPKCS8(
     algorithm = CoseAlgorithmIdentifier::kRs256;
   } else if (key->IsEd25519()) {
     algorithm = CoseAlgorithmIdentifier::kEdDSA;
+  } else if (key->IsMldsa44()) {
+    algorithm = CoseAlgorithmIdentifier::kMlDsa44;
+  } else if (key->IsMldsa65()) {
+    algorithm = CoseAlgorithmIdentifier::kMlDsa65;
+  } else if (key->IsMldsa87()) {
+    algorithm = CoseAlgorithmIdentifier::kMlDsa87;
   } else {
     return std::nullopt;
   }
@@ -132,6 +147,12 @@ std::vector<uint8_t> VirtualFidoDevice::PrivateKey::Sign(
       return crypto::sign::Sign(crypto::sign::RSA_PKCS1_SHA256, *key_, message);
     case CoseAlgorithmIdentifier::kEdDSA:
       return crypto::sign::Sign(crypto::sign::ED25519, *key_, message);
+    case CoseAlgorithmIdentifier::kMlDsa44:
+      return crypto::sign::Sign(crypto::sign::MLDSA_44, *key_, message);
+    case CoseAlgorithmIdentifier::kMlDsa65:
+      return crypto::sign::Sign(crypto::sign::MLDSA_65, *key_, message);
+    case CoseAlgorithmIdentifier::kMlDsa87:
+      return crypto::sign::Sign(crypto::sign::MLDSA_87, *key_, message);
     case CoseAlgorithmIdentifier::kInvalidForTesting:
       return {'s', 'i', 'g'};
   }

@@ -205,6 +205,9 @@ VirtualAuthenticator::ConstructDevice() {
       config.advertised_algorithms = {
           device::CoseAlgorithmIdentifier::kEdDSA,
           device::CoseAlgorithmIdentifier::kEs256,
+          device::CoseAlgorithmIdentifier::kMlDsa44,
+          device::CoseAlgorithmIdentifier::kMlDsa65,
+          device::CoseAlgorithmIdentifier::kMlDsa87,
           device::CoseAlgorithmIdentifier::kRs256,
       };
       return std::make_unique<device::VirtualCtap2Device>(state_, config);
