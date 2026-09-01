@@ -13,6 +13,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(USE_CBOR_RUST)
+#include "components/cbor/rust/cbor_rust.h"
+#endif
+
 /* Leveraging RFC 7049 examples from
    https://github.com/cbor/test-vectors/blob/master/appendix_a.json. */
 namespace cbor {
@@ -1512,4 +1516,73 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(false),
                          [](const auto&) { return "Cpp"; });
 #endif
+
+#if BUILDFLAG(USE_CBOR_RUST)
+
+TEST(CBORReaderRustTest, FfiStreamingDecoderSubmitsChunks) {
+  auto decoder = cbor::rust::Decoder::new_();
+
+  // Test providing a CBOR text string:
+  // 0x62 (Text string of length 2), 'b', 'b'
+  std::vector<uint8_t> data = {0x62, 'b', 'b'};
+  rs_std::SliceRef<const uint8_t> slice(data);
+  auto res = decoder.next_event(slice);
+  ASSERT_TRUE(res.has_value());
+  ASSERT_EQ(res.value().tag, cbor::rust::CborEvent::Tag::String);
+  ASSERT_EQ(res.value().String.__field0, "bb");
+
+  // Test streaming bytestrings (e.g. large response bodies):
+  // 0x44 (Byte string of length 4), 0x01, 0x02, 0x03, 0x04
+  auto decoder2 = cbor::rust::Decoder::new_();
+  std::vector<uint8_t> bytes_data = {0x44, 0x01, 0x02, 0x03, 0x04};
+  rs_std::SliceRef<const uint8_t> bytes_slice(bytes_data);
+  auto res_b1 = decoder2.next_event(bytes_slice);
+  ASSERT_TRUE(res_b1.has_value());
+  ASSERT_EQ(res_b1.value().tag, cbor::rust::CborEvent::Tag::BytesStart);
+  ASSERT_EQ(res_b1.value().BytesStart.__field0, 4);
+
+  auto res_b2 = decoder2.next_event(bytes_slice);
+  ASSERT_TRUE(res_b2.has_value());
+  ASSERT_EQ(res_b2.value().tag, cbor::rust::CborEvent::Tag::BytesChunk);
+  ASSERT_EQ(res_b2.value().BytesChunk.__field0.size(), 4);
+
+  auto res_b3 = decoder2.next_event(bytes_slice);
+  ASSERT_TRUE(res_b3.has_value());
+  ASSERT_EQ(res_b3.value().tag, cbor::rust::CborEvent::Tag::BytesEnd);
+  ASSERT_TRUE(decoder2.is_complete());
+}
+
+TEST(CBORReaderRustTest, FfiStreamingDecoderIncompleteCborDataRollback) {
+  auto decoder = cbor::rust::Decoder::new_();
+
+  // Text string 0x64 ('t', 'e', 's', 't'):
+  std::vector<uint8_t> str_partial = {0x64, 't', 'e'};
+
+  // When incomplete, next_event returns IncompleteCborData without consuming
+  // data:
+  rs_std::SliceRef<const uint8_t> partial_slice(str_partial);
+  auto res = decoder.next_event(partial_slice);
+  ASSERT_TRUE(res.has_value());
+  EXPECT_EQ(res.value().tag, cbor::rust::CborEvent::Tag::NeedsMoreData);
+  EXPECT_EQ(res.value().NeedsMoreData.__field0, 5u);  // 't' 'e' 's' 't' + 1 = 5
+  EXPECT_EQ(partial_slice.size(), 3u);  // Slice was not partially consumed!
+}
+
+TEST(CBORReaderRustTest, FfiStreamingDecoderAllowInvalidUtf8) {
+  cbor::rust::Config config;
+  config.allow_invalid_utf8 = true;
+  config.max_nesting_level = 16;
+  auto decoder = cbor::rust::Decoder::with_config(config);
+
+  std::vector<uint8_t> data = {0x61, 0xFF};
+  rs_std::SliceRef<const uint8_t> slice(data);
+  auto res = decoder.next_event(slice);
+  ASSERT_TRUE(res.has_value());
+  ASSERT_EQ(res.value().tag, cbor::rust::CborEvent::Tag::InvalidUtf8);
+  ASSERT_EQ(res.value().InvalidUtf8.__field0.size(), 1u);
+  EXPECT_EQ(res.value().InvalidUtf8.__field0.to_span()[0], 0xFF);
+}
+
+#endif
+
 }  // namespace cbor

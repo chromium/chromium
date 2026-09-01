@@ -199,3 +199,173 @@ fn test_map_lookups() {
     assert_eq!(map.get(&MapKey::Bytestring(&[1, 2])), Some(&Value::Int(42)));
     assert_eq!(map.get(&MapKey::Bytestring(&[1, 3])), None);
 }
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoder)]
+fn test_streaming_decoder() {
+    let mut data: &[u8] = &[0x82, 0x01, 0x02];
+    let mut decoder = Decoder::new();
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(2)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(1)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(2)));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderWebBundle)]
+fn test_streaming_decoder_webbundle() {
+    let mut data: &[u8] =
+        &[0x85, 0x48, 0xF0, 0x9F, 0x8C, 0x90, 0xF0, 0x9F, 0x93, 0xA6, 0x44, 0x62, 0x32, 0x00, 0x00];
+    let mut decoder = Decoder::new();
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(5)));
+
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesStart(8)));
+    assert_eq!(
+        decoder.next_event(&mut data),
+        Ok(CborEvent::BytesChunk(&[0xF0, 0x9F, 0x8C, 0x90, 0xF0, 0x9F, 0x93, 0xA6]))
+    );
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesEnd));
+
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesStart(4)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesChunk(&[0x62, 0x32, 0x00, 0x00])));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesEnd));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderComplex)]
+fn test_streaming_decoder_complex() {
+    let mut data: &[u8] = &[0xa2, 0x61, b'a', 0x01, 0x61, b'b', 0x82, 0x20, 0x21];
+    let mut decoder = Decoder::new();
+
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::MapStart(2)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::String("a")));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(1)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::String("b")));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(2)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(-1)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(-2)));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderInvalidUtf8String)]
+fn test_streaming_decoder_invalid_utf8_string() {
+    let mut data: &[u8] = &[0x61, 0x80]; // Major type 3 (text string) length 1, invalid UTF-8 byte 0x80
+    let mut decoder = Decoder::new();
+    assert_eq!(decoder.next_event(&mut data), Err(Error::InvalidUtf8));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderIncomplete)]
+fn test_streaming_decoder_incomplete() {
+    let mut data: &[u8] = &[0x82, 0x01]; // Array of 2 elements, but only holds 1
+    let mut decoder = Decoder::new();
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(2)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(1)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::NeedsMoreData(1)));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderNonMinimal)]
+fn test_streaming_decoder_non_minimal() {
+    // Int 1 encoded in 2 bytes instead of 1 (0x18 0x01 instead of 0x01)
+    let mut data: &[u8] = &[0x18, 0x01];
+    let mut decoder = Decoder::new();
+    assert_eq!(decoder.next_event(&mut data), Err(Error::NonMinimalCborEncoding));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderIncrementalChunking)]
+fn test_streaming_decoder_incremental_chunking() {
+    let mut decoder = Decoder::new();
+
+    let mut chunk1: &[u8] = &[0x44]; // StringStart(4)
+    assert_eq!(decoder.next_event(&mut chunk1), Ok(CborEvent::BytesStart(4)));
+
+    let mut chunk2: &[u8] = &[0x62]; // "b"
+    assert_eq!(decoder.next_event(&mut chunk2), Ok(CborEvent::BytesChunk(&[0x62])));
+
+    let mut chunk3: &[u8] = &[];
+    assert_eq!(decoder.next_event(&mut chunk3), Ok(CborEvent::NeedsMoreData(1)));
+
+    let mut chunk4: &[u8] = &[0x32, 0x00, 0x00]; // "2\0\0"
+    assert_eq!(decoder.next_event(&mut chunk4), Ok(CborEvent::BytesChunk(&[0x32, 0x00, 0x00])));
+    assert_eq!(decoder.next_event(&mut chunk4), Ok(CborEvent::BytesEnd));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderIncrementalString)]
+fn test_streaming_decoder_incremental_string() {
+    let mut decoder = Decoder::new();
+    let mut chunk1: &[u8] = &[0x64, b't', b'e'];
+
+    // Since only 2 of 4 bytes are available in the chunk, read_bytes returns None
+    // (IncompleteCborData).
+    assert_eq!(decoder.next_event(&mut chunk1), Ok(CborEvent::NeedsMoreData(5)));
+
+    // Provide the complete text string chunk:
+    let mut chunk2: &[u8] = &[0x64, b't', b'e', b's', b't'];
+    assert_eq!(decoder.next_event(&mut chunk2), Ok(CborEvent::String("test")));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderAllowInvalidUtf8)]
+fn test_streaming_decoder_allow_invalid_utf8() {
+    let mut data: &[u8] = &[0x61, 0xFF]; // Text string of 1 byte with invalid UTF-8
+    let config = Config { allow_invalid_utf8: true, ..Default::default() };
+    let mut decoder = Decoder::with_config(config);
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::InvalidUtf8(&[0xFF])));
+
+    // Also test Value conversion:
+    let event = CborEvent::InvalidUtf8(&[0xFF]);
+    assert_eq!(Value::try_from(event), Ok(Value::InvalidUtf8(&[0xFF])));
+
+    let event_int = CborEvent::Int(42);
+    assert_eq!(Value::try_from(event_int), Ok(Value::Int(42)));
+
+    let event_str = CborEvent::String("hello");
+    assert_eq!(Value::try_from(event_str), Ok(Value::String("hello")));
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderReadCompleteBytestring)]
+fn test_streaming_decoder_read_complete_bytestring() {
+    // Array of 2 items: [ h'01020304', 42 ]
+    let mut data: &[u8] = &[0x82, 0x44, 0x01, 0x02, 0x03, 0x04, 0x18, 0x2A];
+    let mut decoder = Decoder::new();
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(2)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesStart(4)));
+    assert_eq!(decoder.read_complete_bytestring(&mut data), Ok(&[0x01, 0x02, 0x03, 0x04][..]));
+    // Ensure state correctly transitions back to Value and reads subsequent
+    // elements:
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(42)));
+}
+
+#[gtest(CBORReaderRustTest, TestDecoderBytestringCompletion)]
+fn test_ffi_decoder_bytestring_completion() {
+    let mut decoder = Decoder::new();
+    let mut data: &[u8] = &[0x44, 0x01, 0x02, 0x03, 0x04];
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesStart(4)));
+    assert!(!decoder.is_complete());
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesChunk(&[0x01, 0x02, 0x03, 0x04])));
+    assert!(!decoder.is_complete());
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::BytesEnd));
+    // Must be complete immediately upon BytesEnd for top-level bytestring!
+    assert!(decoder.is_complete());
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderReadCompleteValue)]
+fn test_streaming_decoder_read_complete_value() {
+    let mut decoder = Decoder::new();
+    let original: &[u8] = &[0x18, 0x2A, 0x01, 0x02];
+    let mut data = original;
+    let val = decoder.read_complete_value(&mut data).unwrap();
+    assert_eq!(val, Value::Int(42));
+    assert_eq!(data, &[0x01, 0x02]);
+}
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderHugeMapLengthNoOverflow)]
+fn test_streaming_decoder_huge_map_length_no_overflow() {
+    // Map with length 0x9595959595959595 (> u64::MAX / 2).
+    // An array [21] followed by 0xBF (unsupported additional info 31).
+    let mut data: &[u8] = &[
+        0xBB, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, // Map header
+        0x95, // Array of length 21
+        0x15, // Uint 21
+        0xBF, // Map with additional info 31 (invalid)
+        0xBE, 0x3B, 0x4F, 0x2F, 0x9E,
+    ];
+    let mut decoder = Decoder::new();
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::MapStart(0x9595959595959595)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(21)));
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(21)));
+    assert_eq!(decoder.next_event(&mut data), Err(Error::UnknownAdditionalInfo));
+}

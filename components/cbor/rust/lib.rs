@@ -23,10 +23,8 @@
 //! the same value. Aside from this exception, all values should round-trip
 //! correctly under the CTAP2 configuration.
 //!
-//! Note on Relaxations: When `Config::allow_floating_point` or
-//! `Config::allow_invalid_utf8` are enabled, the injectivity and exact
-//! round-tripping guarantees no longer hold. For example, `f16` floats will
-//! parse to `f64` and serialize back as `f64` (changing the byte string).
+//! Note on Relaxations: When `Config::allow_invalid_utf8` is enabled, the
+//! injectivity and exact round-tripping guarantees no longer hold.
 //!
 //! ```
 //! let value = cbor::Value::String("hello");
@@ -48,7 +46,7 @@ mod values;
 mod writer;
 
 pub use constants::MAX_DEPTH;
-pub use reader::{parse_with_config, Config, Error, ParseResult};
+pub use reader::{parse_with_config, CborEvent, Config, Decoder, Error, ParseResult};
 pub use values::{Map, MapEntry, MapKey, MapKeyKind, Value, ValueKind};
 pub use writer::write;
 

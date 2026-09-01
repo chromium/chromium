@@ -14,6 +14,7 @@ pub(crate) const MAJOR_TYPE_SIMPLE_VALUE: u8 = 7;
 
 // CBOR Additional Information Values (RFC 8949 Section 3)
 // https://datatracker.ietf.org/doc/html/rfc8949#section-3
+pub(crate) const ADDL_INFO_DIRECT_MAX: u8 = 23;
 pub(crate) const ADDL_INFO_1_BYTE: u8 = 24;
 pub(crate) const ADDL_INFO_2_BYTES: u8 = 25;
 pub(crate) const ADDL_INFO_4_BYTES: u8 = 26;

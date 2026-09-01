@@ -63,7 +63,10 @@ source_set("unit_tests") {
     "//third_party/fuzztest",
   ]
   if (!is_cronet_build) {
-    deps += [ "//components/cbor/rust:cbor_rust_unittests" ]
+    deps += [
+      "//components/cbor/rust:cbor_rust_bindings",
+      "//components/cbor/rust:cbor_rust_unittests",
+    ]
   }
 
   data = [ "reader_fuzzer_corpus/" ]
