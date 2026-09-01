@@ -1837,12 +1837,12 @@
       "evanluo@google.com",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "chrome-finds-internals",
     "owners": ["wylieb@google.com", "evanluo@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "chrome-native-url-overriding",
