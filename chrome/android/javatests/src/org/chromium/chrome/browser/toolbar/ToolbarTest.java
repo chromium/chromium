@@ -652,6 +652,8 @@ public class ToolbarTest {
     @EnableFeatures(
             ChromeFeatureList.HOME_BUTTON_REMOVAL
                     + ":set_default_to_false_on_homepage_on_desktop/false")
+    // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+    @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
     @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHomeButton_loadsNtpOnSameTab() {
         WebPageStation webPage = mPage;
@@ -679,7 +681,11 @@ public class ToolbarTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+        ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
+    })
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
     public void testHomeButtonVisibility_KeepOnNtp() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -702,7 +708,11 @@ public class ToolbarTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        // TODO(giannich): Update Android tests with WebUI NTP enabled on AL.
+        ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
+    })
     @EnableFeatures({
         ChromeFeatureList.HOME_BUTTON_REMOVAL
                 + ":keep_home_button_on_ntp/true/set_default_to_false_on_homepage_on_desktop/false"

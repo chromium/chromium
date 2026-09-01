@@ -8,9 +8,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -42,7 +46,18 @@ using content::WebContents;
 namespace extensions {
 
 class ExtensionOverrideTest : public ExtensionApiTest {
+ public:
+  ExtensionOverrideTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+    scoped_feature_list_.InitAndDisableFeature(
+        chrome::android::kUseWebUiNtpAndroid);
+#endif
+  }
+
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
