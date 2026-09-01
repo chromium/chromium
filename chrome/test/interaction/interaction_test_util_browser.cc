@@ -36,9 +36,9 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
-#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -410,6 +410,8 @@ void InteractionTestUtilBrowser::PopulateSimulators(
     ui::test::InteractionTestUtil& test_util) {
   test_util.AddSimulator(
       std::make_unique<InteractionTestUtilSimulatorBrowser>());
+  test_util.AddSimulator(
+      std::make_unique<ui::InteractionTestUtilSimulatorWebUI>());
 }
 
 // static

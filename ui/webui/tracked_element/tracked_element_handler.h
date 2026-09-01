@@ -127,8 +127,9 @@ class TrackedElementHandler
 
   // Interaction simulation methods.
   bool ClickElement(TrackedElementWebUI& element,
+                    tracked_element::mojom::InputType input_type,
                     base::PassKey<InteractionTestUtilSimulatorWebUI>) {
-    return ClickElement(element);
+    return ClickElement(element, input_type);
   }
   bool FocusElement(TrackedElementWebUI& element,
                     base::PassKey<InteractionTestUtilSimulatorWebUI>) {
@@ -179,7 +180,9 @@ class TrackedElementHandler
   FRIEND_TEST_ALL_PREFIXES(TrackedElementHandlerTest, Interaction);
 
   // Interaction simulation methods.
-  bool ClickElement(TrackedElementWebUI& element);
+  bool ClickElement(TrackedElementWebUI& element,
+                    tracked_element::mojom::InputType input_type =
+                        tracked_element::mojom::InputType::kDontCare);
   bool FocusElement(TrackedElementWebUI& element);
   bool SelectTab(TrackedElementWebUI& element, size_t index);
   bool SelectDropdownItem(TrackedElementWebUI& element, size_t index);

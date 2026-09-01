@@ -122,7 +122,9 @@ void TrackedElementHandler::FlushManagerRemoteForTesting() {
   manager_remote_.FlushForTesting();  // IN-TEST
 }
 
-bool TrackedElementHandler::ClickElement(TrackedElementWebUI& element) {
+bool TrackedElementHandler::ClickElement(
+    TrackedElementWebUI& element,
+    tracked_element::mojom::InputType input_type) {
   CHECK_IS_TEST();
   if (!manager_remote_) {
     return false;
@@ -132,6 +134,7 @@ bool TrackedElementHandler::ClickElement(TrackedElementWebUI& element) {
   manager_remote_->ClickElement(
       tracked_element::mojom::TrackedElementIdentifier::New(
           element.identifier().GetName(), element.GetSecondaryIdentifier()),
+      input_type,
       base::BindOnce(
           [](bool* success_ptr, base::OnceClosure quit_closure, bool result) {
             *success_ptr = result;

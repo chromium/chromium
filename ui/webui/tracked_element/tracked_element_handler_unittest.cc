@@ -80,8 +80,11 @@ class TestTrackedElementManager
   }
 
   void ClickElement(tracked_element::mojom::TrackedElementIdentifierPtr id,
+                    tracked_element::mojom::InputType input_type,
                     ClickElementCallback callback) override {
-    interaction_events_.push_back("Click:" + id->native_identifier);
+    interaction_events_.push_back(
+        base::StringPrintf("Click:%s:%d", id->native_identifier.c_str(),
+                           static_cast<int>(input_type)));
     std::move(callback).Run(true);
   }
 
@@ -518,8 +521,19 @@ TEST_F(TrackedElementHandlerTest, Interaction) {
 
   const std::string name = kTestElementIdentifier1.GetName();
   EXPECT_TRUE(handler()->ClickElement(element));
-  EXPECT_THAT(manager.TakeInteractionEvents(),
-              testing::ElementsAre("Click:" + name));
+  EXPECT_THAT(
+      manager.TakeInteractionEvents(),
+      testing::ElementsAre(base::StringPrintf(
+          "Click:%s:%d", name.c_str(),
+          static_cast<int>(tracked_element::mojom::InputType::kDontCare))));
+
+  EXPECT_TRUE(handler()->ClickElement(
+      element, tracked_element::mojom::InputType::kKeyboard));
+  EXPECT_THAT(
+      manager.TakeInteractionEvents(),
+      testing::ElementsAre(base::StringPrintf(
+          "Click:%s:%d", name.c_str(),
+          static_cast<int>(tracked_element::mojom::InputType::kKeyboard))));
 
   EXPECT_TRUE(handler()->FocusElement(element));
   EXPECT_THAT(manager.TakeInteractionEvents(),

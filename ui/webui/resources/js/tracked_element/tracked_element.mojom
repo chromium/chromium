@@ -7,6 +7,21 @@ module tracked_element.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// LINT.IfChange(InputType)
+// How should an input be simulated?
+// Mirror of ui::test::InteractionTestUtil::InputType
+enum InputType {
+  // Simulate the input in the most reliable way.
+  kDontCare,
+  // Simulate the input explicitly via mouse events.
+  kMouse,
+  // Simulate the input explicitly via keyboard events.
+  kKeyboard,
+  // Simulate the input explicitly via touch events.
+  kTouch,
+};
+// LINT.ThenChange(//ui/base/interaction/interaction_test_util.h:InputType)
+
 // How should text be sent to a text input?
 // Mirror of ui::test::InteractionTestUtil::TextEntryMode
 enum TextEntryMode {
@@ -76,7 +91,8 @@ interface TrackedElementManager {
                             bool highlighted);
 
   // Simulates a click on the element.
-  ClickElement(TrackedElementIdentifier identifier) => (bool success);
+  ClickElement(TrackedElementIdentifier identifier, InputType input_type)
+      => (bool success);
 
   // Simulates focusing the element.
   FocusElement(TrackedElementIdentifier identifier) => (bool success);

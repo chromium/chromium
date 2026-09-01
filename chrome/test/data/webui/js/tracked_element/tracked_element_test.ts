@@ -8,7 +8,7 @@ import type {TrackedElementProxy} from 'chrome://resources/js/tracked_element/tr
 import {TrackedElementProxyImpl} from 'chrome://resources/js/tracked_element/tracked_element_proxy.js';
 import type {RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {TrackedElementHandlerInterface, TrackedElementIdentifier, TrackedElementManagerRemote} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-import {TrackedElementManagerCallbackRouter} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
+import {InputType, TrackedElementManagerCallbackRouter} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotDeepEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -685,7 +685,8 @@ suite('TrackedElementTest', function() {
 
     // Disable the button and try to click it.
     button.disabled = true;
-    const clickPromise = managerRemote.clickElement(ELEMENT_ID);
+    const clickPromise =
+        managerRemote.clickElement(ELEMENT_ID, InputType.kMouse);
 
     // Give it some time to make sure it hasn't clicked.
     await microtasksFinished();
@@ -697,6 +698,139 @@ suite('TrackedElementTest', function() {
     assertTrue(result.success);
     assertTrue(clicked);
   });
+
+  test('clickElement_ from keyboard sends keyboard click event', async () => {
+    const button = document.createElement('button');
+    button.id = 'button';
+    document.body.appendChild(button);
+
+    let clickedEvent: MouseEvent|null = null;
+    let pointerDownEvent: PointerEvent|null = null;
+    button.addEventListener('click', (e: MouseEvent) => {
+      clickedEvent = e;
+    });
+    button.addEventListener('pointerdown', (e: PointerEvent) => {
+      pointerDownEvent = e;
+    });
+
+    manager.startTracking(
+        button, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    await waitForVisibilityEvents();
+
+    const result =
+        await managerRemote.clickElement(ELEMENT_ID, InputType.kKeyboard);
+    assertTrue(result.success);
+    assertTrue(!!clickedEvent);
+    assertEquals(0, (clickedEvent as MouseEvent).detail);
+    assertEquals(0, (clickedEvent as MouseEvent).clientX);
+    assertEquals(0, (clickedEvent as MouseEvent).clientY);
+    assertFalse(!!pointerDownEvent);
+  });
+
+  test('clickElement_ from mouse sends mouse pointer events', async () => {
+    const button = document.createElement('button');
+    button.id = 'button';
+    document.body.appendChild(button);
+
+    let clickedEvent: MouseEvent|null = null;
+    let pointerDownEvent: PointerEvent|null = null;
+    let pointerUpEvent: PointerEvent|null = null;
+    button.addEventListener('click', (e: MouseEvent) => {
+      clickedEvent = e;
+    });
+    button.addEventListener('pointerdown', (e: PointerEvent) => {
+      pointerDownEvent = e;
+    });
+    button.addEventListener('pointerup', (e: PointerEvent) => {
+      pointerUpEvent = e;
+    });
+
+    manager.startTracking(
+        button, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    await waitForVisibilityEvents();
+
+    const result =
+        await managerRemote.clickElement(ELEMENT_ID, InputType.kMouse);
+    assertTrue(result.success);
+    assertTrue(!!clickedEvent);
+    assertEquals(1, (clickedEvent as MouseEvent).detail);
+    assertTrue(!!pointerDownEvent);
+    assertEquals('mouse', (pointerDownEvent as PointerEvent).pointerType);
+    assertTrue(!!pointerUpEvent);
+    assertEquals('mouse', (pointerUpEvent as PointerEvent).pointerType);
+  });
+
+  test('clickElement_ from touch sends touch pointer events', async () => {
+    const button = document.createElement('button');
+    button.id = 'button';
+    document.body.appendChild(button);
+
+    let clickedEvent: MouseEvent|null = null;
+    let pointerDownEvent: PointerEvent|null = null;
+    let pointerUpEvent: PointerEvent|null = null;
+    button.addEventListener('click', (e: MouseEvent) => {
+      clickedEvent = e;
+    });
+    button.addEventListener('pointerdown', (e: PointerEvent) => {
+      pointerDownEvent = e;
+    });
+    button.addEventListener('pointerup', (e: PointerEvent) => {
+      pointerUpEvent = e;
+    });
+
+    manager.startTracking(
+        button, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    await waitForVisibilityEvents();
+
+    const result =
+        await managerRemote.clickElement(ELEMENT_ID, InputType.kTouch);
+    assertTrue(result.success);
+    assertTrue(!!clickedEvent);
+    assertEquals(1, (clickedEvent as MouseEvent).detail);
+    assertTrue(!!pointerDownEvent);
+    assertEquals('touch', (pointerDownEvent as PointerEvent).pointerType);
+    assertTrue(!!pointerUpEvent);
+    assertEquals('touch', (pointerUpEvent as PointerEvent).pointerType);
+  });
+
+  test(
+      'clickElement_ from dontCare defaults to mouse pointer events',
+      async () => {
+        const button = document.createElement('button');
+        button.id = 'button';
+        document.body.appendChild(button);
+
+        let clickedEvent: MouseEvent|null = null;
+        let pointerDownEvent: PointerEvent|null = null;
+        let pointerUpEvent: PointerEvent|null = null;
+        button.addEventListener('click', (e: MouseEvent) => {
+          clickedEvent = e;
+        });
+        button.addEventListener('pointerdown', (e: PointerEvent) => {
+          pointerDownEvent = e;
+        });
+        button.addEventListener('pointerup', (e: PointerEvent) => {
+          pointerUpEvent = e;
+        });
+
+        manager.startTracking(
+            button, ELEMENT_ID.nativeIdentifier,
+            {secondaryId: ELEMENT_ID.secondaryIdentifier});
+        await waitForVisibilityEvents();
+
+        const result =
+            await managerRemote.clickElement(ELEMENT_ID, InputType.kDontCare);
+        assertTrue(result.success);
+        assertTrue(!!clickedEvent);
+        assertEquals(1, (clickedEvent as MouseEvent).detail);
+        assertTrue(!!pointerDownEvent);
+        assertEquals('mouse', (pointerDownEvent as PointerEvent).pointerType);
+        assertTrue(!!pointerUpEvent);
+        assertEquals('mouse', (pointerUpEvent as PointerEvent).pointerType);
+      });
 
   // Tests for multiple elements with the same native identifier:
 

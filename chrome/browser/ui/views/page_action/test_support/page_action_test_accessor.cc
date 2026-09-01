@@ -364,6 +364,8 @@ void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
   if (features::IsWebUILocationBarEnabled()) {
     if (auto* tracked_el = GetTrackedElement()) {
       if (content::WebContents* contents = GetWebContents()) {
+        const int click_detail =
+            (trigger == page_actions::PageActionTrigger::kMouse) ? 1 : 0;
         const std::string script = base::StringPrintf(
             R"((() => {
               const manager = window._trackedElementManager;
@@ -378,11 +380,49 @@ void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
                   ? (el.shadowRoot.querySelector(
                          '#button, toolbar-chip-button, toolbar-button, button, [role="button"]') || el)
                   : el;
-              btn.click();
+              const detail = %d;
+              if (detail > 0) {
+                const bounds = btn.getBoundingClientRect();
+                btn.dispatchEvent(new PointerEvent('pointerdown', {
+                  bubbles: true,
+                  composed: true,
+                  button: 0,
+                  pointerId: 1,
+                  isPrimary: true,
+                  buttons: 1,
+                  clientX: bounds.left + bounds.width / 2,
+                  clientY: bounds.top + bounds.height / 2,
+                }));
+                btn.dispatchEvent(new PointerEvent('pointerup', {
+                  bubbles: true,
+                  composed: true,
+                  button: 0,
+                  pointerId: 1,
+                  isPrimary: true,
+                  buttons: 0,
+                  clientX: bounds.left + bounds.width / 2,
+                  clientY: bounds.top + bounds.height / 2,
+                }));
+                btn.dispatchEvent(new MouseEvent('click', {
+                  bubbles: true,
+                  composed: true,
+                  button: 0,
+                  detail: 1,
+                  clientX: bounds.left + bounds.width / 2,
+                  clientY: bounds.top + bounds.height / 2,
+                }));
+              } else {
+                btn.dispatchEvent(new MouseEvent('click', {
+                  bubbles: true,
+                  composed: true,
+                  button: 0,
+                  detail: 0,
+                }));
+              }
               return true;
             })())",
             tracked_el->identifier().GetName().c_str(),
-            tracked_el->GetSecondaryIdentifier().c_str());
+            tracked_el->GetSecondaryIdentifier().c_str(), click_detail);
         content::EvalJsResult result = content::EvalJs(contents, script);
         if (result.is_bool() && result.ExtractBool()) {
           return;

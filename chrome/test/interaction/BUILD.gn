@@ -59,6 +59,7 @@ if (!is_android) {
       "//ui/views:test_support",
       "//ui/views/controls/webview",
       "//ui/webui/tracked_element",
+      "//ui/webui/tracked_element:test_support",
     ]
   }
 

@@ -16,6 +16,24 @@
 
 namespace ui {
 
+namespace {
+
+tracked_element::mojom::InputType ToMojomInputType(
+    ui::test::InteractionTestUtil::InputType input_type) {
+  switch (input_type) {
+    case ui::test::InteractionTestUtil::InputType::kDontCare:
+      return tracked_element::mojom::InputType::kDontCare;
+    case ui::test::InteractionTestUtil::InputType::kMouse:
+      return tracked_element::mojom::InputType::kMouse;
+    case ui::test::InteractionTestUtil::InputType::kKeyboard:
+      return tracked_element::mojom::InputType::kKeyboard;
+    case ui::test::InteractionTestUtil::InputType::kTouch:
+      return tracked_element::mojom::InputType::kTouch;
+  }
+}
+
+}  // namespace
+
 InteractionTestUtilSimulatorWebUI::InteractionTestUtilSimulatorWebUI() =
     default;
 InteractionTestUtilSimulatorWebUI::~InteractionTestUtilSimulatorWebUI() =
@@ -26,7 +44,8 @@ ui::test::ActionResult InteractionTestUtilSimulatorWebUI::PressButton(
     InputType input_type) {
   if (auto* webui_el = element->AsA<TrackedElementWebUI>()) {
     if (webui_el->handler()->ClickElement(
-            *webui_el, base::PassKey<InteractionTestUtilSimulatorWebUI>())) {
+            *webui_el, ToMojomInputType(input_type),
+            base::PassKey<InteractionTestUtilSimulatorWebUI>())) {
       return ui::test::ActionResult::kSucceeded;
     }
     return ui::test::ActionResult::kFailed;
@@ -39,7 +58,8 @@ ui::test::ActionResult InteractionTestUtilSimulatorWebUI::SelectMenuItem(
     InputType input_type) {
   if (auto* webui_el = element->AsA<TrackedElementWebUI>()) {
     if (webui_el->handler()->ClickElement(
-            *webui_el, base::PassKey<InteractionTestUtilSimulatorWebUI>())) {
+            *webui_el, ToMojomInputType(input_type),
+            base::PassKey<InteractionTestUtilSimulatorWebUI>())) {
       return ui::test::ActionResult::kSucceeded;
     }
     return ui::test::ActionResult::kFailed;
@@ -52,7 +72,8 @@ ui::test::ActionResult InteractionTestUtilSimulatorWebUI::DoDefaultAction(
     InputType input_type) {
   if (auto* webui_el = element->AsA<TrackedElementWebUI>()) {
     if (webui_el->handler()->ClickElement(
-            *webui_el, base::PassKey<InteractionTestUtilSimulatorWebUI>())) {
+            *webui_el, ToMojomInputType(input_type),
+            base::PassKey<InteractionTestUtilSimulatorWebUI>())) {
       return ui::test::ActionResult::kSucceeded;
     }
     return ui::test::ActionResult::kFailed;
