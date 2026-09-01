@@ -87,6 +87,10 @@ public class MediaLauncherActivity extends Activity {
             return getContentResolver().getType(uri);
         }
 
+        if (!uriScheme.equals(ContentResolver.SCHEME_FILE)) {
+            return null;
+        }
+
         // Otherwise, use the file extension.
         String filteredUri = filterURI(uri);
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(filteredUri);
