@@ -726,6 +726,8 @@ export class GlicAppController implements WebviewDelegate {
 
   webClientStateChanged(state: WebClientState): void {
     switch (state) {
+      case WebClientState.kUninitialized:
+        break;
       case WebClientState.kWarmed:
         if (this.state === WebUiState.kBeginLoad ||
             this.state === WebUiState.kFinishLoading ||
@@ -749,7 +751,7 @@ export class GlicAppController implements WebviewDelegate {
         this.setErrorState(WebUiErrorReason.CLIENT_ERROR);
         break;
       default:
-        assertNotReachedCase(state as never);
+        assertNotReachedCase(state);
     }
   }
 
