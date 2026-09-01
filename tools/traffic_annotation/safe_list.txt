@@ -47,7 +47,7 @@ missing,chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/StoreP
 missing,net/proxy_resolution/proxy_config_service_android.cc
 
 # Desktop platform specific annotations.
-missing,components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc
+missing,components/optimization_guide/core/model_execution/remote_model_execution_common.cc
 missing,components/personal_context/core/network/personal_context_fetcher.cc
 
 # For prototyping and will be removed (either by adding a proper traffic

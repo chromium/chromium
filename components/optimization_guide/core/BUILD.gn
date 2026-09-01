@@ -247,8 +247,8 @@ source_set("model_execution") {
       "model_execution/model_execution_fetcher_impl.h",
       "model_execution/model_execution_manager.cc",
       "model_execution/model_execution_manager.h",
-      "model_execution/model_execution_proto_util.cc",
-      "model_execution/model_execution_proto_util.h",
+      "model_execution/remote_model_execution_common.cc",
+      "model_execution/remote_model_execution_common.h",
       "model_execution/settings_enabled_observer.cc",
       "model_execution/settings_enabled_observer.h",
     ]
