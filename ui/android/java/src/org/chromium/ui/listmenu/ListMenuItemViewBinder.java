@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -230,7 +231,8 @@ public class ListMenuItemViewBinder {
             // Not tracked intentionally because it's used by clients to keep track of items. The
             // order field is used to recreate a SelectionMenuItem when an item is clicked.
         } else if (propertyKey == ListMenuItemProperties.CHECKABLE
-                || propertyKey == ListMenuItemProperties.CHECKED) {
+                || propertyKey == ListMenuItemProperties.CHECKED
+                || propertyKey == ListMenuItemProperties.POSITION) {
             view.setAccessibilityDelegate(
                     new View.AccessibilityDelegate() {
                         @Override
@@ -241,6 +243,23 @@ public class ListMenuItemViewBinder {
                             info.setChecked(
                                     model.containsKey(ListMenuItemProperties.CHECKED)
                                             && model.get(ListMenuItemProperties.CHECKED));
+                            // Note: `info.setCheckable` and `info.setChecked` are applied
+                            // to both checkable items and radio buttons.
+                            // We use the presence of the POSITION property to determine if a
+                            // checkable item should identify specifically as a RadioButton.
+                            // A checkable item acts as a RadioButton if and only
+                            // if it provides a POSITION.
+                            if (model.containsKey(ListMenuItemProperties.POSITION)) {
+                                info.setClassName(RadioButton.class.getName());
+                                int position = model.get(ListMenuItemProperties.POSITION);
+                                info.setCollectionItemInfo(
+                                        AccessibilityNodeInfo.CollectionItemInfo.obtain(
+                                                /* rowIndex= */ position,
+                                                /* rowSpan= */ 1,
+                                                /* columnIndex= */ 0,
+                                                /* columnSpan= */ 1,
+                                                /* heading= */ false));
+                            }
                         }
                     });
         } else {

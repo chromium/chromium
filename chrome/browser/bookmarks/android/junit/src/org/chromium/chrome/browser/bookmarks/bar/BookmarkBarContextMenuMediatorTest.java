@@ -213,6 +213,7 @@ public class BookmarkBarContextMenuMediatorTest {
                 submenuItems.get(0).model.get(ListMenuItemProperties.END_ICON_ID));
         assertTrue(submenuItems.get(0).model.get(ListMenuItemProperties.CHECKABLE));
         assertTrue(submenuItems.get(0).model.get(ListMenuItemProperties.CHECKED));
+        assertEquals(0, submenuItems.get(0).model.get(ListMenuItemProperties.POSITION));
         assertEquals(
                 mActivity.getString(R.string.contextmenu_always_show_bookmarks_bar),
                 submenuItems.get(1).model.get(ListMenuItemProperties.TITLE));
@@ -221,6 +222,7 @@ public class BookmarkBarContextMenuMediatorTest {
                 submenuItems.get(1).model.get(ListMenuItemProperties.END_ICON_ID));
         assertTrue(submenuItems.get(1).model.get(ListMenuItemProperties.CHECKABLE));
         assertFalse(submenuItems.get(1).model.get(ListMenuItemProperties.CHECKED));
+        assertEquals(1, submenuItems.get(1).model.get(ListMenuItemProperties.POSITION));
         assertEquals(
                 mActivity.getString(R.string.contextmenu_only_show_bookmarks_bar_on_ntp),
                 submenuItems.get(2).model.get(ListMenuItemProperties.TITLE));
@@ -229,6 +231,7 @@ public class BookmarkBarContextMenuMediatorTest {
                 submenuItems.get(2).model.get(ListMenuItemProperties.END_ICON_ID));
         assertTrue(submenuItems.get(2).model.get(ListMenuItemProperties.CHECKABLE));
         assertFalse(submenuItems.get(2).model.get(ListMenuItemProperties.CHECKED));
+        assertEquals(2, submenuItems.get(2).model.get(ListMenuItemProperties.POSITION));
     }
 
     @Test
@@ -596,16 +599,19 @@ public class BookmarkBarContextMenuMediatorTest {
                 submenuItems.get(0).model.get(ListMenuItemProperties.TITLE));
         assertTrue(submenuItems.get(0).model.get(ListMenuItemProperties.CHECKABLE));
         assertTrue(submenuItems.get(0).model.get(ListMenuItemProperties.CHECKED));
+        assertEquals(0, submenuItems.get(0).model.get(ListMenuItemProperties.POSITION));
         assertEquals(
                 mActivity.getString(R.string.contextmenu_always_show_bookmarks_bar),
                 submenuItems.get(1).model.get(ListMenuItemProperties.TITLE));
         assertTrue(submenuItems.get(1).model.get(ListMenuItemProperties.CHECKABLE));
         assertFalse(submenuItems.get(1).model.get(ListMenuItemProperties.CHECKED));
+        assertEquals(1, submenuItems.get(1).model.get(ListMenuItemProperties.POSITION));
         assertEquals(
                 mActivity.getString(R.string.contextmenu_only_show_bookmarks_bar_on_ntp),
                 submenuItems.get(2).model.get(ListMenuItemProperties.TITLE));
         assertTrue(submenuItems.get(2).model.get(ListMenuItemProperties.CHECKABLE));
         assertFalse(submenuItems.get(2).model.get(ListMenuItemProperties.CHECKED));
+        assertEquals(2, submenuItems.get(2).model.get(ListMenuItemProperties.POSITION));
     }
 
     // Tests for actions of the items in the context menu.

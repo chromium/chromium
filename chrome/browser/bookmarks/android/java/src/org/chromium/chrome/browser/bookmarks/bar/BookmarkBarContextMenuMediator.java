@@ -395,6 +395,7 @@ class BookmarkBarContextMenuMediator {
                 buildCheckableContextMenuItem(
                         mContext.getString(R.string.contextmenu_always_hide_bookmarks_bar),
                         currentState == BookmarkBarVisibilityState.ALWAYS_HIDE,
+                        /* position= */ 0,
                         isIncognito,
                         /* enabled= */ true,
                         v -> alwaysHide()));
@@ -402,6 +403,7 @@ class BookmarkBarContextMenuMediator {
                 buildCheckableContextMenuItem(
                         mContext.getString(R.string.contextmenu_always_show_bookmarks_bar),
                         currentState == BookmarkBarVisibilityState.ALWAYS_SHOW,
+                        /* position= */ 1,
                         isIncognito,
                         /* enabled= */ true,
                         v -> alwaysShow()));
@@ -409,6 +411,7 @@ class BookmarkBarContextMenuMediator {
                 buildCheckableContextMenuItem(
                         mContext.getString(R.string.contextmenu_only_show_bookmarks_bar_on_ntp),
                         currentState == BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                        /* position= */ 2,
                         isIncognito,
                         /* enabled= */ true,
                         v -> onlyShowOnNTP()));
@@ -565,6 +568,7 @@ class BookmarkBarContextMenuMediator {
     private ListItem buildCheckableContextMenuItem(
             String title,
             boolean isChecked,
+            int position,
             boolean isIncognito,
             boolean enabled,
             View.OnClickListener listener) {
@@ -582,6 +586,7 @@ class BookmarkBarContextMenuMediator {
                                         : android.R.color.transparent)
                         .with(ListMenuItemProperties.CHECKABLE, true)
                         .with(ListMenuItemProperties.CHECKED, isChecked)
+                        .with(ListMenuItemProperties.POSITION, position)
                         .with(
                                 ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                                 isIncognito

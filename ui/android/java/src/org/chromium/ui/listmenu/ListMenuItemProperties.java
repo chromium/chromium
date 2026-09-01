@@ -112,6 +112,9 @@ public class ListMenuItemProperties {
     public static final WritableBooleanPropertyKey CHECKABLE = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey CHECKED = new WritableBooleanPropertyKey();
 
+    /** The menu item's position in the menu. */
+    public static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE_ID,
         TITLE,
@@ -144,6 +147,7 @@ public class ListMenuItemProperties {
         LONG_CLICK_LISTENER,
         ORDER,
         CHECKABLE,
-        CHECKED
+        CHECKED,
+        POSITION
     };
 }

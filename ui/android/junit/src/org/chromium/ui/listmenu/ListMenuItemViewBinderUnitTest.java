@@ -23,6 +23,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -438,6 +439,7 @@ public class ListMenuItemViewBinderUnitTest {
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.CHECKABLE, true)
                         .with(ListMenuItemProperties.CHECKED, true)
+                        .with(ListMenuItemProperties.POSITION, 1)
                         .build();
 
         View view =
@@ -447,8 +449,12 @@ public class ListMenuItemViewBinderUnitTest {
                         super.setAccessibilityDelegate(delegate);
                         AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfo.obtain();
                         delegate.onInitializeAccessibilityNodeInfo(this, nodeInfo);
+                        Assert.assertEquals(RadioButton.class.getName(), nodeInfo.getClassName());
                         Assert.assertTrue(nodeInfo.isCheckable());
                         Assert.assertTrue(nodeInfo.isChecked());
+                        Assert.assertNotNull(nodeInfo.getCollectionItemInfo());
+                        Assert.assertEquals(1, nodeInfo.getCollectionItemInfo().getRowIndex());
+                        Assert.assertEquals(0, nodeInfo.getCollectionItemInfo().getColumnIndex());
                     }
                 };
 
@@ -462,6 +468,7 @@ public class ListMenuItemViewBinderUnitTest {
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.CHECKABLE, true)
                         .with(ListMenuItemProperties.CHECKED, false)
+                        .with(ListMenuItemProperties.POSITION, 2)
                         .build();
 
         View view =
@@ -471,8 +478,12 @@ public class ListMenuItemViewBinderUnitTest {
                         super.setAccessibilityDelegate(delegate);
                         AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfo.obtain();
                         delegate.onInitializeAccessibilityNodeInfo(this, nodeInfo);
+                        Assert.assertEquals(RadioButton.class.getName(), nodeInfo.getClassName());
                         Assert.assertTrue(nodeInfo.isCheckable());
                         Assert.assertFalse(nodeInfo.isChecked());
+                        Assert.assertNotNull(nodeInfo.getCollectionItemInfo());
+                        Assert.assertEquals(2, nodeInfo.getCollectionItemInfo().getRowIndex());
+                        Assert.assertEquals(0, nodeInfo.getCollectionItemInfo().getColumnIndex());
                     }
                 };
 
@@ -494,8 +505,12 @@ public class ListMenuItemViewBinderUnitTest {
                         super.setAccessibilityDelegate(delegate);
                         AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfo.obtain();
                         delegate.onInitializeAccessibilityNodeInfo(this, nodeInfo);
+                        Assert.assertEquals(RadioButton.class.getName(), nodeInfo.getClassName());
                         Assert.assertTrue(nodeInfo.isCheckable());
                         Assert.assertFalse(nodeInfo.isChecked());
+                        Assert.assertNotNull(nodeInfo.getCollectionItemInfo());
+                        Assert.assertEquals(0, nodeInfo.getCollectionItemInfo().getRowIndex());
+                        Assert.assertEquals(0, nodeInfo.getCollectionItemInfo().getColumnIndex());
                     }
                 };
 
