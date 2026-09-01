@@ -40,7 +40,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ResettersForTesting;
@@ -79,7 +78,6 @@ import java.util.function.Consumer;
 
 /** Tests for {@link ImmersiveVideoPlaybackCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("unchecked")
 public class ImmersiveVideoPlaybackCoordinatorTest {
     static {

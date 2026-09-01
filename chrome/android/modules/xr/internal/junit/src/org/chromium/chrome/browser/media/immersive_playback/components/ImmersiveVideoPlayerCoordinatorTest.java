@@ -21,7 +21,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
@@ -38,7 +37,6 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 
 /** Tests for {@link ImmersiveVideoPlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImmersiveVideoPlayerCoordinatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private XrSceneCoreSessionManager mSessionManager;

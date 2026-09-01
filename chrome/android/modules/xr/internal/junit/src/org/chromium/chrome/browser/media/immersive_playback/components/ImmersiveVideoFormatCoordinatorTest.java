@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
@@ -36,7 +35,6 @@ import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /** Tests for {@link ImmersiveVideoFormatCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImmersiveVideoFormatCoordinatorTest {
     @Mock private XrSceneCoreSessionManager mSessionManager;
     @Mock private ImmersiveVideoFormatCoordinator.Delegate mDelegate;

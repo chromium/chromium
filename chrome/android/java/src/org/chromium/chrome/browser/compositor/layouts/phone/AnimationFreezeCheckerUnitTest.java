@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.layouts.phone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -16,7 +15,6 @@ import org.chromium.chrome.browser.compositor.layouts.phone.AnimationFreezeCheck
 
 /** Unit tests for {@link AnimationFreezeChecker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AnimationFreezeCheckerUnitTest {
     private static final String HISTOGRAM_NAME = "Tab.TestTag.NewTabAnimationProgress";
 

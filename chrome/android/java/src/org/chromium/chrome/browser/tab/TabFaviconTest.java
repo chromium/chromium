@@ -29,7 +29,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
@@ -42,7 +41,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabFavicon}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabFaviconTest {
     private static final int IDEAL_SIZE = 4;
 

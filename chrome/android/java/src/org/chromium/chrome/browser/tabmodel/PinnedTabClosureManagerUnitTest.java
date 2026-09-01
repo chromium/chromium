@@ -26,7 +26,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link PinnedTabClosureManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PinnedTabClosureManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

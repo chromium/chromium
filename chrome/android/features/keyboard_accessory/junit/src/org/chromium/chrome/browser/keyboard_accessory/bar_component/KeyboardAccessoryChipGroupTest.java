@@ -28,7 +28,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * that maps 1dp to exactly 1 pixel. The screen resolution is 360x640.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, qualifiers = "w360dp-h640dp-mdpi")
+@Config(qualifiers = "w360dp-h640dp-mdpi")
 public class KeyboardAccessoryChipGroupTest {
     private static final int SCREEN_WIDTH = 360;
     // Use fixed height because the tests don't verify it.

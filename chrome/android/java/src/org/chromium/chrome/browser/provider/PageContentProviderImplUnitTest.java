@@ -71,9 +71,7 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.PAGE_CONTENT_PROVIDER})
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowContentResolver.class})
+@Config(shadows = {ShadowContentResolver.class})
 public class PageContentProviderImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

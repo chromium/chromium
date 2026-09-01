@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link ImmersiveVideoControlMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImmersiveVideoControlMediatorTest {
     @Mock private ImmersiveVideoControlCoordinator.Delegate mDelegate;
 

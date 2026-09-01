@@ -43,7 +43,6 @@ import java.util.Map;
 
 /** Unit tests for {@link TabGroupingActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabGroupingActionProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

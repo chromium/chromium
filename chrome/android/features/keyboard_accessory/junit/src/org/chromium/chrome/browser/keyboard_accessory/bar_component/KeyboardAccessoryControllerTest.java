@@ -53,7 +53,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -113,7 +112,6 @@ import java.util.List;
 
 /** Controller tests for the keyboard accessory component. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @Features.EnableFeatures({
     ChromeFeatureList.AUTOFILL_AI_LIMIT_SUGGESTION_WIDTH,
     ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP,

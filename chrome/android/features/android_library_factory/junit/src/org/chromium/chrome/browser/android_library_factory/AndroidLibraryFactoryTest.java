@@ -10,7 +10,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -19,7 +18,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  * involved. The test succeeds if the compile succeeds.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class AndroidLibraryFactoryTest {
     @Test
     @SmallTest

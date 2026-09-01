@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
@@ -23,7 +22,6 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link ImmersiveVideoPoseManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ImmersiveVideoPoseManagerTest {
     static {
         XrModuleProviderImpl.initialize();

@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
@@ -46,7 +45,6 @@ import org.chromium.ui.modelutil.ListObservable;
 
 /** Controller tests for the address accessory sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AddressAccessorySheetControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

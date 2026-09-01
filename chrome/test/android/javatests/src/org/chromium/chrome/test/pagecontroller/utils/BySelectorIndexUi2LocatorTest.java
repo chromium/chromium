@@ -18,7 +18,6 @@ import org.junit.runners.MethodSorters;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -28,7 +27,6 @@ import java.util.List;
 
 /** Tests for {@link BySelectorIndexUi2Locator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public final class BySelectorIndexUi2LocatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -67,7 +66,6 @@ import java.util.Set;
 
 /** Integration tests for TabItemPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabItemPickerCoordinatorNavigationUnitTest {
     private static final int WINDOW_ID = 5;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

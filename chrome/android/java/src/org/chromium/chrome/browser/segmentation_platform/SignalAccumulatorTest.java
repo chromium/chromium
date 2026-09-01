@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,7 +33,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link SignalAccumulator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SignalAccumulatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mMockTab;
