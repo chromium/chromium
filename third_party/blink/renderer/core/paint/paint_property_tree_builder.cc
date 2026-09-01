@@ -1116,9 +1116,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsElementCanvasTransform(object_)) {
       const auto& element = *To<Element>(object_.GetNode());
-      const auto* canvas_transform = element.GetUsedCanvasTransform();
-      TransformPaintPropertyNode::State state{
-          {canvas_transform ? *canvas_transform : gfx::Transform()}};
+      gfx::Transform transform;
+      if (const auto* canvas_transform = element.GetUsedCanvasTransform()) {
+        transform = *canvas_transform;
+        float zoom = object_.StyleRef().EffectiveZoom();
+        if (zoom != 1.f) {
+          transform.Zoom(zoom);
+        }
+      }
+      TransformPaintPropertyNode::State state{{transform}};
       state.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
