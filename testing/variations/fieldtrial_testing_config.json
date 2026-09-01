@@ -6846,24 +6846,6 @@
             ]
         }
     ],
-    "DesktopRealboxContextualSearchIPH": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_DesktopRealboxContextualSearchFeature"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopToMobilePromos": [
         {
             "platforms": [
