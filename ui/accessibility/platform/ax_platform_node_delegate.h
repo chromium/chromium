@@ -466,6 +466,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Get whether this node is in the web content vs. the Views layer.
   virtual bool IsWebContent() const;
 
+  // Get whether this node is the root of the top-level web content.
+  virtual bool IsTopLevelWebContentRoot() const;
+
   // Get whether this node can be marked as read-only.
   virtual bool IsReadOnlySupported() const;
 

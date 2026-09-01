@@ -947,6 +947,11 @@ bool BrowserAccessibility::IsWebContent() const {
   return delegate->AccessibilityIsWebContentSource();
 }
 
+bool BrowserAccessibility::IsTopLevelWebContentRoot() const {
+  return manager_->IsRootFrameManager() &&
+         manager_->GetBrowserAccessibilityRoot() == this;
+}
+
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   // The caret should be visible if Caret Browsing is enabled, but only in the
   // node which contains it.

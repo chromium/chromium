@@ -34,6 +34,12 @@ UiaRegistrarWin::UiaRegistrarWin() {
   registrar->RegisterProperty(&unique_id_property_info,
                               &unique_id_property_id_);
 
+  UIAutomationPropertyInfo is_web_content_root_property_info = {
+      kUiaPropertyIsWebContentRootGuid, L"IsWebContentRoot",
+      UIAutomationType_Bool};
+  registrar->RegisterProperty(&is_web_content_root_property_info,
+                              &is_web_content_root_property_id_);
+
   if (features::IsUiaMathMlSupportEnabled()) {
     // Register the custom UIA property that provides MathML markup for
     // math elements. This GUID matches Microsoft Word's implementation for
@@ -76,6 +82,10 @@ PROPERTYID UiaRegistrarWin::GetMathMLPropertyId() const {
 
 PROPERTYID UiaRegistrarWin::GetAriaActionsPropertyId() const {
   return aria_actions_property_id_;
+}
+
+PROPERTYID UiaRegistrarWin::GetIsWebContentRootPropertyId() const {
+  return is_web_content_root_property_id_;
 }
 
 const UiaRegistrarWin& UiaRegistrarWin::GetInstance() {

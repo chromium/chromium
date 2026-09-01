@@ -523,6 +523,10 @@ bool AXPlatformNodeDelegate::IsWebContent() const {
   return false;
 }
 
+bool AXPlatformNodeDelegate::IsTopLevelWebContentRoot() const {
+  return false;
+}
+
 bool AXPlatformNodeDelegate::HasVisibleCaretOrSelection() const {
   return IsDescendantOfAtomicTextField();
 }

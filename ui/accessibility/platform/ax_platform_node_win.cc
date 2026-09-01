@@ -5807,6 +5807,12 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
             V_ARRAY(result) = CreateUIAElementsSafeArray(target_nodes);
           }
         }
+      } else if (property_id == UiaRegistrarWin::GetInstance()
+                                    .GetIsWebContentRootPropertyId()) {
+        V_VT(result) = VT_BOOL;
+        V_BOOL(result) = GetDelegate()->IsTopLevelWebContentRoot()
+                             ? VARIANT_TRUE
+                             : VARIANT_FALSE;
       }
       break;
   }

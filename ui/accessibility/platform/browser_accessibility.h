@@ -449,6 +449,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
   bool ShouldIgnoreHoveredStateForTesting() override;
   bool IsOffscreen() const override;
   bool IsWebContent() const override;
+  bool IsTopLevelWebContentRoot() const override;
   bool HasVisibleCaretOrSelection() const override;
   std::vector<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr) override;

@@ -861,6 +861,41 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
   EXPECT_TRUE(tree_position->IsNullPosition());
 }
 
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
+                       UIAIsWebContentRootProperty) {
+  LoadInitialAccessibilityTreeFromHtmlFilePath(
+      "/accessibility/html/iframe-traversal.html");
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Text in iframe");
+
+  ui::BrowserAccessibility* root_node = GetRootAndAssertNonNull();
+  ui::BrowserAccessibility* iframe_text_node =
+      FindNodeAfter(root_node, "Text in iframe");
+  ASSERT_NE(nullptr, iframe_text_node);
+  ui::BrowserAccessibility* iframe_root =
+      iframe_text_node->manager()->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, iframe_root);
+
+  PROPERTYID property_id =
+      ui::UiaRegistrarWin::GetInstance().GetIsWebContentRootPropertyId();
+  ASSERT_NE(0, property_id);
+
+  ScopedVariant root_value;
+  ASSERT_HRESULT_SUCCEEDED(
+      ToBrowserAccessibilityWin(root_node)->GetCOM()->GetPropertyValue(
+          property_id, root_value.Receive()));
+  ASSERT_EQ(VT_BOOL, root_value.type());
+  EXPECT_EQ(VARIANT_TRUE, V_BOOL(root_value.ptr()));
+
+  ScopedVariant iframe_value;
+  ASSERT_HRESULT_SUCCEEDED(
+      ToBrowserAccessibilityWin(iframe_root)
+          ->GetCOM()
+          ->GetPropertyValue(property_id, iframe_value.Receive()));
+  ASSERT_EQ(VT_BOOL, iframe_value.type());
+  EXPECT_EQ(VARIANT_FALSE, V_BOOL(iframe_value.ptr()));
+}
+
 // Test fixture for MathML UIA property tests.
 class AXPlatformNodeWinMathMLBrowserTest : public AXPlatformNodeWinBrowserTest {
  public:
