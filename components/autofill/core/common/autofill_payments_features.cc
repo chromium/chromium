@@ -180,17 +180,6 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// When enabled, in-product help UI will be shown the first time a card added
-// outside of Chrome appears in Autofill card suggestions.
-BASE_FEATURE(kAutofillEnableDownstreamCardAwarenessIph,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
-
 // When enabled, card flat rate benefit will not be shown on merchants in the
 // blocklist.
 BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsBlocklist,

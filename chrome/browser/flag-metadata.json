@@ -1061,11 +1061,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-enable-downstream-card-awareness-iph",
-    "owners": [ "averina@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "autofill-enable-ewallet-new-account-linking",
     "owners": [ "nicluo@google.com", "hfizt@google.com" ],
     "expiry_milestone": 160
