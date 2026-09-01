@@ -118,6 +118,8 @@ source_set("model") {
     "//ios/web/common",
     "//ios/web/public/js_messaging",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
     "//url",
   ]
@@ -295,6 +297,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
