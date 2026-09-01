@@ -40,7 +40,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link SendTabToSelfOmniboxIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
+@Config(sdk = Build.VERSION_CODES.R)
 public class SendTabToSelfOmniboxIphControllerTest {
     private static final String HTTP_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 

@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -29,7 +28,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** Unit tests for {@link BackPressManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BackPressManagerUnitTest {
 
     private static class EmptyBackPressHandler implements BackPressHandler {

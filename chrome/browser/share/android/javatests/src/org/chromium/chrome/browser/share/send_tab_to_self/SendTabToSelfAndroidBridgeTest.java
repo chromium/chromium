@@ -86,9 +86,7 @@ import java.util.function.Supplier;
 
 /** Tests for SendTabToSelfAndroidBridge */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class SendTabToSelfAndroidBridgeTest {
     private static final String URL = "https://www.google.com";
     private static final String TITLE = "Google";

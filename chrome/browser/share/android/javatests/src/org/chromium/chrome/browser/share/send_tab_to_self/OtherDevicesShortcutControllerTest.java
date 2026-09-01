@@ -50,7 +50,7 @@ import java.util.List;
 
 /** Unit tests for OtherDevicesShortcutController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
+@Config(sdk = Build.VERSION_CODES.R)
 @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS)
 public class OtherDevicesShortcutControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

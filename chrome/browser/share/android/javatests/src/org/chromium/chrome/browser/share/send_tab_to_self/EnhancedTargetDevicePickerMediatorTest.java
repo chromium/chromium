@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,7 +37,6 @@ import java.util.List;
 
 /** Unit tests for {@link EnhancedTargetDevicePickerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class EnhancedTargetDevicePickerMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
