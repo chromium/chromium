@@ -3427,6 +3427,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionReadingListMenuAddTab)
+          .SetText(l10n_util::GetStringUTF16(IDS_READING_LIST_MENU_ADD_TAB))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kListAltAddIcon
+                                                : kReadLaterAddOldIcon,
+              ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -3933,6 +3938,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionImportSettings)
+          .SetText(l10n_util::GetStringUTF16(IDS_IMPORT_SETTINGS_MENU_LABEL))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kMenuBookIcon
+                                                : kMenuBookChromeRefreshOldIcon,
+              ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4184,6 +4194,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowBookmarkBar)
+          .SetText(l10n_util::GetStringUTF16(IDS_SHOW_BOOKMARK_BAR))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kToolbarIcon
+                                                : kToolbarChromeRefreshOldIcon,
+              ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4241,6 +4256,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowBookmarkManager)
+          .SetText(l10n_util::GetStringUTF16(
+              features::IsMenuSimplificationEnabled() ? IDS_BOOKMARK_MANAGER_V2
+                                                      : IDS_BOOKMARK_MANAGER))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kBookmarkManagerIcon
+                                                : kBookmarksManagerOldIcon,
+              ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4924,8 +4946,8 @@ void BrowserActions::InitializeSubmenuActions() {
               bwi),
           kActionBookmarkBarSubmenu, IDS_BOOKMARK_BAR_SUBMENU_LABEL,
           IDS_BOOKMARK_BAR_SUBMENU_LABEL,
-          features::IsRoundedIconsEnabled() ? kStarIcon
-                                            : kBookmarksListsMenuOldIcon,
+          features::IsRoundedIconsEnabled() ? kToolbarIcon
+                                            : kToolbarChromeRefreshOldIcon,
           /*is_pinnable=*/false)
           .Build());
 

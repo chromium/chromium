@@ -77,6 +77,17 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionBookmarksSubmenu, u"Bookmarks and Lists");
   add_action(kActionBookmarkThisTab, u"Bookmark This Tab");
   add_action(kActionBookmarkAllTabs, u"Bookmark All Tabs");
+  add_action(kActionBookmarkBarSubmenu, u"Bookmark Bar");
+  add_action(kActionBookmarkBarSubmenuAlwaysHide, u"Always Hide");
+  add_action(kActionBookmarkBarSubmenuAlwaysShow, u"Always Show");
+  add_action(kActionBookmarkBarSubmenuOnlyOnNtp, u"Only on NTP");
+  add_action(kActionShowBookmarkBar, u"Show Bookmark Bar");
+  add_action(kActionSidePanelShowBookmarks, u"Bookmarks Side Panel");
+  add_action(kActionShowBookmarkManager, u"Bookmark Manager");
+  add_action(kActionImportSettings, u"Import Bookmarks and Settings");
+  add_action(kActionReadingListSubmenu, u"Reading List");
+  add_action(kActionReadingListMenuAddTab, u"Add Tab to Reading List");
+  add_action(kActionSidePanelShowReadingList, u"Show Reading List");
   add_action(kActionExtensionsSubmenu, u"Extensions");
   add_action(kActionExtensionsSubmenuManageExtensions, u"Manage Extensions");
   add_action(kActionExtensionsSubmenuVisitChromeWebStore,
