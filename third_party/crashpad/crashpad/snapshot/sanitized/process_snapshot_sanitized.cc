@@ -52,7 +52,11 @@ class StackReferencesAddressRange : public MemorySnapshot::Delegate {
   template <typename Pointer>
   bool ScanStackForPointers(void* data, size_t size) {
     size_t sp_offset;
-    if (!AssignIfInRange(&sp_offset, stack_pointer_ - stack_->Address())) {
+    // stack_pointer_ might point below the stack region if ProcessReaderLinux
+    // interpreted it as pointing to a guard page.
+    if (stack_pointer_ < stack_->Address()) {
+      sp_offset = 0;
+    } else if (!AssignIfInRange(&sp_offset, stack_pointer_ - stack_->Address())) {
       return false;
     }
     const size_t aligned_sp_offset =
