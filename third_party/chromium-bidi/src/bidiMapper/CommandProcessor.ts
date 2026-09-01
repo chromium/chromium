@@ -365,9 +365,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetLocaleOverrideParams(command.params),
         );
       case 'emulation.setMediaFeaturesOverride':
-        this.#parser.parseSetMediaFeaturesOverrideParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setMediaFeaturesOverride(
+          this.#parser.parseSetMediaFeaturesOverrideParams(command.params),
         );
       case 'emulation.setNetworkConditions':
         return await this.#emulationProcessor.setNetworkConditions(

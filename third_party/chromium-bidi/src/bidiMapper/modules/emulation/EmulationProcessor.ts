@@ -29,6 +29,18 @@ import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+// Media features supported by Blink's MediaFeatureOverrides:
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/css/media_feature_overrides.cc;l=124
+const SUPPORTED_MEDIA_FEATURES = new Set([
+  'color-gamut',
+  'forced-colors',
+  'prefers-color-scheme',
+  'prefers-contrast',
+  'prefers-reduced-data',
+  'prefers-reduced-motion',
+  'prefers-reduced-transparency',
+]);
+
 export class EmulationProcessor {
   #userContextStorage: UserContextStorage;
   #browsingContextStorage: BrowsingContextStorage;
@@ -163,6 +175,59 @@ export class EmulationProcessor {
             config.clientHints,
           ),
         ]);
+      }),
+    );
+    return {};
+  }
+
+  async setMediaFeaturesOverride(
+    params: Emulation.SetMediaFeaturesOverrideParameters,
+  ): Promise<EmptyResult> {
+    const unsupportedFeatures = Object.keys(params.features ?? {}).filter(
+      (feature) => !SUPPORTED_MEDIA_FEATURES.has(feature),
+    );
+    if (unsupportedFeatures.length > 0) {
+      throw new UnsupportedOperationException(
+        `Media feature(s) not supported: ${unsupportedFeatures.map((f) => `"${f}"`).join(', ')}`,
+      );
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          mediaFeatures: params.features,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        mediaFeatures: params.features,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        mediaFeatures: params.features,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setMediaFeaturesOverride(config.mediaFeatures ?? null);
       }),
     );
     return {};

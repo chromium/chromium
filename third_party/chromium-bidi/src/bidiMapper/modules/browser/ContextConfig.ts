@@ -53,6 +53,7 @@ export class ContextConfig {
     | null;
   locale?: string | null;
   maxTouchPoints?: number | null;
+  mediaFeatures?: Emulation.MediaFeatures | null;
   prerenderingDisabled?: boolean;
   screenArea?: Emulation.ScreenArea | null;
   screenOrientation?: Emulation.ScreenOrientation | null;
