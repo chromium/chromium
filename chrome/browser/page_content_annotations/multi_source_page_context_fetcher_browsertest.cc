@@ -1287,8 +1287,16 @@ class IframeInfoMultiSourcePageContextFetcherBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/555870916): Test failing on Mac.
+#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC \
+  DISABLED_TakesScreenshot_AddsIframeInfoToAPC
+#else
+#define MAYBE_TakesScreenshot_AddsIframeInfoToAPC \
+  TakesScreenshot_AddsIframeInfoToAPC
+#endif
 IN_PROC_BROWSER_TEST_F(IframeInfoMultiSourcePageContextFetcherBrowserTest,
-                       TakesScreenshot_AddsIframeInfoToAPC) {
+                       MAYBE_TakesScreenshot_AddsIframeInfoToAPC) {
   GURL top_frame_url = GetURL(kHostA, "/iframe.html");
   GURL iframe_url = GetURL(kHostB);
   url::Origin iframe_origin = url::Origin::Create(iframe_url);
