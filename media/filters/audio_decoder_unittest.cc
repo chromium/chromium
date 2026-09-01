@@ -5,23 +5,25 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_span.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
@@ -42,6 +44,7 @@
 #include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/filters/opus_audio_decoder.h"
+#include "media/formats/common/opus_constants.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -194,15 +197,16 @@ class AudioDecoderTest
         break;
 #endif
       default:
-        EXPECT_TRUE(false) << "Decoder is not supported by this test.";
-        break;
+        NOTREACHED() << "Decoder is not supported by this test.";
     }
   }
 
   AudioDecoderTest(const AudioDecoderTest&) = delete;
   AudioDecoderTest& operator=(const AudioDecoderTest&) = delete;
 
-  virtual ~AudioDecoderTest() {
+  ~AudioDecoderTest() override = default;
+
+  void TearDown() override {
     EXPECT_FALSE(pending_decode_);
     EXPECT_FALSE(pending_reset_);
   }
@@ -307,7 +311,7 @@ class AudioDecoderTest
 
   void SetReinitializeParams();
 
-  // Initializes the AudioFileReader from the `filename_` property.
+  // Initializes the AudioFileReader from `params_.filename`.
   void InitializeReader() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
@@ -317,15 +321,12 @@ class AudioDecoderTest
   }
 
   void Initialize() {
-    filename_ = params_.filename;
     InitializeReader();
 
     // Load the first packet and check its timestamp.
     auto packet = ScopedAVPacket::Allocate();
     ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
     EXPECT_EQ(params_.first_packet_pts, packet->pts);
-    start_timestamp_ = ConvertFromTimeBase(
-        reader_->GetAVStreamForTesting()->time_base, packet->pts);
 
     // Reset the reader back to the beginning.
     InitializeReader();
@@ -561,11 +562,9 @@ class AudioDecoderTest
   }
 
   size_t decoded_audio_size() const { return decoded_audio_.size(); }
-  base::TimeDelta start_timestamp() const { return start_timestamp_; }
   const DecoderStatus& last_decode_status() const {
     return last_decode_status_;
   }
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:
   AudioCodec codec() const { return params_.codec; }
@@ -576,6 +575,7 @@ class AudioDecoderTest
   base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   const AudioDecoderType decoder_type_;
 
   // Current TestParams used to initialize the test and decoder. The initial
@@ -592,13 +592,10 @@ class AudioDecoderTest
 
   NullMediaLog media_log_;
   scoped_refptr<DecoderBuffer> data_;
-  const char* filename_ = nullptr;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   bool pending_decode_ = false;
   bool pending_reset_ = false;
   DecoderStatus last_decode_status_ = DecoderStatus::Codes::kFailed;
-
-  base::TimeDelta start_timestamp_;
 };
 
 constexpr DataExpectations kBearOpusExpectations = {{
@@ -851,30 +848,30 @@ constexpr DataExpectations kIamfExpectations = {{
     {40000, 20000, nullptr}   // Timestamp 40ms, Duration 20ms
 }};
 
-static const uint8_t kIamf714ExtraData[] = {
-    0xf8, 0x06, 0x69, 0x61, 0x6d, 0x66, 0x00, 0x00, 0x00, 0x14, 0x00, 0x4f,
-    0x70, 0x75, 0x73, 0xc0, 0x07, 0xff, 0xfc, 0x01, 0x02, 0x01, 0x38, 0x00,
-    0x00, 0xbb, 0x80, 0x00, 0x00, 0x00, 0x08, 0x1c, 0x01, 0x00, 0x00, 0x07,
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x01, 0x01, 0x00, 0x80, 0xf7,
-    0x02, 0x00, 0xc0, 0x07, 0xc0, 0x07, 0x00, 0x00, 0x20, 0x70, 0x07, 0x05,
-    0x10, 0x41, 0x03, 0x01, 0x65, 0x6e, 0x2d, 0x75, 0x73, 0x00, 0x64, 0x65,
-    0x66, 0x61, 0x75, 0x6c, 0x74, 0x5f, 0x6d, 0x69, 0x78, 0x5f, 0x70, 0x72,
-    0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x00, 0x01,
-    0x01, 0x01, 0x37, 0x2e, 0x31, 0x2e, 0x34, 0x00, 0x40, 0x00, 0x65, 0x80,
-    0xf7, 0x02, 0x80, 0x00, 0x00, 0x64, 0x80, 0xf7, 0x02, 0x80, 0x00, 0x00,
-    0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00};
+constexpr auto kIamf714ExtraData = std::to_array<uint8_t>(
+    {0xf8, 0x06, 0x69, 0x61, 0x6d, 0x66, 0x00, 0x00, 0x00, 0x14, 0x00, 0x4f,
+     0x70, 0x75, 0x73, 0xc0, 0x07, 0xff, 0xfc, 0x01, 0x02, 0x01, 0x38, 0x00,
+     0x00, 0xbb, 0x80, 0x00, 0x00, 0x00, 0x08, 0x1c, 0x01, 0x00, 0x00, 0x07,
+     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x01, 0x01, 0x00, 0x80, 0xf7,
+     0x02, 0x00, 0xc0, 0x07, 0xc0, 0x07, 0x00, 0x00, 0x20, 0x70, 0x07, 0x05,
+     0x10, 0x41, 0x03, 0x01, 0x65, 0x6e, 0x2d, 0x75, 0x73, 0x00, 0x64, 0x65,
+     0x66, 0x61, 0x75, 0x6c, 0x74, 0x5f, 0x6d, 0x69, 0x78, 0x5f, 0x70, 0x72,
+     0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x00, 0x01,
+     0x01, 0x01, 0x37, 0x2e, 0x31, 0x2e, 0x34, 0x00, 0x40, 0x00, 0x65, 0x80,
+     0xf7, 0x02, 0x80, 0x00, 0x00, 0x64, 0x80, 0xf7, 0x02, 0x80, 0x00, 0x00,
+     0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00});
 
-static const uint8_t kIamfStereoExtraData[] = {
-    0xf8, 0x06, 0x69, 0x61, 0x6d, 0x66, 0x00, 0x00, 0x00, 0x14, 0x00,
-    0x4f, 0x70, 0x75, 0x73, 0xc0, 0x07, 0xff, 0xfc, 0x01, 0x02, 0x01,
-    0x38, 0x00, 0x00, 0xbb, 0x80, 0x00, 0x00, 0x00, 0x08, 0x0a, 0x01,
-    0x00, 0x00, 0x01, 0x00, 0x00, 0x20, 0x10, 0x01, 0x01, 0x10, 0x42,
-    0x03, 0x01, 0x65, 0x6e, 0x2d, 0x75, 0x73, 0x00, 0x64, 0x65, 0x66,
-    0x61, 0x75, 0x6c, 0x74, 0x5f, 0x6d, 0x69, 0x78, 0x5f, 0x70, 0x72,
-    0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x00,
-    0x01, 0x01, 0x01, 0x73, 0x74, 0x65, 0x72, 0x65, 0x6f, 0x00, 0x00,
-    0x00, 0x65, 0x80, 0xf7, 0x02, 0x80, 0x00, 0x00, 0x64, 0x80, 0xf7,
-    0x02, 0x80, 0x00, 0x00, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00};
+constexpr auto kIamfStereoExtraData = std::to_array<uint8_t>(
+    {0xf8, 0x06, 0x69, 0x61, 0x6d, 0x66, 0x00, 0x00, 0x00, 0x14, 0x00,
+     0x4f, 0x70, 0x75, 0x73, 0xc0, 0x07, 0xff, 0xfc, 0x01, 0x02, 0x01,
+     0x38, 0x00, 0x00, 0xbb, 0x80, 0x00, 0x00, 0x00, 0x08, 0x0a, 0x01,
+     0x00, 0x00, 0x01, 0x00, 0x00, 0x20, 0x10, 0x01, 0x01, 0x10, 0x42,
+     0x03, 0x01, 0x65, 0x6e, 0x2d, 0x75, 0x73, 0x00, 0x64, 0x65, 0x66,
+     0x61, 0x75, 0x6c, 0x74, 0x5f, 0x6d, 0x69, 0x78, 0x5f, 0x70, 0x72,
+     0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x00,
+     0x01, 0x01, 0x01, 0x73, 0x74, 0x65, 0x72, 0x65, 0x6f, 0x00, 0x00,
+     0x00, 0x65, 0x80, 0xf7, 0x02, 0x80, 0x00, 0x00, 0x64, 0x80, 0xf7,
+     0x02, 0x80, 0x00, 0x00, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00});
 
 // Only IAMF Audio Streams can be decoded by this decoder.
 constexpr TestParams kIamfTestParams[] = {
@@ -1000,30 +997,23 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
   }
 }
 
-TEST_P(AudioDecoderTest, VerifyIamfOutputLayout) {
-  if (!IsIamfTest()) {
-    GTEST_SKIP() << "Only for IAMF";
-  }
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+class IamfDecodingTest : public AudioDecoderTest {};
+
+TEST_P(IamfDecodingTest, VerifyOutputLayout) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   ASSERT_NO_FATAL_FAILURE(Decode());
   EXPECT_TRUE(last_decode_status().is_ok());
   VerifyIamfOutputLayout();
 }
+#endif
+
+class OpusDecodingTest : public AudioDecoderTest {};
 
 // Verifies that disabling decoder delay discard (disable_discard_decoder_delay)
 // causes the decoder to output all decoded samples (including the initial
 // codec delay / pre-skip samples) rather than discarding them.
-TEST_P(AudioDecoderTest, OpusDisableDiscardDecoderDelay) {
-  if (codec() != AudioCodec::kOpus) {
-    GTEST_SKIP() << "Only for Opus";
-  }
-
-  if (decoder_type() != AudioDecoderType::kOpus &&
-      decoder_type() != AudioDecoderType::kFFmpeg) {
-    GTEST_SKIP()
-        << "Decoder type does not support disable_discard_decoder_delay";
-  }
-
+TEST_P(OpusDecodingTest, DisableDiscardDecoderDelay) {
   // 1. Decode the entire file with default discard_decoder_delay enabled.
   ASSERT_NO_FATAL_FAILURE(Initialize());
   DecodeAllPackets();
@@ -1050,16 +1040,134 @@ TEST_P(AudioDecoderTest, OpusDisableDiscardDecoderDelay) {
   EXPECT_EQ(total_frames_disabled_discard - total_frames_default, 312);
 }
 
-TEST_P(AudioDecoderTest, OpusMismatchedExtraDataChannels) {
-  if (codec() != AudioCodec::kOpus ||
-      decoder_type() != AudioDecoderType::kOpus) {
-    GTEST_SKIP() << "Only for OpusAudioDecoder";
-  }
+TEST_P(OpusDecodingTest, MultichannelVorbis) {
+  struct MultichannelTestCase {
+    ChannelLayout layout;
+    int channels;
+    uint8_t streams;
+    uint8_t coupled;
+    std::vector<uint8_t> stream_map;
+  };
 
+  const MultichannelTestCase kTestCases[] = {
+      // 3 channels: FL, FR, FC (Vorbis mapping: 2 streams, 1 coupled)
+      {CHANNEL_LAYOUT_SURROUND, 3, 2, 1, {0, 2, 1}},
+      // 4 channels: FL, FR, BL, BR (Vorbis mapping: 2 streams, 2 coupled)
+      {CHANNEL_LAYOUT_QUAD, 4, 2, 2, {0, 1, 2, 3}},
+      // 5 channels: FL, FR, FC, BL, BR (Vorbis mapping: 3 streams, 2 coupled)
+      {CHANNEL_LAYOUT_5_0_BACK, 5, 3, 2, {0, 4, 1, 2, 3}},
+      // 6 channels: 5.1 Back (Vorbis mapping: 4 streams, 2 coupled)
+      {CHANNEL_LAYOUT_5_1_BACK, 6, 4, 2, {0, 4, 1, 2, 3, 5}},
+      // 7 channels: 6.1 (Vorbis mapping: 5 streams, 2 coupled)
+      {CHANNEL_LAYOUT_6_1, 7, 5, 2, {0, 4, 1, 2, 3, 5, 6}},
+      // 8 channels: 7.1 (Vorbis mapping: 6 streams, 2 coupled)
+      {CHANNEL_LAYOUT_7_1, 8, 6, 2, {0, 6, 1, 2, 3, 4, 5, 7}},
+  };
+
+  for (const auto& [layout, channels, streams, coupled, stream_map] :
+       kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("Channels: %d, Layout: %s", channels,
+                                    ChannelLayoutToString(layout)));
+
+    std::vector<uint8_t> extra_data = {
+        'O',
+        'p',
+        'u',
+        's',
+        'H',
+        'e',
+        'a',
+        'd',                             // Magic
+        1,                               // Version
+        static_cast<uint8_t>(channels),  // Channels
+        0x38,
+        0x01,  // Skip samples = 312
+        0x80,
+        0xBB,
+        0x00,
+        0x00,  // Sample rate = 48000
+        0x00,
+        0x00,  // Gain = 0
+        1,     // Mapping family = 1 (Vorbis)
+        streams,
+        coupled,
+    };
+    base::Extend(extra_data, stream_map);
+
+    AudioDecoderConfig config;
+    config.Initialize(AudioCodec::kOpus, kSampleFormatF32,
+                      ChannelLayoutConfig(layout, channels), 48000, extra_data,
+                      EncryptionScheme::kUnencrypted, base::TimeDelta(), 312);
+
+    InitializeDecoderWithResult(config, true);
+  }
+}
+
+TEST_P(OpusDecodingTest, MultichannelAmbisonicsAndDiscrete) {
+  struct NonVorbisTestCase {
+    uint8_t family;
+    int channels;
+    uint8_t streams;
+    uint8_t coupled;
+    std::vector<uint8_t> stream_map;
+  };
+
+  const NonVorbisTestCase kTestCases[] = {
+      // Family 2: Ambisonics (4 channels, first order)
+      {2, 4, 4, 0, {0, 1, 2, 3}},
+      // Family 255: Discrete / custom (4 channels)
+      {255, 4, 4, 0, {0, 1, 2, 3}},
+      // Family 255: Discrete / custom (6 channels)
+      {255, 6, 6, 0, {0, 1, 2, 3, 4, 5}},
+  };
+
+  for (const auto& [family, channels, streams, coupled, stream_map] :
+       kTestCases) {
+    SCOPED_TRACE(
+        base::StringPrintf("Family: %d, Channels: %d", family, channels));
+
+    std::vector<uint8_t> extra_data = {
+        'O',
+        'p',
+        'u',
+        's',
+        'H',
+        'e',
+        'a',
+        'd',                             // Magic
+        1,                               // Version
+        static_cast<uint8_t>(channels),  // Channels
+        0x38,
+        0x01,  // Skip samples = 312
+        0x80,
+        0xBB,
+        0x00,
+        0x00,  // Sample rate = 48000
+        0x00,
+        0x00,  // Gain = 0
+        family,
+        streams,
+        coupled,
+    };
+    base::Extend(extra_data, stream_map);
+
+    AudioDecoderConfig config;
+    config.Initialize(AudioCodec::kOpus, kSampleFormatF32,
+                      ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, channels),
+                      48000, extra_data, EncryptionScheme::kUnencrypted,
+                      base::TimeDelta(), 312);
+
+    InitializeDecoderWithResult(config, true);
+  }
+}
+
+class OpusAudioDecoderTest : public AudioDecoderTest {};
+
+TEST_P(OpusAudioDecoderTest, MismatchedExtraDataChannels) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
   // Construct Opus extradata for 2 channels with Vorbis mapping family 1.
-  const uint8_t extra_data_vorbis2ch[] = {
+  constexpr auto kExtraDataVorbis2ch = std::to_array<uint8_t>({
       'O',  'p',  'u',  's',  'H', 'e', 'a', 'd',  // Magic
       1,                                           // Version
       2,                                           // Channels = 2
@@ -1070,17 +1178,144 @@ TEST_P(AudioDecoderTest, OpusMismatchedExtraDataChannels) {
       1,       // Streams = 1
       1,       // Coupled = 1
       0,    1  // Stream map (2 bytes)
-  };
+  });
 
   AudioDecoderConfig config;
   config.Initialize(AudioCodec::kOpus, kSampleFormatF32,
                     ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>(),
                     48000,
-                    std::vector<uint8_t>(std::begin(extra_data_vorbis2ch),
-                                         std::end(extra_data_vorbis2ch)),
+                    std::vector<uint8_t>(kExtraDataVorbis2ch.begin(),
+                                         kExtraDataVorbis2ch.end()),
                     EncryptionScheme::kUnencrypted, base::TimeDelta(), 312);
 
   InitializeDecoderWithResult(config, false);
+}
+
+TEST_P(OpusAudioDecoderTest, InconsistentChannelMappingSucceeds) {
+  // 6 channels, but streams=3, coupled=2 (3 + 2 = 5 != 6).
+  // FFmpeg and libopus allow it with a warning if stream_map references valid
+  // streams.
+  constexpr auto kExtraDataInconsistent = std::to_array<uint8_t>({
+      'O',  'p',  'u',  's',  'H', 'e', 'a', 'd',  // Magic
+      1,                                           // Version
+      6,                                           // Channels = 6
+      0x38, 0x01,                                  // Skip samples = 312
+      0x80, 0xBB, 0x00, 0x00,                      // Sample rate = 48000
+      0x00, 0x00,                                  // Gain = 0
+      1,                                           // Mapping family = 1
+      3,                                           // Streams = 3
+      2,                                           // Coupled = 2
+      0,    4,    1,    2,    3,   4               // Stream map (6 bytes)
+  });
+
+  AudioDecoderConfig config;
+  config.Initialize(AudioCodec::kOpus, kSampleFormatF32,
+                    ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1_BACK>(),
+                    48000,
+                    std::vector<uint8_t>(kExtraDataInconsistent.begin(),
+                                         kExtraDataInconsistent.end()),
+                    EncryptionScheme::kUnencrypted, base::TimeDelta(), 312);
+
+  InitializeDecoderWithResult(config, true);
+}
+
+TEST_P(OpusAudioDecoderTest, InvalidExtraDataHeaderFails) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+
+  // 1. Truncated extra data (< 19 bytes header).
+  AudioDecoderConfig config;
+  config.Initialize(AudioCodec::kOpus, kSampleFormatF32,
+                    ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_STEREO>(),
+                    48000, {0x00, 0x01, 0x02}, EncryptionScheme::kUnencrypted,
+                    base::TimeDelta(), 0);
+  InitializeDecoderWithResult(config, false);
+
+  // 2. Unsupported channel mapping family (e.g. 42).
+  constexpr auto kBadMapping = std::to_array<uint8_t>({
+      'O', 'p', 'u', 's', 'H', 'e', 'a', 'd',  // Magic
+      1,                                       // Version
+      2,                                       // Channels = 2
+      0x38, 0x01,                              // Skip samples = 312
+      0x80, 0xBB, 0x00, 0x00,                  // Sample rate = 48000
+      0x00, 0x00,                              // Gain = 0
+      42                                       // Invalid mapping family
+  });
+  config.Initialize(
+      AudioCodec::kOpus, kSampleFormatF32,
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_STEREO>(), 48000,
+      std::vector<uint8_t>(kBadMapping.begin(), kBadMapping.end()),
+      EncryptionScheme::kUnencrypted, base::TimeDelta(), 0);
+  InitializeDecoderWithResult(config, false);
+}
+
+TEST(OpusAudioDecoderStandaloneTest, VorbisChannelMappingVerification) {
+  // RFC 7845 Section 5.1.1.2 defines the Vorbis channel order:
+  // 1 channel: mono (FC)
+  // 2 channels: stereo (FL, FR)
+  // 3 channels: 3.0 (FL, FC, FR)
+  // 4 channels: quad (FL, FR, BL, BR)
+  // 5 channels: 5.0 (FL, FC, FR, BL, BR)
+  // 6 channels: 5.1 (FL, FC, FR, BL, BR, LFE)
+  // 7 channels: 6.1 (FL, FC, FR, SL, SR, BC, LFE)
+  // 8 channels: 7.1 (FL, FC, FR, SL, SR, BL, BR, LFE)
+  //
+  // Chromium's channel ordering (matching FFmpeg):
+  // 1 channel: FC
+  // 2 channels: FL, FR
+  // 3 channels: FL, FR, FC
+  // 4 channels: FL, FR, BL, BR
+  // 5 channels: FL, FR, FC, BL, BR
+  // 6 channels: FL, FR, FC, LFE, BL, BR
+  // 7 channels: FL, FR, FC, LFE, BC, SL, SR
+  // 8 channels: FL, FR, FC, LFE, BL, BR, SL, SR
+
+  struct MappingTestCase {
+    int channels;
+    // Standard stream map from RFC 7845 Table 2 (Vorbis header order).
+    std::vector<uint8_t> rfc7845_stream_map;
+    // Expected stream map translated into Chromium/FFmpeg output channel order.
+    std::vector<uint8_t> expected_chromium_map;
+  };
+
+  const MappingTestCase kTestCases[] = {
+      // 1ch: Vorbis [FC] -> Chromium [FC]
+      {1, {0}, {0}},
+      // 2ch: Vorbis [FL, FR] -> Chromium [FL, FR]
+      {2, {0, 1}, {0, 1}},
+      // 3ch: Vorbis [FL, FC, FR] -> Chromium [FL, FR, FC]
+      {3, {0, 2, 1}, {0, 1, 2}},
+      // 4ch: Vorbis [FL, FR, BL, BR] -> Chromium [FL, FR, BL, BR]
+      {4, {0, 1, 2, 3}, {0, 1, 2, 3}},
+      // 5ch: Vorbis [FL, FC, FR, BL, BR] -> Chromium [FL, FR, FC, BL, BR]
+      {5, {0, 4, 1, 2, 3}, {0, 1, 4, 2, 3}},
+      // 6ch (5.1): Vorbis [FL, FC, FR, BL, BR, LFE] -> Chromium [FL, FR, FC,
+      // LFE, BL, BR]
+      {6, {0, 4, 1, 2, 3, 5}, {0, 1, 4, 5, 2, 3}},
+      // 7ch (6.1): Vorbis [FL, FC, FR, SL, SR, BC, LFE] -> Chromium [FL, FR,
+      // FC, LFE, BC, SL, SR]
+      {7, {0, 4, 1, 2, 3, 5, 6}, {0, 1, 4, 6, 5, 2, 3}},
+      // 8ch (7.1): Vorbis [FL, FC, FR, SL, SR, BL, BR, LFE] -> Chromium [FL,
+      // FR, FC, LFE, BL, BR, SL, SR]
+      {8, {0, 6, 1, 2, 3, 4, 5, 7}, {0, 1, 6, 7, 4, 5, 2, 3}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("Channels: %d", test_case.channels));
+    ASSERT_EQ(test_case.rfc7845_stream_map.size(),
+              static_cast<size_t>(test_case.channels));
+    ASSERT_EQ(test_case.expected_chromium_map.size(),
+              static_cast<size_t>(test_case.channels));
+
+    const auto layout_offsets =
+        GetVorbisToChromiumChannelLayoutOffsets(test_case.channels);
+
+    std::vector<uint8_t> remapped(test_case.channels);
+    for (int ch = 0; ch < test_case.channels; ++ch) {
+      remapped[ch] = test_case.rfc7845_stream_map[layout_offsets[ch]];
+    }
+
+    EXPECT_EQ(remapped, test_case.expected_chromium_map);
+  }
 }
 
 TEST_P(AudioDecoderTest, Decode) {
@@ -1092,7 +1327,7 @@ TEST_P(AudioDecoderTest, Decode) {
 TEST_P(AudioDecoderTest, MismatchedSubsampleBuffer) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   DecodeBuffer(CreateMismatchedBufferForTest());
-  EXPECT_TRUE(!last_decode_status().is_ok());
+  EXPECT_FALSE(last_decode_status().is_ok());
 }
 
 // The AudioDecoders do not support encrypted buffers since they were
@@ -1100,7 +1335,7 @@ TEST_P(AudioDecoderTest, MismatchedSubsampleBuffer) {
 TEST_P(AudioDecoderTest, EncryptedBuffer) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   DecodeBuffer(CreateFakeEncryptedBuffer());
-  EXPECT_TRUE(!last_decode_status().is_ok());
+  EXPECT_FALSE(last_decode_status().is_ok());
 }
 
 TEST_P(AudioDecoderTest, DecodeEOSFirst) {
@@ -1120,6 +1355,12 @@ TEST_P(AudioDecoderTest, DecodeEOSFirstThenResetAndDecode) {
 
 TEST_P(AudioDecoderTest, Reset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
+  ResetDecoder();
+}
+
+TEST_P(AudioDecoderTest, MultipleResets) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  ResetDecoder();
   ResetDecoder();
 }
 
@@ -1203,6 +1444,17 @@ INSTANTIATE_TEST_SUITE_P(Opus,
                          Combine(Values(AudioDecoderType::kOpus),
                                  ValuesIn(kOpusTestParams)));
 
+INSTANTIATE_TEST_SUITE_P(OpusDecoding,
+                         OpusDecodingTest,
+                         Combine(Values(AudioDecoderType::kOpus,
+                                        AudioDecoderType::kFFmpeg),
+                                 ValuesIn(kOpusTestParams)));
+
+INSTANTIATE_TEST_SUITE_P(OpusOnly,
+                         OpusAudioDecoderTest,
+                         Combine(Values(AudioDecoderType::kOpus),
+                                 Values(kBearOpusParams)));
+
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 INSTANTIATE_TEST_SUITE_P(Symphonia,
                          AudioDecoderTest,
@@ -1213,6 +1465,11 @@ INSTANTIATE_TEST_SUITE_P(Symphonia,
 #if BUILDFLAG(ENABLE_IAMF_TOOLS)
 INSTANTIATE_TEST_SUITE_P(Iamf,
                          AudioDecoderTest,
+                         Combine(Values(AudioDecoderType::kIamf),
+                                 ValuesIn(kIamfTestParams)));
+
+INSTANTIATE_TEST_SUITE_P(IamfDecoding,
+                         IamfDecodingTest,
                          Combine(Values(AudioDecoderType::kIamf),
                                  ValuesIn(kIamfTestParams)));
 #endif
@@ -1254,7 +1511,7 @@ TEST(SymphoniaAudioDecoderStandaloneTest, ToSymphoniaPacketNullTimestamp) {
   auto buffer = base::MakeRefCounted<DecoderBuffer>(10);
   buffer->set_timestamp(base::Microseconds(100));
   SymphoniaPacket packet = ToSymphoniaPacket(*buffer, std::nullopt);
-  EXPECT_EQ(packet.timestamp_us, 0uL);
+  EXPECT_EQ(packet.timestamp_us, 0u);
 }
 
 TEST(SymphoniaAudioDecoderStandaloneTest, DecodeTruncatedBufferFails) {

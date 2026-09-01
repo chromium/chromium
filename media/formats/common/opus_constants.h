@@ -5,7 +5,14 @@
 #ifndef MEDIA_FORMATS_COMMON_OPUS_CONSTANTS_H_
 #define MEDIA_FORMATS_COMMON_OPUS_CONSTANTS_H_
 
+#include <stddef.h>
 #include <stdint.h>
+
+#include <array>
+
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 namespace media {
 
@@ -84,9 +91,53 @@ enum : uint8_t {
   OPUS_EXTRADATA_STREAM_MAP_OFFSET = OPUS_EXTRADATA_NUM_STREAMS_OFFSET + 2,
 };
 
-// Opus internal to Vorbis channel order mapping written in the header.
-extern const uint8_t kOpusVorbisChannelMap[OPUS_MAX_VORBIS_CHANNELS]
-                                          [OPUS_MAX_VORBIS_CHANNELS];
+// Returns the Vorbis-to-Chromium channel layout offset mapping (RFC 7845
+// Section 5.1.1.2) for a stream with `channels` (1 to 8), matching FFmpeg's
+// ff_vorbis_channel_layout_offsets.
+//
+// Used by OpusAudioDecoder to remap the Vorbis channel mapping table into
+// Chromium's expected channel order for libopus multistream decoding.
+//
+// Slices the exact span of length `channels`.
+ALWAYS_INLINE constexpr base::span<const uint8_t>
+GetVorbisToChromiumChannelLayoutOffsets(size_t channels) {
+  CHECK_GE(channels, 1u);
+  CHECK_LE(channels, static_cast<size_t>(OPUS_MAX_VORBIS_CHANNELS));
+
+  // Vorbis channel order per RFC 7845 Section 5.1.1.2:
+  //   1ch: FC(0)
+  //   2ch: FL(0), FR(1)
+  //   3ch: FL(0), FC(1), FR(2)
+  //   4ch: FL(0), FR(1), BL(2), BR(3)
+  //   5ch: FL(0), FC(1), FR(2), BL(3), BR(4)
+  //   6ch: FL(0), FC(1), FR(2), BL(3), BR(4), LFE(5)
+  //   7ch: FL(0), FC(1), FR(2), SL(3), SR(4), BC(5), LFE(6)
+  //   8ch: FL(0), FC(1), FR(2), SL(3), SR(4), BL(5), BR(6), LFE(7)
+  //
+  // Values below map Chromium channel order to Vorbis channel indices:
+  static constexpr std::array<std::array<uint8_t, OPUS_MAX_VORBIS_CHANNELS>,
+                              OPUS_MAX_VORBIS_CHANNELS>
+      kOffsets = {{
+          // 1ch (Mono):   FC
+          {0},
+          // 2ch (Stereo): FL, FR
+          {0, 1},
+          // 3ch (3.0):    FL, FR, FC
+          {0, 2, 1},
+          // 4ch (Quad):   FL, FR, BL, BR
+          {0, 1, 2, 3},
+          // 5ch (5.0):    FL, FR, FC, BL, BR
+          {0, 2, 1, 3, 4},
+          // 6ch (5.1):    FL, FR, FC, LFE, BL, BR
+          {0, 2, 1, 5, 3, 4},
+          // 7ch (6.1):    FL, FR, FC, LFE, BC, SL, SR
+          {0, 2, 1, 6, 5, 3, 4},
+          // 8ch (7.1):    FL, FR, FC, LFE, BL, BR, SL, SR
+          {0, 2, 1, 7, 5, 6, 3, 4},
+      }};
+
+  return base::span(kOffsets[channels - 1]).first(channels);
+}
 
 }  // namespace media
 
