@@ -294,6 +294,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testShowEnhancedDeviceListIfSignedIn_activitylessSignin() {
         // Sign in and wait for the device list to be downloaded.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -325,6 +326,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_multipleDevicesSelection() {
         // Inject two more devices (in addition to the one in setUp) with an older timestamp,
         // so that the default device ("Device") is sorted first and auto-selected.
@@ -393,6 +395,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_halfStateOverflowWithManyDevices() {
         // Inject 6 more devices (in addition to the one in setUp) with an older timestamp,
         // so there are 7 devices total - more than will fit on a regular screen.
@@ -436,6 +439,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_exactlyFourDevicesOverflowBoundary() {
         for (int i = 1; i <= 3; i++) {
             long olderTime = mSetUpTimeMs - i * 1000;
@@ -475,6 +479,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_overflowTransitionToFullState() {
         for (int i = 1; i <= 5; i++) {
             long olderTime = mSetUpTimeMs - i * 1000;
@@ -549,6 +554,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_manageDevicesClick() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         CriteriaHelper.pollUiThread(
@@ -663,6 +669,7 @@ public class SendTabToSelfCoordinatorTest {
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET,
         ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testSnackbarShownAfterSend() {
         // Sign in and wait for the device list to be downloaded.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -914,6 +921,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_landscapeMode() {
         mSyncTestRule
                 .getFakeServerHelper()
