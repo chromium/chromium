@@ -179,8 +179,7 @@ class InfoBarUiTest : public TestInfoBar,
            {"MigratedObsoleteSystem", "true"},
            {"MigratedThemeInstalled", "true"},
            {"MigratedExtensionDevTools", "true"},
-           {"MigratedAutomation", "true"},
-           {"MigratedBadFlags", "true"}});
+           {"MigratedAutomation", "true"}});
     } else {
       feature_list_.InitAndDisableFeature(
           infobars::kCentralizedInfoBarFramework);

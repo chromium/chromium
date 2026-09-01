@@ -19,11 +19,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
-                   kMigratedBadFlags,
-                   &kCentralizedInfoBarFramework,
-                   false);
-
-BASE_FEATURE_PARAM(bool,
                    kMigratedCollectedCookies,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -124,8 +119,6 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
   switch (infobar_id) {
     case InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE:
       return &kMigratedAutomation;
-    case InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE:
-      return &kMigratedBadFlags;
     case InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE:
       return &kMigratedCollectedCookies;
     case InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE:
