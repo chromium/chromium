@@ -32,8 +32,20 @@ bool ContainerQueryList::matches() {
   element_->GetDocument().UpdateStyleAndLayoutForNode(
       element_, DocumentUpdateReason::kJavaScript);
 
-  UpdateMatches();
-  return matches_;
+  if (!evaluated_) {
+    UpdateMatches();
+    return matches_;
+  }
+
+  return ComputeMatches();
+}
+
+bool ContainerQueryList::UpdateMatches() {
+  bool current = ComputeMatches();
+  bool changed = evaluated_ && current != matches_;
+  matches_ = current;
+  evaluated_ = true;
+  return changed;
 }
 
 String ContainerQueryList::query() const {
@@ -43,11 +55,9 @@ String ContainerQueryList::query() const {
   return container_query_set_->ToString();
 }
 
-void ContainerQueryList::UpdateMatches() {
-  matches_ = false;
-
+bool ContainerQueryList::ComputeMatches() {
   if (!container_query_set_) {
-    return;
+    return false;
   }
 
   Element* starting_element = FlatTreeTraversal::ParentElement(*element_);
@@ -62,10 +72,11 @@ void ContainerQueryList::UpdateMatches() {
     if (ContainerQueryEvaluator::EvalAndAdd(starting_element,
                                             StyleRecalcContext(),
                                             *container_query, cache, result)) {
-      matches_ = true;
-      break;
+      return true;
     }
   }
+
+  return false;
 }
 
 bool ContainerQueryList::HasPendingActivity() const {

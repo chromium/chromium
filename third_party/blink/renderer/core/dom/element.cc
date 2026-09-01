@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_query_list.h"
+#include "third_party/blink/renderer/core/css/container_query_list_controller.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -3499,8 +3500,14 @@ ContainerQueryList* Element::matchContainer(const String& query) {
       MakeGarbageCollected<CSSParserContext>(GetDocument());
   auto* container_queries =
       ContainerQueryParser::ParseContainerQuerySet(query, *context);
-  return MakeGarbageCollected<ContainerQueryList>(
+  auto* list = MakeGarbageCollected<ContainerQueryList>(
       GetDocument().GetExecutionContext(), container_queries, this);
+  if (auto* window =
+          DynamicTo<LocalDOMWindow>(GetDocument().GetExecutionContext())) {
+    ContainerQueryListController::From(*window)->AddContainerQueryList(*this,
+                                                                       *list);
+  }
+  return list;
 }
 
 const AtomicString& Element::computedRole() {

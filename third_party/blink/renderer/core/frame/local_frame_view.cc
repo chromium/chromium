@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/css/container_query_list_controller.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -2467,6 +2468,9 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   // RunPostLayoutSnapshotClientSteps must not run more than once.
   bool should_run_post_layout_snapshot_client_steps = true;
 
+  // RunContainerQueryListSteps must not run more than once.
+  bool should_run_container_query_list_steps = true;
+
   auto old_force_commit_criteria = ForceCommitCriteria();
 
   // Run style, layout, compositing and prepaint lifecycle phases and deliver
@@ -2602,6 +2606,31 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
           });
     }
     // Only run the rest of the steps here if resize observer is done.
+    if (needs_to_repeat_lifecycle) {
+      if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
+        should_run_post_layout_snapshot_client_steps = true;
+      }
+      continue;
+    }
+
+    // TODO(crbug.com/40887402): The spec PR has no termination rule, so a
+    // change listener that keeps changing its container's matches state would
+    // re-run these steps indefinitely without this flag (cf. ResizeObserver's
+    // depth limit).
+    // Therefore, limit them to at most once per lifecycle update for now.
+    // To be discussed with the CSSWG.
+    if (should_run_container_query_list_steps &&
+        RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
+      should_run_container_query_list_steps = false;
+      ScriptForbiddenScope::AllowUserAgentScript allow_script;
+      base::AutoReset<DocumentLifecycle::LifecycleState> saved_target_state(
+          &target_state_, DocumentLifecycle::kUninitialized);
+      ForAllNonThrottledLocalFrameViews(
+          [&needs_to_repeat_lifecycle](LocalFrameView& frame_view) {
+            bool result = frame_view.RunContainerQueryListSteps();
+            needs_to_repeat_lifecycle = needs_to_repeat_lifecycle || result;
+          });
+    }
     if (needs_to_repeat_lifecycle) {
       if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
         should_run_post_layout_snapshot_client_steps = true;
@@ -2769,6 +2798,21 @@ bool LocalFrameView::RunResizeObserverSteps(
       engine.UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift();
 
   return NotifyResizeObservers() || re_run_lifecycles;
+}
+
+bool LocalFrameView::RunContainerQueryListSteps() {
+  if (!RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
+    return false;
+  }
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  if (!window) {
+    return false;
+  }
+  if (ContainerQueryListController* controller =
+          ContainerQueryListController::FromIfExists(*window)) {
+    return controller->NotifyChanges();
+  }
+  return false;
 }
 
 void LocalFrameView::ClearResizeObserverLimit() {

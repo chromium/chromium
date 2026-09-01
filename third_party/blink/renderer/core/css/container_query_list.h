@@ -32,6 +32,11 @@ class CORE_EXPORT ContainerQueryList final
   bool matches();
   String query() const;
 
+  bool UpdateMatches();
+  Element* GetElement() const { return element_.Get(); }
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
+
   void Trace(Visitor*) const override;
 
   bool HasPendingActivity() const final;
@@ -42,8 +47,11 @@ class CORE_EXPORT ContainerQueryList final
   ExecutionContext* GetExecutionContext() const override;
 
  private:
-  void UpdateMatches();
+  bool ComputeMatches();
 
+  // Evaluation is deferred to avoid an update of style and layout at
+  // construction; it runs on 1) the rendering step or 2) a matches() read.
+  bool evaluated_ = false;
   bool matches_ = false;
   Member<const ContainerQuerySet> container_query_set_;
   Member<Element> element_;
