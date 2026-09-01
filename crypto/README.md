@@ -40,8 +40,7 @@ of safety.
 * If you need to sign with a private key, use ML-DSA-44 via crypto/sign.
 * If you need to sign with a symmetric key, use HMAC-SHA256 via crypto/hmac.
 * If you need to hash, use SHA256 via crypto/hash.
-* If you need to do key exchange, use ML-KEM-768, which does not yet have a
-  //crypto API. TODO(https://crbug.com/549892109): add one.
+* If you need to do key exchange, use ML-KEM-768 via crypto/kem.
 
 ## Advice For Clients
 
