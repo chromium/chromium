@@ -5859,6 +5859,11 @@ crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-lis
 
 # Grid-lanes crossing gap width does not account for overlapping gutters.
 crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-inset-overlapping-gutters-percentage.html [ Failure ]
+crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-inset-overlapping-gutters-percentage.html [ Failure ]
+
+# Grid-lanes main-gap overlap-join does not account for crossing rule width.
+crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-inset-overlap-join.html [ Failure ]
+crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-inset-overlap-join.html [ Failure ]
 
 ### End of gap decoration test failures
 
