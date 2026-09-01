@@ -38,7 +38,6 @@
   },
   "chromium": {
     "exclusions": [
-      ".*/README.chromium",
       "buildtools/checkdeps/.*",
       "chrome/android/profiles/newest.txt",
       "chrome/browser/resources/chromeos/about_os_credits.html",
