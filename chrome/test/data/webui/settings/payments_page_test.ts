@@ -157,6 +157,7 @@ suite('PaymentsPage', function() {
   test('verifyTypesBlockedEnterprisePolicy', async function() {
     loadTimeData.overrideValues({
       showIbansSettings: false,
+      AutofillSettingsEnterprisePolicyEnabled: true,
     });
     const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
@@ -178,6 +179,7 @@ suite('PaymentsPage', function() {
   test('verifyTypesBlockedAllEnterprisePolicy', async function() {
     loadTimeData.overrideValues({
       showIbansSettings: false,
+      AutofillSettingsEnterprisePolicyEnabled: true,
     });
     const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
@@ -199,12 +201,35 @@ suite('PaymentsPage', function() {
   test('verifyTypesBlockedEnterprisePolicyNegativeTest', async function() {
     loadTimeData.overrideValues({
       showIbansSettings: false,
+      AutofillSettingsEnterprisePolicyEnabled: true,
     });
     const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
           credit_card_enabled: {value: true},
           types_blocked: {
             value: [{url_pattern: '*', blocked_types: ['contact_info']}],
+          },
+        });
+
+    assertFalse(page.$.autofillCreditCardToggle.controlDisabled());
+    assertTrue(page.$.autofillCreditCardToggle.checked);
+
+    const addCreditCardButton =
+        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+    assertTrue(!!addCreditCardButton);
+    assertFalse(addCreditCardButton.disabled);
+  });
+
+  test('verifyTypesBlockedIgnoredWhenFlagDisabled', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+      AutofillSettingsEnterprisePolicyEnabled: false,
+    });
+    const page = await createPaymentsPage(
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
+          credit_card_enabled: {value: true},
+          types_blocked: {
+            value: [{url_pattern: '*', blocked_types: ['payments']}],
           },
         });
 

@@ -175,6 +175,9 @@ suite('ContactInfoPageUiTest', function() {
   });
 
   test('AutofillTypesBlockedPolicy', async function() {
+    loadTimeData.overrideValues({
+      AutofillSettingsEnterprisePolicyEnabled: true,
+    });
     const page = await createContactInfoPage([], {
       profile_enabled: {value: true},
       types_blocked: {
@@ -207,6 +210,9 @@ suite('ContactInfoPageUiTest', function() {
   });
 
   test('AutofillTypesBlockedAllPolicy', async function() {
+    loadTimeData.overrideValues({
+      AutofillSettingsEnterprisePolicyEnabled: true,
+    });
     const page = await createContactInfoPage([], {
       profile_enabled: {value: true},
       types_blocked: {
@@ -223,10 +229,32 @@ suite('ContactInfoPageUiTest', function() {
   });
 
   test('AutofillTypesBlockedPolicyNegativeTest', async function() {
+    loadTimeData.overrideValues({
+      AutofillSettingsEnterprisePolicyEnabled: true,
+    });
     const page = await createContactInfoPage([], {
       profile_enabled: {value: true},
       types_blocked: {
         value: [{url_pattern: '*', blocked_types: ['payments']}],
+      },
+    });
+    flush();
+
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#autofillProfileToggle')!;
+    assertFalse(toggle.controlDisabled());
+    assertTrue(toggle.checked);
+    assertFalse(page.$.addAddress.disabled);
+  });
+
+  test('AutofillTypesBlockedIgnoredWhenFlagDisabled', async function() {
+    loadTimeData.overrideValues({
+      AutofillSettingsEnterprisePolicyEnabled: false,
+    });
+    const page = await createContactInfoPage([], {
+      profile_enabled: {value: true},
+      types_blocked: {
+        value: [{url_pattern: '*', blocked_types: ['contact_info']}],
       },
     });
     flush();
