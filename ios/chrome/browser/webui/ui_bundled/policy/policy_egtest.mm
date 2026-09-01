@@ -22,6 +22,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -441,6 +442,43 @@ id<GREYMatcher> DownloadButton() {
   [ChromeEarlGrey waitForWebStateContainingText:"iOS"];
 }
 
+// Tests that policy logs emitted from C++ are visible in the logs page.
+- (void)testPolicyLogsVisibleOnPage {
+  [PolicyAppInterface clearPolicyLogs];
+
+  NSString* testMessage = @"Test policy log message from C++";
+  [PolicyAppInterface logErrorPolicy:testMessage];
+
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyLogsURL)];
+  [ChromeEarlGrey waitForWebStateContainingElement:RefreshLogsButton()];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:base::SysNSStringToUTF8(testMessage)];
+}
+
+// Tests that clicking the refresh button updates logs fetched by the logs page.
+- (void)testPolicyLogsRefresh {
+  [PolicyAppInterface clearPolicyLogs];
+
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyLogsURL)];
+  [ChromeEarlGrey waitForWebStateContainingElement:RefreshLogsButton()];
+
+  NSString* testMessage = @"Test policy log message after refresh";
+  [PolicyAppInterface logErrorPolicy:testMessage];
+
+  // Click refresh button in WebUI.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          @"(function() {"
+           "  var app = document.querySelector('policy-logs-app');"
+           "  if (app && app.shadowRoot) {"
+           "    app.shadowRoot.getElementById('logs-refresh').click();"
+           "  }"
+           "})()"];
+
+  [ChromeEarlGrey
+      waitForWebStateContainingText:base::SysNSStringToUTF8(testMessage)];
+}
+
 // -----------------------------------------------------------------------------
 // Tests for chrome://policy/test
 // -----------------------------------------------------------------------------
@@ -489,6 +527,12 @@ id<GREYMatcher> DownloadButton() {
   }                                                \
   -(void)testVersionInformationIsCorrect {         \
     [super testVersionInformationIsCorrect];       \
+  }                                                \
+  -(void)testPolicyLogsVisibleOnPage {             \
+    [super testPolicyLogsVisibleOnPage];           \
+  }                                                \
+  -(void)testPolicyLogsRefresh {                   \
+    [super testPolicyLogsRefresh];                 \
   }
 
 @interface PolicyUIMojoDisabledTestCase : PolicyUITestCaseBase

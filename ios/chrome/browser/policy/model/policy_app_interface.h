@@ -63,6 +63,12 @@
 + (BOOL)hasUserPolicyInCurrentProfile:(NSString*)policyName
                      withIntegerValue:(int)expectedValue;
 
+// Logs a message using LOG_POLICY with ERROR severity from C++.
++ (void)logErrorPolicy:(NSString*)message;
+
+// Clears all policy logs in the PolicyLogger singleton.
++ (void)clearPolicyLogs;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_POLICY_MODEL_POLICY_APP_INTERFACE_H_
