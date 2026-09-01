@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>
+  Re-entrant document.write from synchronous about:blank iframe onload
+</title>
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/parsing.html#tree-construction"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    function parseInIframe(t, srcdoc) {
+      const iframe = document.createElement("iframe");
+      iframe.srcdoc = srcdoc;
+      return new Promise((resolve, reject) => {
+        iframe.onload = () => resolve(iframe);
+        iframe.onerror = reject;
+        document.body.appendChild(iframe);
+        t.add_cleanup(() => iframe.remove());
+      });
+    }
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+    <!DOCTYPE html>
+    <iframe onload="document.write('<textarea>textarea content<\\/textarea>'); document.close();"></iframe>
+  `,
+      );
+
+      const doc = iframe.contentDocument;
+      const textarea = doc.querySelector("textarea");
+      assert_not_equals(textarea, null, "textarea element exists");
+      assert_equals(
+        textarea.value,
+        "textarea content",
+        "textarea content is preserved as RCDATA text",
+      );
+    }, "Re-entrant document.write with textarea from synchronous iframe onload parses RCDATA correctly");
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+    <!DOCTYPE html>
+    <iframe onload="document.write('<div id=injected>injected<\\/div><script>window.scriptRan = true;<\\/script>'); document.close();"></iframe>
+  `,
+      );
+
+      const doc = iframe.contentDocument;
+      const w = iframe.contentWindow;
+      assert_true(w.scriptRan, "script executed");
+      assert_not_equals(
+        doc.getElementById("injected"),
+        null,
+        "injected element exists",
+      );
+    }, "Re-entrant document.write with script from synchronous iframe onload executes correctly");
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+    <!DOCTYPE html>
+    <iframe onload="document.write('<div id=target>styled text<\\/div><style>#target { color: rgb(255, 0, 0); }<\\/style>'); document.close();"></iframe>
+  `,
+      );
+
+      const doc = iframe.contentDocument;
+      const target = doc.getElementById("target");
+      assert_not_equals(target, null, "styled target exists");
+      assert_equals(
+        iframe.contentWindow.getComputedStyle(target).color,
+        "rgb(255, 0, 0)",
+        "style was correctly applied",
+      );
+    }, "Re-entrant document.write with style from synchronous iframe onload parses style correctly");
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+    <!DOCTYPE html>
+    <iframe onload="document.write('<xmp><b>raw text<\\/b><\\/xmp>'); document.close();"></iframe>
+  `,
+      );
+
+      const doc = iframe.contentDocument;
+      const xmp = doc.querySelector("xmp");
+      assert_not_equals(xmp, null, "xmp element exists");
+      assert_equals(
+        xmp.textContent,
+        "<b>raw text</b>",
+        "xmp text content is treated as raw text",
+      );
+    }, "Re-entrant document.write with xmp from synchronous iframe onload parses rawtext correctly");
+  </script>
+</body>

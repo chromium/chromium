@@ -40,49 +40,6 @@
 
 namespace blink {
 
-struct HTMLConstructionSiteTask {
-  DISALLOW_NEW();
-
- public:
-  enum Operation {
-    kInsert,
-    kInsertText,                // Handles possible merging of text nodes.
-    kInsertAlreadyParsedChild,  // Insert w/o calling begin/end parsing.
-    kReparent,
-    kTakeAllChildren,
-    kRemove,
-  };
-
-  explicit HTMLConstructionSiteTask(Operation op)
-      : operation(op), self_closing(false) {}
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(parent);
-    visitor->Trace(next_child);
-    visitor->Trace(child);
-  }
-
-  ContainerNode* OldParent() {
-    // It's sort of ugly, but we store the |oldParent| in the |child| field of
-    // the task so that we don't bloat the HTMLConstructionSiteTask object in
-    // the common case of the Insert operation.
-    return To<ContainerNode>(child.Get());
-  }
-
-  Operation operation;
-  Member<ContainerNode> parent;
-  Member<Node> next_child;
-  Member<Node> child;
-  bool self_closing;
-};
-
-}  // namespace blink
-
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::HTMLConstructionSiteTask)
-
-namespace blink {
-
 // Note: These are intentionally ordered so that when we concatonate strings and
 // whitespaces the resulting whitespace is ws = min(ws1, ws2).
 enum class WhitespaceMode {
@@ -106,6 +63,14 @@ class HTMLConstructionSite final {
   DISALLOW_NEW();
 
  public:
+  struct InsertionLocation {
+    STACK_ALLOCATED();
+
+   public:
+    ContainerNode* parent = nullptr;
+    Node* next_child = nullptr;
+  };
+
   static constexpr unsigned kMaximumHTMLParserDOMTreeDepth = 512;
   static constexpr unsigned kObsoleteTextNodeLengthLimit = 1 << 16;
 
@@ -125,27 +90,9 @@ class HTMLConstructionSite final {
 
   void Detach();
 
-  // executeQueuedTasks empties the queue but does not flush pending text.
-  // NOTE: Possible reentrancy via JavaScript execution.
-  void ExecuteQueuedTasks();
-
-  // flushPendingText turns pending text into queued Text insertions, but does
-  // not execute them.
   void FlushPendingText();
 
-  // Called before every token in HTMLTreeBuilder::processToken, thus inlined:
-  void Flush() {
-    if (!HasPendingTasks())
-      return;
-    FlushPendingText();
-    // NOTE: Possible reentrancy via JavaScript execution.
-    ExecuteQueuedTasks();
-    DCHECK(!HasPendingTasks());
-  }
-
-  bool HasPendingTasks() {
-    return !pending_text_.IsEmpty() || !task_queue_.empty();
-  }
+  bool HasPendingTasks() const { return !pending_text_.IsEmpty(); }
 
   void SetDefaultCompatibilityMode();
   void ProcessEndOfFile();
@@ -233,8 +180,6 @@ class HTMLConstructionSite final {
     return parser_content_policy_;
   }
 
-  bool PreprocessInsertionTask(HTMLConstructionSiteTask&);
-
   static CustomElementDefinition* LookUpCustomElementDefinition(
       Document&,
       const QualifiedName&,
@@ -265,36 +210,27 @@ class HTMLConstructionSite final {
   };
 
  private:
-  struct InsertionLocation {
-    STACK_ALLOCATED();
-
-   public:
-    ContainerNode* parent;
-    Node* next_child = nullptr;
-  };
-
-  // In the common case, this queue will have only one task because most tokens
-  // produce only one DOM mutation.
-  typedef HeapVector<HTMLConstructionSiteTask, 1> TaskQueue;
-
   void SetCompatibilityMode(Document::CompatibilityMode);
   void SetCompatibilityModeFromDoctype(const html_names::HTMLTag tag,
                                        const String& public_id,
                                        const String& system_id);
 
-  void AttachLater(InsertionLocation location,
-                   Node* child,
-                   bool self_closing = false);
-  void AttachLater(ContainerNode* parent,
-                   Node* child,
-                   bool self_closing = false) {
-    AttachLater({parent, nullptr}, child, self_closing);
+  void Attach(InsertionLocation location,
+              Node* child,
+              bool self_closing = false);
+  void Attach(ContainerNode* parent, Node* child, bool self_closing = false) {
+    Attach({parent, nullptr}, child, self_closing);
   }
 
-  InsertionLocation CurrentInsertionLocation();
-  void AdjustInsertionLocation(HTMLConstructionSiteTask& task);
+  void AttachOrFosterParent(Node* child,
+                            HTMLStackItem* item = nullptr,
+                            bool self_closing = false);
+  void AttachOrFosterParent(HTMLStackItem* item);
 
-  void FindFosterSite(HTMLConstructionSiteTask&);
+  InsertionLocation CurrentInsertionLocation();
+  InsertionLocation AdjustInsertionLocation(InsertionLocation location);
+
+  void FindFosterSite(InsertionLocation&);
 
   CreateElementFlags GetCreateElementFlags() const;
   bool ShouldMarkScriptAlreadyStarted() const;
@@ -302,8 +238,7 @@ class HTMLConstructionSite final {
 
   void MergeAttributesFromTokenIntoElement(AtomicHTMLToken*, Element*);
 
-  void ExecuteTask(HTMLConstructionSiteTask&);
-  void QueueTask(HTMLConstructionSiteTask&, bool flush_pending_text);
+  bool ShouldInsertChild(ContainerNode* parent, Node* child);
   StreamingSanitizer* ActiveSanitizer(
       Node* node_being_inserted = nullptr) const;
   void SetAttributes(Element* element, AtomicHTMLToken* token);
@@ -324,8 +259,6 @@ class HTMLConstructionSite final {
   Member<HTMLFormElement> form_;
   mutable HTMLElementStack open_elements_;
   mutable HTMLFormattingElementList active_formatting_elements_;
-
-  TaskQueue task_queue_;
 
   class PendingText final {
     DISALLOW_NEW();

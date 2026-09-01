@@ -1,0 +1,137 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>
+  Adoption agency does not re-trigger about:blank subframe load events
+</title>
+<link
+  rel="help"
+  href="https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    function parseInIframe(t, srcdoc) {
+      const iframe = document.createElement("iframe");
+      iframe.srcdoc = srcdoc;
+      return new Promise((resolve, reject) => {
+        iframe.onload = () => resolve(iframe);
+        iframe.onerror = reject;
+        document.body.appendChild(iframe);
+        t.add_cleanup(() => iframe.remove());
+      });
+    }
+
+    function doubleRaf() {
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
+    }
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+          <!DOCTYPE html>
+          <script>
+            window.loadCount = 0;
+          <\/script>
+          <b>
+            <p>
+              <iframe src="about:blank" onload="window.loadCount++">
+              </iframe>
+            </p>
+          </b>
+        `,
+      );
+
+      await doubleRaf();
+      assert_equals(
+        iframe.contentWindow.loadCount,
+        1,
+        "iframe onload must fire exactly once during parsing and AAA reparenting",
+      );
+    }, "Adoption agency does not trigger duplicate load event on reparented iframe");
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+          <!DOCTYPE html>
+          <b>
+            <p>
+              <iframe id="testIframe" onload="if (!this.contentWindow.initialized) { this.contentWindow.initialized = true; this.contentWindow.expando = 42; }">
+              </iframe>
+            </p>
+          </b>
+        `,
+      );
+
+      await doubleRaf();
+      const doc = iframe.contentDocument;
+      const innerIframe = doc.getElementById("testIframe");
+      assert_not_equals(innerIframe, null, "iframe element exists in DOM");
+      assert_equals(
+        innerIframe.contentWindow.expando,
+        42,
+        "iframe contentWindow state is preserved",
+      );
+    }, "Iframe contentWindow state is preserved when reparented by adoption agency");
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+          <!DOCTYPE html>
+          <script>
+            window.counts = [0, 0];
+          <\/script>
+          <b>
+            <p>
+              <iframe id="f1" onload="window.counts[0]++">
+              </iframe>
+              <iframe id="f2" onload="window.counts[1]++">
+              </iframe>
+            </p>
+          </b>
+        `,
+      );
+
+      await doubleRaf();
+      const w = iframe.contentWindow;
+      assert_equals(w.counts[0], 1, "first iframe onload fired once");
+      assert_equals(w.counts[1], 1, "second iframe onload fired once");
+    }, "Multiple iframes inside reparented subtree each fire onload only once");
+
+    promise_test(async (t) => {
+      const iframe = await parseInIframe(
+        t,
+        `
+          <!DOCTYPE html>
+          <script>
+            window.recursiveLoadCount = 0;
+            function onRecursiveLoad() {
+              window.recursiveLoadCount++;
+              document.write('<script>void(0)<\\/script></a>PASS');
+              document.close();
+            }
+          <\/script>
+          <a>
+            <p>
+              <iframe onload="window.onRecursiveLoad()">
+              </iframe>
+            </p>
+          </a>
+        `,
+      );
+
+      await doubleRaf();
+      const w = iframe.contentWindow;
+      assert_equals(
+        w.recursiveLoadCount,
+        1,
+        "recursive adoption agency triggered from iframe onload fires onload only once",
+      );
+    }, "Recursive adoption agency triggered by document.write in iframe onload fires onload only once");
+  </script>
+</body>

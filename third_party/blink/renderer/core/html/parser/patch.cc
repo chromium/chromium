@@ -157,11 +157,11 @@ Patch* Patch::Prepare(ContainerNode* scope,
                                      template_element);
 }
 
-void Patch::Apply(HTMLConstructionSiteTask& task) {
-  task.parent = parent_;
-  task.next_child = end_marker_ && end_marker_->parentNode() == parent_
-                        ? end_marker_
-                        : nullptr;
+void Patch::Apply(HTMLConstructionSite::InsertionLocation& location) {
+  location.parent = parent_;
+  location.next_child = end_marker_ && end_marker_->parentNode() == parent_
+                            ? end_marker_
+                            : nullptr;
 }
 
 void Patch::DidFinishParsingChildren(HTMLTemplateElement* template_element) {

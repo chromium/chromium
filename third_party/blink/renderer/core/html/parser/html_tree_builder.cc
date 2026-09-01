@@ -37,12 +37,14 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
@@ -487,9 +489,6 @@ void HTMLTreeBuilder::ConstructTree(AtomicHTMLToken* token) {
   parser_->tokenizer().SetForceNullCharacterReplacement(
       GetInsertionMode() == kTextMode || in_foreign_content);
   parser_->tokenizer().SetShouldAllowCDATA(in_foreign_content);
-
-  tree_.ExecuteQueuedTasks();
-  // We might be detached now.
 }
 
 void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
@@ -531,9 +530,9 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
   }
 
   // Any non-character token needs to cause us to flush any pending text
-  // immediately. NOTE: flush() can cause any queued tasks to execute, possibly
-  // re-entering the parser.
-  tree_.Flush();
+  // immediately. NOTE: FlushPendingText() can cause any queued tasks to
+  // execute, possibly re-entering the parser.
+  tree_.FlushPendingText();
   should_skip_leading_newline_ = false;
 
   switch (token->GetType()) {
@@ -1065,12 +1064,12 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       frameset_ok_ = false;
       break;
     case HTMLTag::kTextarea:
-      tree_.InsertHTMLElement(token);
       should_skip_leading_newline_ = true;
       parser_->tokenizer().SetState(HTMLTokenizer::kRCDATAState);
       original_insertion_mode_ = insertion_mode_;
       frameset_ok_ = false;
       SetInsertionMode(kTextMode);
+      tree_.InsertHTMLElement(token);
       break;
     case HTMLTag::kXmp:
       ProcessFakePEndTagIfPInButtonScope();
@@ -1204,9 +1203,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
         tree_.InsertForeignElement(token, svg_names::kNamespaceURI);
       } else {
         tree_.ReconstructTheActiveFormattingElements();
-        // Flush before creating custom elements. NOTE: Flush() can cause any
-        // queued tasks to execute, possibly re-entering the parser.
-        tree_.Flush();
+        tree_.FlushPendingText();
         tree_.InsertHTMLElement(token);
       }
       break;
@@ -1756,6 +1753,10 @@ void HTMLTreeBuilder::ProcessAnyOtherEndTagForInBody(AtomicHTMLToken* token) {
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html#parsing-main-inbody
 void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
+  CEReactionsScope reactions(parser_->GetDocument()->GetAgent().isolate());
+  SubframeLoadingDisabler disabler(tree_.OpenElements()->RootNode());
+  tree_.FlushPendingText();
+
   // The adoption agency algorithm is N^2. We limit the number of iterations
   // to stop from hanging the whole browser. This limit is specified in the
   // adoption agency algorithm:
@@ -3032,23 +3033,22 @@ bool HTMLTreeBuilder::ProcessStartTagForInHead(AtomicHTMLToken* token) {
 
 void HTMLTreeBuilder::ProcessGenericRCDATAStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
-  tree_.InsertHTMLElement(token);
   parser_->tokenizer().SetState(HTMLTokenizer::kRCDATAState);
   original_insertion_mode_ = insertion_mode_;
   SetInsertionMode(kTextMode);
+  tree_.InsertHTMLElement(token);
 }
 
 void HTMLTreeBuilder::ProcessGenericRawTextStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
-  tree_.InsertHTMLElement(token);
   parser_->tokenizer().SetState(HTMLTokenizer::kRAWTEXTState);
   original_insertion_mode_ = insertion_mode_;
   SetInsertionMode(kTextMode);
+  tree_.InsertHTMLElement(token);
 }
 
 void HTMLTreeBuilder::ProcessScriptStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
-  tree_.InsertScriptElement(token);
   parser_->tokenizer().SetState(HTMLTokenizer::kScriptDataState);
   original_insertion_mode_ = insertion_mode_;
 
@@ -3057,6 +3057,7 @@ void HTMLTreeBuilder::ProcessScriptStartTag(AtomicHTMLToken* token) {
   script_to_process_start_position_ = position;
 
   SetInsertionMode(kTextMode);
+  tree_.InsertScriptElement(token);
 }
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/tree-construction.html#tree-construction
@@ -3100,7 +3101,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
     return;
   }
 
-  tree_.Flush();
+  tree_.FlushPendingText();
   HTMLStackItem* adjusted_current_node = AdjustedCurrentStackItem();
 
   switch (token->GetType()) {
@@ -3276,7 +3277,7 @@ void HTMLTreeBuilder::Flush() {
       last_text_mode_flush_time_ = now;
       current_text_mode_flush_interval_ =
           DeferTreeBuilderFlushInitialInterval();
-      tree_.Flush();
+      tree_.FlushPendingText();
       return;
     }
 
@@ -3287,13 +3288,13 @@ void HTMLTreeBuilder::Flush() {
       current_text_mode_flush_interval_ = std::min(
           current_text_mode_flush_interval_ * DeferTreeBuilderFlushMultiplier(),
           DeferTreeBuilderFlushMaxInterval());
-      tree_.Flush();
+      tree_.FlushPendingText();
       return;
     }
     return;
   }
 
-  tree_.Flush();
+  tree_.FlushPendingText();
 }
 
 void HTMLTreeBuilder::ParseError(AtomicHTMLToken*) {}

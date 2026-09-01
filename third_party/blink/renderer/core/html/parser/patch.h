@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_PATCH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_PATCH_H_
 
-#include "base/types/pass_key.h"
+#include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
@@ -16,8 +16,6 @@ class ContainerNode;
 class ExternalPatchLoader;
 class HTMLTemplateElement;
 class Node;
-class HTMLTemplateElement;
-struct HTMLConstructionSiteTask;
 
 // This class manages the lifecycle of out-of-order streaming (<template for>
 // during parsing).
@@ -29,7 +27,7 @@ class Patch : public GarbageCollected<Patch> {
 
   virtual ~Patch() = default;
 
-  void Apply(HTMLConstructionSiteTask&);
+  void Apply(HTMLConstructionSite::InsertionLocation&);
   void Finalize(HTMLTemplateElement*);
   virtual void DidFinishParsingChildren(HTMLTemplateElement*);
   void DidRemoveTemplateElement();
