@@ -104,7 +104,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     }
 
     /**
-     * Retrieve fallback icon for a given suggestion. Must be completed synchromously.
+     * Retrieve fallback icon for a given suggestion. Must be completed synchronously.
      *
      * @param match AutocompleteMatch instance to retrieve fallback icon for
      * @return OmniboxDrawableState that can be immediately applied to suggestion view
@@ -254,7 +254,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * Process the touch down event. Only handles search suggestions.
      *
      * @param suggestion Selected suggestion.
-     * @param position Position of the suggesiton on the list.
+     * @param position Position of the suggestion on the list.
      * @param eventTime Uptime of the touch down event in milliseconds.
      */
     protected void onSuggestionTouchDownEvent(

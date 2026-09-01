@@ -207,7 +207,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
 
     @Override
     public void setHovered(boolean hovered) {
-        // The suggestion view should remain in hovered drawing state when the action buttion is
+        // The suggestion view should remain in hovered drawing state when the action button is
         // hovered or pressed.
         hovered |= mAnyActionButtonHovered || mAnyActionButtonPressed;
         super.setHovered(hovered);

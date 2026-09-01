@@ -257,7 +257,7 @@ public class BaseSuggestionViewBinderUnitTest {
     @Test
     public void actionIcon_dontCrashWhenRecycling() {
         // Force a dirty/recycled view that would have a button view, when the model does not carry
-        // any aciton.
+        // any action.
         assertNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         mBaseView.setActionButtonsCount(1);
         // Change in color scheme happening ahead of setting action could cause a crash.

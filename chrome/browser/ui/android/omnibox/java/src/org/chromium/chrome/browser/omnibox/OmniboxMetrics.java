@@ -113,9 +113,9 @@ public class OmniboxMetrics {
     public @interface PrefetchResult {
         // The last prefetch started matches the suggestion navigated to.
         int HIT = 0;
-        // The last prefetch started does NOT match the suggesiton navigated to.
+        // The last prefetch started does NOT match the suggestion navigated to.
         int MISS = 1;
-        // No prefetches were stated in the omnibox session.
+        // No prefetches were started in the omnibox session.
         int NO_PREFETCH = 2;
         int COUNT = 3;
     }
@@ -302,7 +302,7 @@ public class OmniboxMetrics {
      *
      * @param requestType The request type at session end.
      * @param focusResultedInNavigation Whether the user completed interaction with navigation.
-     * @param withAttachments Whether there were any attachemnts at session end.
+     * @param withAttachments Whether there were any attachments at session end.
      */
     public static void recordOmniboxFocusResultedInNavigation(
             @AutocompleteRequestType int requestType,
@@ -492,7 +492,7 @@ public class OmniboxMetrics {
     /**
      * Records the number of prefetches started by touch down events in an omnibox session.
      *
-     * @param numPrefetchesStarted the number of prefetches started wihin the omnibox session.
+     * @param numPrefetchesStarted the number of prefetches started within the omnibox session.
      */
     public static void recordNumPrefetchesStartedInOmniboxSession(int numPrefetchesStarted) {
         RecordHistogram.recordCount100Histogram(

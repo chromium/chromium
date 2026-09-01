@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 public class OmniboxPrerender {
     private final long mNativeOmniboxPrerender;
 
-    /** Constructor for creating a OmniboxPrerender instanace. */
+    /** Constructor for creating an OmniboxPrerender instance. */
     public OmniboxPrerender() {
         mNativeOmniboxPrerender = OmniboxPrerenderJni.get().init(OmniboxPrerender.this);
     }

@@ -185,7 +185,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         /* package */ int updateKeyboardVisibilityAndScroll(
                 int resultingDeltaY, int requestedDeltaY) {
             // Change keyboard visibility only once per gesture.
-            // This helps in situations where the user interacts with the horizontal caoursel (e.g.
+            // This helps in situations where the user interacts with the horizontal carousel (e.g.
             // the Most Visited Sites), where a horizontal finger swipe could result in a series of
             // keyboard show/hide events.
             if (mCurrentGestureAffectedKeyboardState) return resultingDeltaY;
@@ -523,7 +523,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         child.setAlpha(1.0f);
     }
 
-    /** Resests the tracked keyboard shown state to properly respond to scroll events. */
+    /** Resets the tracked keyboard shown state to properly respond to scroll events. */
     void resetScrollState() {
         mLayoutScrollListener.resetScrollState();
     }

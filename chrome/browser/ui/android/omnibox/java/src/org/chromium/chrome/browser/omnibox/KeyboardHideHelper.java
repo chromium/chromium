@@ -59,7 +59,7 @@ class KeyboardHideHelper implements ViewTreeObserver.OnGlobalLayoutListener {
      * <p>Only call this method once a strong signal arrives that indicates the keyboard likely will
      * be hidden (i.e. KeyEvent.KEYCODE_BACK in View#onKeyPreIme). Any increase in window size will
      * trigger the hide callback to be notified after this is called. This is meant to be a "good"
-     * approximation for user intent to dimiss the keyboard to compensate for the lack of a proper
+     * approximation for user intent to dismiss the keyboard to compensate for the lack of a proper
      * signal from the system.
      */
     public void monitorForKeyboardHidden() {
