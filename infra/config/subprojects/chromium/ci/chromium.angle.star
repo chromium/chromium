@@ -633,7 +633,7 @@ ci.thin_tester(
             "isolate_profile_data",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_16_main",
+            "xcode_27_main",
             "xctest",
         ],
     ),

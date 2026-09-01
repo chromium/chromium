@@ -59,6 +59,108 @@
         "args": [
           "--use-simulator-cache",
           "--platform",
+          "iPhone 16",
+          "--version",
+          "26.5",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "27a5252f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests iPhone 16 26.5",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:07e67ff89ff11ed0e3071867ed6bb49319a91b05"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_5",
+              "path": "Runtime-ios-26.5"
+            },
+            {
+              "name": "xcode_ios_27a5252f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "variant_id": "iPhone 16 26.5"
+      },
+      {
+        "args": [
+          "--use-simulator-cache",
+          "--platform",
+          "iPhone 16",
+          "--version",
+          "27.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "27a5252f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests iPhone 16 27.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:07e67ff89ff11ed0e3071867ed6bb49319a91b05"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_27_0",
+              "path": "Runtime-ios-27.0"
+            },
+            {
+              "name": "xcode_ios_27a5252f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "variant_id": "iPhone 16 27.0"
+      },
+      {
+        "args": [
+          "--use-simulator-cache",
+          "--platform",
           "iPhone 15",
           "--version",
           "18.5",
@@ -105,6 +207,108 @@
         "test": "highway_tests",
         "test_id_prefix": "ninja://third_party/highway:highway_tests/",
         "variant_id": "iPhone 15 18.5"
+      },
+      {
+        "args": [
+          "--use-simulator-cache",
+          "--platform",
+          "iPhone 16",
+          "--version",
+          "26.5",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "27a5252f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
+        "name": "highway_tests iPhone 16 26.5",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:07e67ff89ff11ed0e3071867ed6bb49319a91b05"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_5",
+              "path": "Runtime-ios-26.5"
+            },
+            {
+              "name": "xcode_ios_27a5252f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "highway_tests",
+        "test_id_prefix": "ninja://third_party/highway:highway_tests/",
+        "variant_id": "iPhone 16 26.5"
+      },
+      {
+        "args": [
+          "--use-simulator-cache",
+          "--platform",
+          "iPhone 16",
+          "--version",
+          "27.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "27a5252f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
+        "name": "highway_tests iPhone 16 27.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:07e67ff89ff11ed0e3071867ed6bb49319a91b05"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_27_0",
+              "path": "Runtime-ios-27.0"
+            },
+            {
+              "name": "xcode_ios_27a5252f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "highway_tests",
+        "test_id_prefix": "ninja://third_party/highway:highway_tests/",
+        "variant_id": "iPhone 16 27.0"
       }
     ]
   }
