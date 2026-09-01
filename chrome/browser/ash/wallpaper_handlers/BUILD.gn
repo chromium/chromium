@@ -33,7 +33,7 @@ static_library("wallpaper_handlers") {
     "//chrome/browser/net",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
-    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/signin:identity_manager_provider",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
   ]
