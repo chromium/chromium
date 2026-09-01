@@ -582,7 +582,7 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest {
 // corrupted policy extensions. For example: if network is unavailable,
 // CheckForExternalUpdates() will fail.
 #if BUILDFLAG(IS_ANDROID)
-// TODO(https://crbug.com/469417243): Fails on desktop android.
+// TODO(https://crbug.com/555403987): Fails on desktop android.
 #define MAYBE_FailedUpdateRetries DISABLED_FailedUpdateRetries
 #else
 #define MAYBE_FailedUpdateRetries FailedUpdateRetries
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, MAYBE_FailedUpdateRetries) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(https://crbug.com/469417243): Fails on desktop android.
+// TODO(https://crbug.com/555403989): Fails on desktop android.
 #define MAYBE_Backoff DISABLED_Backoff
 #else
 #define MAYBE_Backoff Backoff

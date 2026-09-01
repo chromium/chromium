@@ -1596,7 +1596,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // This test also verifies that if the requested resource exists in the manifest
 // but is not present in the extension directory, the Service Worker can still
 // serve the resource file.
-// TODO(crbug.com/469417243): Port to desktop Android. The test requires a
+// TODO(crbug.com/555405342): Port to desktop Android. The test requires a
 // background page to use window.registerServiceWorker, which is not
 // supported on Android's MV3 extensions.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, WebAccessibleResourcesIframeSrc) {
@@ -1726,7 +1726,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/469417243): Port to desktop Android. Fails because
+// TODO(crbug.com/555404293): Port to desktop Android. Fails because
 // gcm_driver()->last_gettoken_app_id() is empty.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
   const Extension* extension = LoadExtension(

@@ -122,7 +122,7 @@ class ExtensionURLLoaderThrottleWithSplitCacheBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/469417243): Flaky on desktop Android.
+// TODO(crbug.com/555403542): Flaky on desktop Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ThrottleRequest DISABLED_ThrottleRequest
 #else

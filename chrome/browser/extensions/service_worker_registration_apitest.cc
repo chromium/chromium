@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest, ExtensionReinstall) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/469417243): Port to desktop Android. Currently fails to
+// TODO(crbug.com/555404879): Port to desktop Android. Currently fails to
 // reliably override the NTP, likely because it is native UI on Android.
 class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
     : public ServiceWorkerRegistrationApiTest {
