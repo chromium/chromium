@@ -773,6 +773,45 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       t11->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, HoverActiveNotMatchedWhilePrinting) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target { color: rgb(0, 0, 0); }
+      #target:hover { color: rgb(255, 0, 0); }
+      #target:active { color: rgb(0, 255, 0); }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+
+  target->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      Color::FromRGB(255, 0, 0),
+      target->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  gfx::SizeF page_size(400, 400);
+  GetDocument().GetFrame()->StartPrinting(WebPrintParams(page_size));
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      target->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+  GetDocument().GetFrame()->EndPrinting();
+
+  target->SetHovered(false);
+  target->SetActive(true);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      Color::FromRGB(0, 255, 0),
+      target->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  GetDocument().GetFrame()->StartPrinting(WebPrintParams(page_size));
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      target->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+  GetDocument().GetFrame()->EndPrinting();
+}
+
 TEST_F(StyleEngineTest, InjectedUserNoAuthorFontFace) {
   UpdateAllLifecyclePhases();
 

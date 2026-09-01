@@ -2661,7 +2661,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
-      return element.IsHovered();
+      return element.IsHovered() && !element.GetDocument().Printing();
     case CSSSelector::kPseudoActive:
       if (mode_ == kResolvingStyle) {
         if (context.is_inside_has_pseudo_class) [[unlikely]] {
@@ -2681,7 +2681,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
-      return element.IsActive();
+      return element.IsActive() && !element.GetDocument().Printing();
     case CSSSelector::kPseudoEnabled: {
       probe::ForcePseudoState(&element, CSSSelector::kPseudoEnabled,
                               &force_pseudo_state);
