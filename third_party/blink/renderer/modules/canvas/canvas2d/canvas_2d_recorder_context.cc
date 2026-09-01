@@ -2382,10 +2382,10 @@ CanvasGradient* Canvas2DRecorderContext::createRadialGradient(
     double r1,
     ExceptionState& exception_state) {
   if (r0 < 0 || r1 < 0) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        UNSAFE_TODO(String::Format("The %s provided is less than 0.",
-                                   r0 < 0 ? "r0" : "r1")));
+    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
+                                      r0 < 0
+                                          ? "The r0 provided is less than 0."
+                                          : "The r1 provided is less than 0.");
     return nullptr;
   }
 
@@ -2468,15 +2468,12 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
     case kZeroSizeCanvasSourceImageStatus:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
-          UNSAFE_TODO(String::Format(
-              "The canvas %s is 0.",
-              image_source
-                      ->ElementSize(
-                          default_object_size,
-                          RespectImageOrientationInternal(image_source))
-                      .width()
-                  ? "height"
-                  : "width")));
+          image_source
+                  ->ElementSize(default_object_size,
+                                RespectImageOrientationInternal(image_source))
+                  .width()
+              ? "The canvas height is 0."
+              : "The canvas width is 0.");
       return nullptr;
     case kZeroSizeImageSourceStatus:
       return nullptr;

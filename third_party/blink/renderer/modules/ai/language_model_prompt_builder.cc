@@ -765,10 +765,10 @@ void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
         execution_context->AddConsoleMessage(
             mojom::blink::ConsoleMessageSource::kJavaScript,
             mojom::blink::ConsoleMessageLevel::kWarning,
-            String::Format("Audio input will be resampled from %dHz to %dHz. "
-                           "This may adversely affect AI model comprehension.",
-                           static_cast<int>(audio_buffer->sampleRate()),
-                           static_cast<int>(audio_data->sample_rate)));
+            Format("Audio input will be resampled from {}Hz to {}Hz. This may "
+                   "adversely affect AI model comprehension.",
+                   static_cast<int>(audio_buffer->sampleRate()),
+                   audio_data->sample_rate));
       }
     }
   }
@@ -932,10 +932,10 @@ void LanguageModelPromptBuilder::OnBitmapLoaded(PendingEntry* entry,
       execution_context->AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          String::Format("Image input (%ux%u) will be downscaled to 768x768. "
-                         "Dense spatial details like small text may be lost. "
-                         "This may adversely affect AI model comprehension.",
-                         original_width, original_height));
+          Format("Image input ({}x{}) will be downscaled to 768x768. Dense "
+                 "spatial details like small text may be lost. This may "
+                 "adversely affect AI model comprehension.",
+                 original_width, original_height));
     }
 
     // 2. Aspect ratio skew warning

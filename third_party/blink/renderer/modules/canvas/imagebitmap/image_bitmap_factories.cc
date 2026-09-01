@@ -266,8 +266,9 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (crop_rect && (crop_rect->width() == 0 || crop_rect->height() == 0)) {
-    exception_state.ThrowRangeError(UNSAFE_TODO(String::Format(
-        "The crop rect %s is 0.", crop_rect->width() ? "height" : "width")));
+    exception_state.ThrowRangeError(crop_rect->width()
+                                        ? "The crop rect height is 0."
+                                        : "The crop rect width is 0.");
     return EmptyPromise();
   }
 

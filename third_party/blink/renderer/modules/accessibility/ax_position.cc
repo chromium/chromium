@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -527,9 +528,9 @@ bool AXPosition::IsValid(String* failure_reason) const {
   if (IsTextPosition()) {
     if (text_offset_or_child_index_ > MaxTextOffset()) {
       if (failure_reason) {
-        *failure_reason = String::Format(
-            "\nPosition invalid: text offset too large.\n%d vs. %d.",
-            text_offset_or_child_index_, MaxTextOffset());
+        *failure_reason =
+            Format("\nPosition invalid: text offset too large.\n{} vs. {}.",
+                   text_offset_or_child_index_, MaxTextOffset());
       }
       return false;
     }
@@ -537,10 +538,10 @@ bool AXPosition::IsValid(String* failure_reason) const {
     if (text_offset_or_child_index_ >
         container_object_->ChildCountIncludingIgnored()) {
       if (failure_reason) {
-        *failure_reason = String::Format(
-            "\nPosition invalid: child index too large.\n%d vs. %d.",
-            text_offset_or_child_index_,
-            container_object_->ChildCountIncludingIgnored());
+        *failure_reason =
+            Format("\nPosition invalid: child index too large.\n{} vs. {}.",
+                   text_offset_or_child_index_,
+                   container_object_->ChildCountIncludingIgnored());
       }
       return false;
     }

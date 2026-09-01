@@ -153,8 +153,8 @@ String Clipboard::ParseWebCustomFormat(const String& format) {
     if (net::ParseMimeTypeWithoutParameter(web_custom_format_suffix.Utf8(),
                                            &web_top_level_mime_type,
                                            &web_mime_sub_type)) {
-      return String::Format("%s/%s", web_top_level_mime_type.c_str(),
-                            web_mime_sub_type.c_str());
+      return StrCat(
+          {web_top_level_mime_type.c_str(), "/", web_mime_sub_type.c_str()});
     }
   }
   return g_empty_string;

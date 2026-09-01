@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -2478,8 +2479,7 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     if (!provider_url.IsValid() || client_id.empty()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
-          String::Format("Provider %i information is incomplete.",
-                         provider_index)));
+          Format("Provider {} information is incomplete.", provider_index)));
       return;
     }
     // We disallow redirects (in idp_network_request_manager.cc), so it is

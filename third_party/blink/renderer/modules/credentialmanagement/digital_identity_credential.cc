@@ -121,11 +121,11 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     case RequestDigitalIdentityStatus::kErrorNoTransientUserActivation:
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
-          UNSAFE_TODO(
-              String::Format("The '%s' feature requires transient activation.",
-                             request_type == DigitalIdentityRequestType::kCreate
-                                 ? "digital-credentials-create"
-                                 : "digital-credentials-get"))));
+          request_type == DigitalIdentityRequestType::kCreate
+              ? "The 'digital-credentials-create' feature requires transient "
+                "activation."
+              : "The 'digital-credentials-get' feature requires transient "
+                "activation."));
       return;
 
     case RequestDigitalIdentityStatus::kErrorUserDeclined: {

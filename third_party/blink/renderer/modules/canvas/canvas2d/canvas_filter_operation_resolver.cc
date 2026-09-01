@@ -248,9 +248,9 @@ base::expected<gfx::PointF, String> ResolveFloatOrVec2f(
       dict.Get<IDLSequence<IDLFloat>>(property_name, exception_state);
   if (exception_state.HadException() || !two_floats.has_value() ||
       two_floats->size() != 2) {
-    return base::unexpected(String::Format(
-        "\"%s\" must either be a number or an array of two numbers",
-        property_name.Ascii().c_str()));
+    return base::unexpected(
+        StrCat({"\"", property_name,
+                "\" must either be a number or an array of two numbers"}));
   }
   return gfx::PointF(two_floats->at(0), two_floats->at(1));
 }
@@ -262,8 +262,7 @@ BlurFilterOperation* ResolveBlur(const Dictionary& blur_dict,
 
   if (exception_state.HadException() || !blur_xy.has_value()) {
     exception_state.ThrowTypeError(
-        String::Format("Failed to construct blur filter. %s.",
-                       blur_xy.error().Utf8().c_str()));
+        StrCat({"Failed to construct blur filter. ", blur_xy.error(), "."}));
     return nullptr;
   }
 
@@ -310,8 +309,8 @@ DropShadowFilterOperation* ResolveDropShadow(
         ResolveFloatOrVec2f("stdDeviation", dict, exception_state);
     if (exception_state.HadException() || !std_deviation.has_value()) {
       exception_state.ThrowTypeError(
-          String::Format("Failed to construct dropShadow filter, %s.",
-                         std_deviation.error().Utf8().c_str()));
+          StrCat({"Failed to construct dropShadow filter, ",
+                  std_deviation.error(), "."}));
       return nullptr;
     }
     blur = gfx::SizeF(std_deviation->x(), std_deviation->y());
@@ -361,8 +360,8 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
         ResolveFloatOrVec2f("baseFrequency", dict, exception_state);
     if (exception_state.HadException() || !base_frequency.has_value()) {
       exception_state.ThrowTypeError(
-          String::Format("Failed to construct turbulence filter, %s.",
-                         base_frequency.error().Utf8().c_str()));
+          StrCat({"Failed to construct turbulence filter, ",
+                  base_frequency.error(), "."}));
       return nullptr;
     }
     base_frequency_x = base_frequency->x();
