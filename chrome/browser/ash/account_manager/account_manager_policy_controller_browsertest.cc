@@ -95,16 +95,17 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
         identity_test_env->MakePrimaryAccountAvailable(
             kFakePrimaryUsername, signin::ConsentLevel::kSignin);
     ASSERT_EQ(account_id,
-              AccountId::FromUserEmailGaiaId(primary_account_info.email,
-                                             primary_account_info.gaia));
+              AccountId::FromUserEmailGaiaId(primary_account_info.GetEmail(),
+                                             primary_account_info.GetGaiaId()));
 
     // Add accounts in Account Manager.
     auto* account_manager =
         ash::AccountManagerFactory::Get()->GetAccountManager(
             profile_->GetPath().value());
     account_manager->UpsertAccount(
-        ::account_manager::AccountKey::FromGaiaId(primary_account_info.gaia),
-        primary_account_info.email,
+        ::account_manager::AccountKey::FromGaiaId(
+            primary_account_info.GetGaiaId()),
+        primary_account_info.GetEmail(),
         account_manager::AccountManager::kInvalidToken);
     account_manager->UpsertAccount(
         ::account_manager::AccountKey::FromGaiaId(kFakeSecondaryGaiaId),

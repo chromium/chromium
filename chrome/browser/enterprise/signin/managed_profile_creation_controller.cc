@@ -59,7 +59,7 @@ const ProfileAttributesEntry* GetExistingProfileEntryOtherThanSourceProfile(
       attributes.begin(), attributes.end(),
       [&account_info, &profile_path](const ProfileAttributesEntry* entry) {
         return entry->GetPath() != profile_path &&
-               account_info.gaia == entry->GetGAIAId();
+               account_info.GetGaiaId() == entry->GetGAIAId();
       });
   return it == attributes.end() ? nullptr : *it;
 }
@@ -175,7 +175,7 @@ void ManagedProfileCreationController::FetchProfileSeparationPolicies() {
               ->GetSharedURLLoaderFactory());
   account_level_signin_restriction_policy_fetcher_
       ->GetManagedAccountsSigninRestriction(
-          GetIdentityManager(), account_info_.account_id,
+          GetIdentityManager(), account_info_.GetAccountId(),
           std::move(policy_fetch_callback),
           policy::utils::IsPolicyTestingEnabled(source_profile_->GetPrefs(),
                                                 chrome::GetChannel())
@@ -215,7 +215,7 @@ void ManagedProfileCreationController::OnProfileSeparationPoliciesReceived(
 
   // If the user is not allowed to sign in, we should not show the disclaimer.
   SigninUIError can_offer_error = CanOfferSignin(
-      source_profile_, GaiaId(account_info_.gaia), account_info_.email,
+      source_profile_, account_info_.GetGaiaId(), account_info_.GetEmail(),
       /*allow_account_from_other_profile=*/true,
       /*ignore_reauth_error=*/true);
   if (!can_offer_error.IsOk()) {
@@ -283,7 +283,7 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
 
   bool user_already_signed_in =
       GetIdentityManager()->GetPrimaryAccountId(
-          signin::ConsentLevel::kSignin) == account_info_.account_id;
+          signin::ConsentLevel::kSignin) == account_info_.GetAccountId();
 
   auto dialog_params =
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
@@ -338,13 +338,14 @@ void ManagedProfileCreationController::
   auto existing_primary_account_id =
       GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   CHECK(existing_primary_account_id.empty() ||
-        existing_primary_account_id == account_info_.account_id);
+        existing_primary_account_id == account_info_.GetAccountId());
 
   if (existing_primary_account_id.empty()) {
     auto* primary_account_mutator =
         GetIdentityManager()->GetPrimaryAccountMutator();
-    primary_account_mutator->SetPrimaryAccount(
-        account_info_.account_id, signin::ConsentLevel::kSignin, access_point_);
+    primary_account_mutator->SetPrimaryAccount(account_info_.GetAccountId(),
+                                               signin::ConsentLevel::kSignin,
+                                               access_point_);
   }
   std::move(callback_).Run(base::ok(source_profile_),
                            profile_creation_required_by_policy_);
@@ -354,8 +355,8 @@ void ManagedProfileCreationController::Signout() {
   CHECK(source_profile_);
   auto* primary_account_mutator =
       GetIdentityManager()->GetPrimaryAccountMutator();
-  if (account_info_.account_id == GetIdentityManager()->GetPrimaryAccountId(
-                                      signin::ConsentLevel::kSignin)) {
+  if (account_info_.GetAccountId() == GetIdentityManager()->GetPrimaryAccountId(
+                                          signin::ConsentLevel::kSignin)) {
     primary_account_mutator->RemovePrimaryAccountButKeepTokens(
         signin_metrics::ProfileSignout::
             kUserDeclinedEnterpriseManagementDisclaimer);
@@ -363,7 +364,7 @@ void ManagedProfileCreationController::Signout() {
   if (profile_creation_required_by_policy_) {
     auto* accounts_mutator = GetIdentityManager()->GetAccountsMutator();
     accounts_mutator->RemoveAccount(
-        account_info_.account_id,
+        account_info_.GetAccountId(),
         signin_metrics::SourceForRefreshTokenOperation::
             kEnterpriseForcedProfileCreation_UserDecline);
   }
@@ -384,8 +385,8 @@ void ManagedProfileCreationController::MoveAccountIntoNewProfile() {
   CHECK(!profile_creator_);
   if (managed_profile_already_exists) {
     profile_creator_ = std::make_unique<DiceSignedInProfileCreator>(
-        source_profile_, account_info_.account_id, std::vector<CoreAccountId>{},
-        switch_to_entry->GetPath(),
+        source_profile_, account_info_.GetAccountId(),
+        std::vector<CoreAccountId>{}, switch_to_entry->GetPath(),
         base::BindOnce(
             &ManagedProfileCreationController::OnNewSignedInProfileCreated,
             weak_ptr_factory_.GetWeakPtr(),
@@ -394,8 +395,9 @@ void ManagedProfileCreationController::MoveAccountIntoNewProfile() {
     return;
   }
   profile_creator_ = std::make_unique<DiceSignedInProfileCreator>(
-      source_profile_, account_info_.account_id, std::vector<CoreAccountId>{},
-      profile_name, profiles::GetPlaceholderAvatarIndex(),
+      source_profile_, account_info_.GetAccountId(),
+      std::vector<CoreAccountId>{}, profile_name,
+      profiles::GetPlaceholderAvatarIndex(),
       base::BindOnce(
           &ManagedProfileCreationController::OnNewSignedInProfileCreated,
           weak_ptr_factory_.GetWeakPtr(),
@@ -436,7 +438,7 @@ void ManagedProfileCreationController::OnNewSignedInProfileCreated(
     return;
   }
 
-  CHECK_EQ(new_profile_primary_account_id, account_info_.account_id);
+  CHECK_EQ(new_profile_primary_account_id, account_info_.GetAccountId());
 
   final_profile_ = new_profile;
   final_profile_observation_.Observe(final_profile_);
@@ -472,7 +474,7 @@ void ManagedProfileCreationController::OnNewSignedInProfileCreated(
   }
 
   startup_helper_ = std::make_unique<DiceInterceptedSessionStartupHelper>(
-      new_profile, is_new_profile, account_info_.account_id, nullptr);
+      new_profile, is_new_profile, account_info_.GetAccountId(), nullptr);
   startup_helper_->Startup(
       base::BindOnce(&ManagedProfileCreationController::OnNewBrowserCreated,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -130,7 +130,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
   if (IsMigrationToAccount()) {
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
-        base::UTF8ToUTF16(account->email));
+        base::UTF8ToUTF16(account->GetEmail()));
   }
 
   if (!original_profile_) {
@@ -138,7 +138,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
     // account if they accept the prompt.
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
-        base::UTF8ToUTF16(account->email));
+        base::UTF8ToUTF16(account->GetEmail()));
   }
   // Notify user that their address has already been saved in their Google
   // account and is only going to be updated there.
@@ -146,15 +146,15 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
     case AutofillProfile::RecordType::kAccountHome:
       return l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
-          base::UTF8ToUTF16(account->email));
+          base::UTF8ToUTF16(account->GetEmail()));
     case AutofillProfile::RecordType::kAccountWork:
       return l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE,
-          base::UTF8ToUTF16(account->email));
+          base::UTF8ToUTF16(account->GetEmail()));
     case AutofillProfile::RecordType::kAccount:
       return l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
-          base::UTF8ToUTF16(account->email));
+          base::UTF8ToUTF16(account->GetEmail()));
     case AutofillProfile::RecordType::kAccountNameEmail:
       NOTIMPLEMENTED();
       break;
@@ -163,7 +163,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
   }
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
-      base::UTF8ToUTF16(account->email));
+      base::UTF8ToUTF16(account->GetEmail()));
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetPositiveButtonText()

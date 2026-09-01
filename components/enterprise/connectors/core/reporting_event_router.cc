@@ -212,7 +212,7 @@ void ReportingEventRouter::OnPasswordReuse(
     reporting_client_->ReportEvent(std::move(event), settings.value());
 }
 
-void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
+void ReportingEventRouter::OnPasswordChanged(std::string_view user_name) {
   if (!IsEventEnabled(kKeyPasswordChangedEvent)) {
     return;
   }

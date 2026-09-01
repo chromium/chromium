@@ -218,7 +218,7 @@ std::string AuthenticatorRequestDialogModel::GetGpmAccountEmail() {
   if (!account_info) {
     return "";
   }
-  return account_info->email;
+  return std::string(account_info->GetEmail());
 }
 
 Profile* AuthenticatorRequestDialogModel::GetProfile() {

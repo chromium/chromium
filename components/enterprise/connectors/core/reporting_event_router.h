@@ -67,7 +67,7 @@ class ReportingEventRouter : public KeyedService {
 
   // Notifies listeners that the user changed the password associated with
   // `user_name`
-  void OnPasswordChanged(const std::string& user_name);
+  void OnPasswordChanged(std::string_view user_name);
 
   // Notifies listeners about events related to Url Filtering Interstitials.
   // Virtual for tests.

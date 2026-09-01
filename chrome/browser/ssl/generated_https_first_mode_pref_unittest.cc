@@ -55,11 +55,15 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
   void SignIn(bool is_under_advanced_protection) {
     AccountInfo account_info =
         identity_test_env()->MakeAccountAvailable(kEmail);
-    account_info.is_under_advanced_protection = is_under_advanced_protection;
+    account_info =
+        AccountInfo::Builder(account_info)
+            .SetIsUnderAdvancedProtection(is_under_advanced_protection)
+            .Build();
     identity_test_env()->SetPrimaryAccount(
-        account_info.email, syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                                ? signin::ConsentLevel::kSignin
-                                : signin::ConsentLevel::kSync);
+        account_info.GetEmail(),
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync);
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }
 

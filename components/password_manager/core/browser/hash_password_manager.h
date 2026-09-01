@@ -55,11 +55,11 @@ class HashPasswordManager {
   // Returns empty if no hash matching |username| and |is_gaia_password| is
   // available.
   std::optional<PasswordHashData> RetrievePasswordHash(
-      const std::string& username,
+      std::string_view username,
       bool is_gaia_password);
 
   // Whether password hash of |username| and |is_gaia_password| is stored.
-  bool HasPasswordHash(const std::string& username, bool is_gaia_password);
+  bool HasPasswordHash(std::string_view username, bool is_gaia_password);
 
   // Moves enterpise password hashes from the profile storage to the local
   // state storage.

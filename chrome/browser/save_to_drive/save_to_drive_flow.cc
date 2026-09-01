@@ -142,7 +142,7 @@ void SaveToDriveFlow::OnAccountChosen(std::optional<AccountInfo> account_info) {
     return;
   }
   if (!signin::IsUsernameAllowedByPattern(
-          account_info->email,
+          account_info->GetEmail(),
           g_browser_process->local_state()->GetString(
               prefs::kRestrictPdfSaveToGoogleDriveAccountsToPattern))) {
     progress.status = SaveToDriveStatus::kUploadFailed;
@@ -153,7 +153,7 @@ void SaveToDriveFlow::OnAccountChosen(std::optional<AccountInfo> account_info) {
     return;
   }
   save_to_drive_account_info_ = {
-      .email = account_info->email,
+      .email = std::string(account_info->GetEmail()),
       .is_managed = account_info->IsManaged() == signin::Tribool::kTrue,
   };
   progress.status = SaveToDriveStatus::kAccountSelected;

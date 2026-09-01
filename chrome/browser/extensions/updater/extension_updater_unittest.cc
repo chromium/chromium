@@ -314,7 +314,7 @@ class TestDownloaderFactory {
     return identity_test_env_.get();
   }
 
-  const CoreAccountId& account_id() { return account_info_.account_id; }
+  const CoreAccountId& account_id() { return account_info_.GetAccountId(); }
 
   ExtensionDownloader::Factory GetDownloaderFactory() {
     return base::BindRepeating(

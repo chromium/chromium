@@ -154,7 +154,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{account_info.email, account_info.gaia}});
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
 
   ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
   auto* user_data =
@@ -188,7 +188,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{account_info.email, account_info.gaia}});
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
 
   ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
   auto* user_data =

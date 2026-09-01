@@ -512,7 +512,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetAvInfo_Success) {
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str()));
+  RunTest(
+      base::StringPrintf(kTest, account_info.GetGaiaId().ToString().c_str()));
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetHotfixes_Success) {
@@ -530,7 +531,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetHotfixes_Success) {
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str()));
+  RunTest(
+      base::StringPrintf(kTest, account_info.GetGaiaId().ToString().c_str()));
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
@@ -641,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str(),
+  RunTest(base::StringPrintf(kTest, account_info.GetGaiaId().ToString().c_str(),
                              kOptions.c_str(), kAssertions));
 }
 
@@ -847,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
   base::ReplaceSubstringsAfterOffset(&escaped_file_path, 0U, "\\", "\\\\");
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str(),
+  RunTest(base::StringPrintf(kTest, account_info.GetGaiaId().ToString().c_str(),
                              escaped_file_path.c_str(), extra_items.c_str(),
                              kAssertions));
 }
@@ -924,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
   )";
 
   AccountInfo account_info = SignIn("some-email@example.com");
-  RunTest(base::StringPrintf(kTest, account_info.gaia.ToString().c_str(),
+  RunTest(base::StringPrintf(kTest, account_info.GetGaiaId().ToString().c_str(),
                              extra_items.c_str(), kAssertions));
 }
 #endif  // BUILDFLAG(IS_MAC)

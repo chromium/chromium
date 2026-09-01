@@ -94,7 +94,7 @@ TEST_F(AndroidManagementClientTest, CheckAndroidManagementCall) {
   client_->StartCheckAndroidManagement(callback_observer_.Get());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-          account_info.account_id, kOAuthToken, base::Time::Max());
+          account_info.GetAccountId(), kOAuthToken, base::Time::Max());
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(

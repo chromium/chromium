@@ -28,7 +28,7 @@ AccountInfo SimulateExplicitSignIn(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bool has_explicit_sign_in =
       SigninPrefs(*profile->GetPrefs())
-          .GetExtensionsExplicitBrowserSignin(account_info.gaia);
+          .GetExtensionsExplicitBrowserSignin(account_info.GetGaiaId());
   CHECK(has_explicit_sign_in);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

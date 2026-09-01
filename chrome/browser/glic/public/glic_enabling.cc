@@ -465,7 +465,7 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
       result.share_image_allowed = false;
     } else {
       if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-              primary_account.account_id)) {
+              primary_account.GetAccountId())) {
         result.primary_account_is_fully_signed_in = false;
       }
 

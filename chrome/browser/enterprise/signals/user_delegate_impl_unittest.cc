@@ -128,7 +128,7 @@ TEST_F(UserDelegateImplTest, IsSameUser_NullManager) {
 
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
-  EXPECT_FALSE(user_delegate_->IsSameUser(account.gaia));
+  EXPECT_FALSE(user_delegate_->IsSameUser(account.GetGaiaId()));
 }
 
 // Tests that IsSameUser returns false when given a different user.
@@ -157,7 +157,7 @@ TEST_F(UserDelegateImplTest, IsSameUser_SameUser) {
       kUserEmail, signin::ConsentLevel::kSignin);
 
   CreateDelegate();
-  EXPECT_TRUE(user_delegate_->IsSameUser(account.gaia));
+  EXPECT_TRUE(user_delegate_->IsSameUser(account.GetGaiaId()));
 }
 
 // Tests that GetPolicyScopesNeedingSignals returns an empty set when

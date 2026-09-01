@@ -132,7 +132,7 @@ void AdvancedProtectionStatusManagerDesktop::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  if (info.is_under_advanced_protection) {
+  if (info.IsUnderAdvancedProtection()) {
     // User just enrolled into advanced protection.
     OnAdvancedProtectionEnabled();
   } else {
@@ -147,7 +147,7 @@ void AdvancedProtectionStatusManagerDesktop::OnExtendedAccountInfoRemoved(
   CoreAccountId unconsented_primary_account_id =
       GetUnconsentedPrimaryAccountId();
   if (!unconsented_primary_account_id.empty() &&
-      unconsented_primary_account_id == info.account_id) {
+      unconsented_primary_account_id == info.GetAccountId()) {
     OnAdvancedProtectionDisabled();
   }
 }

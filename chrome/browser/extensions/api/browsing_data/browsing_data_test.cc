@@ -146,13 +146,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
       function.get(), kRemoveEverythingArguments, GetProfile()));
   // Check that the Sync token was not revoked.
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      primary_account_info.account_id));
+      primary_account_info.GetAccountId()));
   EXPECT_FALSE(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_info.account_id));
+          primary_account_info.GetAccountId()));
   // Check that the secondary token was revoked.
   EXPECT_FALSE(identity_manager->HasAccountWithRefreshToken(
-      secondary_account_info.account_id));
+      secondary_account_info.GetAccountId()));
 }
 
 // Test that Sync remained in error when browsing data is cleared if Sync was in
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, kAccountEmail, signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager, account_info.account_id,
+      identity_manager, account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -178,13 +178,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, GetProfile()));
   // Check that the account was not removed and Sync remains in auth error.
-  EXPECT_TRUE(
-      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_SERVER,
-            identity_manager
-                ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
-                .GetInvalidGaiaCredentialsReason());
+  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
+  EXPECT_EQ(
+      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+          CREDENTIALS_REJECTED_BY_SERVER,
+      identity_manager
+          ->GetErrorStateOfRefreshTokenForAccount(account_info.GetAccountId())
+          .GetInvalidGaiaCredentialsReason());
 }
 
 // Test that the tokens are revoked when browsing data is cleared when there is
@@ -203,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, NotSyncing) {
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, GetProfile()));
   // Check that the account was removed.
-  EXPECT_FALSE(
-      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_FALSE(identity_manager->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
 }
 #endif
 

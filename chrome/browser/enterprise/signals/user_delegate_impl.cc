@@ -73,7 +73,7 @@ bool UserDelegateImpl::IsSameUser(const GaiaId& gaia_id) const {
          identity_manager_->GetPrimaryAccountId(
              signin::ConsentLevel::kSignin) ==
              identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id)
-                 .account_id;
+                 .GetAccountId();
 }
 
 std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()

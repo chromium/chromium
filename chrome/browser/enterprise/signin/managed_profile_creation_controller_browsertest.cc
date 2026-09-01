@@ -429,17 +429,17 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
   EXPECT_EQ(enterprise_util::UserAcceptedAccountManagement(verify_profile),
             GetParam().expected_management_accepted);
   EXPECT_EQ(GetIdentityManager(verify_profile)
-                ->HasAccountWithRefreshToken(account_info.account_id),
+                ->HasAccountWithRefreshToken(account_info.GetAccountId()),
             GetParam().expected_refresh_token);
 
   // The other primary account should not have been touched.
   if (GetParam().has_other_primary_account) {
     EXPECT_TRUE(GetIdentityManager(GetProfile())
                     ->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
-                other_primary_account_info.account_id);
+                other_primary_account_info.GetAccountId());
     EXPECT_TRUE(GetIdentityManager(GetProfile())
                     ->HasAccountWithRefreshToken(
-                        other_primary_account_info.account_id));
+                        other_primary_account_info.GetAccountId()));
     EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
   }
   if (verify_profile != GetProfile() || !GetParam().has_other_primary_account) {
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
         GetParam().has_other_primary_account);
     EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
     EXPECT_FALSE(GetIdentityManager()->HasAccountWithRefreshToken(
-        account_info.account_id));
+        account_info.GetAccountId()));
   }
 }
 
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTest,
   EXPECT_FALSE(GetIdentityManager(GetProfile())
                    ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(GetIdentityManager(GetProfile())
-                   ->HasAccountWithRefreshToken(account_info.account_id));
+                   ->HasAccountWithRefreshToken(account_info.GetAccountId()));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

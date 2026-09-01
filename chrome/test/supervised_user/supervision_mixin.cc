@@ -199,7 +199,7 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
                 .WithGaiaId(FakeGaia::GetDefaultGaiaId())
                 .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
                 .Build(email_));
-    CHECK(!account_info.account_id.empty());
+    CHECK(!account_info.GetAccountId().empty());
   } else {
     GetIdentityTestEnvironment()->SetRefreshTokenForPrimaryAccount();
   }

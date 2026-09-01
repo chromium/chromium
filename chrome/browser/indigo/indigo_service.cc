@@ -363,7 +363,7 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
   AccountInfo info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   bool is_google_internal_account =
-      gaia::IsGoogleInternalAccountEmail(info.email);
+      gaia::IsGoogleInternalAccountEmail(info.GetEmail());
   if (info.IsManaged() == signin::Tribool::kTrue &&
       !is_google_internal_account) {
     return LocalEligibility::kManagedDomain;

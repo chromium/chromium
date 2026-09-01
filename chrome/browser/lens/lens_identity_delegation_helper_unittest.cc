@@ -92,7 +92,7 @@ TEST_F(LensIdentityDelegationHelperTest,
       "user@gmail.com", signin::ConsentLevel::kSignin);
   // Force update cookie jar accounts in IdentityManager.
   identity_test_env_.SetCookieAccounts(
-      {{account_info.email, account_info.gaia}});
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
 
   base::test::TestFuture<std::vector<std::string>> future;
   FetchIdentityDelegationHeaders(
@@ -134,7 +134,7 @@ TEST_F(LensIdentityDelegationHelperTest,
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   identity_test_env_.SetCookieAccounts(
-      {{account_info.email, account_info.gaia}});
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
   SetSapisidCookie("sapisid_value");
 
   base::test::TestFuture<std::vector<std::string>> future;

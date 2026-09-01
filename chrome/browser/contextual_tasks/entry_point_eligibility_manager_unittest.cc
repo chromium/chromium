@@ -230,9 +230,10 @@ TEST_F(EntryPointEligibilityManagerTest, AreEntryPointsEligible_True) {
       identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
           "test@example.com");
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
   identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-      account_info.email, signin::ConsentLevel::kSignin);
+      account_info.GetEmail(), signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));
@@ -251,7 +252,8 @@ TEST_F(EntryPointEligibilityManagerTest,
           ->MakePrimaryAccountAvailable("test@example.com",
                                         signin::ConsentLevel::kSignin);
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));
@@ -282,9 +284,10 @@ TEST_F(EntryPointEligibilityManagerTest,
       identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
           "test@example.com");
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
   identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-      account_info.email, signin::ConsentLevel::kSignin);
+      account_info.GetEmail(), signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));
@@ -307,7 +310,8 @@ TEST_F(EntryPointEligibilityManagerTest,
   // Restore eligible state.
   notified_eligibility.reset();
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
   EXPECT_EQ(notified_eligibility, true);
 
   // 2. Test OnPrimaryAccountChanged: Clear primary account.
@@ -321,7 +325,8 @@ TEST_F(EntryPointEligibilityManagerTest,
                      ->MakePrimaryAccountAvailable(
                          "test@example.com", signin::ConsentLevel::kSignin);
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
   EXPECT_EQ(notified_eligibility, true);
 
   // 3. Test OnRefreshTokenUpdatedForAccount:
@@ -363,7 +368,7 @@ TEST_F(EntryPointEligibilityManagerTest,
       .WillRepeatedly(Return(false));
   identity_test_env_adaptor_->identity_test_env()
       ->UpdatePersistentErrorOfRefreshTokenForAccount(
-          account_info.account_id,
+          account_info.GetAccountId(),
           GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
               GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_EQ(notified_eligibility, false);

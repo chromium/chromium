@@ -876,7 +876,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     CoreAccountId primary_account_id =
         IdentityManagerFactory::GetForProfile(GetProfile())
             ->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-    if (primary_account_id != account.account_id) {
+    if (primary_account_id != account.GetAccountId()) {
       CompleteMintTokenFlow();
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kRemoteConsentUserNonPrimary));

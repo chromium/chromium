@@ -759,7 +759,7 @@ TEST_F(UserCloudPolicyManagerAshTest, NonBlockingFirstFetch) {
       kEmail, signin::ConsentLevel::kSignin);
   EXPECT_TRUE(
       identity_test_env()->identity_manager()->HasAccountWithRefreshToken(
-          account_info.account_id));
+          account_info.GetAccountId()));
 
   // That should have notified the manager, which now issues the request for the
   // policy oauth token.

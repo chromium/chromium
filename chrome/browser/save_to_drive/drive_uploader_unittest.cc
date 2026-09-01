@@ -148,9 +148,10 @@ TEST_F(DriveUploaderTest, FetchAccessTokenFailure) {
 }
 
 TEST_F(DriveUploaderTest, NoRefreshToken) {
-  AccountInfo account_info;
-  account_info.email = "test@example.com";
-  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("12345"));
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("12345"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("12345")))
+          .Build();
 
   auto uploader = std::make_unique<FakeDriveUploader>(
       "test_title", account_info, progress_callback_.Get(), profile_.get(),
@@ -183,7 +184,7 @@ TEST_F(DriveUploaderTest, OnRefreshTokenRemovedForAccount) {
       .Times(2);
 
   uploader->Start();
-  test_env()->RemoveRefreshTokenForAccount(account_info.account_id);
+  test_env()->RemoveRefreshTokenForAccount(account_info.GetAccountId());
 }
 
 TEST_F(DriveUploaderTest, NotifyUploadInProgressIsRateLimited) {

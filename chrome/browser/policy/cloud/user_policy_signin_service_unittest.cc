@@ -143,7 +143,7 @@ class UserPolicySigninServiceTest : public testing::Test {
 
     CHECK(!account_info.IsEmpty());
     service->RegisterForPolicyWithAccountId(
-        kTestUser, account_info.account_id,
+        kTestUser, account_info.GetAccountId(),
         /*is_registration_for_management_consistency_check=*/false,
         std::move(callback));
     ASSERT_TRUE(IsRequestActive());

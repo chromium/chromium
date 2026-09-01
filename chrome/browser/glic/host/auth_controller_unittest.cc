@@ -182,7 +182,7 @@ TEST_F(AuthControllerTest, CookieSyncOnTokenChange_PrimaryAccountChanged) {
   signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
   AccountInfo account_info =
       identity_test_env_->MakeAccountAvailable("user2@gmail.com");
-  identity_test_env_->SetPrimaryAccount(account_info.email,
+  identity_test_env_->SetPrimaryAccount(account_info.GetEmail(),
                                         signin::ConsentLevel::kSignin);
 
   task_environment_.FastForwardBy(base::Seconds(10));
@@ -207,7 +207,7 @@ TEST_F(AuthControllerTest,
   signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
   AccountInfo account_info =
       identity_test_env_->MakeAccountAvailable("user2@gmail.com");
-  identity_test_env_->SetPrimaryAccount(account_info.email,
+  identity_test_env_->SetPrimaryAccount(account_info.GetEmail(),
                                         signin::ConsentLevel::kSignin);
 
   // Sync shouldn't run immediately because of the delay.

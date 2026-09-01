@@ -136,18 +136,20 @@ class AccountAppsAvailabilityTest : public testing::Test {
 
   void AddAccountToAccountManager(const AccountInfo& account_info) {
     account_manager_->UpsertAccount(
-        account_manager::AccountKey::FromGaiaId(account_info.gaia),
-        account_info.email, account_manager::AccountManager::kInvalidToken);
+        account_manager::AccountKey::FromGaiaId(account_info.GetGaiaId()),
+        account_info.GetEmail(),
+        account_manager::AccountManager::kInvalidToken);
   }
 
   void RemoveAccountFromAccountManager(const AccountInfo& account_info) {
     account_manager_->RemoveAccount(
-        account_manager::AccountKey::FromGaiaId(account_info.gaia));
+        account_manager::AccountKey::FromGaiaId(account_info.GetGaiaId()));
   }
 
   void RemoveAccount(const AccountInfo& account_info) {
     RemoveAccountFromAccountManager(account_info);
-    identity_test_env()->RemoveRefreshTokenForAccount(account_info.account_id);
+    identity_test_env()->RemoveRefreshTokenForAccount(
+        account_info.GetAccountId());
   }
 
   TestingPrefServiceSimple* pref_service() { return pref_service_.get(); }
@@ -162,8 +164,8 @@ class AccountAppsAvailabilityTest : public testing::Test {
   }
 
   void LoginUserSession() {
-    auto account_id = AccountId::FromUserEmailGaiaId(primary_account_.email,
-                                                     primary_account_.gaia);
+    auto account_id = AccountId::FromUserEmailGaiaId(
+        primary_account_.GetEmail(), primary_account_.GetGaiaId());
     ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
     test_user_session_manager_->LogIn(account_id);
   }
@@ -213,9 +215,9 @@ TEST_F(AccountAppsAvailabilityTest, CallsBeforeInitialization) {
   const AccountInfo secondary_account_info =
       identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
   const account_manager::Account primary_account =
-      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
-  const account_manager::Account secondary_account =
-      CreateAccount(kSecondaryAccount1Email, secondary_account_info.gaia);
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->GetGaiaId());
+  const account_manager::Account secondary_account = CreateAccount(
+      kSecondaryAccount1Email, secondary_account_info.GetGaiaId());
 
   // Since AccountManager fetches synchronously, CreateAccountAppsAvailability()
   // will immediately initialize the service if any accounts are present.
@@ -245,7 +247,7 @@ TEST_F(AccountAppsAvailabilityTest, CallsBeforeInitialization) {
   const base::DictValue* secondary_account_pref =
       pref_service()
           ->GetDict(account_manager::prefs::kAccountAppsAvailability)
-          .FindDict(secondary_account_info.gaia.ToString());
+          .FindDict(secondary_account_info.GetGaiaId().ToString());
   ASSERT_TRUE(secondary_account_pref);
   const std::optional<bool> secondary_is_available_in_arc =
       secondary_account_pref->FindBool(
@@ -258,9 +260,9 @@ TEST_F(AccountAppsAvailabilityTest, GetAccountsAvailableInArc) {
   const AccountInfo secondary_account_info =
       AddAccount(kSecondaryAccount1Email);
   const account_manager::Account primary_account =
-      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
-  const account_manager::Account secondary_account =
-      CreateAccount(kSecondaryAccount1Email, secondary_account_info.gaia);
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->GetGaiaId());
+  const account_manager::Account secondary_account = CreateAccount(
+      kSecondaryAccount1Email, secondary_account_info.GetGaiaId());
 
   auto account_apps_availability = CreateAccountAppsAvailability();
   // Wait for initialization to finish.
@@ -286,9 +288,9 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
   const AccountInfo secondary_account_1_info =
       AddAccount(kSecondaryAccount1Email);
   const account_manager::Account primary_account =
-      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
-  const account_manager::Account secondary_account_1 =
-      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->GetGaiaId());
+  const account_manager::Account secondary_account_1 = CreateAccount(
+      kSecondaryAccount1Email, secondary_account_1_info.GetGaiaId());
 
   auto account_apps_availability = CreateAccountAppsAvailability();
   // Wait for initialization to finish.
@@ -315,8 +317,8 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
 
   const AccountInfo secondary_account_2_info =
       AddAccount(kSecondaryAccount2Email);
-  const account_manager::Account secondary_account_2 =
-      CreateAccount(kSecondaryAccount2Email, secondary_account_2_info.gaia);
+  const account_manager::Account secondary_account_2 = CreateAccount(
+      kSecondaryAccount2Email, secondary_account_2_info.GetGaiaId());
   // Add the account to ARC.
   account_apps_availability->SetIsAccountAvailableInArc(secondary_account_2,
                                                         true);
@@ -361,9 +363,9 @@ TEST_F(AccountAppsAvailabilityTest, ObserversAreCalledWhenAvailabilityChanges) {
   const AccountInfo secondary_account_1_info =
       AddAccount(kSecondaryAccount1Email);
   const account_manager::Account primary_account =
-      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
-  const account_manager::Account secondary_account_1 =
-      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->GetGaiaId());
+  const account_manager::Account secondary_account_1 = CreateAccount(
+      kSecondaryAccount1Email, secondary_account_1_info.GetGaiaId());
 
   auto account_apps_availability = CreateAccountAppsAvailability();
   // Wait for initialization to finish.
@@ -407,9 +409,9 @@ TEST_F(AccountAppsAvailabilityTest,
   const AccountInfo secondary_account_1_info =
       AddAccount(kSecondaryAccount1Email);
   const account_manager::Account primary_account =
-      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
-  const account_manager::Account secondary_account_1 =
-      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->GetGaiaId());
+  const account_manager::Account secondary_account_1 = CreateAccount(
+      kSecondaryAccount1Email, secondary_account_1_info.GetGaiaId());
 
   auto account_apps_availability = CreateAccountAppsAvailability();
   // Wait for initialization to finish.
@@ -441,8 +443,8 @@ TEST_F(AccountAppsAvailabilityTest,
 
   const AccountInfo secondary_account_2_info =
       AddAccount(kSecondaryAccount2Email);
-  const account_manager::Account secondary_account_2 =
-      CreateAccount(kSecondaryAccount2Email, secondary_account_2_info.gaia);
+  const account_manager::Account secondary_account_2 = CreateAccount(
+      kSecondaryAccount2Email, secondary_account_2_info.GetGaiaId());
 
   // [Account is NOT available in ARC] Account is removed from ARC - observer is
   // not called.
@@ -455,9 +457,9 @@ TEST_F(AccountAppsAvailabilityTest,
   const AccountInfo secondary_account_1_info =
       AddAccount(kSecondaryAccount1Email);
   const account_manager::Account primary_account =
-      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
-  const account_manager::Account secondary_account_1 =
-      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->GetGaiaId());
+  const account_manager::Account secondary_account_1 = CreateAccount(
+      kSecondaryAccount1Email, secondary_account_1_info.GetGaiaId());
 
   auto account_apps_availability = CreateAccountAppsAvailability();
   // Wait for initialization to finish.
@@ -485,7 +487,7 @@ TEST_F(AccountAppsAvailabilityTest,
 
   // [Account is available in ARC] Account is upserted - observer is called.
   identity_test_env()->SetRefreshTokenForAccount(
-      secondary_account_1_info.account_id);
+      secondary_account_1_info.GetAccountId());
   // Wait for async calls to finish.
   base::RunLoop().RunUntilIdle();
   checkpoint.Call(1);
@@ -502,9 +504,9 @@ TEST_F(AccountAppsAvailabilityTest,
   const AccountInfo secondary_account_1_info =
       AddAccount(kSecondaryAccount1Email);
   const account_manager::Account primary_account =
-      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
-  const account_manager::Account secondary_account_1 =
-      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->GetGaiaId());
+  const account_manager::Account secondary_account_1 = CreateAccount(
+      kSecondaryAccount1Email, secondary_account_1_info.GetGaiaId());
 
   auto account_apps_availability = CreateAccountAppsAvailability();
   // Wait for initialization to finish.
@@ -540,7 +542,7 @@ TEST_F(AccountAppsAvailabilityTest,
   // [Account is NOT available in ARC] Account is upserted - observer is not
   // called.
   identity_test_env()->SetRefreshTokenForAccount(
-      secondary_account_1_info.account_id);
+      secondary_account_1_info.GetAccountId());
   // Wait for async calls to finish.
   base::RunLoop().RunUntilIdle();
   checkpoint.Call(2);

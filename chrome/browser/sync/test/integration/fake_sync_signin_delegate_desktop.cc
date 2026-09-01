@@ -85,12 +85,12 @@ bool FakeSyncSigninDelegateDesktop::SignIn(SyncTestAccount account,
     signin::MakeAccountAvailable(identity_manager, options.Build(username));
   } else {
     // There is no primary account previously, so mimic a new sign-in.
-    const CoreAccountInfo account_info = signin::MakePrimaryAccountAvailable(
+    const AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, username, consent_level);
 
     signin::SimulateSuccessfulFetchOfAccountInfo(
-        identity_manager, account_info.account_id, account_info.email,
-        account_info.gaia,
+        identity_manager, account_info.GetAccountId(), account_info.GetEmail(),
+        account_info.GetGaiaId(),
         GetHostedDomain(account).value_or(
             signin::constants::kNoHostedDomainFound),
         "Full Name", "Given Name", "en-US", "");

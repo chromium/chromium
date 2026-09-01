@@ -41,13 +41,13 @@ uint64_t CalculatePasswordHash(std::u16string_view text,
 
 // If username is an email address, canonicalizes this email. Otherwise,
 // append "@gmail.com" if it is gaia or returns |username| for non-Gaia account.
-std::string CanonicalizeUsername(const std::string& username,
+std::string CanonicalizeUsername(std::string_view username,
                                  bool is_gaia_account);
 
 // Returns true if the two usernames the same after canonicalization.
-bool AreUsernamesSame(const std::string& username1,
+bool AreUsernamesSame(std::string_view username1,
                       bool is_username1_gaia_account,
-                      const std::string& username2,
+                      std::string_view username2,
                       bool is_username2_gaia_account);
 
 // Creates random salt.

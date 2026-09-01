@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextServiceImplBrowserTest,
       identity_test_env()
           ->MakePrimaryAccountAvailable("error_user@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
       account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(

@@ -2800,7 +2800,8 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnEligibilityChange) {
   auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   identity_test_env_->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
 
   base::RepeatingClosure captured_callback;
 
@@ -2842,7 +2843,8 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnStartupIfAlreadyEligible) {
   auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   identity_test_env_->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
 
   EXPECT_CALL(*aim_eligibility_service_, RegisterEligibilityChangedCallback(_))
       .WillOnce(Return(base::CallbackListSubscription()));

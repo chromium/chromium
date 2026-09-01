@@ -1571,7 +1571,7 @@ void UserSessionManager::InitProfilePreferences(
               user_context.GetAccountId().GetUserEmail());
 
       DCHECK(!account_info.IsEmpty() || IsRunningTest());
-      gaia_id = account_info.gaia;
+      gaia_id = account_info.GetGaiaId();
       used_extended_account_info = true;
 
       // Use a fake gaia id for tests that do not have it.

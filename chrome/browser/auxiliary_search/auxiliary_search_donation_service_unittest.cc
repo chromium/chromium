@@ -512,7 +512,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, DonatesHistoryEntriesWithAccount) {
               fake_visit_time))));
   EXPECT_FALSE(account.IsEmpty());
   EXPECT_EQ(account.email, "test@gmail.com");
-  EXPECT_EQ(account.gaia, account_info.gaia);
+  EXPECT_EQ(account.gaia, account_info.GetGaiaId());
 }
 
 }  // namespace

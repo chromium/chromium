@@ -292,7 +292,7 @@ void LocaleSwitchScreen::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void LocaleSwitchScreen::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
-  if (account_info.gaia != gaia_id_) {
+  if (account_info.GetGaiaId() != gaia_id_) {
     return;
   }
   account_capabilities_loaded_ =

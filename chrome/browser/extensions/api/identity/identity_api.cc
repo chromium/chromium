@@ -278,16 +278,16 @@ void IdentityAPI::OnRefreshTokenUpdatedForAccount(
 
 void IdentityAPI::OnExtendedAccountInfoRemoved(
     const AccountInfo& account_info) {
-  DCHECK(!account_info.gaia.empty());
+  DCHECK(!account_info.GetGaiaId().empty());
   EraseStaleGaiaIdsForAllExtensions();
 
-  auto it = accounts_known_to_extensions_.find(account_info.gaia);
+  auto it = accounts_known_to_extensions_.find(account_info.GetGaiaId());
   if (it == accounts_known_to_extensions_.end()) {
     // Account unknown to Extensions.
     return;
   }
   accounts_known_to_extensions_.erase(it);
-  FireOnAccountSignInChanged(account_info.gaia, false);
+  FireOnAccountSignInChanged(account_info.GetGaiaId(), false);
 }
 
 void IdentityAPI::FireOnAccountSignInChanged(const GaiaId& gaia_id,

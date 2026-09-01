@@ -272,8 +272,8 @@ void GlicActorPolicyChecker::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
-      info.account_id == identity_manager->GetPrimaryAccountId(
-                             signin::ConsentLevel::kSignin)) {
+      info.GetAccountId() == identity_manager->GetPrimaryAccountId(
+                                 signin::ConsentLevel::kSignin)) {
     OnPrefOrAccountChanged();
   }
 }
@@ -282,8 +282,8 @@ void GlicActorPolicyChecker::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
-      info.account_id == identity_manager->GetPrimaryAccountId(
-                             signin::ConsentLevel::kSignin)) {
+      info.GetAccountId() == identity_manager->GetPrimaryAccountId(
+                                 signin::ConsentLevel::kSignin)) {
     OnPrefOrAccountChanged();
   }
 }

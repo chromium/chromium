@@ -120,7 +120,7 @@ ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
       FROM_HERE, base::BindOnce(&ProfileManagementDisclaimerService::
                                     MaybeShowEnterpriseManagementDisclaimer,
                                 weak_ptr_factory_.GetWeakPtr(),
-                                GetPrimaryAccountInfo().account_id,
+                                GetPrimaryAccountInfo().GetAccountId(),
                                 signin_metrics::AccessPoint::
                                     kEnterpriseManagementDisclaimerAtStartup));
 }
@@ -301,7 +301,7 @@ void ProfileManagementDisclaimerService::
   // between failures, we can reset the state and wait for another attempt.
   if (!CanTryPolicyRegistration(
           signin_prefs_.GetPolicyDisclaimerLastRegistrationFailureTime(
-              info.gaia))) {
+              info.GetGaiaId()))) {
     OnRegisteredForPolicy(/*is_from_cached_registration_result=*/true,
                           /*is_managed_account=*/false);
     return;
@@ -486,7 +486,7 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
     Reset();
     return;
   }
-  GaiaId gaia_id = GetExtendedAccountInfo(state_->account_id).gaia;
+  GaiaId gaia_id = GetExtendedAccountInfo(state_->account_id).GetGaiaId();
   // If the account has been removed in the meantime, reset the state.
   if (gaia_id.empty()) {
     state_->profile_to_continue_in = nullptr;
@@ -565,7 +565,7 @@ void ProfileManagementDisclaimerService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
           signin::PrimaryAccountChangeEvent::Type::kCleared &&
-      state_->account_id == GetPrimaryAccountInfo().account_id) {
+      state_->account_id == GetPrimaryAccountInfo().GetAccountId()) {
     state_->profile_to_continue_in = nullptr;
     Reset();
     return;
@@ -595,7 +595,7 @@ void ProfileManagementDisclaimerService::OnPrimaryAccountChanged(
 
 void ProfileManagementDisclaimerService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.account_id != state_->account_id) {
+  if (info.GetAccountId() != state_->account_id) {
     return;
   }
   // Management status is not yet available, wait for extended account info.
@@ -613,7 +613,7 @@ void ProfileManagementDisclaimerService::OnRefreshTokenUpdatedForAccount(
   // This would most likely happen at startup after all refresh tokens are
   // loaded.
   if (state_->account_id.empty() &&
-      GetPrimaryAccountInfo().account_id != account_info.account_id) {
+      GetPrimaryAccountInfo().GetAccountId() != account_info.account_id) {
     return;
   }
   if (!state_->account_id.empty() &&
@@ -633,7 +633,7 @@ void ProfileManagementDisclaimerService::OnBrowserActivated(
   MaybeShowDeviceSignalsDisclaimerDialog(browser);
 
   CoreAccountId account_id = state_->account_id.empty()
-                                 ? GetPrimaryAccountInfo().account_id
+                                 ? GetPrimaryAccountInfo().GetAccountId()
                                  : state_->account_id;
   signin_metrics::AccessPoint access_point = state_->access_point.value_or(
       signin_metrics::AccessPoint::

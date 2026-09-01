@@ -141,7 +141,7 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
       identity_manager->FindExtendedAccountInfo(core_account_info);
   account_info =
       AccountInfo::Builder(account_info)
-          .SetHostedDomain(gaia::ExtractDomainName(account_info.email))
+          .SetHostedDomain(gaia::ExtractDomainName(account_info.GetEmail()))
           .Build();
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }

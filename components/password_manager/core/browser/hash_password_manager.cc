@@ -200,7 +200,7 @@ HashPasswordManager::RetrieveAllPasswordHashesInternal(
 }
 
 std::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
-    const std::string& username,
+    std::string_view username,
     bool is_gaia_password) {
   CHECK(prefs_);
   if (username.empty()) {
@@ -220,7 +220,7 @@ std::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
   return std::nullopt;
 }
 
-bool HashPasswordManager::HasPasswordHash(const std::string& username,
+bool HashPasswordManager::HasPasswordHash(std::string_view username,
                                           bool is_gaia_password) {
   CheckPrefs(is_gaia_password);
   if (username.empty()) {

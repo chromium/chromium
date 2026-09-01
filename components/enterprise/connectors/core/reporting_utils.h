@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_UTILS_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_UTILS_H_
 
+#include <string_view>
+
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -79,7 +81,7 @@ GetPasswordReuseEvent(const GURL& url,
                       const ReferrerChain& referrer_chain);
 
 chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
-GetPasswordChangedEvent(const std::string& user_name,
+GetPasswordChangedEvent(std::string_view user_name,
                         const std::string& profile_identifier,
                         const std::string& profile_username);
 

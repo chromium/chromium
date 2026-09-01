@@ -188,8 +188,8 @@ bool IsPrimaryOrDeviceLocalAccount(
     return false;
   }
 
-  DCHECK(!account_info.gaia.empty());
-  return IsPrimaryGaiaAccount(account_info.gaia);
+  DCHECK(!account_info.GetGaiaId().empty());
+  return IsPrimaryGaiaAccount(account_info.GetGaiaId());
 }
 
 // See //chromeos/ash/experiences/arc/mojom/auth.mojom RequestPrimaryAccount()
@@ -711,7 +711,7 @@ void ArcAuthService::FetchSecondaryAccountInfo(
     return;
   }
 
-  const CoreAccountId& account_id = account_info.account_id;
+  const CoreAccountId& account_id = account_info.GetAccountId();
   DCHECK(!account_id.empty());
 
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -763,7 +763,7 @@ void ArcAuthService::OnSecondaryAccountAuthCodeFetched(
   if (!account_info.IsEmpty()) {
     const bool is_persistent_error =
         identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            account_info.account_id);
+            account_info.GetAccountId());
     std::move(callback).Run(
         mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR,
         nullptr /* account_info */, is_persistent_error);
@@ -820,7 +820,7 @@ ArcAuthService::CreateArcBackgroundAuthCodeFetcher(
       &local_state_.get(), url_loader_factory_,
       CHECK_DEREF(ash::AnnotatedAccountId::Get(profile_.get())),
       identity_manager_.get(), core_account_id, initial_signin,
-      IsPrimaryGaiaAccount(account_info.gaia));
+      IsPrimaryGaiaAccount(account_info.GetGaiaId()));
 
   return fetcher;
 }

@@ -69,7 +69,8 @@ class OneGoogleBarServiceTest : public testing::Test {
   void SignIn() {
     AccountInfo account_info =
         identity_env_.MakeAccountAvailable("test@email.com");
-    identity_env_.SetCookieAccounts({{account_info.email, account_info.gaia}});
+    identity_env_.SetCookieAccounts(
+        {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
   }
 
   void SignOut() { identity_env_.SetCookieAccounts({}); }

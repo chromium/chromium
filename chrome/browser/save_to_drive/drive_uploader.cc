@@ -200,13 +200,13 @@ DriveUploader::~DriveUploader() = default;
 void DriveUploader::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!identity_manager_->HasAccountWithRefreshToken(
-          account_info_.account_id)) {
+          account_info_.GetAccountId())) {
     NotifyError(SaveToDriveErrorType::kOauthError);
     return;
   }
   scoped_identity_manager_observation_.Observe(identity_manager_);
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      account_info_.account_id, signin::OAuthConsumerId::kSaveToDrive,
+      account_info_.GetAccountId(), signin::OAuthConsumerId::kSaveToDrive,
       base::BindOnce(&DriveUploader::OnFetchAccessToken,
                      weak_ptr_factory_.GetWeakPtr()),
       signin::AccessTokenFetcher::Mode::kImmediate);
@@ -343,7 +343,7 @@ void DriveUploader::NotifyError(SaveToDriveErrorType error_type) {
 
 void DriveUploader::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
-  if (account_info_.account_id == account_id) {
+  if (account_info_.GetAccountId() == account_id) {
     NotifyError(SaveToDriveErrorType::kOauthError);
   }
 }

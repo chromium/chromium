@@ -118,7 +118,7 @@ std::u16string AutofillAiSaveUpdateEntityPromptController::GetSourceNotice()
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE,
       google_wallet_text, google_wallet_text,
-      base::UTF8ToUTF16(account->email));
+      base::UTF8ToUTF16(account->GetEmail()));
 }
 
 bool AutofillAiSaveUpdateEntityPromptController::IsWalletableEntity() const {

@@ -1073,7 +1073,7 @@ GURL ChromePasswordProtectionService::GetEnterpriseChangePasswordURL() const {
 GURL ChromePasswordProtectionService::GetDefaultChangePasswordURL() const {
   // Computes the default GAIA change password URL.
   const AccountInfo account_info = GetAccountInfo();
-  std::string account_email = account_info.email;
+  std::string account_email(account_info.GetEmail());
   // This page will prompt for re-auth and then will prompt for a new password.
   std::string account_url =
       "https://myaccount.google.com/signinoptions/"
@@ -1414,10 +1414,11 @@ std::string ChromePasswordProtectionService::GetOrganizationName(
     return std::string();
   }
 
-  std::string email =
+  AccountInfo account_info =
       password_type.is_account_syncing()
-          ? GetAccountInfo().email
-          : GetAccountInfoForUsername(username_for_last_shown_warning()).email;
+          ? GetAccountInfo()
+          : GetAccountInfoForUsername(username_for_last_shown_warning());
+  std::string_view email = account_info.GetEmail();
   return email.empty() ? std::string() : gaia::ExtractDomainName(email);
 }
 
@@ -1448,7 +1449,7 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     // User name should only be empty when MaybeStartPasswordFieldOnFocusRequest
     // is called.
     std::string username_or_email =
-        username.empty() ? GetAccountInfo().email : username;
+        username.empty() ? std::string(GetAccountInfo().GetEmail()) : username;
 
 // Disabled on Android, because enterprise reporting extension is not supported.
 #if !BUILDFLAG(IS_ANDROID)
@@ -1488,7 +1489,7 @@ void ChromePasswordProtectionService::ReportPasswordChanged() {
           profile_);
   if (safe_browsing_event_router) {
     safe_browsing_event_router->OnPolicySpecifiedPasswordChanged(
-        GetAccountInfo().email);
+        GetAccountInfo().GetEmail());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1496,7 +1497,7 @@ void ChromePasswordProtectionService::ReportPasswordChanged() {
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile_);
   if (reporting_event_router) {
-    reporting_event_router->OnPasswordChanged(GetAccountInfo().email);
+    reporting_event_router->OnPasswordChanged(GetAccountInfo().GetEmail());
   }
 }
 
@@ -1678,7 +1679,7 @@ std::string ChromePasswordProtectionService::GetSyncPasswordHashFromPrefs(
 
   auto* old_prefs = hash_password_manager->set_prefs(profile_->GetPrefs());
   std::optional<password_manager::PasswordHashData> sync_hash_data =
-      hash_password_manager->RetrievePasswordHash(GetAccountInfo().email,
+      hash_password_manager->RetrievePasswordHash(GetAccountInfo().GetEmail(),
                                                   /*is_gaia_password=*/true);
   std::string result = sync_hash_data
                            ? base::NumberToString(sync_hash_data->hash)
@@ -1836,8 +1837,9 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSyncingHistory() const {
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
-  return !GetAccountInfo().account_id.empty() &&
-         GetAccountInfo().GetHostedDomain().has_value();
+  AccountInfo account_info = GetAccountInfo();
+  return !account_info.GetAccountId().empty() &&
+         account_info.GetHostedDomain().has_value();
 }
 
 bool ChromePasswordProtectionService::IsAccountConsumer(

@@ -5787,7 +5787,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetAccessTokenFunction::Run() {
           identity_manager
               ->FindExtendedAccountInfoByEmailAddress(
                   params->access_token_params.email)
-              .account_id,
+              .GetAccountId(),
           signin::OAuthConsumerId::kAshAutotestPrivateApi, scopes,
           base::BindOnce(&AutotestPrivateGetAccessTokenFunction::OnAccessToken,
                          this),

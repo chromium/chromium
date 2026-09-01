@@ -629,7 +629,7 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
         email, signin::ConsentLevel::kSignin);
     EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
         signin::ConsentLevel::kSignin));
-    return account_info.account_id;
+    return account_info.GetAccountId();
   }
 
   IdentityAPI* id_api() {
@@ -2773,7 +2773,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
     func->push_mint_token_result(
         TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
     func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
-    func->set_remote_consent_gaia_id(secondary_account.gaia);
+    func->set_remote_consent_gaia_id(secondary_account.GetGaiaId());
     // Have GetAuthTokenFunction actually make the request for the access token.
     func->set_auto_login_access_token(false);
 
@@ -2799,7 +2799,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
     }
 
     std::string secondary_account_access_token =
-        IssueLoginAccessTokenForAccount(secondary_account.account_id);
+        IssueLoginAccessTokenForAccount(secondary_account.GetAccountId());
 
     std::string access_token;
     std::set<std::string> granted_scopes;
@@ -2809,7 +2809,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 
     EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
               GetCachedToken(secondary_account).status());
-    EXPECT_EQ(secondary_account.gaia,
+    EXPECT_EQ(secondary_account.GetGaiaId(),
               id_api()->GetGaiaIdForExtension(extension->id()));
     EXPECT_THAT(func->login_access_tokens(),
                 testing::ElementsAre(primary_account_access_token,
@@ -2995,14 +2995,14 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   AccountInfo secondary_account =
       identity_test_env()->MakeAccountAvailable("secondary@example.com");
   identity_test_env()->SetInvalidRefreshTokenForAccount(
-      secondary_account.account_id);
+      secondary_account.GetAccountId());
 
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
   func->set_extension(extension.get());
   func->set_login_ui_result(true);
   func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
-  func->set_remote_consent_gaia_id(secondary_account.gaia);
+  func->set_remote_consent_gaia_id(secondary_account.GetGaiaId());
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
 
   const char kFunctionParams[] =
@@ -3469,8 +3469,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
   AccountInfo secondary_account =
       identity_test_env()->MakeAccountAvailable("secondary@example.com");
 
-  SetCachedGaiaId(secondary_account.gaia);
-  RunNewFunctionAndExpectSelectedUserId(extension, secondary_account.gaia);
+  SetCachedGaiaId(secondary_account.GetGaiaId());
+  RunNewFunctionAndExpectSelectedUserId(extension,
+                                        secondary_account.GetGaiaId());
 
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
@@ -3496,8 +3497,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
 
   SetCachedGaiaId(primary_account.gaia);
   // Run a new function with an account id specified in the arguments.
-  RunNewFunctionAndExpectSelectedUserId(extension, secondary_account.gaia,
-                                        secondary_account.gaia);
+  RunNewFunctionAndExpectSelectedUserId(
+      extension, secondary_account.GetGaiaId(), secondary_account.GetGaiaId());
 
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
@@ -4485,7 +4486,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireForSecondaryAccount) {
   CoreAccountId secondary_account_id =
       identity_test_env()
           ->MakeAccountAvailable("secondary@example.com")
-          .account_id;
+          .GetAccountId();
   EXPECT_FALSE(HasExpectedEvent());
 
   // Revoke the secondary account's refresh token and check that the callback

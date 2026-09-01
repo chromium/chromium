@@ -59,7 +59,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
 
   // Notifies listeners that the user changed the password associated with
   // |user_name|.
-  void OnPolicySpecifiedPasswordChanged(const std::string& user_name);
+  void OnPolicySpecifiedPasswordChanged(std::string_view user_name);
 
   // Notifies listeners that the user just opened a dangerous download.
   void OnDangerousDownloadOpened(const GURL& download_url,

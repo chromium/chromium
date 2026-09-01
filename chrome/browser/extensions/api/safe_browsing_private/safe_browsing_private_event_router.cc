@@ -71,7 +71,7 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
 }
 
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
-    const std::string& user_name) {
+    std::string_view user_name) {
   // |event_router_| can be null in tests.
   if (event_router_) {
     base::ListValue event_value;

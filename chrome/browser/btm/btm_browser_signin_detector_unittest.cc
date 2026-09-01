@@ -106,8 +106,8 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
   void SimulateSuccessfulFetchOfAccountInfo(const TestAccount* test_account,
                                             const AccountInfo* account_info) {
     identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-        account_info->account_id, account_info->email, account_info->gaia,
-        test_account->host_domain,
+        account_info->GetAccountId(), account_info->GetEmail(),
+        account_info->GetGaiaId(), test_account->host_domain,
         base::StrCat({"full_name-", test_account->email}),
         base::StrCat({"given_name-", test_account->email}),
         base::StrCat({"local-", test_account->email}),
@@ -226,8 +226,8 @@ TEST_F(BrowserSigninDetectorServiceTest, LateObservation) {
       identity_test_env()->MakeAccountAvailable(kEnterpriseAccount.email);
 
   identity_test_env()->SetCookieAccounts(
-      {{account_info_1.email, account_info_1.gaia},
-       {account_info_2.email, account_info_2.gaia}});
+      {{std::string(account_info_1.GetEmail()), account_info_1.GetGaiaId()},
+       {std::string(account_info_2.GetEmail()), account_info_2.GetGaiaId()}});
 
   SimulateSuccessfulFetchOfAccountInfo(&kNonEnterpriseAccount, &account_info_1);
   SimulateSuccessfulFetchOfAccountInfo(&kEnterpriseAccount, &account_info_2);

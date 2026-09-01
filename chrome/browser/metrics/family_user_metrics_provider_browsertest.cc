@@ -119,8 +119,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
         IdentityManagerFactory::GetForProfile(profile);
     AccountInfo account_info =
         signin::MakeAccountAvailable(identity_manager, kSecondaryEDUEmail);
-    EXPECT_TRUE(
-        identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+    EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
+        account_info.GetAccountId()));
   }
 
   // Simulate calling ProvideHistograms() after logging in.

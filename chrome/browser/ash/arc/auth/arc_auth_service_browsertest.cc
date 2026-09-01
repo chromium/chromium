@@ -462,8 +462,8 @@ class ArcAuthServiceTest : public MixinBasedInProcessBrowserTest {
     // Wait for async calls to finish.
     base::RunLoop().RunUntilIdle();
     if (make_available_in_arc) {
-      EXPECT_TRUE(
-          SetIsAccountAvailableInArc(account_info.gaia, make_available_in_arc));
+      EXPECT_TRUE(SetIsAccountAvailableInArc(account_info.GetGaiaId(),
+                                             make_available_in_arc));
     }
     return account_info;
   }
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        FetchSecondaryAccountInfoInvalidRefreshToken) {
   base::HistogramTester tester;
   const AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
-  SetInvalidRefreshTokenForAccount(account_info.account_id);
+  SetInvalidRefreshTokenForAccount(account_info.GetAccountId());
   test_url_loader_factory()->AddResponse(arc::kTokenBootstrapEndPoint,
                                          std::string() /* response */,
                                          net::HTTP_UNAUTHORIZED);
@@ -842,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   base::HistogramTester tester;
   const AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
   UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id,
+      account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -965,14 +965,14 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   // 1 call for the Secondary Account.
   EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
 
-  SetInvalidRefreshTokenForAccount(account_info.account_id);
+  SetInvalidRefreshTokenForAccount(account_info.GetAccountId());
   EXPECT_EQ(initial_num_calls, auth_instance().num_account_upserted_calls());
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountUpdatesArePropagated) {
   AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
 
-  SetInvalidRefreshTokenForAccount(account_info.account_id);
+  SetInvalidRefreshTokenForAccount(account_info.GetAccountId());
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
   // 1 SetAccounts() call for the Primary account.
   EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountUpdatesArePropagated) {
             (*auth_instance().last_set_accounts_list())[0]->email);
   // 1 call for the Secondary Account.
   EXPECT_EQ(1, initial_num_calls);
-  SetRefreshTokenForAccount(account_info.account_id);
+  SetRefreshTokenForAccount(account_info.GetAccountId());
   // Expect exactly one call for the account update above.
   EXPECT_EQ(1,
             auth_instance().num_account_upserted_calls() - initial_num_calls);
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        AccountUpdatesAreNotPropagatedIfAccountIsNotAvailable) {
   AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
 
-  SetInvalidRefreshTokenForAccount(account_info.account_id);
+  SetInvalidRefreshTokenForAccount(account_info.GetAccountId());
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
   // 1 SetAccounts() call for the Primary account.
   EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
@@ -1002,14 +1002,14 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   // 1 call for the Secondary Account.
   EXPECT_EQ(1, initial_num_calls);
 
-  EXPECT_TRUE(SetIsAccountAvailableInArc(account_info.gaia,
+  EXPECT_TRUE(SetIsAccountAvailableInArc(account_info.GetGaiaId(),
                                          /*make_available_in_arc=*/false));
   // Wait for async calls to finish.
   base::RunLoop().RunUntilIdle();
   // Expect one call for the account update above.
   EXPECT_EQ(1, auth_instance().num_account_removed_calls());
 
-  SetRefreshTokenForAccount(account_info.account_id);
+  SetRefreshTokenForAccount(account_info.GetAccountId());
   // Expect zero calls for the account update above.
   EXPECT_EQ(0,
             auth_instance().num_account_upserted_calls() - initial_num_calls);
@@ -1032,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountRemovalsArePropagated) {
   // be sent.
   EnableRemovalOfExtendedAccountInfo();
 
-  RemoveRefreshTokenForAccount(account_info.account_id);
+  RemoveRefreshTokenForAccount(account_info.GetAccountId());
 
   EXPECT_EQ(1, auth_instance().num_account_removed_calls());
   EXPECT_EQ(kSecondaryAccountEmail, auth_instance().last_removed_account());
@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
           kSecondaryAccountEmail);
   ASSERT_TRUE(!account_info.IsEmpty());
 
-  EXPECT_TRUE(SetIsAccountAvailableInArc(account_info.gaia,
+  EXPECT_TRUE(SetIsAccountAvailableInArc(account_info.GetGaiaId(),
                                          /*make_available_in_arc=*/false));
 
   // Wait for async calls to finish.
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   // be sent.
   EnableRemovalOfExtendedAccountInfo();
 
-  RemoveRefreshTokenForAccount(account_info.account_id);
+  RemoveRefreshTokenForAccount(account_info.GetAccountId());
 
   // Expect zero calls for the account removal above.
   EXPECT_EQ(0, auth_instance().num_account_removed_calls() - last_num_calls);

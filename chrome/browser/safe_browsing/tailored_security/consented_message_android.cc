@@ -101,13 +101,12 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
               Profile::FromBrowserContext(web_contents->GetBrowserContext()));
       if (identity_manager &&
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-        std::string email_address =
-            identity_manager
-                ->FindExtendedAccountInfoByAccountId(
-                    identity_manager->GetPrimaryAccountId(
-                        signin::ConsentLevel::kSignin))
-                .email;
-        description = base::UTF8ToUTF16(email_address);
+        description =
+            base::UTF8ToUTF16(identity_manager
+                                  ->FindExtendedAccountInfoByAccountId(
+                                      identity_manager->GetPrimaryAccountId(
+                                          signin::ConsentLevel::kSignin))
+                                  .GetEmail());
       } else {
         description = l10n_util::GetStringUTF16(
             IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION);
