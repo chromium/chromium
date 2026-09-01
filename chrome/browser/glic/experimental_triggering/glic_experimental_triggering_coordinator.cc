@@ -883,6 +883,10 @@ GlicExperimentalTriggeringCoordinator::OnProtoMessage(
   LogGlicExperimentalTriggeringProto(
       actor_service, "GlicExperimentalTriggering", context_id, proto);
 
+  if (!HasUpdatesHandler(context_id)) {
+    MaybeRecordInitialSharingMessageDeliveryLatency(proto);
+  }
+
   auto request_metadata = ProtoToTaskMetadata(proto);
   const TaskMetadata* request_metadata_ptr =
       request_metadata.has_value() ? &*request_metadata : nullptr;

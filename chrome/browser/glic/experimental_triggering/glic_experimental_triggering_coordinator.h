@@ -78,6 +78,12 @@ class GlicExperimentalTriggeringCoordinator {
 
   void OnUpdatesHandlerCleanup(std::string_view context_id);
 
+  // Returns true if an active updates handler exists for `context_id`.
+  bool HasUpdatesHandler(std::string_view context_id) const {
+    return context_id_to_updates_handler_map_.find(context_id) !=
+           context_id_to_updates_handler_map_.end();
+  }
+
   const raw_ptr<Profile> profile_;
   std::map<std::string,
            std::unique_ptr<ExperimentalTriggeringUpdatesHandler>,

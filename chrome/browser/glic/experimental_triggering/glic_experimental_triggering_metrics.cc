@@ -12,6 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 
 namespace glic {
 
@@ -85,6 +87,39 @@ void ScopedIncomingMessageResultLogger::LogAndDisarm() {
 void ScopedIncomingMessageResultLogger::set_result(
     GlicExperimentalTriggeringIncomingMessageResult result) {
   result_ = result;
+}
+
+void MaybeRecordInitialSharingMessageDeliveryLatency(
+    const components_sharing_message::GlicExperimentalTriggering& triggering) {
+  if (!triggering.has_request()) {
+    return;
+  }
+  const auto& request = triggering.request();
+  // Only log for the first sharing message arriving in Chrome (OptIn or
+  // TriggerActuation).
+  if (!request.has_device_opt_in_request() &&
+      !request.has_trigger_actuation_request()) {
+    return;
+  }
+  if (!triggering.has_task_metadata() ||
+      !triggering.task_metadata().has_server_time_stamp()) {
+    return;
+  }
+  const auto& timestamp = triggering.task_metadata().server_time_stamp();
+  if (timestamp.seconds() <= 0 || timestamp.nanos() < 0 ||
+      timestamp.nanos() >= base::Time::kNanosecondsPerSecond) {
+    return;
+  }
+  base::Time server_time = base::Time::UnixEpoch() +
+                           base::Seconds(timestamp.seconds()) +
+                           base::Nanoseconds(timestamp.nanos());
+  base::TimeDelta latency = base::Time::Now() - server_time;
+  if (latency.is_negative()) {
+    latency = base::TimeDelta();
+  }
+  base::UmaHistogramCustomTimes(
+      "Glic.ExperimentalTriggering.FirstFCMMessageLatency", latency,
+      base::Milliseconds(100), base::Days(10), 100);
 }
 
 }  // namespace glic

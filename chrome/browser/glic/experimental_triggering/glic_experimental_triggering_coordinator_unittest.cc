@@ -718,5 +718,114 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   EXPECT_EQ(response->task_metadata->last_seen_sequence_number, 42);
 }
 
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       RecordsInitialMessageDeliveryLatency) {
+  base::HistogramTester histogram_tester;
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.set_context_id(kTestContextId);
+  proto.set_glic_experimental_triggering_version(1);
+  proto.mutable_request()->mutable_device_opt_in_request();
+
+  base::Time sent_time = base::Time::Now() - base::Seconds(5);
+  auto* timestamp = proto.mutable_task_metadata()->mutable_server_time_stamp();
+  timestamp->set_seconds((sent_time - base::Time::UnixEpoch()).InSeconds());
+  timestamp->set_nanos(0);
+
+  coordinator_->OnProtoMessage(
+      kTestContextId, proto,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      base::DoNothing(), nullptr);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       DoesNotRecordLatencyForInvalidServerTimestamp) {
+  base::HistogramTester histogram_tester;
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.set_context_id(kTestContextId);
+  proto.set_glic_experimental_triggering_version(1);
+  proto.mutable_request()->mutable_device_opt_in_request();
+
+  // Default/empty server timestamp (seconds = 0, nanos = 0).
+  proto.mutable_task_metadata()->mutable_server_time_stamp();
+
+  coordinator_->OnProtoMessage(
+      kTestContextId, proto,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      base::DoNothing(), nullptr);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 0);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       ClampsNegativeDeliveryLatencyToZero) {
+  base::HistogramTester histogram_tester;
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.set_context_id(kTestContextId);
+  proto.set_glic_experimental_triggering_version(1);
+  proto.mutable_request()->mutable_device_opt_in_request();
+
+  // Server timestamp is 10 seconds in the future due to clock skew.
+  base::Time sent_time = base::Time::Now() + base::Seconds(10);
+  auto* timestamp = proto.mutable_task_metadata()->mutable_server_time_stamp();
+  timestamp->set_seconds((sent_time - base::Time::UnixEpoch()).InSeconds());
+  timestamp->set_nanos(0);
+
+  coordinator_->OnProtoMessage(
+      kTestContextId, proto,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      base::DoNothing(), nullptr);
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 0, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       DoesNotRecordLatencyForSubsequentMessagesInSameContext) {
+  base::HistogramTester histogram_tester;
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.set_context_id(kTestContextId);
+  proto.set_glic_experimental_triggering_version(1);
+  proto.mutable_request()->mutable_trigger_actuation_request();
+
+  base::Time sent_time = base::Time::Now() - base::Seconds(5);
+  auto* timestamp = proto.mutable_task_metadata()->mutable_server_time_stamp();
+  timestamp->set_seconds((sent_time - base::Time::UnixEpoch()).InSeconds());
+  timestamp->set_nanos(0);
+
+  // 1. First message initializes the updates handler and logs latency.
+  coordinator_->OnProtoMessage(
+      kTestContextId, proto,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      base::DoNothing(), nullptr);
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 1);
+
+  // 2. Second message for the same context_id must not log latency again.
+  components_sharing_message::GlicExperimentalTriggering proto2;
+  proto2.set_context_id(kTestContextId);
+  proto2.set_glic_experimental_triggering_version(1);
+  proto2.mutable_request()->mutable_continue_actuation_request();
+  auto* timestamp2 =
+      proto2.mutable_task_metadata()->mutable_server_time_stamp();
+  timestamp2->set_seconds((sent_time - base::Time::UnixEpoch()).InSeconds());
+  timestamp2->set_nanos(0);
+
+  coordinator_->OnProtoMessage(
+      kTestContextId, proto2,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      base::DoNothing(), nullptr);
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 1);
+}
+
 }  // namespace
 }  // namespace glic

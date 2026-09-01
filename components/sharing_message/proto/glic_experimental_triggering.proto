@@ -7,6 +7,8 @@ syntax = "proto2";
 option java_multiple_files = true;
 option java_package = "org.chromium.components.sharing_message.proto";
 
+import "timestamp.proto";
+
 package components_sharing_message;
 
 option optimize_for = LITE_RUNTIME;
@@ -40,7 +42,13 @@ message GlicExperimentalTriggering {
       optional string conversation_title = 2;
     }
     optional ParentConversationMetadata parent_conversation_metadata = 5;
+
+    // The UTC server timestamp when the message was sent. Since this timestamp
+    // originates from the server side, it is not synchronized with the
+    // client clock and is an approximation.
+    optional Timestamp server_time_stamp = 6;
   }
+
   // If the task is already running, this contains the metadata about it.
   optional TaskMetadata task_metadata = 1;
 

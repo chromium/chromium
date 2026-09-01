@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
+
 namespace glic {
 
 // The processing outcome or early return / failure reason for an incoming
@@ -88,6 +90,14 @@ class ScopedIncomingMessageResultLogger {
   // on destruction.
   bool disarmed_ = false;
 };
+
+// Records the approximate time elapsed between when the server sent the initial
+// experimental triggering sharing message and when Chrome received it. This is
+// only logged for the first sharing message arriving in Chrome (i.e.
+// DeviceOptInRequest or TriggerActuationRequest). If the calculated duration is
+// negative due to clock skew between client and server, it is clamped to 0.
+void MaybeRecordInitialSharingMessageDeliveryLatency(
+    const components_sharing_message::GlicExperimentalTriggering& triggering);
 
 }  // namespace glic
 

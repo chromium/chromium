@@ -695,6 +695,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ExperimentalTriggering.FirstFCMMessageLatency" units="ms"
+    expires_after="2027-08-01">
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the approximate time elapsed from when the server sent the first
+    experimental triggering sharing message (either an OptIn request or a
+    trigger actuation request) for a given conversation context to when Chrome
+    received it. Because client and server clocks are not synchronized, this
+    duration is an approximation; any negative values resulting from clock skew
+    are recorded as 0.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ExperimentalTriggering.IncomingMessageResult.{Channel}"
     enum="GlicExperimentalTriggeringIncomingMessageResult"
     expires_after="2027-07-21">
