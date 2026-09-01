@@ -2463,10 +2463,11 @@ void StyleEngine::InvalidateSlottedElements(
   }
 }
 
-bool StyleEngine::HasViewportDependentMediaQueries() {
+bool StyleEngine::MayHaveViewportDependentMediaQueries() {
   DCHECK(global_rule_set_);
   UpdateActiveStyle();
-  return global_rule_set_->GetRuleFeatureSet()
+  return media_query_result_flags_.is_viewport_dependent ||
+         global_rule_set_->GetRuleFeatureSet()
              .HasViewportDependentMediaQueries() ||
          functional_media_query_result_flags_.is_viewport_dependent;
 }
@@ -2679,7 +2680,7 @@ void StyleEngine::SetHttpDefaultStyle(const String& content) {
   }
 }
 
-void StyleEngine::CollectFeaturesTo(RuleFeatureSet& features) {
+void StyleEngine::CollectFeaturesTo(RuleFeatureSet& features) const {
   CollectUserStyleFeaturesTo(features);
   CollectScopedStyleFeaturesTo(features);
 }
@@ -3085,6 +3086,11 @@ void StyleEngine::ApplyRuleSetChanges(
     const HeapVector<Member<RuleSetDiff>>& diffs) {
   DCHECK(global_rule_set_);
   HeapHashSet<Member<RuleSet>> changed_rule_sets;
+
+  for (const ActiveStyleSheet& active_sheet : new_style_sheets) {
+    media_query_result_flags_.Add(
+        active_sheet.first->GetMediaQueryResultFlags());
+  }
 
   ActiveSheetsChange change = CompareActiveStyleSheets(
       old_style_sheets, new_style_sheets, diffs, changed_rule_sets);

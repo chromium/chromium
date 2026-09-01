@@ -24,7 +24,7 @@ bool DocumentLayoutUpgrade::ShouldUpgrade() {
 
 bool ParentLayoutUpgrade::ShouldUpgrade() {
   StyleEngine& style_engine = document_.GetStyleEngine();
-  return style_engine.HasViewportDependentMediaQueries() ||
+  return style_engine.MayHaveViewportDependentMediaQueries() ||
          style_engine.HasViewportDependentPropertyRegistrations() ||
          ElementLayoutUpgrade(owner_).ShouldUpgrade();
 }

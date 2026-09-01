@@ -1255,7 +1255,7 @@ TEST_F(WebViewTest, AutoResizePreservesTransitionAcrossRemeasurement) {
   ASSERT_TRUE(select);
   ASSERT_TRUE(select->UsesMenuList());
   ASSERT_TRUE(document.GetStyleEngine().StyleAffectedByLayout());
-  ASSERT_TRUE(document.GetStyleEngine().HasViewportDependentMediaQueries());
+  ASSERT_TRUE(document.GetStyleEngine().MayHaveViewportDependentMediaQueries());
   ASSERT_TRUE(target->getAnimations().empty());
 
   frame->ExecuteScript(WebScriptSource(

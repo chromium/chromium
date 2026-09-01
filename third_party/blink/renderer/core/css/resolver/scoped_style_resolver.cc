@@ -118,7 +118,6 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
   for (const ActiveStyleSheet& active_sheet :
        base::span(active_sheets).subspan(index)) {
     CSSStyleSheet* sheet = active_sheet.first;
-    media_query_result_flags_.Add(sheet->GetMediaQueryResultFlags());
     if (!active_sheet.second) {
       continue;
     }
@@ -157,8 +156,6 @@ void ScopedStyleResolver::CollectFeaturesTo(
     RuleFeatureSet& features,
     HeapHashSet<Member<const StyleSheetContents>>&
         visited_shared_style_sheet_contents) const {
-  features.MutableMediaQueryResultFlags().Add(media_query_result_flags_);
-
   for (const auto& [sheet, rule_set] : active_style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     StyleSheetContents* contents = sheet->Contents();
@@ -173,7 +170,6 @@ void ScopedStyleResolver::ResetStyle() {
   RemoveImplicitScopeTriggers();
   active_style_sheets_.clear();
   rule_set_groups_.clear();
-  media_query_result_flags_.Clear();
   keyframes_rule_map_.clear();
   position_try_rule_map_.clear();
   font_feature_values_storage_map_.clear();

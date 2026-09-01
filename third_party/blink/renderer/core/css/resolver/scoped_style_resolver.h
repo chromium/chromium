@@ -156,7 +156,6 @@ class CORE_EXPORT ScopedStyleResolver final
   Member<TreeScope> scope_;
 
   ActiveStyleSheetVector active_style_sheets_;
-  MediaQueryResultFlags media_query_result_flags_;
   HeapVector<RuleSetGroup> rule_set_groups_;
 
   using KeyframesRuleMap =
