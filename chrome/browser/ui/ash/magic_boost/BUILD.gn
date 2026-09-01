@@ -59,6 +59,34 @@ source_set("test_support") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "magic_boost_card_controller_unittest.cc",
+    "magic_boost_opt_in_card_unittest.cc",
+  ]
+
+  deps = [
+    ":magic_boost",
+    ":magic_boost_constants",
+    ":test_support",
+    "//base",
+    "//chrome/browser/ash/magic_boost",
+    "//chrome/browser/ash/magic_boost:test_support",
+    "//chrome/browser/ui/ash/editor_menu:utils",
+    "//chrome/test:test_support",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/components/magic_boost/test:fake_magic_boost_state",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/strings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}
+
 source_set("magic_boost_constants") {
   sources = [ "magic_boost_constants.h" ]
 

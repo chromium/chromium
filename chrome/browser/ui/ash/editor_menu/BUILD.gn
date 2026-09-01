@@ -115,3 +115,58 @@ source_set("views") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  sources = [
+    "editor_menu_card_context_unittest.cc",
+    "editor_menu_view_unittest.cc",
+    "utils/pre_target_handler_unittest.cc",
+    "utils/utils_unittest.cc",
+  ]
+
+  deps = [
+    ":editor_menu",
+    ":utils",
+    ":views",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/editor_menu/public/cpp",
+    "//chromeos/constants",
+    "//components/application_locale_storage",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/display:test_support",
+    "//ui/events",
+    "//ui/events:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    # TODO(crbug.com/510716187): Enable for other platforms once macOS
+    # native window ID translation is implemented.
+    "editor_menu_browsertest.cc",
+  ]
+
+  deps = [
+    ":editor_menu",
+    ":utils",
+    ":views",
+    "//base",
+    "//chrome/browser/ui/ash/read_write_cards:read_write_cards_manager",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/editor_menu/public/cpp",
+  ]
+}

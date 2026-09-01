@@ -124,6 +124,7 @@ if (is_android) {
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
     ]
   }
+
   generate_jni("payment_test_support_jni_headers") {
     testonly = true
     sources = [ "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java" ]
@@ -4003,10 +4004,6 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
-
-        # TODO(crbug.com/510716187): Enable for other platforms once macOS
-        # native window ID translation is implemented.
-        "../browser/ui/ash/editor_menu/editor_menu_browsertest.cc",
         "../browser/ui/ash/input_method/candidate_window_view_pixeltest.cc",
         "../browser/ui/ash/quick_answers/quick_answers_browsertest.cc",
         "../browser/ui/ash/quick_answers/quick_answers_browsertest_base.cc",
@@ -4304,6 +4301,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/arc/arc_app_dialog_view:browser_tests",
         "//chrome/browser/ui/ash/capture_mode",
         "//chrome/browser/ui/ash/editor_menu",
+        "//chrome/browser/ui/ash/editor_menu:browser_tests",
         "//chrome/browser/ui/ash/editor_menu:utils",
         "//chrome/browser/ui/ash/editor_menu:views",
         "//chrome/browser/ui/ash/holding_space:test_support",
@@ -4811,6 +4809,7 @@ if (!is_android) {
 } else {
   template("telemetry_perf_unittests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
+
     script_test(target_name) {
       script = "//testing/scripts/run_telemetry_as_googletest.py"
       args = _telemetry_perf_args
@@ -4851,6 +4850,7 @@ if (!is_android) {
   # splitting the performance test targets is being postponed.
   template("telemetry_perf_tests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
+
     group(target_name) {
       testonly = true
       data_deps = [
@@ -4898,6 +4898,7 @@ template("performance_test_suite_template_base") {
                            "override_board",
                            "data_deps",
                          ])
+
   script_test(target_name) {
     script = "//testing/scripts/run_performance_tests.py"
     if (is_chromeos_device) {
@@ -4941,6 +4942,7 @@ template("performance_test_suite_template_base") {
 if (!is_android) {
   template("performance_test_suite_template") {
     forward_variables_from(invoker, [ "override_board" ])
+
     performance_test_suite_template_base(target_name) {
       data_deps = [ "//chrome/test:telemetry_perf_tests" ]
     }
@@ -4955,6 +4957,7 @@ if (!is_android) {
                              "override_board",
                              "telemetry_target_suffix",
                            ])
+
     performance_test_suite_template_base(target_name) {
       data_deps =
           [ "//chrome/test:telemetry_perf_tests${telemetry_target_suffix}" ]
@@ -5007,6 +5010,7 @@ if (is_linux) {
 if (is_chromeos_device && cros_boards != "") {
   foreach(_board, string_split(cros_boards, ":")) {
     _board_underscore = string_replace(_board, "-", "_")
+
     performance_test_suite_template(
         "performance_test_suite_${_board_underscore}") {
       override_board = _board
@@ -6976,12 +6980,6 @@ test("unit_tests") {
   if (is_chromeos) {
     sources += [
       "../browser/shell_integration_chromeos_unittest.cc",
-      "../browser/ui/ash/editor_menu/editor_menu_card_context_unittest.cc",
-      "../browser/ui/ash/editor_menu/editor_menu_view_unittest.cc",
-      "../browser/ui/ash/editor_menu/utils/pre_target_handler_unittest.cc",
-      "../browser/ui/ash/editor_menu/utils/utils_unittest.cc",
-      "../browser/ui/ash/magic_boost/magic_boost_card_controller_unittest.cc",
-      "../browser/ui/ash/magic_boost/magic_boost_opt_in_card_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_controller_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_state_ash_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_ui_controller_unittest.cc",
@@ -7128,6 +7126,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash:test_support",
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/editor_menu",
+      "//chrome/browser/ui/ash/editor_menu:unit_tests",
       "//chrome/browser/ui/ash/editor_menu:utils",
       "//chrome/browser/ui/ash/editor_menu:views",
       "//chrome/browser/ui/ash/holding_space",
@@ -7136,6 +7135,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/magic_boost",
       "//chrome/browser/ui/ash/magic_boost:magic_boost_constants",
       "//chrome/browser/ui/ash/magic_boost:test_support",
+      "//chrome/browser/ui/ash/magic_boost:unit_tests",
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/quick_answers",
       "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",
