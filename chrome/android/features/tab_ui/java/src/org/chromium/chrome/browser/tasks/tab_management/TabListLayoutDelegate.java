@@ -19,7 +19,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -29,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -74,14 +74,14 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     abstract boolean isChildTabRepresentedByGroupCard(Tab tab);
 
     /**
-     * Resolves the visual media state indicator (e.g. playing audio) for a tab card or group
+     * Resolves the visual alert state indicator (e.g. playing audio) for a tab card or group
      * header.
      *
      * @param representativeTab The representative tab for the card.
      * @param model The property model associated with the tab or group header.
-     * @return The {@link MediaState} that should be displayed.
+     * @return The {@link TabAlert} that should be displayed, or {@link TabAlert#NONE} if none.
      */
-    abstract @MediaState int getMediaIndicatorState(Tab representativeTab, PropertyModel model);
+    abstract @TabAlert int getAlertState(Tab representativeTab, PropertyModel model);
 
     /** Returns the insertion index for a new tab card. */
     abstract int getInsertionIndexOfTab(Tab tab);
@@ -223,19 +223,23 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     }
 
     /**
-     * Updates the media indicator for a tab or its representing card when media state changes.
+     * Updates the alert state indicator for a tab or its representing card when alert state
+     * changes.
      *
-     * @param updatedTab The {@link Tab} whose media state changed.
-     * @param mediaState The new {@link MediaState}.
+     * @param updatedTab The {@link Tab} whose alert state changed.
+     * @param alertState The new {@link TabAlert} state.
      */
-    void onMediaStateChanged(Tab updatedTab, @MediaState int mediaState) {
+    void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
             return;
         }
-        model.set(
-                TabProperties.MEDIA_INDICATOR,
-                mMediator.getTabListMediaIndicator(updatedTab, model));
+        @TabAlert int alertStateToSet = getAlertState(updatedTab, model);
+        model.set(TabProperties.ALERT_STATE, alertStateToSet);
+        if (model.containsKey(TabProperties.MEDIA_INDICATOR)) {
+            model.set(
+                    TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertStateToSet));
+        }
     }
 
     /**

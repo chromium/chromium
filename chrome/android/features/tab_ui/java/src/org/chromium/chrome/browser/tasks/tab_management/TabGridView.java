@@ -13,6 +13,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -25,6 +26,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -36,7 +38,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.InnerGlowDrawable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView.ThumbnailViewState;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
+import org.chromium.components.tabs.TabAlert;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -238,38 +240,28 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         mTabCardHighlightHandler.maybeAnimateForHighlightState(highlightState, isIncognito);
     }
 
-    void setMediaIndicator(@MediaState int mediaState) {
-        TextView tabTitle = findViewById(R.id.tab_title);
-        ImageView tabMediaIndicator = findViewById(R.id.media_indicator_icon);
-        tabMediaIndicator.setImageResource(TabUtils.getMediaIndicatorDrawable(mediaState));
+    void setAlertState(@TabAlert int alertState) {
+        TextView tabTitle = fastFindViewById(R.id.tab_title);
+        ImageView tabAlertIndicator = fastFindViewById(R.id.media_indicator_icon);
+        @DrawableRes int iconRes = TabUtils.getTabAlertDrawable(alertState);
+        tabAlertIndicator.setImageResource(iconRes);
         ConstraintLayout.LayoutParams titleParams =
                 (ConstraintLayout.LayoutParams) tabTitle.getLayoutParams();
 
         // Default values when no indicator is shown.
-        int mediaIndicatorVisibility = View.GONE;
+        int alertIndicatorVisibility = View.GONE;
         int marginResId = R.dimen.tab_grid_card_title_end_margin;
 
-        switch (mediaState) {
-            case MediaState.AUDIBLE:
-            case MediaState.MUTED:
-            case MediaState.RECORDING:
-            case MediaState.SHARING:
-            case MediaState.PICTURE_IN_PICTURE:
-                marginResId = R.dimen.tab_grid_card_title_end_margin_media_indicator;
-                mediaIndicatorVisibility = View.VISIBLE;
-                break;
-            case MediaState.NONE:
-                break;
-            default:
-                assert false : "Invalid media state";
-                break;
+        if (iconRes != Resources.ID_NULL) {
+            marginResId = R.dimen.tab_grid_card_title_end_margin_media_indicator;
+            alertIndicatorVisibility = View.VISIBLE;
         }
 
         int endMargin = getResources().getDimensionPixelSize(marginResId);
 
         titleParams.setMarginEnd(endMargin);
         tabTitle.setLayoutParams(titleParams);
-        tabMediaIndicator.setVisibility(mediaIndicatorVisibility);
+        tabAlertIndicator.setVisibility(alertIndicatorVisibility);
     }
 
     void clearHighlight() {

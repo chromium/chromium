@@ -20,6 +20,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -280,9 +281,51 @@ public class TabListViewBinderUtils {
 
     /**
      * Resolves the string template resource for the tab's accessibility description based on pinned
-     * state and media indicator.
+     * state and alert state.
+     *
+     * @param isPinned Whether the tab is pinned.
+     * @param alertState The {@link TabAlert} state of the tab.
+     * @return The string resource ID for the accessibility description.
      */
+    // TODO(crbug.com/456216687): Refactor a11y labels.
     public static @StringRes int getTabContentDescriptionStringId(
+            boolean isPinned, @TabAlert int alertState) {
+        return switch (alertState) {
+            case TabAlert.AUDIO_MUTING ->
+                    isPinned
+                            ? R.string.accessibility_tabstrip_tab_pinned_muted
+                            : R.string.accessibility_tabstrip_tab_muted;
+            case TabAlert.AUDIO_PLAYING ->
+                    isPinned
+                            ? R.string.accessibility_tabstrip_tab_pinned_audible
+                            : R.string.accessibility_tabstrip_tab_audible;
+            case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
+                    isPinned
+                            ? R.string.accessibility_tabstrip_tab_pinned_recording
+                            : R.string.accessibility_tabstrip_tab_recording;
+            case TabAlert.TAB_CAPTURING, TabAlert.DESKTOP_CAPTURING ->
+                    isPinned
+                            ? R.string.accessibility_tabstrip_tab_pinned_sharing
+                            : R.string.accessibility_tabstrip_tab_sharing;
+            case TabAlert.PIP_PLAYING ->
+                    isPinned
+                            ? R.string.accessibility_tabstrip_tab_pinned_picture_in_picture
+                            : R.string.accessibility_tabstrip_tab_picture_in_picture;
+            default ->
+                    isPinned
+                            ? R.string.accessibility_tabstrip_tab_pinned
+                            : R.string.accessibility_tabstrip_tab;
+        };
+    }
+
+    /**
+     * Resolves the string template resource for the tab's accessibility description based on pinned
+     * state and media indicator.
+     *
+     * @deprecated Use {@link #getTabContentDescriptionStringId(boolean, int)} instead.
+     */
+    @Deprecated
+    public static @StringRes int getMediaIndicatorTabContentDescriptionStringId(
             boolean isPinned, @MediaState int mediaState) {
         switch (mediaState) {
             case MediaState.MUTED:

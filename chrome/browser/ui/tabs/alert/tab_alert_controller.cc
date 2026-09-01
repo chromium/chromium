@@ -36,6 +36,7 @@ namespace tabs {
 
 DEFINE_USER_DATA(TabAlertController);
 
+// LINT.IfChange(TabAlertPriority)
 bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
   // Alerts are ordered from highest priority to be shown to lowest priority.
   static constexpr auto tab_alert_priority =
@@ -65,6 +66,7 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
 
   return tab_alert_priority.at(first) > tab_alert_priority.at(second);
 }
+// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java:TabAlertPriority)
 
 // Helper class that notifies subscribers if the alert state has changed when
 // the ScopedAlertNotifier is destroyed.

@@ -71,13 +71,13 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -129,6 +129,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -634,10 +635,10 @@ public class TabListMediator implements TabListNotificationHandler {
                 }
 
                 @Override
-                public void onMediaStateChanged(Tab updatedTab, @MediaState int mediaState) {
+                public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
                     assert mShowingTabs;
 
-                    mTabListLayoutDelegate.onMediaStateChanged(updatedTab, mediaState);
+                    mTabListLayoutDelegate.onAlertStateChanged(updatedTab, alertState);
                 }
 
                 @Override
@@ -1458,7 +1459,11 @@ public class TabListMediator implements TabListNotificationHandler {
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, model, /* useDefault= */ true));
         model.set(TabProperties.IS_PINNED, tab.getIsPinned());
-        model.set(TabProperties.MEDIA_INDICATOR, getTabListMediaIndicator(tab, model));
+        @TabAlert int alertState = getTabGridAlertState(tab, model);
+        model.set(TabProperties.ALERT_STATE, alertState);
+        if (model.containsKey(TabProperties.MEDIA_INDICATOR)) {
+            model.set(TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertState));
+        }
 
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
@@ -1505,11 +1510,10 @@ public class TabListMediator implements TabListNotificationHandler {
         return tabModel.isTabInTabGroup(tab);
     }
 
-    @MediaState
-    int getTabListMediaIndicator(Tab representativeTab, PropertyModel model) {
-        if (!TabProperties.isTabOrTabGroup(model)) return MediaState.MAX_VALUE;
+    private @TabAlert int getTabGridAlertState(Tab representativeTab, PropertyModel model) {
+        if (!TabProperties.isTabOrTabGroup(model)) return TabAlert.NONE;
 
-        return mTabListLayoutDelegate.getMediaIndicatorState(representativeTab, model);
+        return mTabListLayoutDelegate.getAlertState(representativeTab, model);
     }
 
     /**
@@ -1980,6 +1984,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.ACTOR_UI_STATE, null)
                         .with(TabProperties.IS_GLIC_ACTIVE, false)
                         .with(TabProperties.IS_PINNED, tab.getIsPinned())
+                        .with(TabProperties.ALERT_STATE, TabAlert.NONE)
                         .build();
 
         ActorUiTabController controller = ActorUiTabController.from(tab);
@@ -2027,7 +2032,11 @@ public class TabListMediator implements TabListNotificationHandler {
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, tabInfo, /* useDefault= */ false));
         tabInfo.set(TabProperties.URL_DOMAIN, getDomainForTab(tab, tabInfo));
-        tabInfo.set(TabProperties.MEDIA_INDICATOR, getTabListMediaIndicator(tab, tabInfo));
+        @TabAlert int alertState = getTabGridAlertState(tab, tabInfo);
+        tabInfo.set(TabProperties.ALERT_STATE, alertState);
+        if (tabInfo.containsKey(TabProperties.MEDIA_INDICATOR)) {
+            tabInfo.set(TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertState));
+        }
         tabInfo.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         tabInfo.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);
         tabInfo.set(
@@ -2082,6 +2091,12 @@ public class TabListMediator implements TabListNotificationHandler {
                 getLatestTitleForTabOrGroup(tab, groupInfo, /* useDefault= */ true));
         groupInfo.set(TabProperties.IS_COLLAPSED, isCollapsed);
         groupInfo.set(TabProperties.FAVICON_FETCHER, null);
+        @TabAlert int alertState = getTabGridAlertState(tab, groupInfo);
+        groupInfo.set(TabProperties.ALERT_STATE, alertState);
+        if (groupInfo.containsKey(TabProperties.MEDIA_INDICATOR)) {
+            groupInfo.set(
+                    TabProperties.MEDIA_INDICATOR, TabUtils.getMediaStateForAlert(alertState));
+        }
 
         bindTabActionStateProperties(mTabActionState, tab, groupInfo);
 
@@ -2120,6 +2135,7 @@ public class TabListMediator implements TabListNotificationHandler {
                                 QuickDeleteAnimationStatus.TAB_RESTORE)
                         .with(TabProperties.VISIBILITY, View.VISIBLE)
                         .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
+                        .with(TabProperties.ALERT_STATE, TabAlert.NONE)
                         .build();
 
         bindTabGroupActionStateProperties(savedTabGroup, tabGroupInfo);
@@ -2281,10 +2297,9 @@ public class TabListMediator implements TabListNotificationHandler {
                                                 numOfRelatedTabs,
                                                 colorDesc);
                     }
-                    String mediaStateString =
-                            getMediaStateAccessibilityString(currentTab, model, res);
-                    if (!TextUtils.isEmpty(mediaStateString)) {
-                        description += " " + mediaStateString;
+                    String alertStateString = getAlertStateAccessibilityString(model, res);
+                    if (!TextUtils.isEmpty(alertStateString)) {
+                        description += " " + alertStateString;
                     }
                     return description;
                 };
@@ -3452,22 +3467,24 @@ public class TabListMediator implements TabListNotificationHandler {
         mSnackbarManager.dismissAllSnackbars();
     }
 
-    private String getMediaStateAccessibilityString(Tab tab, PropertyModel model, Resources res) {
-        @MediaState int mediaState = getTabListMediaIndicator(tab, model);
-        switch (mediaState) {
-            case MediaState.AUDIBLE:
-                return res.getString(R.string.accessibility_tab_group_audible);
-            case MediaState.MUTED:
-                return res.getString(R.string.accessibility_tab_group_muted);
-            case MediaState.RECORDING:
-                return res.getString(R.string.accessibility_tab_group_recording);
-            case MediaState.SHARING:
-                return res.getString(R.string.accessibility_tab_group_sharing);
-            case MediaState.PICTURE_IN_PICTURE:
-                return res.getString(R.string.accessibility_tab_group_picture_in_picture);
-            default:
-                return "";
-        }
+    // TODO(crbug.com/456216687): Refactor a11y labels.
+    private String getAlertStateAccessibilityString(PropertyModel model, Resources res) {
+        @TabAlert
+        int alertState =
+                model.containsKey(TabProperties.ALERT_STATE)
+                        ? model.get(TabProperties.ALERT_STATE)
+                        : TabAlert.NONE;
+        return switch (alertState) {
+            case TabAlert.AUDIO_PLAYING -> res.getString(R.string.accessibility_tab_group_audible);
+            case TabAlert.AUDIO_MUTING -> res.getString(R.string.accessibility_tab_group_muted);
+            case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
+                    res.getString(R.string.accessibility_tab_group_recording);
+            case TabAlert.TAB_CAPTURING, TabAlert.DESKTOP_CAPTURING ->
+                    res.getString(R.string.accessibility_tab_group_sharing);
+            case TabAlert.PIP_PLAYING ->
+                    res.getString(R.string.accessibility_tab_group_picture_in_picture);
+            default -> "";
+        };
     }
 
     private void onRailCollapseStateChanged(@RailCollapseState int railCollapseState) {

@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -116,56 +117,56 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testGetMediaIndicatorState_NotInGroup() {
+    public void testGetAlertState_NotInGroup() {
         when(mTab1.getId()).thenReturn(1);
-        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
 
         PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        int state = mDelegate.getMediaIndicatorState(mTab1, model);
-        assertEquals(MediaState.AUDIBLE, state);
+        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        assertEquals(TabAlert.AUDIO_PLAYING, state);
     }
 
     @Test
-    public void testGetMediaIndicatorState_InGroup() {
+    public void testGetAlertState_InGroup() {
         when(mTab1.getId()).thenReturn(1);
-        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
-        when(mTab2.getMediaState()).thenReturn(MediaState.RECORDING);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
+        when(mTab2.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
 
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
 
         PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        int state = mDelegate.getMediaIndicatorState(mTab1, model);
-        assertEquals(MediaState.RECORDING, state);
+        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        assertEquals(TabAlert.MEDIA_RECORDING, state);
     }
 
     @Test
-    public void testGetMediaIndicatorState_InGroup_RepTabHasMaxPriority() {
+    public void testGetAlertState_InGroup_RepTabHasMaxPriority() {
         when(mTab1.getId()).thenReturn(1);
-        when(mTab1.getMediaState()).thenReturn(MediaState.MAX_VALUE);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.DESKTOP_CAPTURING);
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
 
         PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        int state = mDelegate.getMediaIndicatorState(mTab1, model);
-        assertEquals(MediaState.MAX_VALUE, state);
+        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        assertEquals(TabAlert.DESKTOP_CAPTURING, state);
 
         // Fast exit should mean getRelatedTabsForId is never called.
         verify(mMediator, never()).getRelatedTabsForId(1);
     }
 
     @Test
-    public void testGetMediaIndicatorState_InGroup_RepTabHasHigherPriority() {
+    public void testGetAlertState_InGroup_RepTabHasHigherPriority() {
         when(mTab1.getId()).thenReturn(1);
-        when(mTab1.getMediaState()).thenReturn(MediaState.RECORDING);
-        when(mTab2.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
+        when(mTab2.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
 
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
 
         PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        int state = mDelegate.getMediaIndicatorState(mTab1, model);
-        assertEquals(MediaState.RECORDING, state);
+        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        assertEquals(TabAlert.MEDIA_RECORDING, state);
     }
 
     @Test
@@ -427,53 +428,57 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testOnMediaStateChanged_InTabGroup() {
+    public void testOnAlertStateChanged_InTabGroup() {
+        when(mTab1.getId()).thenReturn(TAB1_ID);
+        when(mTab2.getId()).thenReturn(TAB2_ID);
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
+        when(mTab2.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
         PropertyModel model = createAndAddPropertyModel(TAB1_ID);
         setupGetIndexAndTabForTabGroupId(TAB_GROUP_ID, 0, mTab1);
-        when(mMediator.getTabListMediaIndicator(mTab1, model)).thenReturn(MediaState.AUDIBLE);
 
-        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
-        assertEquals(MediaState.AUDIBLE, model.get(TabProperties.MEDIA_INDICATOR));
+        assertEquals(TabAlert.MEDIA_RECORDING, model.get(TabProperties.ALERT_STATE));
+        assertEquals(MediaState.RECORDING, model.get(TabProperties.MEDIA_INDICATOR));
         verify(mMediator).updateDescriptionString(model);
     }
 
     @Test
-    public void testOnMediaStateChanged_InTabGroup_UseShrinkCloseAnimation() {
+    public void testOnAlertStateChanged_InTabGroup_UseShrinkCloseAnimation() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         PropertyModel model = createAndAddPropertyModel(TAB1_ID);
         model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
         setupGetIndexAndTabForTabGroupId(TAB_GROUP_ID, 0, mTab1);
 
-        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
-        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
         verify(mMediator, never()).updateDescriptionString(any());
     }
 
     @Test
-    public void testOnMediaStateChanged_InTabGroup_NotFound() {
+    public void testOnAlertStateChanged_InTabGroup_NotFound() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         setupGetIndexAndTabForTabGroupIdNotFound(TAB_GROUP_ID);
 
-        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
-        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
         verify(mMediator, never()).updateDescriptionString(any());
     }
 
     @Test
-    public void testOnMediaStateChanged_NotInTabGroup() {
+    public void testOnAlertStateChanged_NotInTabGroup() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
         PropertyModel model = createAndAddPropertyModel(TAB1_ID);
-        when(mMediator.getTabListMediaIndicator(mTab1, model)).thenReturn(MediaState.AUDIBLE);
 
-        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
+        assertEquals(TabAlert.AUDIO_PLAYING, model.get(TabProperties.ALERT_STATE));
         assertEquals(MediaState.AUDIBLE, model.get(TabProperties.MEDIA_INDICATOR));
         verify(mMediator, never()).updateDescriptionString(any());
     }

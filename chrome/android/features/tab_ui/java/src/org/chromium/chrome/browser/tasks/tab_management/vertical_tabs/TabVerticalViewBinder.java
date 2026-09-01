@@ -866,7 +866,8 @@ class TabVerticalViewBinder {
 
             @StringRes
             int stringRes =
-                    TabListViewBinderUtils.getTabContentDescriptionStringId(isPinned, mediaState);
+                    TabListViewBinderUtils.getMediaIndicatorTabContentDescriptionStringId(
+                            isPinned, mediaState);
             contentDescriptionString = context.getString(stringRes, title);
         }
         view.setContentDescription(contentDescriptionString);

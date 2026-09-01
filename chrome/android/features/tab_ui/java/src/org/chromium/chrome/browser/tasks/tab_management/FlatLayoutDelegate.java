@@ -11,12 +11,12 @@ import android.util.Pair;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -58,9 +58,9 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    @MediaState
-    int getMediaIndicatorState(Tab representativeTab, PropertyModel model) {
-        return representativeTab.getMediaState();
+    @TabAlert
+    int getAlertState(Tab representativeTab, PropertyModel model) {
+        return representativeTab.getAlertState();
     }
 
     @Override

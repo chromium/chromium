@@ -59,7 +59,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
@@ -71,6 +70,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Junit Tests for {@link TabGridViewBinder}. */
@@ -557,22 +557,22 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    public void testMediaIndicator() {
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
-        verify(mViewGroup).setMediaIndicator(eq(MediaState.RECORDING));
+    public void testAlertState() {
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.MEDIA_RECORDING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
+        verify(mViewGroup).setAlertState(eq(TabAlert.MEDIA_RECORDING));
 
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
-        verify(mViewGroup).setMediaIndicator(eq(MediaState.AUDIBLE));
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.AUDIO_PLAYING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
+        verify(mViewGroup).setAlertState(eq(TabAlert.AUDIO_PLAYING));
 
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
-        verify(mViewGroup).setMediaIndicator(eq(MediaState.MUTED));
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.AUDIO_MUTING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
+        verify(mViewGroup).setAlertState(eq(TabAlert.AUDIO_MUTING));
 
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
-        verify(mViewGroup).setMediaIndicator(eq(MediaState.NONE));
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.NONE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
+        verify(mViewGroup).setAlertState(eq(TabAlert.NONE));
     }
 
     @Test
@@ -616,81 +616,98 @@ public final class TabGridViewBinderUnitTest {
         // Unpinned state.
         mModel.set(TabProperties.IS_PINNED, false);
 
-        // MediaState NONE.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert NONE.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.NONE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(R.string.accessibility_tabstrip_tab, title));
 
-        // MediaState AUDIBLE.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert AUDIO_PLAYING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.AUDIO_PLAYING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(R.string.accessibility_tabstrip_tab_audible, title));
 
-        // MediaState MUTED.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert AUDIO_MUTING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.AUDIO_MUTING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(R.string.accessibility_tabstrip_tab_muted, title));
 
-        // MediaState RECORDING.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert MEDIA_RECORDING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.MEDIA_RECORDING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(R.string.accessibility_tabstrip_tab_recording, title));
 
-        // MediaState SHARING.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.SHARING);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert TAB_CAPTURING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.TAB_CAPTURING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(R.string.accessibility_tabstrip_tab_sharing, title));
 
+        // TabAlert PIP_PLAYING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.PIP_PLAYING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(
+                                R.string.accessibility_tabstrip_tab_picture_in_picture, title));
+
         // Pinned state.
         mModel.set(TabProperties.IS_PINNED, true);
 
-        // MediaState NONE.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert NONE.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.NONE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(R.string.accessibility_tabstrip_tab_pinned, title));
 
-        // MediaState AUDIBLE.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert AUDIO_PLAYING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.AUDIO_PLAYING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(
                                 R.string.accessibility_tabstrip_tab_pinned_audible, title));
 
-        // MediaState MUTED.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert AUDIO_MUTING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.AUDIO_MUTING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(
                                 R.string.accessibility_tabstrip_tab_pinned_muted, title));
 
-        // MediaState RECORDING.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert MEDIA_RECORDING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.MEDIA_RECORDING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(
                                 R.string.accessibility_tabstrip_tab_pinned_recording, title));
 
-        // MediaState SHARING.
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.SHARING);
-        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        // TabAlert TAB_CAPTURING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.TAB_CAPTURING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
         verify(mTabTitleView)
                 .setContentDescription(
                         mContext.getString(
                                 R.string.accessibility_tabstrip_tab_pinned_sharing, title));
+
+        // TabAlert PIP_PLAYING.
+        mModel.set(TabProperties.ALERT_STATE, TabAlert.PIP_PLAYING);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.ALERT_STATE);
+        verify(mTabTitleView)
+                .setContentDescription(
+                        mContext.getString(
+                                R.string.accessibility_tabstrip_tab_pinned_picture_in_picture,
+                                title));
     }
 }

@@ -22,7 +22,6 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -34,6 +33,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -71,10 +71,10 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    @MediaState
-    int getMediaIndicatorState(Tab representativeTab, PropertyModel model) {
-        if (TabProperties.isTabGroupHeader(model)) return MediaState.NONE;
-        return representativeTab.getMediaState();
+    @TabAlert
+    int getAlertState(Tab representativeTab, PropertyModel model) {
+        if (TabProperties.isTabGroupHeader(model)) return TabAlert.NONE;
+        return representativeTab.getAlertState();
     }
 
     /**

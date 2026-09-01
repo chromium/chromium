@@ -408,6 +408,43 @@ public class TabUtils {
 
     // LINT.ThenChange(/components/tabs/public/tab_alert.h)
 
+    // LINT.IfChange(TabAlertPriority)
+    /** The maximum alert priority value returned by {@link #getTabAlertPriority(int)}. */
+    public static final int MAX_TAB_ALERT_PRIORITY = 17;
+
+    /**
+     * Returns the priority of a given tab alert (higher number = higher priority to show).
+     *
+     * @param alertState The {@link TabAlert} for which to get the priority.
+     * @return The priority integer, or -1 if {@code alertState} is {@link TabAlert#NONE} or
+     *     unknown.
+     */
+    public static int getTabAlertPriority(@TabAlert int alertState) {
+        return switch (alertState) {
+            case TabAlert.DESKTOP_CAPTURING -> MAX_TAB_ALERT_PRIORITY;
+            case TabAlert.TAB_CAPTURING -> 16;
+            case TabAlert.MEDIA_RECORDING -> 15;
+            case TabAlert.AUDIO_RECORDING -> 14;
+            case TabAlert.VIDEO_RECORDING -> 13;
+            case TabAlert.BLUETOOTH_CONNECTED -> 12;
+            case TabAlert.BLUETOOTH_SCAN_ACTIVE -> 11;
+            case TabAlert.USB_CONNECTED -> 10;
+            case TabAlert.HID_CONNECTED -> 9;
+            case TabAlert.SERIAL_CONNECTED -> 8;
+            case TabAlert.ACTOR_WAITING_ON_USER -> 7;
+            case TabAlert.ACTOR_ACCESSING -> 6;
+            case TabAlert.GLIC_ACCESSING -> 5;
+            case TabAlert.GLIC_SHARING -> 4;
+            case TabAlert.VR_PRESENTING_IN_HEADSET -> 3;
+            case TabAlert.PIP_PLAYING -> 2;
+            case TabAlert.AUDIO_MUTING -> 1;
+            case TabAlert.AUDIO_PLAYING -> 0;
+            default -> -1;
+        };
+    }
+
+    // LINT.ThenChange(//chrome/browser/ui/tabs/alert/tab_alert_controller.cc:TabAlertPriority)
+
     /**
      * Returns the {@link DrawableRes} ID for a given media state.
      *

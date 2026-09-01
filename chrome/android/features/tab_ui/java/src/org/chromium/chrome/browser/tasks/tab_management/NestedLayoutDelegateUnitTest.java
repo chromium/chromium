@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -129,22 +130,22 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testGetMediaIndicatorState_Tab() {
+    public void testGetAlertState_Tab() {
         PropertyModel tabModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
-        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
-        int state = mDelegate.getMediaIndicatorState(mTab1, tabModel);
-        assertEquals(MediaState.AUDIBLE, state);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
+        @TabAlert int state = mDelegate.getAlertState(mTab1, tabModel);
+        assertEquals(TabAlert.AUDIO_PLAYING, state);
     }
 
     @Test
-    public void testGetMediaIndicatorState_GroupHeader() {
+    public void testGetAlertState_GroupHeader() {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, new Token(1, 2))
                         .build();
-        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
-        int state = mDelegate.getMediaIndicatorState(mTab1, headerModel);
-        assertEquals(MediaState.NONE, state);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
+        @TabAlert int state = mDelegate.getAlertState(mTab1, headerModel);
+        assertEquals(TabAlert.NONE, state);
     }
 
     @Test
@@ -312,30 +313,31 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testOnMediaStateChanged() {
+    public void testOnAlertStateChanged() {
         PropertyModel model = addTabToModelList(TAB1_ID, null);
-        when(mMediator.getTabListMediaIndicator(mTab1, model)).thenReturn(MediaState.AUDIBLE);
+        when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
 
-        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
+        assertEquals(TabAlert.AUDIO_PLAYING, model.get(TabProperties.ALERT_STATE));
         assertEquals(MediaState.AUDIBLE, model.get(TabProperties.MEDIA_INDICATOR));
     }
 
     @Test
-    public void testOnMediaStateChanged_UseShrinkCloseAnimation() {
+    public void testOnAlertStateChanged_UseShrinkCloseAnimation() {
         PropertyModel model = addTabToModelList(TAB1_ID, null);
+        model.set(TabProperties.ALERT_STATE, TabAlert.NONE);
         model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
 
-        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
-        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
+        assertEquals(TabAlert.NONE, model.get(TabProperties.ALERT_STATE));
     }
 
     @Test
-    public void testOnMediaStateChanged_NotFound() {
-        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
-
-        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
+    public void testOnAlertStateChanged_NotFound() {
+        // Verify no exception is thrown when the tab ID is not found in the model list.
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
     }
 
     @Test
