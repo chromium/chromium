@@ -36,6 +36,7 @@ class MockWidgetBaseClient : public StubWidgetBaseClient {
               (const WebGestureEvent&, bool*),
               (override));
   MOCK_METHOD(void, WillHandleMouseEvent, (const WebMouseEvent&), (override));
+  MOCK_METHOD(WebTextInputType, GetTextInputType, (), (override));
   const display::ScreenInfos& GetOriginalScreenInfos() override {
     return screen_infos_;
   }
@@ -157,6 +158,16 @@ TEST_F(WidgetBaseInputHandlerTest, MouseEventDestroysWidget) {
           &callback_run));
 
   EXPECT_TRUE(callback_run);
+}
+
+TEST_F(WidgetBaseInputHandlerTest, UpdateTextInputStateDestroysWidget) {
+  EXPECT_CALL(client_, GetTextInputType()).WillOnce([&]() {
+    widget_base_->Shutdown(false);
+    widget_base_.reset();
+    return WebTextInputType::kWebTextInputTypeText;
+  });
+
+  widget_base_->UpdateTextInputState();
 }
 
 }  // namespace blink
