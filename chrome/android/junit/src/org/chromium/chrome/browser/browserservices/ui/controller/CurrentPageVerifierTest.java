@@ -49,8 +49,6 @@ public class CurrentPageVerifierTest {
     private static final String OTHER_TRUSTED_ORIGIN_PAGE1 = OTHER_TRUSTED_ORIGIN + "/page1";
     private static final String UNTRUSTED_PAGE = "https://www.origin3.com/page1";
 
-    public static final String PACKAGE_NAME = "package.name";
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock TabObserverRegistrar mTabObserverRegistrar;
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
