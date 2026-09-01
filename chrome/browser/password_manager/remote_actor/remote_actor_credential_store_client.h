@@ -58,7 +58,6 @@ class RemoteActorCredentialStoreClient {
   // Uploads the credential to Passbox with a TTL.
   void UpdateCredential(const std::string& obfuscated_gaia_id,
                         const std::string& web_origin,
-                        const std::string& password_client_tag_hash,
                         sync_pb::PasswordSpecificsData password_data,
                         base::TimeDelta ttl,
                         UpdateCallback callback);

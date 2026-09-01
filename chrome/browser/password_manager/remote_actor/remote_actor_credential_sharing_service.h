@@ -10,6 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 
 namespace password_manager {
@@ -26,10 +29,6 @@ class RemoteActorCredentialSharingService : public KeyedService {
     // "https://github.com") for which the credential is valid.
     std::string web_origin;
 
-    // The client tag hash representing the metadata or key identifier for the
-    // password.
-    std::string password_client_tag_hash;
-
     // The fully populated sync specifics data for the password.
     sync_pb::PasswordSpecificsData password_data;
 
@@ -38,6 +37,15 @@ class RemoteActorCredentialSharingService : public KeyedService {
 
     // The task ID of the remote actor requesting the credential.
     std::string task_id;
+
+    // Computes the client tag hash identifying the credential from its
+    // specifics data.
+    std::string password_client_tag_hash() const {
+      std::string client_tag = GetClientTag(password_data);
+      return syncer::ClientTagHash::FromUnhashed(syncer::DataType::PASSWORDS,
+                                                 client_tag)
+          .value();
+    }
   };
 
   using SharePasswordCallback = base::OnceCallback<void(bool)>;

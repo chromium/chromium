@@ -25,8 +25,11 @@
 #include "chrome/browser/password_manager/remote_actor/protos/remote_actor_list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "google_apis/common/time_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -110,11 +113,16 @@ RemoteActorCredentialStoreClient::~RemoteActorCredentialStoreClient() {
 void RemoteActorCredentialStoreClient::UpdateCredential(
     const std::string& obfuscated_gaia_id,
     const std::string& web_origin,
-    const std::string& password_client_tag_hash,
     sync_pb::PasswordSpecificsData password_data,
     base::TimeDelta ttl,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string client_tag = GetClientTag(password_data);
+  std::string password_client_tag_hash =
+      syncer::ClientTagHash::FromUnhashed(syncer::DataType::PASSWORDS,
+                                          client_tag)
+          .value();
+
   RemoteActorListAffiliatedPasswordsResult::RemoteActorAffiliatedPassword proto;
   *proto.mutable_password_data() = std::move(password_data);
   // Only username and password are needed by the remote actor.

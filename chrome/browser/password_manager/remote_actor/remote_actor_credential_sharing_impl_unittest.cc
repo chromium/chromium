@@ -55,6 +55,13 @@ namespace password_manager {
 
 namespace {
 
+using testing::_;
+using testing::AllOf;
+using testing::Field;
+using testing::IsEmpty;
+using testing::Not;
+using testing::Property;
+
 class MockBadMessageHelper {
  public:
   MockBadMessageHelper() {
@@ -661,23 +668,17 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
   EXPECT_EQ(last_dialog_credentials_[0]->username_value, u"user");
   EXPECT_EQ(last_dialog_credential_domain_, "https://google.com");
 
-  using ::testing::_;
-  using ::testing::AllOf;
-  using ::testing::Field;
-  using ::testing::IsEmpty;
-  using ::testing::Not;
-
   EXPECT_CALL(
       *mock_sharing_service_,
       SharePassword(
           AllOf(Field(&RemoteActorCredentialSharingService::ShareParameters::
                           password_data,
-                      ::testing::Property(
+                      Property(
                           &sync_pb::PasswordSpecificsData::username_value,
                           "user")),
                 Field(&RemoteActorCredentialSharingService::ShareParameters::
                           password_data,
-                      ::testing::Property(
+                      Property(
                           &sync_pb::PasswordSpecificsData::password_value,
                           "pass")),
                 Field(&RemoteActorCredentialSharingService::ShareParameters::
@@ -686,9 +687,10 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
                 Field(&RemoteActorCredentialSharingService::ShareParameters::
                           task_id,
                       "actor_id"),
-                Field(&RemoteActorCredentialSharingService::ShareParameters::
-                          password_client_tag_hash,
-                      Not(IsEmpty()))),
+                Property(
+                    &RemoteActorCredentialSharingService::ShareParameters::
+                        password_client_tag_hash,
+                    Not(IsEmpty()))),
           _))
       .WillOnce(base::test::RunOnceCallback<1>(true));
 

@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
@@ -17,7 +18,10 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/password_manager/remote_actor/protos/remote_actor_list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "google_apis/common/time_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -31,8 +35,6 @@ namespace {
 
 constexpr char kTestGaiaId[] = "12345";
 constexpr char kTestWebOrigin[] = "https://nike.com";
-constexpr char kTestTagHash[] = "HEJUlbCns/tAdqunOs14cRDYyHg=";
-constexpr char kTestEscapedTagHash[] = "HEJUlbCns%2FtAdqunOs14cRDYyHg%3D";
 constexpr char16_t kTestUsername[] = u"alice";
 constexpr char16_t kTestPassword[] = u"password";
 
@@ -70,7 +72,12 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
   password_data.set_username_value(base::UTF16ToUTF8(kTestUsername));
   password_data.set_password_value(base::UTF16ToUTF8(kTestPassword));
 
-  store_->UpdateCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
+  std::string expected_escaped_tag_hash = base::EscapeAllExceptUnreserved(
+      syncer::ClientTagHash::FromUnhashed(syncer::DataType::PASSWORDS,
+                                          GetClientTag(password_data))
+          .value());
+
+  store_->UpdateCredential(kTestGaiaId, kTestWebOrigin,
                            std::move(password_data), base::Minutes(10),
                            future.GetCallback());
 
@@ -89,7 +96,7 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
                  "AGENTIC_CREDENTIAL_MANAGER/owneridnamespaces/GOOGLE_USER_ID/"
                  "ownerids/12345/externalservices/https%3A%2F%2Fnike.com/"
                  "credentials/",
-                 kTestEscapedTagHash, "?allow_missing=true"}));
+                 expected_escaped_tag_hash, "?allow_missing=true"}));
 
   // Verify request body
   base::DictValue request_dict = base::test::ParseJsonDict(
@@ -100,7 +107,7 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
           {"internalservices/AGENTIC_CREDENTIAL_MANAGER/owneridnamespaces/"
            "GOOGLE_USER_ID/ownerids/12345/externalservices/"
            "https%3A%2F%2Fnike.com/credentials/",
-           kTestEscapedTagHash}));
+           expected_escaped_tag_hash}));
 
   const base::DictValue* credential_data_dict =
       request_dict.FindDict("credentialData");
@@ -145,7 +152,12 @@ TEST_F(RemoteActorCredentialStoreClientTest,
   password_data.set_username_value(base::UTF16ToUTF8(kTestUsername));
   password_data.set_password_value(base::UTF16ToUTF8(kTestPassword));
 
-  custom_store->UpdateCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
+  std::string expected_escaped_tag_hash = base::EscapeAllExceptUnreserved(
+      syncer::ClientTagHash::FromUnhashed(syncer::DataType::PASSWORDS,
+                                          GetClientTag(password_data))
+          .value());
+
+  custom_store->UpdateCredential(kTestGaiaId, kTestWebOrigin,
                                  std::move(password_data), base::Minutes(10),
                                  future.GetCallback());
 
@@ -162,7 +174,7 @@ TEST_F(RemoteActorCredentialStoreClientTest,
                  "AGENTIC_CREDENTIAL_MANAGER/owneridnamespaces/GOOGLE_USER_ID/"
                  "ownerids/12345/externalservices/https%3A%2F%2Fnike.com/"
                  "credentials/",
-                 kTestEscapedTagHash, "?allow_missing=true"}));
+                 expected_escaped_tag_hash, "?allow_missing=true"}));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "{}");
@@ -175,6 +187,7 @@ TEST_F(RemoteActorCredentialStoreClientTest, DeleteCredentialSuccess) {
                                                  signin::ConsentLevel::kSignin);
 
   base::test::TestFuture<bool> future;
+  constexpr char kTestTagHash[] = "test_tag_hash";
   store_->DeleteCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
                            future.GetCallback());
 
@@ -192,7 +205,7 @@ TEST_F(RemoteActorCredentialStoreClientTest, DeleteCredentialSuccess) {
                  "AGENTIC_CREDENTIAL_MANAGER/owneridnamespaces/GOOGLE_USER_ID/"
                  "ownerids/12345/externalservices/https%3A%2F%2Fnike.com/"
                  "credentials/",
-                 kTestEscapedTagHash, "?allow_missing=true"}));
+                 kTestTagHash, "?allow_missing=true"}));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
