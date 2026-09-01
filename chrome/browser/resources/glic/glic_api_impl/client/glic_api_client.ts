@@ -405,7 +405,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     const state = response.initialState;
     this.geminiEnterpriseSettings.assignAndSignal(
         state.geminiEnterpriseSettings ?? undefined);
-    this.router.setLoggingEnabled(state.loggingEnabled);
     this.clientRemote.rawSender().setMaxInFlightRequests(
         state.maxInFlightRequests);
     this.clientRemote.rawSender().sendResponsesForAllRequests =

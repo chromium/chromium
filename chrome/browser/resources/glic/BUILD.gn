@@ -125,6 +125,7 @@ glic_api_ts_files = [
   "glic_api_impl/host/host_utils.ts",
   "glic_api_impl/host/types.ts",
   "glic_api_impl/mojo_bindings_stub.ts",
+  "glic_api_impl/mojo_logging.ts",
   "glic_api_impl/request_types.ts",
   "glic_api_impl/skills/skills_client.ts",
   "glic_api_impl/skills/skills_host.ts",

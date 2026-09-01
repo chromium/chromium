@@ -20,6 +20,7 @@ import type {AnnotationHost} from '../annotation/annotation_types.js';
 import {ExperimentalTriggeringClientImpl} from '../experimental_triggering/experimental_triggering_host.js';
 import {ExperimentalTriggeringClientDef} from '../experimental_triggering/experimental_triggering_types.js';
 import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
+import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {getHostRequestHistogramInfo} from '../request_types.js';
 import type {ActorClient, ActorHost, SkillsClient, SkillsHost, WebClient, ZeroStateSuggestionsHost} from '../request_types.js';
 import {SkillsClientImpl, SkillsHostMessageHandler} from '../skills/skills_host.js';
@@ -117,7 +118,8 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   ) {
     this.router = hostRouter;
     this.sender = hostRemote;
-    this.handler = new WebClientHandlerRemote();
+    this.handler = maybeWrapWithLogging(
+        new WebClientHandlerRemote(), {prefix: 'WebClientHandler'});
     this.handler.onConnectionError.addListener(() => {
       if (this.isDestroyed ||
           this.webClientState.getCurrentValue() === WebClientState.ERROR) {
@@ -182,7 +184,8 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     let actorReceiver: PendingReceiver<ActorClient>|undefined;
 
     if (initialState.enableActInFocusedTab) {
-      this.actorHandler = new ActorHandlerRemote();
+      this.actorHandler = maybeWrapWithLogging(
+          new ActorHandlerRemote(), {prefix: 'ActorHandler'});
       const {remote: clientRemote, receiver: receiverVal} =
           this.router.newPipeWithRemote(ActorClientDef);
       const actorClientReceiver =
@@ -198,7 +201,8 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
       actorReceiver = receiverVal;
     }
 
-    this.skillsHandler = new SkillsHandlerRemote();
+    this.skillsHandler = maybeWrapWithLogging(
+        new SkillsHandlerRemote(), {prefix: 'SkillsHandler'});
     const {remote: skillsClientRemote, receiver: skillsReceiver} =
         this.router.newPipeWithRemote(SkillsClientDef);
     const skillsClientReceiver =
@@ -223,8 +227,9 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     let zeroStateSuggestionsRemote: PendingRemote<ZeroStateSuggestionsHost>|
         undefined;
     if (initialState.enableZeroStateSuggestions) {
-      this.zeroStateSuggestionsHandler =
-          new ZeroStateSuggestionsHandlerRemote();
+      this.zeroStateSuggestionsHandler = maybeWrapWithLogging(
+          new ZeroStateSuggestionsHandlerRemote(),
+          {prefix: 'ZeroStateSuggestionsHandler'});
       this.handler.createZeroStateSuggestionsHandler(
           this.zeroStateSuggestionsHandler.$.bindNewPipeAndPassReceiver());
       const zeroStateSuggestionsHostMessageHandler =
@@ -249,7 +254,8 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
 
   createAnnotationHandler(receiver: PendingReceiver<AnnotationHost>): void {
     assert(!this.annotationHandler);
-    this.annotationHandler = new AnnotationHandlerRemote();
+    this.annotationHandler = maybeWrapWithLogging(
+        new AnnotationHandlerRemote(), {prefix: 'AnnotationHandler'});
     this.handler.createAnnotationHandler(
         this.annotationHandler.$.bindNewPipeAndPassReceiver());
     const annotationHostMessageHandler =
