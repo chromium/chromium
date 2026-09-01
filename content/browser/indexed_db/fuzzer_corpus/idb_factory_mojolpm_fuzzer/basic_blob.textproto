@@ -260,4 +260,4 @@ sequence_indexes: [0, 1, 2, 3, 4, 5, 6]
 sequence_indexes: [1, 7, 3, 8, 5, 6]
 
 in_memory: false
-use_sqlite: false
+use_sqlite: true
