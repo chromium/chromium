@@ -679,8 +679,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            base::FeatureList::IsEnabled(
                contextual_tasks::kContextualTasksHideMenuOnAiPage));
   dict.Set("contextualTasksUnboundedMenuEnabled",
-           base::FeatureList::IsEnabled(
-               contextual_tasks::kContextualTasksUnboundedMenu));
+           contextual_tasks::IsContextualTasksUnboundedMenuEnabled());
   dict.Set(
       "contextualTasksEnableSpatialModelToolbarLayout",
       contextual_tasks::GetContextualTasksSpatialModelToolbarLayoutEnabled());

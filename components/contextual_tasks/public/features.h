@@ -484,6 +484,7 @@ extern bool GetIsWebpageApcComparisonEnabled();
 
 extern bool IsContextualTasksRearchitectureEnabled();
 extern bool IsContextualTasksSidePanelRearchitectureEnabled();
+extern bool IsContextualTasksUnboundedMenuEnabled();
 
 inline constexpr char kContextualTasksSearchCapabilitiesHeaderName[] =
     "Chrome-Search-Capabilities-Version";
