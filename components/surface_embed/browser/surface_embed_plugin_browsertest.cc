@@ -1274,7 +1274,15 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedAccessibilityBrowserTest,
       [&]() { return host->HasReceivedParentAccessibilityInfoForTesting(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusPreservedAfterNavigation) {
+// TODO(crbug.com/555865331): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FocusPreservedAfterNavigation \
+  DISABLED_FocusPreservedAfterNavigation
+#else
+#define MAYBE_FocusPreservedAfterNavigation FocusPreservedAfterNavigation
+#endif
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       MAYBE_FocusPreservedAfterNavigation) {
   NavigateToTestUrl(kFocusHarnessUrl);
 
   auto child_contents = CreateChildWebContents();
