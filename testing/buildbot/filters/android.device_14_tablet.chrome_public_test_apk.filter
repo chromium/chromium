@@ -81,3 +81,9 @@
 
 # crbug.com/531604581
 -org.chromium.chrome.browser.gesturenav.NavigationTransitionsTest.testBackNavInRTL__ThreeButtonMode
+
+# Rotating to portrait letterboxes the activity on landscape-oriented devices,
+# causing Android 14's letterbox education dialog to intercept clicks.
+# crbug.com/555361598
+-org.chromium.chrome.browser.settings.SettingsPageSigninTest.testSignOutInSingleColumnThenTransitionToMultiColumn
+-org.chromium.chrome.browser.settings.SettingsPageTest.testSearchInSingleColumnThenRotateToLandscapeAndExitSearch

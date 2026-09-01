@@ -17,7 +17,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.content.res.Configuration;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
@@ -32,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -74,23 +76,17 @@ public class SettingsPageSigninTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
-    @DisabledTest(message = "crbug.com/555360488")
     public void testSignOutInSingleColumnThenTransitionToMultiColumn() {
         // Sign in.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Ensure starting in portrait (usually single-column mode on tablet).
-        var activity = mActivityTestRule.getActivity();
-        if (activity.getResources().getConfiguration().orientation
-                != Configuration.ORIENTATION_PORTRAIT) {
-            ActivityTestUtils.rotateActivityToOrientation(
-                    activity, Configuration.ORIENTATION_PORTRAIT);
-        }
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
 
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
         // Wait for settings page to load.
-        onView(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
         // Skip test if portrait mode happens to be wide enough for two-column mode.
         var isSingleColumn =
@@ -109,17 +105,20 @@ public class SettingsPageSigninTest {
 
         // Click on Account preference in MainSettings header pane to open ManageSyncSettings.
         var headerRecyclerViewMatcher =
-                allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header)));
-        onView(headerRecyclerViewMatcher)
+                allOf(
+                        withId(R.id.recycler_view),
+                        isDescendantOfA(withId(R.id.preferences_header)),
+                        hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail())));
+        onViewWaiting(headerRecyclerViewMatcher)
                 .perform(scrollTo(hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail()))));
         var headerAccountMatcher =
                 allOf(
                         isDescendantOfA(withId(R.id.preferences_header)),
                         withText(TestAccounts.ACCOUNT1.getEmail()));
-        onView(headerAccountMatcher).perform(click());
+        onViewWaiting(headerAccountMatcher).perform(click());
 
         // Verify Account settings (ManageSyncSettings) is displayed.
-        onView(allOf(withText(R.string.account_settings_title), isDisplayed()))
+        onViewWaiting(allOf(withText(R.string.account_settings_title), isDisplayed()))
                 .check(matches(isDisplayed()));
 
         // 1. Sign out while in single-column mode.
@@ -139,13 +138,34 @@ public class SettingsPageSigninTest {
                 });
 
         // 2. Rotate display to landscape (transitioning to two-column mode).
-        activity = mActivityTestRule.getActivity();
-        ActivityTestUtils.rotateActivityToOrientation(
-                activity, Configuration.ORIENTATION_LANDSCAPE);
+        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        ensureTwoColumnMode();
 
         // In two-column mode, verify that the detail pane shows the default Google Services
         // settings and NOT the stale Account/ManageSyncSettings fragment.
-        onView(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.allow_chrome_signin_title)).check(matches(isDisplayed()));
         onView(withText(R.string.account_settings_title)).check(doesNotExist());
+    }
+
+    private void ensureActivityOrientation(int orientation) {
+        var activity = mActivityTestRule.getActivity();
+        ActivityTestUtils.rotateActivityToOrientation(activity, orientation);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View decorView = activity.getWindow().getDecorView();
+                    return orientation == Configuration.ORIENTATION_LANDSCAPE
+                            ? decorView.getWidth() > decorView.getHeight()
+                            : decorView.getHeight() > decorView.getWidth();
+                },
+                "Window should be laid out in the target orientation.");
+    }
+
+    private void ensureTwoColumnMode() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
+                    return hostFragment != null && hostFragment.isTwoColumnSettingsVisible();
+                },
+                "Settings should be shown in two-column mode.");
     }
 }
