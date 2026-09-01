@@ -17,7 +17,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -31,7 +30,6 @@ import org.chromium.components.segmentation_platform.InputContext;
 
 /** Unit tests for {@link HomeModulesUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class HomeModulesUtilsUnitTest {
     @Test
     @SmallTest

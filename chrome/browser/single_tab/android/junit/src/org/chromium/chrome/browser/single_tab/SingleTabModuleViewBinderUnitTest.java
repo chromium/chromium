@@ -42,7 +42,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -52,7 +51,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link SingleTabViewBinder} with {@link R.layout.single_tab_module_layout} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SingleTabModuleViewBinderUnitTest {
     private static final String TEST_TITLE = "test";
     private static final String TEST_URL = "www.foo.com";

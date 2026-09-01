@@ -37,7 +37,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -48,7 +47,6 @@ import java.util.Locale;
 
 /** Unit tests for {@link CirclePagerIndicatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CirclePagerIndicatorDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();

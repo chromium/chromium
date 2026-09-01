@@ -47,7 +47,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -79,7 +78,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class HomeModulesCoordinatorUnitTest {
     private static final int INITIAL_TOP_MARGIN = 12;
     private static final int SMALL_TOP_MARGIN = 8;
