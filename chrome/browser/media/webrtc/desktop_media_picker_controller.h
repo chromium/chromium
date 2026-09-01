@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -54,6 +55,9 @@ class DesktopMediaPickerController : private content::WebContentsObserver {
   // Checks if system audio capture is supported on the current platform.
   static bool IsSystemAudioCaptureSupported(
       Params::RequestSource request_source);
+
+  static void SetSystemAudioCaptureSupportedForTesting(
+      std::optional<bool> is_supported);
 
   // Show the desktop picker dialog using the parameters specified by |params|,
   // with the possible selections restricted to those included in |sources|.  If

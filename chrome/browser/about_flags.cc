@@ -5956,11 +5956,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacCatapLoopbackAudioForCastDescription, kOsMac,
      FEATURE_VALUE_TYPE(media::kMacCatapLoopbackAudioForCast)},
 
-    {"mac-catap-loopback-audio-for-screen-share",
-     flag_descriptions::kMacCatapLoopbackAudioForScreenShareName,
-     flag_descriptions::kMacCatapLoopbackAudioForScreenShareDescription, kOsMac,
-     FEATURE_VALUE_TYPE(media::kMacCatapLoopbackAudioForScreenShare)},
-
     {"use-sc-content-sharing-picker",
      flag_descriptions::kUseSCContentSharingPickerName,
      flag_descriptions::kUseSCContentSharingPickerDescription, kOsMac,

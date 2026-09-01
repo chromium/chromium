@@ -2760,7 +2760,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=MacCatapLoopbackAudioForScreenShare,RestrictOwnAudio"
+      "--enable-features=RestrictOwnAudio"
     ],
     "owners": [
       "guidou@chromium.org",

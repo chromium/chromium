@@ -1529,11 +1529,6 @@ BASE_FEATURE(kCastStreamingMacHardwareH264, base::FEATURE_ENABLED_BY_DEFAULT);
 // Cast.
 BASE_FEATURE(kMacCatapLoopbackAudioForCast, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables system audio loopback capture using the macOS CoreAudio tap API for
-// screen share.
-BASE_FEATURE(kMacCatapLoopbackAudioForScreenShare,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
 // flag will only use the built-in picker on MacOS 15 Sequoia and later where it
 // is required to avoid recurring permission dialogs.
@@ -1815,8 +1810,6 @@ bool IsApplicationLoopbackCaptureSupported() {
          IsWindowsProcessLoopbackCaptureSupported();
 #elif BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(kApplicationAudioCaptureMac) &&
-         base::FeatureList::IsEnabled(
-             media::kMacCatapLoopbackAudioForScreenShare) &&
          media::IsMacCatapSystemLoopbackCaptureSupported();
 #else
   return false;
@@ -1879,8 +1872,7 @@ bool IsLiveTranslateEnabled() {
 
 bool IsRestrictOwnAudioSupported() {
 #if BUILDFLAG(IS_MAC)
-  return IsMacCatapSystemLoopbackCaptureSupported() &&
-         base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForScreenShare);
+  return IsMacCatapSystemLoopbackCaptureSupported();
 #elif BUILDFLAG(IS_WIN)
   return IsWindowsProcessLoopbackCaptureSupported();
 #else

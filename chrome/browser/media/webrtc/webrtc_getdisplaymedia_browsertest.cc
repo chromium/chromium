@@ -2887,7 +2887,6 @@ class GetDisplayMediaRestrictOwnAudioTest
   void SetUpInProcessBrowserTestFixture() override {
 #if BUILDFLAG(IS_MAC)
     feature_list_.InitWithFeatures({media::kMacCatapLoopbackAudioForCast,
-                                    media::kMacCatapLoopbackAudioForScreenShare,
                                     blink::features::kRestrictOwnAudio},
                                    {media::kUseSCContentSharingPicker});
 #elif BUILDFLAG(IS_WIN)

@@ -77,7 +77,6 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
 using ::content::RenderFrameHost;
@@ -1431,8 +1430,6 @@ void DesktopMediaPickerDialogView::OnPermissionUpdate(bool has_permission) {
     category.pane->OnScreenCapturePermissionUpdate(has_permission);
   }
 }
-
-
 
 void DesktopMediaPickerDialogView::OnAudioSharingApprovedByUserUpdate() {
   UpdateAudioPermissionsWarningState(GetSelectedTabIndex());

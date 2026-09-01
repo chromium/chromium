@@ -310,24 +310,25 @@ class DesktopMediaPickerDefaultAudioOnTest
              DesktopMediaList::Type::kWebContents}) {}
   ~DesktopMediaPickerDefaultAudioOnTest() override = default;
 
+  void TearDown() override {
+    DesktopMediaPickerController::SetSystemAudioCaptureSupportedForTesting(
+        std::nullopt);
+    DesktopMediaPickerViewsTestBase::TearDown();
+  }
+
   void MaybeCreatePickerViews() override {
     // CreatePickerViews() called directly from tests.
   }
 
  protected:
-  void InitFeatures(bool is_system_audio_capture = true) {
+  void InitFeatures(bool is_system_audio_capture_supported = true) {
+    DesktopMediaPickerController::SetSystemAudioCaptureSupportedForTesting(
+        is_system_audio_capture_supported);
+
     std::vector<base::test::FeatureRef> enabled_features, disabled_features;
 
     (GetParam() ? enabled_features : disabled_features)
         .push_back(blink::features::kGetDisplayMediaAudioSelection);
-
-#if BUILDFLAG(IS_LINUX)
-    (is_system_audio_capture ? enabled_features : disabled_features)
-        .push_back(media::kPulseaudioLoopbackForScreenShare);
-#elif BUILDFLAG(IS_MAC)
-    (is_system_audio_capture ? enabled_features : disabled_features)
-        .push_back(media::kMacCatapLoopbackAudioForScreenShare);
-#endif
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -448,7 +449,7 @@ TEST_P(DesktopMediaPickerDefaultAudioOnTest,
 TEST_P(DesktopMediaPickerDefaultAudioOnTest,
        LabelHintShownWhenAudioNotSupported) {
   const bool audio_toggle_on = GetParam();
-  InitFeatures(/*is_system_audio_capture=*/false);
+  InitFeatures(/*is_system_audio_capture_supported=*/false);
 
   CreatePickerViewsForGetDisplayMedia(/*audio_selection_preferred=*/true);
 
@@ -891,10 +892,7 @@ class DesktopMediaPickerViewsSystemAudioTest
 
   void SetUp() override {
 #if BUILDFLAG(IS_MAC)
-    feature_list_.InitWithFeatures(
-        {media::kMacCatapLoopbackAudioForCast,
-         media::kMacCatapLoopbackAudioForScreenShare},
-        {});
+    feature_list_.InitWithFeatures({media::kMacCatapLoopbackAudioForCast}, {});
 #endif
     DesktopMediaPickerViewsTestBase::SetUp();
   }
@@ -1168,7 +1166,7 @@ TEST_P(DesktopMediaPickerViewsApplicationAudioTest, AudioCheckbox) {
   EXPECT_EQ(test_api_.IsWindowAudioOffered(), ShouldOfferWindowAudio());
   // By default, the audio sharing toggle is unchecked for window capture.
   if (ShouldOfferWindowAudio()) {
-      EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+    EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
   }
   EXPECT_EQ(test_api_.GetAudioLabelText(), GetExpectedWindowAudioLabel());
 

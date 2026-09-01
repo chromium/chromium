@@ -7275,12 +7275,6 @@ inline constexpr char kMacCatapLoopbackAudioForCastDescription[] =
     "Enable system audio loopback capture for Cast using the macOS CoreAudio "
     "tap API on macOS 14.2+.";
 
-inline constexpr char kMacCatapLoopbackAudioForScreenShareName[] =
-    "Mac Core Audio Tap System Loopback Capture for Screen Sharing";
-inline constexpr char kMacCatapLoopbackAudioForScreenShareDescription[] =
-    "Enable system audio loopback capture for screen share using the macOS "
-    "CoreAudio tap API on macOS 14.2+.";
-
 inline constexpr char kMacPWAsNotificationAttributionName[] =
     "Mac PWA notification attribution";
 inline constexpr char kMacPWAsNotificationAttributionDescription[] =

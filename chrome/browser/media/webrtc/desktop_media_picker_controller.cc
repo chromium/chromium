@@ -33,6 +33,10 @@
 
 using ::content::DesktopMediaID;
 
+namespace {
+std::optional<bool> g_is_system_audio_capture_supported_for_testing;
+}  // namespace
+
 DesktopMediaPickerController::DesktopMediaPickerController(
     DesktopMediaPickerFactory* picker_factory)
     : picker_factory_(picker_factory
@@ -87,8 +91,17 @@ void DesktopMediaPickerController::WebContentsDestroyed() {
 }
 
 // static
+void DesktopMediaPickerController::SetSystemAudioCaptureSupportedForTesting(
+    std::optional<bool> is_supported) {
+  g_is_system_audio_capture_supported_for_testing = is_supported;
+}
+
+// static
 bool DesktopMediaPickerController::IsSystemAudioCaptureSupported(
     Params::RequestSource request_source) {
+  if (g_is_system_audio_capture_supported_for_testing.has_value()) {
+    return *g_is_system_audio_capture_supported_for_testing;
+  }
   if (!media::IsSystemLoopbackCaptureSupported()) {
     return false;
   }
@@ -97,9 +110,7 @@ bool DesktopMediaPickerController::IsSystemAudioCaptureSupported(
     return (media::IsMacSckSystemLoopbackCaptureSupported() ||
             base::FeatureList::IsEnabled(media::kMacCatapLoopbackAudioForCast));
   } else {
-    return (media::IsMacCatapSystemLoopbackCaptureSupported() &&
-            base::FeatureList::IsEnabled(
-                media::kMacCatapLoopbackAudioForScreenShare));
+    return media::IsMacCatapSystemLoopbackCaptureSupported();
   }
 #elif BUILDFLAG(IS_LINUX)
   if (request_source == Params::RequestSource::kCast) {
