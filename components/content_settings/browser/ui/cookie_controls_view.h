@@ -25,11 +25,9 @@ class CookieControlsObserver : public base::CheckedObserver {
       // The expiration time of the active UB exception if it is present.
       base::Time expiration) {}
 
-  // Called to update the user bypass entrypoint in the omnibox. This can impact
-  // any property of the entrypoint (i.e. the visibility, label, or icon).
+  // Called to update the cookie controls icon in the omnibox. This can impact
+  // any property of the icon, including the visibility and label.
   virtual void OnCookieControlsIconStatusChanged(
-      // Whether to show the user bypass icon.
-      bool icon_visible,
       // The state of the controls for the UI to change.
       CookieControlsState controls_state) {}
 

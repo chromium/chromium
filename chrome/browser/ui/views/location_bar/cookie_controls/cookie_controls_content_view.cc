@@ -56,7 +56,7 @@ std::unique_ptr<views::View> CreateFullWidthSeparator() {
   return CreateSeparator(/*padded=*/false);
 }
 
-gfx::Insets UserBypassBubbleInsets() {
+gfx::Insets CookieControlsBubbleInsets() {
   auto* provider = ChromeLayoutProvider::Get();
   const int vertical_margin =
       provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
@@ -88,7 +88,7 @@ void CookieControlsContentView::AddContentLabels() {
   label_wrapper_ = AddChildView(std::make_unique<views::View>());
   label_wrapper_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  label_wrapper_->SetProperty(views::kMarginsKey, UserBypassBubbleInsets());
+  label_wrapper_->SetProperty(views::kMarginsKey, CookieControlsBubbleInsets());
   title_ = label_wrapper_->AddChildView(std::make_unique<views::Label>());
   title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);

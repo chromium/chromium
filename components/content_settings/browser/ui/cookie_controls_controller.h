@@ -46,8 +46,8 @@ class CookieControlsController final
   // Called when the web_contents has changed.
   void Update(content::WebContents* web_contents);
 
-  // Updates user bypass visibility and/or highlighting.
-  void UpdateUserBypass();
+  // Updates the cookie controls icon.
+  void UpdateCookieControlsIcon();
 
   // Called when the UI is closing.
   void OnUiClosing();
@@ -157,7 +157,8 @@ class CookieControlsController final
   bool SiteDataAccessed(int third_party_allowed_sites,
                         int third_party_blocked_sites);
 
-  bool ShouldUserBypassIconBeVisible(CookieControlsState controls_state);
+  CookieControlsState GetCookieControlsIconState(
+      CookieControlsState controls_state);
   bool SiteDataAccessAttempted();
   content::WebContents* GetWebContents() const;
 

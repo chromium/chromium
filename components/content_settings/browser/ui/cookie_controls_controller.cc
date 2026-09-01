@@ -48,7 +48,7 @@ using ::base::UserMetricsAction;
 using ::site_engagement::SiteEngagementService;
 
 constexpr char kActivationsCountKey[] = "activations_count_key";
-constexpr base::TimeDelta kUserBypassUIReloadTime = base::Seconds(30);
+constexpr base::TimeDelta kCookieControlsUIReloadTime = base::Seconds(30);
 
 using CacheSizeType =
     base::LRUCacheSet<content_settings::AccessDetails>::size_type;
@@ -133,13 +133,12 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
     return;
   }
   auto status = GetStatus(web_contents);
-  const bool icon_visible =
-      ShouldUserBypassIconBeVisible(status.controls_state);
+  const CookieControlsState icon_state =
+      GetCookieControlsIconState(status.controls_state);
   for (auto& observer : observers_) {
     observer.OnStatusChanged(status.controls_state, status.enforcement,
                              status.expiration);
-    observer.OnCookieControlsIconStatusChanged(icon_visible,
-                                               status.controls_state);
+    observer.OnCookieControlsIconStatusChanged(icon_state);
   }
 }
 
@@ -291,16 +290,15 @@ int CookieControlsController::GetStatefulBounceCount() const {
   }
 }
 
-void CookieControlsController::UpdateUserBypass() {
+void CookieControlsController::UpdateCookieControlsIcon() {
   if (observers_.empty()) {
     return;
   }
   auto status = GetStatus(GetWebContents());
-  const bool icon_visible =
-      ShouldUserBypassIconBeVisible(status.controls_state);
+  const CookieControlsState icon_state =
+      GetCookieControlsIconState(status.controls_state);
   for (auto& observer : observers_) {
-    observer.OnCookieControlsIconStatusChanged(icon_visible,
-                                               status.controls_state);
+    observer.OnCookieControlsIconStatusChanged(icon_state);
   }
 }
 
@@ -333,13 +331,13 @@ void CookieControlsController::OnPageFinishedLoading() {
 void CookieControlsController::OnThirdPartyCookieBlockingChanged(
     bool block_third_party_cookies) {
   if (GetWebContents()) {
-    UpdateUserBypass();
+    UpdateCookieControlsIcon();
   }
 }
 
 void CookieControlsController::OnCookieSettingChanged() {
   if (GetWebContents()) {
-    UpdateUserBypass();
+    UpdateCookieControlsIcon();
   }
 }
 
@@ -382,25 +380,27 @@ void CookieControlsController::RecordActivationMetrics() {
       .Record(ukm::UkmRecorder::Get());
 }
 
-bool CookieControlsController::ShouldUserBypassIconBeVisible(
+CookieControlsState CookieControlsController::GetCookieControlsIconState(
     CookieControlsState controls_state) {
-  if (controls_state == CookieControlsState::kHidden) {
-    return false;
+  if (controls_state != CookieControlsState::kBlocked3pc) {
+    return controls_state;
   }
-  return show_icon_as_confirmation_ ||
-         controls_state == CookieControlsState::kAllowed3pc ||
-         // 3PC blocking prevents SameSite=None cookies from being sent when the
-         // top-level document is sandboxed without `allow-origin`. For instance
-         // when loaded with: `Content-Security-Policy: sandbox`. In that case,
-         // we render the UI to allow the user to opt into sending SameSite=None
-         // cookies again in those contexts.
-         HasOriginSandboxedTopLevelDocument() ||
-         // If no 3P sites have attempted to access site data, nor were any
-         // stateful bounces recorded, the icon should not be displayed. Take
-         // into account both allow and blocked counts, since the breakage might
-         // be related to storage partitioning. Partitioned site will be allowed
-         // to access partitioned storage.
-         SiteDataAccessAttempted();
+  if (show_icon_as_confirmation_ ||
+      // 3PC blocking prevents SameSite=None cookies from being sent when the
+      // top-level document is sandboxed without `allow-origin`. For instance
+      // when loaded with: `Content-Security-Policy: sandbox`. In that case,
+      // we render the UI to allow the user to opt into sending SameSite=None
+      // cookies again in those contexts.
+      HasOriginSandboxedTopLevelDocument() ||
+      // If no 3P sites have attempted to access site data, nor were any
+      // stateful bounces recorded, the icon should not be displayed. Take
+      // into account both allow and blocked counts, since the breakage might
+      // be related to storage partitioning. Partitioned site will be allowed
+      // to access partitioned storage.
+      SiteDataAccessAttempted()) {
+    return controls_state;
+  }
+  return CookieControlsState::kHidden;
 }
 
 bool CookieControlsController::SiteDataAccessAttempted() {
@@ -425,7 +425,7 @@ CookieControlsController::TabObserver::~TabObserver() = default;
 void CookieControlsController::TabObserver::OnSiteDataAccessed(
     const AccessDetails& access_details) {
   if (access_details.site_data_type != SiteDataType::kCookies) {
-    cookie_controls_->UpdateUserBypass();
+    cookie_controls_->UpdateCookieControlsIcon();
     return;
   }
 
@@ -449,11 +449,11 @@ void CookieControlsController::TabObserver::OnSiteDataAccessed(
   }
 
   cookie_accessed_set_.Put(AccessDetails(access_details));
-  cookie_controls_->UpdateUserBypass();
+  cookie_controls_->UpdateCookieControlsIcon();
 }
 
 void CookieControlsController::TabObserver::OnStatefulBounceDetected() {
-  cookie_controls_->UpdateUserBypass();
+  cookie_controls_->UpdateCookieControlsIcon();
 }
 
 void CookieControlsController::TabObserver::PrimaryPageChanged(
@@ -467,7 +467,7 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
     timer_.Stop();
   } else {
     if (!timer_.IsRunning()) {
-      timer_.Start(FROM_HERE, kUserBypassUIReloadTime, this,
+      timer_.Start(FROM_HERE, kCookieControlsUIReloadTime, this,
                    &CookieControlsController::TabObserver::ResetReloadCounter);
     }
     reload_count_++;
