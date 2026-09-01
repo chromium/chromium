@@ -8,7 +8,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "media/base/video_codecs.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
@@ -45,7 +45,7 @@ D3D12ReferenceFrameList::D3D12ReferenceFrameList(
     const D3D12ReferenceFrameList& other) = default;
 
 void D3D12ReferenceFrameList::SetPictureBuffers(
-    base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers) {
+    base::span<scoped_refptr<D3DPictureBuffer>> picture_buffers) {
   for (size_t i = 0; i < picture_buffers.size(); i++) {
     picture_buffers_[i] = picture_buffers[i].get();
   }

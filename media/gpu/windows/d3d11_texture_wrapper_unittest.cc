@@ -12,7 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "media/gpu/windows/format_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

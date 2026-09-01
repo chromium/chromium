@@ -13,8 +13,8 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 

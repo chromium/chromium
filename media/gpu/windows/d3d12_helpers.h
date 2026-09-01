@@ -31,7 +31,7 @@ struct D3D12HeapProperties {
   constexpr static D3D12_HEAP_PROPERTIES kReadback{D3D12_HEAP_TYPE_READBACK};
 };
 
-class D3D11PictureBuffer;
+class D3DPictureBuffer;
 
 using D3D11FenceAndValue =
     std::pair<Microsoft::WRL::ComPtr<ID3D11Fence>, uint64_t>;
@@ -65,7 +65,7 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   D3D12ReferenceFrameList(const D3D12ReferenceFrameList& other);
 
   void SetPictureBuffers(
-      base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers);
+      base::span<scoped_refptr<D3DPictureBuffer>> picture_buffers);
 
   void WriteTo(D3D12_VIDEO_DECODE_REFERENCE_FRAMES* dest);
 
@@ -104,8 +104,9 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   std::array<ID3D12VideoDecoderHeap*, kMaxSize> heaps_;
   // The raw pointer array for converting to
   // D3D12_VIDEO_DECODE_REFERENCE_FRAMES. We only store the references here. The
-  // lifetime of |D3D11PictureBuffer|'s is managed by the |D3DVideoDecoder|.
-  std::array<raw_ptr<D3D11PictureBuffer>, kMaxSize> picture_buffers_;
+  // lifetime of the |D3DPictureBuffer| instances is managed by
+  // |D3DVideoDecoder|.
+  std::array<raw_ptr<D3DPictureBuffer>, kMaxSize> picture_buffers_;
 };
 
 // A scoped class managing the |Map()| and |Unmap()| of a |ID3D12Resource|. The

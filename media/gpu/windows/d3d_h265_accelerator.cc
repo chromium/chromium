@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "media/media_buildflags.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -33,12 +33,12 @@ using H265DecoderStatus = H265Decoder::H265Accelerator::Status;
 
 class D3D11H265Picture : public H265Picture {
  public:
-  D3D11H265Picture(D3D11PictureBuffer* picture)
+  D3D11H265Picture(D3DPictureBuffer* picture)
       : picture(picture), picture_index_(picture->picture_index()) {
     picture->set_in_picture_use(true);
   }
 
-  raw_ptr<D3D11PictureBuffer> picture;
+  raw_ptr<D3DPictureBuffer> picture;
   size_t picture_index_;
 
   D3D11H265Picture* AsD3D11H265Picture() override { return this; }
@@ -63,7 +63,7 @@ D3DH265Accelerator::D3DH265Accelerator(D3DVideoDecoderClient* client,
 D3DH265Accelerator::~D3DH265Accelerator() {}
 
 scoped_refptr<H265Picture> D3DH265Accelerator::CreateH265Picture() {
-  D3D11PictureBuffer* picture = client_->GetPicture();
+  D3DPictureBuffer* picture = client_->GetPicture();
   if (!picture) {
     return nullptr;
   }

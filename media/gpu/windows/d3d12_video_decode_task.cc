@@ -6,7 +6,7 @@
 
 #include "base/task/thread_pool.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 
 namespace media {

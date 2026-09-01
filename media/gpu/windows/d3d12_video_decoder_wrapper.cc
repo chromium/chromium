@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/gpu/windows/d3d12_video_decoder_wrapper.h"
 
 #include <Windows.h>
@@ -19,10 +18,10 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/d3d12_video_decode_task.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 
@@ -82,7 +81,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
   }
 
   D3D11Status SetPictureBuffers(
-      base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers) override {
+      base::span<scoped_refptr<D3DPictureBuffer>> picture_buffers) override {
     reference_frame_list_.SetPictureBuffers(picture_buffers);
     for (size_t i = 0; i < picture_buffers.size(); ++i) {
       auto result = picture_buffers[i]->ToD3D12Resource(device_.Get());
@@ -95,7 +94,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     return D3D11StatusCode::kOk;
   }
 
-  bool WaitForFrameBegins(D3D11PictureBuffer* output_picture) override {
+  bool WaitForFrameBegins(D3DPictureBuffer* output_picture) override {
     TRACE_EVENT("gpu", "D3D12VideoDecoderWrapperImpl::WaitForFrameBegins");
     Reset();
 

@@ -7,13 +7,14 @@
 
 #include <d3d11.h>
 #include <wrl.h>
+
 #include <memory>
 #include <vector>
 
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {

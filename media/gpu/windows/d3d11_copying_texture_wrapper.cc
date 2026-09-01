@@ -5,7 +5,7 @@
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 
 #include "media/base/video_types.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {
@@ -85,7 +85,7 @@ D3D11Status CopyingTexture2DWrapper::Init(
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11Texture2D texture,
     size_t array_slice,
-    scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+    scoped_refptr<media::D3DPictureBuffer> picture_buffer,
     PictureBufferGPUResourceInitDoneCB
         picture_buffer_gpu_resource_init_done_cb) {
   auto result = video_processor_->Init(size_.width(), size_.height());

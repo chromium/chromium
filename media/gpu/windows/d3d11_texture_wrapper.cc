@@ -22,7 +22,7 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "media/gpu/windows/format_utils.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -85,7 +85,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11Texture2D texture,
     size_t array_slice,
-    scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+    scoped_refptr<media::D3DPictureBuffer> picture_buffer,
     Texture2DWrapper::PictureBufferGPUResourceInitDoneCB
         picture_buffer_gpu_resource_init_done_cb) {
   if (SharedImageFormatToDXGIFormat(output_si_format_) == DXGI_FORMAT_UNKNOWN) {
@@ -120,7 +120,7 @@ void DefaultTexture2DWrapper::OnError(D3D11Status status) {
 }
 
 void DefaultTexture2DWrapper::OnGPUResourceInitDone(
-    scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+    scoped_refptr<media::D3DPictureBuffer> picture_buffer,
     std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep,
     scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
   DCHECK(shared_image_rep);
@@ -141,7 +141,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     ComD3D11Device video_device,
     ComD3D11Texture2D texture,
     size_t array_slice,
-    scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+    scoped_refptr<media::D3DPictureBuffer> picture_buffer,
     GPUResourceInitCB gpu_resource_init_cb) {
   CHECK(texture);
 

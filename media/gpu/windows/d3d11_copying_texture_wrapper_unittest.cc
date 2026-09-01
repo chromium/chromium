@@ -12,9 +12,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/win/d3d11_mocks.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
@@ -91,7 +91,7 @@ class MockTexture2DWrapper : public Texture2DWrapper {
                    GetCommandBufferHelperCB get_helper_cb,
                    ComD3D11Texture2D in_texture,
                    size_t array_slice,
-                   scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+                   scoped_refptr<media::D3DPictureBuffer> picture_buffer,
                    PictureBufferGPUResourceInitDoneCB
                        picture_buffer_gpu_resource_init_done_cb) override {
     gpu_task_runner_ = std::move(gpu_task_runner);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 
 #include <windows.h>
 
@@ -17,22 +17,22 @@
 
 namespace media {
 
-D3D11PictureBuffer::D3D11PictureBuffer(
+D3DPictureBuffer::D3DPictureBuffer(
     scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
     ComD3D11Texture2D texture,
     size_t array_slice,
     std::unique_ptr<Texture2DWrapper> texture_wrapper,
     size_t picture_index)
-    : RefCountedDeleteOnSequence<D3D11PictureBuffer>(
+    : RefCountedDeleteOnSequence<D3DPictureBuffer>(
           std::move(delete_task_runner)),
       texture_(std::move(texture)),
       array_slice_(array_slice),
       texture_wrapper_(std::move(texture_wrapper)),
       picture_index_(picture_index) {}
 
-D3D11PictureBuffer::~D3D11PictureBuffer() = default;
+D3DPictureBuffer::~D3DPictureBuffer() = default;
 
-D3D11Status D3D11PictureBuffer::Init(
+D3D11Status D3DPictureBuffer::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11VideoDevice1 video_device,
@@ -65,17 +65,17 @@ D3D11Status D3D11PictureBuffer::Init(
   return D3D11Status::Codes::kOk;
 }
 
-D3D11Status D3D11PictureBuffer::ProcessTexture(
+D3D11Status D3DPictureBuffer::ProcessTexture(
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   return texture_wrapper_->ProcessTexture(shared_image_dest);
 }
 
-ComD3D11Texture2D D3D11PictureBuffer::Texture() const {
+ComD3D11Texture2D D3DPictureBuffer::Texture() const {
   return texture_;
 }
 
 D3D11Status::Or<ID3D11VideoDecoderOutputView*>
-D3D11PictureBuffer::AcquireOutputView() const {
+D3DPictureBuffer::AcquireOutputView() const {
   D3D11Status result = texture_wrapper_->BeginSharedImageAccess();
   if (!result.is_ok()) {
     MEDIA_LOG(ERROR, media_log_)
@@ -88,7 +88,7 @@ D3D11PictureBuffer::AcquireOutputView() const {
   return output_view_.Get();
 }
 
-D3D11Status::Or<ID3D12Resource*> D3D11PictureBuffer::ToD3D12Resource(
+D3D11Status::Or<ID3D12Resource*> D3DPictureBuffer::ToD3D12Resource(
     ID3D12Device* device) {
   HRESULT hr;
   if (!d3d12_resource_) {
@@ -120,12 +120,12 @@ D3D11Status::Or<ID3D12Resource*> D3D11PictureBuffer::ToD3D12Resource(
   return d3d12_resource_.Get();
 }
 
-void D3D11PictureBuffer::SetFenceAndValue(scoped_refptr<D3D12Fence> fence,
-                                          uint64_t value) {
+void D3DPictureBuffer::SetFenceAndValue(scoped_refptr<D3D12Fence> fence,
+                                        uint64_t value) {
   fence_and_value_ = std::make_pair(std::move(fence), value);
 }
 
-D3D11Status D3D11PictureBuffer::WaitForDecodeCompleteGPU(
+D3D11Status D3DPictureBuffer::WaitForDecodeCompleteGPU(
     ID3D11DeviceContext* context) {
   const auto& [fence, value] = fence_and_value_;
   return !fence ? D3D11Status::Codes::kOk : fence->WaitGPU(*context, value);

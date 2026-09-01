@@ -35,11 +35,11 @@
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/windows/d3d_h265_accelerator.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d12_video_decoder_wrapper.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/color_space.h"
@@ -468,7 +468,7 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
 }
 
 void D3DVideoDecoder::ReceivePictureBufferFromClient(
-    scoped_refptr<D3D11PictureBuffer> buffer) {
+    scoped_refptr<D3DPictureBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "D3DVideoDecoder::ReceivePictureBufferFromClient");
 
@@ -482,7 +482,7 @@ void D3DVideoDecoder::ReceivePictureBufferFromClient(
 }
 
 void D3DVideoDecoder::PictureBufferGPUResourceInitDone(
-    scoped_refptr<D3D11PictureBuffer> buffer) {
+    scoped_refptr<D3DPictureBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "D3DVideoDecoder::PictureBufferGPUResourceInitDone");
 
@@ -783,7 +783,7 @@ int D3DVideoDecoder::GetMaxDecodeRequests() const {
 void D3DVideoDecoder::CreatePictureBuffers() {
   // TODO(liberato): When we run off the gpu main thread, this call will need
   // to signal success / failure asynchronously.  We'll need to transition into
-  // a "waiting for pictures" state, since D3D11PictureBuffer will post the gpu
+  // a "waiting for pictures" state, since D3DPictureBuffer will post the gpu
   // thread work.
   TRACE_EVENT0("gpu", "D3DVideoDecoder::CreatePictureBuffers");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -845,11 +845,11 @@ void D3DVideoDecoder::CreatePictureBuffers() {
     }
 
     const size_t array_slice = use_single_video_decoder_texture_ ? 0 : i;
-    picture_buffers_.push_back(base::MakeRefCounted<D3D11PictureBuffer>(
+    picture_buffers_.push_back(base::MakeRefCounted<D3DPictureBuffer>(
         decoder_task_runner_, in_texture, array_slice, std::move(tex_wrapper),
         /*level=*/i));
 
-    base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>
+    base::OnceCallback<void(scoped_refptr<media::D3DPictureBuffer>)>
         picture_buffer_gpu_resource_init_done_cb = base::DoNothing();
 
     // WebGPU requires interop on the picture buffer to achieve zero copy.
@@ -885,7 +885,7 @@ void D3DVideoDecoder::CreatePictureBuffers() {
   }
 }
 
-D3D11PictureBuffer* D3DVideoDecoder::GetPicture() {
+D3DPictureBuffer* D3DVideoDecoder::GetPicture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& buffer : picture_buffers_) {
@@ -898,7 +898,7 @@ D3D11PictureBuffer* D3DVideoDecoder::GetPicture() {
   return nullptr;
 }
 
-void D3DVideoDecoder::UpdateTimestamp(D3D11PictureBuffer* picture_buffer) {
+void D3DVideoDecoder::UpdateTimestamp(D3DPictureBuffer* picture_buffer) {
   // A picture is being reused with a different timestamp; since we've already
   // generated a VideoFrame from the previous picture buffer, we can just stamp
   // the new timestamp directly onto the buffer.
@@ -906,7 +906,7 @@ void D3DVideoDecoder::UpdateTimestamp(D3D11PictureBuffer* picture_buffer) {
 }
 
 bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
-                                   D3D11PictureBuffer* picture_buffer) {
+                                   D3DPictureBuffer* picture_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(texture_selector_);
   TRACE_EVENT0("gpu", "D3DVideoDecoder::OutputResult");
@@ -953,7 +953,7 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
   auto wait_complete_cb = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&D3DVideoDecoder::ReceivePictureBufferFromClient,
                      weak_factory_.GetWeakPtr(),
-                     scoped_refptr<D3D11PictureBuffer>(picture_buffer)));
+                     scoped_refptr<D3DPictureBuffer>(picture_buffer)));
   frame->SetReleaseMailboxCB(
       base::BindOnce(release_mailbox_cb_, std::move(wait_complete_cb)));
   frame->metadata().power_efficient = true;

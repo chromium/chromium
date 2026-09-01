@@ -7,19 +7,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "media/gpu/vp9_picture.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "media/gpu/windows/d3d_video_decoder_client.h"
 
 namespace media {
 
-class D3D11PictureBuffer;
+class D3DPictureBuffer;
 
 class D3D11VP9Picture : public VP9Picture {
  public:
-  explicit D3D11VP9Picture(D3D11PictureBuffer* picture_buffer,
+  explicit D3D11VP9Picture(D3DPictureBuffer* picture_buffer,
                            D3DVideoDecoderClient* client);
 
-  D3D11PictureBuffer* picture_buffer() const { return picture_buffer_; }
+  D3DPictureBuffer* picture_buffer() const { return picture_buffer_; }
 
   size_t picture_index() const { return picture_index_; }
 
@@ -29,7 +29,7 @@ class D3D11VP9Picture : public VP9Picture {
   scoped_refptr<VP9Picture> CreateDuplicate() override;
 
  private:
-  raw_ptr<D3D11PictureBuffer> picture_buffer_;
+  raw_ptr<D3DPictureBuffer> picture_buffer_;
   raw_ptr<D3DVideoDecoderClient> client_;
   size_t picture_index_;
 };

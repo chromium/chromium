@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace media {
@@ -86,11 +86,11 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
   }
 
   D3D11Status SetPictureBuffers(
-      base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers) override {
+      base::span<scoped_refptr<D3DPictureBuffer>> picture_buffers) override {
     return D3D11StatusCode::kOk;
   }
 
-  bool WaitForFrameBegins(D3D11PictureBuffer* output_picture) override {
+  bool WaitForFrameBegins(D3DPictureBuffer* output_picture) override {
     auto result = output_picture->AcquireOutputView();
     if (!result.has_value()) {
       media_log_->NotifyError(std::move(result).error().AddHere());

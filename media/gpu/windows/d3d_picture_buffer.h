@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_PICTURE_BUFFER_H_
-#define MEDIA_GPU_WINDOWS_D3D11_PICTURE_BUFFER_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_PICTURE_BUFFER_H_
+#define MEDIA_GPU_WINDOWS_D3D_PICTURE_BUFFER_H_
 
 #include <memory>
 #include <vector>
@@ -29,7 +29,7 @@ namespace media {
 
 class Texture2DWrapper;
 using PictureBufferGPUResourceInitDoneCB =
-    base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>;
+    base::OnceCallback<void(scoped_refptr<media::D3DPictureBuffer>)>;
 
 // PictureBuffer that owns Chrome Textures to display it, and keep a reference
 // to the D3D texture that backs the image.
@@ -44,8 +44,8 @@ using PictureBufferGPUResourceInitDoneCB =
 // does so, it would be fine if this were destroyed.  Technically, only the
 // GpuResources have to be retained until the mailbox is used, but we just
 // retain the whole thing.
-class MEDIA_GPU_EXPORT D3D11PictureBuffer
-    : public base::RefCountedDeleteOnSequence<D3D11PictureBuffer> {
+class MEDIA_GPU_EXPORT D3DPictureBuffer
+    : public base::RefCountedDeleteOnSequence<D3DPictureBuffer> {
  public:
   // |texture_wrapper| is responsible for controlling mailbox access to
   // the ID3D11Texture2D,
@@ -54,12 +54,11 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   // picture to the decoder.  If a texture array is used, then it might as well
   // be equal to the texture array index.  Otherwise, any 0-based index is
   // probably okay, though sequential makes sense.
-  D3D11PictureBuffer(
-      scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
-      ComD3D11Texture2D texture,
-      size_t array_slice,
-      std::unique_ptr<Texture2DWrapper> texture_wrapper,
-      size_t picture_index);
+  D3DPictureBuffer(scoped_refptr<base::SequencedTaskRunner> delete_task_runner,
+                   ComD3D11Texture2D texture,
+                   size_t array_slice,
+                   std::unique_ptr<Texture2DWrapper> texture_wrapper,
+                   size_t picture_index);
 
   D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
                    GetCommandBufferHelperCB get_helper_cb,
@@ -69,8 +68,8 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
                    PictureBufferGPUResourceInitDoneCB
                        picture_buffer_gpu_resource_init_done_cb);
 
-  D3D11PictureBuffer(const D3D11PictureBuffer&) = delete;
-  D3D11PictureBuffer& operator=(const D3D11PictureBuffer&) = delete;
+  D3DPictureBuffer(const D3DPictureBuffer&) = delete;
+  D3DPictureBuffer& operator=(const D3DPictureBuffer&) = delete;
 
   // Initialize |shared_image_dest|; return true if successful.
   // |input_color_space| is the color space of our input texture.
@@ -111,9 +110,9 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   base::TimeDelta timestamp_;
 
  private:
-  ~D3D11PictureBuffer();
-  friend class base::RefCountedDeleteOnSequence<D3D11PictureBuffer>;
-  friend class base::DeleteHelper<D3D11PictureBuffer>;
+  ~D3DPictureBuffer();
+  friend class base::RefCountedDeleteOnSequence<D3DPictureBuffer>;
+  friend class base::DeleteHelper<D3DPictureBuffer>;
 
   ComD3D11Texture2D texture_;
   uint32_t array_slice_;
@@ -135,4 +134,4 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_PICTURE_BUFFER_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_PICTURE_BUFFER_H_

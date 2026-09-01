@@ -25,7 +25,7 @@ D3DVP9Accelerator::D3DVP9Accelerator(D3DVideoDecoderClient* client,
 D3DVP9Accelerator::~D3DVP9Accelerator() = default;
 
 scoped_refptr<VP9Picture> D3DVP9Accelerator::CreateVP9Picture() {
-  D3D11PictureBuffer* picture_buffer = client_->GetPicture();
+  D3DPictureBuffer* picture_buffer = client_->GetPicture();
   if (!picture_buffer) {
     return nullptr;
   }

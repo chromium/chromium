@@ -42,7 +42,7 @@ class CommandBufferStub;
 
 namespace media {
 
-class D3D11PictureBuffer;
+class D3DPictureBuffer;
 class D3DVideoDecoderTest;
 class MediaLog;
 
@@ -90,10 +90,10 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   int GetMaxDecodeRequests() const override;
 
   // D3DVideoDecoderClient implementation.
-  D3D11PictureBuffer* GetPicture() override;
-  void UpdateTimestamp(D3D11PictureBuffer* picture_buffer) override;
+  D3DPictureBuffer* GetPicture() override;
+  void UpdateTimestamp(D3DPictureBuffer* picture_buffer) override;
   bool OutputResult(const CodecPicture* picture,
-                    D3D11PictureBuffer* picture_buffer) override;
+                    D3DPictureBuffer* picture_buffer) override;
   D3DVideoDecoderWrapper* GetWrapper() override;
 
   bool RecreateDecoderWrapper();
@@ -128,11 +128,10 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
                   SupportedConfigs supported_configs);
 
   // Receive |buffer|, that is now unused by the client.
-  void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
+  void ReceivePictureBufferFromClient(scoped_refptr<D3DPictureBuffer> buffer);
 
   // Picture buffer and related gpu resource initialization done.
-  void PictureBufferGPUResourceInitDone(
-      scoped_refptr<D3D11PictureBuffer> buffer);
+  void PictureBufferGPUResourceInitDone(scoped_refptr<D3DPictureBuffer> buffer);
 
   // Called when the gpu side of initialization is complete.
   void OnGpuInitComplete(
@@ -246,7 +245,7 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
 
   // It would be nice to unique_ptr these, but we give a ref to the VideoFrame
   // so that the texture is retained until the mailbox is opened.
-  std::vector<scoped_refptr<D3D11PictureBuffer>> picture_buffers_;
+  std::vector<scoped_refptr<D3DPictureBuffer>> picture_buffers_;
 
   State state_ = State::kInitializing;
 

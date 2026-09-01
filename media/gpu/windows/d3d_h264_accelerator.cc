@@ -15,7 +15,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
-#include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d_picture_buffer.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 #include "ui/gfx/color_space.h"
@@ -34,12 +34,12 @@ using H264DecoderStatus = H264Decoder::H264Accelerator::Status;
 
 class D3D11H264Picture : public H264Picture {
  public:
-  D3D11H264Picture(D3D11PictureBuffer* picture)
+  D3D11H264Picture(D3DPictureBuffer* picture)
       : picture(picture), picture_index_(picture->picture_index()) {
     picture->set_in_picture_use(true);
   }
 
-  raw_ptr<D3D11PictureBuffer> picture;
+  raw_ptr<D3DPictureBuffer> picture;
   size_t picture_index_;
 
   D3D11H264Picture* AsD3D11H264Picture() override { return this; }
@@ -61,7 +61,7 @@ D3DH264Accelerator::D3DH264Accelerator(D3DVideoDecoderClient* client,
 D3DH264Accelerator::~D3DH264Accelerator() {}
 
 scoped_refptr<H264Picture> D3DH264Accelerator::CreateH264Picture() {
-  D3D11PictureBuffer* picture = client_->GetPicture();
+  D3DPictureBuffer* picture = client_->GetPicture();
   if (!picture) {
     return nullptr;
   }

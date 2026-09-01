@@ -10,15 +10,15 @@
 namespace media {
 
 class CodecPicture;
-class D3D11PictureBuffer;
+class D3DPictureBuffer;
 
 // Exposes the methods required by D3D video accelerators.
 class D3DVideoDecoderClient {
  public:
-  virtual D3D11PictureBuffer* GetPicture() = 0;
-  virtual void UpdateTimestamp(D3D11PictureBuffer* picture_buffer) = 0;
+  virtual D3DPictureBuffer* GetPicture() = 0;
+  virtual void UpdateTimestamp(D3DPictureBuffer* picture_buffer) = 0;
   virtual bool OutputResult(const CodecPicture* picture,
-                            D3D11PictureBuffer* picture_buffer) = 0;
+                            D3DPictureBuffer* picture_buffer) = 0;
   // Get the pointer of the D3DVideoDecoderWrapper instance. Callers should not
   // store the return value since the wrapper may change over time.
   virtual D3DVideoDecoderWrapper* GetWrapper() = 0;

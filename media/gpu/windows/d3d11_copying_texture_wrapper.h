@@ -43,7 +43,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
                    GetCommandBufferHelperCB get_helper_cb,
                    ComD3D11Texture2D texture,
                    size_t array_slice,
-                   scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+                   scoped_refptr<media::D3DPictureBuffer> picture_buffer,
                    PictureBufferGPUResourceInitDoneCB
                        picture_buffer_gpu_resource_init_done_cb) override;
 
