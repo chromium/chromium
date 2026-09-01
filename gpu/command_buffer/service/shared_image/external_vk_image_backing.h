@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
@@ -21,6 +20,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -91,7 +91,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
     return vk_textures_[0].backend_texture;
   }
   VulkanImage* image() const { return vk_textures_[0].vulkan_image.get(); }
-  viz::VulkanContextProvider* context_provider() const {
+  VulkanContextProvider* context_provider() const {
     return context_state()->vk_context_provider();
   }
   VulkanImplementation* vulkan_implementation() const {

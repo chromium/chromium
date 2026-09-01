@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/shm_count.h"
@@ -33,6 +32,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
@@ -86,25 +86,24 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     : public raster::GrShaderCache::Client,
       public base::MemoryConsumer {
  public:
-  GpuChannelManager(
-      const GpuPreferences& gpu_preferences,
-      GpuChannelManagerDelegate* delegate,
-      GpuWatchdogThread* watchdog,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      Scheduler* scheduler,
-      SyncPointManager* sync_point_manager,
-      SharedImageManager* shared_image_manager,
-      const GpuFeatureInfo& gpu_feature_info,
-      GpuProcessShmCount* use_shader_cache_shm_count,
-      scoped_refptr<gl::GLSurface> default_offscreen_surface,
-      viz::VulkanContextProvider* vulkan_context_provider = nullptr,
-      DawnContextProvider* dawn_context_provider = nullptr,
-      webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory =
-          nullptr,
-      const SharedContextState::GrContextOptionsProvider*
-          gr_context_options_provider = nullptr,
-      GpuPersistentCacheCollection* persistent_caches = nullptr);
+  GpuChannelManager(const GpuPreferences& gpu_preferences,
+                    GpuChannelManagerDelegate* delegate,
+                    GpuWatchdogThread* watchdog,
+                    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+                    Scheduler* scheduler,
+                    SyncPointManager* sync_point_manager,
+                    SharedImageManager* shared_image_manager,
+                    const GpuFeatureInfo& gpu_feature_info,
+                    GpuProcessShmCount* use_shader_cache_shm_count,
+                    scoped_refptr<gl::GLSurface> default_offscreen_surface,
+                    VulkanContextProvider* vulkan_context_provider = nullptr,
+                    DawnContextProvider* dawn_context_provider = nullptr,
+                    webgpu::DawnCachingInterfaceFactory*
+                        dawn_caching_interface_factory = nullptr,
+                    const SharedContextState::GrContextOptionsProvider*
+                        gr_context_options_provider = nullptr,
+                    GpuPersistentCacheCollection* persistent_caches = nullptr);
 
   GpuChannelManager(const GpuChannelManager&) = delete;
   GpuChannelManager& operator=(const GpuChannelManager&) = delete;
@@ -363,7 +362,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // With --enable-vulkan, |vulkan_context_provider_| will be set from
   // viz::GpuServiceImpl. The raster decoders will use it for rasterization if
   // features::Vulkan is used.
-  raw_ptr<viz::VulkanContextProvider> vulkan_context_provider_ = nullptr;
+  raw_ptr<VulkanContextProvider> vulkan_context_provider_ = nullptr;
 
   // With features::SkiaGraphite, |dawn_context_provider_| will be set from
   // viz::GpuServiceImpl. The raster decoders may use it for rasterization.

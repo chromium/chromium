@@ -13,12 +13,9 @@
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/vulkan_ycbcr_info.h"
 
-namespace viz {
-class VulkanContextProvider;
-}  // namespace viz
-
 namespace gpu {
 class DawnContextProvider;
+class VulkanContextProvider;
 struct Mailbox;
 struct VulkanYCbCrInfo;
 class RefCountedLock;
@@ -45,7 +42,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
   // nullopt for other contexts.
   static std::optional<VulkanYCbCrInfo> GetYcbcrInfo(
       TextureOwner* texture_owner,
-      viz::VulkanContextProvider* vulkan_context_provider,
+      VulkanContextProvider* vulkan_context_provider,
       DawnContextProvider* dawn_context_provider);
 
   ~AndroidVideoImageBacking() override;

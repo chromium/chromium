@@ -12,24 +12,22 @@
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/semaphore_handle.h"
 
-namespace viz {
-class VulkanContextProvider;
-}
-
 namespace gpu {
+
+class VulkanContextProvider;
 
 class GPU_GLES2_EXPORT ExternalSemaphore {
  public:
-  static ExternalSemaphore Create(viz::VulkanContextProvider* context_provider);
+  static ExternalSemaphore Create(VulkanContextProvider* context_provider);
 
   static ExternalSemaphore CreateFromHandle(
-      viz::VulkanContextProvider* context_provider,
+      VulkanContextProvider* context_provider,
       SemaphoreHandle handle);
 
   ExternalSemaphore();
   ExternalSemaphore(ExternalSemaphore&& other);
   ExternalSemaphore(base::PassKey<ExternalSemaphore>,
-                    viz::VulkanContextProvider* context_provider,
+                    VulkanContextProvider* context_provider,
                     VkSemaphore semaphore,
                     SemaphoreHandle handle);
   ~ExternalSemaphore();
@@ -54,7 +52,7 @@ class GPU_GLES2_EXPORT ExternalSemaphore {
   SemaphoreHandle TakeSemaphoreHandle();
 
  private:
-  raw_ptr<viz::VulkanContextProvider> context_provider_ = nullptr;
+  raw_ptr<VulkanContextProvider> context_provider_ = nullptr;
   VkSemaphore semaphore_ = VK_NULL_HANDLE;
   SemaphoreHandle handle_;
   unsigned int gl_semaphore_ = 0;

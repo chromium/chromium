@@ -66,7 +66,7 @@ SkiaOutputSurfaceDependencyWebView::GetGrShaderCache() {
   return nullptr;
 }
 
-viz::VulkanContextProvider*
+gpu::VulkanContextProvider*
 SkiaOutputSurfaceDependencyWebView::GetVulkanContextProvider() {
   return shared_context_state_->vk_context_provider();
 }

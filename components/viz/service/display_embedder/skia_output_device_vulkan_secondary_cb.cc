@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
@@ -21,7 +21,7 @@
 namespace viz {
 
 SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
-    VulkanContextProvider* context_provider,
+    gpu::VulkanContextProvider* context_provider,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_provider->GetGrContext(),
@@ -100,7 +100,7 @@ SkCanvas* SkiaOutputDeviceVulkanSecondaryCB::GetCanvas(SkSurface* sk_surface) {
 
 GrSemaphoresSubmitted SkiaOutputDeviceVulkanSecondaryCB::Flush(
     SkSurface* sk_surface,
-    VulkanContextProvider* vulkan_context_provider,
+    gpu::VulkanContextProvider* vulkan_context_provider,
     std::vector<GrBackendSemaphore> end_semaphores,
     base::OnceClosure on_finished) {
   DCHECK(!sk_surface);

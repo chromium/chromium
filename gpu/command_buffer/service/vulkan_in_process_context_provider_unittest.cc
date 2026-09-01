@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_in_process_context_provider.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
@@ -10,10 +10,11 @@
 #include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace viz {
+namespace gpu {
 
 class VulkanInProcessContextProviderTest : public testing::Test {
  public:
@@ -44,6 +45,8 @@ class VulkanInProcessContextProviderTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   base::TestMemoryConsumerRegistry registry_;
   scoped_refptr<VulkanInProcessContextProvider> context_provider_;
 };
@@ -163,4 +166,4 @@ TEST_F(VulkanInProcessContextProviderTest,
   EXPECT_THAT(limit, testing::Optional(kTestSyncCpuMemoryLimit));
 }
 
-}  // namespace viz
+}  // namespace gpu

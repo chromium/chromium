@@ -19,17 +19,16 @@
 
 namespace gpu {
 class VulkanSurface;
+class VulkanContextProvider;
 }
 
 namespace viz {
-
-class VulkanContextProvider;
 
 class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
  public:
   SkiaOutputDeviceVulkan(
       base::PassKey<SkiaOutputDeviceVulkan>,
-      VulkanContextProvider* context_provider,
+      gpu::VulkanContextProvider* context_provider,
       gpu::SurfaceHandle surface_handle,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
@@ -40,7 +39,7 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
   ~SkiaOutputDeviceVulkan() override;
 
   static std::unique_ptr<SkiaOutputDeviceVulkan> Create(
-      VulkanContextProvider* context_provider,
+      gpu::VulkanContextProvider* context_provider,
       gpu::SurfaceHandle surface_handle,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
@@ -77,7 +76,7 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
   void OnPostSubBufferFinished(OutputSurfaceFrame frame,
                                gfx::SwapResult result);
 
-  const raw_ptr<VulkanContextProvider> context_provider_;
+  const raw_ptr<gpu::VulkanContextProvider> context_provider_;
 
   const gpu::SurfaceHandle surface_handle_;
   std::unique_ptr<gpu::VulkanSurface> vulkan_surface_;

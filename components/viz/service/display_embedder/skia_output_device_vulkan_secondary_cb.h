@@ -11,14 +11,16 @@
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 
-namespace viz {
-
+namespace gpu {
 class VulkanContextProvider;
+}
+
+namespace viz {
 
 class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
  public:
   SkiaOutputDeviceVulkanSecondaryCB(
-      VulkanContextProvider* context_provider,
+      gpu::VulkanContextProvider* context_provider,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
@@ -35,10 +37,11 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
   void EndPaint() override;
 
   SkCanvas* GetCanvas(SkSurface* sk_surface) override;
-  GrSemaphoresSubmitted Flush(SkSurface* sk_surface,
-                              VulkanContextProvider* vulkan_context_provider,
-                              std::vector<GrBackendSemaphore> end_semaphores,
-                              base::OnceClosure on_finished) override;
+  GrSemaphoresSubmitted Flush(
+      SkSurface* sk_surface,
+      gpu::VulkanContextProvider* vulkan_context_provider,
+      std::vector<GrBackendSemaphore> end_semaphores,
+      base::OnceClosure on_finished) override;
   bool Wait(SkSurface* sk_surface,
             int num_semaphores,
             const GrBackendSemaphore wait_semaphores[],
@@ -47,7 +50,7 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
             sk_sp<const GrDeferredDisplayList> ddl) override;
 
  private:
-  const raw_ptr<VulkanContextProvider> context_provider_;
+  const raw_ptr<gpu::VulkanContextProvider> context_provider_;
   gfx::Size size_;
 };
 

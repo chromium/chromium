@@ -6,7 +6,7 @@
 #include <sys/eventfd.h>
 
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_in_process_context_provider.h"
 #include "gpu/vulkan/android/vulkan_implementation_android.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
@@ -31,7 +31,7 @@ class VulkanImplementationAndroidTest : public testing::Test {
     // extensions. Let the test pass if this call fails since many bots would
     // not have this extension present.
     vk_context_provider_ =
-        viz::VulkanInProcessContextProvider::Create(vk_implementation_.get());
+        VulkanInProcessContextProvider::Create(vk_implementation_.get());
     if (!vk_context_provider_)
       return;
 
@@ -53,7 +53,7 @@ class VulkanImplementationAndroidTest : public testing::Test {
 
  protected:
   std::unique_ptr<VulkanImplementation> vk_implementation_;
-  scoped_refptr<viz::VulkanInProcessContextProvider> vk_context_provider_;
+  scoped_refptr<VulkanInProcessContextProvider> vk_context_provider_;
   VkDevice vk_device_;
   VkPhysicalDevice vk_phy_device_;
 };

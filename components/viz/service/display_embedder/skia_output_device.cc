@@ -63,7 +63,7 @@ SkCanvas* SkiaOutputDevice::ScopedPaint::GetCanvas() {
 }
 
 GrSemaphoresSubmitted SkiaOutputDevice::ScopedPaint::Flush(
-    VulkanContextProvider* vulkan_context_provider,
+    gpu::VulkanContextProvider* vulkan_context_provider,
     std::vector<GrBackendSemaphore> end_semaphores,
     base::OnceClosure on_finished) {
   return device_->Flush(sk_surface_, vulkan_context_provider,
@@ -327,7 +327,7 @@ SkCanvas* SkiaOutputDevice::GetCanvas(SkSurface* sk_surface) {
 
 GrSemaphoresSubmitted SkiaOutputDevice::Flush(
     SkSurface* sk_surface,
-    VulkanContextProvider* vulkan_context_provider,
+    gpu::VulkanContextProvider* vulkan_context_provider,
     std::vector<GrBackendSemaphore> end_semaphores,
     base::OnceClosure on_finished) {
   CHECK(sk_surface);

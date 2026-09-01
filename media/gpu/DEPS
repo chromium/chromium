@@ -13,7 +13,6 @@ include_rules = [
   "+ui/display/display_switches.h",
   "+ui/display/types",
   "+ui/platform_window",
-  "+components/viz/common/gpu/vulkan_context_provider.h",
 
   # media/gpu is not part of "media" target and should not use MEDIA_EXPORT.
   "-media/base/media_export.h",

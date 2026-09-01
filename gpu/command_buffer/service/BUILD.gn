@@ -31,6 +31,7 @@ if (is_component_build) {
 } else {
   link_target_type = "static_library"
 }
+
 source_set("service_sources") {
   # External code should depend on this via //gpu/command_buffer/service above
   # rather than depending on this directly or the component build will break.
@@ -438,10 +439,7 @@ target(link_target_type, "gles2_sources") {
   }
 
   if (enable_vulkan) {
-    deps += [
-      "//components/viz/common:vulkan_context_provider",
-      "//gpu/vulkan",
-    ]
+    deps += [ "//gpu/vulkan" ]
 
     sources += [
       "shared_image/angle_vulkan_image_backing.cc",
@@ -450,6 +448,9 @@ target(link_target_type, "gles2_sources") {
       "shared_image/angle_vulkan_image_backing_factory.h",
       "shared_image/texture_holder_vk.cc",
       "shared_image/texture_holder_vk.h",
+      "vulkan_context_provider.h",
+      "vulkan_in_process_context_provider.cc",
+      "vulkan_in_process_context_provider.h",
     ]
 
     if (is_linux || is_fuchsia || is_win) {

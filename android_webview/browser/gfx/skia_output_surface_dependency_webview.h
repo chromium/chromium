@@ -43,7 +43,7 @@ class SkiaOutputSurfaceDependencyWebView
   const gpu::GpuDriverBugWorkarounds& GetGpuDriverBugWorkarounds() override;
   scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
   gpu::raster::GrShaderCache* GetGrShaderCache() override;
-  viz::VulkanContextProvider* GetVulkanContextProvider() override;
+  gpu::VulkanContextProvider* GetVulkanContextProvider() override;
   gpu::DawnContextProvider* GetDawnContextProvider() override;
   const gpu::GpuPreferences& GetGpuPreferences() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() override;

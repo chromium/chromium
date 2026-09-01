@@ -32,7 +32,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_in_process_context_provider.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif
@@ -178,8 +178,8 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
     vulkan_implementation_ = gpu::CreateVulkanImplementation();
     ASSERT_TRUE(vulkan_implementation_);
     ASSERT_TRUE(vulkan_implementation_->InitializeVulkanInstance());
-    vulkan_context_provider_ = viz::VulkanInProcessContextProvider::Create(
-        vulkan_implementation_.get());
+    vulkan_context_provider_ =
+        VulkanInProcessContextProvider::Create(vulkan_implementation_.get());
     ASSERT_TRUE(vulkan_context_provider_);
 #else
     FAIL() << "Vulkan not available";

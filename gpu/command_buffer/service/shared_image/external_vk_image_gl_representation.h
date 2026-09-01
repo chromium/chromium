@@ -42,7 +42,7 @@ class ExternalVkImageGLRepresentationShared {
   ExternalVkImageBacking* backing_impl() const { return backing_; }
 
  private:
-  viz::VulkanContextProvider* context_provider() const {
+  VulkanContextProvider* context_provider() const {
     return backing_impl()->context_provider();
   }
 

@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
@@ -80,7 +80,7 @@ GLuint ImportSemaphoreHandleToGLSemaphore(SemaphoreHandle handle) {
 
 // static
 ExternalSemaphore ExternalSemaphore::Create(
-    viz::VulkanContextProvider* context_provider) {
+    VulkanContextProvider* context_provider) {
   VkDevice device = context_provider->GetDeviceQueue()->GetVulkanDevice();
 
   VkSemaphore semaphore = CreateVkOpaqueExternalSemaphore(device);
@@ -99,7 +99,7 @@ ExternalSemaphore ExternalSemaphore::Create(
 
 // static
 ExternalSemaphore ExternalSemaphore::CreateFromHandle(
-    viz::VulkanContextProvider* context_provider,
+    VulkanContextProvider* context_provider,
     SemaphoreHandle handle) {
   if (!handle.is_valid())
     return {};
@@ -122,11 +122,10 @@ ExternalSemaphore::ExternalSemaphore(ExternalSemaphore&& other) {
   *this = std::move(other);
 }
 
-ExternalSemaphore::ExternalSemaphore(
-    base::PassKey<ExternalSemaphore>,
-    viz::VulkanContextProvider* context_provider,
-    VkSemaphore semaphore,
-    SemaphoreHandle handle)
+ExternalSemaphore::ExternalSemaphore(base::PassKey<ExternalSemaphore>,
+                                     VulkanContextProvider* context_provider,
+                                     VkSemaphore semaphore,
+                                     SemaphoreHandle handle)
     : context_provider_(context_provider),
       semaphore_(semaphore),
       handle_(std::move(handle)) {}

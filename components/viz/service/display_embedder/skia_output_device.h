@@ -38,6 +38,7 @@ class MemoryTracker;
 class MemoryTypeTracker;
 class SharedContextState;
 class GraphiteSharedContext;
+class VulkanContextProvider;
 }  // namespace gpu
 
 namespace skgpu::graphite {
@@ -45,8 +46,6 @@ class Recording;
 }  // namespace skgpu::graphite
 
 namespace viz {
-
-class VulkanContextProvider;
 
 class VIZ_SERVICE_EXPORT SkiaOutputDevice {
  public:
@@ -67,9 +66,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     SkCanvas* GetCanvas();
 
     // Ganesh
-    GrSemaphoresSubmitted Flush(VulkanContextProvider* vulkan_context_provider,
-                                std::vector<GrBackendSemaphore> end_semaphores,
-                                base::OnceClosure on_finished);
+    GrSemaphoresSubmitted Flush(
+        gpu::VulkanContextProvider* vulkan_context_provider,
+        std::vector<GrBackendSemaphore> end_semaphores,
+        base::OnceClosure on_finished);
     bool Wait(int num_semaphores,
               const GrBackendSemaphore wait_semaphores[],
               bool delete_semaphores_after_wait);
@@ -222,7 +222,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   virtual SkCanvas* GetCanvas(SkSurface* sk_surface);
   virtual GrSemaphoresSubmitted Flush(
       SkSurface* sk_surface,
-      VulkanContextProvider* vulkan_context_provider,
+      gpu::VulkanContextProvider* vulkan_context_provider,
       std::vector<GrBackendSemaphore> end_semaphores,
       base::OnceClosure on_finished);
   virtual bool Wait(SkSurface* sk_surface,

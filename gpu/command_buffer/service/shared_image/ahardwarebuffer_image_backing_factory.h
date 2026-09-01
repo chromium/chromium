@@ -18,11 +18,9 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
-namespace viz {
-class VulkanContextProvider;
-}
-
 namespace gpu {
+
+class VulkanContextProvider;
 
 namespace gles2 {
 class FeatureInfo;
@@ -39,7 +37,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   explicit AHardwareBufferImageBackingFactory(
       const gles2::FeatureInfo* feature_info,
       const GpuPreferences& gpu_preferences,
-      const scoped_refptr<viz::VulkanContextProvider>& vulkan_context_provider);
+      const scoped_refptr<VulkanContextProvider>& vulkan_context_provider);
 
   AHardwareBufferImageBackingFactory(
       const AHardwareBufferImageBackingFactory&) = delete;
@@ -93,7 +91,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data);
 
-  scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
+  scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
 
   base::flat_set<viz::SharedImageFormat> supported_gl_formats_;
 

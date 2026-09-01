@@ -206,7 +206,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     // Note that |shared_context_| is to just keep ref on it until
     // context provider raw_ptrs are being used.
     scoped_refptr<gpu::SharedContextState> shared_context_;
-    raw_ptr<viz::VulkanContextProvider> vulkan_context_provider_ = nullptr;
+    raw_ptr<gpu::VulkanContextProvider> vulkan_context_provider_ = nullptr;
     raw_ptr<gpu::DawnContextProvider> dawn_context_provider_ = nullptr;
     scoped_refptr<FrameInfoHelperHolder> frame_info_helper_holder_;
   };

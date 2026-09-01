@@ -7,7 +7,6 @@
 #include <dawn/webgpu.h>
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -16,6 +15,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
 #include "gpu/command_buffer/service/texture_owner.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gfx/gpu_fence.h"
@@ -67,7 +67,7 @@ std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
 // Static.
 std::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
     TextureOwner* texture_owner,
-    viz::VulkanContextProvider* vulkan_context_provider,
+    VulkanContextProvider* vulkan_context_provider,
     DawnContextProvider* dawn_context_provider) {
   if (!vulkan_context_provider && !dawn_context_provider) {
     return std::nullopt;

@@ -19,6 +19,7 @@
 
 namespace gpu {
 class SharedContextState;
+class VulkanContextProvider;
 
 // Implementation of SharedImageBackingFactory that produces NativePixmap
 // backed SharedImages.
@@ -32,7 +33,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
   ~OzoneImageBackingFactory() override;
 
   static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
-      viz::VulkanContextProvider* vulkan_context_provider,
+      VulkanContextProvider* vulkan_context_provider,
       const gfx::Size& size,
       viz::SharedImageFormat format,
       gfx::BufferUsage usage);

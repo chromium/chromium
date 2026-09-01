@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
@@ -35,7 +35,7 @@ struct SecondaryCBDrawState {
 };
 
 // Lifetime: WebView
-class AwVulkanContextProvider final : public viz::VulkanContextProvider {
+class AwVulkanContextProvider final : public gpu::VulkanContextProvider {
  public:
   // Short-lived per draw pass. Created in DrawVk() and destroyed in
   // PostDrawVk().
@@ -76,7 +76,7 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   static scoped_refptr<AwVulkanContextProvider> Create(
       AwDrawFn_InitVkParams* params);
 
-  // viz::VulkanContextProvider implementation:
+  // gpu::VulkanContextProvider implementation:
   bool InitializeGrContext(const GrContextOptions& context_options) override;
   gpu::VulkanImplementation* GetVulkanImplementation() override;
   gpu::VulkanDeviceQueue* GetDeviceQueue() override;

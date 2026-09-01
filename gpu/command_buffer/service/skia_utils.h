@@ -48,7 +48,6 @@ class ColorSpace;
 
 namespace viz {
 class SharedImageFormat;
-class VulkanContextProvider;
 }  // namespace viz
 
 namespace skgpu::graphite {
@@ -57,6 +56,8 @@ struct InsertRecordingInfo;
 }  // namespace skgpu::graphite
 
 namespace gpu {
+
+class VulkanContextProvider;
 
 #if BUILDFLAG(ENABLE_VULKAN)
 class VulkanImage;
@@ -115,7 +116,7 @@ GPU_GLES2_EXPORT void AddCleanupTaskForGraphiteRecording(
 // Helper which associates cleanup callbacks with a Skia GrFlushInfo's callback.
 // Is a no-op if |context_provider| is null.
 GPU_GLES2_EXPORT void AddVulkanCleanupTaskForSkiaFlush(
-    viz::VulkanContextProvider* context_provider,
+    VulkanContextProvider* context_provider,
     GrFlushInfo* flush_info);
 
 GPU_GLES2_EXPORT void DeleteGrBackendTexture(
@@ -148,7 +149,7 @@ CreateVulkanYcbcrConversionInfo(
 // that Skia submit calls should synchronize with the CPU in order
 // to free released memory immediately.
 GPU_GLES2_EXPORT bool ShouldVulkanSyncCpuForSkiaSubmit(
-    viz::VulkanContextProvider* context_provider);
+    VulkanContextProvider* context_provider);
 
 GPU_GLES2_EXPORT uint64_t
 GrBackendTextureTracingID(const GrBackendTexture& backend_texture);

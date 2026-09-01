@@ -32,7 +32,7 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
@@ -87,7 +87,7 @@ OzoneImageBackingFactory::~OzoneImageBackingFactory() = default;
 // static
 gfx::GpuMemoryBufferHandle
 OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
-    viz::VulkanContextProvider* vulkan_context_provider,
+    VulkanContextProvider* vulkan_context_provider,
     const gfx::Size& size,
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {

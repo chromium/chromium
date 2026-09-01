@@ -62,7 +62,7 @@
 #undef Status
 #undef Success
 
-#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
@@ -264,7 +264,7 @@ SharedContextState::SharedContextState(
     bool use_virtualized_gl_contexts,
     ContextLostCallback context_lost_callback,
     GrContextType gr_context_type,
-    viz::VulkanContextProvider* vulkan_context_provider,
+    VulkanContextProvider* vulkan_context_provider,
     DawnContextProvider* dawn_context_provider,
     scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
     bool direct_rendering_display_compositor_enabled,

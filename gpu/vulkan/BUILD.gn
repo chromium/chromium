@@ -18,6 +18,7 @@ buildflag_header("buildflags") {
 
 if (enable_vulkan) {
   use_vulkan_xcb = ozone_platform_x11
+
   config("vulkan_config") {
     defines = [ "VK_NO_PROTOTYPES" ]
     if (use_vulkan_xcb) {
@@ -249,7 +250,7 @@ if (enable_vulkan) {
         ":test_support",
         "//base",
         "//base/test:test_support",
-        "//components/viz/common:vulkan_context_provider",
+        "//gpu/command_buffer/service:gles2",
         "//gpu/ipc/service",
         "//gpu/vulkan/init",
         "//testing/gmock",

@@ -40,7 +40,7 @@ test("vk_tests") {
     ":android",
     "//base",
     "//base/test:test_support",
-    "//components/viz/common:vulkan_context_provider",
+    "//gpu/command_buffer/service:gles2",
     "//testing/gtest",
     "//ui/gfx",
   ]

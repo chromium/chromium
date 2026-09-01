@@ -357,7 +357,7 @@ GpuChannelManager::GpuChannelManager(
     const GpuFeatureInfo& gpu_feature_info,
     GpuProcessShmCount* use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
-    viz::VulkanContextProvider* vulkan_context_provider,
+    VulkanContextProvider* vulkan_context_provider,
     DawnContextProvider* dawn_context_provider,
     webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory,
     const SharedContextState::GrContextOptionsProvider*

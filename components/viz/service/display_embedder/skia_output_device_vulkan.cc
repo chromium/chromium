@@ -12,9 +12,9 @@
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -47,7 +47,7 @@ namespace viz {
 
 // static
 std::unique_ptr<SkiaOutputDeviceVulkan> SkiaOutputDeviceVulkan::Create(
-    VulkanContextProvider* context_provider,
+    gpu::VulkanContextProvider* context_provider,
     gpu::SurfaceHandle surface_handle,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback) {
@@ -62,7 +62,7 @@ std::unique_ptr<SkiaOutputDeviceVulkan> SkiaOutputDeviceVulkan::Create(
 
 SkiaOutputDeviceVulkan::SkiaOutputDeviceVulkan(
     base::PassKey<SkiaOutputDeviceVulkan>,
-    VulkanContextProvider* context_provider,
+    gpu::VulkanContextProvider* context_provider,
     gpu::SurfaceHandle surface_handle,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)

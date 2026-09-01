@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_GPU_VULKAN_IN_PROCESS_CONTEXT_PROVIDER_H_
-#define COMPONENTS_VIZ_COMMON_GPU_VULKAN_IN_PROCESS_CONTEXT_PROVIDER_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_VULKAN_IN_PROCESS_CONTEXT_PROVIDER_H_
+#define GPU_COMMAND_BUFFER_SERVICE_VULKAN_IN_PROCESS_CONTEXT_PROVIDER_H_
 
 #include <atomic>
 #include <memory>
@@ -13,20 +13,18 @@
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/time/time.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/viz_vulkan_context_provider_export.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
+#include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
 
 namespace gpu {
+
 class VulkanImplementation;
 class VulkanDeviceQueue;
 struct GPUInfo;
-}
 
-namespace viz {
-
-class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
+class GPU_GLES2_EXPORT VulkanInProcessContextProvider
     : public VulkanContextProvider,
       public base::MemoryConsumer {
  public:
@@ -39,19 +37,19 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   // dynamically based on the pressure level instead of using the fixed cooldown
   // period.
   static scoped_refptr<VulkanInProcessContextProvider> Create(
-      gpu::VulkanImplementation* vulkan_implementation,
+      VulkanImplementation* vulkan_implementation,
       uint32_t heap_memory_limit = 0,
       uint32_t sync_cpu_memory_limit = 0,
       const bool is_thread_safe = false,
-      const gpu::GPUInfo* gpu_info = nullptr,
+      const GPUInfo* gpu_info = nullptr,
       base::TimeDelta cooldown_duration_at_memory_pressure_critical =
           base::Seconds(15));
 
   // Creates a VulkanContextProvider for the CompositorGpuThread.
   static scoped_refptr<VulkanInProcessContextProvider>
   CreateForCompositorGpuThread(
-      gpu::VulkanImplementation* vulkan_implementation,
-      std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue,
+      VulkanImplementation* vulkan_implementation,
+      std::unique_ptr<VulkanDeviceQueue> vulkan_device_queue,
       uint32_t sync_cpu_memory_limit = 0,
       base::TimeDelta cooldown_duration_at_memory_pressure_critical =
           base::Seconds(15));
@@ -65,8 +63,8 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
 
   // VulkanContextProvider implementation
   bool InitializeGrContext(const GrContextOptions& context_options) override;
-  gpu::VulkanImplementation* GetVulkanImplementation() override;
-  gpu::VulkanDeviceQueue* GetDeviceQueue() override;
+  VulkanImplementation* GetVulkanImplementation() override;
+  VulkanDeviceQueue* GetDeviceQueue() override;
   GrDirectContext* GetGrContext() override;
   GrVkSecondaryCBDrawContext* GetGrSecondaryCBDrawContext() override;
   void EnqueueSecondaryCBSemaphores(
@@ -78,17 +76,16 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   friend class VulkanInProcessContextProviderTest;
 
   VulkanInProcessContextProvider(
-      gpu::VulkanImplementation* vulkan_implementation,
+      VulkanImplementation* vulkan_implementation,
       uint32_t heap_memory_limit,
       uint32_t sync_cpu_memory_limit,
       base::TimeDelta cooldown_duration_at_memory_pressure_critical);
   ~VulkanInProcessContextProvider() override;
 
-  bool Initialize(const gpu::GPUInfo* gpu_info,
-                  const bool is_thread_safe = false);
+  bool Initialize(const GPUInfo* gpu_info, const bool is_thread_safe = false);
 
   void InitializeForCompositorGpuThread(
-      std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue);
+      std::unique_ptr<VulkanDeviceQueue> vulkan_device_queue);
 
   // base::MemoryConsumer:
   void OnReleaseMemory() override;
@@ -98,8 +95,8 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   uint32_t GetCurrentGpuMemoryUsage() const;
 
   sk_sp<GrDirectContext> gr_context_;
-  raw_ptr<gpu::VulkanImplementation> vulkan_implementation_;
-  std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
+  raw_ptr<VulkanImplementation> vulkan_implementation_;
+  std::unique_ptr<VulkanDeviceQueue> device_queue_;
   const uint32_t heap_memory_limit_;
   const std::optional<uint32_t> sync_cpu_memory_limit_;
   const base::TimeDelta cooldown_duration_at_memory_pressure_critical_;
@@ -111,6 +108,6 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
       memory_consumer_registration_;
 };
 
-}  // namespace viz
+}  // namespace gpu
 
-#endif  // COMPONENTS_VIZ_COMMON_GPU_VULKAN_IN_PROCESS_CONTEXT_PROVIDER_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_VULKAN_IN_PROCESS_CONTEXT_PROVIDER_H_

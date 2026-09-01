@@ -15,9 +15,9 @@
 #include "base/task/bind_post_task.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/switches.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -29,7 +29,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_in_process_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif
@@ -78,7 +78,7 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
         device_queue->enabled_device_features_2(),
         device_queue->vma_allocator());
     compositor_gpu_thread->vulkan_context_provider_ =
-        VulkanInProcessContextProvider::CreateForCompositorGpuThread(
+        gpu::VulkanInProcessContextProvider::CreateForCompositorGpuThread(
             params.vulkan_implementation,
             std::move(compositor_thread_device_queue),
             params.gpu_channel_manager->gpu_preferences()

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_GPU_VULKAN_CONTEXT_PROVIDER_H_
-#define COMPONENTS_VIZ_COMMON_GPU_VULKAN_CONTEXT_PROVIDER_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_VULKAN_CONTEXT_PROVIDER_H_
+#define GPU_COMMAND_BUFFER_SERVICE_VULKAN_CONTEXT_PROVIDER_H_
 
 #include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "components/viz/common/viz_vulkan_context_provider_export.h"
+#include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -27,19 +27,17 @@ class GrDirectContext;
 class GrVkSecondaryCBDrawContext;
 
 namespace gpu {
+
 class VulkanDeviceQueue;
 class VulkanImplementation;
-}
-
-namespace viz {
 
 // The VulkanContextProvider groups sharing of vulkan objects synchronously.
-class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanContextProvider
+class GPU_GLES2_EXPORT VulkanContextProvider
     : public base::RefCountedThreadSafe<VulkanContextProvider> {
  public:
   virtual bool InitializeGrContext(const GrContextOptions& context_options) = 0;
-  virtual gpu::VulkanImplementation* GetVulkanImplementation() = 0;
-  virtual gpu::VulkanDeviceQueue* GetDeviceQueue() = 0;
+  virtual VulkanImplementation* GetVulkanImplementation() = 0;
+  virtual VulkanDeviceQueue* GetDeviceQueue() = 0;
   virtual GrDirectContext* GetGrContext() = 0;
 
   // Get the current SecondaryCBDrawContext for the default render target.
@@ -66,6 +64,6 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanContextProvider
   virtual ~VulkanContextProvider() = default;
 };
 
-}  // namespace viz
+}  // namespace gpu
 
-#endif  // COMPONENTS_VIZ_COMMON_GPU_VULKAN_CONTEXT_PROVIDER_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_VULKAN_CONTEXT_PROVIDER_H_

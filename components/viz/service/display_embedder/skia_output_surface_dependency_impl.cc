@@ -67,7 +67,7 @@ SkiaOutputSurfaceDependencyImpl::GetGrShaderCache() {
   return gpu_service_impl_->gr_shader_cache();
 }
 
-VulkanContextProvider*
+gpu::VulkanContextProvider*
 SkiaOutputSurfaceDependencyImpl::GetVulkanContextProvider() {
   if (gpu_service_impl_->compositor_gpu_thread()) {
     return gpu_service_impl_->compositor_gpu_thread()

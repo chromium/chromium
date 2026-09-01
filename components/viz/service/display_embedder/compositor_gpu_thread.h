@@ -25,11 +25,10 @@ class DawnContextProvider;
 class GpuChannelManager;
 class VulkanImplementation;
 class VulkanDeviceQueue;
+class VulkanContextProvider;
 }  // namespace gpu
 
 namespace viz {
-
-class VulkanContextProvider;
 
 class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
  public:
@@ -60,7 +59,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
 
   scoped_refptr<gpu::SharedContextState> GetSharedContextState();
 
-  VulkanContextProvider* vulkan_context_provider() const {
+  gpu::VulkanContextProvider* vulkan_context_provider() const {
     return vulkan_context_provider_.get();
   }
 
@@ -96,7 +95,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
   const bool enable_watchdog_;
   bool init_succeeded_ = false;
 
-  scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
+  scoped_refptr<gpu::VulkanContextProvider> vulkan_context_provider_;
 
 #if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider_;

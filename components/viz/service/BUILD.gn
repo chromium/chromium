@@ -792,13 +792,6 @@ viz_source_set("unit_tests") {
     ]
     deps += [ "//ui/events:motionevent_jni_headers" ]
   }
-
-  if (enable_vulkan) {
-    deps += [
-      "//gpu/vulkan:test_support",
-      "//gpu/vulkan/init",
-    ]
-  }
 }
 
 viz_source_set("perf_tests") {

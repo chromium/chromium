@@ -36,7 +36,7 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -95,7 +95,7 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
 SharedImageManager::SharedImageManager(
     bool thread_safe,
     bool display_context_on_another_thread,
-    viz::VulkanContextProvider* vulkan_context_provider,
+    VulkanContextProvider* vulkan_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> io_runner)
     : display_context_on_another_thread_(display_context_on_another_thread)
 #if BUILDFLAG(IS_WIN)

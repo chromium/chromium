@@ -117,8 +117,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/vulkan_in_process_context_provider.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -249,7 +249,7 @@ GpuServiceImpl::GpuServiceImpl(
 
     // If GL is using a real GPU, the gpu_info will be passed in and vulkan will
     // use the same GPU.
-    vulkan_context_provider_ = VulkanInProcessContextProvider::Create(
+    vulkan_context_provider_ = gpu::VulkanInProcessContextProvider::Create(
         vulkan_implementation_, gpu_preferences_.vulkan_heap_memory_limit,
         gpu_preferences_.vulkan_sync_cpu_memory_limit, is_thread_safe,
         (is_native_vulkan && is_native_gl) ? &gpu_info_ : nullptr);

@@ -41,11 +41,11 @@ namespace raster {
 class GrShaderCache;
 }
 
+class VulkanContextProvider;
+
 }  // namespace gpu
 
 namespace viz {
-
-class VulkanContextProvider;
 
 // This class exists to allow SkiaOutputSurfaceImpl to ignore differences
 // between Android Webview and regular viz environment.
@@ -68,7 +68,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // May return null.
   virtual gpu::raster::GrShaderCache* GetGrShaderCache() = 0;
   // May return null.
-  virtual VulkanContextProvider* GetVulkanContextProvider() = 0;
+  virtual gpu::VulkanContextProvider* GetVulkanContextProvider() = 0;
   // May return null.
   virtual gpu::DawnContextProvider* GetDawnContextProvider() = 0;
   virtual const gpu::GpuPreferences& GetGpuPreferences() const = 0;

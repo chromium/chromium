@@ -70,6 +70,7 @@ namespace gpu {
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
 class SharedImageRepresentationFactory;
 class SharedImageFactory;
+class VulkanContextProvider;
 }  // namespace gpu
 
 namespace skgpu::graphite {
@@ -88,7 +89,6 @@ class AsyncReadResultHelper;
 class AsyncReadResultLock;
 class ImageContextImpl;
 class SkiaOutputSurfaceDependency;
-class VulkanContextProvider;
 
 namespace copy_output {
 struct RenderPassGeometry;
@@ -498,7 +498,7 @@ class SkiaOutputSurfaceImplOnGpu
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
-  const raw_ptr<VulkanContextProvider> vulkan_context_provider_;
+  const raw_ptr<gpu::VulkanContextProvider> vulkan_context_provider_;
   const RendererSettings renderer_settings_;
 
   // Should only be run on the client thread with PostTaskToClientThread().

@@ -20,13 +20,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace viz {
-class VulkanInProcessContextProvider;
-}
-
 namespace gpu {
 
 class VulkanImplementation;
+class VulkanInProcessContextProvider;
 
 // Test base that initializes SharedContextState and other classes needed to
 // create SharedImageBackings + SharedImageBackingFactories.
@@ -86,7 +83,7 @@ class SharedImageTestBase : public testing::Test {
 
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<VulkanImplementation> vulkan_implementation_;
-  scoped_refptr<viz::VulkanInProcessContextProvider> vulkan_context_provider_;
+  scoped_refptr<VulkanInProcessContextProvider> vulkan_context_provider_;
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
