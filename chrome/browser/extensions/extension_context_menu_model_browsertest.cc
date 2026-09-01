@@ -2597,4 +2597,42 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelRateExtensionTest,
                 extensions::util::CWSReviewSource::kContextMenu));
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelRateExtensionTest,
+                       RateExtensionCommand_DisabledByPolicyPref) {
+  scoped_refptr<const Extension> cws_extension =
+      ExtensionBuilder("CWS Extension")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  InitializeAndAddExtension(*cws_extension);
+
+  base::DictValue cws_info_dict;
+  cws_info_dict.Set("is-present", true);
+  cws_info_dict.Set("is-live", true);
+  cws_info_dict.Set("violation-type", 0);
+  ExtensionPrefs::Get(profile())->UpdateExtensionPref(
+      cws_extension->id(), "cws-info", base::Value(std::move(cws_info_dict)));
+
+  // When review prompts are disabled by policy preference, the command is
+  // absent.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionReviewPromptsAllowed,
+                                    false);
+
+  ExtensionContextMenuModel menu_item(
+      cws_extension.get(), browser_window_interface(),
+      /*is_pinned=*/true, nullptr,
+      /*can_show_icon_in_toolbar=*/true, ContextMenuSource::kMenuItem);
+  EXPECT_EQ(
+      GetCommandState(menu_item, ExtensionContextMenuModel::RATE_EXTENSION),
+      CommandState::kAbsent);
+
+  ExtensionContextMenuModel menu_toolbar(
+      cws_extension.get(), browser_window_interface(),
+      /*is_pinned=*/true, nullptr,
+      /*can_show_icon_in_toolbar=*/true, ContextMenuSource::kToolbarAction);
+  EXPECT_EQ(
+      GetCommandState(menu_toolbar, ExtensionContextMenuModel::RATE_EXTENSION),
+      CommandState::kAbsent);
+}
+
 }  // namespace extensions

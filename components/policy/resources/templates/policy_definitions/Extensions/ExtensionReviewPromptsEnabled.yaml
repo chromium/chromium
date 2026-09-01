@@ -1,0 +1,30 @@
+caption: Control extension review prompts and rating links
+desc: |-
+  Controls whether native review prompts and rating links (such as "Rate it") for installed Chrome extensions are available across Chrome user interfaces.
+
+  If this policy is set to Enabled or left unset, users may see native entry points to review and rate eligible extensions in the toolbar, context menus, and the extensions management page (chrome://extensions).
+
+  If this policy is set to Disabled, all native review prompts and rating links are suppressed and unavailable.
+
+default: true
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable native extension review prompts and rating links
+  value: true
+- caption: Disable native extension review prompts and rating links
+  value: false
+owners:
+- ikabadzhov@google.com
+- file://extensions/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:154-
+- chrome_os:154-
+- android:154-
+tags: []
+type: main
+

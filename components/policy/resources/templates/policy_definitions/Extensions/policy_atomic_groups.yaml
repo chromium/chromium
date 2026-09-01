@@ -12,3 +12,4 @@ Extensions:
   - ExtensionUnpublishedAvailability
   - ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls
   - ExtensionDOMActivityLoggingEnabled
+  - ExtensionReviewPromptsEnabled
