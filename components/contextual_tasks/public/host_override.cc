@@ -5,7 +5,9 @@
 #include "components/contextual_tasks/public/host_override.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/url_canon_ip.h"
 
@@ -21,29 +23,45 @@ std::optional<HostOverride> HostOverride::FromString(std::string_view str) {
     std::string bracketed = base::StrCat({"[", str, "]"});
     unsigned char tmp_ipv6[16];
     if (url::IPv6AddressToNumber(bracketed, tmp_ipv6)) {
-      return HostOverride{std::string(str)};
+      return HostOverride{std::string(str), std::nullopt};
     }
   }
 
-  // Strip brackets if bracketed IPv6.
-  if (str.size() >= 2 && str.front() == '[' && str.back() == ']') {
-    return HostOverride{std::string(str.substr(1, str.size() - 2))};
+  std::string parsed_host;
+  int parsed_port = -1;
+  if (!net::ParseHostAndPort(str, &parsed_host, &parsed_port)) {
+    return std::nullopt;
   }
 
-  return HostOverride{std::string(str)};
+  if (parsed_host.empty()) {
+    return std::nullopt;
+  }
+
+  std::optional<uint16_t> port;
+  if (parsed_port != -1) {
+    port = static_cast<uint16_t>(parsed_port);
+  }
+
+  return HostOverride{std::move(parsed_host), port};
 }
 
 std::string HostOverride::ToString() const {
-  if (host.find(':') != std::string::npos && !host.empty() &&
-      host.front() != '[') {
-    return base::StrCat({"[", host, "]"});
+  std::string formatted_host = (host.find(':') != std::string::npos &&
+                                !host.empty() && host.front() != '[')
+                                   ? base::StrCat({"[", host, "]"})
+                                   : host;
+  if (port.has_value()) {
+    return base::StrCat({formatted_host, ":", base::NumberToString(*port)});
   }
-  return host;
+  return formatted_host;
 }
 
 bool HostOverride::Matches(const GURL& url) const {
-  return base::EqualsCaseInsensitiveASCII(host, url.host()) ||
-         base::EqualsCaseInsensitiveASCII(host, url.HostNoBracketsPiece());
+  if (!base::EqualsCaseInsensitiveASCII(host, url.host()) &&
+      !base::EqualsCaseInsensitiveASCII(host, url.HostNoBracketsPiece())) {
+    return false;
+  }
+  return port ? (url.EffectiveIntPort() == *port) : !url.has_port();
 }
 
 GURL HostOverride::ApplyToUrl(const GURL& url) const {
@@ -53,6 +71,13 @@ GURL HostOverride::ApplyToUrl(const GURL& url) const {
                                    ? base::StrCat({"[", host, "]"})
                                    : host;
   replacements.SetHostStr(formatted_host);
+  std::string port_str;
+  if (port) {
+    port_str = base::NumberToString(*port);
+    replacements.SetPortStr(port_str);
+  } else if (url.has_port()) {
+    replacements.ClearPort();
+  }
   return url.ReplaceComponents(replacements);
 }
 

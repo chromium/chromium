@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_HOST_OVERRIDE_H_
 #define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_HOST_OVERRIDE_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -20,17 +21,18 @@ namespace contextual_tasks {
 // override, and apply the override to a GURL.
 struct HostOverride {
   std::string host;
+  std::optional<uint16_t> port = std::nullopt;
 
-  // Deserializer: parses host from string inputs.
+  // Deserializer: parses "<host>[:<port>]" from string inputs.
   static std::optional<HostOverride> FromString(std::string_view str);
 
-  // Serializer: formats host for string outputs.
+  // Serializer: formats as "host" or "host:port" for string outputs.
   std::string ToString() const;
 
-  // Matcher: checks if url's host matches this override.
+  // Matcher: checks if url's host and port match this override.
   bool Matches(const GURL& url) const;
 
-  // Mutator: safely updates url's host via GURL::Replacements.
+  // Mutator: safely updates url's host and port via GURL::Replacements.
   GURL ApplyToUrl(const GURL& url) const;
 
   friend bool operator==(const HostOverride&, const HostOverride&) = default;

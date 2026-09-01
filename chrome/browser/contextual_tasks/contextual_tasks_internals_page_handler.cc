@@ -96,8 +96,13 @@ void ContextualTasksInternalsPageHandler::SetForcedEmbeddedPageHost(
     return;
   }
 
+  std::optional<uint16_t> port;
+  if (host.has_port()) {
+    port = static_cast<uint16_t>(host.EffectiveIntPort());
+  }
+
   contextual_tasks::SetForcedEmbeddedPageHostOverride(
-      contextual_tasks::HostOverride{std::string(host.host())});
+      contextual_tasks::HostOverride{std::string(host.host()), port});
 }
 
 void ContextualTasksInternalsPageHandler::GetForcedEmbeddedPageHost(
@@ -107,7 +112,7 @@ void ContextualTasksInternalsPageHandler::GetForcedEmbeddedPageHost(
   if (!host.has_value()) {
     std::move(callback).Run(GURL());
   } else {
-    // Wrap the string host into a valid URL so it can be passed via Mojo.
+    // Wrap the host and port into a valid URL so it can be passed via Mojo.
     std::move(callback).Run(GURL(base::StrCat(
         {url::kHttpsScheme, url::kStandardSchemeSeparator, host->ToString()})));
   }
