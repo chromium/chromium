@@ -179,6 +179,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     disabled_features.push_back(features::kHttpsFirstBalancedModeAutoEnable);
     disabled_features.push_back(
         features::kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback);
+    disabled_features.push_back(features::kWebUILocationBar);
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
