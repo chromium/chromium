@@ -1810,8 +1810,18 @@ void ReadAnythingAppController::OnConnected() {
   render_frame()->GetBrowserInterfaceBroker().GetInterface(
       std::move(page_handler_factory_receiver));
 
-  // Get the dependency parser model used by phrase-based highlighting.
-  if (read_aloud_model_.GetDependencyParserModel().IsAvailable()) {
+  // Asynchronously check the availability of the sequence-bound dependency
+  // parser model used by phrase-based highlighting.
+  read_aloud_model_.GetDependencyParserModel()
+      .AsyncCall(&DependencyParserModel::IsAvailable)
+      .Then(base::BindOnce(&ReadAnythingAppController::
+                               OnDependencyParserModelAvailabilityChecked,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingAppController::OnDependencyParserModelAvailabilityChecked(
+    bool is_available) {
+  if (is_available) {
     return;
   }
 
@@ -2320,11 +2330,12 @@ bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
 
 void ReadAnythingAppController::UpdateDependencyParserModel(
     base::File model_file) {
-  read_aloud_model_.GetDependencyParserModel().UpdateWithFile(
-      std::move(model_file));
+  read_aloud_model_.GetDependencyParserModel()
+      .AsyncCall(&DependencyParserModel::UpdateWithFile)
+      .WithArgs(std::move(model_file));
 }
 
-DependencyParserModel&
+base::SequenceBound<DependencyParserModel>&
 ReadAnythingAppController::GetDependencyParserModelForTesting() {
   return read_aloud_model_.GetDependencyParserModel();
 }

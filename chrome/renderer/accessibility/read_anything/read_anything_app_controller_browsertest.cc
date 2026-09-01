@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything.mojom-data-view.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -2716,27 +2717,33 @@ TEST_F(
 
 TEST_F(ReadAnythingAppControllerTest,
        GetDependencyParserModel_UnavailableWithoutModelFile) {
-  DependencyParserModel& model =
-      controller().GetDependencyParserModelForTesting();
-  EXPECT_FALSE(model.IsAvailable());
+  auto& model = controller().GetDependencyParserModelForTesting();
+  base::test::TestFuture<bool> future;
+  model.AsyncCall(&DependencyParserModel::IsAvailable)
+      .Then(future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetDependencyParserModel_AvailableWithValidModelFile) {
   controller().UpdateDependencyParserModel(test::GetValidModelFile());
-  DependencyParserModel& model =
-      controller().GetDependencyParserModelForTesting();
+  auto& model = controller().GetDependencyParserModelForTesting();
 
-  EXPECT_TRUE(model.IsAvailable());
+  base::test::TestFuture<bool> future;
+  model.AsyncCall(&DependencyParserModel::IsAvailable)
+      .Then(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetDependencyParserModel_UnavailableWithInvalidModelFile) {
   controller().UpdateDependencyParserModel(test::GetInvalidModelFile());
-  DependencyParserModel& model =
-      controller().GetDependencyParserModelForTesting();
+  auto& model = controller().GetDependencyParserModelForTesting();
 
-  EXPECT_FALSE(model.IsAvailable());
+  base::test::TestFuture<bool> future;
+  model.AsyncCall(&DependencyParserModel::IsAvailable)
+      .Then(future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
