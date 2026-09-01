@@ -361,6 +361,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/read_write_card_observer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
@@ -3343,25 +3344,33 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   // NOTE: If new commands are being added, please disable them by default and
   // notify the ChromeOS team by filing a bug under this component --
   // b/?q=componentid:1389107.
-  bool should_disable_command_for_locked_fullscreen_or_on_task = false;
   BrowserWindowInterface* const browser_window = GetBrowser();
-  if (browser_window &&
-      platform_util::IsBrowserLockedFullscreen(browser_window)) {
-    should_disable_command_for_locked_fullscreen_or_on_task = true;
-  }
-  if (browser_window && ash::boca::OnTaskLockedController::From(browser_window)
-                            ->is_locked_for_on_task()) {
-    bool is_page_nav_command =
-        (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
-    bool is_allowed_content_context_command =
-        (id == IDC_CONTENT_CONTEXT_COPYIMAGE) ||
-        (id == IDC_CONTENT_CONTEXT_COPYIMAGELOCATION);
-    should_disable_command_for_locked_fullscreen_or_on_task =
-        !is_page_nav_command && !is_allowed_content_context_command &&
-        !ContextMenuMatcher::IsExtensionsCustomCommandId(id);
-  }
-  if (should_disable_command_for_locked_fullscreen_or_on_task) {
-    return false;
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    if (browser_window && !chromeos::LockedStateController::From(browser_window)
+                               ->IsCommandIdEnabled(id)) {
+      return false;
+    }
+  } else {
+    bool should_disable_command_for_locked_fullscreen_or_on_task = false;
+    if (browser_window &&
+        platform_util::IsBrowserLockedFullscreen(browser_window)) {
+      should_disable_command_for_locked_fullscreen_or_on_task = true;
+    }
+    if (browser_window &&
+        ash::boca::OnTaskLockedController::From(browser_window)
+            ->is_locked_for_on_task()) {
+      bool is_page_nav_command =
+          (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
+      bool is_allowed_content_context_command =
+          (id == IDC_CONTENT_CONTEXT_COPYIMAGE) ||
+          (id == IDC_CONTENT_CONTEXT_COPYIMAGELOCATION);
+      should_disable_command_for_locked_fullscreen_or_on_task =
+          !is_page_nav_command && !is_allowed_content_context_command &&
+          !ContextMenuMatcher::IsExtensionsCustomCommandId(id);
+    }
+    if (should_disable_command_for_locked_fullscreen_or_on_task) {
+      return false;
+    }
   }
 #endif
 

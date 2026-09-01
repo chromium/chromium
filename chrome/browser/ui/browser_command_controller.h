@@ -284,6 +284,8 @@ class BrowserCommandController : public CommandUpdater,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // In locked fullscreen mode disallow enabling/disabling commands.
+  // TODO(crbug.com/438540029): Remove `is_locked_fullscreen_` when migration
+  // is completed.
   bool is_locked_fullscreen_ = false;
   bool is_tab_switching_enabled_ = true;
 #endif

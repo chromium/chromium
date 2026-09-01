@@ -99,6 +99,8 @@
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -322,17 +324,6 @@ bool MatchesBool(const std::optional<bool>& boolean, bool value) {
   return !boolean || *boolean == value;
 }
 
-// Returns true if the given browser window is in locked fullscreen mode
-// (a special type of fullscreen where the user is locked into one browser
-// window).
-// TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
-// support on desktop android.
-#if BUILDFLAG(IS_CHROMEOS)
-bool IsLockedFullscreen(BrowserWindowInterface* browser) {
-  return platform_util::IsBrowserLockedFullscreen(browser);
-}
-#endif
-
 // Returns the tab group ID for the tab at `index`. Returns nullopt if the index
 // is out of range, the tab is not found, or the tab is not part of a group.
 std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
@@ -346,14 +337,53 @@ std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
   return tab->GetGroup();
 }
 
-// Places the window in a special type of fullscreen where the user is locked
-// into one browser window based on `is_locked_fullscreen`.
 #if BUILDFLAG(IS_CHROMEOS)
-void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
-                                   BrowserWindowInterface* browser,
-                                   bool is_locked_fullscreen) {
+// Returns true if the given browser window is in locked fullscreen mode
+// (a special type of fullscreen where the user is locked into one browser
+// window).
+// TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
+// support on desktop android.
+bool IsLockedFullscreen(BrowserWindowInterface* browser) {
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    return chromeos::LockedStateController::From(browser)->IsLockedFullscreen();
+  }
+  return platform_util::IsBrowserLockedFullscreen(browser);
+}
+
+// Places the window in a special type of fullscreen where the user is locked
+// into one browser window if requested. Returns an error message on failure,
+// or std::nullopt on success.
+std::optional<std::string> MaybeSetLockedFullscreenState(
+    const api::windows::Update::Params& params,
+    const Extension* extension,
+    BrowserWindowInterface* browser) {
+  // Don't allow locked fullscreen operations on a window without the proper
+  // permission (also don't allow any operations on a locked window if the
+  // extension doesn't have the permission).
+  const bool is_locked_fullscreen = IsLockedFullscreen(browser);
+  if ((params.update_info.state == windows::WindowState::kLockedFullscreen ||
+       is_locked_fullscreen) &&
+      !tabs_internal::ExtensionHasLockedFullscreenPermission(extension)) {
+    return tabs_internal::kMissingLockWindowFullscreenPrivatePermission;
+  }
+
   // State will be WINDOW_STATE_NONE if the state parameter wasn't passed from
   // the JS side, and in that case we don't want to change the locked state.
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    auto* locked_state_controller =
+        chromeos::LockedStateController::From(browser);
+    if (is_locked_fullscreen &&
+        params.update_info.state != windows::WindowState::kLockedFullscreen &&
+        params.update_info.state != windows::WindowState::kNone) {
+      locked_state_controller->Unlock(chromeos::LockedState::kExtensionLocked);
+    } else if (!is_locked_fullscreen &&
+               params.update_info.state ==
+                   windows::WindowState::kLockedFullscreen) {
+      locked_state_controller->Lock(chromeos::LockedState::kExtensionLocked);
+    }
+    return std::nullopt;
+  }
+
   if (browser) {
     if (is_locked_fullscreen &&
         params.update_info.state != windows::WindowState::kLockedFullscreen &&
@@ -373,6 +403,7 @@ void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
       }
     }
   }
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1375,11 +1406,16 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   if (create_data_ &&
       create_data_->state == windows::WindowState::kLockedFullscreen) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (new_window) {
-      auto* delegate =
-          ash::BrowserController::GetInstance()->GetDelegate(new_window);
-      if (delegate) {
-        delegate->EnterLockedFullscreen();
+    if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+      chromeos::LockedStateController::From(new_window)
+          ->Lock(chromeos::LockedState::kExtensionLocked);
+    } else {
+      if (new_window) {
+        auto* delegate =
+            ash::BrowserController::GetInstance()->GetDelegate(new_window);
+        if (delegate) {
+          delegate->EnterLockedFullscreen();
+        }
       }
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1513,19 +1549,6 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   }
   ui::BaseWindow* browser_window = browser->GetWindow();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Don't allow locked fullscreen operations on a window without the proper
-  // permission (also don't allow any operations on a locked window if the
-  // extension doesn't have the permission).
-  const bool is_locked_fullscreen = IsLockedFullscreen(browser);
-  if ((params->update_info.state == windows::WindowState::kLockedFullscreen ||
-       is_locked_fullscreen) &&
-      !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(
-        Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
-  }
-#endif
-
   // Before changing any of a window's state, validate the update parameters.
   // This prevents Chrome from performing "half" an update.
 
@@ -1582,7 +1605,10 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
   // Parameters are valid. Now to perform the actual updates.
 #if BUILDFLAG(IS_CHROMEOS)
-  MaybeSetLockedFullscreenState(*params, browser, is_locked_fullscreen);
+  if (std::optional<std::string> locked_fullscreen_error =
+          MaybeSetLockedFullscreenState(*params, extension(), browser)) {
+    return RespondNow(Error(std::move(*locked_fullscreen_error)));
+  }
 #endif
 
   UpdateWindowState(*params, browser, window_controller, show_state,

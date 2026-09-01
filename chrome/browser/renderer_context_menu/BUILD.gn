@@ -208,6 +208,7 @@ source_set("impl") {
       "//chrome/browser/ui/ash/read_write_cards",
       "//chrome/browser/ui/ash/read_write_cards:read_write_cards_manager",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/chromeos/locked_state",
       "//chrome/browser/ui/webui/ash/system_web_dialog",
       "//chromeos/ash/components/system_web_apps:system_web_app_type",
       "//chromeos/ash/experiences/system_web_apps/types",
@@ -427,7 +428,10 @@ if (!is_android) {
     }
 
     if (is_chromeos) {
-      deps += [ "//chrome/browser/ash/boca/on_task" ]
+      deps += [
+        "//chrome/browser/ash/boca/on_task",
+        "//chrome/browser/ui/chromeos/locked_state",
+      ]
     }
 
     if (enable_pdf) {

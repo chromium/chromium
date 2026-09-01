@@ -203,6 +203,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -1101,8 +1102,67 @@ IN_PROC_BROWSER_TEST_F(
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ContextMenuForLockedFullscreenBrowserTest
-    : public ContextMenuBrowserTest {
+    : public ContextMenuBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContextMenuForLockedFullscreenBrowserTest() {
+    if (is_unified_locked_state_controller_enabled_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUseUnifiedLockedStateController);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kUseUnifiedLockedStateController);
+    }
+  }
+
  protected:
+  const bool is_unified_locked_state_controller_enabled_ = GetParam();
+
+  void LockForExtension() {
+    if (is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      controller->Lock(chromeos::LockedState::kExtensionLocked);
+    } else {
+      ash::boca::OnTaskLockedController::From(browser())
+          ->set_locked_for_on_task(false);
+      ash::PinWindow(browser()->GetWindow()->GetNativeWindow(),
+                     /*trusted=*/true);
+    }
+  }
+
+  void LockForOnTask() {
+    if (is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      controller->Lock(chromeos::LockedState::kOnTaskLocked);
+    } else {
+      ash::boca::OnTaskLockedController::From(browser())
+          ->set_locked_for_on_task(true);
+      ash::PinWindow(browser()->GetWindow()->GetNativeWindow(),
+                     /*trusted=*/true);
+    }
+  }
+
+  void SetLockedForOnTaskWithoutPin() {
+    if (is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      controller->Lock(chromeos::LockedState::kOnTaskPrepared);
+    } else {
+      ash::boca::OnTaskLockedController::From(browser())
+          ->set_locked_for_on_task(true);
+    }
+  }
+
+  void LockForOnTaskPaused() {
+    if (is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      controller->Lock(chromeos::LockedState::kOnTaskLockedPaused);
+    }
+  }
+
   void SetUpOnMainThread() override {
     ContextMenuBrowserTest::SetUpOnMainThread();
 
@@ -1130,12 +1190,12 @@ class ContextMenuForLockedFullscreenBrowserTest
         browser(), url, disposition,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
                        ItemsAreDisabledWhenPinnedAndNotLockedForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      false);
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeImage(/*url=*/kTestUrl);
@@ -1157,7 +1217,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
   }
 
   // Set locked fullscreen state.
-  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
+  LockForExtension();
 
   // Verify aforementioned commands are disabled in locked fullscreen.
   for (int command_id : kCommandsToTest) {
@@ -1167,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
                        CriticalItemsAreEnabledWhenPinnedAndLockedForOnTask) {
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -1190,11 +1250,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
   }
 
   // Lock instance for OnTask.
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      true);
-
-  // Set locked fullscreen state.
-  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
+  LockForOnTask();
 
   // Verify page navigation commands and some contextual content commands remain
   // enabled.
@@ -1219,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
                        CriticalItemsAreEnabledWhenLockedForOnTask) {
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -1242,8 +1298,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
   }
 
   // Lock instance for OnTask.
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      true);
+  SetLockedForOnTaskWithoutPin();
 
   // Verify page navigation commands and some contextual content commands remain
   // enabled.
@@ -1267,6 +1322,59 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
         << " failed to meet disabled state expectation when locked for OnTask";
   }
 }
+
+IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
+                       CriticalItemsAreEnabledWhenLockedForOnTaskPaused) {
+  if (!is_unified_locked_state_controller_enabled_) {
+    return;
+  }
+  const GURL kTestUrl("http://www.google.com/");
+  const std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeImage(/*url=*/kTestUrl);
+
+  // Verify commands are enabled initially.
+  static constexpr int kCommandsToTest[] = {
+      // Navigation commands.
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD,
+      // Content contextual commands.
+      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, IDC_CONTENT_CONTEXT_COPYIMAGE,
+      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, IDC_CONTENT_CONTEXT_INSPECTELEMENT,
+      IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+      // Other commands (we only test a subset).
+      IDC_VIEW_SOURCE};
+  for (int command_id : kCommandsToTest) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet enabled state expectation";
+  }
+
+  LockForOnTaskPaused();
+
+  static constexpr int kCommandsEnabledForOnTask[] = {
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD, IDC_CONTENT_CONTEXT_COPYIMAGE,
+      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION};
+  for (int command_id : kCommandsEnabledForOnTask) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet enabled state expectation when locked for OnTask "
+           "Paused";
+  }
+
+  static constexpr int kCommandsDisabledForOnTask[] = {
+      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+      IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+  for (int command_id : kCommandsDisabledForOnTask) {
+    EXPECT_FALSE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet disabled state expectation when locked for OnTask "
+           "Paused";
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextMenuForLockedFullscreenBrowserTest,
+                         testing::Bool());
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

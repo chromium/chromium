@@ -1381,6 +1381,7 @@ source_set("extensions") {
       "//chrome/browser/ui/ash/media_client",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/thumbnail_loader",
+      "//chrome/browser/ui/chromeos/locked_state",
       "//chrome/browser/ui/views/extensions/dialogs:request_file_system_dialog",
       "//chrome/browser/ui/webui/ash/settings/pages/a11y",
       "//chromeos/ash/components/attestation",

@@ -64,6 +64,11 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
+#endif
+
 namespace {
 
 void TabGroupsDialogTimingToSource(
@@ -435,7 +440,13 @@ void BrowserTabStripModelDelegate::CloseTab(
 #if BUILDFLAG(IS_CHROMEOS)
   // Tabs cannot be closed when the app is in locked fullscreen, which is
   // available only on ChromeOS.
-  if (platform_util::IsBrowserLockedFullscreen(browser_)) {
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    if (!chromeos::LockedStateController::From(browser_)
+             ->GetCapabilities()
+             .allow_tab_modification) {
+      return;
+    }
+  } else if (platform_util::IsBrowserLockedFullscreen(browser_)) {
     return;
   }
 #endif

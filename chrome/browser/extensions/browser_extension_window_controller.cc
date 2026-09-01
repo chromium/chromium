@@ -44,6 +44,11 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -205,7 +210,12 @@ base::DictValue BrowserExtensionWindowController::CreateWindowValueForExtension(
       return kShowStateValueMinimized;
     } else if (window()->IsFullscreen()) {
 #if BUILDFLAG(IS_CHROMEOS)
-      if (platform_util::IsBrowserLockedFullscreen(GetBrowser())) {
+      if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+        if (chromeos::LockedStateController::From(GetBrowser())
+                ->IsLockedFullscreen()) {
+          return kShowStateValueLockedFullscreen;
+        }
+      } else if (platform_util::IsBrowserLockedFullscreen(GetBrowser())) {
         return kShowStateValueLockedFullscreen;
       }
 #endif

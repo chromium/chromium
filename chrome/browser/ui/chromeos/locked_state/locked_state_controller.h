@@ -68,6 +68,7 @@ class LockedStateController {
 
   enum class CommandType {
     kUnknown,
+    kClipboard,              // IDC_CUT, IDC_COPY, IDC_PASTE
     kPageNavigation,         // IDC_BACK, IDC_FORWARD, IDC_RELOAD
     kAllowedContentContext,  // IDC_CONTENT_CONTEXT_COPYIMAGE, COPYIMAGELOCATION
     kExtensionsCustom,       // Extensions Custom commands
@@ -96,6 +97,9 @@ class LockedStateController {
   // OnTaskLocked, OnTaskLockedPaused).
   bool IsLocked() const;
 
+  // Returns true if the browser is in extension locked fullscreen.
+  bool IsLockedFullscreen() const;
+
   LockedState GetState() const;
   const LockedStateCapabilities& GetCapabilities() const;
 
@@ -111,7 +115,7 @@ class LockedStateController {
 
   // Returns true if the browser is in any OnTask state (Prepared, Locked,
   // LockedPaused).
-  bool IsLockedForOnTaskForTesting() const;
+  bool IsLockedForOnTask() const;
 
  private:
   void UpdateCapabilities();

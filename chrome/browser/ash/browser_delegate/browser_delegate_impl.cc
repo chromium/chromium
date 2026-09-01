@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
@@ -308,6 +310,26 @@ void BrowserDelegateImpl::ResetLocationBar() {
 }
 
 void BrowserDelegateImpl::SetOnTaskState(OnTaskState state) {
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    auto* const controller =
+        chromeos::LockedStateController::From(&browser_.get());
+    switch (state) {
+      case OnTaskState::kUnlocked:
+        controller->Unlock(chromeos::LockedState::kOnTaskLocked);
+        break;
+      case OnTaskState::kPrepared:
+        controller->Lock(chromeos::LockedState::kOnTaskPrepared);
+        break;
+      case OnTaskState::kLocked:
+        controller->Lock(chromeos::LockedState::kOnTaskLocked);
+        break;
+      case OnTaskState::kPaused:
+        controller->Lock(chromeos::LockedState::kOnTaskLockedPaused);
+        break;
+    }
+    return;
+  }
+
   switch (state) {
     case OnTaskState::kUnlocked:
       if (IsLockedFullscreen()) {
@@ -341,6 +363,22 @@ void BrowserDelegateImpl::SetOnTaskState(OnTaskState state) {
 }
 
 bool BrowserDelegateImpl::IsOnTaskState(OnTaskState state) const {
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    auto* const controller =
+        chromeos::LockedStateController::From(&browser_.get());
+    switch (state) {
+      case OnTaskState::kUnlocked:
+        return controller->GetState() == chromeos::LockedState::kUnlocked;
+      case OnTaskState::kPrepared:
+        return controller->GetState() == chromeos::LockedState::kOnTaskPrepared;
+      case OnTaskState::kLocked:
+        return controller->GetState() == chromeos::LockedState::kOnTaskLocked;
+      case OnTaskState::kPaused:
+        return controller->GetState() ==
+               chromeos::LockedState::kOnTaskLockedPaused;
+    }
+  }
+
   switch (state) {
     case OnTaskState::kUnlocked:
       return !boca::OnTaskLockedController::From(&browser_.get())
