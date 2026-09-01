@@ -19,6 +19,7 @@ found in the LICENSE file.
   <attr name="locationBarActionButtonMarginHorizontal" format="dimension" />
   <attr name="locationBarActionButtonConstraintTopToTopOf" format="reference|string" />
   <attr name="locationBarActionButtonConstraintBottomToBottomOf" format="reference|string" />
+  <attr name="locationBarDeleteButtonPadding" format="dimension" />
 
   <attr name="closeButtonWidth" format="dimension" />
   <attr name="closeButtonHeight" format="dimension" />
