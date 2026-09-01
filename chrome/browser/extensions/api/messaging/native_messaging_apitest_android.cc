@@ -36,9 +36,14 @@ constexpr char kUnauthorizedExtensionKey[] =
 
 class NativeMessagingAndroidApiTest : public ExtensionApiTest {
  public:
-  NativeMessagingAndroidApiTest()
-      : scoped_feature_list_{
-            extensions_features::kApiDesktopAndroidNativeMessaging} {}
+  NativeMessagingAndroidApiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {extensions_features::kApiDesktopAndroidNativeMessaging,
+         extensions_features::
+             kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist},
+        /*disabled_features=*/{});
+  }
   ~NativeMessagingAndroidApiTest() override = default;
   NativeMessagingAndroidApiTest(const NativeMessagingAndroidApiTest&) = delete;
   NativeMessagingAndroidApiTest& operator=(
@@ -50,6 +55,37 @@ class NativeMessagingAndroidApiTest : public ExtensionApiTest {
   // Needed to simulate installs for webstore extensions.
   ScopedInstallVerifierBypassForTest ignore_install_verification_;
 };
+
+// Test fixture explicitly disabling the bypass flag, verifying allowlist
+// behavior.
+class NativeMessagingAndroidUnauthorizedApiTest : public ExtensionApiTest {
+ public:
+  NativeMessagingAndroidUnauthorizedApiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{extensions_features::
+                                  kApiDesktopAndroidNativeMessaging},
+        /*disabled_features=*/
+        {extensions_features::
+             kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist});
+  }
+  ~NativeMessagingAndroidUnauthorizedApiTest() override = default;
+  NativeMessagingAndroidUnauthorizedApiTest(
+      const NativeMessagingAndroidUnauthorizedApiTest&) = delete;
+  NativeMessagingAndroidUnauthorizedApiTest& operator=(
+      const NativeMessagingAndroidUnauthorizedApiTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Needed to simulate installs for webstore extensions.
+  ScopedInstallVerifierBypassForTest ignore_install_verification_;
+};
+
+IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidUnauthorizedApiTest,
+                       UnauthorizedExtensionRejected) {
+  ASSERT_TRUE(RunExtensionTest("native_messaging_android_unauthorized"))
+      << message_;
+}
 
 IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest, NativeMessagingBasic) {
   ASSERT_TRUE(RunExtensionTest("native_messaging")) << message_;
