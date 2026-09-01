@@ -18,6 +18,7 @@ import androidx.annotation.StringRes;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -145,6 +146,7 @@ public class VerticalTabUtils {
      * calculations.
      */
     public static boolean isTablet(Context context) {
+        assert context != null;
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && !DeviceInfo.isDesktop();
     }
@@ -153,8 +155,9 @@ public class VerticalTabUtils {
      * Returns whether the current device is eligible for Vertical Tabs. Vertical Tabs require the
      * AndroidVerticalTabs feature flag to be enabled and the device to be a tablet form factor.
      */
-    public static boolean isVerticalTabsEligible(Context context) {
-        return ChromeFeatureList.sAndroidVerticalTabs.isEnabled()
+    public static boolean isVerticalTabsEligible(@Nullable Context context) {
+        return context != null
+                && ChromeFeatureList.sAndroidVerticalTabs.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
@@ -165,7 +168,7 @@ public class VerticalTabUtils {
      * (preference is true). 2. The user has not set a preference, and VT is enabled by default via
      * the "enable_by_default" feature parameter.
      */
-    public static boolean isVerticalTabsEnabled(Context context) {
+    public static boolean isVerticalTabsEnabled(@Nullable Context context) {
         if (!isVerticalTabsEligible(context)) {
             return false;
         }
@@ -210,6 +213,8 @@ public class VerticalTabUtils {
      */
     public static void recordLayoutToggle(
             Context context, @LayoutSwitchEntryPoint int entryPoint, boolean isEnabling) {
+        assert context != null;
+
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.VerticalTabs.LayoutToggleSourceAndDirection",
                 getLayoutToggleSourceAndDirection(entryPoint, isEnabling),
@@ -275,7 +280,7 @@ public class VerticalTabUtils {
      * <p>The badge is shown only on tablets (excluding desktop form factor) and capped at 3
      * impressions until the user clicks the menu item.
      */
-    public static boolean shouldShowNewBadgeForVerticalTabs(Context context) {
+    public static boolean shouldShowNewBadgeForVerticalTabs(@Nullable Context context) {
         // Show only on tablet devices, not on Desktop.
         if (!isVerticalTabsEligible(context) || DeviceInfo.isDesktop()) {
             return false;
