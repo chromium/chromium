@@ -12,6 +12,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Intent;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,8 +29,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -107,5 +111,39 @@ public class CustomTabObserverUnitTest {
         // Verify connection's sendNavigationInfo is invoked
         verify(mCustomTabsConnection)
                 .sendNavigationInfo(eq(mSession), eq(TEST_URL), eq(TEST_TITLE), eq(null));
+    }
+
+    @Test
+    public void testTrackNextPageLoadForHiddenTab_UsedSpeculation() {
+        createObserver();
+        Intent intent = new Intent();
+        BrowserIntentUtils.addLauncherTimestampsToIntent(intent);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.Startup.TimeToFirstCommitNavigation2.Speculated");
+
+        mObserver.trackNextPageLoadForHiddenTab(
+                mWebContents, /* usedSpeculation= */ true, /* hasCommitted= */ true, intent);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testTrackNextPageLoadForHiddenTab_UnusedSpeculation() {
+        createObserver();
+        Intent intent = new Intent();
+        BrowserIntentUtils.addLauncherTimestampsToIntent(intent);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "CustomTabs.Startup.TimeToFirstCommitNavigation2.Speculated")
+                        .build();
+
+        mObserver.trackNextPageLoadForHiddenTab(
+                mWebContents, /* usedSpeculation= */ false, /* hasCommitted= */ false, intent);
+
+        histogramWatcher.assertExpected();
     }
 }
