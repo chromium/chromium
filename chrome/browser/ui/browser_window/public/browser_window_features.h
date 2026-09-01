@@ -100,6 +100,7 @@ class SessionServiceBrowserHelper;
 class SharingWindowController;
 class SidePanelCoordinator;
 class SidePanelRegistry;
+class SidePanelUI;
 class SigninViewController;
 class SplitViewIphController;
 class TabDragServiceFeature;
@@ -373,6 +374,13 @@ class BrowserWindowFeatures {
     return pinned_toolbar_actions_;
   }
 
+  // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
+  // abstract base class that contains some, but not all of the public interface
+  // of SidePanelCoordinator. One of the accessors side_panel_ui() or
+  // side_panel_coordinator() should be removed. For consistency with the rest
+  // of this class, we use lowercase_with_underscores even though the
+  // implementation is not inlined.
+  SidePanelUI* side_panel_ui();
 
   SigninViewController* signin_view_controller() {
     return signin_view_controller_.get();
