@@ -46,4 +46,13 @@ bool HasWeightedGroupWithExperimentId(const Study& study) {
       });
 }
 
+bool ConsumesEntropy(const Study& study) {
+  // TODO(crbug.com/554002485): Refine the logic a bit more. For example,
+  // consider a study with a single weighted group that happens to have an
+  // experiment ID. If the study targets 100% of the client population, then it
+  // doesn't actually consume any entropy.
+  return study.consistency() == Study::PERMANENT &&
+         HasWeightedGroupWithExperimentId(study);
+}
+
 }  // namespace variations

@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace variations {
 
@@ -76,10 +77,10 @@ class COMPONENT_EXPORT(VARIATIONS) LimitedLayerEntropyCostTracker {
   FRIEND_TEST_ALL_PREFIXES(LimitedLayerEntropyCostTrackerTest,
                            TestAddEntropyUsedByStudy_IsTimeAware);
 
-  // Returns the maximum member-level entropy used by studies currently being
-  // tracked by the tracker. This method is idempotent and logically const, but
-  // it does modify the internal state of the tracker by sorting the entropy
-  // events in place.
+  // Computes the amount of entropy consumed by each limited-layer member
+  // referenced by an entropy-consuming study. Returns the maximum amount across
+  // members. This method is idempotent and logically const, but it does modify
+  // the internal state of the tracker by sorting the entropy events in place.
   double GetMaxEntropyUsed() const;
 
   // Invalidates the tracker on bad input. Note that this is a terminal state
@@ -111,9 +112,10 @@ class COMPONENT_EXPORT(VARIATIONS) LimitedLayerEntropyCostTracker {
   mutable absl::flat_hash_map<uint32_t, EntropyEventList>
       entropy_events_by_member_id_;
 
-  // Whether the tracker has had non-zero entropy added for at least one study.
-  // i.e., the entropy is not solely based on the layer member sizes.
-  bool includes_study_entropy_ = false;
+  // IDs denoting the layer members that are referenced by at least one study
+  // for which `ConsumesEntropy()` returns true. Only members in this set have
+  // their base entropy cost counted in `GetMaxEntropyUsed()`.
+  absl::flat_hash_set<uint32_t> members_with_entropy_consuming_studies_;
 
   // Whether all input given to the tracker has been valid. If the tracker is
   // invalidated by bad input, the seed from which the input is derived should

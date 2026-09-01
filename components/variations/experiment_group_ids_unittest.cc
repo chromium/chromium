@@ -38,8 +38,10 @@ Study::Experiment CreateExperiment(uint32_t weight,
   return group;
 }
 
-Study CreateStudy(base::span<const Study::Experiment> groups) {
+Study CreateStudy(base::span<const Study::Experiment> groups,
+                  Study::Consistency consistency = Study::PERMANENT) {
   Study study;
+  study.set_consistency(consistency);
   for (const Study::Experiment& group : groups) {
     *study.add_experiment() = group;
   }
@@ -56,6 +58,7 @@ TEST(ExperimentGroupIdsTest, WeightedGroupWithoutId) {
   EXPECT_FALSE(IsWeightedGroupWithExperimentId(group));
   EXPECT_FALSE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_FALSE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_FALSE(ConsumesEntropy(study));
 }
 
 TEST(ExperimentGroupIdsTest, WeightedGroupWithGoogleWebExperimentId) {
@@ -69,6 +72,7 @@ TEST(ExperimentGroupIdsTest, WeightedGroupWithGoogleWebExperimentId) {
   EXPECT_TRUE(IsWeightedGroupWithExperimentId(group));
   EXPECT_TRUE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_TRUE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_TRUE(ConsumesEntropy(study));
 }
 
 TEST(ExperimentGroupIdsTest, WeightedGroupWithGoogleWebTriggerExperimentId) {
@@ -82,6 +86,7 @@ TEST(ExperimentGroupIdsTest, WeightedGroupWithGoogleWebTriggerExperimentId) {
   EXPECT_TRUE(IsWeightedGroupWithExperimentId(group));
   EXPECT_TRUE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_TRUE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_TRUE(ConsumesEntropy(study));
 }
 
 TEST(ExperimentGroupIdsTest, WeightedGroupWithGoogleAppExperimentId) {
@@ -95,6 +100,7 @@ TEST(ExperimentGroupIdsTest, WeightedGroupWithGoogleAppExperimentId) {
   EXPECT_TRUE(IsWeightedGroupWithExperimentId(group));
   EXPECT_FALSE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_TRUE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_TRUE(ConsumesEntropy(study));
 }
 
 TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithoutId) {
@@ -107,6 +113,7 @@ TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithoutId) {
   EXPECT_FALSE(IsWeightedGroupWithExperimentId(group));
   EXPECT_FALSE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_FALSE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_FALSE(ConsumesEntropy(study));
 }
 
 TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithGoogleWebExperimentId) {
@@ -120,6 +127,7 @@ TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithGoogleWebExperimentId) {
   EXPECT_FALSE(IsWeightedGroupWithExperimentId(group));
   EXPECT_FALSE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_FALSE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_FALSE(ConsumesEntropy(study));
 }
 
 TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithGoogleWebTriggerExperimentId) {
@@ -133,6 +141,7 @@ TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithGoogleWebTriggerExperimentId) {
   EXPECT_FALSE(IsWeightedGroupWithExperimentId(group));
   EXPECT_FALSE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_FALSE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_FALSE(ConsumesEntropy(study));
 }
 
 TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithGoogleAppExperimentId) {
@@ -146,6 +155,21 @@ TEST(ExperimentGroupIdsTest, ZeroWeightGroupWithGoogleAppExperimentId) {
   EXPECT_FALSE(IsWeightedGroupWithExperimentId(group));
   EXPECT_FALSE(HasWeightedGroupWithGoogleWebExperimentId(study));
   EXPECT_FALSE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_FALSE(ConsumesEntropy(study));
+}
+
+TEST(ExperimentGroupIdsTest, SessionStudyWithGoogleWebExperimentId) {
+  Study::Experiment group = CreateExperiment(
+      /*weight=*/100, {.set_google_web_experiment_id = true});
+  Study study = CreateStudy({group}, Study::SESSION);
+
+  EXPECT_TRUE(HasGoogleWebExperimentId(group));
+  EXPECT_TRUE(HasGoogleWebExperimentId(study));
+  EXPECT_TRUE(HasExperimentId(group));
+  EXPECT_TRUE(IsWeightedGroupWithExperimentId(group));
+  EXPECT_TRUE(HasWeightedGroupWithGoogleWebExperimentId(study));
+  EXPECT_TRUE(HasWeightedGroupWithExperimentId(study));
+  EXPECT_FALSE(ConsumesEntropy(study));
 }
 
 }  // namespace

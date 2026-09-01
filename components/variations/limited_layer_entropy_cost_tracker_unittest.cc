@@ -204,7 +204,6 @@ TEST_F(LimitedLayerEntropyCostTrackerTest,
 
   // The total entropy used is zero because no study entropy has been added to
   // the limited_entropy_tracker at this stage.
-  EXPECT_FALSE(limited_entropy_tracker.includes_study_entropy_);
   EXPECT_EQ(0, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
   EXPECT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
 }
@@ -598,25 +597,55 @@ TEST_F(LimitedLayerEntropyCostTrackerTest,
 
 TEST_F(LimitedLayerEntropyCostTrackerTest,
        TestAddEntropyUsedByStudy_LaunchedStudy) {
-  // Experiments without google_web_experiment_id are excluded from entropy
-  // calculation.
+  // Create a limited layer with two members that each contain 50% of the
+  // population.
   auto test_layer = CreateLayer(
       kTestLayerId, /*num_slots=*/100, /*entropy_mode=*/Layer::LIMITED,
       {
-          CreateLayerMember(kTestLayerMemberId,
-                            {{0, 49}}),  // 50% of the population.
-          CreateLayerMember(kTestLayerMemberId + 1,
-                            {{50, 99}}),  // 05% of the population.
+          CreateLayerMember(kTestLayerMemberId, {{0, 49}}),
+          CreateLayerMember(kTestLayerMemberId + 1, {{50, 99}}),
       });
+  // Create a study with a single weighted group that also has an experiment ID
+  // and runs in both limited-layer members; i.e., it targets 100% of the client
+  // population.
   auto launched_study = CreateTestStudy(
-      {CreateGoogleWebExperiment(100, 100001)},  // 100% launched arm
-      CreateLayerMemberReference(
-          kTestLayerId,
-          {kTestLayerMemberId, kTestLayerMemberId + 1}));  // 100% population.
-  LimitedLayerEntropyCostTracker limited_entropy_tracker(test_layer, 13);
+      {CreateGoogleWebExperiment(100, 100001)},
+      CreateLayerMemberReference(kTestLayerId,
+                                 {kTestLayerMemberId, kTestLayerMemberId + 1}));
+  LimitedLayerEntropyCostTracker limited_entropy_tracker(
+      test_layer, /*entropy_limit_in_bits=*/13);
 
   EXPECT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(launched_study));
-  EXPECT_EQ(0, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  // TODO(crbug.com/554002485): When the only study that consumes entropy in a
+  // limited layer has a study-level cost of 0 and the study targets all
+  // limited-layer slots, the base limited-layer member costs should not be
+  // counted.
+  EXPECT_EQ(limited_entropy_tracker.GetMaxEntropyUsedForTesting(), 1);
+}
+
+TEST_F(LimitedLayerEntropyCostTrackerTest,
+       TestAddEntropyUsedByStudy_StudyWithOneWeightedGroupWithExperimentId) {
+  // Create a limited layer with three members: one that has 10% of the
+  // population (roughly 3.32 bits), one that has 25% (2 bits), and one that has
+  // 65% (0.62 bits).
+  auto test_layer = CreateLayer(
+      kTestLayerId, /*num_slots=*/100, /*entropy_mode=*/Layer::LIMITED,
+      {
+          CreateLayerMember(kTestLayerMemberId, {{0, 24}}),
+          CreateLayerMember(kTestLayerMemberId + 1, {{25, 34}}),
+          CreateLayerMember(kTestLayerMemberId + 2, {{35, 99}}),
+      });
+  // Create a study with a single weighted group that also has an experiment ID
+  // and runs in only the 25% limited-layer member.
+  auto test_study = CreateTestStudy(
+      {CreateGoogleWebExperiment(100, 100001)},
+      CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}));
+  LimitedLayerEntropyCostTracker limited_entropy_tracker(test_layer, 13);
+
+  EXPECT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(test_study));
+  // Check that, even though the study consumes no entropy, the base entropy
+  // cost of the limited-layer member in which it runs is counted.
+  EXPECT_EQ(limited_entropy_tracker.GetMaxEntropyUsedForTesting(), 2);
 }
 
 TEST_F(LimitedLayerEntropyCostTrackerTest,

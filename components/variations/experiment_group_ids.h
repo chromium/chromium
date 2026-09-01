@@ -42,6 +42,11 @@ bool HasWeightedGroupWithGoogleWebExperimentId(const Study& study);
 COMPONENT_EXPORT(VARIATIONS)
 bool HasWeightedGroupWithExperimentId(const Study& study);
 
+// Returns true if the study consumes entropy. A study consumes entropy if it
+// has permanent consistency and has a weighted group with an experiment ID.
+COMPONENT_EXPORT(VARIATIONS)
+bool ConsumesEntropy(const Study& study);
+
 }  // namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_EXPERIMENT_GROUP_IDS_H_

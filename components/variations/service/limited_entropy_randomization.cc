@@ -151,12 +151,6 @@ bool IsLowEntropyLayer(const Layer& layer) {
   return layer.entropy_mode() == Layer::LOW;
 }
 
-// Returns true if the study consumes entropy. This is true if the study has
-// permanent consistency and uses experiment ids.
-bool ConsumesEntropy(const Study& study) {
-  return study.consistency() == Study::PERMANENT &&
-         HasWeightedGroupWithExperimentId(study);
-}
 // Returns true if the study applies to the client's platform.
 bool AppliesToClientPlatform(const Study& study,
                              const ClientFilterableState& client_state) {

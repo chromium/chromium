@@ -57,21 +57,17 @@ double ConvertToBitsOfEntropy(uint64_t numerator, uint64_t denominator) {
                base::strict_cast<double>(denominator));
 }
 
-// Returns the number of bits of entropy used by a single study.
+// Returns the amount of entropy (in bits) used by `study`. Expected to be
+// called only for studies for which `ConsumesEntropy()` returns true, and
+// CHECKs this.
 double GetEntropyUsedByStudy(const Study& study) {
-  if (study.consistency() == Study::SESSION) {
-    // Session-consistent studies do not consume entropy. They are randomized
-    // for each Chrome browser process' lifetime; they use neither the low
-    // entropy source nor the limited entropy randomization source.
-    return 0.0;
-  }
+  CHECK(ConsumesEntropy(study));
+
   // Use uint32_t to match the type of `probability_weight` field in the
   // experiment proto.
   uint32_t min_weight = std::numeric_limits<uint32_t>::max();
   uint64_t total_weight = 0;
 
-  // The entropy limit applies to experiments with experiment IDs.
-  bool has_experiment_id = false;
   for (const auto& experiment : study.experiment()) {
     // This will CHECK if `total_weight` (a uint64_t) overflows, which is nearly
     // impossible since each `experiment.probability_weight()` is a uint32_t.
@@ -79,22 +75,17 @@ double GetEntropyUsedByStudy(const Study& study) {
     total_weight = base::CheckAdd(total_weight, experiment.probability_weight())
                        .ValueOrDie();
 
-    // Skip experiments with zero probability. They will not cause entropy
-    // usage since they will never be assigned. Also, checking for non-zero
-    // probability ensures that `has_experiment_id` implies that `total_weight`
-    // > 0.
+    // Only consider groups that can contribute to a study's entropy cost.
     if (IsWeightedGroupWithExperimentId(experiment)) {
-      has_experiment_id = true;
       min_weight = std::min(min_weight, experiment.probability_weight());
     }
   }
-  if (!has_experiment_id) {
-    return 0.0;
-  }
 
-  // By now, `has_experiment_id` being true implies 0 < `min_weight` <=
-  // `total_weight`, which is required by ConvertToBitsOfEntropy().
-  //
+  // `ConvertToBitsOfEntropy()` requires 0 < min_weight <= total_weight, which
+  // is implied by `ConsumesEntropy()` returning true, so do a check here.
+  CHECK(total_weight > 0);
+  CHECK(min_weight <= total_weight);
+
   // Mathematically, this returns -log2(`min_weight` / `total_weight`).
   // If the probability of a client being assigned to a specific group in the
   // study is p, the entropy revealed by this assignment is -log2(p):
@@ -159,11 +150,6 @@ LimitedLayerEntropyCostTracker::LimitedLayerEntropyCostTracker(
       Invalidate();
       return;
     }
-    // All layer members are included in the entropy calculation, including
-    // empty ones – ones not referenced by any study. A client assigned to an
-    // empty layer member would have the visible assignment state of "no study
-    // assigned", which itself reveals information and should be accounted for
-    // in the entropy calculation.
     auto [iterator, inserted] =
         entropy_events_by_member_id_.emplace(member.id(), EntropyEventList());
     if (!inserted) {
@@ -174,7 +160,9 @@ LimitedLayerEntropyCostTracker::LimitedLayerEntropyCostTracker(
 
     // Add an entropy event at kMinTimeStamp, representing the initial entropy
     // state of the layer member before any study assignments. I.e., the entropy
-    // cost of the layer member itself.
+    // cost of the layer member itself. Note that this base cost is only counted
+    // towards the total entropy used when there is at least one
+    // entropy-consuming study referencing this member.
     //
     // Note that we reserve an initial capacity for the entropy events to avoid
     // up to 6-8 (re)allocations per layer member when growing the entropy event
@@ -222,20 +210,6 @@ bool LimitedLayerEntropyCostTracker::AddEntropyUsedByStudy(const Study& study) {
     return false;
   }
 
-  // Returns true if the study does not consume entropy at all (e.g. a study
-  // with no Google web experiment ID or Google web trigger experiment ID).
-  const double study_entropy = GetEntropyUsedByStudy(study);
-  if (study_entropy <= 0) {
-    return true;
-  }
-
-  // Get the start and end times for the study's visibility.
-  const int64_t start_time = GetWebVisibilityStartTime(study);
-  const int64_t end_time = GetWebVisibilityEndTime(study);
-
-  // Update the entropy events for each layer member referenced by the study.
-  // It is assumed that layer member references have already been validated by
-  // the caller.
   for (const uint32_t member_id : layer_member_ids) {
     if (member_id == kInvalidLayerMemberId) {
       Invalidate();
@@ -246,16 +220,38 @@ bool LimitedLayerEntropyCostTracker::AddEntropyUsedByStudy(const Study& study) {
       Invalidate();
       return false;
     }
+  }
 
+  if (!ConsumesEntropy(study)) {
+    return true;
+  }
+  members_with_entropy_consuming_studies_.insert(layer_member_ids.begin(),
+                                                 layer_member_ids.end());
+  const double study_entropy = GetEntropyUsedByStudy(study);
+  if (study_entropy <= 0) {
+    // In rare cases, a study that consumes entropy may not consume any at the
+    // study-level. An example of such a study is one with a single weighted
+    // group that happens to set an experiment ID. In this case, entropy
+    // consumption comes from the base member cost of the limited-layer members
+    // in which the study runs.
+    return true;
+  }
+
+  const int64_t start_time = GetWebVisibilityStartTime(study);
+  const int64_t end_time = GetWebVisibilityEndTime(study);
+
+  // Update the entropy events for each layer member referenced by the study.
+  // It is assumed that layer member references have already been validated by
+  // the caller.
+  for (const uint32_t member_id : layer_member_ids) {
     // Add an entropy event for the study's start and end times. Note that
     // events which free entropy at the end-of-time can (as an optimization)
     // be skipped, as they will not contribute the maximum entropy used.
-    auto& entropy_events = it->second;
+    auto& entropy_events = entropy_events_by_member_id_[member_id];
     entropy_events.emplace_back(start_time, study_entropy);
     if (end_time != kMaxTimeStamp) {
       entropy_events.emplace_back(end_time, -study_entropy);
     }
-    includes_study_entropy_ = true;
   }
 
   // Returning true means that the studies entropy has been successfully added
@@ -270,17 +266,17 @@ bool LimitedLayerEntropyCostTracker::IsEntropyLimitExceeded() const {
 }
 
 double LimitedLayerEntropyCostTracker::GetMaxEntropyUsed() const {
-  if (!includes_study_entropy_) {
-    return 0.0;
-  }
   double max_entropy_used = 0.0;
-  for (auto& [member_id, entropy_events] : entropy_events_by_member_id_) {
-    // Sort the entropy events by increasing time, then by increasing entropy
-    // entropy change. This ensures that we removing entropy (negative changes)
-    // before adding entropy (positive changes) for identical timestamps.
+  for (const uint32_t member_id : members_with_entropy_consuming_studies_) {
+    const auto it = entropy_events_by_member_id_.find(member_id);
+    if (it == entropy_events_by_member_id_.end()) {
+      continue;
+    }
+    auto& entropy_events = it->second;
+    // Sort the entropy events by increasing time and then by increasing entropy
+    // amount. This ensures that we remove entropy (negative amounts) before
+    // adding entropy (positive amounts) for identical timestamps.
     std::ranges::sort(entropy_events);
-    // Iterate through the sorted entropy events, accumulating the entropy
-    // used and tracking the maximum entropy used at any point.
     double entropy_used = 0.0;
     for (const auto& [unused_timestamp, entropy_change] : entropy_events) {
       entropy_used += entropy_change;
