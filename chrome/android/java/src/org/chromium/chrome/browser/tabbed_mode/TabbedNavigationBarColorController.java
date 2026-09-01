@@ -21,6 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -105,7 +107,7 @@ class TabbedNavigationBarColorController
     private boolean mForceShowDivider;
     private boolean mOverviewMode;
     private @Nullable ValueAnimator mNavbarColorTransitionAnimation;
-    private @Nullable Boolean mEnabledBottomChinForTesting;
+    private @TriState int mEnabledBottomChinForTesting;
     private final boolean mIsBottomBarEnabledInGts;
 
     /**
@@ -527,7 +529,7 @@ class TabbedNavigationBarColorController
     }
 
     public void setIsBottomChinEnabledForTesting(boolean isEnabled) {
-        mEnabledBottomChinForTesting = isEnabled;
+        mEnabledBottomChinForTesting = TriStateUtils.from(isEnabled);
     }
 
     private boolean shouldEnableNavBarBottomChinColorAnimations() {
@@ -544,8 +546,8 @@ class TabbedNavigationBarColorController
     }
 
     private boolean isBottomChinEnabled() {
-        if (mEnabledBottomChinForTesting != null) {
-            return mEnabledBottomChinForTesting;
+        if (mEnabledBottomChinForTesting != TriState.NOT_SET) {
+            return mEnabledBottomChinForTesting == TriState.TRUE;
         }
 
         return mContext instanceof Activity
