@@ -253,7 +253,8 @@ std::u16string IndexedSubsubfolderName(size_t i);
 // URL.
 std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
     const std::u16string& title,
-    const GURL& url);
+    const GURL& url,
+    const base::Uuid& uuid = base::Uuid::GenerateRandomV4());
 
 // Helper class that reacts to any BookmarkModelObserver event by running a
 // callback provided in the constructor.
