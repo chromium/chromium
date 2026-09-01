@@ -128,6 +128,7 @@ void LocalFrameUkmAggregator::IterativeTimer::Record(
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
     LocalFrameUkmAggregator& aggregator,
     DocumentUpdateReason update_reason,
+    bool is_potentially_clean,
     bool avoid_unnecessary_forced_layout_measurements,
     bool should_report_uma_this_frame,
     bool is_pre_fcp,
@@ -139,6 +140,7 @@ LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
                           record_ukm_for_current_frame
                       ? aggregator_->clock_->NowTicks()
                       : base::TimeTicks()),
+      is_potentially_clean_(is_potentially_clean),
       avoid_unnecessary_forced_layout_measurements_(
           avoid_unnecessary_forced_layout_measurements),
       should_report_uma_this_frame_(should_report_uma_this_frame),
@@ -158,7 +160,7 @@ LocalFrameUkmAggregator::ScopedForcedLayoutTimer::~ScopedForcedLayoutTimer() {
       // layout, because it won't be reported.
       !start_time_.is_null() ? aggregator_->clock_->NowTicks() - start_time_
                              : base::TimeDelta(),
-      avoid_unnecessary_forced_layout_measurements_,
+      is_potentially_clean_, avoid_unnecessary_forced_layout_measurements_,
       should_report_uma_this_frame_, is_pre_fcp_);
 }
 
@@ -266,7 +268,8 @@ LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
 
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer
 LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
-    DocumentUpdateReason update_reason) {
+    DocumentUpdateReason update_reason,
+    bool is_potentially_clean) {
   static const bool avoid_unnecessary_forced_layout_measurements =
       base::FeatureList::IsEnabled(kAvoidUnnecessaryForcedLayoutMeasurements);
 
@@ -283,9 +286,10 @@ LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
 
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
 
-  return ScopedForcedLayoutTimer(
-      *this, update_reason, avoid_unnecessary_forced_layout_measurements,
-      should_report_uma_this_frame, is_pre_fcp, record_ukm_for_current_frame_);
+  return ScopedForcedLayoutTimer(*this, update_reason, is_potentially_clean,
+                                 avoid_unnecessary_forced_layout_measurements,
+                                 should_report_uma_this_frame, is_pre_fcp,
+                                 record_ukm_for_current_frame_);
 }
 
 void LocalFrameUkmAggregator::BeginMainFrame() {
@@ -360,6 +364,8 @@ void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
                                                 int64_t count) {
   // Always use EndForcedLayout for the kForcedStyleAndLayout metric id.
   DCHECK_NE(metric_index, static_cast<size_t>(kForcedStyleAndLayout));
+  DCHECK_NE(metric_index,
+            static_cast<size_t>(kForcedStyleAndLayoutPotentiallyClean));
 
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
 
@@ -627,6 +633,7 @@ void LocalFrameUkmAggregator::BeginForcedLayout() {
 void LocalFrameUkmAggregator::EndForcedLayout(
     DocumentUpdateReason reason,
     base::TimeDelta duration,
+    bool is_potentially_clean,
     bool avoid_unnecessary_forced_layout_measurements,
     bool should_report_uma_this_frame,
     bool is_pre_fcp) {
@@ -655,6 +662,26 @@ void LocalFrameUkmAggregator::EndForcedLayout(
       record.pre_fcp_uma_counter->Count(ToSample(count));
     } else {
       record.post_fcp_uma_counter->Count(ToSample(count));
+    }
+  }
+
+  if (is_potentially_clean) {
+    auto& clean_record = absolute_metric_records_[static_cast<size_t>(
+        kForcedStyleAndLayoutPotentiallyClean)];
+    clean_record.interval_count += count;
+    if (in_main_frame_update_) {
+      clean_record.main_frame_count += count;
+    }
+    if (is_pre_fcp) {
+      clean_record.pre_fcp_aggregate += count;
+    }
+
+    if (should_report_uma_this_frame) {
+      if (is_pre_fcp) {
+        clean_record.pre_fcp_uma_counter->Count(ToSample(count));
+      } else {
+        clean_record.post_fcp_uma_counter->Count(ToSample(count));
+      }
     }
   }
 

@@ -3131,8 +3131,12 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   TRACE_EVENT("blink", "Document::UpdateStyleAndLayout");
   LocalFrameView* frame_view = View();
 
+  bool is_potentially_clean =
+      (Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean) &&
+      !NeedsLayoutTreeUpdate() && (!frame_view || !frame_view->NeedsLayout());
+
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
-    frame_view->WillStartForcedLayout(reason);
+    frame_view->WillStartForcedLayout(reason, is_potentially_clean);
 
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   ScriptForbiddenScope forbid_script;

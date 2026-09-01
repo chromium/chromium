@@ -227,7 +227,8 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     aggregator().BeginMainFrame();
     {
       LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
-          aggregator().GetScopedForcedLayoutTimer(reason);
+          aggregator().GetScopedForcedLayoutTimer(
+              reason, /*is_potentially_clean=*/false);
       test_task_runner_->FastForwardBy(base::Milliseconds(10));
     }
     aggregator().RecordEndOfFrameMetrics(start_time, Now(), 0, source_id(),
@@ -601,6 +602,92 @@ TEST_F(LocalFrameUkmAggregatorTest, MetricConfigurationFlags) {
   // kUpdateLayers should not have AggregatedPreFCP recorded as has_uma = false.
   histogram_tester.ExpectTotalCount(
       "Blink.UpdateLayers.UpdateTime.AggregatedPreFCP", 0);
+}
+
+TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutPotentiallyClean) {
+  if (!base::TimeTicks::IsHighResolution()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Case 1: is_potentially_clean is true. ForcedStyleAndLayout is recorded in
+  // UKM and UMA. ForcedStyleAndLayoutPotentiallyClean is UMA-only.
+  {
+    base::TimeTicks start_time = Now();
+    aggregator().BeginMainFrame();
+    {
+      LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
+          aggregator().GetScopedForcedLayoutTimer(
+              DocumentUpdateReason::kJavaScript, /*is_potentially_clean=*/true);
+      test_task_runner_->FastForwardBy(base::Milliseconds(10));
+    }
+    aggregator().RecordEndOfFrameMetrics(start_time, Now(), 0, source_id(),
+                                         &recorder());
+    ResetAggregator();
+
+    EXPECT_EQ(recorder().entries_count(), 1u);
+    auto entries = recorder().GetEntriesByName("Blink.UpdateTime");
+    EXPECT_EQ(entries.size(), 1u);
+    auto* entry = entries[0].get();
+
+    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
+        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout)));
+    const int64_t* forced_val = ukm::TestUkmRecorder::GetEntryMetric(
+        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout));
+    EXPECT_NEAR(*forced_val, 10000, 1);
+
+    // ForcedStyleAndLayoutPotentiallyClean is UMA-only (has_ukm = false).
+    EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
+        entry,
+        GetMetricName(
+            LocalFrameUkmAggregator::kForcedStyleAndLayoutPotentiallyClean)));
+
+    histogram_tester.ExpectTotalCount(
+        "Blink.ForcedStyleAndLayout.UpdateTime.PreFCP", 1);
+    histogram_tester.ExpectTotalCount(
+        "Blink.ForcedStyleAndLayoutPotentiallyClean.UpdateTime.PreFCP", 1);
+    RestartAggregator();
+  }
+
+  // Case 2: is_potentially_clean is false. ForcedStyleAndLayout is recorded,
+  // but ForcedStyleAndLayoutPotentiallyClean is not.
+  {
+    base::TimeTicks start_time = Now();
+    aggregator().BeginMainFrame();
+    {
+      LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
+          aggregator().GetScopedForcedLayoutTimer(
+              DocumentUpdateReason::kJavaScript,
+              /*is_potentially_clean=*/false);
+      test_task_runner_->FastForwardBy(base::Milliseconds(10));
+    }
+    aggregator().RecordEndOfFrameMetrics(start_time, Now(), 0, source_id(),
+                                         &recorder());
+    ResetAggregator();
+
+    EXPECT_EQ(recorder().entries_count(), 2u);
+    auto entries = recorder().GetEntriesByName("Blink.UpdateTime");
+    EXPECT_EQ(entries.size(), 2u);
+    auto* entry = entries[1].get();
+
+    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
+        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout)));
+    const int64_t* forced_val = ukm::TestUkmRecorder::GetEntryMetric(
+        entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout));
+    EXPECT_NEAR(*forced_val, 10000, 1);
+
+    EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
+        entry,
+        GetMetricName(
+            LocalFrameUkmAggregator::kForcedStyleAndLayoutPotentiallyClean)));
+
+    histogram_tester.ExpectTotalCount(
+        "Blink.ForcedStyleAndLayout.UpdateTime.PreFCP", 2);
+    histogram_tester.ExpectTotalCount(
+        "Blink.ForcedStyleAndLayoutPotentiallyClean.UpdateTime.PreFCP", 1);
+    RestartAggregator();
+  }
 }
 
 TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {

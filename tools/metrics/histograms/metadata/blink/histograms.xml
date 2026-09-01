@@ -2933,6 +2933,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.ForcedStyleAndLayoutPotentiallyClean.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="microseconds" expires_after="2027-01-03">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Time spent in Blink Document::UpdateStyleAndLayout when the document
+    lifecycle was already clean (kLayoutClean or higher) with no pending style
+    recalc or layout dirty bits. This measures pure no-op forced layout
+    overhead.
+
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
+
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    {BlinkUpdateTimeSuffixes}
+  </summary>
+</histogram>
+
 <histogram name="Blink.Frame.GetCanonicalUrlRendererTime" units="microseconds"
     expires_after="2023-09-03">
   <owner>carlosk@chromium.org</owner>

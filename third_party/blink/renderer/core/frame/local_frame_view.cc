@@ -896,7 +896,8 @@ void LocalFrameView::UpdateLayout() {
   probe::DidChangeViewport(frame_.Get());
 }
 
-void LocalFrameView::WillStartForcedLayout(DocumentUpdateReason reason) {
+void LocalFrameView::WillStartForcedLayout(DocumentUpdateReason reason,
+                                           bool is_potentially_clean) {
   if (!base::TimeTicks::IsHighResolution()) {
     return;
   }
@@ -908,8 +909,8 @@ void LocalFrameView::WillStartForcedLayout(DocumentUpdateReason reason) {
     return;
   if (auto* metrics_aggregator = GetUkmAggregator()) {
     DCHECK(!forced_layout_timer_.has_value());
-    forced_layout_timer_ =
-        metrics_aggregator->GetScopedForcedLayoutTimer(reason);
+    forced_layout_timer_ = metrics_aggregator->GetScopedForcedLayoutTimer(
+        reason, is_potentially_clean);
   }
 }
 

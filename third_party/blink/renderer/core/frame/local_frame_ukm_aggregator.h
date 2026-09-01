@@ -152,6 +152,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kUpdateViewportIntersection,
     kVisualUpdateDelay,
     kForcedStyleAndLayout,
+    kForcedStyleAndLayoutPotentiallyClean,
     kContentDocumentUpdate,
     kHitTestDocumentUpdate,
     kJavascriptDocumentUpdate,
@@ -208,6 +209,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"Blink.UpdateViewportIntersection.UpdateTime", true, true},
         {"Blink.VisualUpdateDelay.UpdateTime", true, true},
         {"Blink.ForcedStyleAndLayout.UpdateTime", true, true},
+        {"Blink.ForcedStyleAndLayoutPotentiallyClean.UpdateTime", true, false},
         {"Blink.ContentDocumentUpdate.UpdateTime", true, true},
         {"Blink.HitTestDocumentUpdate.UpdateTime", true, true},
         {"Blink.JavascriptDocumentUpdate.UpdateTime", true, true},
@@ -279,6 +281,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
    public:
     ScopedForcedLayoutTimer(LocalFrameUkmAggregator& aggregator,
                             DocumentUpdateReason update_reason,
+                            bool is_potentially_clean,
                             bool avoid_unnecessary_forced_layout_measurements,
                             bool should_report_uma_this_frame,
                             bool is_pre_fcp,
@@ -295,6 +298,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     scoped_refptr<LocalFrameUkmAggregator> aggregator_;
     DocumentUpdateReason update_reason_;
     base::TimeTicks start_time_;
+    bool is_potentially_clean_;
     bool avoid_unnecessary_forced_layout_measurements_;
     bool should_report_uma_this_frame_;
     bool is_pre_fcp_;
@@ -316,7 +320,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
   // Create a ScopedForcedLayoutTimer
   ScopedForcedLayoutTimer GetScopedForcedLayoutTimer(
-      DocumentUpdateReason update_reason);
+      DocumentUpdateReason update_reason,
+      bool is_potentially_clean);
 
   // Record a main frame time metric, that also computes the ratios for the
   // sub-metrics and generates UMA samples. UKM is only reported when
@@ -417,6 +422,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // ForcedLayout regressions.
   void EndForcedLayout(DocumentUpdateReason reason,
                        base::TimeDelta duration,
+                       bool is_potentially_clean,
                        bool avoid_unnecessary_forced_layout_measurements,
                        bool should_report_uma_this_frame,
                        bool is_pre_fcp);
