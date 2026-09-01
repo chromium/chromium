@@ -73,7 +73,9 @@ std::unique_ptr<HostResolverInternalMetadataResult> CreateMetadata(
   return std::make_unique<HostResolverInternalMetadataResult>(
       std::string(domain_name), DnsQueryType::HTTPS,
       /*expiration=*/base::TimeTicks(), /*timed_expiration=*/base::Time(),
-      HostResolverInternalResult::Source::kDns, std::move(metadatas));
+      HostResolverInternalResult::Source::kDns, std::move(metadatas),
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap());
 }
 
 std::unique_ptr<HostResolverInternalAliasResult> CreateAlias(

@@ -10,10 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/connection_endpoint_metadata_test_util.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -38,6 +40,7 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Ne;
 using ::testing::Optional;
@@ -64,6 +67,25 @@ constexpr uint8_t fake_test_rdata[] = {'f', 'a', 'k', 'e', ' ',
 
 constexpr uint8_t malformed_test_rdata[] = {
     'm', 'a', 'l', 'f', 'o', 'r', 'm', 'e', 'd', ' ', 'r', 'd', 'a', 't', 'a'};
+
+std::pair<uint16_t, std::string> BuildHttpsServiceIpHintParam(
+    uint16_t param_key,
+    const std::vector<IPAddress>& addresses) {
+  std::string value;
+  for (const IPAddress& address : addresses) {
+    value.append(address.bytes().begin(), address.bytes().end());
+  }
+  return std::pair(param_key, std::move(value));
+}
+
+auto ExpectAddressHints(std::vector<IPAddress> ipv4_hints,
+                        std::vector<IPAddress> ipv6_hints) {
+  return AllOf(
+      Field(&HostResolverInternalMetadataResult::AddressHints::ipv4_hints,
+            ElementsAreArray(std::move(ipv4_hints))),
+      Field(&HostResolverInternalMetadataResult::AddressHints::ipv6_hints,
+            ElementsAreArray(std::move(ipv6_hints))));
+}
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
   constexpr char kName[] = "address.test";
@@ -1392,6 +1414,227 @@ TEST_F(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithMismatchingPort) {
               4, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
                      /*ech_config_list_matcher=*/IsEmpty(), kName)))))));
+}
+
+TEST_F(DnsResponseResultExtractorTest, ExtractsHttpsRecordAddressHints) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseDnsHttpsSvcbAddressHints);
+
+  constexpr char kName[] = "https.test";
+  const IPAddress kIpv4Hint(192, 0, 2, 1);
+  const IPAddress kIpv6Hint = *IPAddress::FromIPLiteral("2001:db8::1");
+
+  DnsResponse response = BuildTestDnsResponse(
+      kName, dns_protocol::kTypeHttps,
+      {BuildTestHttpsServiceRecord(
+          kName, /*priority=*/4,
+          /*service_name=*/".",
+          /*params=*/
+          {BuildTestHttpsServiceAlpnParam({"foo"}),
+           BuildHttpsServiceIpHintParam(
+               dns_protocol::kHttpsServiceParamKeyIpv4Hint, {kIpv4Hint}),
+           BuildHttpsServiceIpHintParam(
+               dns_protocol::kHttpsServiceParamKeyIpv6Hint, {kIpv6Hint})})});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/0);
+
+  ASSERT_TRUE(results.has_value());
+  ASSERT_EQ(results.value().size(), 1u);
+  const HostResolverInternalResult& result = **results.value().begin();
+  ASSERT_EQ(result.type(), HostResolverInternalResult::Type::kMetadata);
+  EXPECT_THAT(result.AsMetadata().metadatas(), SizeIs(1));
+  EXPECT_THAT(
+      result.AsMetadata().address_hints(),
+      ElementsAre(Pair(kName, ExpectAddressHints({kIpv4Hint}, {kIpv6Hint}))));
+}
+
+TEST_F(DnsResponseResultExtractorTest,
+       UnionsHttpsRecordAddressHintsForSameTargetName) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseDnsHttpsSvcbAddressHints);
+
+  constexpr char kName[] = "https.test";
+  const IPAddress kIpv4Hint1(192, 0, 2, 1);
+  const IPAddress kIpv4Hint2(192, 0, 2, 2);
+  const IPAddress kIpv6Hint = *IPAddress::FromIPLiteral("2001:db8::1");
+
+  DnsResponse response = BuildTestDnsResponse(
+      kName, dns_protocol::kTypeHttps,
+      {BuildTestHttpsServiceRecord(
+           kName, /*priority=*/4,
+           /*service_name=*/".",
+           /*params=*/
+           {BuildTestHttpsServiceAlpnParam({"foo"}),
+            BuildHttpsServiceIpHintParam(
+                dns_protocol::kHttpsServiceParamKeyIpv4Hint, {kIpv4Hint1})}),
+       BuildTestHttpsServiceRecord(
+           kName, /*priority=*/5,
+           /*service_name=*/".",
+           /*params=*/
+           {BuildTestHttpsServiceAlpnParam({"bar"}),
+            BuildHttpsServiceIpHintParam(
+                dns_protocol::kHttpsServiceParamKeyIpv4Hint,
+                {kIpv4Hint1, kIpv4Hint2}),
+            BuildHttpsServiceIpHintParam(
+                dns_protocol::kHttpsServiceParamKeyIpv6Hint, {kIpv6Hint})})});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/0);
+
+  ASSERT_TRUE(results.has_value());
+  ASSERT_EQ(results.value().size(), 1u);
+  const HostResolverInternalResult& result = **results.value().begin();
+  ASSERT_EQ(result.type(), HostResolverInternalResult::Type::kMetadata);
+  EXPECT_THAT(result.AsMetadata().metadatas(), SizeIs(2));
+  EXPECT_THAT(
+      result.AsMetadata().address_hints(),
+      ElementsAre(Pair(
+          kName, ExpectAddressHints({kIpv4Hint1, kIpv4Hint2}, {kIpv6Hint}))));
+}
+
+TEST_F(DnsResponseResultExtractorTest,
+       IgnoresHttpsRecordAddressHintsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kUseDnsHttpsSvcbAddressHints);
+
+  constexpr char kName[] = "https.test";
+  const IPAddress kIpv4Hint(192, 0, 2, 1);
+  const IPAddress kIpv6Hint = *IPAddress::FromIPLiteral("2001:db8::1");
+
+  DnsResponse response = BuildTestDnsResponse(
+      kName, dns_protocol::kTypeHttps,
+      {BuildTestHttpsServiceRecord(
+          kName, /*priority=*/4,
+          /*service_name=*/".",
+          /*params=*/
+          {BuildTestHttpsServiceAlpnParam({"foo"}),
+           BuildHttpsServiceIpHintParam(
+               dns_protocol::kHttpsServiceParamKeyIpv4Hint, {kIpv4Hint}),
+           BuildHttpsServiceIpHintParam(
+               dns_protocol::kHttpsServiceParamKeyIpv6Hint, {kIpv6Hint})})});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/0);
+
+  ASSERT_TRUE(results.has_value());
+  ASSERT_EQ(results.value().size(), 1u);
+  const HostResolverInternalResult& result = **results.value().begin();
+  ASSERT_EQ(result.type(), HostResolverInternalResult::Type::kMetadata);
+  EXPECT_THAT(result.AsMetadata().metadatas(), SizeIs(1));
+  EXPECT_THAT(result.AsMetadata().address_hints(), IsEmpty());
+}
+
+TEST_F(DnsResponseResultExtractorTest,
+       IgnoresHttpsRecordAddressHintsWithAlias) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseDnsHttpsSvcbAddressHints);
+
+  constexpr char kName[] = "https.test";
+  const IPAddress kIpv4Hint(192, 0, 2, 1);
+
+  DnsResponse response = BuildTestDnsResponse(
+      kName, dns_protocol::kTypeHttps,
+      {BuildTestHttpsServiceRecord(
+           kName, /*priority=*/4,
+           /*service_name=*/".",
+           /*params=*/
+           {BuildTestHttpsServiceAlpnParam({"foo"}),
+            BuildHttpsServiceIpHintParam(
+                dns_protocol::kHttpsServiceParamKeyIpv4Hint, {kIpv4Hint})}),
+       BuildTestHttpsAliasRecord(kName, "alias.test")});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/0);
+
+  ASSERT_TRUE(results.has_value());
+  ASSERT_EQ(results.value().size(), 1u);
+  const HostResolverInternalResult& result = **results.value().begin();
+  ASSERT_EQ(result.type(), HostResolverInternalResult::Type::kMetadata);
+  EXPECT_THAT(result.AsMetadata().metadatas(), IsEmpty());
+  EXPECT_THAT(result.AsMetadata().address_hints(), IsEmpty());
+}
+
+TEST_F(DnsResponseResultExtractorTest,
+       IgnoresHttpsRecordAddressHintsWithNoDefaultAlpn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseDnsHttpsSvcbAddressHints);
+
+  constexpr char kName[] = "https.test";
+  const IPAddress kIpv4Hint(192, 0, 2, 1);
+
+  DnsResponse response = BuildTestDnsResponse(
+      kName, dns_protocol::kTypeHttps,
+      {BuildTestHttpsServiceRecord(
+          kName, /*priority=*/4,
+          /*service_name=*/".",
+          /*params=*/
+          {BuildTestHttpsServiceAlpnParam({"foo"}),
+           {dns_protocol::kHttpsServiceParamKeyNoDefaultAlpn, ""},
+           BuildHttpsServiceIpHintParam(
+               dns_protocol::kHttpsServiceParamKeyIpv4Hint, {kIpv4Hint})})});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/0);
+
+  ASSERT_TRUE(results.has_value());
+  ASSERT_EQ(results.value().size(), 1u);
+  const HostResolverInternalResult& result = **results.value().begin();
+  ASSERT_EQ(result.type(), HostResolverInternalResult::Type::kMetadata);
+  EXPECT_THAT(result.AsMetadata().metadatas(), IsEmpty());
+  EXPECT_THAT(result.AsMetadata().address_hints(), IsEmpty());
+}
+
+TEST_F(DnsResponseResultExtractorTest,
+       IgnoresHttpsRecordAddressHintsWithMismatchingPort) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseDnsHttpsSvcbAddressHints);
+
+  constexpr char kName[] = "https.test";
+  const IPAddress kIpv4Hint(192, 0, 2, 1);
+
+  DnsResponse response = BuildTestDnsResponse(
+      kName, dns_protocol::kTypeHttps,
+      {BuildTestHttpsServiceRecord(
+           kName, /*priority=*/4,
+           /*service_name=*/".",
+           /*params=*/
+           {BuildTestHttpsServiceAlpnParam({"ignored"}),
+            BuildTestHttpsServicePortParam(1003),
+            BuildHttpsServiceIpHintParam(
+                dns_protocol::kHttpsServiceParamKeyIpv4Hint, {kIpv4Hint})}),
+       BuildTestHttpsServiceRecord(kName, /*priority=*/5,
+                                   /*service_name=*/".",
+                                   /*params=*/
+                                   {BuildTestHttpsServiceAlpnParam({"foo"})})});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/55);
+
+  ASSERT_TRUE(results.has_value());
+  ASSERT_EQ(results.value().size(), 1u);
+  const HostResolverInternalResult& result = **results.value().begin();
+  ASSERT_EQ(result.type(), HostResolverInternalResult::Type::kMetadata);
+  EXPECT_THAT(result.AsMetadata().metadatas(), SizeIs(1));
+  EXPECT_THAT(result.AsMetadata().address_hints(), IsEmpty());
 }
 
 // HTTPS records with "no-default-alpn" but also no "alpn" are not

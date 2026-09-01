@@ -12,14 +12,17 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/dns/https_record_rdata.h"
 #include "net/dns/public/dns_query_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace net {
 
@@ -62,6 +65,8 @@ class NET_EXPORT_PRIVATE HostResolverInternalResult {
 
   virtual base::Value ToValue() const = 0;
 
+  bool operator==(const HostResolverInternalResult& other) const = default;
+
  protected:
   HostResolverInternalResult(std::string domain_name,
                              DnsQueryType query_type,
@@ -72,13 +77,6 @@ class NET_EXPORT_PRIVATE HostResolverInternalResult {
   // Expect to only be called with a `dict` well-formed for deserialization. Can
   // be checked via ValidateValueBaseDict().
   explicit HostResolverInternalResult(const base::DictValue& dict);
-
-  bool operator==(const HostResolverInternalResult& other) const {
-    return std::tie(domain_name_, query_type_, type_, source_, expiration_,
-                    timed_expiration_) ==
-           std::tie(other.domain_name_, other.query_type_, other.type_,
-                    other.source_, other.expiration_, other.timed_expiration_);
-  }
 
   static bool ValidateValueBaseDict(const base::DictValue& dict,
                                     bool require_timed_expiration);
@@ -166,6 +164,21 @@ class NET_EXPORT_PRIVATE HostResolverInternalDataResult final
 class NET_EXPORT_PRIVATE HostResolverInternalMetadataResult final
     : public HostResolverInternalResult {
  public:
+  // Address hints from an HTTPS record.
+  struct AddressHints {
+    static std::optional<AddressHints> FromValue(const base::Value& value);
+
+    bool operator==(const AddressHints&) const = default;
+
+    base::Value ToValue() const;
+
+    base::flat_set<IPAddress> ipv4_hints;
+    base::flat_set<IPAddress> ipv6_hints;
+  };
+
+  // Keyed by canonicalized target name.
+  using AddressHintsMap = absl::flat_hash_map<std::string, AddressHints>;
+
   static std::unique_ptr<HostResolverInternalMetadataResult> FromValue(
       const base::Value& value);
 
@@ -176,7 +189,8 @@ class NET_EXPORT_PRIVATE HostResolverInternalMetadataResult final
       std::optional<base::TimeTicks> expiration,
       base::Time timed_expiration,
       Source source,
-      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas);
+      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas,
+      AddressHintsMap address_hints);
   ~HostResolverInternalMetadataResult() override;
 
   HostResolverInternalMetadataResult(
@@ -184,15 +198,14 @@ class NET_EXPORT_PRIVATE HostResolverInternalMetadataResult final
   HostResolverInternalMetadataResult& operator=(
       const HostResolverInternalMetadataResult&) = delete;
 
-  bool operator==(const HostResolverInternalMetadataResult& other) const {
-    return HostResolverInternalResult::operator==(other) &&
-           metadatas_ == other.metadatas_;
-  }
+  bool operator==(const HostResolverInternalMetadataResult&) const = default;
 
   const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>&
   metadatas() const {
     return metadatas_;
   }
+
+  const AddressHintsMap& address_hints() const { return address_hints_; }
 
   std::unique_ptr<HostResolverInternalResult> Clone() const override;
 
@@ -201,9 +214,11 @@ class NET_EXPORT_PRIVATE HostResolverInternalMetadataResult final
  private:
   HostResolverInternalMetadataResult(
       const base::DictValue& dict,
-      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas);
+      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas,
+      AddressHintsMap address_hints);
 
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas_;
+  AddressHintsMap address_hints_;
 };
 
 // Parsed and extracted error.

@@ -2630,7 +2630,9 @@ TEST(HostCacheTest, ConvertFromInternalMetadataResult) {
   results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
-      kMetadatas));
+      kMetadatas,
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap()));
   results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
@@ -2664,7 +2666,9 @@ TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
   results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
-      kMetadatas));
+      kMetadatas,
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap()));
   results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
@@ -2853,7 +2857,9 @@ TEST(HostCacheTest, ConvertFromInternalMergedResult) {
   results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
       base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
-      kMetadatas));
+      kMetadatas,
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap()));
   results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
       base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
@@ -2903,7 +2909,9 @@ TEST(HostCacheTest, ConvertFromInternalMergedResultWithPartialError) {
   results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
       base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
-      kMetadatas));
+      kMetadatas,
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap()));
   results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
       base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,

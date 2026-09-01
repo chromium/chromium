@@ -340,8 +340,9 @@ TEST_F(HostResolverCacheTest, CacheHttpsResult) {
                                          {})}};
   auto result = std::make_unique<HostResolverInternalMetadataResult>(
       kName, DnsQueryType::HTTPS, tick_clock_.NowTicks() + kTtl,
-      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
-      kMetadatas);
+      clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns, kMetadatas,
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap());
 
   const NetworkAnonymizationKey anonymization_key;
   cache.Set(std::move(result), anonymization_key,
@@ -439,7 +440,9 @@ TEST_F(HostResolverCacheTest, RespectsSchemeAndPortInName) {
       clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
       std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
           {4, ConnectionEndpointMetadata({kAlpn1}, /*ech_config_list=*/{},
-                                         kNameWithScheme, {})}});
+                                         kNameWithScheme, {})}},
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap());
 
   const std::string kNameWithoutScheme = "foo.test";
   const std::string kAlpn2 = "bar";
@@ -448,7 +451,9 @@ TEST_F(HostResolverCacheTest, RespectsSchemeAndPortInName) {
       clock_.Now() + kTtl, HostResolverInternalResult::Source::kDns,
       std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
           {7, ConnectionEndpointMetadata({kAlpn2}, /*ech_config_list=*/{},
-                                         kNameWithoutScheme, {})}});
+                                         kNameWithoutScheme, {})}},
+      /*address_hints=*/
+      HostResolverInternalMetadataResult::AddressHintsMap());
 
   const NetworkAnonymizationKey anonymization_key;
   cache.Set(std::move(result1), anonymization_key,
