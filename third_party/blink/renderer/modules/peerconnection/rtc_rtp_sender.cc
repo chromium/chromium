@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -62,6 +63,11 @@
 namespace blink {
 
 namespace {
+
+// TODO(crbug.com/488071544): Remove this kill switch after the new behavior
+// has been stable by M156 or M157 without regressions.
+BASE_FEATURE(kWebRtcRejectSetParametersOnStoppedTransceiver,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec);
 
@@ -824,6 +830,15 @@ ScriptPromise<IDLUndefined> RTCRtpSender::setParameters(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
+
+  if (base::FeatureList::IsEnabled(
+          kWebRtcRejectSetParametersOnStoppedTransceiver) &&
+      transceiver_ && transceiver_->stopped()) {
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "setParameters cannot be called on a stopped sender.");
+    return promise;
+  }
 
   if (!last_returned_parameters_) {
     resolver->RejectWithDOMException(

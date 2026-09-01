@@ -3,8 +3,6 @@ This is a testharness.js-based test.
   assert_equals: expected "InvalidStateError" but got "Error"
 [FAIL] createAnswer must detect InvalidStateError synchronously when chain is empty (prerequisite)
   assert_equals: promise rejected on same task expected "rejected" but got "pending"
-[FAIL] setParameters must detect InvalidStateError synchronously always when transceiver is stopped
-  assert_equals: promise rejected on same task expected "rejected" but got "pending"
 [FAIL] isOperationsChainEmpty detects empty in stable
   assert_true: Empty to start expected true got false
 [FAIL] isOperationsChainEmpty detects empty in have-local-offer
