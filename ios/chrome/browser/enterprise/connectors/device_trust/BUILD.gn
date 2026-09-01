@@ -12,10 +12,12 @@ source_set("device_trust") {
     "//base",
     "//components/device_signals/core/browser",
     "//components/enterprise/device_trust",
+    "//ios/chrome/browser/device_trust",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/common:features",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
   ]
 }
@@ -27,6 +29,7 @@ source_set("unit_tests") {
   deps = [
     ":device_trust",
     "//base/test:test_support",
+    "//ios/chrome/browser/device_trust",
     "//ios/chrome/browser/enterprise/connectors/device_trust/model:unit_tests",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -34,6 +37,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
 
