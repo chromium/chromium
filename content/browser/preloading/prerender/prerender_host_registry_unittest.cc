@@ -359,6 +359,93 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_SpeculationRule) {
       "Navigation.TimeToActivatePrerender.SpeculationRule", 1u);
 }
 
+// Helper observer to trigger a prerender request and cancel the current
+// prerender while `is_starting_prerendering_` is true.
+class PrerenderStarterObserver : public WebContentsObserver {
+ public:
+  explicit PrerenderStarterObserver(WebContents* web_contents,
+                                    PrerenderHostRegistry* registry,
+                                    PrerenderAttributes attributes)
+      : WebContentsObserver(web_contents),
+        registry_(registry),
+        attributes_(std::move(attributes)) {}
+
+  void DidStartNavigation(NavigationHandle* navigation_handle) override {
+    if (triggered_) {
+      return;
+    }
+    triggered_ = true;
+    // 1. Trigger a new prerender (host1) while `is_starting_prerendering_` is
+    // true.
+    registry_->CreateAndStartHost(attributes_);
+
+    // 2. Cancel the starting prerender (host0) while
+    // `is_starting_prerendering_` is true. Because `is_starting_prerendering_`
+    // is true, CancelHosts's internal StartPrerendering is skipped, leaving
+    // host1 in `pending_prerenders_` with running_prerender_host_id_ null.
+    PrerenderHostId host_id0 = registry_->GetPrerenderHostIdForNavigation(
+        static_cast<NavigationRequest*>(navigation_handle));
+    if (host_id0) {
+      registry_->CancelHost(host_id0, PrerenderFinalStatus::kDestroyed);
+    }
+  }
+
+ private:
+  raw_ptr<PrerenderHostRegistry> registry_;
+  PrerenderAttributes attributes_;
+  bool triggered_ = false;
+};
+
+// Repro of https://crbug.com/553069087
+//
+// Tests that creating a new prerender host when another prerender is already
+// queued in `pending_prerenders_` triggers a CHECK failure due to host ID
+// mismatch.
+//
+// TODO(crbug.com/553069087): Fix.
+TEST_F(PrerenderHostRegistryTest,
+       DISABLED_CreateAndStartHost_WhenPendingPrerendersExist) {
+  const GURL kUrl0("https://example.com/page0");
+  const GURL kUrl1("https://example.com/page1");
+  const GURL kUrl2("https://example.com/page2");
+
+  // 1. Put tab in background.
+  contents()->WasHidden();
+
+  PrerenderStarterObserver observer(
+      contents(), &registry(),
+      GeneratePrerenderAttributes(
+          kUrl1, PreloadingTriggerType::kSpeculationRule, "",
+          blink::mojom::SpeculationEagerness::kImmediate,
+          contents()->GetPrimaryMainFrame()));
+
+  // 2. Create host0. While host0 is starting, DidStartNavigation creates host1
+  // and cancels host0. This leaves host1 in `pending_prerenders_` while
+  // `running_prerender_host_id_` is null and
+  // `PrerenderCanBeStartedWhenInitiatorIsInBackground()` is true.
+  const PrerenderHostId host_id0 =
+      registry().CreateAndStartHost(GeneratePrerenderAttributes(
+          kUrl0, PreloadingTriggerType::kSpeculationRule, "",
+          blink::mojom::SpeculationEagerness::kImmediate,
+          contents()->GetPrimaryMainFrame()));
+  EXPECT_FALSE(host_id0);
+  EXPECT_EQ(registry().GetPendingPrerendersCountForTesting(), 1u);
+
+  // 3. Create host2 while still in background.
+  // Because `running_prerender_host_id_` is null and background starting is
+  // allowed, CreateAndStartHost calls `StartPrerendering(PrerenderHostId())`,
+  // which dequeues and starts host1 from the front of `pending_prerenders_`.
+  // Prior to the fix, this triggers CHECK(started_prerender_host_id ==
+  // prerender_host_id) because started_prerender_host_id (host1) !=
+  // prerender_host_id (host2).
+  const PrerenderHostId host_id2 =
+      registry().CreateAndStartHost(GeneratePrerenderAttributes(
+          kUrl2, PreloadingTriggerType::kSpeculationRule, "",
+          blink::mojom::SpeculationEagerness::kImmediate,
+          contents()->GetPrimaryMainFrame()));
+  EXPECT_TRUE(host_id2);
+}
+
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_Embedder_DirectURLInput) {
   const GURL kPrerenderingUrl("https://example.com/next");
   const PrerenderHostId prerender_host_id =
