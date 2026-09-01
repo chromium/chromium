@@ -33,16 +33,21 @@ TEST(FidoDiscoveryFactoryTest, CreateWindowsHybridDiscovery) {
       &fake_win_webauthn_api);
 
   for (const bool windows_has_hybrid : {false, true}) {
-    SCOPED_TRACE(windows_has_hybrid);
-    fake_win_webauthn_api.set_version(windows_has_hybrid ? 7 : 4);
+    for (const bool force_hybrid_discovery : {false, true}) {
+      SCOPED_TRACE(windows_has_hybrid);
+      SCOPED_TRACE(force_hybrid_discovery);
+      fake_win_webauthn_api.set_version(windows_has_hybrid ? 7 : 4);
 
-    FidoDiscoveryFactory discovery_factory;
-    discovery_factory.set_cable_data(
-        FidoRequestType::kGetAssertion,
-        /*qr_generator_key=*/std::array<uint8_t, cablev2::kQRKeySize>());
-    std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries =
-        discovery_factory.Create(FidoTransportProtocol::kHybrid);
-    EXPECT_EQ(discoveries.empty(), windows_has_hybrid);
+      FidoDiscoveryFactory discovery_factory;
+      discovery_factory.set_force_hybrid_discovery(force_hybrid_discovery);
+      discovery_factory.set_cable_data(
+          FidoRequestType::kGetAssertion,
+          /*qr_generator_key=*/std::array<uint8_t, cablev2::kQRKeySize>());
+      std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries =
+          discovery_factory.Create(FidoTransportProtocol::kHybrid);
+      EXPECT_EQ(discoveries.empty(),
+                windows_has_hybrid && !force_hybrid_discovery);
+    }
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

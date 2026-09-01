@@ -122,6 +122,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // available. Returns nullptr otherwise.
   virtual std::unique_ptr<FidoDiscoveryBase>
   MaybeCreateWinWebAuthnApiDiscovery();
+
+  // Configures whether hybrid discovery must be instantiated even if
+  // the platform WebAuthn API (such as Windows 11) reports hybrid support.
+  void set_force_hybrid_discovery(bool force_hybrid_discovery) {
+    force_hybrid_discovery_ = force_hybrid_discovery;
+  }
+  bool force_hybrid_discovery() const { return force_hybrid_discovery_; }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -181,6 +188,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   std::unique_ptr<FidoDiscoveryBase::EventStream<
       std::unique_ptr<enclave::CredentialRequest>>>
       enclave_ui_request_stream_;
+#if BUILDFLAG(IS_WIN)
+  bool force_hybrid_discovery_ = false;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace device

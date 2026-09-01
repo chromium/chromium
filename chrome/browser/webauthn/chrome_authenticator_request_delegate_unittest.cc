@@ -41,6 +41,7 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/ui/signin/signin_qrcode_model.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -948,6 +949,40 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, SigninQRCodeModelPopulation) {
   delegate.reset();
   EXPECT_FALSE(model->qr_code_string().has_value());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeAuthenticatorRequestDelegateTest, MagiChromeForceHybridDiscovery) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kMagiChromePasskeySignIn, {{"flow_type", "autofill"}});
+
+  DiceTabHelper::CreateForWebContents(web_contents());
+  DiceTabHelper::FromWebContents(web_contents())
+      ->InitializeSigninFlow(
+          GURL(kOrigin), signin_metrics::AccessPoint::kSettings,
+          signin_metrics::Reason::kSigninPrimaryAccount,
+          signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
+          /*record_signin_started_metrics=*/false, base::DoNothing(),
+          base::DoNothing(), base::DoNothing(), base::DoNothing());
+
+  MockCableDiscoveryFactory discovery_factory;
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.SetRelyingPartyId(kRpId);
+
+  delegate.ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
+                                content::AuthenticatorRequestClientDelegate::
+                                    RequestSource::kWebAuthentication,
+                                device::FidoRequestType::kGetAssertion,
+                                device::ResidentKeyRequirement::kRequired,
+                                device::UserVerificationRequirement::kRequired,
+                                /*cmtg_key_requested=*/false,
+                                /*user_name=*/std::nullopt,
+                                /*is_enclave_authenticator_available=*/false,
+                                &discovery_factory);
+
+  EXPECT_TRUE(discovery_factory.force_hybrid_discovery());
+}
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace

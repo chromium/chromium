@@ -584,6 +584,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       SigninQRCodeModel::GetOrCreateForWebContents(web_contents)
           ->SetQrCode(qr_string);
     }
+#if BUILDFLAG(IS_WIN)
+    if (switches::IsMagiChromePasskeyAutofillEnabled()) {
+      discovery_factory->set_force_hybrid_discovery(true);
+    }
+#endif  // BUILDFLAG(IS_WIN)
   }
 #endif
 
