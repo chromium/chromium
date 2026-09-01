@@ -3852,13 +3852,8 @@ static_library("test_support") {
 
   if (is_mac) {
     assert(toolkit_views)
-    sources += [
-      "cocoa/test/cocoa_test_helper.h",
-      "cocoa/test/cocoa_test_helper.mm",
-      "cocoa/test/run_loop_testing.h",
-      "cocoa/test/run_loop_testing.mm",
-      "views/extensions/extension_action_test_helper_mac.mm",
-    ]
+    sources += [ "views/extensions/extension_action_test_helper_mac.mm" ]
+    public_deps += [ "//chrome/browser/ui/cocoa/test:test_support" ]
   }
 
   if (toolkit_views) {

@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac)
+
+source_set("test_support") {
+  testonly = true
+
+  public = [
+    "cocoa_test_helper.h",
+    "run_loop_testing.h",
+  ]
+
+  sources = [
+    "cocoa_test_helper.mm",
+    "run_loop_testing.mm",
+  ]
+
+  public_deps = [ "//ui/base:test_support" ]
+
+  deps = [
+    "//base",
+    "//chrome/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "run_loop_testing_unittest.mm" ]
+  deps = [
+    ":test_support",
+    "//testing/gtest",
+  ]
+}

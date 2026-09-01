@@ -4,6 +4,8 @@
 
 import("//chrome/browser/buildflags.gni")
 
+assert(is_mac)
+
 source_set("cocoa") {
   public = [
     "accelerators_cocoa.h",
