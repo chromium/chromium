@@ -21,6 +21,8 @@
 #include "content/browser/hid/hid_test_utils.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -41,9 +43,11 @@
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/hid_test_util.h"
 #include "services/device/public/cpp/test/test_report_descriptors.h"
+#include "services/network/public/cpp/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 
 namespace content {
@@ -61,6 +65,7 @@ using ::testing::Return;
 
 enum HidServiceCreationType {
   kCreateUsingRenderFrameHost,
+  kCreateUsingDedicatedWorker,
   kCreateUsingServiceWorkerContextCore,
 };
 
@@ -75,6 +80,8 @@ std::string HidServiceCreationTypeToString(HidServiceCreationType type) {
   switch (type) {
     case kCreateUsingRenderFrameHost:
       return "CreateUsingRenderFrameHost";
+    case kCreateUsingDedicatedWorker:
+      return "CreateUsingDedicatedWorker";
     case kCreateUsingServiceWorkerContextCore:
       return "CreateUsingServiceWorkerContextCore";
   }
@@ -267,6 +274,29 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
             ->GetPrimaryMainFrame()
             ->GetHidService(service_.BindNewPipeAndPassReceiver());
         break;
+      case kCreateUsingDedicatedWorker: {
+        web_contents_ =
+            web_contents_factory_.CreateWebContents(&browser_context_);
+        static_cast<TestWebContents*>(web_contents_)
+            ->NavigateAndCommit(GURL(kTestUrl));
+        auto* rfh =
+            static_cast<TestWebContents*>(web_contents_)->GetPrimaryMainFrame();
+        dedicated_worker_host_ = std::make_unique<DedicatedWorkerHost>(
+            &dedicated_worker_service_, blink::DedicatedWorkerToken(),
+            rfh->GetProcess(), rfh->GetGlobalId(), rfh->GetWeakDocumentPtr(),
+            rfh->GetStorageKey().origin(), rfh->GetStorageKey(),
+            rfh->GetStorageKey().origin(),
+            rfh->GetIsolationInfoForSubresources(),
+            rfh->BuildClientSecurityState(),
+            rfh->policy_container_host()->policies(),
+            /*creator_coep_reporter=*/nullptr,
+            network::GetTestNetworkRestrictionsId(),
+            mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost>(),
+            net::StorageAccessApiStatus::kNone);
+        dedicated_worker_host_->BindHidService(
+            service_.BindNewPipeAndPassReceiver());
+        break;
+      }
       case kCreateUsingServiceWorkerContextCore: {
         auto scope = GURL(kTestUrl);
         auto origin = url::Origin::Create(scope);
@@ -304,6 +334,7 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
   BrowserContext* GetBrowserContext(HidServiceCreationType type) {
     switch (type) {
       case kCreateUsingRenderFrameHost:
+      case kCreateUsingDedicatedWorker:
         return &browser_context_;
       case kCreateUsingServiceWorkerContextCore:
         if (embedded_worker_test_helper_->context()) {
@@ -318,7 +349,8 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
 
   void CheckHidServiceConnectedState(HidServiceCreationType type,
                                      bool expected_state) {
-    if (type == kCreateUsingRenderFrameHost) {
+    if (type == kCreateUsingRenderFrameHost ||
+        type == kCreateUsingDedicatedWorker) {
       ASSERT_EQ(
           web_contents_->IsCapabilityActive(WebContentsCapabilityType::kHID),
           expected_state);
@@ -349,6 +381,10 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
   TestWebContentsFactory web_contents_factory_;
   raw_ptr<WebContents> web_contents_;  // Owned by |web_contents_factory_|.
   MockHidManagerClient hid_manager_client_;
+
+  // For create hid service using dedicated worker.
+  DedicatedWorkerServiceImpl dedicated_worker_service_;
+  std::unique_ptr<DedicatedWorkerHost> dedicated_worker_host_;
 
   // For create hid service using service worker.
   std::unique_ptr<EmbeddedWorkerTestHelper> embedded_worker_test_helper_;
@@ -1602,6 +1638,7 @@ TEST_P(HidServiceTest, NestedKeyboardDeviceBlocked) {
 
 const HidServiceCreationType kServiceCreationTypes[]{
     kCreateUsingRenderFrameHost,
+    kCreateUsingDedicatedWorker,
 #if !BUILDFLAG(IS_ANDROID)
     kCreateUsingServiceWorkerContextCore,
 #endif  // !BUILDFLAG(IS_ANDROID)
