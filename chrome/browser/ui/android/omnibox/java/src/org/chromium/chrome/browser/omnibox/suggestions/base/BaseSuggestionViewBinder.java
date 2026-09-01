@@ -88,30 +88,30 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         bindContent(model, view.contentView, propertyKey);
         ActionChipsBinder.bind(model, view.actionChipsView, propertyKey);
 
-        if (BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING == propertyKey) {
+        if (BaseSuggestionViewProperties.ACTION_BUTTONS == propertyKey) {
+            bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
+        } else if (BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING == propertyKey) {
             view.setActionChipLeadInSpacing(
                     model.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING));
         } else if (SuggestionCommonProperties.APPLY_SIDE_SPACING == propertyKey) {
             view.applySideSpacing(
                     model.get(SuggestionCommonProperties.APPLY_SIDE_SPACING),
                     getResourceProvider(model).getSideSpacing());
+        } else if (SuggestionCommonProperties.BG_POSITIONAL_MODE == propertyKey
+                || SuggestionCommonProperties.BG_ROUND_SIDES == propertyKey) {
+            updateRounding(model, view);
+        } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
+            updateColorScheme(model, view);
         } else if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-        } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
-            updateColorScheme(model, view);
-        } else if (SuggestionCommonProperties.BG_POSITIONAL_MODE == propertyKey
-                || SuggestionCommonProperties.BG_ROUND_SIDES == propertyKey) {
-            updateRounding(model, view);
-        } else if (BaseSuggestionViewProperties.ACTION_BUTTONS == propertyKey) {
-            bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
+        } else if (BaseSuggestionViewProperties.ON_ACTIVATE == propertyKey) {
+            view.setOnActivateListener(model.get(BaseSuggestionViewProperties.ON_ACTIVATE));
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
             view.setOnFocusViaSelectionListener(
                     model.get(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION));
-        } else if (BaseSuggestionViewProperties.ON_ACTIVATE == propertyKey) {
-            view.setOnActivateListener(model.get(BaseSuggestionViewProperties.ON_ACTIVATE));
         } else if (BaseSuggestionViewProperties.ON_LONG_CLICK == propertyKey) {
             Runnable listener = model.get(BaseSuggestionViewProperties.ON_LONG_CLICK);
             if (listener == null) {
