@@ -229,6 +229,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/authentication/age_mismatch_signout/coordinator:unit_tests",
     "//ios/chrome/browser/authentication/age_mismatch_signout/ui:unit_tests",
     "//ios/chrome/browser/authentication/consistency_promo_signin/coordinator:unit_tests",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator:unit_tests",
     "//ios/chrome/browser/authentication/history_sync/model:unit_tests",
     "//ios/chrome/browser/authentication/signin/fullscreen_promo/model:unit_tests",
     "//ios/chrome/browser/authentication/signin/non_modal_promo/coordinator:unit_tests",

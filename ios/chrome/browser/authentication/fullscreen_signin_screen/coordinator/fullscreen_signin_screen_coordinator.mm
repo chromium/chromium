@@ -186,6 +186,7 @@
   [self stopAddAccountCoordinator];
   [self stopIdentityChooserCoordinator];
   self.delegate = nil;
+  self.viewController.delegate = nil;
   self.viewController = nil;
   [self.mediator disconnect];
   self.mediator = nil;
