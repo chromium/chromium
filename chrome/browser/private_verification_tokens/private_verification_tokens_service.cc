@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/privacy_pass_athm_batch_request.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
@@ -277,6 +278,10 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   }
   const auto& config = it->second;
 
+  if (config.public_key.expiration() <= base::Time::Now()) {
+    return;
+  }
+
   if (store_->TokenCountForIssuer(issuer) >
       static_cast<size_t>(config.batch_size / 2)) {
     return;
@@ -373,6 +378,12 @@ PrivateVerificationTokensService::GetTokenForRedemption(
     return std::nullopt;
   }
 
+  auto config_it = issuer_config_->config().find(matching_issuer);
+  if (config_it == issuer_config_->config().end() ||
+      config_it->second.public_key.expiration() <= base::Time::Now()) {
+    return std::nullopt;
+  }
+
   CHECK(store_);
   const auto& tokens = store_->tokens();
   auto it = tokens.find(matching_issuer);
@@ -409,7 +420,18 @@ bool PrivateVerificationTokensService::IsRegisteredRedeemer(
   if (!issuer_config_) {
     return false;
   }
-  return redeemer_to_issuer_.contains(redeemer_origin);
+  auto it = redeemer_to_issuer_.find(redeemer_origin);
+  if (it == redeemer_to_issuer_.end()) {
+    return false;
+  }
+
+  auto config_it = issuer_config_->config().find(it->second);
+  if (config_it == issuer_config_->config().end() ||
+      config_it->second.public_key.expiration() <= base::Time::Now()) {
+    return false;
+  }
+
+  return true;
 }
 
 void PrivateVerificationTokensService::SetIssuerConfig(

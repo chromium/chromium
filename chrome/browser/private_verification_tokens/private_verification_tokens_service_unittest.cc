@@ -264,6 +264,11 @@ class PrivateVerificationTokensServiceTest : public testing::Test {
     target_service->SetIssuerConfig(config);
   }
 
+  void AdvanceTime(base::TimeDelta time_delta) {
+    ASSERT_FALSE(time_delta.is_negative());
+    task_environment_.FastForwardBy(time_delta);
+  }
+
  private:
   std::optional<private_verification_tokens::AthmTestIssuer> test_issuer_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -982,6 +987,55 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
   auto issuers = future.Take();
   EXPECT_THAT(issuers,
               testing::ElementsAre(url::Origin::Create(GURL("https://c.net"))));
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       MaybeFetchTokens_ConfigExpired_ReturnsEarly) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  auto origin = url::Origin::Create(GURL("https://c.net"));
+  base::Time expiration =
+      service()->issuer_config()->config().at(origin).public_key.expiration();
+  base::TimeDelta advance_delta = expiration - base::Time::Now();
+  AdvanceTime(advance_delta);
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  service()->MaybeFetchTokens(GURL("https://c.net/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       GetTokenForRedemption_ConfigExpired_ReturnsNullopt) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  auto origin = url::Origin::Create(GURL("https://a.com"));
+  base::Time expiration =
+      service()->issuer_config()->config().at(origin).public_key.expiration();
+  base::TimeDelta advance_delta = expiration - base::Time::Now();
+  AdvanceTime(advance_delta);
+
+  const url::Origin redeemer_a = url::Origin::Create(GURL("https://r1.a.com"));
+  auto token = service()->GetTokenForRedemption(redeemer_a);
+  EXPECT_FALSE(token.has_value());
+}
+
+TEST_F(PrivateVerificationTokensServiceTest,
+       IsRegisteredRedeemer_ConfigExpired_ReturnsFalse) {
+  WaitForInitialization(service());
+  SetTestIssuerConfig(service());
+
+  auto origin = url::Origin::Create(GURL("https://a.com"));
+  base::Time expiration =
+      service()->issuer_config()->config().at(origin).public_key.expiration();
+  base::TimeDelta advance_delta = expiration - base::Time::Now();
+  AdvanceTime(advance_delta);
+
+  EXPECT_FALSE(service()->IsRegisteredRedeemer(
+      url::Origin::Create(GURL("https://r1.a.com"))));
 }
 
 }  // namespace
