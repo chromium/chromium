@@ -7,8 +7,8 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
-import uuid
 
 import PRESUBMIT
 
@@ -16,7 +16,7 @@ import PRESUBMIT
 class MockInputApi(object):
     """A minimal mock InputApi for our checks."""
 
-    def __init__(self):
+    def __init__(self, presubmit_local_path=None):
         self.affected_paths = []
         self.sys = sys
         self.os_path = os.path
@@ -28,12 +28,14 @@ class MockInputApi(object):
         self.logging = PrintLogger()
         self.change = MockChange()
         self.no_diffs = False
+        self.presubmit_local_path = (presubmit_local_path or os.path.abspath(
+            os.path.dirname(__file__)))
 
     def AbsoluteLocalPaths(self):
         return self.affected_paths
 
     def PresubmitLocalPath(self):
-        return os.path.abspath(os.path.dirname(__file__))
+        return self.presubmit_local_path
 
     def AffectedSourceFiles(self, filter_func):
         all_files = [MockFile(self.PresubmitLocalPath(), path) for path in self.affected_paths]
@@ -100,26 +102,28 @@ class MockFile(object):
         return self.local_path
 
 
-@unittest.skip('https://crbug.com/553643606 - needs more investigation')
 class LintWPTTest(unittest.TestCase):
-    def setUp(self):
-        self._test_file = os.path.join(
-            os.path.dirname(__file__), 'wpt',
-            '_DO_NOT_SUBMIT_%s_.html' % uuid.uuid4().hex)
-        self._ignored_directory = os.path.join(os.path.dirname(__file__),
-                                               'wpt', 'css',
-                                               '_DNS_%s_' % uuid.uuid4().hex)
+    """Runs WPT lint tests without modifying the source tree.
 
-    def tearDown(self):
-        if os.path.exists(self._test_file):
-            os.remove(self._test_file)
-        if os.path.exists(self._ignored_directory):
-            shutil.rmtree(self._ignored_directory)
+    This prevents concurrent manifest scans from observing temporary files.
+    """
+    def setUp(self):
+        temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        self._presubmit_local_path = temp_dir.name
+        wpt_dir = os.path.join(temp_dir.name, 'wpt')
+        os.mkdir(wpt_dir)
+        # `wpt lint` requires lint.ignore at the repository root.
+        real_wpt_dir = os.path.join(os.path.dirname(__file__), 'wpt')
+        shutil.copyfile(os.path.join(real_wpt_dir, 'lint.ignore'),
+                        os.path.join(wpt_dir, 'lint.ignore'))
+        self._test_file = os.path.join(wpt_dir, 'test.html')
+        self._ignored_directory = os.path.join(wpt_dir, 'css', '_DNS_')
 
     def testWPTLintSuccess(self):
         with open(self._test_file, 'w') as f:
             f.write('<body>Hello, world!</body>')
-        mock_input = MockInputApi()
+        mock_input = MockInputApi(self._presubmit_local_path)
         mock_output = MockOutputApi()
         mock_input.affected_paths = [os.path.abspath(self._test_file)]
         errors = PRESUBMIT._LintWPT(mock_input, mock_output)
@@ -129,7 +133,7 @@ class LintWPTTest(unittest.TestCase):
         # Private LayoutTests APIs are not allowed.
         with open(self._test_file, 'w') as f:
             f.write('<script>testRunner.notifyDone()</script>')
-        mock_input = MockInputApi()
+        mock_input = MockInputApi(self._presubmit_local_path)
         mock_output = MockOutputApi()
         mock_input.affected_paths = [os.path.abspath(self._test_file)]
         errors = PRESUBMIT._LintWPT(mock_input, mock_output)
@@ -137,13 +141,13 @@ class LintWPTTest(unittest.TestCase):
         self.assertTrue(isinstance(errors[0], MockPresubmitError))
 
     def testWPTLintIgnore(self):
-        os.mkdir(self._ignored_directory)
+        os.makedirs(self._ignored_directory)
         files = []
         for f in ['DIR_METADATA', 'OWNERS', 'test-expected.txt']:
             path = os.path.abspath(os.path.join(self._ignored_directory, f))
             files.append(path)
             open(path, 'w').close()
-        mock_input = MockInputApi()
+        mock_input = MockInputApi(self._presubmit_local_path)
         mock_output = MockOutputApi()
         mock_input.affected_paths = files
         errors = PRESUBMIT._LintWPT(mock_input, mock_output)

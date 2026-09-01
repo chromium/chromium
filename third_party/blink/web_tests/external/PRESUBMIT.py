@@ -16,9 +16,8 @@ def _LintWPT(input_api, output_api):
     See https://web-platform-tests.org/writing-tests/lint-tool.html for more
     information about the lint tool.
     """
-    tools_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                        input_api.os_path.pardir,
-                                        input_api.os_path.pardir, 'tools')
+    tools_path = input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                        'third_party', 'blink', 'tools')
     if tools_path not in input_api.sys.path:
         input_api.sys.path.insert(0, tools_path)
     from blinkpy.presubmit.common_checks import lint_wpt_root
