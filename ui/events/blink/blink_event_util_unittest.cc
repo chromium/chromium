@@ -225,4 +225,15 @@ TEST(BlinkEventUtilTest, WebEventModifersAndEventFlags) {
   }
 }
 
+TEST(BlinkEventUtilTest, FlingStartRailsModePlumbing) {
+  ui::GestureEventDetails details(ui::EventType::kScrollFlingStart, 10.f, 20.f);
+  details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+  details.set_fling_rails_mode(ui::GestureScrollRailsMode::kVertical);
+  auto event =
+      CreateWebGestureEvent(details, base::TimeTicks(), gfx::PointF(1.f, 1.f),
+                            gfx::PointF(1.f, 1.f), 0, 0U);
+  EXPECT_EQ(ui::GestureScrollRailsMode::kVertical,
+            event.data.fling_start.rails_mode);
+}
+
 }  // namespace ui

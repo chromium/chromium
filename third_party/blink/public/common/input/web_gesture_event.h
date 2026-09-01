@@ -169,6 +169,9 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // If true, this event will skip hit testing to find a scroll
       // target and instead just scroll the viewport.
       bool target_viewport;
+      // Represents the browser's scroll axis locking (railing) decision for a
+      // GestureFlingStart event.
+      ui::GestureScrollRailsMode rails_mode;
     } fling_start;
 
     struct {

@@ -512,6 +512,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
     GestureEventDetails fling_details = CreateTouchGestureDetails(
         EventType::kScrollFlingStart, velocity_x, velocity_y);
+    fling_details.set_fling_rails_mode(GetRailsMode(snap_scroll_controller_));
     Send(CreateGesture(fling_details, e2));
     return true;
   }

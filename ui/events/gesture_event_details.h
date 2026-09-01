@@ -186,6 +186,16 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     return data_.fling_velocity.y;
   }
 
+  ui::GestureScrollRailsMode fling_rails_mode() const {
+    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    return data_.fling_velocity.rails_mode;
+  }
+
+  void set_fling_rails_mode(ui::GestureScrollRailsMode rails_mode) {
+    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    data_.fling_velocity.rails_mode = rails_mode;
+  }
+
   float first_finger_width() const {
     DCHECK_EQ(EventType::kGestureTwoFingerTap, type_);
     return data_.first_finger_enclosing_rectangle.width;
@@ -338,6 +348,7 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     struct {  // FLING velocity.
       float x;
       float y;
+      ui::GestureScrollRailsMode rails_mode;
     } fling_velocity;
 
     // Dimensions of the first finger's enclosing rectangle for

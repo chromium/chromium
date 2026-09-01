@@ -444,6 +444,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
           IfNanUseMaxFloat(details.velocity_x());
       gesture.data.fling_start.velocity_y =
           IfNanUseMaxFloat(details.velocity_y());
+      gesture.data.fling_start.rails_mode = details.fling_rails_mode();
       break;
     case EventType::kScrollFlingCancel:
       gesture.SetType(WebInputEvent::Type::kGestureFlingCancel);

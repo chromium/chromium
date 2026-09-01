@@ -770,6 +770,28 @@ TEST_F(GestureProviderTest, ScrollWithApplyScrollRailingInRenderer) {
   EXPECT_LE(gesture.details.scroll_y(), delta_y);
 }
 
+TEST_F(GestureProviderTest, FlingRailsMode) {
+  base::TimeTicks event_time = TimeTicks::Now();
+  base::TimeDelta delta_time = base::Milliseconds(10);
+
+  // Send a vertical swipe (dy >> dx).
+  MockMotionEvent event =
+      ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 0, 0);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event = ObtainMotionEvent(event_time + delta_time, MotionEvent::Action::MOVE,
+                            2, 100);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event = ObtainMotionEvent(event_time + delta_time * 2,
+                            MotionEvent::Action::UP, 2, 200);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  EXPECT_EQ(EventType::kScrollFlingStart, GetMostRecentGestureEventType());
+  EXPECT_EQ(GestureScrollRailsMode::kVertical,
+            GetMostRecentGestureEvent().details.fling_rails_mode());
+}
+
 // Verify that for a normal scroll the following events are sent:
 // - EventType::kGestureScrollBegin
 // - EventType::kGestureScrollUpdate

@@ -14,6 +14,7 @@
 #include "components/input/touchscreen_tap_suppression_controller.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/fling_booster.h"
+#include "ui/events/event_constants.h"
 
 namespace blink {
 class WebGestureCurve;
@@ -82,6 +83,9 @@ class COMPONENT_EXPORT(INPUT) FlingController {
     base::TimeTicks start_time;
     // Timestamp of the original GestureFlingStart event.
     base::TimeTicks fling_start_event_time;
+    // The scroll axis locking (railing) mode of the GestureFlingStart event,
+    // forwarded to the scroll updates generated throughout the fling.
+    ui::GestureScrollRailsMode rails_mode = ui::GestureScrollRailsMode::kNone;
 
     ActiveFlingParameters() : modifiers(0) {}
   };

@@ -107,13 +107,16 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
 
   void SimulateFlingStart(blink::WebGestureDevice source_device,
                           const gfx::Vector2dF& velocity,
-                          bool wait_before_processing = true) {
+                          bool wait_before_processing = true,
+                          ui::GestureScrollRailsMode rails_mode =
+                              ui::GestureScrollRailsMode::kNone) {
     scheduled_next_fling_progress_ = false;
     sent_scroll_gesture_count_ = 0;
     WebGestureEvent fling_start(WebInputEvent::Type::kGestureFlingStart, 0,
                                 NowTicks(), source_device);
     fling_start.data.fling_start.velocity_x = velocity.x();
     fling_start.data.fling_start.velocity_y = velocity.y();
+    fling_start.data.fling_start.rails_mode = rails_mode;
     GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
     if (wait_before_processing) {
       // Wait for up to one frame before processing the event.
@@ -921,6 +924,21 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
       PhysicsBasedFlingCurve::default_bounds_multiplier_for_testing() *
       GetRootWidgetViewportSize().width();
   EXPECT_EQ(ceilf(total_scroll_delta), roundf(expected_delta));
+}
+
+TEST_P(FlingControllerTest, FlingProgressScrollUpdateHasRailsMode) {
+  SimulateFlingStart(
+      blink::WebGestureDevice::kTouchscreen, gfx::Vector2dF(1000.f, 5000.f),
+      /*wait_before_processing=*/false, ui::GestureScrollRailsMode::kVertical);
+  EXPECT_TRUE(FlingInProgress());
+
+  AdvanceTime();
+  ProgressFling(NowTicks());
+
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
+  EXPECT_EQ(ui::GestureScrollRailsMode::kVertical,
+            last_sent_gesture_.data.scroll_update.rails_mode);
 }
 
 }  // namespace input
