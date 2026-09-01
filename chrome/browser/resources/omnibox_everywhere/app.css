@@ -143,12 +143,12 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 
 cr-most-visited {
   -webkit-app-region: drag;
-  --most-visited-gap: calc((644px - 7 * 64px) / 6);
+  --most-visited-gap: calc((644px - 7 * var(--most-visited-tile-size)) / 6);
   --most-visited-icon-margin-top: 8px;
   --most-visited-icon-size: 48px;
   --most-visited-managed-icon-left: 44px;
   --most-visited-managed-icon-top: 32px;
-  --most-visited-tile-size: 64px;
+  --most-visited-tile-size: 68px;
   --tile-background-color: var(--color-sys-surface-variant);
   --tile-hover-color: var(--color-sys-state-hover-on-subtle);
   align-items: center;
