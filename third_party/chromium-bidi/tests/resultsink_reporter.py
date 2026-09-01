@@ -13,11 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import fnmatch
 import html
 import json
 import os
 import re
+import sys
 import urllib.request
+
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
+)
+from run_unittests import parse_filter_tokens
 
 
 def format_test_id(nodeid: str):
@@ -25,7 +32,9 @@ def format_test_id(nodeid: str):
 
     Canonical flat format: :chromium-bidi!pytest:${coarseName}:${fineName}#${caseName}
     """
-    parts = nodeid.split("::")
+    # Strip pytest-repeat suffix [1-N] if present
+    clean_nodeid = re.sub(r"\[\d+-\d+\]$", "", nodeid)
+    parts = clean_nodeid.split("::")
     file_path = parts[0]
     case_components = parts[1:] if len(parts) > 1 else [os.path.basename(file_path)]
 
@@ -52,36 +61,6 @@ def format_test_id(nodeid: str):
     return test_id, test_id_structured
 
 
-def parse_filter_tokens(filter_str: str) -> list[str]:
-    """Parses a filter string into individual filter patterns.
-
-    Handles :: separation as well as legacy joined nodeids (file.py::func_name).
-    """
-    raw_tokens = [t.strip() for t in filter_str.split("::") if t.strip()]
-    patterns = []
-    i = 0
-    while i < len(raw_tokens):
-        token = raw_tokens[i]
-        # Check if this token is a file path and next token is a test function name (legacy nodeid joined by ::)
-        if (
-            (
-                token.endswith(".py")
-                or ".py:" in token
-                or (token.startswith("-") and token[1:].endswith(".py"))
-            )
-            and i + 1 < len(raw_tokens)
-            and not raw_tokens[i + 1].endswith(".py")
-            and not raw_tokens[i + 1].startswith(":")
-            and not raw_tokens[i + 1].startswith("tests/")
-        ):
-            patterns.append(f"{token}::{raw_tokens[i + 1]}")
-            i += 2
-        else:
-            patterns.append(token)
-            i += 1
-    return patterns
-
-
 class TestFilter:
     """Represents a single test filter rule."""
 
@@ -91,21 +70,25 @@ class TestFilter:
         self.is_exclusion = filter_text.startswith("-")
         if self.is_exclusion:
             filter_text = filter_text[1:]
-        self.is_prefix = filter_text.endswith("*")
-        if self.is_prefix:
-            filter_text = filter_text[:-1]
         self.filter_text = filter_text
 
     def matches_string(self, s: str) -> bool:
-        if self.is_prefix:
-            return s.startswith(self.filter_text)
+        if not s:
+            return False
+        if "*" in self.filter_text or "?" in self.filter_text:
+            return fnmatch.fnmatchcase(s, self.filter_text)
         return s == self.filter_text
 
     def is_match(
         self, structured_id: str, nodeid: str, file_path: str, func_name: str
     ) -> bool:
+        clean_filter = re.sub(r"^ninja://\S+?:[^\s/]+/", "", self.filter_text)
         return (
             self.matches_string(structured_id)
+            or self.matches_string(
+                f"ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/{structured_id}"
+            )
+            or TestFilter(clean_filter).matches_string(structured_id)
             or self.matches_string(nodeid)
             or self.matches_string(file_path)
             or self.matches_string(func_name)
@@ -258,10 +241,12 @@ def pytest_addoption(parser):
     group.addoption(
         "--test-filter",
         "--isolated-script-test-filter",
+        "--gtest_filter",
+        "--gtest-filter",
         action="append",
         default=[],
         dest="test_filters",
-        help="Double-colon separated test filters",
+        help="Test filters",
     )
     group.addoption(
         "--test-filter-file",
@@ -277,8 +262,10 @@ def pytest_collection_modifyitems(session, config, items):
     test_filters = list(config.getoption("test_filters") or [])
     test_filter_files = list(config.getoption("test_filter_files") or [])
 
-    env_filter = os.environ.get("ISOLATED_SCRIPT_TEST_FILTER") or os.environ.get(
-        "TEST_FILTER"
+    env_filter = (
+        os.environ.get("ISOLATED_SCRIPT_TEST_FILTER")
+        or os.environ.get("TEST_FILTER")
+        or os.environ.get("GTEST_FILTER")
     )
     if env_filter:
         test_filters.append(env_filter)
@@ -310,11 +297,13 @@ def pytest_collection_modifyitems(session, config, items):
     kept_items = []
     for item in items:
         structured_id, _ = format_test_id(item.nodeid)
-        file_path = item.nodeid.split("::")[0]
-        func_name = item.name
+        clean_nodeid = re.sub(r"\[\d+-\d+\]$", "", item.nodeid)
+        file_path = clean_nodeid.split("::")[0]
+        func_name = re.sub(r"\[\d+-\d+\]$", "", item.name)
 
         included = all(
-            group.is_test_included(structured_id, item.nodeid, file_path, func_name)
+            group.is_test_included(structured_id, clean_nodeid, file_path, func_name)
+            or group.is_test_included(structured_id, item.nodeid, file_path, item.name)
             for group in filter_groups
         )
         if included:

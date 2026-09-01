@@ -1,6 +1,7 @@
 __pycache__
 .build
 .cache
+.pytest_cache/
 .idea
 chromium-bidi-*
 chromium-bidi.iml

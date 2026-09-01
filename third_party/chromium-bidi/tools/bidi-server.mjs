@@ -119,6 +119,12 @@ export function parseCommandLineArgs() {
       'isolated-script-test-filter-file': {
         type: 'string',
       },
+      gtest_filter: {
+        type: 'string',
+      },
+      'gtest-filter': {
+        type: 'string',
+      },
       'isolated-script-test-output': {
         type: 'string',
       },
@@ -131,11 +137,20 @@ export function parseCommandLineArgs() {
       'isolated-script-test-repeat': {
         type: 'string',
       },
+      gtest_repeat: {
+        type: 'string',
+      },
+      'gtest-repeat': {
+        type: 'string',
+      },
       'isolated-script-test-launcher-retry-limit': {
         type: 'string',
       },
       'isolated-script-test-also-run-disabled-tests': {
         type: 'boolean',
+      },
+      shards: {
+        type: 'string',
       },
     },
     allowPositionals: true,
@@ -147,21 +162,29 @@ export function parseCommandLineArgs() {
     k: values.k,
     s: values.s,
     'repeat-times': Number(
-      values['isolated-script-test-repeat'] || values['repeat-times'],
+      values['isolated-script-test-repeat'] ||
+        values.gtest_repeat ||
+        values['gtest-repeat'] ||
+        values['repeat-times'] ||
+        1,
     ),
     'reruns-times': Number(
       values['isolated-script-test-launcher-retry-limit'] ||
-        values['reruns-times'],
+        values['reruns-times'] ||
+        0,
     ),
-    'total-shards': Number(values['total-shards']),
-    'shard-id': Number(values['shard-id']),
+    'total-shards': Number(values.shards || values['total-shards'] || 1),
+    'shard-id': Number(values['shard-id'] || 0),
     'gen-dir': values['gen-dir'],
     'python-bin': values['python-bin'],
     'python-spec': values['python-spec'],
     'browser-bin': values['browser-bin'],
     'chromedriver-bin': values['chromedriver-bin'],
     'test-filter':
-      values['test-filter'] || values['isolated-script-test-filter'],
+      values['test-filter'] ||
+      values['isolated-script-test-filter'] ||
+      values.gtest_filter ||
+      values['gtest-filter'],
     'test-filter-file':
       values['test-filter-file'] || values['isolated-script-test-filter-file'],
     'isolated-script-test-output': values['isolated-script-test-output'],

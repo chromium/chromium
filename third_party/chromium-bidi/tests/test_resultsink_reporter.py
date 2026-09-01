@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+import sys
 import tempfile
 
 from resultsink_reporter import (
@@ -10,6 +11,13 @@ from resultsink_reporter import (
     TestFilterGroup,
     format_test_id,
     parse_filter_tokens,
+)
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
+from run_unittests import (
+    matches_file,
+    parse_filter_file,
+    parse_filter_pattern,
 )
 
 
@@ -68,6 +76,38 @@ def test_parse_filter_tokens_structured():
     ]
 
 
+def test_parse_filter_tokens_gtest():
+    filter_str = "tests/a/test_a.py::test_func_a:tests/b/test_b.py::test_func_b:-tests/c/test_c.py"
+    tokens = parse_filter_tokens(filter_str)
+    assert tokens == [
+        "tests/a/test_a.py::test_func_a",
+        "tests/b/test_b.py::test_func_b",
+        "-tests/c/test_c.py",
+    ]
+
+
+def test_parse_filter_tokens_test_ninja():
+    filter_str = "tests/a.py::test_ninja:tests/b.py"
+    tokens = parse_filter_tokens(filter_str)
+    assert tokens == [
+        "tests/a.py::test_ninja",
+        "tests/b.py",
+    ]
+
+
+def test_parse_filter_tokens_mixed_ninja_and_regular():
+    filter_str = (
+        "ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/:chromium-bidi!pytest:tests/a/:b.py#c"
+        ":tests/b.py::test_ninja:-tests/c.py"
+    )
+    tokens = parse_filter_tokens(filter_str)
+    assert tokens == [
+        "ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/:chromium-bidi!pytest:tests/a/:b.py#c",
+        "tests/b.py::test_ninja",
+        "-tests/c.py",
+    ]
+
+
 def test_parse_filter_tokens_legacy_joined():
     filter_str = "tests/bluetooth/test_a.py::test_func_a::tests/browser/test_b.py::test_func_b[True]"
     tokens = parse_filter_tokens(filter_str)
@@ -75,6 +115,48 @@ def test_parse_filter_tokens_legacy_joined():
         "tests/bluetooth/test_a.py::test_func_a",
         "tests/browser/test_b.py::test_func_b[True]",
     ]
+
+
+def test_test_filter_group_ninja_and_wildcard():
+    tokens = [
+        "ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/:chromium-bidi!pytest:tests/bluetooth/:test_characteristic_emulation.py#test_bluetooth_add_same_characteristic_uuid_twice",
+        "*test_create_user_context*",
+    ]
+    group = TestFilterGroup([TestFilter(t) for t in tokens])
+
+    # Should match ninja-prefixed structured test ID
+    assert group.is_test_included(
+        ":chromium-bidi!pytest:tests/bluetooth/:test_characteristic_emulation.py#test_bluetooth_add_same_characteristic_uuid_twice",
+        "tests/bluetooth/test_characteristic_emulation.py::test_bluetooth_add_same_characteristic_uuid_twice",
+        "tests/bluetooth/test_characteristic_emulation.py",
+        "test_bluetooth_add_same_characteristic_uuid_twice",
+    )
+
+    # Should match wildcard
+    assert group.is_test_included(
+        ":chromium-bidi!pytest:tests/browser/:test_create_user_context.py#test_browser_create_user_context_legacy_proxy",
+        "tests/browser/test_create_user_context.py::test_browser_create_user_context_legacy_proxy",
+        "tests/browser/test_create_user_context.py",
+        "test_browser_create_user_context_legacy_proxy",
+    )
+
+
+def test_test_filter_ninja_prefix_with_wildcards():
+    filter_rule = TestFilter(
+        "ninja://other_target:other_test_name/:chromium-bidi!pytest:tests/bluetooth/*"
+    )
+    assert filter_rule.is_match(
+        ":chromium-bidi!pytest:tests/bluetooth/:test_characteristic_emulation.py#test_bluetooth_add_same_characteristic_uuid_twice",
+        "tests/bluetooth/test_characteristic_emulation.py::test_bluetooth_add_same_characteristic_uuid_twice",
+        "tests/bluetooth/test_characteristic_emulation.py",
+        "test_bluetooth_add_same_characteristic_uuid_twice",
+    )
+    assert not filter_rule.is_match(
+        ":chromium-bidi!pytest:tests/browser/:test_create_user_context.py#test_browser_create_user_context_legacy_proxy",
+        "tests/browser/test_create_user_context.py::test_browser_create_user_context_legacy_proxy",
+        "tests/browser/test_create_user_context.py",
+        "test_browser_create_user_context_legacy_proxy",
+    )
 
 
 def test_test_filter_group_matching():
@@ -163,12 +245,6 @@ def test_test_filter_file_parsing():
 
 
 def test_unit_test_filter_file_parsing():
-    import sys
-
-    tools_dir = os.path.join(os.path.dirname(__file__), "..", "tools")
-    sys.path.insert(0, tools_dir)
-    from run_unittests import matches_file, parse_filter_file, parse_filter_pattern
-
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
         f.write("# WebKit style filter file\n")
         f.write("[ Debug ] Bug(12345) src/utils/assert.test.ts\n")
@@ -220,3 +296,33 @@ def test_unit_test_filter_file_parsing():
         )
     finally:
         os.remove(filepath)
+
+
+def test_unit_test_filter_pattern_ninja_and_gtest():
+    # GTest colon-delimited tokens with ninja prefix
+    filter_str = (
+        "ninja://third_party/chromium-bidi:webdriver_bidi_unittests/:chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw an error"
+        ":ninja://third_party/chromium-bidi:webdriver_bidi_unittests/:chromium-bidi!mocha:src/utils/:DefaultMap.test.ts#DefaultMap:sets and gets properly"
+        ":-src/cdp/CdpClient.test.ts"
+    )
+    tokens = parse_filter_tokens(filter_str)
+    assert tokens == [
+        "ninja://third_party/chromium-bidi:webdriver_bidi_unittests/:chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw an error",
+        "ninja://third_party/chromium-bidi:webdriver_bidi_unittests/:chromium-bidi!mocha:src/utils/:DefaultMap.test.ts#DefaultMap:sets and gets properly",
+        "-src/cdp/CdpClient.test.ts",
+    ]
+
+    is_ex, f_pat, c_pat = parse_filter_pattern(tokens[0])
+    assert not is_ex
+    assert f_pat == "src/utils/assert.test.ts"
+    assert c_pat == "should not throw an error"
+
+    is_ex, f_pat, c_pat = parse_filter_pattern(tokens[1])
+    assert not is_ex
+    assert f_pat == "src/utils/DefaultMap.test.ts"
+    assert c_pat == "sets and gets properly"
+
+    is_ex, f_pat, c_pat = parse_filter_pattern(tokens[2])
+    assert is_ex
+    assert f_pat == "src/cdp/CdpClient.test.ts"
+    assert c_pat is None

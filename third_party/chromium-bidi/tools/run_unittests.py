@@ -24,29 +24,104 @@ import shutil
 import subprocess
 import sys
 
+# ResultDB canonical test IDs format:
+#   [+-]?[ninja://<target_path>:<target_name>/]:chromium-bidi!<scheme>:<coarse_name>:<fine_name>[#<case_name>]
+#
+# Examples:
+#   :chromium-bidi!pytest:tests/bluetooth/:test_characteristic_emulation.py#test_foo
+#   ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/:chromium-bidi!pytest:tests/bidi/:test_bidi.py
+#   ninja://third_party/chromium-bidi:webdriver_bidi_unittests/:chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw
+CANONICAL_TEST_ID_RE = re.compile(
+    r"""
+    [+-]?                                           # Optional filter inclusion (+) or exclusion (-) prefix
+    (?:ninja://\S+?:[^\s/]+/)?                      # Optional Ninja build target prefix (e.g. ninja://dir:target/)
+    :chromium-bidi!\w+                              # ResultDB module prefix and scheme (e.g. :chromium-bidi!pytest)
+    :[^#:\s]*                                       # Coarse directory path (e.g. :tests/bluetooth/)
+    (?::[^#:\s]*)?                                  # Fine file name (e.g. :test_characteristic_emulation.py)
+    (?:\#[^:\s\n\r]*(?::(?!\S+[:/]|-)[\w\s-]+)*)?   # Optional case name, allowing colons in sub-titles (#suite:test)
+    """,
+    re.VERBOSE,
+)
+
 
 def parse_filter_tokens(filter_str: str) -> list[str]:
     """Parses a filter string into individual filter patterns.
 
-    Handles :: separation as well as legacy joined nodeids (file.test.js::test_name).
+    Handles ResultDB canonical test IDs, GTest colon-separated filters,
+    and legacy joined nodeids (file.py::func_name).
     """
-    raw_tokens = [t.strip() for t in filter_str.split("::") if t.strip()]
+    if not filter_str:
+        return []
+
+    # Protect canonical ResultDB test IDs before splitting on GTest colons (:)
+    canonical_tokens = []
+
+    def mask_canonical(match):
+        idx = len(canonical_tokens)
+        canonical_tokens.append(match.group(0).strip())
+        return f" __CANONICAL_{idx}__ "
+
+    masked_str = CANONICAL_TEST_ID_RE.sub(mask_canonical, filter_str)
+
+    # Split on triple-colons (:::) or single colons (:) separating filter rules.
+    # Note: double colons (::) within pytest nodeids (file.py::func) are preserved.
+    raw_tokens = re.split(r":{3,}|(?<!:):(?!:)", masked_str)
+
     patterns = []
-    i = 0
-    while i < len(raw_tokens):
-        token = raw_tokens[i]
-        if (
-            (token.endswith(".js") or token.endswith(".ts"))
-            and i + 1 < len(raw_tokens)
-            and not raw_tokens[i + 1].endswith(".js")
-            and not raw_tokens[i + 1].endswith(".ts")
-            and not raw_tokens[i + 1].startswith(":")
-        ):
-            patterns.append(f"{token}#{raw_tokens[i + 1]}")
-            i += 2
+    for raw in raw_tokens:
+        raw = raw.strip()
+        if not raw:
+            continue
+
+        if "__CANONICAL_" in raw:
+            # Restore canonical ResultDB test IDs. These were masked with placeholders
+            # prior to delimiter splitting so their internal single colons (:) wouldn't
+            # be mistaken for GTest filter separators.
+            for piece in raw.split():
+                if piece.startswith("__CANONICAL_") and piece.endswith("__"):
+                    idx = int(piece[len("__CANONICAL_") : -2])
+                    patterns.append(canonical_tokens[idx])
+                elif piece and piece.strip(":") != "":
+                    patterns.append(piece)
+        elif "::" in raw:
+            # Handle legacy node IDs joined by :: (e.g. file1.py::func1::file2.py::func2)
+            sub_tokens = [s.strip() for s in raw.split("::") if s.strip()]
+            i = 0
+            while i < len(sub_tokens):
+                st = sub_tokens[i]
+                is_py = (
+                    st.endswith(".py")
+                    or ".py:" in st
+                    or (st.startswith("-") and st[1:].endswith(".py"))
+                )
+                is_js_ts = (
+                    st.endswith(".js")
+                    or st.endswith(".ts")
+                    or (
+                        st.startswith("-")
+                        and (st[1:].endswith(".js") or st[1:].endswith(".ts"))
+                    )
+                )
+                if (
+                    (is_py or is_js_ts)
+                    and i + 1 < len(sub_tokens)
+                    and not (
+                        sub_tokens[i + 1].endswith(".py")
+                        or sub_tokens[i + 1].endswith(".js")
+                        or sub_tokens[i + 1].endswith(".ts")
+                    )
+                    and not sub_tokens[i + 1].startswith(":")
+                    and not sub_tokens[i + 1].startswith("tests/")
+                    and not sub_tokens[i + 1].startswith("src/")
+                ):
+                    delimiter = "::" if is_py else "#"
+                    patterns.append(f"{st}{delimiter}{sub_tokens[i + 1]}")
+                    i += 2
+                else:
+                    patterns.append(st)
+                    i += 1
         else:
-            patterns.append(token)
-            i += 1
+            patterns.append(raw)
     return patterns
 
 
@@ -77,6 +152,9 @@ def parse_filter_pattern(pattern: str):
     is_exclusion = pattern.startswith("-")
     if is_exclusion:
         pattern = pattern[1:]
+
+    # Strip ninja target prefix if present: e.g. ninja://third_party/chromium-bidi:webdriver_bidi_unittests/
+    pattern = re.sub(r"^ninja://\S+?:[^\s/]+/", "", pattern)
 
     file_pattern = None
     case_pattern = None
@@ -189,18 +267,25 @@ def main():
     i = 0
     while i < len(node_args):
         arg = node_args[i]
-        if arg.startswith("--isolated-script-test-filter="):
-            test_filters.append(arg[len("--isolated-script-test-filter=") :])
+        if (
+            arg.startswith("--isolated-script-test-filter=")
+            or arg.startswith("--test-filter=")
+            or arg.startswith("--gtest_filter=")
+            or arg.startswith("--gtest-filter=")
+        ):
+            test_filters.append(arg.split("=", 1)[1])
             i += 1
-        elif arg == "--isolated-script-test-filter" or arg == "--test-filter":
+        elif arg in (
+            "--isolated-script-test-filter",
+            "--test-filter",
+            "--gtest_filter",
+            "--gtest-filter",
+        ):
             if i + 1 < len(node_args):
                 test_filters.append(node_args[i + 1])
                 i += 2
             else:
                 i += 1
-        elif arg.startswith("--test-filter="):
-            test_filters.append(arg[len("--test-filter=") :])
-            i += 1
         elif arg.startswith("--isolated-script-test-filter-file="):
             test_filter_files.append(arg[len("--isolated-script-test-filter-file=") :])
             i += 1
@@ -217,6 +302,9 @@ def main():
             arg.startswith("--isolated-script-test-")
             or arg.startswith("--isolated-outdir")
             or arg == "--isolated-script-test-also-run-disabled-tests"
+            or arg.startswith("--gtest_repeat")
+            or arg.startswith("--gtest-repeat")
+            or arg.startswith("--shards")
         ):
             # Consume isolated script args without passing them to node
             if (
@@ -236,8 +324,10 @@ def main():
             i += 1
 
     # Check environment variables
-    env_filter = os.environ.get("ISOLATED_SCRIPT_TEST_FILTER") or os.environ.get(
-        "TEST_FILTER"
+    env_filter = (
+        os.environ.get("ISOLATED_SCRIPT_TEST_FILTER")
+        or os.environ.get("TEST_FILTER")
+        or os.environ.get("GTEST_FILTER")
     )
     if env_filter:
         test_filters.append(env_filter)

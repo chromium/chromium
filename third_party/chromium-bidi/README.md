@@ -315,13 +315,13 @@ Filter unit tests by file path:
 ../../out/Default/bin/run_webdriver_bidi_unittests -- --test-path-pattern="<path_pattern>"
 ```
 
-Filter unit tests using ResultDB / Chromium test filter (`--test-filter` / `--isolated-script-test-filter`):
+Filter unit tests using ResultDB / Chromium test filter (`--test-filter` / `--isolated-script-test-filter` / `--gtest_filter`):
 
 ```sh
 ../../out/Default/bin/run_webdriver_bidi_unittests --test-filter=':chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw an error when the predicate is truthy'
 ```
 
-Multiple tests can be separated with `::`:
+Multiple tests can be separated with `::` or `:`:
 
 ```sh
 ../../out/Default/bin/run_webdriver_bidi_unittests --test-filter=':chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw an error when the predicate is truthy:::chromium-bidi!mocha:src/utils/:DefaultMap.test.ts#DefaultMap:sets and gets properly'
@@ -365,13 +365,13 @@ Run all E2E tests:
 ../../out/Default/bin/run_webdriver_bidi_e2e_tests
 ```
 
-Filter E2E tests using ResultDB / Chromium test filter (`--test-filter` / `--isolated-script-test-filter`):
+Filter E2E tests using ResultDB / Chromium test filter (`--test-filter` / `--isolated-script-test-filter` / `--gtest_filter`):
 
 ```sh
 ../../out/Default/bin/run_webdriver_bidi_e2e_tests --test-filter=':chromium-bidi!pytest:tests/bluetooth/:test_characteristic_emulation.py#test_bluetooth_add_same_characteristic_uuid_twice'
 ```
 
-Legacy pytest node IDs and multiple `::`-separated test IDs are also supported:
+Legacy pytest node IDs, wildcards (`*`), and multiple `::` or `:` separated test IDs are also supported:
 
 ```sh
 ../../out/Default/bin/run_webdriver_bidi_e2e_tests --isolated-script-test-filter='tests/bluetooth/test_characteristic_emulation.py::test_bluetooth_add_same_characteristic_uuid_twice::tests/browser/test_create_user_context.py::test_browser_create_user_context_proxy[True]'
