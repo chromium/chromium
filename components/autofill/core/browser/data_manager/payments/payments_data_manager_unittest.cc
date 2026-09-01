@@ -4671,7 +4671,7 @@ TEST_F(PaymentsDataManagerTest,
   blocked_types.Append("payments");
   entry.Set("blocked_types", std::move(blocked_types));
   blocked_list.Append(std::move(entry));
-  static_cast<TestingPrefServiceSimple*>(prefs_.get())
+  static_cast<test::AutofillTestingPrefService*>(prefs_.get())
       ->SetManagedPref(prefs::kAutofillTypesBlocked, std::move(blocked_list));
 
   EXPECT_FALSE(payments_data_manager().IsAutofillPaymentMethodsEnabled());

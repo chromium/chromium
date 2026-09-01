@@ -71,11 +71,11 @@ class ValuablesDataManagerTest : public testing::Test {
 
   ValuablesTable& valuables_table() { return *valuables_table_; }
 
-  PrefService& prefs() { return *prefs_; }
+  test::AutofillTestingPrefService& prefs() { return *prefs_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<PrefService> prefs_;
+  std::unique_ptr<test::AutofillTestingPrefService> prefs_;
   NiceMock<MockAutofillImageFetcher> mock_image_fetcher_;
   raw_ptr<ValuablesTable> valuables_table_;
   std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
@@ -279,8 +279,7 @@ TEST_F(ValuablesDataManagerTest,
   blocked_types.Append("payments");
   entry.Set("blocked_types", std::move(blocked_types));
   blocked_list.Append(std::move(entry));
-  static_cast<TestingPrefServiceSimple*>(&prefs())->SetManagedPref(
-      prefs::kAutofillTypesBlocked, std::move(blocked_list));
+  prefs().SetManagedPref(prefs::kAutofillTypesBlocked, std::move(blocked_list));
 
   ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
                                               &image_fetcher());
