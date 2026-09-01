@@ -30,3 +30,6 @@ tast.secagentd.FileEvents.user_credential
 tast.secagentd.NetworkEvents.relaxed_tcp
 tast.secagentd.NetworkEvents.relaxed_udp
 
+# b/555518712
+tast.crash.Sender.mock_consent_fieldtrial_testing_config_on
+tast.crash.Sender.mock_consent_fieldtrial_testing_config_off
