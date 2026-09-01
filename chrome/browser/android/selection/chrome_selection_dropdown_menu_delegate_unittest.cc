@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
@@ -26,6 +27,15 @@ bool ContainsCommand(const ui::MenuModel& model, int command_id) {
   for (size_t i = 0; i < model.GetItemCount(); ++i) {
     if (model.GetCommandIdAt(i) == command_id) {
       return true;
+    }
+  }
+  return false;
+}
+
+bool IsCommandEnabled(const ui::MenuModel& model, int command_id) {
+  for (size_t i = 0; i < model.GetItemCount(); ++i) {
+    if (model.GetCommandIdAt(i) == command_id) {
+      return model.IsEnabledAt(i);
     }
   }
   return false;
@@ -48,8 +58,10 @@ class ChromeSelectionDropdownMenuDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ChromeSelectionDropdownMenuDelegateTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chrome::android::kPrintSelectionMenu);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chrome::android::kPrintSelectionMenu,
+                              features::kAndroidDevToolsFrontend},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -71,6 +83,7 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
 
   ASSERT_TRUE(model);
   ASSERT_TRUE(ContainsCommand(*model, IDC_PRINT));
+  EXPECT_TRUE(IsCommandEnabled(*model, IDC_PRINT));
   EXPECT_EQ(65, GetCommandOrder(*model, IDC_PRINT));
 }
 
@@ -87,7 +100,8 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
       delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
 
   ASSERT_TRUE(model);
-  EXPECT_FALSE(ContainsCommand(*model, IDC_PRINT));
+  ASSERT_TRUE(ContainsCommand(*model, IDC_PRINT));
+  EXPECT_FALSE(IsCommandEnabled(*model, IDC_PRINT));
 }
 
 TEST_F(ChromeSelectionDropdownMenuDelegateTest,
@@ -104,7 +118,8 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
       delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
 
   ASSERT_TRUE(model);
-  EXPECT_FALSE(ContainsCommand(*model, IDC_PRINT));
+  ASSERT_TRUE(ContainsCommand(*model, IDC_PRINT));
+  EXPECT_FALSE(IsCommandEnabled(*model, IDC_PRINT));
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
@@ -123,15 +138,22 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
       delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
 
   ASSERT_TRUE(model);
+#if BUILDFLAG(ENABLE_PRINTING)
+  ASSERT_TRUE(ContainsCommand(*model, IDC_PRINT));
+  EXPECT_FALSE(IsCommandEnabled(*model, IDC_PRINT));
+#else
   EXPECT_FALSE(ContainsCommand(*model, IDC_PRINT));
+#endif
 }
 
 class ChromeSelectionDropdownMenuDelegateFeatureDisabledTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ChromeSelectionDropdownMenuDelegateFeatureDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        chrome::android::kPrintSelectionMenu);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chrome::android::kPrintSelectionMenu,
+                               features::kAndroidDevToolsFrontend});
   }
 
  private:
@@ -153,6 +175,7 @@ TEST_F(ChromeSelectionDropdownMenuDelegateFeatureDisabledTest,
 
   ASSERT_TRUE(model);
   EXPECT_FALSE(ContainsCommand(*model, IDC_PRINT));
+  EXPECT_FALSE(ContainsCommand(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
 TEST_F(ChromeSelectionDropdownMenuDelegateTest,
@@ -166,6 +189,7 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
 
   ASSERT_TRUE(model);
   ASSERT_TRUE(ContainsCommand(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  EXPECT_TRUE(IsCommandEnabled(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
   EXPECT_EQ(1000000,
             GetCommandOrder(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }

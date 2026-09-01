@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.link_to_text;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,7 +72,9 @@ public class CopyLinkToHighlightTest {
                         /* isSelectionPassword= */ false,
                         /* isSelectionReadOnly= */ true,
                         "selected text");
-        assertTrue(hasCopyLinkToHighlight(items));
+        SelectionMenuItem item = findCopyLinkToHighlight(items);
+        assertNotNull(item);
+        assertTrue(item.isEnabled);
     }
 
     @Test
@@ -83,7 +86,9 @@ public class CopyLinkToHighlightTest {
                         /* isSelectionPassword= */ false,
                         /* isSelectionReadOnly= */ true,
                         "");
-        assertFalse(hasCopyLinkToHighlight(items));
+        SelectionMenuItem item = findCopyLinkToHighlight(items);
+        assertNotNull(item);
+        assertFalse(item.isEnabled);
     }
 
     @Test
@@ -95,7 +100,9 @@ public class CopyLinkToHighlightTest {
                         /* isSelectionPassword= */ true,
                         /* isSelectionReadOnly= */ true,
                         "*password*");
-        assertFalse(hasCopyLinkToHighlight(items));
+        SelectionMenuItem item = findCopyLinkToHighlight(items);
+        assertNotNull(item);
+        assertFalse(item.isEnabled);
     }
 
     @Test
@@ -117,6 +124,7 @@ public class CopyLinkToHighlightTest {
                 new SelectionMenuItem.Builder("Copy link to highlight")
                         .setId(R.id.contextmenu_copy_link_to_highlight)
                         .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
+                        .setIsEnabled(true)
                         .build();
 
         boolean handled = mDelegate.handleMenuItemClick(item, mWebContents, mContainerView);
@@ -126,7 +134,28 @@ public class CopyLinkToHighlightTest {
         verify(mLinkToTextBridgeJniMock).shouldOfferLinkToText(TEST_URL);
     }
 
+    @Test
+    public void testHandleMenuItemClick_disabled() {
+        FeatureOverrides.overrideFlag(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT, true);
+        SelectionMenuItem item =
+                new SelectionMenuItem.Builder("Copy link to highlight")
+                        .setId(R.id.contextmenu_copy_link_to_highlight)
+                        .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
+                        .setIsEnabled(false)
+                        .build();
+
+        boolean handled = mDelegate.handleMenuItemClick(item, mWebContents, mContainerView);
+        assertFalse(handled);
+    }
+
     private boolean hasCopyLinkToHighlight(List<SelectionMenuItem> items) {
         return items.stream().anyMatch(item -> item.id == R.id.contextmenu_copy_link_to_highlight);
+    }
+
+    private SelectionMenuItem findCopyLinkToHighlight(List<SelectionMenuItem> items) {
+        return items.stream()
+                .filter(item -> item.id == R.id.contextmenu_copy_link_to_highlight)
+                .findFirst()
+                .orElse(null);
     }
 }

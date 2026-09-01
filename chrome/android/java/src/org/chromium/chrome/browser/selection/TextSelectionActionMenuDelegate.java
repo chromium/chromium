@@ -113,9 +113,8 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
         }
         if (menuType == MenuType.DROPDOWN
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT)
-                && !selectedText.isEmpty()
-                && !isSelectionPassword
                 && isSelectionReadOnly) {
+            boolean isCopyLinkEnabled = !selectedText.isEmpty() && !isSelectionPassword;
             SelectionMenuItem copyLinkItem =
                     new SelectionMenuItem.Builder(R.string.contextmenu_copy_link_to_highlight)
                             .setId(R.id.contextmenu_copy_link_to_highlight)
@@ -123,6 +122,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                             .setOrderAndCategory(
                                     SelectionMenuItem.ItemOrder.COPY_LINK_TO_HIGHLIGHT,
                                     ItemGroupOffset.DEFAULT_ITEMS)
+                            .setIsEnabled(isCopyLinkEnabled)
                             .build();
 
             items.add(copyLinkItem);
@@ -144,6 +144,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     @Override
     public boolean handleMenuItemClick(
             SelectionMenuItem item, WebContents webContents, @Nullable View containerView) {
+        if (!item.isEnabled) return false;
         if (item.id == R.id.contextmenu_open_in_reading_mode) {
             ReaderModeManager readerModeManager =
                     mTab.getUserDataHost().getUserData(ReaderModeManager.class);
