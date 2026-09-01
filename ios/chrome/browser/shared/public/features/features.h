@@ -42,21 +42,8 @@ BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
-
-// Docking Promo experiment variations.
-extern const char kIOSDockingPromoV2VariationParam[];
-extern const char kIOSDockingPromoV2VariationHeader1[];
-extern const char kIOSDockingPromoV2VariationHeader2[];
-extern const char kIOSDockingPromoV2VariationHeader3[];
-
-// Feature flag to enable the Docking Promo V2.
-BASE_DECLARE_FEATURE(kIOSDockingPromoV2);
-
 // Feature flag to enable the "Level Up" feature.
 BASE_DECLARE_FEATURE(kIOSLevelUp);
-
-// Helper function to check if `kIOSDockingPromoV2` is enabled.
-bool IsDockingPromoV2Enabled();
 
 // Helper function to check if `kIOSLevelUp` is enabled.
 bool IsLevelUpEnabled();

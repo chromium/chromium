@@ -62,7 +62,6 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
-#import "ios/chrome/browser/docking_promo/model/docking_promo_scene_agent.h"
 #import "ios/chrome/browser/enterprise/data_protection/coordinator/data_protection_scene_agent.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
@@ -2052,11 +2051,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   if (IsLevelUpEnabled()) {
     [sceneState addAgent:[[LevelUpSceneAgent alloc] init]];
-  }
-
-  if (IsDockingPromoV2Enabled()) {
-    [sceneState addAgent:[[DockingPromoSceneAgent alloc]
-                             initWithPromosManager:promosManager]];
   }
 
   if (IsDefaultBrowserPictureInPictureEnabled()) {

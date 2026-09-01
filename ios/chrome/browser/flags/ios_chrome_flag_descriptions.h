@@ -1077,10 +1077,11 @@ inline constexpr char kIOSDateToCalendarSignedOutDescription[] =
     "When enabled, signed-out users can long-press detected dates to access "
     "the 'Add to Google Calendar' feature.";
 
-inline constexpr char kIOSDockingPromoV2Name[] = "Docking Promo V2";
-inline constexpr char kIOSDockingPromoV2Description[] =
-    "When enabled, the user will be presented an animated, instructional "
-    "promo V2 showing how to move Chrome to their native iOS dock.";
+inline constexpr char kIOSEnableCloudProfileReportingName[] =
+    "Enable profile reporting on iOS";
+inline constexpr char kIOSEnableCloudProfileReportingDescription[] =
+    "When enabled, profile reports will be reported to the user's "
+    "organization.";
 
 inline constexpr char kIOSEnableRealtimeEventReportingName[] =
     "Enable realtime event reporting on iOS";

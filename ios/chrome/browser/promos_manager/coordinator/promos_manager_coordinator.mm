@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/default_browser/promo/tailored/ui/all_tabs_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/default_browser/promo/tailored/ui/made_for_ios_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/default_browser/promo/tailored/ui/stay_safe_default_browser_promo_view_provider.h"
-#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_display_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/ntp/coordinator/home_background_customization_promo_display_handler.h"
@@ -587,11 +586,6 @@
       [[CredentialProviderPromoDisplayHandler alloc]
           initWithHandler:_credentialProviderPromoCommandHandler];
 
-  // Docking promo handler.
-  if (IsDockingPromoV2Enabled()) {
-    _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
-        [[DockingPromoDisplayHandler alloc] init];
-  }
 
   // Default browser promo handler.
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =

@@ -47,21 +47,6 @@ BASE_FEATURE(kSharedHighlightingIOS, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSBrowserEditMenuMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kIOSDockingPromoV2VariationParam[] =
-    "IOSDockingPromoV2VariationParam";
-const char kIOSDockingPromoV2VariationHeader1[] =
-    "IOSDockingPromoV2VariationHeader1";
-const char kIOSDockingPromoV2VariationHeader2[] =
-    "IOSDockingPromoV2VariationHeader2";
-const char kIOSDockingPromoV2VariationHeader3[] =
-    "IOSDockingPromoV2VariationHeader3";
-
-BASE_FEATURE(kIOSDockingPromoV2, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsDockingPromoV2Enabled() {
-  return base::FeatureList::IsEnabled(kIOSDockingPromoV2);
-}
-
 BASE_FEATURE(kIOSLevelUp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLevelUpEnabled() {
