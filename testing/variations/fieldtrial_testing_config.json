@@ -20693,6 +20693,26 @@
             ]
         }
     ],
+    "WebGLMemoryExperiments": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260828",
+                    "enable_features": [
+                        "OffscreenCanvasPropagateVisibility",
+                        "WebGLDiscardBackBuffer"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebGPUEnableRangeAnalysisForRobustness": [
         {
             "platforms": [
