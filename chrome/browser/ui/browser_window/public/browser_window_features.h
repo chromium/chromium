@@ -374,10 +374,6 @@ class BrowserWindowFeatures {
     return pinned_toolbar_actions_;
   }
 
-  ProfileMenuCoordinator* profile_menu_coordinator() {
-    return profile_menu_coordinator_.get();
-  }
-
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
   // abstract base class that contains some, but not all of the public interface
   // of SidePanelCoordinator. One of the accessors side_panel_ui() or
