@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -514,13 +515,13 @@ IN_PROC_BROWSER_TEST_F(BlockedAppApiTest, OpenAppFromIframe) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GetTestBaseURL("app_process").Resolve("path3/container.html")));
-  ui_test_utils::WaitForViewVisibility(browser(), VIEW_ID_CONTENT_SETTING_POPUP,
-                                       true);
 
   WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   blocked_content::PopupBlockerTabHelper* popup_blocker_tab_helper =
       blocked_content::PopupBlockerTabHelper::FromWebContents(tab);
-  EXPECT_EQ(1u, popup_blocker_tab_helper->GetBlockedPopupsCount());
+  ASSERT_TRUE(base::test::RunUntil([popup_blocker_tab_helper]() {
+    return popup_blocker_tab_helper->GetBlockedPopupsCount() == 1u;
+  }));
 }
 
 // Tests that if an extension launches an app via chrome.tabs.create with an URL
