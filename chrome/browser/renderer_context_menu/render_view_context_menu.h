@@ -217,6 +217,10 @@ class RenderViewContextMenu
 #endif
   void RecordUsedItem(int id) override;
 
+  // Platform-specific subclasses can override this method to handle commands.
+  // Returns true if the command was handled.
+  virtual bool ExecPlatformCommand(int command_id, int event_flags);
+
   // Returns true if the browser is in HTML fullscreen mode, initiated by the
   // page (as opposed to the user). Used to determine which shortcut to display.
   bool IsHTML5Fullscreen() const;

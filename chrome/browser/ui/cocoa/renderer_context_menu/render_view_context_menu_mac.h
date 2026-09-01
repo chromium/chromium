@@ -29,7 +29,6 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
   void Show() override {}
 
   // SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
 
@@ -56,6 +55,7 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
                                      const std::u16string& title) {}
 
   // RenderViewContextMenu:
+  bool ExecPlatformCommand(int command_id, int event_flags) override;
   void AppendPlatformEditableItems() override;
 
  private:

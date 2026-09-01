@@ -2880,3 +2880,38 @@ TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_SEND_TAB_TO_SELF));
 }
+
+namespace {
+
+class PlatformCommandTestContextMenu : public TestRenderViewContextMenu {
+ public:
+  using TestRenderViewContextMenu::TestRenderViewContextMenu;
+
+  bool ExecPlatformCommand(int command_id, int event_flags) override {
+    if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP) {
+      platform_command_executed_ = true;
+      return true;
+    }
+    return false;
+  }
+
+  bool platform_command_executed() const { return platform_command_executed_; }
+
+ private:
+  bool platform_command_executed_ = false;
+};
+
+}  // namespace
+
+TEST_F(RenderViewContextMenuPrefsTest, ExecPlatformCommandCalledAndLogged) {
+  base::HistogramTester histogram_tester;
+  content::ContextMenuParams params = CreateParams(MenuItem::ALL);
+  PlatformCommandTestContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                      params);
+  menu.Init();
+
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_LOOK_UP, 0);
+  EXPECT_TRUE(menu.platform_command_executed());
+  histogram_tester.ExpectBucketCount("RenderViewContextMenu.Used", /*98*/ 98,
+                                     1);
+}

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -67,9 +68,10 @@ class RenderViewContextMenuMacBrowserTest : public InProcessBrowserTest {
 
 // Tests that the "Remove from Dictionary" command appears when a word that has
 // been added to the dictionary by the user is detected, and that selecting it
-// removes the word from the user's dictionary.
+// removes the word from the user's dictionary and logs UMA metrics.
 IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacBrowserTest,
                        ExecuteRemoveFromDictionary) {
+  base::HistogramTester histogram_tester;
   SpellcheckService* spellcheck_service = GetSpellcheckService();
   ASSERT_TRUE(spellcheck_service);
 
@@ -85,6 +87,22 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacBrowserTest,
   menu->ExecuteCommand(IDC_SPELLCHECK_REMOVE_FROM_DICTIONARY, 0);
   EXPECT_FALSE(spellcheck_service->GetCustomDictionary()->HasWord(
       base::UTF16ToUTF8(word)));
+  histogram_tester.ExpectBucketCount("RenderViewContextMenu.Used", /*167*/ 167,
+                                     1);
+}
+
+// Tests that the "Look up <word>" command appears when text is selected and
+// records UMA metrics when executed.
+IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacBrowserTest,
+                       ExecuteLookUpInDictionary) {
+  base::HistogramTester histogram_tester;
+  auto menu = CreateMenu(u"lookupword");
+  EXPECT_TRUE(
+      MenuHasItemWithCommand(menu->menu_model(), IDC_CONTENT_CONTEXT_LOOK_UP));
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_LOOK_UP, 0);
+  histogram_tester.ExpectBucketCount("RenderViewContextMenu.Used", /*98*/ 98,
+                                     1);
 }
 
 // Verifies that the "Remove from dictionary" option is not shown when a word

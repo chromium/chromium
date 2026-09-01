@@ -4261,9 +4261,17 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
     default:
+      if (ExecPlatformCommand(id, event_flags)) {
+        break;
+      }
       DUMP_WILL_BE_NOTREACHED() << "Unhandled id: " << id;
       break;
   }
+}
+
+bool RenderViewContextMenu::ExecPlatformCommand(int command_id,
+                                                int event_flags) {
+  return false;
 }
 
 void RenderViewContextMenu::AddSpellCheckServiceItem(bool is_checked) {
