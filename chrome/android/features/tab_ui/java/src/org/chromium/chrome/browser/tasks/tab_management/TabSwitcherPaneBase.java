@@ -792,6 +792,16 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         mDestroyCoordinatorRunnable.run();
     }
 
+    void finishAllCleanupsForTesting() {
+        removeDelayedCallbacks();
+        if (mIsVisibleSupplier.get()) {
+            return;
+        }
+        mSoftCleanupRunnable.run();
+        mHardCleanupRunnable.run();
+        mDestroyCoordinatorRunnable.run();
+    }
+
     private static boolean shouldShowMenuButton(Context context) {
         // If the bottom bar is enabled and the app menu button is included in the bottom bar, then
         // we should not show the menu button in the toolbar.

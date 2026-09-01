@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,8 +51,12 @@ import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.hub.Pane;
+import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
@@ -139,6 +144,50 @@ public class TabSwitcherLayoutPTTest {
         mStartPage = mCtaTestRule.startOnBlankPage();
 
         mCtaTestRule.getActivity().getTabContentManager().setCaptureMinRequestTimeForTesting(0);
+    }
+
+    @After
+    public void tearDown() {
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
+        if (cta != null) {
+            LayoutManagerChrome layoutManager = cta.getLayoutManager();
+            if (layoutManager != null && layoutManager.isLayoutVisible(LayoutType.HUB)) {
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false));
+                CriteriaHelper.pollUiThread(
+                        () -> layoutManager.getActiveLayoutType() == LayoutType.BROWSING,
+                        "Failed to exit Hub to BROWSING layout during tearDown");
+            }
+        }
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (cta == null) {
+                        return;
+                    }
+                    var hubManagerSupplier = cta.getHubManagerSupplierForTesting();
+                    if (hubManagerSupplier == null) {
+                        return;
+                    }
+                    var hubManager = hubManagerSupplier.get();
+                    if (hubManager == null) {
+                        return;
+                    }
+                    var paneManager = hubManager.getPaneManager();
+                    if (paneManager == null) {
+                        return;
+                    }
+
+                    Pane tabSwitcherPane = paneManager.getPaneForId(PaneId.TAB_SWITCHER);
+                    if (tabSwitcherPane instanceof TabSwitcherPaneBase paneBase) {
+                        paneBase.finishAllCleanupsForTesting();
+                    }
+                    Pane incognitoTabSwitcherPane =
+                            paneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER);
+                    if (incognitoTabSwitcherPane instanceof TabSwitcherPaneBase incognitoPaneBase) {
+                        incognitoPaneBase.finishAllCleanupsForTesting();
+                    }
+                });
     }
 
     /** Enters the regular Tab Switcher, making sure all tabs have a thumbnail. */
@@ -396,10 +445,9 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @EnableAnimations
     public void testTabToGridAndBack_NoReset() {
-        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation page =
                 roundtripToHTSWithThumbnailChecks(
-                        firstPage,
+                        mStartPage,
                         WebPageStation::newBuilder,
                         () -> {},
                         /* canGarbageCollectBitmaps= */ false);
@@ -504,9 +552,7 @@ public class TabSwitcherLayoutPTTest {
                                             .getPaneManager()
                                             .getFocusedPaneSupplier()
                                             .get();
-                    tabSwitcherPane.softCleanupForTesting();
-                    tabSwitcherPane.hardCleanupForTesting();
-                    tabSwitcherPane.destroyCoordinatorForTesting();
+                    tabSwitcherPane.finishAllCleanupsForTesting();
                 };
         WebPageStation page =
                 roundtripToHTSWithThumbnailChecks(
