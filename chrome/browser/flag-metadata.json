@@ -7958,7 +7958,7 @@
   {
     "name": "on-device-category-classifier",
     "owners": [ "sophiechang@chromium.org", "wittman@chromium.org" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 162
   },
   {
     "name": "on-device-model-speculative-decoding",
