@@ -127,7 +127,6 @@ tast.inputs.VirtualKeyboardTypingUserMode.guest
 tast.inputs.InputMethodManagement.guest
 
 # b/451624782
-tast.secagentd.NetworkEvents.relaxed_icmp@chromeos-betty-cfi-thin-lto-chrome
 tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 
 # b/488388275
