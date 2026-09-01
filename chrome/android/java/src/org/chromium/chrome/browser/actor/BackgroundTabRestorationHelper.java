@@ -52,6 +52,10 @@ public final class BackgroundTabRestorationHelper {
         Profile profile = model.getProfile();
         if (profile == null || profile.isOffTheRecord()) return null;
 
+        if (!BackgroundTabPoolManager.hasPoolForTesting() && !profile.isNativeInitialized()) {
+            return null;
+        }
+
         return BackgroundTabPoolManager.acquire(profile);
     }
 

@@ -126,6 +126,11 @@ public final class BackgroundTabPoolManager {
         sPoolForTesting = pool;
     }
 
+    /** Returns whether a mock pool for testing is configured. */
+    public static boolean hasPoolForTesting() {
+        return sPoolForTesting != null;
+    }
+
     /**
      * Returns the active pool instance for the given profile for testing.
      *
