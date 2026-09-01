@@ -48,7 +48,7 @@ TEST_F(MachineDealCodeTest, Set) {
   EXPECT_FALSE(rlz_lib::MachineDealCode::Set(too_long_dcc));
 
   // Invalid characters should be normalized to '.'.
-  EXPECT_TRUE(rlz_lib::MachineDealCode::Set("bad deal code!"));
+  EXPECT_TRUE(rlz_lib::MachineDealCode::Set("bad deal code?"));
   EXPECT_EQ("bad.deal.code.", rlz_lib::MachineDealCode::Get());
 }
 
