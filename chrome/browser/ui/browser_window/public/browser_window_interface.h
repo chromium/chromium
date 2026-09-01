@@ -18,17 +18,14 @@
 // This is the public interface for a browser window. Most features in
 // //chrome/browser depend on this interface, and thus to prevent circular
 // dependencies this interface should not depend on anything else in //chrome.
-// Ping erikchen for assistance if this class does not have the functionality
-// your feature needs. This comment will be deleted after there are 10+ features
-// in BrowserWindowFeatures.
 //
 // This interface is shared between desktop platforms and the experimental
 // desktop android platform. As such, the features exposed directly on this
 // class should only be those that apply to all these platforms, and should only
 // be features that are core to the concept of a browser window. Classes related
-// to specific features should likely instead be stored either as an entry in
-// the UnownedUserData (via BrowserWindowInterface::GetUnownedUserDataHost())
-// or on DesktopBrowserWindowCapabilities.
+// to specific features should instead be stored either as an entry in
+// the UnownedUserData via BrowserWindowInterface::GetUnownedUserDataHost().
+// Desktop-only functions should live in DesktopBrowserWindowCapabilities.
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace tabs {
