@@ -45,6 +45,11 @@ GlowHoverController* VerticalTabStyleViews::GetHoverControllerForTesting() {
   return delegate_->GetHoverControllerForTesting();  // IN-TEST
 }
 
+TabStyle::SeparatorOpacities
+VerticalTabStyleViews::GetSeparatorOpacitiesForTesting() const {  // IN-TEST
+  return {0.0f, 0.0f};
+}
+
 SkPath VerticalTabStyleViews::GetPath(TabStyle::PathType path_type,
                                       float scale,
                                       const TabPathFlags& flags) const {

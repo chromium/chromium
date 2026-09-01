@@ -38,6 +38,7 @@ class VerticalTabStyleViews : public TabStyleViews {
   const TabStyleViewDelegate* delegate() const override;
   double GetHoverAnimationValue() const override;
   GlowHoverController* GetHoverControllerForTesting() override;
+  TabStyle::SeparatorOpacities GetSeparatorOpacitiesForTesting() const override;
 
  private:
   SkScalar GetCornerRadius() const;

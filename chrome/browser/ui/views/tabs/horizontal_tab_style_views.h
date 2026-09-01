@@ -45,6 +45,7 @@ class HorizontalTabStyleViews : public TabStyleViews {
   double GetHoverAnimationValue() const override;
 
   GlowHoverController* GetHoverControllerForTesting() override;
+  TabStyle::SeparatorOpacities GetSeparatorOpacitiesForTesting() const override;
 
  private:
   // Returns the color for the separator.

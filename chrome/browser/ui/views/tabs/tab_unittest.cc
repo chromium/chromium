@@ -9,11 +9,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
@@ -1338,6 +1340,65 @@ TEST_F(TabTest, SingleElementCentering) {
     EXPECT_TRUE(GetTabTitle(tab)->GetVisible());
   }
 }
+
+namespace {
+class SeparatorTestTabSlotController : public FakeTabSlotController {
+ public:
+  void SetTabs(std::vector<Tab*> tabs) { tabs_ = std::move(tabs); }
+
+  Tab* GetAdjacentTab(const Tab* tab, int offset) override {
+    auto it = std::find(tabs_.begin(), tabs_.end(), tab);
+    if (it == tabs_.end()) {
+      return nullptr;
+    }
+    int index = std::distance(tabs_.begin(), it) + offset;
+    if (index >= 0 && index < static_cast<int>(tabs_.size())) {
+      return tabs_[index];
+    }
+    return nullptr;
+  }
+
+  int GetTabCount() const override { return static_cast<int>(tabs_.size()); }
+
+ private:
+  std::vector<Tab*> tabs_;
+};
+}  // namespace
+
+TEST_F(TabTest, HorizontalSeparators) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({}, {tabs::kTabStripUnification});
+
+  auto controller = std::make_unique<SeparatorTestTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  views::View* contents_view =
+      widget->SetContentsView(std::make_unique<views::View>());
+
+  Tab* tab0 = contents_view->AddChildView(
+      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
+  Tab* tab1 = contents_view->AddChildView(
+      std::make_unique<Tab>(tabs::TabHandle(2), controller.get()));
+  Tab* tab2 = contents_view->AddChildView(
+      std::make_unique<Tab>(tabs::TabHandle(3), controller.get()));
+
+  controller->SetTabs({tab0, tab1, tab2});
+
+  // When unification is disabled (legacy), trailing separators are drawn as
+  // well.
+  auto opacities0 = tab0->tab_style_views()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 1.0f);
+
+  auto opacities1 = tab1->tab_style_views()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 1.0f);
+  EXPECT_EQ(opacities1.right, 1.0f);
+
+  auto opacities2 = tab2->tab_style_views()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities2.left, 1.0f);
+  EXPECT_EQ(opacities2.right, 1.0f);
+}
+
 #if BUILDFLAG(IS_MAC)
 class TestContextMenuController : public views::ContextMenuController {
  public:

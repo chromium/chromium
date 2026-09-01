@@ -139,6 +139,9 @@ class TabStyleViews {
 
   virtual GlowHoverController* GetHoverControllerForTesting() = 0;
 
+  virtual TabStyle::SeparatorOpacities GetSeparatorOpacitiesForTesting()
+      const = 0;
+
   const TabStyle* tab_style() const { return tab_style_; }
 
  private:

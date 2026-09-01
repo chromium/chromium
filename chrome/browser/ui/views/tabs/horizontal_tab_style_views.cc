@@ -56,6 +56,11 @@ GlowHoverController* HorizontalTabStyleViews::GetHoverControllerForTesting() {
   return delegate_->GetHoverControllerForTesting();  // IN-TEST
 }
 
+TabStyle::SeparatorOpacities
+HorizontalTabStyleViews::GetSeparatorOpacitiesForTesting() const {  // IN-TEST
+  return GetSeparatorOpacities(/*for_layout=*/false);
+}
+
 SkPath HorizontalTabStyleViews::GetPath(TabStyle::PathType path_type,
                                         float scale,
                                         const TabPathFlags& flags) const {
@@ -531,7 +536,9 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
   const auto has_visible_background =
       [](const TabStyleViewDelegate* const delegate) {
         return delegate->IsActive() || delegate->IsSelected() ||
-               delegate->IsHovering();
+               delegate->IsHovering() ||
+               (delegate->IsPinned() &&
+                tabs::IsNewHorizontalPinnedTabStylingEnabled());
       };
 
   // These tab states all have visible backgrounds. Separators must not
@@ -570,18 +577,32 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
                : shown_separator_opacity;
   }
 
-  // If there isn't an adjacent tab, the tab is at the beginning or end of the
-  // tab strip. For the first tab, we shouldn't show the leading separator, for
-  // the last tab, we should show the separator between the new tab button and
-  // the tab strip IF the tab isn't selected, hovered, or active. If there is a
-  // combo button with a non-transparent background in place of the new tab
-  // button, we should not show the trailing separator.
-  if (!adjacent_tab) {
-    return leading ? 0.0f : shown_separator_opacity;
+  if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+    // When unification is enabled, tabs render trailing separators by default
+    // to avoid double separators between tabs. Leading separators are only
+    // rendered between the pinned and unpinned tab containers when new pinned
+    // tab styling is disabled.
+    if (leading) {
+      if (!tabs::IsNewHorizontalPinnedTabStylingEnabled() && adjacent_tab &&
+          adjacent_tab->IsPinned() && !has_visible_background(adjacent_tab)) {
+        return shown_separator_opacity;
+      }
+      return 0.0f;
+    }
+  } else {
+    // If there isn't an adjacent tab, the tab is at the beginning or end of the
+    // tab strip. For the first tab, we shouldn't show the leading separator.
+    // For the last tab, we should show the separator between the new tab button
+    // and the tab strip IF the tab isn't selected, hovered, or active. If there
+    // is a combo button with a non-transparent background in place of the new
+    // tab button, we should not show the trailing separator.
+    if (!adjacent_tab) {
+      return leading ? 0.0f : shown_separator_opacity;
+    }
   }
 
   // Do not show when the adjacent tab is displaying a visible shape.
-  if (has_visible_background(adjacent_tab)) {
+  if (adjacent_tab && has_visible_background(adjacent_tab)) {
     return 0.0f;
   }
 
@@ -837,12 +858,18 @@ void HorizontalTabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(separator_color(separator_opacities.left));
-  canvas->DrawRoundRect(separator_bounds.leading,
-                        tab_style()->GetSeparatorCornerRadius() * scale, flags);
-  flags.setColor(separator_color(separator_opacities.right));
-  canvas->DrawRoundRect(separator_bounds.trailing,
-                        tab_style()->GetSeparatorCornerRadius() * scale, flags);
+  if (separator_opacities.left > 0) {
+    flags.setColor(separator_color(separator_opacities.left));
+    canvas->DrawRoundRect(separator_bounds.leading,
+                          tab_style()->GetSeparatorCornerRadius() * scale,
+                          flags);
+  }
+  if (separator_opacities.right > 0) {
+    flags.setColor(separator_color(separator_opacities.right));
+    canvas->DrawRoundRect(separator_bounds.trailing,
+                          tab_style()->GetSeparatorCornerRadius() * scale,
+                          flags);
+  }
 }
 
 BrowserFrameView* HorizontalTabStyleViews::GetBrowserFrameView() const {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -910,4 +913,354 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, MultiSelectUserActions) {
       ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN | ctrl_modifier,
       ui::EF_LEFT_MOUSE_BUTTON);
   tab_view_3->OnMouseReleased(release_shift_ctrl);
+}
+
+class HorizontalTabViewSeparatorTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    ExitVerticalTabsMode();
+  }
+
+  TabView* GetTabView(int index) {
+    auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+    if (!region_view) {
+      return nullptr;
+    }
+    tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(index);
+    if (!tab) {
+      return nullptr;
+    }
+    return views::AsViewClass<TabView>(
+        region_view->GetTabAnchorView(tab->GetHandle()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewSeparatorTest, HorizontalSeparators) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  TabView* tab0 = GetTabView(0);
+  TabView* tab1 = GetTabView(1);
+  TabView* tab2 = GetTabView(2);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+
+  // Tab 0 is active.
+  tab_strip_model()->ActivateTabAt(0);
+
+  // Tab 0 is active, so neither separator is shown.
+  auto opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  // Tab 1 is inactive and has Tab 2 after it. With unification enabled, tabs
+  // render trailing separators, so Tab 1 renders trailing (right) separator.
+  auto opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 1.0f);
+
+  // Tab 2 is inactive and the last tab in the strip, so it renders its trailing
+  // separator on the right.
+  auto opacities2 = tab2->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities2.left, 0.0f);
+  EXPECT_EQ(opacities2.right, 1.0f);
+
+  // When Tab 1 is active:
+  tab_strip_model()->ActivateTabAt(1);
+
+  // Tab 0 is next to active Tab 1 -> trailing is 0.0f.
+  opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  // Tab 1 is active -> no separators.
+  opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 0.0f);
+
+  // Tab 2 is last tab -> trailing is 1.0f.
+  opacities2 = tab2->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities2.left, 0.0f);
+  EXPECT_EQ(opacities2.right, 1.0f);
+
+  // When Tab 2 is active:
+  tab_strip_model()->ActivateTabAt(2);
+
+  // Tab 0 is inactive and has inactive Tab 1 following -> trailing is 1.0f.
+  opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 1.0f);
+
+  // Tab 1 is next to active Tab 2 -> trailing is 0.0f.
+  opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 0.0f);
+
+  opacities2 = tab2->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities2.left, 0.0f);
+  EXPECT_EQ(opacities2.right, 0.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewSeparatorTest,
+                       HorizontalSeparators_RTL) {
+  std::string original_locale = base::i18n::GetConfiguredLocale();
+  base::i18n::SetICUDefaultLocale("ar");
+
+  AppendTab();
+  AppendTab();
+
+  TabView* tab0 = GetTabView(0);
+  TabView* tab1 = GetTabView(1);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+
+  // Tab 0 is active.
+  tab_strip_model()->ActivateTabAt(0);
+
+  // In RTL, the leading separator is placed on the physical right
+  // (opacities.right), and the trailing separator is on the physical left
+  // (opacities.left).
+  auto opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  // Tab 1 is inactive and last tab -> trailing (left) is 1.0f, leading (right)
+  // is 0.0f.
+  auto opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 1.0f);
+  EXPECT_EQ(opacities1.right, 0.0f);
+
+  // When Tab 1 is active:
+  tab_strip_model()->ActivateTabAt(1);
+
+  // Tab 0 is inactive and next to active Tab 1 -> trailing (left) is 0.0f.
+  opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 0.0f);
+
+  base::i18n::SetICUDefaultLocale(original_locale);
+}
+
+class HorizontalTabViewPinnedStylingEnabledTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    enabled.push_back({tabs::kNewHorizontalPinnedTabStyling, {}});
+    return enabled;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    ExitVerticalTabsMode();
+  }
+
+  TabView* GetTabView(int index) {
+    auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+    if (!region_view) {
+      return nullptr;
+    }
+    tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(index);
+    if (!tab) {
+      return nullptr;
+    }
+    return views::AsViewClass<TabView>(
+        region_view->GetTabAnchorView(tab->GetHandle()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingEnabledTest,
+                       HorizontalSeparators_PinnedTabsStylingEnabled) {
+  AppendPinnedTab();
+  AppendTab();
+
+  TabView* tab0 = GetTabView(0);
+  TabView* tab1 = GetTabView(1);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+
+  // Tab 1 is active.
+  tab_strip_model()->ActivateTabAt(1);
+
+  // Pinned tabs never draw separators. Tab 1 is active so no separators.
+  auto opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  auto opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 0.0f);
+
+  // Tab 0 (pinned) is active.
+  tab_strip_model()->ActivateTabAt(0);
+
+  opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  // Tab 1 is inactive and last tab. With pinned tab styling enabled, pinned
+  // tabs have visible backgrounds, so no leading separator is needed between
+  // the pinned and unpinned containers. Its trailing separator is drawn.
+  opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 1.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingEnabledTest,
+                       HorizontalPinnedTabStyle_UpdatedEnabled) {
+  AppendPinnedTab();
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(1);
+
+  TabView* tab0 = GetTabView(0);
+  ASSERT_TRUE(tab0);
+  tab0->SetBounds(0, 0, 50, 40);
+
+  // When inactive, pinned tabs have stroke thickness 1 (border) and squarcle
+  // path.
+  EXPECT_FALSE(tab0->IsActive());
+  EXPECT_EQ(tab0->tab_styling()->GetStrokeThickness(), 1);
+  SkPath inactive_path =
+      tab0->tab_styling()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_TRUE(inactive_path.isRRect(nullptr));
+
+  // When active, stroke thickness is 0 and uses folder path.
+  tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(tab0->IsActive());
+  EXPECT_EQ(tab0->tab_styling()->GetStrokeThickness(), 0);
+  SkPath active_path =
+      tab0->tab_styling()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(active_path.isRRect(nullptr));
+}
+
+class HorizontalTabViewPinnedStylingDisabledTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {tabs::kNewHorizontalPinnedTabStyling};
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    ExitVerticalTabsMode();
+  }
+
+  TabView* GetTabView(int index) {
+    auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+    if (!region_view) {
+      return nullptr;
+    }
+    tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(index);
+    if (!tab) {
+      return nullptr;
+    }
+    return views::AsViewClass<TabView>(
+        region_view->GetTabAnchorView(tab->GetHandle()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingDisabledTest,
+                       HorizontalSeparators_PinnedTabsStylingDisabled) {
+  AppendPinnedTab();
+  AppendTab();
+  AppendTab();
+
+  TabView* tab0 = GetTabView(0);
+  TabView* tab1 = GetTabView(1);
+  TabView* tab2 = GetTabView(2);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+
+  // Tab 1 is active.
+  tab_strip_model()->ActivateTabAt(1);
+
+  auto opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  auto opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 0.0f);
+
+  // Tab 0 (pinned) is active.
+  tab_strip_model()->ActivateTabAt(0);
+
+  opacities0 = tab0->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities0.left, 0.0f);
+  EXPECT_EQ(opacities0.right, 0.0f);
+
+  // When pinned tab styling is disabled and Tab 0 is active, Tab 1 leading
+  // separator is 0.0f because Tab 0 has a visible background. Tab 1 trailing
+  // separator is 1.0f (between Tab 1 and Tab 2).
+  opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 0.0f);
+  EXPECT_EQ(opacities1.right, 1.0f);
+
+  // When Tab 2 is active, both Tab 0 (pinned) and Tab 1 (unpinned) are
+  // inactive. When new pinned tab styling is disabled, Tab 1 renders a leading
+  // separator between the pinned and unpinned containers.
+  tab_strip_model()->ActivateTabAt(2);
+
+  opacities1 = tab1->tab_styling()->GetSeparatorOpacitiesForTesting();
+  EXPECT_EQ(opacities1.left, 1.0f);
+  EXPECT_EQ(opacities1.right, 0.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingDisabledTest,
+                       HorizontalPinnedTabStyle_UpdatedDisabled) {
+  AppendPinnedTab();
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(1);
+
+  TabView* tab0 = GetTabView(0);
+  ASSERT_TRUE(tab0);
+  tab0->SetBounds(0, 0, 50, 40);
+
+  // When disabled, inactive pinned tabs match the folder structure with
+  // extended border tabs with no border (stroke thickness 0, non-RRect folder
+  // path).
+  EXPECT_FALSE(tab0->IsActive());
+  EXPECT_EQ(tab0->tab_styling()->GetStrokeThickness(), 0);
+  SkPath inactive_path =
+      tab0->tab_styling()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(inactive_path.isRRect(nullptr));
+
+  // When active, pinned tab still has no stroke and uses folder path.
+  tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(tab0->IsActive());
+  EXPECT_EQ(tab0->tab_styling()->GetStrokeThickness(), 0);
+  SkPath active_path =
+      tab0->tab_styling()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(active_path.isRRect(nullptr));
 }
