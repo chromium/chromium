@@ -858,6 +858,23 @@ TEST_F(ContextualTasksUiTest,
                 "voiceSearchCoherenceCobrowsingComposeboxEnabled"),
             true);
 }
+
+TEST_F(ContextualTasksUiTest, ShouldClearAllInputsOnSubmit) {
+  // Default / no invocation source should clear inputs.
+  EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(std::nullopt));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Omnibox page action entrypoint should retain inputs.
+  EXPECT_FALSE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
+      lens::LensOverlayInvocationSource::kOmniboxPageAction));
+
+  // Other entrypoints should clear inputs.
+  EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
+      lens::LensOverlayInvocationSource::kAppMenu));
+  EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
+      lens::LensOverlayInvocationSource::kToolbar));
+#endif
+}
 #endif  // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 
 TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {

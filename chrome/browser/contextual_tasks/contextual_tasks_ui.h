@@ -139,6 +139,8 @@ class ContextualTasksUI
 
   static content::WebUIDataSource* RegisterWebUIDataSource(Profile* profile);
   static base::DictValue GetContextualTasksLoadTimeData(Profile* profile);
+  static bool ShouldClearAllInputsOnSubmit(
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   using SlimWebViewPageHandlerFactory::BindInterface;
