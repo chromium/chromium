@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -27,6 +28,9 @@ constexpr CGFloat kModuleContainerCornerRadius = 24.0;
 
 // Bottom padding for the most visited tiles container.
 constexpr CGFloat kMVTContainerBottomPadding = 10.0;
+// TODO(crbug.com/542594099): Remove "UICleanup" suffix when the NTP clean up is
+// launched.
+constexpr CGFloat kMVTContainerBottomPaddingUICleanup = 16.0;
 
 // Spacing between content suggestions modules in the stack view.
 constexpr CGFloat kStackViewSpacing = 12.0;
@@ -179,14 +183,16 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   AddSameConstraints(container, backgroundView);
 
   [container addSubview:moduleView];
+  CGFloat bottomPadding = IsNewTabPageUICleanupEnabled()
+                              ? kMVTContainerBottomPaddingUICleanup
+                              : kMVTContainerBottomPadding;
   [NSLayoutConstraint activateConstraints:@[
     [moduleView.topAnchor constraintEqualToAnchor:container.topAnchor],
     [moduleView.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
     [moduleView.trailingAnchor
         constraintEqualToAnchor:container.trailingAnchor],
-    [moduleView.bottomAnchor
-        constraintEqualToAnchor:container.bottomAnchor
-                       constant:-kMVTContainerBottomPadding],
+    [moduleView.bottomAnchor constraintEqualToAnchor:container.bottomAnchor
+                                            constant:-bottomPadding],
   ]];
   return container;
 }

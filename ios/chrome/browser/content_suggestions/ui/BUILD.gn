@@ -20,6 +20,7 @@ source_set("ui") {
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/util",
