@@ -14,6 +14,10 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::_;
 using testing::Return;
@@ -149,6 +153,110 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, SnoozeResetForciblyReshowsNotice) {
 
   context.OnExclusiveAccessUserInput();
 
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+}
+
+TEST_F(ExclusiveAccessBubbleAndroidTest,
+       ParamsAccessorReturnsLiveUpdatedParams) {
+  ExclusiveAccessBubbleParams initial_params;
+  initial_params.type =
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  ExclusiveAccessBubbleAndroid bubble(initial_params, base::DoNothing(),
+                                      std::move(mock_bridge));
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  EXPECT_EQ(bubble.params().type,
+            EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION);
+
+  // Dynamically update the bubble params (e.g. keyboard lock acquired).
+  ExclusiveAccessBubbleParams update_params;
+  update_params.type =
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION;
+  update_params.origin = url::Origin::Create(GURL("https://example.com"));
+
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  bubble.Update(update_params, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  // In the buggy baseline where ExclusiveAccessBubbleAndroid shadows params_,
+  // ExclusiveAccessBubble::params() returns the frozen base class member,
+  // which still has EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION
+  // and an empty origin.
+  EXPECT_EQ(bubble.params().type,
+            EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION);
+  EXPECT_EQ(bubble.params().origin, update_params.origin);
+}
+
+TEST_F(ExclusiveAccessBubbleAndroidTest,
+       SnoozeResetPreservesDynamicallyUpdatedParams) {
+  ExclusiveAccessBubbleParams initial_params;
+  initial_params.type =
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  auto bubble = std::make_unique<ExclusiveAccessBubbleAndroid>(
+      initial_params, base::DoNothing(), std::move(mock_bridge));
+  auto* bubble_ptr = bubble.get();
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  // Transition to keyboard lock.
+  ExclusiveAccessBubbleParams lock_params;
+  lock_params.type =
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION;
+
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  bubble_ptr->Update(lock_params, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  ExclusiveAccessContextAndroid context;
+  context.SetBubbleForTesting(std::move(bubble));
+
+  for (int i = 1; i <= 9; ++i) {
+    context.OnExclusiveAccessUserInput();
+  }
+
+  // The 10th input forces a re-show by reading bubble->params().
+  // If params_ is shadowed, bubble->params() returns the initial FULLSCREEN
+  // type, overwriting the live KEYBOARD_LOCK type and sending the wrong exit
+  // text to the bridge.
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
+      .WillRepeatedly(Return(true));
+  std::u16string expected_text =
+      exclusive_access_bubble::GetInstructionTextForType(
+          EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION,
+          l10n_util::GetStringUTF16(IDS_APP_ESC_KEY), std::nullopt,
+          /*has_download=*/false, /*notify_overridden=*/false);
+  EXPECT_CALL(*mock_bridge_ptr, Update(expected_text)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  context.OnExclusiveAccessUserInput();
   testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
 }
 
