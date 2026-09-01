@@ -24,6 +24,11 @@ BASE_DECLARE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache);
 
 BASE_DECLARE_FEATURE(kSearchPrefetchBeaconLogging);
 
+BASE_DECLARE_FEATURE(kSearchPrefetchPreloadServingMetrics);
+
+// Whether to record legacy search prefetch in PreloadServingMetrics.
+bool IsSearchPrefetchPreloadServingMetricsEnabled();
+
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
 

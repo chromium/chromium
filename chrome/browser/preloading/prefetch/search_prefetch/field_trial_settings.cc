@@ -182,6 +182,13 @@ bool IsSearchPrefetchBeaconLoggingEnabled(
          value == kSuggestPrefetchParam.Get();
 }
 
+BASE_FEATURE(kSearchPrefetchPreloadServingMetrics,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsSearchPrefetchPreloadServingMetricsEnabled() {
+  return base::FeatureList::IsEnabled(kSearchPrefetchPreloadServingMetrics);
+}
+
 bool IsPrefetchIncognitoEnabled() {
   return SearchPrefetchServicePrefetchingIsEnabled() &&
          IsSearchNavigationPrefetchEnabled() &&
