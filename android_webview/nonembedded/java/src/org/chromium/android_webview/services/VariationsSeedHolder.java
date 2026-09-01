@@ -127,16 +127,15 @@ public class VariationsSeedHolder {
                     Log.e(TAG, "Failed to open seed file " + newSeedFile + " for update");
                     return;
                 }
-                // Avoid passing entropy source values here. This is done because the source of
-                // truth for the entropy sources is AwEntropyState. So, when providing the seed and
-                // entropy sources to apps (via the SeedWriter), AwEntropyState should be used. It
-                // isn't useful to persist the entropy sources here because they would (and should)
-                // be ignored by the SeedWriter.
+                // SafeModeVariationsSeedContentProvider serves this seed file directly to apps
+                // during FastVariationsSeed SafeMode without going through SeedWriter. Therefore,
+                // the device-level entropy sources must be persisted here so SafeMode clients
+                // stay synchronized.
                 if (!VariationsUtils.writeSeed(
                         out,
                         VariationsSeedHolder.this.mSeed,
-                        /* lowEntropySource= */ -1,
-                        /* limitedEntropyRandomizationSource= */ null)) {
+                        AwEntropyState.getLowEntropySource(),
+                        AwEntropyState.getLimitedEntropyRandomizationSource())) {
                     Log.e(TAG, "Failed to write seed file " + newSeedFile + " for update");
                     return;
                 }

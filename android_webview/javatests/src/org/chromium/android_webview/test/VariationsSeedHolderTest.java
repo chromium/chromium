@@ -375,24 +375,37 @@ public class VariationsSeedHolderTest {
     }
 
     // Test that updateSeed() saves the seed to the service's internal storage
-    // without the entropy sources, as they are added when serving the seed.
+    // with the entropy sources, so SafeMode clients querying the seed will stay
+    // synchronized.
     @Test
     @MediumTest
-    public void testUpdateSeed_NoEntropy() throws IOException, TimeoutException {
+    public void testUpdateSeed_HasEntropy() throws IOException, TimeoutException {
         TestHolder holder = new TestHolder();
+        int expectedLowEntropy = AwEntropyState.getLowEntropySource();
+        Assert.assertTrue(expectedLowEntropy >= 0);
+        String expectedLimitedEntropy = AwEntropyState.getLimitedEntropyRandomizationSource();
+        Assert.assertNotNull(expectedLimitedEntropy);
         holder.updateSeedBlocking(VariationsTestUtils.createMockSeed());
 
         File internalSeedFile = VariationsUtils.getSeedFile();
         Assert.assertTrue("Internal seed file should exist", internalSeedFile.exists());
         AwVariationsSeed readProto = VariationsTestUtils.readProtoFromFile(internalSeedFile);
 
-        // The internal file should NOT have the entropy sources.
-        Assert.assertFalse(
-                "Internal seed file should not contain low entropy source",
+        // The internal file should have the entropy sources.
+        Assert.assertTrue(
+                "Internal seed file should contain low entropy source",
                 readProto.hasLowEntropySource());
-        Assert.assertFalse(
-                "Internal seed file should not contain limited entropy source",
+        Assert.assertEquals(
+                "Internal seed file has wrong low entropy source",
+                expectedLowEntropy,
+                readProto.getLowEntropySource());
+        Assert.assertTrue(
+                "Internal seed file should contain limited entropy source",
                 readProto.hasLimitedEntropyRandomizationSource());
+        Assert.assertEquals(
+                "Internal seed file has wrong limited entropy source",
+                expectedLimitedEntropy,
+                readProto.getLimitedEntropyRandomizationSource());
     }
 
     // Test that writeSeedIfNewer() serves the seed to the app with the entropy
