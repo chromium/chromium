@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -33,7 +33,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 FYI x64 Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -53,7 +53,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -63,7 +63,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 FYI x64 Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -83,7 +83,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -95,19 +95,19 @@
         {
           "bucket": "ci",
           "builder": "GPU FYI Win x64 Builder",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Win10 FYI x64 Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m154"
         },
         {
           "bucket": "ci",
           "builder": "Win10 FYI x64 Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "retry_failed_shards": false,

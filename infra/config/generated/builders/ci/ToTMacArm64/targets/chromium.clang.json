@@ -1,7 +1,0 @@
-{
-  "ToTMacArm64": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}

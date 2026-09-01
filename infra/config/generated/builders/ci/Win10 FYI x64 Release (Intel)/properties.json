@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -30,7 +30,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 FYI x64 Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -50,7 +50,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -62,14 +62,10 @@
         {
           "bucket": "ci",
           "builder": "Win10 FYI x64 Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "mirroring_builder_group_and_names": [
-        {
-          "builder": "gpu-fyi-try-win10-intel-rel-64",
-          "group": "tryserver.chromium.win"
-        },
         {
           "builder": "win_optional_gpu_tests_rel",
           "group": "tryserver.chromium.win"
@@ -87,11 +83,11 @@
   },
   "builder_group": "chromium.gpu.fyi",
   "gardener_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

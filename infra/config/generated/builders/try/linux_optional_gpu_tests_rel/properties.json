@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Linux Builder",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -33,7 +33,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux FYI Release (AMD RX 5500 XT)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -53,7 +53,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Linux Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -63,7 +63,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux FYI Release (Intel UHD 630)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -83,7 +83,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Linux Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -93,7 +93,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux FYI Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -113,7 +113,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Linux Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -125,24 +125,24 @@
         {
           "bucket": "ci",
           "builder": "GPU FYI Linux Builder",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Linux FYI Release (AMD RX 5500 XT)",
-          "project": "chromium"
+          "project": "chromium-m154"
         },
         {
           "bucket": "ci",
           "builder": "Linux FYI Release (Intel UHD 630)",
-          "project": "chromium"
+          "project": "chromium-m154"
         },
         {
           "bucket": "ci",
           "builder": "Linux FYI Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "retry_failed_shards": false,

@@ -1,7 +1,0 @@
-ci/android-annotator-rel
-ci/linux-annotator-rel
-ci/linux-chromeos-annotator-rel
-ci/win-annotator-rel
-try/linux-annotator-rel
-try/linux-chromeos-annotator-rel
-try/win-annotator-rel

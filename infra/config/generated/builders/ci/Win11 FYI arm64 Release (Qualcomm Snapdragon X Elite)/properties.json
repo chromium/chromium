@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Win arm64 Builder",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -31,7 +31,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -51,7 +51,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Win arm64 Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -63,16 +63,12 @@
         {
           "bucket": "ci",
           "builder": "Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "gpu-fyi-cq-win-arm64",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64",
           "group": "tryserver.chromium.win"
         }
       ],
@@ -88,11 +84,11 @@
   },
   "builder_group": "chromium.gpu.fyi",
   "gardener_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

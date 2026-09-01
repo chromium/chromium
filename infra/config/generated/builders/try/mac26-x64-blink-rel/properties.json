@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "try",
               "builder": "mac26-x64-blink-rel",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "tryserver.blink",
@@ -35,7 +35,7 @@
         {
           "bucket": "try",
           "builder": "mac26-x64-blink-rel",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/mac26-x64-blink-rel/targets"

@@ -1,1 +1,0 @@
-trusted.robots/linux_clang

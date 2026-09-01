@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Mac arm64 Builder",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -33,101 +33,8 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac FYI Experimental Release (Apple M1)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true,
-              "use_test_trigger_cas": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Mac FYI Experimental Retina Release (Apple M2)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true,
-              "use_test_trigger_cas": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Mac FYI Release (Apple M1)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true,
-              "use_test_trigger_cas": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Mac FYI Retina Release (Apple M2)",
-              "project": "chromium"
+              "project": "chromium-m154"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -148,38 +55,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Mac arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true,
-              "use_test_trigger_cas": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Mac FYI Retina Release (Apple M3)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac arm64 Builder",
-                "project": "chromium"
+                "project": "chromium-m154"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -191,59 +67,19 @@
         {
           "bucket": "ci",
           "builder": "GPU FYI Mac arm64 Builder",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Mac FYI Experimental Release (Apple M1)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Mac FYI Experimental Retina Release (Apple M2)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Mac FYI Release (Apple M1)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "Mac FYI Retina Release (Apple M2)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Mac FYI Retina Release (Apple M3)",
-          "project": "chromium"
+          "project": "chromium-m154"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "gpu-fyi-cq-mac-arm64",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-arm64-apple-m1-exp",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-arm64-apple-m1-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-arm64-apple-m2-exp",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-arm64-apple-m2-retina-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-arm64-apple-m3-retina-rel",
           "group": "tryserver.chromium.mac"
         }
       ],
@@ -270,11 +106,11 @@
   },
   "builder_group": "chromium.gpu.fyi",
   "gardener_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }
