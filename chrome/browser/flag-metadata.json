@@ -1389,7 +1389,7 @@
   {
     "name": "bookmarks-encryption",
     "owners": [ "arichiv@google.com", "mastiz@google.com", "plcoirier@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 170
   },
   {
     "name": "borealis-big-gl",
@@ -9146,7 +9146,7 @@
   {
     "name": "session-encryption",
     "owners": [ "arichiv@google.com", "dljames@chromium.org", "sammon@google.com"],
-    "expiry_milestone": 157
+    "expiry_milestone": 170
   },
   {
     "name": "session-restore-after-crash",
