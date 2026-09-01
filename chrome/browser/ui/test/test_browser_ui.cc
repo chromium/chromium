@@ -12,13 +12,16 @@
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"  // nogncheck
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -111,6 +114,41 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     const std::string& screenshot_prefix,
     const std::string& screenshot_name) {
   return VerifyPixelUi(view, {}, screenshot_prefix, screenshot_name);
+}
+
+ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
+    ui::TrackedElement* element,
+    const std::string& screenshot_prefix,
+    const std::string& screenshot_name) {
+  return VerifyPixelUi(element, {}, screenshot_prefix, screenshot_name);
+}
+
+ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
+    ui::TrackedElement* element,
+    const ScreenshotOptions& options,
+    const std::string& screenshot_prefix,
+    const std::string& screenshot_name) {
+  if (!element) {
+    return ui::test::ActionResult::kNotAttempted;
+  }
+  views::View* view = nullptr;
+  ScreenshotOptions effective_options = options;
+  if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
+    view = view_el->view();
+  } else if (auto* const webui_el = element->AsA<ui::TrackedElementWebUI>()) {
+    view = webui_el->GetWebView();
+    if (!effective_options.region.has_value()) {
+      effective_options.region = webui_el->GetBoundsInWebContents();
+    } else {
+      effective_options.region->Offset(
+          webui_el->GetBoundsInWebContents().OffsetFromOrigin());
+    }
+  }
+  if (!view) {
+    return ui::test::ActionResult::kNotAttempted;
+  }
+  return VerifyPixelUi(view, effective_options, screenshot_prefix,
+                       screenshot_name);
 }
 
 ui::test::ActionResult TestBrowserUi::VerifyPixelUi(

@@ -33,6 +33,8 @@ if (!is_android) {
       "//ui/views",
       "//ui/views:test_support",
       "//ui/views:view_pixel_diff_test_support",
+      "//ui/views/controls/webview",
+      "//ui/webui/tracked_element",
     ]
 
     if (is_chromeos) {

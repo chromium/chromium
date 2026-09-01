@@ -15,6 +15,10 @@
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace ui {
+class TrackedElement;
+}
+
 namespace views {
 class Widget;
 class View;
@@ -130,6 +134,16 @@ class TestBrowserUi {
   // Verifies a region within a View. For example, verify an element within
   // web content.
   ui::test::ActionResult VerifyPixelUi(views::View* view,
+                                       const ScreenshotOptions& options,
+                                       const std::string& screenshot_prefix,
+                                       const std::string& screenshot_name);
+
+  // Can be called by VerifyUi() to ensure pixel correctness for a tracked
+  // element (e.g. Views or WebUI element).
+  ui::test::ActionResult VerifyPixelUi(ui::TrackedElement* element,
+                                       const std::string& screenshot_prefix,
+                                       const std::string& screenshot_name);
+  ui::test::ActionResult VerifyPixelUi(ui::TrackedElement* element,
                                        const ScreenshotOptions& options,
                                        const std::string& screenshot_prefix,
                                        const std::string& screenshot_name);
