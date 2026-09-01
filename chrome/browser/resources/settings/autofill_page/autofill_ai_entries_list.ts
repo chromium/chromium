@@ -17,6 +17,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../icons.html.js';
+import '../privacy_icons.html.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 import './autofill_ai_add_or_edit_dialog.js';
