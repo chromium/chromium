@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -115,9 +116,15 @@ public final class ReadAloudFeatures {
         return sIneligibilityReason;
     }
 
+    public static final MutableFlagWithSafeDefault sReadAloudNative =
+            new MutableFlagWithSafeDefault(
+                    AccessibilityFeaturesMap.getInstance(),
+                    AccessibilityFeatures.READ_ALOUD_NATIVE,
+                    /* defaultValue= */ false);
+
     /** Returns true if the native C++ Read Aloud implementation is enabled. */
     public static boolean isNativeEnabled() {
-        return AccessibilityFeaturesMap.isEnabled(AccessibilityFeatures.READ_ALOUD_NATIVE);
+        return sReadAloudNative.isEnabled();
     }
 
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */

@@ -10,8 +10,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.FeatureMap;
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.Map;
-
 /** Java accessor for ui/accessibility/accessibility_features.cc state */
 @JNINamespace("ui")
 @NullMarked
@@ -31,11 +29,6 @@ public class AccessibilityFeaturesMap extends FeatureMap {
     /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
-    }
-
-    @Override
-    public Map<String, Boolean> getFlagsDefaultValuesInTests() {
-        return Map.of(AccessibilityFeatures.READ_ALOUD_NATIVE, false);
     }
 
     @Override
