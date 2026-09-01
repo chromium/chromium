@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../i18n_setup.js';
 import '../../settings_shared.css.js';
 import '../passwords/passwords_shared.css.js';
-import '../screen_reader_only.css.js';
+import './screen_reader_only.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

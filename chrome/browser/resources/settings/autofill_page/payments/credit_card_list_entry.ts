@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../settings_shared.css.js';
 import '../passwords/passwords_shared.css.js';
-import '../screen_reader_only.css.js';
+import './screen_reader_only.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';

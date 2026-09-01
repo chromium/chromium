@@ -503,7 +503,7 @@ build_webui("build") {
     "appearance_page/home_url_input.css",
     "autofill_page/autofill_shared.css",
     "autofill_page/passwords/passwords_shared.css",
-    "autofill_page/screen_reader_only.css",
+    "autofill_page/payments/screen_reader_only.css",
     "controls/settings_dropdown_menu.css",
     "controls/settings_slider.css",
     "downloads_page/downloads_page.css",
