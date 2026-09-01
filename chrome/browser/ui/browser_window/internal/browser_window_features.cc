@@ -1282,10 +1282,6 @@ ToastController* BrowserWindowFeatures::toast_controller() {
   return browser_ ? ToastController::From(browser_) : nullptr;
 }
 
-sessions::LiveTabContext* BrowserWindowFeatures::live_tab_context() {
-  return live_tab_context_.get();
-}
-
 LocationBar* BrowserWindowFeatures::location_bar() {
   // Return nullptr if not initialized. This can happen in tests where
   // BrowserWindowFeatures is stubbed without being initialized with a browser.
