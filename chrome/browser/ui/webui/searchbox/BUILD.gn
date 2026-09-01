@@ -224,10 +224,14 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "contextual_searchbox_handler_unittest.cc" ]
+    sources += [
+      "contextual_searchbox_handler_unittest.cc",
+      "contextual_searchbox_screenshare_controller_unittest.cc",
+    ]
     deps += [
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/feature_engagement",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/browser/ui:tab_ui_helper",
@@ -244,7 +248,9 @@ source_set("unit_tests") {
       "//components/omnibox/common:features",
       "//components/omnibox/composebox:mojo_bindings",
       "//components/prefs",
+      "//third_party/webrtc_overrides:webrtc_component",
       "//ui/base:test_support",
+      "//ui/gfx/codec",
     ]
 
     if (is_chromeos) {

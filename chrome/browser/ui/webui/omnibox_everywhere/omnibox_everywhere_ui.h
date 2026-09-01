@@ -134,7 +134,8 @@ class OmniboxEverywhereUI
   // ContextualSearchboxHandler::ScreenshareDelegate:
   void ShowScreenshotMenu(
       const gfx::Rect& anchor_rect,
-      base::WeakPtr<ContextualSearchboxHandler> source_handler) override;
+      base::WeakPtr<ContextualSearchboxScreenshareController> controller)
+      override;
   void OnScreensharePickerOpened() override;
   void OnScreensharePickerClosed() override;
   void ShowRegionSelectOverlay(const SkBitmap& screenshot,
@@ -171,7 +172,8 @@ class OmniboxEverywhereUI
   std::unique_ptr<ui::SimpleMenuModel> screenshot_menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> screenshot_menu_runner_;
-  base::WeakPtr<ContextualSearchboxHandler> active_screenshot_handler_;
+  base::WeakPtr<ContextualSearchboxScreenshareController>
+      active_screenshot_controller_;
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_{this};

@@ -7,9 +7,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "contextual_searchbox_handler\\.(cc|h)": [
+  "contextual_searchbox_(handler|screenshare_controller)\\.(cc|h)": [
+    "+chrome/browser/media/webrtc/desktop_media_list.h",
     "+chrome/browser/media/webrtc/desktop_media_picker.h",
     "+chrome/browser/media/webrtc/desktop_media_picker_controller.h",
+    "+chrome/browser/media/webrtc/desktop_media_picker_factory.h",
     "+chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h",
     "+third_party/webrtc/modules/desktop_capture/desktop_capturer.h",
   ],
