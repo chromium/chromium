@@ -33,6 +33,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
@@ -341,6 +342,17 @@ class VideoCaptureTest : public testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
+  VideoCaptureHost* host() const { return host_.get(); }
+  mojo::Remote<media::mojom::VideoCaptureHost>& host_remote() {
+    return host_remote_;
+  }
+  const base::UnguessableToken& opened_session_id() const {
+    return opened_session_id_;
+  }
+  const scoped_refptr<base::SingleThreadTaskRunner>& task_runner() const {
+    return task_runner_;
+  }
+
   MediaStreamManager* media_stream_manager() const {
     return media_stream_manager_.get();
   }
@@ -405,6 +417,27 @@ TEST_F(VideoCaptureTest, StartAndErrorAndStop) {
 TEST_F(VideoCaptureTest, StartWithInvalidSessionId) {
   StartCaptureWithInvalidSession();
   StopCapture();
+}
+
+TEST_F(VideoCaptureTest, StartWithDuplicateDeviceIdReportsBadMessage) {
+  StartCapture();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::PendingRemote<media::mojom::VideoCaptureObserver> dummy_observer;
+  std::ignore = dummy_observer.InitWithNewPipeAndPassReceiver();
+  media::VideoCaptureParams params;
+  params.requested_format = media::VideoCaptureFormat(gfx::Size(352, 288), 30,
+                                                      media::PIXEL_FORMAT_I420);
+  host_remote()->Start(DeviceId(), opened_session_id(), params,
+                       std::move(dummy_observer));
+  EXPECT_EQ("VideoCaptureHost::Start: Duplicate device_id.",
+            bad_message_observer.WaitForBadMessage());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, DoOnStateChanged(media::mojom::VideoCaptureState::STOPPED))
+      .WillOnce(ExitMessageLoop(task_runner(), run_loop.QuitClosure()));
+  static_cast<media::mojom::VideoCaptureHost*>(host())->Stop(DeviceId());
+  run_loop.Run();
 }
 
 TEST_F(VideoCaptureTest, StartAndCaptureAndError) {

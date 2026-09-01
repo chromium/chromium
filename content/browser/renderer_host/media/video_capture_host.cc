@@ -294,8 +294,10 @@ void VideoCaptureHost::Start(
     return;
   }
 
-  CHECK(!device_id_to_observer_map_.contains(device_id),
-        base::NotFatalUntil::M158);
+  if (device_id_to_observer_map_.contains(device_id)) {
+    mojo::ReportBadMessage("VideoCaptureHost::Start: Duplicate device_id.");
+    return;
+  }
   auto& observer_in_map = device_id_to_observer_map_[device_id];
   observer_in_map.Bind(std::move(observer));
 
