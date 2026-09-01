@@ -282,7 +282,7 @@ let mojoPrimaryProfile = Profile(
     processEnv: [
         "ASAN_OPTIONS": "detect_odr_violation=0:abort_on_error=1", "DISPLAY": ":20",
     ],
-    maxExecsBeforeRespawn: 1000,
+    maxExecsBeforeRespawn: 50,
     timeout: Timeout.interval(11000, 11000),
     codePrefix: """
         let globalRemote = null;
