@@ -41,7 +41,7 @@ bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
     SCOPED_TRACE(base::StringPrintf(
         "org_words[%" PRIuS "]: %s", i, org_words[i].first.c_str()));
 
-    int affix_matches = iter.Advance(buf.data(), kBufSize, affix_ids.data());
+    int affix_matches = iter.Advance(buf, affix_ids.data());
     EXPECT_NE(0, affix_matches);
     EXPECT_EQ(org_words[i].first, std::string(buf.data()));
     EXPECT_EQ(affix_matches, static_cast<int>(org_words[i].second.size()));

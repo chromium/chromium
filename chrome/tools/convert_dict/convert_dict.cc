@@ -47,7 +47,7 @@ bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
   static const int buf_size = 128;
   char buf[buf_size];
   for (size_t i = 0; i < org_words.size(); i++) {
-    int affix_matches = iter.Advance(buf, buf_size, affix_ids);
+    int affix_matches = iter.Advance(buf, affix_ids);
     if (affix_matches == 0) {
       printf("Found the end before we expected\n");
       return false;

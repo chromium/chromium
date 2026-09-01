@@ -7,7 +7,9 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -34,7 +36,7 @@ class WordIterator {
   // Fills the buffer with the next word and the affixes for it into the given
   // array. Returns the number of affixes. A return value of 0 means there are
   // no more words.
-  int Advance(char* output_buffer, size_t output_len,
+  int Advance(base::span<char> output_buffer,
               int affix_ids[BDict::MAX_AFFIXES_PER_WORD]);
 
  private:
@@ -46,7 +48,7 @@ class WordIterator {
   // Called by Advance when a leaf is found to generate the word, affix list,
   // and return value.
   int FoundLeaf(const NodeReader& node, char cur_char,
-                char* output_buffer, size_t output_len,
+                base::span<char> output_buffer,
                 int affix_ids[BDict::MAX_AFFIXES_PER_WORD]);
 
   std::vector<NodeInfo> stack_;
@@ -55,8 +57,8 @@ class WordIterator {
 // Will iterate over a list of lines separated by NULLs.
 class LineIterator {
  public:
-  // Returns the next word in the sequence or NULL if there are no more.
-  const char* Advance();
+  // Returns the next line in the sequence or std::nullopt if there are no more.
+  std::optional<std::string_view> Advance();
 
   // Returns true when all data has been read. We're done when we reach a
   // double-NULL or a the end of the input (shouldn't happen).
@@ -77,9 +79,9 @@ class LineIterator {
 // Created by GetReplacementIterator to iterate over all replacement pairs.
 class ReplacementIterator : public LineIterator {
  public:
-  // Fills pointers to NULL terminated strings into the given output params.
+  // Fills string views into the given output params.
   // Returns false if there are no more pairs and nothing was filled in.
-  bool GetNext(const char** first, const char** second);
+  bool GetNext(std::string_view* first, std::string_view* second);
 
  private:
   friend class BDictReader;
@@ -115,7 +117,7 @@ class BDictReader {
   // group IDs are filled into |*affix_indices|. These IDs may be 0 to indicate
   // there is no affix for that particular match. A return valuf of 0 means that
   // there are no matches.
-  int FindWord(const char* word,
+  int FindWord(std::string_view word,
                int affix_indices[BDict::MAX_AFFIXES_PER_WORD]) const;
 
   // Returns an iterator that will go over all AF lines ("affix groups").

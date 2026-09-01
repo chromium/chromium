@@ -137,17 +137,14 @@ index 5d35540..80ce539 100644
    std::string word(in_word, 0, wl);
  
 +#ifdef HUNSPELL_CHROME_CLIENT
-+  const char *pattern, *pattern2;
++  std::string_view pattern, pattern2;
 +  hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
 +  while (iterator.GetNext(&pattern, &pattern2)) {
-+    const char* r = word.c_str();
-+    const size_t lenr = strlen(pattern2);
-+    const size_t lenp = strlen(pattern);
-+
++    size_t r = 0;
 +    // search every occurence of the pattern in the word
-+    while ((r=strstr(r, pattern)) != NULL) {
++    while ((r = word.find(pattern, r)) != std::string::npos) {
 +      std::string candidate(word);
-+      candidate.replace(r - word.c_str(), lenp, pattern2);
++      candidate.replace(r, pattern.size(), pattern2);
 +      if (candidate_check(candidate)) return 1;
 +      r++; // search for the next letter
 +    }
@@ -289,10 +286,12 @@ index 10729ea..002b760 100644
 +bool FileMgr::getline(std::string& line) {
 +  // Read one line from a BDICT file and return it, if we can read a line
 +  // without errors.
-+  const char* result = iterator_->Advance();
-+  if (result)
-+    line = result;
-+  return result;
++  std::optional<std::string_view> result = iterator_->Advance();
++  if (result.has_value()) {
++    line = *result;
++    return true;
++  }
++  return false;
 +}
 +
 +int FileMgr::getlinenum() {
@@ -423,11 +422,12 @@ index a9ae8e0..0cb8dd8 100644
  
  struct hentry* HashMgr::lookup(const char* word, size_t len) const {
 +#ifdef HUNSPELL_CHROME_CLIENT
++  std::string_view word_view(word, len);
 +  int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
-+  int affix_count = bdict_reader->FindWord(word, affix_ids);
++  int affix_count = bdict_reader->FindWord(word_view, affix_ids);
 +  if (affix_count == 0) { // look for custom added word
 +    std::map<std::string_view, int>::const_iterator iter = 
-+      custom_word_to_affix_id_map_.find(word);
++      custom_word_to_affix_id_map_.find(word_view);
 +    if (iter != custom_word_to_affix_id_map_.end()) {
 +      affix_count = 1;
 +      affix_ids[0] = iter->second;
@@ -523,7 +523,7 @@ index a9ae8e0..0cb8dd8 100644
 +  int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
 +  static const int kMaxWordLen = 128;
 +  static char word[kMaxWordLen];
-+  int affix_count = word_iterator.Advance(word, kMaxWordLen, affix_ids);
++  int affix_count = word_iterator.Advance(word, affix_ids);
 +  if (affix_count == 0)
 +    return NULL;
 +  short word_len = static_cast<short>(strlen(word));
@@ -1295,17 +1295,14 @@ index 82b53d2..57c81a4 100644
 +
 +// TODO: wrong, 'ns' doesn't exist any more
 +#ifdef HUNSPELL_CHROME_CLIENT
-+  const char *pattern, *pattern2;
++  std::string_view pattern, pattern2;
 +  hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
 +  while (iterator.GetNext(&pattern, &pattern2)) {
 +    size_t r = 0;
-+    size_t lenr = strlen(pattern2);
-+    size_t lenp = strlen(pattern);
-+
 +    // search every occurence of the pattern in the word
 +    while ((r = word.find(pattern, r)) != std::string::npos) {
 +      candidate = word;
-+      candidate.replace(r, lenp, pattern2);
++      candidate.replace(r, pattern.size(), pattern2);
 +#else
    const std::vector<replentry>& reptable = pAMgr->get_reptable();
    for (const auto& entry : reptable) {

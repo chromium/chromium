@@ -182,11 +182,12 @@ void HashMgr::EmptyHentryCache() {
 
 struct hentry* HashMgr::lookup(const char* word, size_t len) const {
 #ifdef HUNSPELL_CHROME_CLIENT
+  std::string_view word_view(word, len);
   int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
-  int affix_count = bdict_reader->FindWord(word, affix_ids);
+  int affix_count = bdict_reader->FindWord(word_view, affix_ids);
   if (affix_count == 0) { // look for custom added word
     std::map<std::string_view, int>::const_iterator iter = 
-      custom_word_to_affix_id_map_.find(word);
+      custom_word_to_affix_id_map_.find(word_view);
     if (iter != custom_word_to_affix_id_map_.end()) {
       affix_count = 1;
       affix_ids[0] = iter->second;
@@ -642,7 +643,7 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
   int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
   static const int kMaxWordLen = 128;
   static char word[kMaxWordLen];
-  int affix_count = word_iterator.Advance(word, kMaxWordLen, affix_ids);
+  int affix_count = word_iterator.Advance(word, affix_ids);
   if (affix_count == 0)
     return NULL;
   short word_len = static_cast<short>(strlen(word));

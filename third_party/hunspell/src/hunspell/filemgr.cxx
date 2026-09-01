@@ -87,10 +87,12 @@ FileMgr::~FileMgr() {
 bool FileMgr::getline(std::string& line) {
   // Read one line from a BDICT file and return it, if we can read a line
   // without errors.
-  const char* result = iterator_->Advance();
-  if (result)
-    line = result;
-  return result;
+  std::optional<std::string_view> result = iterator_->Advance();
+  if (result.has_value()) {
+    line = *result;
+    return true;
+  }
+  return false;
 }
 
 int FileMgr::getlinenum() {

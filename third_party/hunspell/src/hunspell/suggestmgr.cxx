@@ -604,17 +604,14 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
 
 // TODO: wrong, 'ns' doesn't exist any more
 #ifdef HUNSPELL_CHROME_CLIENT
-  const char *pattern, *pattern2;
+  std::string_view pattern, pattern2;
   hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
   while (iterator.GetNext(&pattern, &pattern2)) {
     size_t r = 0;
-    size_t lenr = strlen(pattern2);
-    size_t lenp = strlen(pattern);
-
     // search every occurence of the pattern in the word
     while ((r = word.find(pattern, r)) != std::string::npos) {
       candidate = word;
-      candidate.replace(r, lenp, pattern2);
+      candidate.replace(r, pattern.size(), pattern2);
 #else
   const std::vector<replentry>& reptable = pAMgr->get_reptable();
   for (const auto& entry : reptable) {

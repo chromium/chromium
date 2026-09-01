@@ -1338,17 +1338,14 @@ int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
   std::string word(in_word, 0, wl);
 
 #ifdef HUNSPELL_CHROME_CLIENT
-  const char *pattern, *pattern2;
+  std::string_view pattern, pattern2;
   hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
   while (iterator.GetNext(&pattern, &pattern2)) {
-    const char* r = word.c_str();
-    const size_t lenr = strlen(pattern2);
-    const size_t lenp = strlen(pattern);
-
+    size_t r = 0;
     // search every occurence of the pattern in the word
-    while ((r=strstr(r, pattern)) != NULL) {
+    while ((r = word.find(pattern, r)) != std::string::npos) {
       std::string candidate(word);
-      candidate.replace(r - word.c_str(), lenp, pattern2);
+      candidate.replace(r, pattern.size(), pattern2);
       if (candidate_check(candidate)) return 1;
       r++; // search for the next letter
     }
