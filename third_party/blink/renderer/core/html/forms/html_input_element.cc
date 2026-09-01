@@ -1141,6 +1141,7 @@ void HTMLInputElement::ResetImpl() {
   } else if (input_type_->GetValueMode() == ValueMode::kFilename) {
     SetNonDirtyValue(String());
     SetNeedsValidityCheck();
+    UpdateView();
   }
   SetChecked(FastHasAttribute(html_names::kCheckedAttr));
   dirty_checkedness_ = false;
