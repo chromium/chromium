@@ -345,38 +345,6 @@ void UpdateDriverBugListStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   }
 }
 
-#if BUILDFLAG(IS_MAC)
-void DisplayReconfigCallback(CGDirectDisplayID display,
-                             CGDisplayChangeSummaryFlags flags,
-                             void* gpu_data_manager) {
-  if (flags == kCGDisplayBeginConfigurationFlag)
-    return;  // This call contains no information about the display change
-
-  GpuDataManagerImpl* manager =
-      reinterpret_cast<GpuDataManagerImpl*>(gpu_data_manager);
-  DCHECK(manager);
-
-  // Notification about "GPU switches" is only necessary on macOS when
-  // using ANGLE's OpenGL backend. Short-circuit the dispatches for
-  // all other backends.
-  gpu::GPUInfo info = manager->GetGPUInfo();
-  gl::GLImplementationParts parts = info.gl_implementation_parts;
-  if (!(parts.gl == gl::kGLImplementationEGLANGLE &&
-        parts.angle == gl::ANGLEImplementation::kOpenGL)) {
-    return;
-  }
-
-  // Notification is only necessary if the machine actually has more
-  // than one GPU - nowadays, defined by it being AMD switchable.
-  if (!info.amd_switchable) {
-    return;
-  }
-
-  // Dispatch the notification through the system.
-  manager->HandleGpuSwitch();
-}
-#endif  // BUILDFLAG(IS_MAC)
-
 void OnVideoMemoryUsageStats(
     GpuDataManager::VideoMemoryUsageStatsCallback callback,
     const gpu::VideoMemoryUsageStats& stats) {
@@ -481,20 +449,12 @@ GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
     AppendGpuCommandLine(command_line, GPU_PROCESS_KIND_SANDBOXED);
   }
 
-#if BUILDFLAG(IS_MAC)
-  CGDisplayRegisterReconfigurationCallback(DisplayReconfigCallback, owner_);
-#endif  // BUILDFLAG(IS_MAC)
-
   // For testing only.
   if (command_line->HasSwitch(switches::kDisableDomainBlockingFor3DAPIs))
     domain_blocking_enabled_ = false;
 }
 
-GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() {
-#if BUILDFLAG(IS_MAC)
-  CGDisplayRemoveReconfigurationCallback(DisplayReconfigCallback, owner_);
-#endif
-}
+GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() = default;
 
 void GpuDataManagerImplPrivate::StartUmaTimer() {
   // Do not change kTimerInterval without also changing the UMA histogram name,
@@ -1461,20 +1421,6 @@ base::ListValue GpuDataManagerImplPrivate::GetLogMessages() const {
     value.Append(std::move(dict));
   }
   return value;
-}
-
-void GpuDataManagerImplPrivate::HandleGpuSwitch() {
-  base::AutoUnlock unlock(owner_->lock_);
-  // Notify observers in the browser process.
-  ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched();
-  // Pass the notification to the GPU process to notify observers there.
-  GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           /*force_create=*/false ,
-                           base::BindOnce([](GpuProcessHost* host) {
-                             if (host) {
-                               host->gpu_service()->GpuSwitched();
-                             }
-                           }));
 }
 
 void GpuDataManagerImplPrivate::OnDisplayAdded(

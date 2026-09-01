@@ -128,8 +128,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   base::ListValue GetLogMessages() const;
 
-  void HandleGpuSwitch();
-
   void BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
                               gpu::DomainGuilt guilt);
   bool Are3DAPIsBlocked(const GURL& top_origin_url,

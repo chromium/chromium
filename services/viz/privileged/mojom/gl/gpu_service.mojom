@@ -179,10 +179,6 @@ interface GpuService {
   // Tells GPU to wake up the GPU because we're about to draw.
   WakeUpGpu();
 
-  // Tells GPU that host has seen a GPU switch. This can happen when the display
-  // is reconfigured, for example.
-  GpuSwitched();
-
   // Tells GPU that host has seen a monitor being plugged in.
   DisplayAdded();
 

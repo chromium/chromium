@@ -176,9 +176,6 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // Returns a base::ListValue with the log messages.
   base::ListValue GetLogMessages() const;
 
-  // Called when switching GPUs.
-  void HandleGpuSwitch();
-
   // Maintenance of domains requiring explicit user permission before
   // using client-facing 3D APIs (WebGL), either because the domain has caused
   // the GPU to reset, or because too many GPU resets have been observed

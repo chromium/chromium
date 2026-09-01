@@ -1050,23 +1050,6 @@ void GpuServiceImpl::WakeUpGpuOnMainThread() {
   }
 }
 
-void GpuServiceImpl::GpuSwitched() {
-  if (!main_runner_->BelongsToCurrentThread()) {
-    main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::GpuSwitched, weak_ptr_));
-    return;
-  }
-  DVLOG(1) << "GPU: GPU has switched";
-
-  if (watchdog_thread_)
-    watchdog_thread_->ReportProgress();
-
-  if (!in_host_process()) {
-    ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched();
-  }
-  GpuServiceImpl::UpdateGPUInfoGL();
-}
-
 void GpuServiceImpl::DisplayAdded() {
   if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(

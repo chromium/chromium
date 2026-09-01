@@ -341,11 +341,6 @@ base::ListValue GpuDataManagerImpl::GetLogMessages() const {
   return private_->GetLogMessages();
 }
 
-void GpuDataManagerImpl::HandleGpuSwitch() {
-  base::AutoLock auto_lock(lock_);
-  private_->HandleGpuSwitch();
-}
-
 void GpuDataManagerImpl::BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
                                                 gpu::DomainGuilt guilt) {
   base::AutoLock auto_lock(lock_);

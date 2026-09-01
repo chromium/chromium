@@ -86,8 +86,6 @@ void StubGpuService::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
 
 void StubGpuService::WakeUpGpu() {}
 
-void StubGpuService::GpuSwitched() {}
-
 void StubGpuService::DisplayAdded() {}
 
 void StubGpuService::DisplayRemoved() {}
