@@ -212,7 +212,7 @@ private let MojoGoldenEntryArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.goldenEntry.name)
+            ILType.jsGoldenEntry.group)
 }
 private let MojoBoolArrayGenerator = CodeGenerator(
     "MojoBoolArrayGenerator",
@@ -224,7 +224,7 @@ private let MojoBoolArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.boolElement.name)
+            ILType.jsBoolElement.group)
 }
 private let MojoStringArrayGenerator = CodeGenerator(
     "MojoStringArrayGenerator",
@@ -236,7 +236,7 @@ private let MojoStringArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.stringElement.name)
+            ILType.jsStringElement.group)
 }
 private let MojoFloatArrayGenerator = CodeGenerator(
     "MojoFloatArrayGenerator",
@@ -248,7 +248,7 @@ private let MojoFloatArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.floatElement.name)
+            ILType.jsFloatElement.group)
 }
 private let MojoInt32ArrayGenerator = CodeGenerator(
     "MojoInt32ArrayGenerator",
@@ -260,7 +260,7 @@ private let MojoInt32ArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.int32Element.name)
+            ILType.jsInt32Element.group)
 }
 private let MojoUint32ArrayGenerator = CodeGenerator(
     "MojoUint32ArrayGenerator",
@@ -272,7 +272,7 @@ private let MojoUint32ArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.uint32Element.name)
+            ILType.jsUint32Element.group)
 }
 
 ///

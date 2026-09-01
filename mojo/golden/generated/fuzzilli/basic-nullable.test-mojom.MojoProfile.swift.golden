@@ -305,7 +305,7 @@ private let MojoFloatArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.floatElement.name)
+            ILType.jsFloatElement.group)
 }
 
 ///
@@ -354,9 +354,10 @@ private let MojoString_Uint64MapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.stringElement.name,
-        valueGroupName: ObjectGroup.uint64Element.name
-    )
+        keyGroupName:
+            ILType.jsStringElement.group,
+        valueGroupName:
+            ILType.jsUint64Element.group)
 }
 
 ///

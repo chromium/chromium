@@ -175,9 +175,10 @@ private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.stringElement.name,
-        valueGroupName: ObjectGroup.goldenEntry.name
-    )
+        keyGroupName:
+            ILType.jsStringElement.group,
+        valueGroupName:
+            ILType.jsGoldenEntry.group)
 }
 private let MojoInt32_String_GoldenEntryMapMapGenerator = CodeGenerator(
     "MojoInt32_String_GoldenEntryMapMapGenerator",
@@ -191,9 +192,10 @@ private let MojoInt32_String_GoldenEntryMapMapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.int32Element.name,
-        valueGroupName: ObjectGroup.stringGoldenEntryMap.name
-    )
+        keyGroupName:
+            ILType.jsInt32Element.group,
+        valueGroupName:
+            ILType.jsString_GoldenEntryMap.group)
 }
 private let MojoFloat_BoolMapGenerator = CodeGenerator(
     "MojoFloat_BoolMapGenerator",
@@ -207,9 +209,10 @@ private let MojoFloat_BoolMapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.floatElement.name,
-        valueGroupName: ObjectGroup.boolElement.name
-    )
+        keyGroupName:
+            ILType.jsFloatElement.group,
+        valueGroupName:
+            ILType.jsBoolElement.group)
 }
 
 ///

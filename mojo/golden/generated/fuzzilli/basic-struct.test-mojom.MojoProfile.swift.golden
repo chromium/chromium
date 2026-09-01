@@ -182,7 +182,7 @@ private let MojoInt64ArrayGenerator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.int64Element.name)
+            ILType.jsInt64Element.group)
 }
 
 ///

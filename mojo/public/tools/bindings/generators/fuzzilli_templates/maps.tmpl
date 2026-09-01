@@ -49,12 +49,9 @@ private let Mojo{{m|format_unique_name}}Generator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.
-            {{- m.key_kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
-            .name,
-        valueGroupName: ObjectGroup.
-            {{- m.value_kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
-            .name
-    )
+        keyGroupName:
+            ILType.{{m.key_kind|format_il_type(primitive_with_suffix=True)}}.group,
+        valueGroupName:
+            ILType.{{m.value_kind|format_il_type(primitive_with_suffix=True)}}.group)
 }
 {%- endfor %}

@@ -44,8 +44,6 @@ private let Mojo{{array|format_unique_name}}Generator = CodeGenerator(
     b.createArray(
         with: elements,
         elementGroupName:
-            ObjectGroup.
-                {{- array.kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
-                .name)
+            ILType.{{array.kind|format_il_type(primitive_with_suffix=True)}}.group)
 }
 {%- endfor %}
