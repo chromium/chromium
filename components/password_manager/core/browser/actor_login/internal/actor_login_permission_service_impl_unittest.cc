@@ -87,7 +87,13 @@ TEST_F(ActorLoginPermissionServiceImplTest,
 
   std::string expected_json = base::StringPrintf(
       R"({
-              "filters": [],
+              "filters": [
+                {
+                  "agent": {
+                    "type": "AGENT_TYPE_GEMINI_IN_CHROME"
+                  }
+                }
+              ],
               "minReadTimestamp": "%s"
             })",
       google_apis::util::FormatTimeAsString(base::Time::Now()).c_str());

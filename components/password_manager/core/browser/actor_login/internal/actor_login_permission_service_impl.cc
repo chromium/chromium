@@ -94,6 +94,12 @@ constexpr net::NetworkTrafficAnnotationTag
         }
       })");
 
+constexpr char kAgentTypeGeminiInChrome[] = "AGENT_TYPE_GEMINI_IN_CHROME";
+
+base::DictValue CreateAgentDict() {
+  return base::DictValue().Set("type", kAgentTypeGeminiInChrome);
+}
+
 base::DictValue CreateFederatedPermissionFilter(
     const FederatedOrigins& origins,
     const std::string& display_name) {
@@ -111,12 +117,9 @@ base::DictValue CreateFederatedPermissionFilter(
   }
   federated_filter.Set("matchAffiliatedRequesterOrigins", true);
 
-  auto agent_dict =
-      base::DictValue().Set("type", "AGENT_TYPE_GEMINI_IN_CHROME");
-
   return base::DictValue()
       .Set("federatedCredentialPermissionFilter", std::move(federated_filter))
-      .Set("agent", std::move(agent_dict));
+      .Set("agent", CreateAgentDict());
 }
 
 base::DictValue CreateFederatedPermissionFilter(
@@ -152,12 +155,10 @@ std::string CreateGrantRequestBody(const FederatedPermission& permission) {
           .Set("rpRequesterOrigin", permission.rp_requester_origin.Serialize())
           .Set("chosenAccountId", permission.chosen_account_id)
           .Set("chosenAccountEmail", permission.chosen_account_email);
-  auto agent_dict =
-      base::DictValue().Set("type", "AGENT_TYPE_GEMINI_IN_CHROME");
   auto request_dict = base::DictValue()
                           .Set("federatedCredentialPermission",
                                std::move(federated_permission_dict))
-                          .Set("agent", std::move(agent_dict));
+                          .Set("agent", CreateAgentDict());
 
   std::string post_data;
   base::JSONWriter::Write(request_dict, &post_data);
@@ -167,8 +168,14 @@ std::string CreateGrantRequestBody(const FederatedPermission& permission) {
 std::string CreateListRequestBody(
     const std::vector<FederatedOrigins>& origins) {
   base::ListValue filters;
-  for (const auto& origin : origins) {
-    filters.Append(CreateFederatedPermissionFilter(origin));
+  if (origins.empty()) {
+    // The API expects requests to only ask for permissions of a particular
+    // agent.
+    filters.Append(base::DictValue().Set("agent", CreateAgentDict()));
+  } else {
+    for (const auto& origin : origins) {
+      filters.Append(CreateFederatedPermissionFilter(origin));
+    }
   }
   auto request_dict =
       base::DictValue()
