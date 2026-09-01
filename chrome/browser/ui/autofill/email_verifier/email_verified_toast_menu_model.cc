@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/email_verifier/email_verified_toast_menu_model.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,7 +18,7 @@ EmailVerifiedToastMenuModel::EmailVerifiedToastMenuModel(
     BrowserWindowInterface* window)
     : ui::SimpleMenuModel(this), window_(window) {
   AddItemWithStringIdAndIcon(
-      /*command_id=*/0, IDS_MANAGE,
+      CommandId::kManage, IDS_MANAGE,
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsFilledIcon,
                                      ui::kColorMenuIcon, 16));
 }
@@ -26,7 +27,9 @@ EmailVerifiedToastMenuModel::~EmailVerifiedToastMenuModel() = default;
 
 void EmailVerifiedToastMenuModel::ExecuteCommand(int command_id,
                                                  int event_flags) {
-  if (command_id == 0) {
+  if (command_id == CommandId::kManage) {
+    base::RecordAction(
+        base::UserMetricsAction("Toast.EmailVerified.ManageClicked"));
     chrome::ShowSettingsSubPage(window_, chrome::kContactInfoSubPage);
   }
 }

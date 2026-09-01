@@ -607,6 +607,7 @@ if (!is_android) {
       "autofill_ai/autofill_ai_import_data_controller_impl_browsertest.cc",
       "autofill_context_menu_manager_browsertest.cc",
       "delete_address_profile_dialog_controller_impl_browsertest.cc",
+      "email_verifier/email_verified_toast_menu_model_browsertest.cc",
     ]
 
     deps = [
@@ -625,6 +626,7 @@ if (!is_android) {
       "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",

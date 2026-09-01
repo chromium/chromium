@@ -15,6 +15,10 @@ namespace autofill {
 class EmailVerifiedToastMenuModel : public ui::SimpleMenuModel,
                                     public ui::SimpleMenuModel::Delegate {
  public:
+  enum CommandId {
+    kManage = 0,
+  };
+
   explicit EmailVerifiedToastMenuModel(BrowserWindowInterface* window);
   EmailVerifiedToastMenuModel(const EmailVerifiedToastMenuModel&) = delete;
   EmailVerifiedToastMenuModel& operator=(const EmailVerifiedToastMenuModel&) =

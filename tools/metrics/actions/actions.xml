@@ -39526,6 +39526,17 @@ should be able to be added at any place in this file.
   <token key="Toast_Type" variants="Toast_Type"/>
 </action>
 
+<action name="Toast.EmailVerified.ManageClicked">
+  <owner>ryqin@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the Manage menu item from the Email Verified
+    toast menu.
+  </description>
+</action>
+
 <action name="ToggleBold">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
