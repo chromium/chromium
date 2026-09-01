@@ -166,11 +166,12 @@ gfx::Size DeviceChooserContentView::GetMinimumSize() const {
   return gfx::Size();
 }
 
-size_t DeviceChooserContentView::RowCount() {
+size_t DeviceChooserContentView::RowCount() const {
   return chooser_controller_->NumOptions();
 }
 
-std::u16string DeviceChooserContentView::GetText(size_t row, int column_id) {
+std::u16string DeviceChooserContentView::GetText(size_t row,
+                                                 int column_id) const {
   DCHECK_LT(row, RowCount());
   std::u16string text = chooser_controller_->GetOption(row);
   return chooser_controller_->IsPaired(row)
@@ -181,7 +182,7 @@ std::u16string DeviceChooserContentView::GetText(size_t row, int column_id) {
 
 void DeviceChooserContentView::SetObserver(ui::TableModelObserver* observer) {}
 
-ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
+ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) const {
   DCHECK(chooser_controller_->ShouldShowIconBeforeText());
   DCHECK_LT(row, RowCount());
 

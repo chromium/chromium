@@ -1190,11 +1190,11 @@ void DesignerExample::CreateView(const ui::Event& event) {
   parent->AddChildView(std::move(new_view));
 }
 
-size_t DesignerExample::RowCount() {
+size_t DesignerExample::RowCount() const {
   return selected_ ? display_list_.size() : 0;
 }
 
-std::u16string DesignerExample::GetText(size_t row, int column_id) {
+std::u16string DesignerExample::GetText(size_t row, int column_id) const {
   if (selected_) {
     const auto editor = display_list_[row];
     if (column_id == 0) {

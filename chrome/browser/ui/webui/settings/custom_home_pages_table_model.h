@@ -55,9 +55,9 @@ class CustomHomePagesTableModel : public ui::TableModel {
   std::vector<GURL> GetURLs();
 
   // TableModel overrides:
-  size_t RowCount() override;
-  std::u16string GetText(size_t row, int column_id) override;
-  std::u16string GetTooltip(size_t row) override;
+  size_t RowCount() const override;
+  std::u16string GetText(size_t row, int column_id) const override;
+  std::u16string GetTooltip(size_t row) const override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:

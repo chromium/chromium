@@ -81,9 +81,9 @@ class JsonTableModel : public ui::TableModel {
       : columns_(std::move(columns)), rows_(std::move(rows)) {}
   ~JsonTableModel() override = default;
 
-  size_t RowCount() override { return rows_.size(); }
+  size_t RowCount() const override { return rows_.size(); }
 
-  std::u16string GetText(size_t row, int column_id) override {
+  std::u16string GetText(size_t row, int column_id) const override {
     if (row >= rows_.size()) {
       return u"";
     }
@@ -102,7 +102,7 @@ class JsonTableModel : public ui::TableModel {
     observer_ = observer;
   }
 
-  int CompareValues(size_t row1, size_t row2, int column_id) override {
+  int CompareValues(size_t row1, size_t row2, int column_id) const override {
     std::u16string text1 = GetText(row1, column_id);
     std::u16string text2 = GetText(row2, column_id);
     return text1.compare(text2);

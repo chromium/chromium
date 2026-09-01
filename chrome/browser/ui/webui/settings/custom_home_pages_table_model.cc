@@ -135,17 +135,18 @@ std::vector<GURL> CustomHomePagesTableModel::GetURLs() {
   return urls;
 }
 
-size_t CustomHomePagesTableModel::RowCount() {
+size_t CustomHomePagesTableModel::RowCount() const {
   return entries_.size();
 }
 
-std::u16string CustomHomePagesTableModel::GetText(size_t row, int column_id) {
+std::u16string CustomHomePagesTableModel::GetText(size_t row,
+                                                  int column_id) const {
   DCHECK(column_id == 0);
   DCHECK(row < RowCount());
   return entries_[row].title.empty() ? FormattedURL(row) : entries_[row].title;
 }
 
-std::u16string CustomHomePagesTableModel::GetTooltip(size_t row) {
+std::u16string CustomHomePagesTableModel::GetTooltip(size_t row) const {
   return entries_[row].title.empty()
              ? std::u16string()
              : l10n_util::GetStringFUTF16(IDS_SETTINGS_ON_STARTUP_PAGE_TOOLTIP,

@@ -69,9 +69,9 @@ class HungPagesTableModel : public ui::TableModel,
   content::RenderWidgetHost* GetRenderWidgetHost();
 
   // Overridden from ui::TableModel:
-  size_t RowCount() override;
-  std::u16string GetText(size_t row, int column_id) override;
-  ui::ImageModel GetIcon(size_t row) override;
+  size_t RowCount() const override;
+  std::u16string GetText(size_t row, int column_id) const override;
+  ui::ImageModel GetIcon(size_t row) const override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // Overridden from RenderProcessHostObserver:

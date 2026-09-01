@@ -83,14 +83,14 @@ class DeprecatedAppsDialogView::DeprecatedAppsTableModel
   ~DeprecatedAppsTableModel() override = default;
 
   // ui::TableModel implementations:
-  size_t RowCount() override { return rows_.size(); }
+  size_t RowCount() const override { return rows_.size(); }
 
-  std::u16string GetText(size_t index, int column_id) override {
+  std::u16string GetText(size_t index, int column_id) const override {
     DCHECK(index < RowCount());
     return base::UTF8ToUTF16(rows_[index].app_name);
   }
 
-  ui::ImageModel GetIcon(size_t index) override {
+  ui::ImageModel GetIcon(size_t index) const override {
     return ui::ImageModel::FromImageSkia(rows_[index].icon->image_skia());
   }
 

@@ -375,11 +375,11 @@ TaskManagerTableModel::~TaskManagerTableModel() {
   task_manager::RecordTabSwitchEvent(CategoryRecord::kAll, all_total_time_);
 }
 
-size_t TaskManagerTableModel::RowCount() {
+size_t TaskManagerTableModel::RowCount() const {
   return tasks_.size();
 }
 
-std::u16string TaskManagerTableModel::GetText(size_t row, int column) {
+std::u16string TaskManagerTableModel::GetText(size_t row, int column) const {
   if (IsSharedByGroup(column) && !IsTaskFirstInGroup(row)) {
     return std::u16string();
   }
@@ -515,7 +515,7 @@ std::u16string TaskManagerTableModel::GetText(size_t row, int column) {
   }
 }
 
-ui::ImageModel TaskManagerTableModel::GetIcon(size_t row) {
+ui::ImageModel TaskManagerTableModel::GetIcon(size_t row) const {
   return ui::ImageModel::FromImageSkia(
       observed_task_manager()->GetIcon(tasks_[row]));
 }
@@ -526,7 +526,7 @@ void TaskManagerTableModel::SetObserver(ui::TableModelObserver* observer) {
 
 int TaskManagerTableModel::CompareValues(size_t row1,
                                          size_t row2,
-                                         int column_id) {
+                                         int column_id) const {
   switch (column_id) {
     case IDS_TASK_MANAGER_TASK_COLUMN:
     case IDS_TASK_MANAGER_PROFILE_NAME_COLUMN:
@@ -676,19 +676,19 @@ int TaskManagerTableModel::CompareValues(size_t row1,
 
 std::u16string TaskManagerTableModel::GetAXNameForHeader(
     const std::vector<std::u16string>& visible_column_titles,
-    const std::vector<std::u16string>& visible_column_sortable) {
+    const std::vector<std::u16string>& visible_column_sortable) const {
   return FormatListToString(visible_column_sortable);
 }
 
 std::u16string TaskManagerTableModel::GetAXNameForHeaderCell(
     const std::u16string& visible_column_title,
-    const std::u16string& visible_column_sortable) {
+    const std::u16string& visible_column_sortable) const {
   return visible_column_sortable;
 }
 
 std::u16string TaskManagerTableModel::GetAXNameForRow(
     size_t row,
-    const std::vector<int>& visible_column_ids) {
+    const std::vector<int>& visible_column_ids) const {
   DCHECK_LT(row, RowCount());
   DCHECK(!visible_column_ids.empty());
 

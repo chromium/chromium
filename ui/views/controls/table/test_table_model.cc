@@ -16,16 +16,16 @@ TestTableModel::TestTableModel(size_t row_count)
 
 TestTableModel::~TestTableModel() = default;
 
-size_t TestTableModel::RowCount() {
+size_t TestTableModel::RowCount() const {
   return row_count_;
 }
 
-std::u16string TestTableModel::GetText(size_t row, int column_id) {
+std::u16string TestTableModel::GetText(size_t row, int column_id) const {
   return base::ASCIIToUTF16(base::NumberToString(row) + "x" +
                             base::NumberToString(column_id));
 }
 
-ui::ImageModel TestTableModel::GetIcon(size_t row) {
+ui::ImageModel TestTableModel::GetIcon(size_t row) const {
   SkBitmap bitmap;
   bitmap.setInfo(SkImageInfo::MakeN32Premul(16, 16));
   return ui::ImageModel::FromImageSkia(

@@ -443,7 +443,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Used to sort the two rows. Returns a value < 0, == 0 or > 0 indicating
   // whether the row2 comes before row1, row2 is the same as row1 or row1 comes
   // after row2. This invokes CompareValues on the model with the sorted column.
-  int CompareRows(size_t model_row1, size_t model_row2);
+  int CompareRows(size_t model_row1, size_t model_row2) const;
 
   // Returns the bounds of the specified row.
   gfx::Rect GetRowBounds(size_t row) const;

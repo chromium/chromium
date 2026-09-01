@@ -103,9 +103,9 @@ class TestTableModel : public ui::TableModel {
   TestTableModel& operator=(const TestTableModel&) = delete;
 
   // ui::TableModel:
-  size_t RowCount() override { return 10; }
+  size_t RowCount() const override { return 10; }
 
-  std::u16string GetText(size_t row, int column_id) override {
+  std::u16string GetText(size_t row, int column_id) const override {
     const std::array<std::array<const char* const, 4>, 5> cells({
         {{"Orange", "Orange", "South america", "$5"}},
         {{"Apple", "Green", "Canada", "$3"}},

@@ -92,20 +92,21 @@ class TaskManagerTableModel : public TaskManagerObserver,
   ~TaskManagerTableModel() override;
 
   // ui::TableModel:
-  size_t RowCount() override;
-  std::u16string GetText(size_t row, int column) override;
-  ui::ImageModel GetIcon(size_t row) override;
+  size_t RowCount() const override;
+  std::u16string GetText(size_t row, int column) const override;
+  ui::ImageModel GetIcon(size_t row) const override;
   void SetObserver(ui::TableModelObserver* observer) override;
-  int CompareValues(size_t row1, size_t row2, int column_id) override;
+  int CompareValues(size_t row1, size_t row2, int column_id) const override;
   std::u16string GetAXNameForHeader(
       const std::vector<std::u16string>& visible_column_titles,
-      const std::vector<std::u16string>& visible_column_sortable) override;
+      const std::vector<std::u16string>& visible_column_sortable)
+      const override;
   std::u16string GetAXNameForHeaderCell(
       const std::u16string& visible_column_title,
-      const std::u16string& visible_column_sortable) override;
+      const std::u16string& visible_column_sortable) const override;
   std::u16string GetAXNameForRow(
       size_t row,
-      const std::vector<int>& visible_column_ids) override;
+      const std::vector<int>& visible_column_ids) const override;
 
   static std::u16string FormatListToString(
       base::span<const std::u16string> items);

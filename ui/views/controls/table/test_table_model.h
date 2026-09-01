@@ -18,9 +18,9 @@ class TestTableModel : public ui::TableModel {
   ~TestTableModel() override;
 
   // ui::TableModel overrides:
-  size_t RowCount() override;
-  std::u16string GetText(size_t row, int column_id) override;
-  ui::ImageModel GetIcon(size_t row) override;
+  size_t RowCount() const override;
+  std::u16string GetText(size_t row, int column_id) const override;
+  ui::ImageModel GetIcon(size_t row) const override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:

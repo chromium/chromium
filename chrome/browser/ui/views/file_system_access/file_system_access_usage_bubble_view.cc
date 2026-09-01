@@ -379,13 +379,13 @@ FileSystemAccessUsageBubbleView::FilePathListModel::FilePathListModel(
 FileSystemAccessUsageBubbleView::FilePathListModel::~FilePathListModel() =
     default;
 
-size_t FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
+size_t FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() const {
   return files_.size() + directories_.size();
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
     size_t row,
-    int column_id) {
+    int column_id) const {
   // Use the non-eliding version of GetPathForDisplay since these are files the
   // user has already granted the site access to.
   if (row < files_.size()) {
@@ -397,7 +397,7 @@ std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
 }
 
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
-    size_t row) {
+    size_t row) const {
   return ui::ImageModel::FromVectorIcon(
       row < files_.size()                 ? features::IsRoundedIconsEnabled()
                                                 ? vector_icons::kDraftIcon
@@ -408,7 +408,7 @@ ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
-    size_t row) {
+    size_t row) const {
   if (row < files_.size()) {
     return files_[row].LossyDisplayName();
   }

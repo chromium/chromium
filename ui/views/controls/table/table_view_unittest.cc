@@ -251,11 +251,11 @@ class TestTableModel2 : public ui::TableModel {
   void SetTooltip(const std::u16string& tooltip);
 
   // ui::TableModel:
-  size_t RowCount() override;
-  std::u16string GetText(size_t row, int column_id) override;
-  std::u16string GetTooltip(size_t row) override;
+  size_t RowCount() const override;
+  std::u16string GetText(size_t row, int column_id) const override;
+  std::u16string GetTooltip(size_t row) const override;
   void SetObserver(ui::TableModelObserver* observer) override;
-  int CompareValues(size_t row1, size_t row2, int column_id) override;
+  int CompareValues(size_t row1, size_t row2, int column_id) const override;
 
  private:
   raw_ptr<ui::TableModelObserver> observer_ = nullptr;
@@ -351,15 +351,15 @@ void TestTableModel2::SetTooltip(const std::u16string& tooltip) {
   tooltip_ = tooltip;
 }
 
-size_t TestTableModel2::RowCount() {
+size_t TestTableModel2::RowCount() const {
   return rows_.size();
 }
 
-std::u16string TestTableModel2::GetText(size_t row, int column_id) {
+std::u16string TestTableModel2::GetText(size_t row, int column_id) const {
   return base::NumberToString16(rows_[row][column_id]);
 }
 
-std::u16string TestTableModel2::GetTooltip(size_t row) {
+std::u16string TestTableModel2::GetTooltip(size_t row) const {
   return tooltip_ ? *tooltip_ : u"Tooltip" + base::NumberToString16(row);
 }
 
@@ -367,7 +367,9 @@ void TestTableModel2::SetObserver(ui::TableModelObserver* observer) {
   observer_ = observer;
 }
 
-int TestTableModel2::CompareValues(size_t row1, size_t row2, int column_id) {
+int TestTableModel2::CompareValues(size_t row1,
+                                   size_t row2,
+                                   int column_id) const {
   return rows_[row1][column_id] - rows_[row2][column_id];
 }
 
@@ -2698,7 +2700,7 @@ class TestTableModel3 : public TestTableModel2 {
 
   TestTableModel3(const TestTableModel3&) = delete;
   TestTableModel3& operator=(const TestTableModel3&) = delete;
-  ui::ImageModel GetIcon(size_t row) override {
+  ui::ImageModel GetIcon(size_t row) const override {
     return ui::ImageModel::FromImageSkia(
         gfx::ImageSkia::CreateFrom1xBitmap(icon_));
   }
