@@ -542,7 +542,8 @@ TabWebContentsDelegateAndroid::GetInstalledWebappGeolocationContext() {
 void TabWebContentsDelegateAndroid::GetAIPageContent(
     content::WebContents* web_contents,
     bool include_actionable_elements,
-    base::OnceCallback<void(const std::string&)> callback) {
+    base::OnceCallback<void(base::expected<std::string, std::string>)>
+        callback) {
   auto options = include_actionable_elements
                      ? optimization_guide::ActionableAIPageContentOptions(
                            /*on_critical_path=*/false)
@@ -552,11 +553,11 @@ void TabWebContentsDelegateAndroid::GetAIPageContent(
   optimization_guide::GetAIPageContent(
       web_contents, std::move(options),
       base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
-                         -> std::string {
+                         -> base::expected<std::string, std::string> {
         if (!result.has_value()) {
-          return "";
+          return base::unexpected(result.error());
         }
-        return result->proto.SerializeAsString();
+        return base::ok(result->proto.SerializeAsString());
       }).Then(std::move(callback)));
 }
 

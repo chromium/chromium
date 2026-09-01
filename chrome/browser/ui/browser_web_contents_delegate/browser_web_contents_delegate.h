@@ -250,7 +250,8 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
   void GetAIPageContent(
       content::WebContents* web_contents,
       bool include_actionable_elements,
-      base::OnceCallback<void(const std::string&)> callback) override;
+      base::OnceCallback<void(base::expected<std::string, std::string>)>
+          callback) override;
   void PrintCrossProcessSubframe(
       content::WebContents* web_contents,
       const gfx::Rect& rect,

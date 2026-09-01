@@ -4275,8 +4275,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, GetAnnotatedPageContent) {
   ASSERT_FALSE(result_ptr);
   EXPECT_EQ(*error()->FindInt("code"),
             static_cast<int>(crdtp::DispatchCode::SERVER_ERROR));
-  EXPECT_EQ(*error()->FindString("message"),
-            "Failed to get annotated page content");
+  EXPECT_EQ(
+      *error()->FindString("message"),
+      "Failed to get annotated page content: Annotated page content is not "
+      "available for this browser target.");
 }
 
 // Flaky on ChromeOS https://crbug.com/860312

@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/headless/console_message_logger/headless_console_message_logger.h"
@@ -136,7 +137,8 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   void GetAIPageContent(
       content::WebContents* web_contents,
       bool include_actionable_elements,
-      base::OnceCallback<void(const std::string&)> callback) override {
+      base::OnceCallback<void(base::expected<std::string, std::string>)>
+          callback) override {
     auto options = include_actionable_elements
                        ? optimization_guide::ActionableAIPageContentOptions(
                              /*on_critical_path=*/false)
@@ -146,11 +148,13 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     optimization_guide::GetAIPageContent(
         web_contents, std::move(options),
         base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
-                           -> std::string {
+                           -> base::expected<std::string, std::string> {
+          // Preserve the provider's error so DevTools callers can diagnose the
+          // extraction failure.
           if (!result.has_value()) {
-            return "";
+            return base::unexpected(result.error());
           }
-          return result->proto.SerializeAsString();
+          return base::ok(result->proto.SerializeAsString());
         }).Then(std::move(callback)));
   }
 

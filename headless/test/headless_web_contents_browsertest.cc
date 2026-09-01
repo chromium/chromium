@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "cc/test/pixel_test_utils.h"
@@ -696,10 +697,18 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsAIPageContentTest, GetAIPageContent) {
   delegate->GetAIPageContent(
       content_web_contents, true,
       base::BindOnce(
-          [](base::RunLoop* run_loop, const std::string& result) {
-            LOG(INFO) << "GetAIPageContent result size: " << result.size();
+          [](base::RunLoop* run_loop,
+             base::expected<std::string, std::string> result) {
+            // Stop before reading the value when extraction returned an error.
+            if (!result.has_value()) {
+              ADD_FAILURE() << "GetAIPageContent failed: " << result.error();
+              run_loop->Quit();
+              return;
+            }
+
+            LOG(INFO) << "GetAIPageContent result size: " << result->size();
             optimization_guide::proto::AnnotatedPageContent proto;
-            if (proto.ParseFromString(result)) {
+            if (proto.ParseFromString(*result)) {
               bool has_text = false;
               std::vector<const optimization_guide::proto::ContentNode*> nodes;
               nodes.push_back(&proto.root_node());

@@ -134,7 +134,8 @@ class TabWebContentsDelegateAndroid
   void GetAIPageContent(
       content::WebContents* web_contents,
       bool include_actionable_elements,
-      base::OnceCallback<void(const std::string&)> callback) override;
+      base::OnceCallback<void(base::expected<std::string, std::string>)>
+          callback) override;
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
   void CapturePaintPreviewOfSubframe(
