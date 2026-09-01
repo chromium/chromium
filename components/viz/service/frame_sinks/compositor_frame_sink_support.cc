@@ -449,16 +449,20 @@ void CompositorFrameSinkSupport::RefResources(
 
 void CompositorFrameSinkSupport::UnrefResources(
     std::vector<ReturnedResourceViz> resources) {
-  // `SurfaceAnimationManager` allocates ResourceIds in a different range
-  // than the client so it can process returned resources before
-  // `surface_resource_holder_`. This removes handled resources from
-  // `resources`.
-  for (auto& [_, manager] : view_transition_token_to_animation_manager_) {
-    manager->UnrefResources(resources);
-  }
-
+  // SurfaceResourceHolder handles all client allocated resources. Anything
+  // remaining in unhandled_resources came from viz.
   std::vector<ReturnedResourceViz> unhandled_resources =
       surface_resource_holder_.UnrefResources(std::move(resources));
+
+  if (unhandled_resources.empty()) {
+    return;
+  }
+
+  // `SurfaceAnimationManager` removes anything it owns from
+  // `unhandled_resources`.
+  for (auto& [_, manager] : view_transition_token_to_animation_manager_) {
+    manager->UnrefResources(unhandled_resources);
+  }
 
   // Any remaining reserved resource IDs in `unhandled_resources` were not
   // claimed by any active `SurfaceAnimationManager` (e.g. because the delegate
