@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
@@ -112,20 +111,19 @@ public class OmniboxActionDelegateImplUnitTest {
     @Test
     public void openIncognitoTab() {
         mDelegate.openIncognitoTab();
-        verify(mMockOpenIncognitoPage, times(1)).run();
+        verify(mMockOpenIncognitoPage).run();
     }
 
     @Test
     public void openPasswordManager() {
         mDelegate.openPasswordManager();
-        verify(mMockOpenPasswordSettings, times(1)).run();
+        verify(mMockOpenPasswordSettings).run();
     }
 
     @Test
     public void openSettingsPage() {
         mDelegate.openSettingsPage(SettingsFragment.ACCESSIBILITY);
-        verify(mMockSettingsNavigation, times(1))
-                .startSettings(mContext, SettingsFragment.ACCESSIBILITY);
+        verify(mMockSettingsNavigation).startSettings(mContext, SettingsFragment.ACCESSIBILITY);
     }
 
     @Test
@@ -145,8 +143,8 @@ public class OmniboxActionDelegateImplUnitTest {
         doReturn(true).when(mTab).isUserInteractable();
         mDelegate.loadPageInCurrentTab("url");
 
-        verify(mTab, times(1)).isUserInteractable();
-        verify(mTab, times(1)).loadUrl(mLoadParamsCaptor.capture());
+        verify(mTab).isUserInteractable();
+        verify(mTab).loadUrl(mLoadParamsCaptor.capture());
         assertEquals("url", mLoadParamsCaptor.getValue().getUrl());
         verifyNoMoreInteractions(mTab);
     }
@@ -156,7 +154,7 @@ public class OmniboxActionDelegateImplUnitTest {
         doReturn(false).when(mTab).isUserInteractable();
         mDelegate.loadPageInCurrentTab("url");
 
-        verify(mTab, times(1)).isUserInteractable();
+        verify(mTab).isUserInteractable();
         verifyNoMoreInteractions(mTab);
         verify(mMockOpenUrl).accept("url");
     }
@@ -183,8 +181,7 @@ public class OmniboxActionDelegateImplUnitTest {
         userDataHost.setUserData(LensOverlayCoordinator.class, mLensOverlayCoordinator);
         doReturn(userDataHost).when(mTab).getUserDataHost();
         mDelegate.openLensOverlay();
-        verify(mLensOverlayCoordinator, times(1))
-                .start(LensOverlayInvocationSource.OMNIBOX_PAGE_ACTION);
+        verify(mLensOverlayCoordinator).start(LensOverlayInvocationSource.OMNIBOX_PAGE_ACTION);
     }
 
     @Test

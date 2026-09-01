@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -47,6 +46,6 @@ public class OmniboxLensOverlayActionUnitTest {
     @Test
     public void testExecute_success() {
         assertTrue(mAction.execute(mGenericDelegate));
-        verify(mGenericDelegate, times(1)).openLensOverlay();
+        verify(mGenericDelegate).openLensOverlay();
     }
 }

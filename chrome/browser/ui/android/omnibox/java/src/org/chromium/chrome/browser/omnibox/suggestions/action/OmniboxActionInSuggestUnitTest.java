@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -179,8 +178,8 @@ public class OmniboxActionInSuggestUnitTest {
         buildActionInSuggest(ActionType.DIRECTIONS, new Intent("Magic Intent Action"))
                 .execute(mDelegate);
 
-        verify(mDelegate, times(1)).isIncognito();
-        verify(mDelegate, times(1)).startActivity(mIntentCaptor.capture());
+        verify(mDelegate).isIncognito();
+        verify(mDelegate).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
 
         assertEquals("Magic Intent Action", intent.getAction());
@@ -202,7 +201,7 @@ public class OmniboxActionInSuggestUnitTest {
 
         buildActionInSuggest(ActionType.DIRECTIONS, intent).execute(mDelegate);
 
-        verify(mDelegate, times(1)).isIncognito();
+        verify(mDelegate).isIncognito();
 
         // Should not be recorded.
         assertEquals(
@@ -210,7 +209,7 @@ public class OmniboxActionInSuggestUnitTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult"));
 
-        verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
+        verify(mDelegate).loadPageInCurrentTab(mUrlCaptor.capture());
 
         var url = mUrlCaptor.getValue();
         assertNotNull(url);
@@ -228,7 +227,7 @@ public class OmniboxActionInSuggestUnitTest {
 
         buildActionInSuggest(ActionType.DIRECTIONS, intent).execute(mDelegate);
 
-        verify(mDelegate, times(1)).isIncognito();
+        verify(mDelegate).isIncognito();
 
         assertEquals(
                 1,
@@ -236,8 +235,8 @@ public class OmniboxActionInSuggestUnitTest {
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
 
-        verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
-        verify(mDelegate, times(1)).startActivity(any());
+        verify(mDelegate).loadPageInCurrentTab(mUrlCaptor.capture());
+        verify(mDelegate).startActivity(any());
 
         var url = mUrlCaptor.getValue();
         assertNotNull(url);
@@ -252,8 +251,8 @@ public class OmniboxActionInSuggestUnitTest {
 
         buildActionInSuggest(ActionType.CALL, new Intent(Intent.ACTION_CALL)).execute(mDelegate);
 
-        verify(mDelegate, times(1)).isIncognito();
-        verify(mDelegate, times(1)).startActivity(mIntentCaptor.capture());
+        verify(mDelegate).isIncognito();
+        verify(mDelegate).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
 
         // OBSERVE: We rewrite ACTION_CALL with ACTION_DIAL, which does not carry high permission
@@ -278,8 +277,8 @@ public class OmniboxActionInSuggestUnitTest {
 
         buildActionInSuggest(ActionType.CALL, intent).execute(mDelegate);
 
-        verify(mDelegate, times(1)).isIncognito();
-        verify(mDelegate, times(1)).startActivity(any());
+        verify(mDelegate).isIncognito();
+        verify(mDelegate).startActivity(any());
 
         assertEquals(
                 1,
@@ -296,7 +295,7 @@ public class OmniboxActionInSuggestUnitTest {
 
         buildActionInSuggest(ActionType.REVIEWS, intent).execute(mDelegate);
 
-        verify(mDelegate, times(1)).isIncognito();
+        verify(mDelegate).isIncognito();
 
         assertEquals(
                 1,
@@ -308,7 +307,7 @@ public class OmniboxActionInSuggestUnitTest {
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
 
-        verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
+        verify(mDelegate).loadPageInCurrentTab(mUrlCaptor.capture());
 
         var url = mUrlCaptor.getValue();
         assertNotNull(url);
@@ -328,11 +327,11 @@ public class OmniboxActionInSuggestUnitTest {
 
         buildActionInSuggest(ActionType.CHROME_AIM, intent).execute(mDelegate);
 
-        verify(mDelegate, times(1)).isIncognito();
+        verify(mDelegate).isIncognito();
 
         histogramWatcher.assertExpected();
 
-        verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
+        verify(mDelegate).loadPageInCurrentTab(mUrlCaptor.capture());
 
         var url = mUrlCaptor.getValue();
         assertNotNull(url);
