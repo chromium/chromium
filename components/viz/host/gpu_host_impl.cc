@@ -29,7 +29,6 @@
 #include "gpu/ipc/host/gpu_disk_cache.h"
 #include "gpu/webgpu/dawn_commit_hash.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "services/webnn/host/weights_file_provider.h"
 #include "skia/buildflags.h"
 #include "skia/ext/skia_commit_hash.h"
 #include "ui/gfx/font_render_params.h"
@@ -39,9 +38,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "services/webnn/host/execution_provider_initializer.h"
-#include "services/webnn/public/cpp/context_properties.h"
-#include "services/webnn/public/cpp/ep_device_info.h"
 #include "ui/gfx/win/rendering_window_manager.h"
 #elif BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -838,56 +834,6 @@ void GpuHostImpl::ClearGrShaderDiskCache() {
           cache, base::Time(), base::Time::Max(), base::DoNothing());
     }
   }
-}
-
-#if BUILDFLAG(IS_WIN)
-void GpuHostImpl::EnsureWebNNExecutionProvidersReady(
-    EnsureWebNNExecutionProvidersReadyCallback cb) {
-  webnn::EnsureExecutionProvidersReady(std::move(cb));
-}
-
-void GpuHostImpl::Delegate::RequestWebNNCompilerContext(
-    webnn::mojom::CreateContextOptionsPtr context_options,
-    const webnn::ContextProperties& context_properties,
-    const webnn::EpDeviceInfo& target_device,
-    mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
-        compiler_context_receiver,
-    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
-    RequestWebNNCompilerContextResultCallback callback) {
-  std::move(callback).Run(false);
-}
-
-void GpuHostImpl::RequestWebNNCompilerContext(
-    webnn::mojom::CreateContextOptionsPtr context_options,
-    const webnn::ContextProperties& context_properties,
-    const webnn::EpDeviceInfo& target_device,
-    mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
-        compiler_context_receiver,
-    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
-    RequestWebNNCompilerContextCallback callback) {
-  delegate_->RequestWebNNCompilerContext(
-      std::move(context_options), context_properties, target_device,
-      std::move(compiler_context_receiver), std::move(model_loader_remote),
-      std::move(callback));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_APPLE)
-void GpuHostImpl::Delegate::CopyWebNNCompiledModel(
-    const base::FilePath& compiler_model_path,
-    CopyWebNNCompiledModelCallback callback) {
-  std::move(callback).Run(std::nullopt);
-}
-
-void GpuHostImpl::CopyWebNNCompiledModel(
-    const base::FilePath& compiler_model_path,
-    CopyWebNNCompiledModelCallback callback) {
-  delegate_->CopyWebNNCompiledModel(compiler_model_path, std::move(callback));
-}
-#endif
-
-void GpuHostImpl::CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) {
-  webnn::CreateWeightsFile(std::move(cb));
 }
 
 void GpuHostImpl::RecordLogMessage(int32_t severity,

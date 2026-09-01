@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 // This file exposes services from the browser process to the GPU process.
-
-#include "content/browser/gpu/gpu_process_host.h"
-
 #include "build/build_config.h"
+#include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/webnn/webnn_browser_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "services/webnn/public/mojom/webnn_browser_host.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
@@ -40,6 +40,11 @@ void BindAndroidOverlayProvider(
 
 void GpuProcessHost::BindHostReceiver(
     mojo::GenericPendingReceiver generic_receiver) {
+  if (auto r = generic_receiver.As<webnn::mojom::WebNNBrowserHost>()) {
+    WebNNBrowserHostImpl::Create(std::move(r));
+    return;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (auto r = generic_receiver.As<media::mojom::AndroidOverlayProvider>()) {
     GetUIThreadTaskRunner({})->PostTask(

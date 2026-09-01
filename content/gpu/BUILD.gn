@@ -74,6 +74,7 @@ target(link_target_type, "gpu_sources") {
     "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
     "//services/webnn/public/cpp",
+    "//services/webnn/public/mojom",
     "//skia",
     "//third_party/angle:angle_gpu_info_util",
     "//ui/gfx/ipc",

@@ -2,23 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webnn/webnn_compiler_process_host.h"
+#include "content/browser/webnn/webnn_browser_host_impl.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/types/pass_key.h"
+#include "build/build_config.h"
+#include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/webnn/host/weights_file_provider.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <algorithm>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -33,9 +42,24 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
 #include "services/webnn/webnn_switches.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_APPLE)
+#include <optional>
+#include <tuple>
+
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/task/thread_pool.h"
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace content {
 
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 // Maximum number of unexpected Compiler-process disconnects allowed before
@@ -45,7 +69,7 @@ constexpr int kMaxCompilerCrashCount = 3;
 // Number of times each WebNN Compiler process has crashed, keyed by device.
 // Stop relaunching after too many crashes to avoid an infinite loop.
 // This is intentionally file-scoped to keep process-wide crash accounting
-// across WebNNCompilerProcessHost re-creation within the browser process.
+// across WebNNBrowserHostImpl re-creation within the browser process.
 base::flat_map<webnn::EpDeviceInfo, int>& GetWebNNCompilerCrashCounts() {
   static base::NoDestructor<base::flat_map<webnn::EpDeviceInfo, int>> counts;
   return *counts;
@@ -138,19 +162,40 @@ mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
 }
 
 }  // namespace
+#endif  // BUILDFLAG(IS_WIN)
 
-WebNNCompilerProcessHost::WebNNCompilerProcessHost() = default;
+// static
+void WebNNBrowserHostImpl::Create(
+    mojo::PendingReceiver<webnn::mojom::WebNNBrowserHost> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The instance is owned by its receiver and deleted when it disconnects.
+  mojo::MakeSelfOwnedReceiver(std::make_unique<WebNNBrowserHostImpl>(
+                                  base::PassKey<WebNNBrowserHostImpl>()),
+                              std::move(receiver));
+}
 
-WebNNCompilerProcessHost::~WebNNCompilerProcessHost() = default;
+WebNNBrowserHostImpl::WebNNBrowserHostImpl(
+    base::PassKey<WebNNBrowserHostImpl>) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
-void WebNNCompilerProcessHost::RequestCompilerContext(
+WebNNBrowserHostImpl::~WebNNBrowserHostImpl() = default;
+
+#if BUILDFLAG(IS_WIN)
+void WebNNBrowserHostImpl::EnsureExecutionProvidersReady(
+    EnsureExecutionProvidersReadyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  webnn::EnsureExecutionProvidersReady(std::move(callback));
+}
+
+void WebNNBrowserHostImpl::RequestCompilerContext(
     webnn::mojom::CreateContextOptionsPtr context_options,
     const webnn::ContextProperties& context_properties,
     const webnn::EpDeviceInfo& target_device,
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
-    RequestCompilerContextResultCallback callback) {
+    RequestCompilerContextCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -186,20 +231,20 @@ void WebNNCompilerProcessHost::RequestCompilerContext(
   // library path. Always call this function to update the EP package info since
   // EPs in `NotPresent` state may be added asynchronously after initialization.
   webnn::EnsureExecutionProvidersReady(base::BindOnce(
-      &WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext,
+      &WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext,
       weak_ptr_factory_.GetWeakPtr(), std::move(context_options),
       context_properties, target_device, std::move(compiler_context_receiver),
       std::move(model_loader_remote), std::move(wrapped_callback)));
 }
 
-void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
+void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
     webnn::mojom::CreateContextOptionsPtr context_options,
     const webnn::ContextProperties& context_properties,
     const webnn::EpDeviceInfo& target_device,
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
-    RequestCompilerContextResultCallback callback,
+    RequestCompilerContextCallback callback,
     base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
         ep_package_info_map) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -226,7 +271,7 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
     }
 
     compiler_remote.set_disconnect_with_reason_handler(
-        base::BindOnce(&WebNNCompilerProcessHost::OnDisconnected,
+        base::BindOnce(&WebNNBrowserHostImpl::OnDisconnected,
                        base::Unretained(this), target_device));
   }
 
@@ -239,7 +284,7 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
       std::move(callback));
 }
 
-void WebNNCompilerProcessHost::OnDisconnected(
+void WebNNBrowserHostImpl::OnDisconnected(
     const webnn::EpDeviceInfo& device_info,
     uint32_t reason,
     const std::string& description) {
@@ -271,5 +316,82 @@ void WebNNCompilerProcessHost::OnDisconnected(
              << device_info.ToSwitchValue() << "] (count: " << crash_count
              << ").";
 }
+#endif  // BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/549199037): Move the implementation of `CreateWeightsFile`
+// function here from `weights_file_provider.cc`.
+void WebNNBrowserHostImpl::CreateWeightsFile(
+    CreateWeightsFileCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  webnn::CreateWeightsFile(std::move(callback));
+}
+
+#if BUILDFLAG(IS_APPLE)
+void WebNNBrowserHostImpl::CopyCompiledModel(
+    const base::FilePath& compiler_model_path,
+    CopyCompiledModelCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::FilePath temp_dir;
+  if (!base::GetTempDir(&temp_dir)) {
+    LOG(ERROR)
+        << "[WebNN] Failed to get system temp directory for copy validation.";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Offload all blocking file I/O operations (directory creation, copying,
+  // and cleanup) to a background thread pool task.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(
+          [](const base::FilePath& src_path,
+             const base::FilePath& temp_dir) -> std::optional<base::FilePath> {
+            // Validates the src path is within the webnn_compiler_protected
+            // directory, and copy to webnn_gpu_protected that
+            // `sandbox/policy/mac/webnn_model_compilation.sb` disallows
+            // compiler process to access.
+            base::FilePath compiler_protected_dir = base::MakeAbsoluteFilePath(
+                temp_dir.AppendASCII("webnn_compiler_protected"));
+            base::FilePath abs_src_path = base::MakeAbsoluteFilePath(src_path);
+            if (abs_src_path.empty() || compiler_protected_dir.empty() ||
+                abs_src_path.ReferencesParent() ||
+                !compiler_protected_dir.IsParent(abs_src_path)) {
+              LOG(ERROR)
+                  << "[WebNN] Security validation failed: compiled model path "
+                  << src_path << " is not within default temp directory.";
+              return std::nullopt;
+            }
+
+            base::FilePath protected_dir =
+                temp_dir.AppendASCII("webnn_gpu_protected");
+            if (!base::CreateDirectory(protected_dir)) {
+              LOG(ERROR) << "[WebNN] Failed to create protected GPU directory.";
+              return std::nullopt;
+            }
+            base::ScopedTempDir gpu_model_dir;
+            if (!gpu_model_dir.CreateUniqueTempDirUnderPath(protected_dir)) {
+              LOG(ERROR) << "[WebNN] Failed to create secure temp directory "
+                            "under protected path.";
+              return std::nullopt;
+            }
+            base::FilePath dest_parent_dir = gpu_model_dir.GetPath();
+            base::FilePath gpu_model_path =
+                dest_parent_dir.AppendASCII("model.mlmodelc");
+            if (!base::CopyDirectory(src_path, gpu_model_path,
+                                     /*recursive=*/true)) {
+              LOG(ERROR) << "[WebNN] Failed to copy compiled model from "
+                         << src_path << " to " << gpu_model_path;
+              return std::nullopt;
+            }
+            // Take ownership of the temp directory so it is not
+            // deleted when ScopedTempDir goes out of scope.
+            std::ignore = gpu_model_dir.Take();
+            return gpu_model_path;
+          },
+          compiler_model_path, temp_dir),
+      std::move(callback));
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace content

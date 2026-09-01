@@ -39,6 +39,7 @@ mojom_component("mojom") {
   macro_prefix = "WEBNN_MOJOM"
 
   sources = [
+    "webnn_browser_host.mojom",
     "webnn_compiler_context.mojom",
     "webnn_context.mojom",
     "webnn_context_properties.mojom",

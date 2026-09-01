@@ -1,0 +1,78 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+[EnableIf=is_apple]
+import "mojo/public/mojom/base/file_path.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/ep_device_info.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/ep_package_info.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_compiler_context.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_context_properties.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_context_provider.mojom";
+
+[EnableIf=is_win]
+import "services/webnn/public/mojom/webnn_model_loader.mojom";
+
+// Communication channel from the GPU process (where the WebNN service lives) to
+// the browser process for WebNN operations that must be brokered by the
+// browser. The GPU process obtains this interface from the browser via its
+// ChildProcessHost (see content::GpuProcessHost::BindHostReceiver).
+//
+// This interface intentionally lives separately from `viz.mojom.GpuHost`: these
+// operations are unrelated to GPU compositing and should not be carried on the
+// privileged GpuHost interface. This interface should never have any sync
+// function calls.
+interface WebNNBrowserHost {
+  // Asks the browser to ensure the execution providers used by WebNN are
+  // ready. Returns the package info of available execution providers.
+  [EnableIf=is_win]
+  EnsureExecutionProvidersReady()
+      => (map<string, EpPackageInfo> ep_package_info);
+
+  // Requests a CompilerContext in the Compiler process for a specific EP
+  // device. Each EP device has its own dedicated Compiler process, launched on
+  // first use for that device.
+  //
+  // The GPU process creates both pipes and passes the endpoints here. The
+  // browser forwards them to the Compiler process. Returns true if the compiler
+  // context was created successfully, false otherwise.
+  [EnableIf=is_win]
+  RequestCompilerContext(
+      CreateContextOptions context_options,
+      ContextProperties context_properties,
+      EpDeviceInfo target_device,
+      pending_receiver<WebNNCompilerContext> compiler_context_receiver,
+      pending_remote<WebNNModelLoader> model_loader_remote)
+      => (bool success);
+
+  // Asks the browser to create a temporary file that can be used to save all
+  // weights in the WebNN graph. Returns the open file handle if the file was
+  // successfully created, otherwise returns an invalid file handle that will be
+  // caught and prevent the graph from being built.
+  //
+  // TODO(crbug.com/364445586): Once the LiteRT MLDrift delegate moves from GPU
+  // to the renderer process, this method can be removed entirely.
+  CreateWeightsFile() => (mojo_base.mojom.File? file);
+
+  // Asks the browser to copy a compiled CoreML model directory from the
+  // Compiler process's temp directory to the GPU process's temp directory.
+  // Returns the new path in the GPU process's temp directory, or null if the
+  // copy failed.
+  [EnableIf=is_apple]
+  CopyCompiledModel(mojo_base.mojom.FilePath compiler_model_path)
+      => (mojo_base.mojom.FilePath? gpu_model_path);
+};

@@ -2297,6 +2297,8 @@ source_set("browser") {
     "webid/user_info_request.h",
     "webid/webid_utils.cc",
     "webid/webid_utils.h",
+    "webnn/webnn_browser_host_impl.cc",
+    "webnn/webnn_browser_host_impl.h",
     "webnn/webnn_introspection_manager_impl.cc",
     "webnn/webnn_introspection_manager_impl.h",
     "webrtc/mock_camera_device.cc",
@@ -3001,8 +3003,6 @@ source_set("browser") {
       "speech/tts_win.cc",
       "speech/tts_win_utils.cc",
       "speech/tts_win_utils.h",
-      "webnn/webnn_compiler_process_host.cc",
-      "webnn/webnn_compiler_process_host.h",
     ]
     deps += [
       "//components/app_launch_prefetch",

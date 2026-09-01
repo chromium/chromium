@@ -142,7 +142,7 @@ specific_include_rules = {
   "browser_interface_binders\\.cc": [
     "+services/webnn/public/mojom/features.mojom-features.h",
   ],
-  "webnn_compiler_process_host\\.cc": [
+  "webnn_browser_host_impl\\.cc": [
     "+services/webnn/public/cpp/compiler_disconnect_reason.h",
   ],
   "browser_main_loop\\.cc": [

@@ -11,7 +11,7 @@ namespace webnn {
 
 // Disconnect reasons passed via `mojo::Receiver::ResetWithReason()` when
 // the WebNNCompilerService pipe is closed. Used by the browser process
-// (`GpuProcessHost`) to distinguish intentional shutdown from unexpected
+// (`WebNNBrowserHostImpl`) to distinguish intentional shutdown from unexpected
 // crashes.
 enum class CompilerDisconnectReason : uint32_t {
   // The compiler process shut down gracefully after all compiler contexts

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
@@ -98,6 +99,15 @@ class VizMainImpl : public mojom::VizMain {
     raw_ptr<base::WaitableEvent> shutdown_event = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner;
     std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder;
+    // Binds a receiver for the interface the WebNN service uses to broker
+    // operations through the browser process (see
+    // webnn::mojom::WebNNBrowserHost). Forwarded to the GpuServiceImpl, which
+    // invokes it on demand when WebNN is first used. Mutable because
+    // `dependencies_` is held by const value in VizMainImpl but this callback
+    // is moved out of it.
+    mutable base::OnceCallback<void(
+        mojo::PendingReceiver<webnn::mojom::WebNNBrowserHost>)>
+        bind_webnn_browser_host;
 #if BUILDFLAG(IS_ANDROID)
     // GpuServiceImpl normally creates the below objects internally. However,
     // on Android WebView it is created by the embedder.

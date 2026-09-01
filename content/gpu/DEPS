@@ -13,6 +13,7 @@ include_rules = [
   "+services/viz/privileged/mojom",
   "+services/viz/service",
   "+services/webnn/public/cpp",
+  "+services/webnn/public/mojom",
   "+sandbox",
   "+skia",
 ]

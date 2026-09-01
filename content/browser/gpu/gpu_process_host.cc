@@ -87,7 +87,6 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
-#include "services/webnn/buildflags.h"
 #include "services/webnn/webnn_switches.h"
 #include "skia/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -106,12 +105,6 @@
 #include "components/metrics/stability_metrics_helper.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE)
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/task/thread_pool.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
@@ -119,11 +112,9 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
-#include "content/browser/webnn/webnn_compiler_process_host.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/window.h"
-#include "services/webnn/public/cpp/ep_device_info.h"
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
@@ -717,103 +708,6 @@ void GpuProcessHost::TerminateGpuProcess(const std::string& message) {
   process_->TerminateOnBadMessageReceived(message);
 }
 #endif  // BUILDFLAG(IS_OZONE)
-
-#if BUILDFLAG(IS_WIN)
-void GpuProcessHost::RequestWebNNCompilerContext(
-    webnn::mojom::CreateContextOptionsPtr context_options,
-    const webnn::ContextProperties& context_properties,
-    const webnn::EpDeviceInfo& target_device,
-    mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
-        compiler_context_receiver,
-    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
-    RequestWebNNCompilerContextResultCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!gpu_service()) {
-    LOG(ERROR) << "[WebNN] RequestWebNNCompilerContext() failed: GPU process "
-                  "is not available.";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  if (!webnn_compiler_process_host_) {
-    webnn_compiler_process_host_ = std::make_unique<WebNNCompilerProcessHost>();
-  }
-
-  webnn_compiler_process_host_->RequestCompilerContext(
-      std::move(context_options), context_properties, target_device,
-      std::move(compiler_context_receiver), std::move(model_loader_remote),
-      std::move(callback));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_APPLE)
-void GpuProcessHost::CopyWebNNCompiledModel(
-    const base::FilePath& compiler_model_path,
-    viz::GpuHostImpl::CopyWebNNCompiledModelCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  base::FilePath temp_dir;
-  if (!base::GetTempDir(&temp_dir)) {
-    LOG(ERROR)
-        << "[WebNN] Failed to get system temp directory for copy validation.";
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  // Offload all blocking file I/O operations (directory creation, copying,
-  // and cleanup) to a background thread pool task.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(
-          [](const base::FilePath& src_path,
-             const base::FilePath& temp_dir) -> std::optional<base::FilePath> {
-            // Validates the src path is within the webnn_compiler_protected
-            // directory, and copy to webnn_gpu_protected that
-            // `sandbox/policy/mac/webnn_model_compilation.sb` disallows
-            // compiler process to access.
-            base::FilePath compiler_protected_dir = base::MakeAbsoluteFilePath(
-                temp_dir.AppendASCII("webnn_compiler_protected"));
-            base::FilePath abs_src_path = base::MakeAbsoluteFilePath(src_path);
-            if (abs_src_path.empty() || compiler_protected_dir.empty() ||
-                abs_src_path.ReferencesParent() ||
-                !compiler_protected_dir.IsParent(abs_src_path)) {
-              LOG(ERROR)
-                  << "[WebNN] Security validation failed: compiled model path "
-                  << src_path << " is not within default temp directory.";
-              return std::nullopt;
-            }
-
-            base::FilePath protected_dir =
-                temp_dir.AppendASCII("webnn_gpu_protected");
-            if (!base::CreateDirectory(protected_dir)) {
-              LOG(ERROR) << "[WebNN] Failed to create protected GPU directory.";
-              return std::nullopt;
-            }
-            base::ScopedTempDir gpu_model_dir;
-            if (!gpu_model_dir.CreateUniqueTempDirUnderPath(protected_dir)) {
-              LOG(ERROR) << "[WebNN] Failed to create secure temp directory "
-                            "under protected path.";
-              return std::nullopt;
-            }
-            base::FilePath dest_parent_dir = gpu_model_dir.GetPath();
-            base::FilePath gpu_model_path =
-                dest_parent_dir.AppendASCII("model.mlmodelc");
-            if (!base::CopyDirectory(src_path, gpu_model_path,
-                                     /*recursive=*/true)) {
-              LOG(ERROR) << "[WebNN] Failed to copy compiled model from "
-                         << src_path << " to " << gpu_model_path;
-              return std::nullopt;
-            }
-            // Take ownership of the temp directory so it is not
-            // deleted when ScopedTempDir goes out of scope.
-            std::ignore = gpu_model_dir.Take();
-            return gpu_model_path;
-          },
-          compiler_model_path, temp_dir),
-      std::move(callback));
-}
-#endif  // BUILDFLAG(IS_APPLE)
 
 // static
 GpuProcessHost* GpuProcessHost::FromID(int host_id) {

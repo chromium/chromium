@@ -18,12 +18,12 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
-#include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/mojom/webnn_browser_host.mojom.h"
 #include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
+      mojo::PendingRemote<mojom::WebNNBrowserHost> webnn_browser_host);
 
   struct WebNNReceiversParams {
     // Indicates whether the provider is operating in incognito mode.
@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
+      mojo::PendingRemote<mojom::WebNNBrowserHost> webnn_browser_host);
 
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
@@ -340,7 +340,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   const scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor_;
 
-  mojo::SharedRemote<viz::mojom::GpuHost> gpu_host_;
+  // Interface to the browser process for WebNN operations brokered by the
+  // browser (see webnn::mojom::WebNNBrowserHost). Bound on the main sequence
+  // and only used from it, so a plain Remote suffices.
+  mojo::Remote<mojom::WebNNBrowserHost> webnn_browser_host_;
 
   // SequenceChecker for WebNNContextProviderImpl. It attaches to the sequence
   // on which this object is constructed. All message dispatches and any access

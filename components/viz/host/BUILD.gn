@@ -46,7 +46,6 @@ viz_component("host") {
     "//gpu/ipc/common",
     "//gpu/webgpu:common",
     "//services/viz/privileged/mojom",
-    "//services/webnn/host",
     "//services/webnn/public/mojom",
     "//ui/base",
     "//ui/base:ozone_buildflags",
@@ -68,10 +67,6 @@ viz_component("host") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-  }
-
-  if (is_win) {
-    deps += [ "//services/webnn/public/cpp:win" ]
   }
 }
 

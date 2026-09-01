@@ -49,8 +49,9 @@ bool HasSufficientFreeDiskSpace(const base::FilePath& temp_dir) {
 // on close.
 //
 // TODO(crbug.com/364445586): Once the LiteRT MLDrift delegate moves from GPU
-// to the renderer process, this function (and the `CreateWebNNWeightsFile`
-// host interface in `gpu_host.mojom` that wraps it) can be removed entirely.
+// to the renderer process, this function (and the `CreateWeightsFile`
+// host interface in `webnn_browser_host.mojom` that wraps it) can be removed
+// entirely.
 base::File CreateTemporaryFile() {
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir)) {

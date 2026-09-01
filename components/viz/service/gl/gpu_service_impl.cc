@@ -295,6 +295,8 @@ GpuServiceImpl::GpuServiceImpl(
   }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
+  bind_webnn_browser_host_ = std::move(init_params.bind_webnn_browser_host);
+
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -688,11 +690,16 @@ void GpuServiceImpl::CreateWebNNContextProviderIfNeeded() {
     return;
   }
 
+  // Bind the WebNNBrowserHost pipe now, on first WebNN use.
+  mojo::PendingRemote<webnn::mojom::WebNNBrowserHost> webnn_browser_host;
+  std::move(bind_webnn_browser_host_)
+      .Run(webnn_browser_host.InitWithNewPipeAndPassReceiver());
+
   webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
       gpu_feature_info_, gpu_info_, shared_image_manager(),
       gpu_channel_manager_->peak_memory_monitor(),
       base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_),
-      main_runner(), GetGpuScheduler(), gpu_host_);
+      main_runner(), GetGpuScheduler(), std::move(webnn_browser_host));
 }
 
 void GpuServiceImpl::BindWebNNServiceIntrospection(

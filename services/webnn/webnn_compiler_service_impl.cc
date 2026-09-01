@@ -37,7 +37,7 @@ WebNNCompilerServiceImpl::WebNNCompilerServiceImpl(
 
   // Start the idle timer immediately as a safety net. Currently the process
   // is only launched when a context is requested (lazy launch in
-  // GpuProcessHost::RequestWebNNCompilerContext), so CreateCompilerContext()
+  // WebNNBrowserHostImpl::RequestCompilerContext), so CreateCompilerContext()
   // will cancel this timer almost immediately. But if the launch path ever
   // changes, this ensures the process won't linger indefinitely.
   idle_timer_.Start(FROM_HERE, kIdleTimeout,
