@@ -3248,16 +3248,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     frame->damage_reasons.Remove(DamageReason::kCompositorScroll);
   }
 
-  if (!frame->video_layer_preferred_intervals.empty() &&
-      frame->damage_reasons.Has(DamageReason::kVideoLayer)) {
-    for (auto& [video_interval, count] :
-         frame->video_layer_preferred_intervals) {
-      metadata.frame_interval_inputs.content_interval_info.push_back(
-          {viz::ContentFrameIntervalType::kVideo, video_interval, count - 1u});
-    }
-    frame->damage_reasons.Remove(DamageReason::kVideoLayer);
-  }
-
   if (frame->damage_reasons.Has(DamageReason::kAnimatedImage)) {
     if (!settings_.trees_in_viz_in_viz_process) {
       CHECK(image_animation_controller_);
