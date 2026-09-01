@@ -88,8 +88,7 @@ bool SendTabPushNotificationClient::HandleNotificationInteraction(
   // Load URL in a new tab and mark the corresponding SendTabToSelfEntry as
   // opened.
   GURL url = GURL(base::SysNSStringToUTF8(user_info[kUrlKey]));
-  std::string identifier = base::SysNSStringToUTF8(
-      response.notification.request.content.userInfo[kIdentifierKey]);
+  std::string identifier = base::SysNSStringToUTF8(user_info[kIdentifierKey]);
   if (base::CallbackListSubscription subscription =
           ExecuteActionWhenBrowserReady(base::BindOnce(
               &SendTabPushNotificationClient::LoadSendTabUrlInNewTab,
