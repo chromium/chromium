@@ -182,14 +182,20 @@ MenuItemView* MenuModelAdapter::AppendMenuItem(MenuItemView* menu,
 void MenuModelAdapter::ExecuteCommand(int id) {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  if (!model ||
+      !ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+    return;
+  }
   model->ActivatedAt(index);
 }
 
 void MenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  if (!model ||
+      !ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+    return;
+  }
   model->ActivatedAt(index, mouse_event_flags);
 }
 
@@ -210,21 +216,34 @@ bool MenuModelAdapter::GetAccelerator(int id,
                                       ui::Accelerator* accelerator) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  // A dynamic menu model (e.g. BackForwardMenuModel) may shrink or change its
+  // contents while MenuItemViews are still in the view hierarchy or in the
+  // middle of being painted/closed by the compositor. Similarly, `menu_model_`
+  // may be cleared during teardown. In these cases, failing to find `id` in
+  // `model` is expected, and we should safely return false rather than
+  // crashing.
+  if (!model ||
+      !ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+    return false;
+  }
   return model->GetAcceleratorAt(index, accelerator);
 }
 
 std::u16string MenuModelAdapter::GetLabel(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  if (!model ||
+      !ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+    return std::u16string();
+  }
   return model->GetLabelAt(index);
 }
 
 const gfx::FontList* MenuModelAdapter::GetLabelFontList(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+  if (model &&
+      ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
     if (const gfx::FontList* const font_list =
             model->GetLabelFontListAt(index)) {
       return font_list;
@@ -238,21 +257,30 @@ const gfx::FontList* MenuModelAdapter::GetLabelFontList(int id) const {
 bool MenuModelAdapter::IsCommandEnabled(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  if (!model ||
+      !ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+    return false;
+  }
   return model->IsEnabledAt(index);
 }
 
 bool MenuModelAdapter::IsCommandVisible(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  if (!model ||
+      !ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+    return false;
+  }
   return model->IsVisibleAt(index);
 }
 
 bool MenuModelAdapter::IsItemChecked(int id) const {
   ui::MenuModel* model = menu_model_;
   size_t index = 0;
-  CHECK(ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index));
+  if (!model ||
+      !ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
+    return false;
+  }
   return model->IsItemCheckedAt(index);
 }
 
@@ -283,10 +311,18 @@ void MenuModelAdapter::OnMenuClosed(MenuItemView* menu) {
 // MenuModelDelegate overrides:
 void MenuModelAdapter::OnIconChanged(int command_id) {
   ui::MenuModel* model = menu_model_;
-  size_t index;
-  menu_model_->GetModelAndIndexForCommandId(command_id, &model, &index);
+  size_t index = 0;
+  if (!model || !ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
+                                                             &index)) {
+    return;
+  }
+  if (!menu_) {
+    return;
+  }
   views::MenuItemView* item = menu_->GetMenuItemByID(command_id);
-  CHECK(item);
+  if (!item) {
+    return;
+  }
   item->SetIcon(model->GetIconAt(index));
 }
 
