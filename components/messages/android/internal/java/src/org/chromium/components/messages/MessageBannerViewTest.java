@@ -865,6 +865,86 @@ public class MessageBannerViewTest {
                 btn.getContentDescription());
     }
 
+    /** Tests that requestFocus prioritizes primary button when it is visible. */
+    @Test
+    @MediumTest
+    public void testRequestFocus_primaryButton() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(
+                                            MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                            PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET)
+                                    .with(
+                                            MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                            PRIMARY_BUTTON_TEXT)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+
+                    boolean focused = mMessageBannerView.requestFocus();
+                    Assert.assertTrue("Focus should be handled.", focused);
+                    Assert.assertTrue(
+                            "Primary button should have focus.", mPrimaryButton.hasFocus());
+                });
+    }
+
+    /** Tests that requestFocus prioritizes secondary button when primary button is not visible. */
+    @Test
+    @MediumTest
+    public void testRequestFocus_secondaryButton() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                            android.R.drawable.ic_menu_add)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+
+                    View secondaryButton =
+                            mMessageBannerView.findViewById(R.id.message_secondary_button);
+                    boolean focused = mMessageBannerView.requestFocus();
+                    Assert.assertTrue("Focus should be handled.", focused);
+                    Assert.assertTrue(
+                            "Secondary button should have focus.", secondaryButton.hasFocus());
+                });
+    }
+
+    /** Tests that requestFocus focuses close button when action buttons are not visible. */
+    @Test
+    @MediumTest
+    public void testRequestFocus_closeButton() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+
+                    mMessageBannerView.enableCloseButton(true);
+                    View closeButton = mMessageBannerView.findViewById(R.id.message_close_button);
+                    closeButton.setVisibility(View.VISIBLE);
+
+                    boolean focused = mMessageBannerView.requestFocus();
+                    Assert.assertTrue("Focus should be handled.", focused);
+                    Assert.assertTrue("Close button should have focus.", closeButton.hasFocus());
+                });
+    }
+
     private void assertIsLoading(boolean isLoading) {
         Assert.assertEquals(isLoading ? View.GONE : View.VISIBLE, mPrimaryButton.getVisibility());
         Assert.assertEquals(isLoading ? View.VISIBLE : View.GONE, mLoadingSpinner.getVisibility());

@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Outline;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -18,6 +19,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,6 +41,7 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
+import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -486,9 +490,30 @@ public class MessageBannerView extends RelativeLayout {
         return super.onGenericMotionEvent(event);
     }
 
+    @Override
+    public boolean requestFocus(int direction, @Nullable Rect previouslyFocusedRect) {
+        if (focusButton(mPrimaryButton)) return true;
+        if (focusButton(mSecondaryButton)) return true;
+        if (focusButton(mCloseButton)) return true;
+        return super.requestFocus(direction, previouslyFocusedRect);
+    }
+
     private boolean isWithinTapProtectionPeriod() {
         return mIsWithinTapProtectionPeriodSupplier != null
                 && Boolean.TRUE.equals(mIsWithinTapProtectionPeriodSupplier.get());
+    }
+
+    @SuppressLint("AccessibilityFocus")
+    private static boolean focusButton(@Nullable View button) {
+        if (button != null && button.getVisibility() == VISIBLE) {
+            if (KeyboardFocusUtil.setFocus(button)) {
+                button.performAccessibilityAction(
+                        AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+                button.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                return true;
+            }
+        }
+        return false;
     }
 
     private static class MessageSwipeGestureListener extends SwipeGestureListener {

@@ -75,6 +75,41 @@ public class MessageContainerTest {
 
     @Test
     @SmallTest
+    public void testA11yDelegate_multipleChildViews() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        container.setA11yDelegate(mA11yDelegate);
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(container);
+
+        View child1 = new View(sActivity);
+        View child2 = new View(sActivity);
+        container.addMessage(child1);
+        container.addMessage(child2);
+
+        AccessibilityEvent focus =
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+        AccessibilityEvent unfocus =
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
+
+        // Focus first child: should notify onA11yFocused.
+        delegate.onRequestSendAccessibilityEvent(container, child1, focus);
+        verify(mA11yDelegate, times(1)).onA11yFocused();
+
+        // Focus second child while first is still focused: should not trigger extra onA11yFocused.
+        delegate.onRequestSendAccessibilityEvent(container, child2, focus);
+        verify(mA11yDelegate, times(1)).onA11yFocused();
+
+        // Clear focus on first child: second is still focused, so onA11yFocusCleared should not be
+        // called yet.
+        delegate.onRequestSendAccessibilityEvent(container, child1, unfocus);
+        verify(mA11yDelegate, times(0)).onA11yFocusCleared();
+
+        // Clear focus on second child: all children unfocused, should notify onA11yFocusCleared.
+        delegate.onRequestSendAccessibilityEvent(container, child2, unfocus);
+        verify(mA11yDelegate, times(1)).onA11yFocusCleared();
+    }
+
+    @Test
+    @SmallTest
     public void testCustomA11yActions() {
         MessageContainer container = new MessageContainer(sActivity, null);
         container.setA11yDelegate(mA11yDelegate);

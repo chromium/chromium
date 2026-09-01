@@ -29,7 +29,7 @@ public class MessageContainer extends FrameLayout {
     }
 
     class MessageContainerA11yDelegateProxy extends AccessibilityDelegate {
-        private int mFocusedView;
+        private int mFocusedViewCount;
 
         @Override
         public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
@@ -47,25 +47,35 @@ public class MessageContainer extends FrameLayout {
         private void handleEvent(AccessibilityEvent event) {
             if (mA11yDelegate == null) return;
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
-                assert mFocusedView == 0 : "No other view should be focused";
-                mFocusedView++;
-                mA11yDelegate.onA11yFocused();
+                mFocusedViewCount++;
+                if (mFocusedViewCount == 1) {
+                    mA11yDelegate.onA11yFocused();
+                }
             } else if (event.getEventType()
                     == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
-                assert mFocusedView == 1 : "One view must be focused";
-                mFocusedView--;
-                mA11yDelegate.onA11yFocusCleared();
+                if (mFocusedViewCount > 0) {
+                    mFocusedViewCount--;
+                    if (mFocusedViewCount == 0) {
+                        mA11yDelegate.onA11yFocusCleared();
+                    }
+                }
             }
+        }
+
+        void reset() {
+            mFocusedViewCount = 0;
         }
     }
 
+    private final MessageContainerA11yDelegateProxy mA11yDelegateProxy =
+            new MessageContainerA11yDelegateProxy();
     private @Nullable MessageContainerA11yDelegate mA11yDelegate;
     private boolean mIsInitializingLayout;
     private int mA11yDismissActionId = NO_ID;
 
     public MessageContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setAccessibilityDelegate(new MessageContainerA11yDelegateProxy());
+        setAccessibilityDelegate(mA11yDelegateProxy);
     }
 
     /**
@@ -103,6 +113,7 @@ public class MessageContainer extends FrameLayout {
         super.removeView(view);
         if (getChildCount() == 0) {
             mA11yDelegate = null;
+            mA11yDelegateProxy.reset();
         }
         onChildCountChanged();
     }
