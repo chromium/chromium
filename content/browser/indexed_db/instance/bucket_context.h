@@ -71,6 +71,12 @@ enum class SqliteRolloutStage {
   // Use SQLite exclusively; delete LevelDB stores if found.
   // All on-disk stores emit metrics to the "OnDisk" variant.
   kUseSqliteOnly,
+  // Like kUseSqliteForNewStores, but additionally, will migrate existing
+  // LevelDB-backed stores to SQLite under certain conditions. This migration
+  // happens when the store is being closed (to avoid delays when the store is
+  // first opened/read), and is avoided when the browser is shutting down (to
+  // avoid shutdown slowness/hangs).
+  kMigrateDataToSqliteGentle,
 };
 
 // BucketContext manages the per-bucket IndexedDB state, and other important
@@ -409,8 +415,10 @@ class CONTENT_EXPORT BucketContext
       bool create_if_missing);
 
   // Destroys `backing_store_` and all associated state. If there are no
-  // receivers remaining, it will also destroy `this`.
-  void ResetBackingStore();
+  // receivers remaining, it will also destroy `this`. When `migrate` is true,
+  // the backing store *may* be migrated to SQLite, assuming other conditions
+  // are met.
+  void ResetBackingStore(bool migrate = false);
 
   // Called when a receiver from `receiver_set_` has been disconnected. If there
   // are no receivers left and the backing store is already destroyed, this will
@@ -436,7 +444,7 @@ class CONTENT_EXPORT BucketContext
 
   // Set at construction. Can be overridden by
   // `SetSqliteRolloutStageForTesting()`.
-  SqliteRolloutStage sqlite_rollout_stage_;
+  const SqliteRolloutStage sqlite_rollout_stage_;
 
   bool running_tasks_ = false;
 

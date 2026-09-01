@@ -18,6 +18,7 @@
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/backing_store_util.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -882,6 +883,43 @@ TEST_F(BackingStoreMigrationTest, Migrate) {
                 "IndexedDB.SqliteMigration.RenameBlobResult",
                 -base::File::FILE_ERROR_NOT_FOUND),
             1);
+}
+
+// Make a backing store in a directory that already contains SQLite files,
+// then tell it to migrate from another backing store. The pre-existing SQLite
+// files should be deleted at the start of migration.
+TEST_F(BackingStoreMigrationTest, MigrateOverExistingSqliteDatabase) {
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                       backing_store()->CreateOrOpenDatabase(u"test_db"));
+  CreateObjectStore(*db);
+  db.reset();
+
+  base::ScopedTempDir other_dir;
+  ASSERT_TRUE(other_dir.CreateUniqueTempDir());
+  std::unique_ptr<BucketContext> other_bucket_context =
+      CreateBucketContext(/*use_sqlite=*/true, other_dir.GetPath());
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<BackingStore::Database> existing_db,
+      other_bucket_context->backing_store()->CreateOrOpenDatabase(
+          u"existing_db"));
+  CreateObjectStore(*existing_db);
+  existing_db.reset();
+  other_bucket_context.reset();
+
+  other_bucket_context =
+      CreateBucketContext(/*use_sqlite=*/true, other_dir.GetPath());
+  sqlite::BackingStoreImpl* sqlite_backing_store =
+      static_cast<sqlite::BackingStoreImpl*>(
+          other_bucket_context->backing_store());
+  ASSERT_TRUE(sqlite_backing_store->MigrateFrom(*backing_store()).ok());
+
+  ASSERT_OK_AND_ASSIGN(bool existing_database_exists,
+                       sqlite_backing_store->DatabaseExists(u"existing_db"));
+  EXPECT_FALSE(existing_database_exists);
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> migrated_db,
+                       sqlite_backing_store->CreateOrOpenDatabase(u"test_db"));
+  EXPECT_TRUE(
+      migrated_db->GetMetadata().object_stores.contains(kObjectStoreId1));
 }
 
 }  // namespace content::indexed_db

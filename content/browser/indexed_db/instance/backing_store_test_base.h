@@ -87,7 +87,7 @@ class BackingStoreTestBase : public testing::Test {
   static IndexedDBExternalObject CreateFileSystemAccessHandle();
 
  protected:
-  static const int64_t kObjectStoreId1 = 1;
+  static constexpr int64_t kObjectStoreId1 = 1;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

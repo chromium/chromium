@@ -90,6 +90,8 @@ constexpr base::FeatureParam<SqliteRolloutStage>::Option
         {SqliteRolloutStage::kUseLevelDbAsControl, "UseLevelDbAsControl"},
         {SqliteRolloutStage::kUseSqliteForNewStores, "UseSqliteForNewStores"},
         {SqliteRolloutStage::kUseSqliteOnly, "UseSqliteOnly"},
+        {SqliteRolloutStage::kMigrateDataToSqliteGentle,
+         "MigrateDataToSqliteGentle"},
 };
 
 BASE_FEATURE_ENUM_PARAM(SqliteRolloutStage,
@@ -111,6 +113,40 @@ constexpr char kExpediteBackingStoreShutdownSwitch[] =
 
 // Duration of inactivity after which idle tasks are run.
 constexpr base::TimeDelta kIdleTimeout = base::Seconds(15);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(MigrationEvent)
+enum class MigrationEvent {
+  kDiskSpaceQueryFailed = 0,
+  kInsufficientDiskSpace = 1,
+  kCreateDirectoryFailed = 2,
+  kStarted = 3,
+  kDeleteLevelDbFilesFailed = 4,
+  kFailedMigrationCleanupFailed = 5,
+  kMaxValue = kFailedMigrationCleanupFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbMigrationEvent)
+
+void LogMigrationEvent(MigrationEvent event) {
+  base::UmaHistogramEnumeration("IndexedDB.SqliteMigration.Event", event);
+}
+
+std::vector<PartitionedLock> LockSqliteDatabase(
+    PartitionedLockManager& lock_manager,
+    const std::u16string& name) {
+  // TODO(crbug.com/436880909): Deduplicate with
+  // `BuildLockRequestsForSqlite()`.
+  std::string key = DatabaseNameToFileName(name).MaybeAsASCII();
+  constexpr int kMetadataLockPartition = 0;
+  PartitionedLockHolder lock_holder;
+  lock_manager.AcquireLocks({{{kMetadataLockPartition, key},
+                              PartitionedLockManager::LockType::kExclusive}},
+                            lock_holder, base::DoNothing());
+  // Locks should be granted synchronously.
+  CHECK_EQ(lock_holder.locks.size(), 1U);
+  return std::move(lock_holder.locks);
+}
 
 std::optional<bool> g_should_use_sqlite_for_testing;
 
@@ -231,6 +267,7 @@ bool ShouldUseSqlite(SqliteRolloutStage stage,
     case SqliteRolloutStage::kUseLevelDbAsControl:
       return false;
     case SqliteRolloutStage::kUseSqliteForNewStores:
+    case SqliteRolloutStage::kMigrateDataToSqliteGentle:
       return !DoesLevelDbStoreExist(bucket_locator, data_path);
     case SqliteRolloutStage::kUseSqliteOnly:
       return true;
@@ -246,6 +283,8 @@ std::string_view DetermineHistogramSuffix(
   }
   switch (stage) {
     case SqliteRolloutStage::kUseLevelDbOnly:
+    case SqliteRolloutStage::kMigrateDataToSqliteGentle:
+    case SqliteRolloutStage::kUseSqliteOnly:
       return ".OnDisk";
     case SqliteRolloutStage::kUseLevelDbAsControl:
       return base::PathExists(
@@ -256,8 +295,6 @@ std::string_view DetermineHistogramSuffix(
     case SqliteRolloutStage::kUseSqliteForNewStores:
       return ShouldUseSqlite(stage, bucket_locator, data_path) ? ".Experimental"
                                                                : ".OnDisk";
-    case SqliteRolloutStage::kUseSqliteOnly:
-      return ".OnDisk";
   }
 }
 
@@ -283,6 +320,7 @@ BucketContext::BucketContext(
         file_system_access_context)
     : bucket_info_(std::move(bucket_info)),
       data_path_(data_path),
+      sqlite_rollout_stage_(GetSqliteRolloutStage(in_memory())),
       idle_timer_(FROM_HERE,
                   kIdleTimeout,
                   base::BindRepeating(&BucketContext::RunIdleTasks,
@@ -303,7 +341,6 @@ BucketContext::BucketContext(
           base::trace_event::MemoryDumpProvider::Options());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
-  sqlite_rollout_stage_ = GetSqliteRolloutStage(in_memory());
 }
 
 BucketContext::~BucketContext() {
@@ -622,7 +659,11 @@ void BucketContext::RunTasks() {
           kExpediteBackingStoreShutdownSwitch);
   if (CanClose() &&
       (closing_stage_ == ClosingState::kClosed || kExpediteShutdown)) {
-    ResetBackingStore();
+    // The "gentle" migration path means migration when the store is being
+    // closed due to a lack of open connections. Force closing or browser
+    // shutdown won't trigger it.
+    ResetBackingStore(/*migrate=*/sqlite_rollout_stage_ ==
+                      SqliteRolloutStage::kMigrateDataToSqliteGentle);
   } else {
     // Since a `Database` may have just been destroyed, there may no longer be
     // a need to keep `this` around.
@@ -1030,7 +1071,7 @@ BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
 
 void BucketContext::SetSqliteRolloutStageForTesting(SqliteRolloutStage stage) {
   CHECK(!backing_store_);
-  sqlite_rollout_stage_ = stage;
+  const_cast<SqliteRolloutStage&>(sqlite_rollout_stage_) = stage;
 }
 
 // static
@@ -1236,23 +1277,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
         std::make_unique<sqlite::BackingStoreImpl>(
             database_path, *blob_storage_context_,
             /*lock_database=*/
-            base::BindRepeating(
-                [](PartitionedLockManager& lock_manager,
-                   const std::u16string& name) {
-                  // TODO(crbug.com/436880909): Deduplicate with
-                  // `BuildLockRequestsForSqlite()`.
-                  std::string key = DatabaseNameToFileName(name).MaybeAsASCII();
-                  constexpr int kMetadataLockPartition = 0;
-                  PartitionedLockHolder lock_holder;
-                  lock_manager.AcquireLocks(
-                      {{{kMetadataLockPartition, key},
-                        PartitionedLockManager::LockType::kExclusive}},
-                      lock_holder, base::DoNothing());
-                  // Locks should be granted synchronously.
-                  CHECK_EQ(lock_holder.locks.size(), 1U);
-                  return std::move(lock_holder.locks);
-                },
-                std::ref(*lock_manager)),
+            base::BindRepeating(&LockSqliteDatabase, std::ref(*lock_manager)),
             /*on_blob_activity=*/
             base::BindRepeating(&BucketContext::OnSqliteBlobActivity,
                                 base::Unretained(this)),
@@ -1266,7 +1291,8 @@ BucketContext::InitBackingStore(bool create_if_missing) {
     Status status, first_try_status;
     const bool skip_create_on_data_loss =
         sqlite_rollout_stage_ == SqliteRolloutStage::kUseLevelDbAsControl ||
-        sqlite_rollout_stage_ == SqliteRolloutStage::kUseSqliteForNewStores;
+        sqlite_rollout_stage_ == SqliteRolloutStage::kUseSqliteForNewStores ||
+        sqlite_rollout_stage_ == SqliteRolloutStage::kMigrateDataToSqliteGentle;
     constexpr static const int kNumOpenTries = 2;
     for (int i = 0; i < kNumOpenTries; ++i) {
       const bool is_first_attempt = i == 0;
@@ -1341,7 +1367,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
   return {Status::OK(), DatabaseError(), data_loss_info};
 }
 
-void BucketContext::ResetBackingStore() {
+void BucketContext::ResetBackingStore(bool migrate) {
   file_reader_map_.clear();
   weak_factory_.InvalidateWeakPtrs();
   idle_timer_.Stop();
@@ -1349,7 +1375,84 @@ void BucketContext::ResetBackingStore() {
   close_timer_.Stop();
 
   if (backing_store_) {
-    base::ElapsedTimer timer;
+    base::ElapsedTimer shutdown_timer;
+    bool migrate_success = false;
+    std::optional<base::TimeDelta> migration_duration;
+    if (migrate && !IsUsingSqlite()) {
+      CHECK(!in_memory());
+
+      base::FilePath sqlite_data_path =
+          data_path_.Append(GetSqliteDbDirectory(bucket_locator()));
+
+      std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+          base::SysInfo::AmountOfDiskSpace(data_path_);
+
+      if (!disk_space) {
+        LogMigrationEvent(MigrationEvent::kDiskSpaceQueryFailed);
+      } else if (int64_t existing_size = base::ComputeDirectorySize(
+                     data_path_.Append(GetLevelDBFileName(bucket_locator())));
+                 disk_space->available <
+                 std::max(base::KiBS(72),
+                          2.5 * base::ByteSizeDelta(existing_size)) +
+                     disk_space->total / 100) {
+        // To attempt migration, the disk must be less than 99% full after we
+        // assume the new database will take up 72KiB, or 2.5x the space of the
+        // old one, whichever is greater. 72KiB is currently the smallest size a
+        // SQLite database can be.
+        LogMigrationEvent(MigrationEvent::kInsufficientDiskSpace);
+      } else if (!base::CreateDirectory(sqlite_data_path)) {
+        LogMigrationEvent(MigrationEvent::kCreateDirectoryFailed);
+      } else {
+        LogMigrationEvent(MigrationEvent::kStarted);
+
+        // Skip cleanup tasks for old database which is probably doomed (modulo
+        // any errors below). TODO(crbug.com/40253999): blob journal cleanup is
+        // also a waste of time.
+        backing_store()->OnForceClosing();
+
+        PartitionedLockManager lock_manager;
+        auto sqlite_backing_store = std::make_unique<sqlite::BackingStoreImpl>(
+            sqlite_data_path, *blob_storage_context_,
+            /*lock_database=*/
+            base::BindRepeating(&LockSqliteDatabase, std::ref(lock_manager)),
+            /*on_blob_activity=*/base::DoNothing(),
+            /*on_can_close=*/base::DoNothing());
+        Status status = sqlite_backing_store->MigrateFrom(*backing_store());
+        status.Log("IndexedDB.SqliteMigration.Status");
+        if (!status.ok()) {
+          sqlite_backing_store->OnForceClosing();
+        }
+
+        base::WaitableEvent destruct_event;
+        std::move(*sqlite_backing_store)
+            .SignalWhenDestructionComplete(&destruct_event);
+        sqlite_backing_store.reset();
+        destruct_event.Wait();
+
+        bool cleanup_success = true;
+        if (status.ok()) {
+          migrate_success = true;
+        } else if (sqlite_data_path == data_path_) {
+          // The non-legacy bucket case, i.e. ".../Default/Web Storage/<bucket
+          // id>/IndexedDB/" where LevelDB nests inside this directory too: just
+          // delete any SQLite databases that may have been left behind.
+          EnumerateDatabasesInDirectory(
+              sqlite_data_path, [&cleanup_success](const base::FilePath& path) {
+                cleanup_success = base::DeleteFile(path) && cleanup_success;
+              });
+        } else {
+          // In the legacy bucket case, i.e.
+          // ".../Default/IndexedDB/<origin_id>/", which would be a sibling of
+          // LevelDB directories: delete the entire directory.
+          cleanup_success = base::DeletePathRecursively(sqlite_data_path);
+        }
+        if (!cleanup_success) {
+          LogMigrationEvent(MigrationEvent::kFailedMigrationCleanupFailed);
+        }
+        migration_duration = shutdown_timer.Elapsed();
+      }
+    }
+
     base::WaitableEvent destruct_event;
     std::move(*backing_store()).SignalWhenDestructionComplete(&destruct_event);
     std::string_view histogram_suffix = GetHistogramSuffix();
@@ -1358,7 +1461,26 @@ void BucketContext::ResetBackingStore() {
     if (!GetTeardownExtraStepForTesting().is_null()) {
       std::move(GetTeardownExtraStepForTesting()).Run();
     }
-    LogDuration(timer.Elapsed(), "IndexedDB.BackendDuration.CloseBackingStore",
+
+    if (migrate_success) {
+      base::ElapsedTimer delete_timer;
+      bool deleted = base::DeletePathRecursively(
+          data_path_.Append(GetLevelDBFileName(bucket_locator())));
+      deleted = base::DeletePathRecursively(data_path_.Append(
+                    GetBlobStoreFileName(bucket_locator()))) ||
+                deleted;
+      if (!deleted) {
+        LogMigrationEvent(MigrationEvent::kDeleteLevelDbFilesFailed);
+      }
+      *migration_duration += delete_timer.Elapsed();
+    }
+    if (migration_duration) {
+      base::UmaHistogramMediumTimes("IndexedDB.SqliteMigration.Duration",
+                                    *migration_duration);
+    }
+
+    LogDuration(shutdown_timer.Elapsed(),
+                "IndexedDB.BackendDuration.CloseBackingStore",
                 histogram_suffix);
   }
 

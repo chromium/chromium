@@ -13,6 +13,8 @@
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_file_util.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_test_base.h"
@@ -20,6 +22,7 @@
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
+#include "sql/test/drive_error_test_vfs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -197,14 +200,17 @@ class SqliteBackingStoreRolloutStageTest
   // Some common expectations.
   const Expectation kCreatedWithSqlite{kSuccessUpgradeNeeded, kIsSqlite};
   const Expectation kCreatedWithLevelDb{kSuccessUpgradeNeeded, kIsLevelDb};
+  const Expectation kOpenedSqlite{kSuccessDirectOpen, kIsSqlite};
   const Expectation kOpenedLevelDb{kSuccessDirectOpen, kIsLevelDb};
 
   void ValidateExpectationsForStage(
       SqliteRolloutStage stage,
-      std::map<StoreType, Expectation> expectations) {
+      std::map<StoreType, Expectation> expectations,
+      bool force_close = false) {
     ASSERT_EQ(expectations.size(), buckets_.size());
     for (const auto& [bucket_type, bucket_info] : buckets_) {
-      LOG(INFO) << "Validating bucket " << bucket_info.storage_key.origin();
+      SCOPED_TRACE("Validating bucket " +
+                   bucket_info.storage_key.GetDebugString());
       base::HistogramTester histograms;
       auto [factory_remote, bucket_context] =
           BindFactoryAndOverrideStage(bucket_info, stage);
@@ -251,6 +257,10 @@ class SqliteBackingStoreRolloutStageTest
       histograms.ExpectTotalCount(histogram_name, 2);
       histograms.ExpectBucketCount(histogram_name, kReceivedRequest, 1);
       histograms.ExpectBucketCount(histogram_name, result, 1);
+
+      if (force_close) {
+        bucket_context->ForceClose(/*doom=*/false);
+      }
     }
   }
 
@@ -263,7 +273,6 @@ class SqliteBackingStoreRolloutStageTest
         BucketContext::GetBackingStoreGracePeriodForTesting());
   }
 
- private:
   std::tuple<mojo::Remote<blink::mojom::IDBFactory>, BucketContext*>
   BindFactoryAndOverrideStage(const storage::BucketInfo& bucket_info,
                               SqliteRolloutStage stage) {
@@ -277,6 +286,7 @@ class SqliteBackingStoreRolloutStageTest
     return {std::move(factory_remote), bucket_context};
   }
 
+ private:
   base::FilePath GetLevelDbCurrentFilePath(
       const storage::BucketInfo& bucket_info) {
     return GetFilePathForTesting(bucket_info.ToBucketLocator())
@@ -435,6 +445,128 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseSqliteForNewStores) {
         {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption, kCreatedWithLevelDb},
        {StoreType::kLevelDbBackingStoreCorruption, kCreatedWithLevelDb}});
+}
+
+TEST_P(SqliteBackingStoreRolloutStageTest, MigrateDataToSqliteGentle) {
+  base::HistogramTester histograms;
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kMigrateDataToSqliteGentle,
+      {{StoreType::kNone, {kSuccessUpgradeNeeded, kIsSqlite}},
+       // Migration case.
+       {StoreType::kLevelDb, kOpenedLevelDb},
+       {StoreType::kSqlite, kOpenedSqlite},
+       {StoreType::kEmptyLevelDbDirectory, {kSuccessUpgradeNeeded, kIsSqlite}},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite}},
+       // Migration case.
+       {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
+       {StoreType::kLevelDbFilesMissing,
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite}}});
+
+  histograms.ExpectTotalCount("IndexedDB.SqliteMigration.Event", 0);
+  histograms.ExpectTotalCount("IndexedDB.SqliteMigration.Status", 0);
+  CloseAllBackingStores();
+  histograms.ExpectUniqueSample("IndexedDB.SqliteMigration.Event",
+                                /*MigrationEvent::kStarted*/ 3, 2);
+  histograms.ExpectUniqueSample("IndexedDB.SqliteMigration.Status",
+                                /*Status::Type::kOk*/ 0, 2);
+
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kMigrateDataToSqliteGentle,
+      {{StoreType::kNone, kOpenedSqlite},
+       {StoreType::kLevelDb, kOpenedSqlite},
+       {StoreType::kSqlite, kOpenedSqlite},
+       {StoreType::kEmptyLevelDbDirectory, kOpenedSqlite},
+       {StoreType::kLevelDbWithCorruptionInfo, kOpenedSqlite},
+       {StoreType::kLevelDbCurrentMissing, kOpenedSqlite},
+       {StoreType::kLevelDbFilesMissing,
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption, kOpenedSqlite},
+       {StoreType::kLevelDbBackingStoreCorruption, kOpenedSqlite}});
+}
+
+TEST_P(SqliteBackingStoreRolloutStageTest, FailedMigrationLeavesLevelDbUsable) {
+  storage::BucketInfo bucket_info =
+      GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
+          "http://failed-migration.com"));
+
+  // Create LevelDB store.
+  {
+    auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+        bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
+    CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+    EXPECT_FALSE(bucket_context->IsUsingSqlite());
+  }
+  CloseAllBackingStores();
+
+  // Create a bucket that will attempt to migrate the LevelDB store.
+  {
+    auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+        bucket_info, SqliteRolloutStage::kMigrateDataToSqliteGentle);
+    OpenDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+    EXPECT_FALSE(bucket_context->IsUsingSqlite());
+  }
+
+  // Interfere with SQLite.
+  sql::test::DriveErrorTestVfs test_vfs;
+  test_vfs.set_drive_unusable(true);
+  base::HistogramTester histograms;
+  CloseAllBackingStores();
+  test_vfs.set_drive_unusable(false);
+  // There's some error outcome.
+  histograms.ExpectTotalCount("IndexedDB.SqliteMigration.Status", 1);
+  histograms.ExpectBucketCount("IndexedDB.SqliteMigration.Status",
+                               /*Status::Type::kOk*/ 0, 0);
+
+  // Make sure we can open the LevelDB store still.
+  base::HistogramTester reopen_histograms;
+  auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+      bucket_info, SqliteRolloutStage::kMigrateDataToSqliteGentle);
+  // Note that this method verifies the store already existed.
+  OpenDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+  EXPECT_FALSE(bucket_context->IsUsingSqlite());
+}
+
+// Verify that "gentle" data migration isn't run when the bucket is forcefully
+// closed.
+TEST_P(SqliteBackingStoreRolloutStageTest, MigrateDataToSqliteGentleIsGentle) {
+  base::HistogramTester histograms;
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kMigrateDataToSqliteGentle,
+      {{StoreType::kNone, {kSuccessUpgradeNeeded, kIsSqlite}},
+       {StoreType::kLevelDb, kOpenedLevelDb},
+       {StoreType::kSqlite, kOpenedSqlite},
+       {StoreType::kEmptyLevelDbDirectory, {kSuccessUpgradeNeeded, kIsSqlite}},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite}},
+       {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
+       {StoreType::kLevelDbFilesMissing,
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite}}},
+      /*force_close=*/true);
+
+  histograms.ExpectTotalCount("IndexedDB.SqliteMigration.Event", 0);
+  histograms.ExpectTotalCount("IndexedDB.SqliteMigration.Status", 0);
+
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kMigrateDataToSqliteGentle,
+      {{StoreType::kNone, kOpenedSqlite},
+       {StoreType::kLevelDb, kOpenedLevelDb},
+       {StoreType::kSqlite, kOpenedSqlite},
+       {StoreType::kEmptyLevelDbDirectory, kOpenedSqlite},
+       {StoreType::kLevelDbWithCorruptionInfo, kOpenedSqlite},
+       {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
+       {StoreType::kLevelDbFilesMissing,
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption, kOpenedSqlite},
+       {StoreType::kLevelDbBackingStoreCorruption, kOpenedSqlite}});
 }
 
 TEST_P(SqliteBackingStoreRolloutStageTest, UseSqliteOnly) {

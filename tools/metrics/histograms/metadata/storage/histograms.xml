@@ -818,6 +818,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SqliteMigration.Duration" units="ms"
+    expires_after="2027-08-26">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the duration of a migration attempt. This includes all the extra work
+    during backing store shutdown that is done to execute a migration, whether
+    or not it's successful.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.SqliteMigration.Event"
+    enum="IndexedDbMigrationEvent" expires_after="2027-08-26">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the outcome of preliminary work to migrate a LevelDB-backed store to
+    SQLite. This will either be an error, or a value that indicates a migration
+    attempt will proceed. This is logged once per potential migration attempt.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.SqliteMigration.RenameBlobResult"
     enum="PlatformFileError" expires_after="2027-02-04">
   <owner>leimy@chromium.org</owner>
@@ -827,6 +851,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of renaming a blob file during IndexedDB backing store
     migration from LevelDB to SQLite.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.SqliteMigration.Status" enum="IndexedDbStatusType"
+    expires_after="2027-08-26">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the outcome of a migration attempt. If the status is not OK, the
+    migration will have been aborted.
   </summary>
 </histogram>
 
