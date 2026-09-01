@@ -240,7 +240,15 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
 }
 
 bool WebUIContentSettingImageControl::TestPressed(size_t index) {
-  if (index >= models_.size() || !models_[index]->is_visible()) {
+  if (index >= models_.size()) {
+    return false;
+  }
+  content::WebContents* web_contents =
+      setting_view_delegate_->GetContentSettingWebContents();
+  if (web_contents) {
+    models_[index]->Update(web_contents);
+  }
+  if (!models_[index]->is_visible()) {
     return false;
   }
   auto result = ShowContentSettingsBubbleImpl(models_[index]->image_type());
