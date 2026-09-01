@@ -43,7 +43,7 @@ _GSUTIL_PY = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'gsutil.py')
 
 def _gsutil(cmd, cwd):
   full_cmd = [sys.executable, _GSUTIL_PY] + cmd
-  subprocess.run(full_cmd, cwd=cwd, check=True)
+  return subprocess.run(full_cmd, cwd=cwd)
 
 
 def _get_fuzzilli_corpora(arch):
@@ -78,7 +78,11 @@ def _download_corpus(args):
 
   os.makedirs(os.path.join(download_dir, corpus_dir), exist_ok=True)
   cmd = ['cp', corpus_url, corpus_dir]
-  _gsutil(cmd, download_dir)
+  res = _gsutil(cmd, download_dir)
+  if res.returncode != 0:
+    # Log warning, as it's possible that not all corpora is present in gcs
+    # Context: b/549761712
+    logging.warning("Could not find or download corpus for %s", target)
 
 
 def _unzip_corpus(args):
@@ -86,6 +90,9 @@ def _unzip_corpus(args):
   download_dir = args[1]
   target_folder = os.path.join(download_dir, target)
   zip_path = os.path.join(target_folder, 'latest.zip')
+  if not os.path.exists(zip_path):
+    logging.warning("Corpus zip %s does not exist, skipping unzip.", zip_path)
+    return
   with zipfile.ZipFile(zip_path, 'r') as zip_ref:
     zip_ref.extractall(target_folder)
   os.remove(zip_path)
@@ -102,6 +109,9 @@ def _unzip_fuzzilli_corpus(args):
   base, _ = os.path.splitext(corpus)
   corpus_dir = os.path.join(download_dir, base)
   archive_path = os.path.join(corpus_dir, corpus)
+  if not os.path.exists(archive_path):
+    logging.warning("Archive %s does not exist, skipping unpack.", archive_path)
+    return
   shutil.unpack_archive(archive_path, corpus_dir)
   os.remove(archive_path)
 
