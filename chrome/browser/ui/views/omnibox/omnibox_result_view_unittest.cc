@@ -284,6 +284,8 @@ TEST_F(OmniboxResultViewTest, AccessibleProperties) {
   result_view()->GetViewAccessibility().GetAccessibleNodeData(
       &result_node_data);
   EXPECT_EQ(result_node_data.role, ax::mojom::Role::kListBoxOption);
+  EXPECT_EQ(result_node_data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kOpen);
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
       int{kTestResultViewIndex} + 1);

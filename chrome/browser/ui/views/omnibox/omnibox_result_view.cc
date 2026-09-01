@@ -313,6 +313,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+  GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kOpen);
   UpdateAccessibleName();
   GetViewAccessibility().SetPosInSet(model_index_ + 1);
 }
