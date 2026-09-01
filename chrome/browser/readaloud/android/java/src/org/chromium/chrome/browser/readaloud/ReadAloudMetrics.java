@@ -275,7 +275,8 @@ public class ReadAloudMetrics {
     }
 
     public static void recordPlaybackModeChange(int mode) {
-        RecordHistogram.recordEnumeratedHistogram("ReadAloud.PlaybackModeChange", mode, 2);
+        RecordHistogram.recordEnumeratedHistogram(
+                "ReadAloud.PlaybackModeChange", mode, PlaybackMode.COUNT);
     }
 
     public static void recordSpeedChange(float speed) {

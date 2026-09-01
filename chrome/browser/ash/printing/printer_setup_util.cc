@@ -46,7 +46,7 @@ void LogPrinterSetup(const chromeos::Printer& printer,
       printer.IsZeroconf()
           ? "Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
           : "Printing.CUPS.PrinterSetupResult.PrintPreview",
-      result, PrinterSetupResult::kMaxValue);
+      result);
 
   switch (result) {
     case PrinterSetupResult::kSuccess: {

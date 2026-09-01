@@ -42,8 +42,7 @@ enum class LanguageVerificationType {
   kModelComplementsCountry = 6,
   kNoPageContent = 7,
   kModelNotAvailable = 8,
-  kModelHistogramBoundary = 9,
-  kMaxValue = kModelHistogramBoundary,
+  kMaxValue = kModelNotAvailable,
 };
 
 // Enum for the Translate.CompactInfobar.Event UMA histogram.

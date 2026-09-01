@@ -37,6 +37,9 @@ public class PlaybackArgs {
         CLASSIC(1),
         OVERVIEW(2);
 
+        // For histogram logging.
+        public static final int COUNT = 3;
+
         private final int mValue;
 
         PlaybackMode(int value) {

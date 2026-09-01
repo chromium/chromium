@@ -941,11 +941,11 @@ void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
     const Printer& printer,
     PrinterSetupResult result_code) {
   if (printer.IsZeroconf()) {
-    UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.ZeroconfPrinterSetupResult",
-                              result_code, PrinterSetupResult::kMaxValue);
+    base::UmaHistogramEnumeration("Printing.CUPS.ZeroconfPrinterSetupResult",
+                                  result_code);
   } else {
-    UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.PrinterSetupResult", result_code,
-                              PrinterSetupResult::kMaxValue);
+    base::UmaHistogramEnumeration("Printing.CUPS.PrinterSetupResult",
+                                  result_code);
   }
 
   switch (result_code) {
