@@ -22,6 +22,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.BuildConfig;
@@ -81,7 +82,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     protected @Nullable TabModelSelectorTabModelObserver mTabModelObserver;
     protected MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
-    private @Nullable Boolean mMergeTabsOnResume;
+    private @TriState int mMergeTabsOnResume;
 
     /**
      * Used to observe state changes to a different ChromeTabbedActivity instances to determine when
@@ -255,15 +256,16 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             boolean inMultiWindowMode =
                     mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                             || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
-            // Don't need to merge tabs when mMergeTabsOnResume is null (cold start) since they get
-            // merged when TabPersistentStore.loadState(boolean) is called from initializeState().
-            if (!inMultiWindowMode && (mMergeTabsOnResume != null && mMergeTabsOnResume)) {
+            // Don't need to merge tabs when mMergeTabsOnResume is NOT_SET (cold start) since they
+            // get merged when TabPersistentStore.loadState(boolean) is called from
+            // initializeState().
+            if (!inMultiWindowMode && mMergeTabsOnResume == TriState.TRUE) {
                 maybeMergeTabs();
-            } else if (!inMultiWindowMode && mMergeTabsOnResume == null) {
+            } else if (!inMultiWindowMode && mMergeTabsOnResume == TriState.NOT_SET) {
                 // This happens on cold start to kill any second activity that might exist.
                 killOtherTask();
             }
-            mMergeTabsOnResume = false;
+            mMergeTabsOnResume = TriState.FALSE;
         }
     }
 
@@ -315,7 +317,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                             mOtherCTAStateObserver, otherResumedCTA);
                 }
             } else {
-                mMergeTabsOnResume = true;
+                mMergeTabsOnResume = TriState.TRUE;
             }
         }
     }
