@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 
@@ -27,6 +28,9 @@ namespace site_token_provider {
 // so that "www.domain.com" and "domain.com" match the same token, while
 // preserving subdomain isolation for other subdomains (e.g. "news.domain.com").
 std::string NormalizeDomain(std::string_view domain);
+
+// Parses and normalizes a comma-separated allowlist of domains into a set.
+base::flat_set<std::string> ParseAllowlistedDomains(std::string_view allowlist);
 
 // Interface for the core logic of managing site-specific tokens.
 class SiteTokenProvider {

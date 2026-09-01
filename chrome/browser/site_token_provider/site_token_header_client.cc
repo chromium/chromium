@@ -24,24 +24,10 @@ namespace site_token_provider {
 
 namespace {
 
-// Parses and normalizes a comma-separated allowlist into a set.
-base::flat_set<std::string> ParseAllowlistedDomains(
-    std::string_view allowlist) {
-  std::vector<std::string_view> raw_domains = base::SplitStringPiece(
-      allowlist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::vector<std::string> normalized_domains;
-  normalized_domains.reserve(raw_domains.size());
-  for (std::string_view domain : raw_domains) {
-    normalized_domains.push_back(NormalizeDomain(domain));
-  }
-  return base::flat_set<std::string>(std::move(normalized_domains));
-}
-
 // Resolves and returns the site token if the request URL is eligible and
 // allowlisted.
 std::optional<std::string> MaybeGetTokenForRequest(
     SiteTokenProviderService* service,
-    const base::flat_set<std::string>& allowed_domains,
     const GURL& request_url) {
   if (!base::FeatureList::IsEnabled(features::kSiteTokenProviderEnabled)) {
     return std::nullopt;
@@ -56,19 +42,18 @@ std::optional<std::string> MaybeGetTokenForRequest(
     return std::nullopt;
   }
 
-  std::string_view host = request_url.host();
-  if (!allowed_domains.contains(NormalizeDomain(host))) {
+  if (!service->IsDomainAllowlisted(request_url.host())) {
     return std::nullopt;
   }
 
-  std::string token = service->GetTokenForDomain(host);
+  std::string token = service->GetTokenForDomain(request_url.host());
   if (token.empty()) {
     return std::nullopt;
   }
 
   // TODO(crbug.com/552904752): Add UMA metrics for invalid header values.
   if (!net::HttpUtil::IsValidHeaderValue(token)) {
-    DLOG(WARNING) << "Malformed site token for domain: " << host;
+    DLOG(WARNING) << "Malformed site token for domain: " << request_url.host();
     return std::nullopt;
   }
 
@@ -91,9 +76,7 @@ void SiteTokenHeaderClient::Create(
 SiteTokenHeaderClient::SiteTokenHeaderClient(
     base::WeakPtr<SiteTokenProviderService> service,
     mojo::PendingRemote<network::mojom::TrustedHeaderClient> target_client)
-    : service_(std::move(service)),
-      allowed_domains_(
-          ParseAllowlistedDomains(features::kSiteTokenAllowlist.Get())) {
+    : service_(std::move(service)) {
   if (target_client) {
     target_client_.Bind(std::move(target_client));
     target_client_.set_disconnect_handler(base::BindOnce(
@@ -154,8 +137,8 @@ void SiteTokenHeaderClient::OnTargetBeforeSendHeadersComplete(
   }
 
   std::optional<net::HttpRequestHeaders> final_headers = headers;
-  if (std::optional<std::string> token = MaybeGetTokenForRequest(
-          service_.get(), allowed_domains_, request_url)) {
+  if (std::optional<std::string> token =
+          MaybeGetTokenForRequest(service_.get(), request_url)) {
     if (!final_headers) {
       final_headers = original_headers;
     }

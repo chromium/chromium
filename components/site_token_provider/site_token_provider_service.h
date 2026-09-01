@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,6 +40,9 @@ class SiteTokenProviderService : public KeyedService,
   // Returns the site token for `domain` if one exists.
   virtual std::string GetTokenForDomain(std::string_view domain) const;
 
+  // Returns true if `domain` is in the allowlist for header injection.
+  bool IsDomainAllowlisted(std::string_view domain) const;
+
   // Populates the internal token cache directly for testing purposes.
   void SetTokenForTesting(std::string_view domain, std::string token);
 
@@ -53,6 +57,7 @@ class SiteTokenProviderService : public KeyedService,
 
   std::unique_ptr<SiteTokenProvider> provider_;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  base::flat_set<std::string> allowed_domains_;
   std::map<std::string, std::string> token_cache_;
 
   base::WeakPtrFactory<SiteTokenProviderService> weak_ptr_factory_{this};

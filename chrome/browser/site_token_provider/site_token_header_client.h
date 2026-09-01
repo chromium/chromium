@@ -63,7 +63,6 @@ class SiteTokenHeaderClient : public network::mojom::TrustedHeaderClient {
 
   base::WeakPtr<SiteTokenProviderService> service_;
   mojo::Remote<network::mojom::TrustedHeaderClient> target_client_;
-  base::flat_set<std::string> allowed_domains_;
 
   base::WeakPtrFactory<SiteTokenHeaderClient> weak_ptr_factory_{this};
 };

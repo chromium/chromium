@@ -90,6 +90,40 @@ TEST_F(SiteTokenProviderServiceTest, UpdatesStateOnSignInEvent) {
   service.Shutdown();
 }
 
+TEST_F(SiteTokenProviderServiceTest, IsDomainAllowlisted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSiteTokenProviderEnabled,
+      {{"site_token_allowlist", "example.com,www.test.com"}});
+
+  auto mock_provider = std::make_unique<NiceMock<MockSiteTokenProvider>>();
+  SiteTokenProviderService service(identity_test_env_.identity_manager(),
+                                   std::move(mock_provider));
+
+  EXPECT_TRUE(service.IsDomainAllowlisted("example.com"));
+  EXPECT_TRUE(service.IsDomainAllowlisted("www.example.com"));
+  EXPECT_TRUE(service.IsDomainAllowlisted("test.com"));
+  EXPECT_TRUE(service.IsDomainAllowlisted("www.test.com"));
+  EXPECT_FALSE(service.IsDomainAllowlisted("other.com"));
+  EXPECT_FALSE(service.IsDomainAllowlisted("sub.example.com"));
+
+  service.Shutdown();
+}
+
+TEST_F(SiteTokenProviderServiceTest, EmptyAllowlist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSiteTokenProviderEnabled, {{"site_token_allowlist", ""}});
+
+  auto mock_provider = std::make_unique<NiceMock<MockSiteTokenProvider>>();
+  SiteTokenProviderService service(identity_test_env_.identity_manager(),
+                                   std::move(mock_provider));
+
+  EXPECT_FALSE(service.IsDomainAllowlisted("example.com"));
+
+  service.Shutdown();
+}
+
 class SiteTokenProviderServiceDomainTest
     : public SiteTokenProviderServiceTest,
       public ::testing::WithParamInterface<
@@ -229,6 +263,23 @@ TEST_F(SiteTokenProviderTest, FetchesSuccessfully) {
 
   EXPECT_EQ(received_tokens.size(), 1u);
   EXPECT_EQ(received_tokens["site-1"], "token-value-123");
+}
+
+TEST(SiteTokenProviderDomainTest, NormalizeDomain) {
+  EXPECT_EQ(NormalizeDomain("example.com"), "example.com");
+  EXPECT_EQ(NormalizeDomain("www.example.com"), "example.com");
+  EXPECT_EQ(NormalizeDomain("WWW.EXAMPLE.COM"), "example.com");
+  EXPECT_EQ(NormalizeDomain("sub.example.com"), "sub.example.com");
+  EXPECT_EQ(NormalizeDomain("localhost"), "localhost");
+}
+
+TEST(SiteTokenProviderDomainTest, ParseAllowlistedDomains) {
+  base::flat_set<std::string> domains = ParseAllowlistedDomains(
+      "example.com, www.example2.com , Sub.Example3.Com ,, ");
+  EXPECT_EQ(domains.size(), 3u);
+  EXPECT_TRUE(domains.contains("example.com"));
+  EXPECT_TRUE(domains.contains("example2.com"));
+  EXPECT_TRUE(domains.contains("sub.example3.com"));
 }
 
 }  // namespace

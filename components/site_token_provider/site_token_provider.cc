@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -25,6 +26,18 @@ std::string NormalizeDomain(std::string_view domain) {
     return normalized.substr(4);
   }
   return normalized;
+}
+
+base::flat_set<std::string> ParseAllowlistedDomains(
+    std::string_view allowlist) {
+  std::vector<std::string_view> raw_domains = base::SplitStringPiece(
+      allowlist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> normalized_domains;
+  normalized_domains.reserve(raw_domains.size());
+  for (std::string_view domain : raw_domains) {
+    normalized_domains.push_back(NormalizeDomain(domain));
+  }
+  return base::flat_set<std::string>(std::move(normalized_domains));
 }
 
 namespace {
