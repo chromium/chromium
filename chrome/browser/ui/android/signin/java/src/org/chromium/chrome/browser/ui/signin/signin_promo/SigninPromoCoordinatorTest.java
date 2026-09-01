@@ -57,7 +57,6 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -96,7 +95,6 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.SyncEnums;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -265,7 +263,6 @@ public class SigninPromoCoordinatorTest {
     @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
     // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288686
     public void testPrimaryButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
         testPrimaryButtonClick(accessPoint, R.id.signin_promo_primary_button);
     }
@@ -275,7 +272,6 @@ public class SigninPromoCoordinatorTest {
     // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288686
     public void testPrimaryButtonClick_seamlessSigninDisabled(@SigninAccessPoint int accessPoint) {
         testPrimaryButtonClick(accessPoint, R.id.sync_promo_signin_button);
     }
@@ -397,7 +393,6 @@ public class SigninPromoCoordinatorTest {
     @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
     // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288686
     public void testSigninBottomSheetStrings_compactPromo(@SigninAccessPoint int accessPoint) {
         testSigninBottomSheetStrings(accessPoint, R.id.signin_promo_primary_button);
     }
@@ -407,7 +402,6 @@ public class SigninPromoCoordinatorTest {
     // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288686
     public void testSigninBottomSheetStrings_seamlessSigninDisabled(
             @SigninAccessPoint int accessPoint) {
         testSigninBottomSheetStrings(accessPoint, R.id.sync_promo_signin_button);
@@ -518,7 +512,6 @@ public class SigninPromoCoordinatorTest {
     @MediumTest
     @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/twoButtons"})
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288686
     public void testSecondaryButtonClick_twoButtonsPromo(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // The history page promo is hidden for non-signed in accounts.
