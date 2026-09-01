@@ -398,9 +398,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(https://crbug.com/461840249): Remove the following 1 line after lint migrates to using merged manifests. -->
     <ignore regexp="The resource `R.string.menu` appears to be unused"/>
 
-    <!-- TODO(crbug.com/553614656): Remove once string is used in code. -->
-    <ignore regexp="The resource `R.string.actor_notification_title_preparing_to_start_task` appears to be unused"/>
-
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

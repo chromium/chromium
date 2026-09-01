@@ -552,12 +552,9 @@ public class ActorNotificationFactoryTest {
 
         assertEquals(
                 "Content title should match",
-                mContext.getString(R.string.actor_notification_title_task_starts_soon),
+                mContext.getString(R.string.actor_notification_title_preparing_to_start_task),
                 shadowNotification.getContentTitle());
-        assertEquals(
-                "Content text should match",
-                mContext.getString(R.string.actor_notification_body_task_starts_soon),
-                shadowNotification.getContentText());
+        assertNull("Content text should be null", shadowNotification.getContentText());
         assertEquals(
                 "Small icon should be ic_chrome",
                 R.drawable.ic_chrome,

@@ -333,7 +333,6 @@ public class ActorNotificationFactory {
      *
      * @return The built {@link NotificationWrapper}.
      */
-    // TODO(crbug.com/533082119): Enable translation when UX is finalized.
     public static NotificationWrapper buildTaskStartsSoonNotification() {
         Context context = ContextUtils.getApplicationContext();
         NotificationMetadata metadata =
@@ -345,9 +344,8 @@ public class ActorNotificationFactory {
                         ChromeChannelDefinitions.ChannelId.ACTOR, metadata)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentTitle(
-                        context.getString(R.string.actor_notification_title_task_starts_soon))
-                .setContentText(
-                        context.getString(R.string.actor_notification_body_task_starts_soon))
+                        context.getString(
+                                R.string.actor_notification_title_preparing_to_start_task))
                 .buildNotificationWrapper();
     }
 }
