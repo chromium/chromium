@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordi
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
+import org.chromium.components.autofill.payments.LegalMessage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -103,7 +104,7 @@ public class AutofillSaveCardBottomSheetCoordinator {
                                 uiInfo.getCardDetail().subLabel)
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
-                                new AutofillSaveCardBottomSheetProperties.LegalMessage(
+                                new LegalMessage(
                                         uiInfo.getLegalMessageLines(), this::openLegalMessageLink))
                         .with(
                                 AutofillSaveCardBottomSheetProperties.ACCEPT_BUTTON_LABEL,

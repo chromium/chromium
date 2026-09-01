@@ -28,6 +28,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.autofill.payments.LegalMessage;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -123,8 +124,7 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
         bind(
                 mModelBuilder.with(
                         AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
-                        new AutofillSaveIbanBottomSheetProperties.LegalMessage(
-                                Collections.emptyList(), _ -> {})));
+                        new LegalMessage(Collections.emptyList(), _ -> {})));
         assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
         assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
 
@@ -137,8 +137,7 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
         bind(
                 mModelBuilder.with(
                         AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
-                        new AutofillSaveIbanBottomSheetProperties.LegalMessage(
-                                legalMessageLines, _ -> {})));
+                        new LegalMessage(legalMessageLines, _ -> {})));
         assertEquals(messageText, String.valueOf(mView.mLegalMessage.getText()));
         assertEquals(View.VISIBLE, mView.mLegalMessage.getVisibility());
     }

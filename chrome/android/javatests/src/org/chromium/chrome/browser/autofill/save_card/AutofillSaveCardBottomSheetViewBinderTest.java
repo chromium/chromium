@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill.payments.LegalMessage;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -210,8 +211,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest {
         bind(
                 mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
-                        new AutofillSaveCardBottomSheetProperties.LegalMessage(
-                                ImmutableList.of(), this::openLink)));
+                        new LegalMessage(ImmutableList.of(), this::openLink)));
         assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
         assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
 
@@ -221,8 +221,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest {
         bind(
                 mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
-                        new AutofillSaveCardBottomSheetProperties.LegalMessage(
-                                ImmutableList.copyOf(legalMessageLines), this::openLink)));
+                        new LegalMessage(ImmutableList.copyOf(legalMessageLines), this::openLink)));
         assertEquals(messageText, String.valueOf(mView.mLegalMessage.getText()));
         assertEquals(View.VISIBLE, mView.mLegalMessage.getVisibility());
 
@@ -233,8 +232,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest {
         bind(
                 mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
-                        new AutofillSaveCardBottomSheetProperties.LegalMessage(
-                                ImmutableList.copyOf(legalMessageLines), this::openLink)));
+                        new LegalMessage(ImmutableList.copyOf(legalMessageLines), this::openLink)));
         assertEquals(messageText, String.valueOf(mView.mLegalMessage.getText()));
         assertEquals(View.VISIBLE, mView.mLegalMessage.getVisibility());
     }

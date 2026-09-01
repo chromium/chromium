@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
+import org.chromium.components.autofill.payments.LegalMessage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -99,7 +100,7 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                                 v -> this.onCancelButtonClick())
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.LEGAL_MESSAGE,
-                                new AutofillSaveIbanBottomSheetProperties.LegalMessage(
+                                new LegalMessage(
                                         uiInfo.getLegalMessageLines(), this::openLegalMessageLink))
                         .build();
         PropertyModelChangeProcessor.create(

@@ -31,6 +31,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
+import org.chromium.components.autofill.payments.LegalMessage;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -261,7 +262,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                                 uiInfo.getCardDetail().subLabel)
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
-                                new AutofillSaveCardBottomSheetProperties.LegalMessage(
+                                new LegalMessage(
                                         uiInfo.getLegalMessageLines(), this::openLegalMessageLink))
                         .with(
                                 AutofillSaveCardBottomSheetProperties.ACCEPT_BUTTON_LABEL,
