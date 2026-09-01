@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
@@ -127,6 +128,7 @@ class TabRestorer {
                 boolean fromMerge);
     }
 
+    private final @TabOrchestratorType int mOrchestratorType;
     private final boolean mIncognito;
     private final TabRestorerDelegate mDelegate;
     private final TabCreator mTabCreator;
@@ -150,6 +152,7 @@ class TabRestorer {
     private int mIndex;
 
     /**
+     * @param orchestratorType The orchestrator type for this restorer.
      * @param incognito Whether the tab restorer is for incognito tabs.
      * @param delegate The delegate to notify when the tab restorer for certain events.
      * @param tabCreator The tab creator to use to create tabs.
@@ -158,12 +161,14 @@ class TabRestorer {
      * @param isFromRecreating Whether the current activity is launched from recreating.
      */
     TabRestorer(
+            @TabOrchestratorType int orchestratorType,
             boolean incognito,
             TabRestorerDelegate delegate,
             TabCreator tabCreator,
             Supplier<ScopedStorageBatch> batchFactory,
             TabModelSelector tabModelSelector,
             boolean isFromRecreating) {
+        mOrchestratorType = orchestratorType;
         mIncognito = incognito;
         mDelegate = delegate;
         mTabCreator = tabCreator;
@@ -220,7 +225,8 @@ class TabRestorer {
         int restoredTabCount = data.getLoadedTabStates().length;
 
         mBackgroundTabIds =
-                BackgroundTabRestorationHelper.fetchBackgroundTabIds(mTabModelSelector, mIncognito);
+                BackgroundTabRestorationHelper.fetchBackgroundTabIds(
+                        mOrchestratorType, mTabModelSelector, mIncognito);
 
         // Special case for when cancellation happened during loading. In this case we cancel as
         // soon as loading has finished.
@@ -534,7 +540,7 @@ class TabRestorer {
         if (mBackgroundTabIds.contains(tabId)) {
             tab =
                     BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                            mTabModelSelector, tabId, index, tabState);
+                            mOrchestratorType, mTabModelSelector, tabId, index, tabState);
         }
         GURL url = tabState.url;
         boolean hasEmptyBuffer =

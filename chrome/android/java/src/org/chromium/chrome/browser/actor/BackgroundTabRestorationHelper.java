@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 
 import java.util.Collections;
 import java.util.Set;
@@ -28,11 +29,15 @@ public final class BackgroundTabRestorationHelper {
     /**
      * Returns whether background tab interception should occur.
      *
+     * @param orchestratorType The orchestrator type for the tab store or restorer.
      * @param isIncognito Whether the model is off-the-record.
      * @return Whether background tabs should be intercepted.
      */
-    public static boolean shouldIntercept(boolean isIncognito) {
-        return ActorUtils.isBackgroundActuationEnabled() && !isIncognito;
+    public static boolean shouldIntercept(
+            @TabOrchestratorType int orchestratorType, boolean isIncognito) {
+        return orchestratorType == TabOrchestratorType.TABBED
+                && ActorUtils.isBackgroundActuationEnabled()
+                && !isIncognito;
     }
 
     /**
@@ -62,14 +67,17 @@ public final class BackgroundTabRestorationHelper {
     /**
      * Fetches the set of background tab IDs currently held or cached in {@link BackgroundTabPool}.
      *
+     * @param orchestratorType The orchestrator type for the caller.
      * @param selector The {@link TabModelSelector} to acquire pool from.
      * @param isIncognito Whether the caller is incognito.
      * @return A {@link Set} of {@link TabId} integers.
      */
     public static Set<@TabId Integer> fetchBackgroundTabIds(
-            @Nullable TabModelSelector selector, boolean isIncognito) {
+            @TabOrchestratorType int orchestratorType,
+            @Nullable TabModelSelector selector,
+            boolean isIncognito) {
         assertOnUiThread();
-        if (!shouldIntercept(isIncognito)) {
+        if (!shouldIntercept(orchestratorType, isIncognito)) {
             return Collections.emptySet();
         }
 
@@ -86,6 +94,7 @@ public final class BackgroundTabRestorationHelper {
     /**
      * Attempts to restore and attach a background tab from {@link BackgroundTabPool}.
      *
+     * @param orchestratorType The orchestrator type for the caller.
      * @param selector The {@link TabModelSelector} managing tab models.
      * @param tabId The ID of the background tab to restore.
      * @param index The index to insert the restored tab into the model.
@@ -94,12 +103,13 @@ public final class BackgroundTabRestorationHelper {
      * @return The restored {@link Tab}, or null if not found or restoration failed.
      */
     public static @Nullable Tab maybeRestoreBackgroundTab(
+            @TabOrchestratorType int orchestratorType,
             @Nullable TabModelSelector selector,
             @TabId int tabId,
             int index,
             @Nullable TabState tabState) {
         assertOnUiThread();
-        if (!ActorUtils.isBackgroundActuationEnabled() || selector == null) {
+        if (!shouldIntercept(orchestratorType, /* isIncognito= */ false) || selector == null) {
             return null;
         }
 
