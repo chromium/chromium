@@ -25,8 +25,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.view.ContextThemeWrapper;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -152,7 +150,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void contentTest_basicContent() {
         SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
         processSuggestion(suggHelper);
@@ -165,7 +162,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void decorationTest_noColorOrImage() {
         SuggestionTestHelper suggHelper = createSuggestion("", "", null, SEARCH_URL);
         processSuggestion(suggHelper);
@@ -175,7 +171,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void decorationTest_validHexColor_lowMemoryDevice() {
         OmniboxCapabilities.setIsLowMemoryDeviceForTesting(true);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
@@ -185,7 +180,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void decorationTest_desktopDevice() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
@@ -195,7 +189,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void decorationTest_validNamedColor() {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", SEARCH_URL);
         processSuggestion(suggHelper);
@@ -206,7 +199,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void decorationTest_invalidColor() {
         // Note, fallback is the bitmap drawable representing a search loupe.
         SuggestionTestHelper suggHelper = createSuggestion("", "", "", SEARCH_URL);
@@ -223,7 +215,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void fetchImage_withSupplier() {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
@@ -241,7 +232,6 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void fetchImage_withoutSupplier() {
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(

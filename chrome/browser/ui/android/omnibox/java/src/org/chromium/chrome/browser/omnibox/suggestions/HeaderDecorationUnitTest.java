@@ -19,7 +19,6 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -110,7 +109,6 @@ public class HeaderDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_withHeader() {
         Rect outRect = new Rect();
         mDecoration.getItemOffsets(outRect, mChildViewWithHeader, mRecyclerView, mState);
@@ -121,7 +119,6 @@ public class HeaderDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_noHeader() {
         Rect outRect = new Rect();
         mDecoration.getItemOffsets(outRect, mChildViewWithNoHeader, mRecyclerView, mState);
@@ -132,7 +129,6 @@ public class HeaderDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDraw_withHeader() {
         doReturn(0).when(mChildViewWithHeader).getTop();
         doReturn(0.0f).when(mChildViewWithHeader).getTranslationY();
@@ -146,7 +142,6 @@ public class HeaderDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDraw_noHeader() {
         doReturn(1).when(mRecyclerView).getChildCount();
         doReturn(mChildViewWithNoHeader).when(mRecyclerView).getChildAt(0);

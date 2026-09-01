@@ -21,7 +21,6 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -129,7 +128,6 @@ public class GroupSeparatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_withLineSeparator() {
         Rect outRect = new Rect();
         mDecoration.getItemOffsets(outRect, mChildViewWithLineSeparator, mRecyclerView, mState);
@@ -140,7 +138,6 @@ public class GroupSeparatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_withGapSeparator() {
         Rect outRect = new Rect();
         mDecoration.getItemOffsets(outRect, mChildViewWithGapSeparator, mRecyclerView, mState);
@@ -151,7 +148,6 @@ public class GroupSeparatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_noSeparator() {
         Rect outRect = new Rect();
         mDecoration.getItemOffsets(outRect, mChildViewWithNoSeparator, mRecyclerView, mState);
@@ -162,7 +158,6 @@ public class GroupSeparatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_withLineSeparator() {
         doReturn(1).when(mRecyclerView).getChildCount();
         doReturn(mChildViewWithLineSeparator).when(mRecyclerView).getChildAt(0);
@@ -199,7 +194,6 @@ public class GroupSeparatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_withGapSeparator() {
         doReturn(1).when(mRecyclerView).getChildCount();
         doReturn(mChildViewWithGapSeparator).when(mRecyclerView).getChildAt(0);
@@ -221,7 +215,6 @@ public class GroupSeparatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_noSeparator() {
         doReturn(1).when(mRecyclerView).getChildCount();
         doReturn(mChildViewWithNoSeparator).when(mRecyclerView).getChildAt(0);

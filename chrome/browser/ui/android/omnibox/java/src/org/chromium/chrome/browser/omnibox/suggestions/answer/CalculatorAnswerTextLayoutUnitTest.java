@@ -11,8 +11,6 @@ import android.text.SpannableStringBuilder;
 import android.text.style.TextAppearanceSpan;
 import android.view.ContextThemeWrapper;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +36,6 @@ public class CalculatorAnswerTextLayoutUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCalculatorAnswerAppearance() {
         // Layout text appearance is different based on whether the instance holds the answer.
         CalculatorAnswerTextLayout answerLayout =

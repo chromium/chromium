@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,7 +28,6 @@ public class OmniboxLoadUrlParamsUnitTest {
     private static final String TEST_URL = "http://www.example.org";
 
     @Test
-    @SmallTest
     public void defaultValue() {
         OmniboxLoadUrlParams params =
                 new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED).build();
@@ -45,7 +42,6 @@ public class OmniboxLoadUrlParamsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void setAllValue() {
         String text = "text";
         byte[] data = new byte[] {0, 1, 2, 3, 4};
@@ -74,7 +70,6 @@ public class OmniboxLoadUrlParamsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void setExtraHeaders() {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer token123");

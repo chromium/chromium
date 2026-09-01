@@ -11,8 +11,6 @@ import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
 import android.text.style.ImageSpan;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -119,7 +117,6 @@ public class TabGroupSuggestionProcessorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPopulateModelTabGroupSuggestions() {
         mInput.setPageClassification(PageClassification.ANDROID_HUB);
 
