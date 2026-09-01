@@ -126,6 +126,11 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
   void CaptureScreenshotInternal(
       DesktopMediaID::Id session_id,
       base::OnceCallback<void(const SkBitmap&)> callback);
+  void OnScreenshotCaptured(DesktopMediaID::Id session_id,
+                            base::OnceCallback<void(const SkBitmap&)> callback,
+                            const SkBitmap& bitmap);
+
+  void MaybeDeactivatePicker();
 
   // Get the capture session or create it if it doesn't exist.
   CaptureSession& GetOrCreateCaptureSession(DesktopMediaID::Id id);

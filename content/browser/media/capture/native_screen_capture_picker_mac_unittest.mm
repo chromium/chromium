@@ -599,6 +599,7 @@ TEST_F(NativeScreenCapturePickerMacTest, CaptureScreenshotSuccess) {
     EXPECT_FALSE(bitmap.drawsNothing());
     EXPECT_EQ(bitmap.width(), kTestFrameWidth);
     EXPECT_EQ(bitmap.height(), kTestFrameHeight);
+    EXPECT_FALSE(g_fake_picker.active);
   }
 }
 
@@ -629,6 +630,7 @@ TEST_F(NativeScreenCapturePickerMacTest, CaptureScreenshotError) {
     // 5. Verify it returns an empty bitmap.
     const SkBitmap& bitmap = future.Get();
     EXPECT_TRUE(bitmap.drawsNothing());
+    EXPECT_FALSE(g_fake_picker.active);
   }
 }
 
@@ -642,6 +644,26 @@ TEST_F(NativeScreenCapturePickerMacTest, CaptureScreenshotInvalidSession) {
     // Should return immediately with empty bitmap (no task delay).
     const SkBitmap& bitmap = future.Get();
     EXPECT_TRUE(bitmap.drawsNothing());
+    EXPECT_FALSE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest, CancelPickerDeactivatesSystemPicker) {
+  if (@available(macOS 14.0, *)) {
+    base::RunLoop cancel_run_loop;
+    picker_->Open(DesktopMediaID::TYPE_SCREEN, base::DoNothing(),
+                  base::DoNothing(),
+                  base::BindLambdaForTesting([&]() { cancel_run_loop.Quit(); }),
+                  base::DoNothing(), base::DoNothing());
+
+    EXPECT_TRUE(g_fake_picker.active);
+
+    [g_fake_picker.observer
+        contentSharingPicker:(SCContentSharingPicker*)g_fake_picker
+          didCancelForStream:nil];
+
+    cancel_run_loop.Run();
+    EXPECT_FALSE(g_fake_picker.active);
   }
 }
 
