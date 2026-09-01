@@ -52,7 +52,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "browser_tests": {
-                "shards": 201,
+                "shards": 169,
                 "try_builder": "linux-chromeos-rel"
             },
             "components_unittests": {
@@ -108,15 +108,15 @@
     "chromium.linux": {
         "Linux Tests": {
             "blink_web_tests": {
-                "shards": 8,
+                "shards": 9,
                 "try_builder": "linux-rel"
             },
             "blink_wpt_tests": {
-                "shards": 3,
+                "shards": 2,
                 "try_builder": "linux-rel"
             },
             "browser_tests": {
-                "shards": 78,
+                "shards": 70,
                 "try_builder": "linux-rel"
             },
             "components_unittests": {
@@ -144,7 +144,7 @@
                 "try_builder": "linux-rel"
             },
             "sync_integration_tests": {
-                "shards": 8,
+                "shards": 6,
                 "try_builder": "linux-rel"
             }
         }
@@ -156,7 +156,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "content_browsertests": {
-                "shards": 82,
+                "shards": 74,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
@@ -164,17 +164,17 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
-                "shards": 18,
+                "shards": 17,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "unit_tests": {
-                "shards": 9,
+                "shards": 7,
                 "try_builder": "linux_chromium_asan_rel_ng"
             }
         },
         "Linux TSan Tests": {
             "blink_unittests": {
-                "shards": 9,
+                "shards": 10,
                 "try_builder": "linux_chromium_tsan_rel_ng"
             },
             "components_unittests": {
@@ -198,7 +198,7 @@
                 "try_builder": "linux_chromium_tsan_rel_ng"
             },
             "unit_tests": {
-                "shards": 14,
+                "shards": 11,
                 "try_builder": "linux_chromium_tsan_rel_ng"
             }
         }
