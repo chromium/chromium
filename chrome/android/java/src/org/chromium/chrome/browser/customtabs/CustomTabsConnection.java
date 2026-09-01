@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
@@ -41,6 +42,7 @@ import org.jni_zero.NativeMethods;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -1992,7 +1994,23 @@ public class CustomTabsConnection {
     void cleanUpSession(final CustomTabsSessionToken session) {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () -> mClientManager.cleanupSession(new SessionHolder<>(session)));
+                () -> {
+                    SessionHolder<?> holder = new SessionHolder<>(session);
+                    closeCustomTabsForDeadClient(holder);
+                    mClientManager.cleanupSession(holder);
+                });
+    }
+
+    /** UI thread. Finishes network-bound Custom Tabs launched with {@code session}. */
+    private void closeCustomTabsForDeadClient(SessionHolder<?> session) {
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (!(activity instanceof BaseCustomTabActivity cct)) continue;
+            BrowserServicesIntentDataProvider provider = cct.getIntentDataProvider();
+            if (provider == null || !provider.hasTargetNetwork()) continue;
+            if (!session.equals(provider.getSession())) continue;
+            if (cct.isFinishing()) continue;
+            cct.finishAndRemoveTask();
+        }
     }
 
     /**
