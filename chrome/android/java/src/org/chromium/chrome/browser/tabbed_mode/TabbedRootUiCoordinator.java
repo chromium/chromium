@@ -14,6 +14,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -537,7 +538,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param persistentState The persistent bundle for the last recorded state.
      * @param multiInstanceManager Manages multi-instance mode.
-     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent} for
      *     interacting with non-popup filling UI.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
@@ -597,7 +597,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable Bundle savedInstanceState,
             @Nullable PersistableBundle persistentState,
             @Nullable MultiInstanceManager multiInstanceManager,
-            NonNullObservableSupplier<Integer> overviewColorSupplier,
             MonotonicObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier,
             EdgeToEdgeManager edgeToEdgeManager,
             MonotonicObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
@@ -647,7 +646,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 backPressManager,
                 savedInstanceState,
                 persistentState,
-                overviewColorSupplier,
+                initHubOverviewColorSupplier(hubManagerSupplier),
                 edgeToEdgeManager,
                 xrSpaceModeObservableSupplier,
                 initAppHeaderCoordinator(
@@ -2101,6 +2100,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetReadAloudControllerCallback = callback;
             mReadAloudControllerSupplier.addSyncObserverAndCallIfNonNull(callback);
         }
+    }
+
+    /**
+     * Creates a {@link NonNullObservableSupplier} for the Hub overview color tied to the {@link
+     * HubManager} lifecycle.
+     */
+    private static NonNullObservableSupplier<Integer> initHubOverviewColorSupplier(
+            OneshotSupplier<HubManager> hubManagerSupplier) {
+        SettableNonNullObservableSupplier<Integer> overviewColorSupplier =
+                ObservableSuppliers.createNonNull(Color.TRANSPARENT);
+        hubManagerSupplier.onAvailable(
+                (hubManager) -> {
+                    NonNullObservableSupplier<Integer> hubOverviewColorSupplier =
+                            hubManager.getHubOverviewColorSupplier();
+                    hubOverviewColorSupplier.addSyncObserverAndPostIfNonNull(
+                            overviewColorSupplier::set);
+                });
+        return overviewColorSupplier;
     }
 
     @SuppressWarnings("NewApi") // OS version check is done via helper method.

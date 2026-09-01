@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.BaseBundle;
 import android.os.Build;
@@ -76,7 +75,6 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -679,7 +677,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private NextTabPolicySupplier mNextTabPolicySupplier;
     private HubProvider mHubProvider;
     private @Nullable BottomBarHostManager mBottomBarHostManager;
-    private Runnable mCleanUpHubOverviewColorObserver;
     private @Nullable SettableMonotonicObservableSupplier<TabModelStartupInfo>
             mTabModelStartupInfoSupplier;
     private CallbackController mCallbackController = new CallbackController();
@@ -1293,23 +1290,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         mHubProvider.getHubManagerSupplier().onAvailable(mHubManagerSupplier::set);
-    }
-
-    private NonNullObservableSupplier<Integer> initHubOverviewColorSupplier() {
-        SettableNonNullObservableSupplier<Integer> overviewColorSupplier =
-                ObservableSuppliers.createNonNull(Color.TRANSPARENT);
-        mHubManagerSupplier.onAvailable(
-                (hubManager) -> {
-                    NonNullObservableSupplier<Integer> hubOverviewColorSupplier =
-                            hubManager.getHubOverviewColorSupplier();
-                    Callback<Integer> hubOverviewColorObserver = overviewColorSupplier::set;
-                    hubOverviewColorSupplier.addSyncObserverAndPostIfNonNull(
-                            hubOverviewColorObserver);
-
-                    mCleanUpHubOverviewColorObserver =
-                            () -> hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);
-                });
-        return overviewColorSupplier;
     }
 
     private Pane createTabSwitcherPane(boolean isIncognito) {
@@ -3380,7 +3360,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getSavedInstanceState(),
                 getPersistentInstanceState(),
                 mMultiInstanceManager,
-                initHubOverviewColorSupplier(),
                 mManualFillingComponentSupplier,
                 getEdgeToEdgeManager(),
                 mBookmarkManagerOpenerSupplier,
@@ -5345,11 +5324,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         if (mHubProvider != null) mHubProvider.destroy();
-
-        if (mCleanUpHubOverviewColorObserver != null) {
-            mCleanUpHubOverviewColorObserver.run();
-            mCleanUpHubOverviewColorObserver = null;
-        }
 
         if (mDseNewTabUrlManager != null) {
             mDseNewTabUrlManager.destroy();
