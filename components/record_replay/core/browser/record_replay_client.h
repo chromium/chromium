@@ -17,10 +17,6 @@ namespace autofill {
 class AutofillClient;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace record_replay {
 
 class TaskStore;

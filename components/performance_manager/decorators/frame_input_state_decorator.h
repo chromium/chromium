@@ -15,8 +15,6 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/scenarios/browser_performance_scenarios.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_observer.h"
 
 namespace performance_manager {
 

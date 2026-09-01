@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_HEADLESS_CONSOLE_MESSAGE_LOGGER_HEADLESS_CONSOLE_MESSAGE_LOGGER_H_
 #define COMPONENTS_HEADLESS_CONSOLE_MESSAGE_LOGGER_HEADLESS_CONSOLE_MESSAGE_LOGGER_H_
 
-#include "content/public/browser/console_message.h"
+#include <stdint.h>
+
+#include <string>
+
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace headless {
 

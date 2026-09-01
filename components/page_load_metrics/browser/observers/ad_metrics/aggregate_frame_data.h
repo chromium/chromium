@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
-#include "content/public/browser/auction_result.h"
 
 namespace page_load_metrics {
 

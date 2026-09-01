@@ -16,11 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
-#include "content/public/browser/browser_context.h"
-
-namespace content {
-class BrowserContext;
-}
 
 namespace performance_manager {
 

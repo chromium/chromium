@@ -26,6 +26,7 @@
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
 #include "components/performance_manager/test_support/persistence/unittest_utils.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/web_contents_tester.h"

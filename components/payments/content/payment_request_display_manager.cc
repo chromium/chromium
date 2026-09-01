@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/payments/content/content_payment_request_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "url/origin.h"
 
 namespace payments {

@@ -9,10 +9,6 @@
 
 class GURL;
 
-namespace content {
-class BrowserContext;
-}
-
 namespace webapps {
 
 enum class WebApkInstallResult;

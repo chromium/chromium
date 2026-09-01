@@ -17,10 +17,6 @@
 #include "components/on_device_translation/service_controller.h"
 #include "url/origin.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace url {
 class Origin;
 }  // namespace url

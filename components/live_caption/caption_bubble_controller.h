@@ -13,10 +13,6 @@
 #include "components/live_caption/views/caption_bubble.h"
 #include "ui/native_theme/caption_style.h"
 
-namespace content {
-class BrowserContext;
-}
-
 namespace captions {
 
 class CaptionBubbleContext;

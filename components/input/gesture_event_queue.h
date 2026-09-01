@@ -19,10 +19,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
-namespace content {
-class MockRenderWidgetHost;
-}  // namespace content
-
 namespace input {
 class GestureEventQueueTest;
 

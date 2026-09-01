@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
 

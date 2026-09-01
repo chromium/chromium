@@ -12,10 +12,6 @@
 #include "components/live_caption/caption_bubble_session_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace captions {
 
 using OpenCaptionSettingsCallback = base::RepeatingCallback<void()>;

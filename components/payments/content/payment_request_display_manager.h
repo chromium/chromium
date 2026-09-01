@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
