@@ -1407,6 +1407,10 @@ class SearchEngineSplitTemplateURLServiceSplitRegionTest
  public:
   SearchEngineSplitTemplateURLServiceSplitRegionTest()
       : SearchEngineSplitTemplateURLServiceTest("JP") {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kApplySearchEngineTypeMigration};
 };
 
 TEST_F(SearchEngineSplitTemplateURLServiceSplitRegionTest,

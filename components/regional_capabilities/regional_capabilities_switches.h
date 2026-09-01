@@ -82,13 +82,24 @@ BASE_DECLARE_FEATURE(kStrictAssociatedCountriesCheck);
 
 // Guards the incremental rollout of the feature that enables migrating
 // prepopulated engines.
+// When enabled, also enable `kApplySearchEngineTypeMigration`.
 // Note: Due to the migration changing the client's data locally persisted in
 // various places, we don't support rollbacks to the feature state.
 BASE_DECLARE_FEATURE(kPrepopulatedEnginesMigration);
 
+// Whether some search engine variants are explicitly assigned to a specific
+// region even if they are not part of the top regional engines list. When
+// enabled, also enable `kApplySearchEngineTypeMigration`.
 BASE_DECLARE_FEATURE(kPrepopulatedEnginesShadowVariants);
 
 bool ArePrepopulatedEnginesShadowVariantsEnabled();
+
+// When enabled, resolves prepopulated engines undergoing an ID split (e.g.
+// Yahoo! JAPAN) to their post-migration SearchEngineType.
+// Companion feature to `kPrepopulatedEnginesMigration` and
+// `kPrepopulatedEnginesShadowVariants`, should be enabled when any of them is
+// also enabled.
+BASE_DECLARE_FEATURE(kApplySearchEngineTypeMigration);
 
 }  // namespace switches
 

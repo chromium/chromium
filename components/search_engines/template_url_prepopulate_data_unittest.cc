@@ -660,7 +660,8 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAlternateURLs) {
 
 TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAllPrepopulatedEngines) {
   base::test::ScopedFeatureList feature_list(
-      switches::kPrepopulatedEnginesMigration);
+      {switches::kPrepopulatedEnginesMigration,
+       switches::kApplySearchEngineTypeMigration});
 
   using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
   const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
@@ -1170,7 +1171,8 @@ TEST_F(TemplateURLPrepopulateDataMigrationTest,
 TEST_F(TemplateURLPrepopulateDataMigrationTest,
        GetEngineTypeForMigratingEngine_PostMigration) {
   base::test::ScopedFeatureList feature_list(
-      switches::kPrepopulatedEnginesMigration);
+      {switches::kPrepopulatedEnginesMigration,
+       switches::kApplySearchEngineTypeMigration});
   auto scoped_override =
       regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
           {&TemplateURLPrepopulateData::google, &fake_engine_deprecated},
@@ -1186,7 +1188,8 @@ TEST_F(TemplateURLPrepopulateDataMigrationTest,
 TEST_F(TemplateURLPrepopulateDataMigrationTest,
        GetEngineTypeForMigratingEngine_PostRollout) {
   base::test::ScopedFeatureList feature_list(
-      switches::kPrepopulatedEnginesMigration);
+      {switches::kPrepopulatedEnginesMigration,
+       switches::kApplySearchEngineTypeMigration});
   auto scoped_override =
       regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
           {&TemplateURLPrepopulateData::google, &fake_engine_new},

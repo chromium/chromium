@@ -13,7 +13,6 @@
 #include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -247,12 +246,21 @@ class TemplateURLServiceChangedOnceObserver
 // regions or the application of a client update that changes the built-in set.
 class PrepopulatedEnginesMigrationBrowserTestBase
     : public PlatformBrowserTest,
-      public base::test::WithFeatureOverride {
+      public testing::WithParamInterface<bool> {
  protected:
   explicit PrepopulatedEnginesMigrationBrowserTestBase(
-      std::vector<RegionalAndNonRegionalEngines> engine_set_load_order)
-      : base::test::WithFeatureOverride(
-            switches::kPrepopulatedEnginesMigration) {
+      std::vector<RegionalAndNonRegionalEngines> engine_set_load_order) {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {switches::kPrepopulatedEnginesMigration,
+           switches::kApplySearchEngineTypeMigration},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {switches::kPrepopulatedEnginesMigration,
+               switches::kApplySearchEngineTypeMigration});
+    }
+
     // GetTestPreCount() returns 0, 1, 2 respectively for Foo, PRE_Foo,
     // PRE_PRE_Foo. Here we flip the queried index so that we can list the
     // engine sets in the intuitive order (i.e. {first, second, third}) in the
@@ -271,6 +279,8 @@ class PrepopulatedEnginesMigrationBrowserTestBase
         regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
             active_engines_config_.first, active_engines_config_.second));
   }
+
+  bool IsParamFeatureEnabled() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();

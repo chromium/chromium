@@ -16166,6 +16166,7 @@
                 {
                     "name": "Enabled_20260320",
                     "enable_features": [
+                        "ApplySearchEngineTypeMigration",
                         "PrepopulatedEnginesMigration"
                     ]
                 }

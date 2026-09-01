@@ -63,15 +63,15 @@ enum class OseSplitEngineState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:OseSplitEngineState)
 
-// Returns the `OseSplitType` for `turl` if it represents Yahoo!.
-// Returns `std::nullopt` if `turl` is not a Yahoo! search engine.
-std::optional<OseSplitType> InspectYahooEngineType(
+// Returns the `OseSplitType` for `turl` if it represents Yahoo! JAPAN.
+// Returns `std::nullopt` if `turl` is not a Yahoo! JAPAN search engine.
+std::optional<OseSplitType> InspectYahooJapanEngineType(
     const TemplateURL& turl,
     const SearchTermsData& search_terms_data);
 
-// Returns the `OseSplitEngineState` for `turl` if it represents Yahoo!.
-// Returns `std::nullopt` if `turl` is not a Yahoo! search engine.
-std::optional<OseSplitEngineState> InspectYahooEngineState(
+// Returns the `OseSplitEngineState` for `turl` if it represents Yahoo! JAPAN.
+// Returns `std::nullopt` if `turl` is not a Yahoo! JAPAN search engine.
+std::optional<OseSplitEngineState> InspectYahooJapanEngineState(
     const TemplateURL& turl,
     const TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data);

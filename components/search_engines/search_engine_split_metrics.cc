@@ -22,10 +22,6 @@ enum class Timing {
   kSettingsPageLoad,
 };
 
-bool IsYahooEngineType(SearchEngineType type) {
-  return type == SEARCH_ENGINE_YAHOO || type == SEARCH_ENGINE_YAHOO_JP;
-}
-
 template <typename Range>
 void RecordSearchEngineSplitMetricsInternal(
     const Range& template_urls,
@@ -34,8 +30,8 @@ void RecordSearchEngineSplitMetricsInternal(
     metrics::ProfileMetricsService& profile_metrics_service,
     Timing timing) {
   if (default_search_provider) {
-    if (std::optional<OseSplitType> dse_type =
-            InspectYahooEngineType(*default_search_provider, search_terms_data);
+    if (std::optional<OseSplitType> dse_type = InspectYahooJapanEngineType(
+            *default_search_provider, search_terms_data);
         dse_type.has_value()) {
       profile_metrics_service.UmaHistogramEnumeration(
           timing == Timing::kProfileLoad
@@ -48,7 +44,7 @@ void RecordSearchEngineSplitMetricsInternal(
   int yahoo_count = 0;
   for (const auto& turl : template_urls) {
     const TemplateURL& deref_turl = CHECK_DEREF(base::to_address(turl));
-    if (std::optional<OseSplitEngineState> state = InspectYahooEngineState(
+    if (std::optional<OseSplitEngineState> state = InspectYahooJapanEngineState(
             deref_turl, default_search_provider, search_terms_data);
         state.has_value()) {
       yahoo_count++;
@@ -69,11 +65,10 @@ void RecordSearchEngineSplitMetricsInternal(
 
 }  // namespace
 
-std::optional<OseSplitType> InspectYahooEngineType(
+std::optional<OseSplitType> InspectYahooJapanEngineType(
     const TemplateURL& turl,
     const SearchTermsData& search_terms_data) {
-  SearchEngineType engine_type = turl.GetEngineType(search_terms_data);
-  if (!IsYahooEngineType(engine_type)) {
+  if (turl.GetEngineType(search_terms_data) != SEARCH_ENGINE_YAHOO_JP) {
     return std::nullopt;
   }
 
@@ -90,12 +85,12 @@ std::optional<OseSplitType> InspectYahooEngineType(
   return OseSplitType::kUnknown;
 }
 
-std::optional<OseSplitEngineState> InspectYahooEngineState(
+std::optional<OseSplitEngineState> InspectYahooJapanEngineState(
     const TemplateURL& turl,
     const TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data) {
   std::optional<OseSplitType> type =
-      InspectYahooEngineType(turl, search_terms_data);
+      InspectYahooJapanEngineType(turl, search_terms_data);
   if (!type.has_value()) {
     return std::nullopt;
   }

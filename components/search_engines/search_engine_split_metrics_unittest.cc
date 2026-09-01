@@ -9,7 +9,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/metrics/profile_metrics_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -50,149 +52,158 @@ std::unique_ptr<TemplateURL> CreateCustomEngine(const std::string& url,
 }  // namespace
 
 class SearchEngineSplitMetricsTest : public testing::Test {
- public:
-  SearchEngineSplitMetricsTest() = default;
-
  protected:
   SearchTermsData search_terms_data_;
   metrics::ProfileMetricsService profile_metrics_service_{/*context=*/1};
   base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      {switches::kPrepopulatedEnginesShadowVariants,
+       switches::kApplySearchEngineTypeMigration}};
 };
 
-TEST_F(SearchEngineSplitMetricsTest, InspectYahooEngineType) {
+TEST_F(SearchEngineSplitMetricsTest, InspectYahooJapanEngineType) {
   std::unique_ptr<TemplateURL> legacy_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp);
-  EXPECT_EQ(InspectYahooEngineType(*legacy_engine, search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineType(*legacy_engine, search_terms_data_),
             OseSplitType::kLegacy);
 
   std::unique_ptr<TemplateURL> new_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp_next);
-  EXPECT_EQ(InspectYahooEngineType(*new_engine, search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineType(*new_engine, search_terms_data_),
             OseSplitType::kNew);
 
   std::unique_ptr<TemplateURL> custom_yahoo =
       CreateCustomEngine("https://search.yahoo.co.jp/search?p={searchTerms}");
-  EXPECT_EQ(InspectYahooEngineType(*custom_yahoo, search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineType(*custom_yahoo, search_terms_data_),
             OseSplitType::kCustom);
 
   std::unique_ptr<TemplateURL> unknown_id_yahoo =
       CreateCustomEngine("https://search.yahoo.co.jp/search?p={searchTerms}",
                          /*prepopulate_id=*/999);
-  EXPECT_EQ(InspectYahooEngineType(*unknown_id_yahoo, search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineType(*unknown_id_yahoo, search_terms_data_),
             OseSplitType::kUnknown);
 
   std::unique_ptr<TemplateURL> google_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::google);
-  EXPECT_EQ(InspectYahooEngineType(*google_engine, search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineType(*google_engine, search_terms_data_),
+            std::nullopt);
+
+  std::unique_ptr<TemplateURL> non_jp_yahoo =
+      CreateCustomEngine("https://search.yahoo.com/search?p={searchTerms}");
+  EXPECT_EQ(InspectYahooJapanEngineType(*non_jp_yahoo, search_terms_data_),
             std::nullopt);
 }
 
-TEST_F(SearchEngineSplitMetricsTest, InspectYahooEngineState_Legacy) {
+TEST_F(SearchEngineSplitMetricsTest, InspectYahooJapanEngineState_Legacy) {
   std::unique_ptr<TemplateURL> legacy_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp);
 
   // Legacy DSE, default config
-  EXPECT_EQ(InspectYahooEngineState(*legacy_engine, legacy_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*legacy_engine, legacy_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kLegacyDse);
 
   // Legacy not DSE, default config
   std::unique_ptr<TemplateURL> google_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::google);
-  EXPECT_EQ(InspectYahooEngineState(*legacy_engine, google_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*legacy_engine, google_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kLegacyNotDse);
 
   // Legacy DSE, user customized
   legacy_engine->set_safe_for_autoreplace(false);
-  EXPECT_EQ(InspectYahooEngineState(*legacy_engine, legacy_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*legacy_engine, legacy_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kLegacyDseCustomized);
 
   // Legacy not DSE, user customized
-  EXPECT_EQ(InspectYahooEngineState(*legacy_engine, google_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*legacy_engine, google_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kLegacyNotDseCustomized);
 }
 
 TEST_F(SearchEngineSplitMetricsTest,
-       InspectYahooEngineState_Legacy_DeviceChoice) {
+       InspectYahooJapanEngineState_Legacy_DeviceChoice) {
   std::unique_ptr<TemplateURL> legacy_device_choice =
       CreateRegulatoryEngine(TemplateURLPrepopulateData::yahoo_jp);
 
   // Legacy DeviceChoice DSE
-  EXPECT_EQ(
-      InspectYahooEngineState(*legacy_device_choice, legacy_device_choice.get(),
-                              search_terms_data_),
-      OseSplitEngineState::kLegacyDseDeviceChoice);
+  EXPECT_EQ(InspectYahooJapanEngineState(*legacy_device_choice,
+                                         legacy_device_choice.get(),
+                                         search_terms_data_),
+            OseSplitEngineState::kLegacyDseDeviceChoice);
 
   // Legacy DeviceChoice not DSE
   std::unique_ptr<TemplateURL> google_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::google);
-  EXPECT_EQ(InspectYahooEngineState(*legacy_device_choice, google_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(
+                *legacy_device_choice, google_engine.get(), search_terms_data_),
             OseSplitEngineState::kLegacyNotDseDeviceChoice);
 }
 
-TEST_F(SearchEngineSplitMetricsTest, InspectYahooEngineState_New) {
+TEST_F(SearchEngineSplitMetricsTest, InspectYahooJapanEngineState_New) {
   std::unique_ptr<TemplateURL> new_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp_next);
 
   // New DSE, default config
-  EXPECT_EQ(InspectYahooEngineState(*new_engine, new_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*new_engine, new_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kNewDse);
 
   // New not DSE, default config
   std::unique_ptr<TemplateURL> google_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::google);
-  EXPECT_EQ(InspectYahooEngineState(*new_engine, google_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*new_engine, google_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kNewNotDse);
 
   // New DSE, user customized
   new_engine->set_safe_for_autoreplace(false);
-  EXPECT_EQ(InspectYahooEngineState(*new_engine, new_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*new_engine, new_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kNewDseCustomized);
 
   // New not DSE, user customized
-  EXPECT_EQ(InspectYahooEngineState(*new_engine, google_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*new_engine, google_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kNewNotDseCustomized);
 }
 
-TEST_F(SearchEngineSplitMetricsTest, InspectYahooEngineState_New_DeviceChoice) {
+TEST_F(SearchEngineSplitMetricsTest,
+       InspectYahooJapanEngineState_New_DeviceChoice) {
   std::unique_ptr<TemplateURL> new_device_choice =
       CreateRegulatoryEngine(TemplateURLPrepopulateData::yahoo_jp_next);
 
   // New DeviceChoice DSE
-  EXPECT_EQ(InspectYahooEngineState(*new_device_choice, new_device_choice.get(),
-                                    search_terms_data_),
-            OseSplitEngineState::kNewDseDeviceChoice);
+  EXPECT_EQ(
+      InspectYahooJapanEngineState(*new_device_choice, new_device_choice.get(),
+                                   search_terms_data_),
+      OseSplitEngineState::kNewDseDeviceChoice);
 
   // New DeviceChoice not DSE
   std::unique_ptr<TemplateURL> google_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::google);
-  EXPECT_EQ(InspectYahooEngineState(*new_device_choice, google_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(
+                *new_device_choice, google_engine.get(), search_terms_data_),
             OseSplitEngineState::kNewNotDseDeviceChoice);
 }
 
-TEST_F(SearchEngineSplitMetricsTest, InspectYahooEngineState_Custom) {
+TEST_F(SearchEngineSplitMetricsTest, InspectYahooJapanEngineState_Custom) {
   std::unique_ptr<TemplateURL> custom_yahoo =
       CreateCustomEngine("https://search.yahoo.co.jp/search?p={searchTerms}");
 
   // Custom DSE
-  EXPECT_EQ(InspectYahooEngineState(*custom_yahoo, custom_yahoo.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*custom_yahoo, custom_yahoo.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kCustomDse);
 
   // Custom not DSE
   std::unique_ptr<TemplateURL> google_engine =
       CreatePrepopulatedEngine(TemplateURLPrepopulateData::google);
-  EXPECT_EQ(InspectYahooEngineState(*custom_yahoo, google_engine.get(),
-                                    search_terms_data_),
+  EXPECT_EQ(InspectYahooJapanEngineState(*custom_yahoo, google_engine.get(),
+                                         search_terms_data_),
             OseSplitEngineState::kCustomNotDse);
 }
 

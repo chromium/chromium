@@ -49,4 +49,7 @@ bool ArePrepopulatedEnginesShadowVariantsEnabled() {
   return base::FeatureList::IsEnabled(kPrepopulatedEnginesShadowVariants);
 }
 
+BASE_FEATURE(kApplySearchEngineTypeMigration,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches
