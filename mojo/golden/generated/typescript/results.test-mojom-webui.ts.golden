@@ -222,7 +222,7 @@ export const ResultInterface_SyncMethod_ResponseParam_ResultSpec: { $: mojo.inte
 
 
 
-export interface ResultTestErrorMojoType {
+export declare interface ResultTestErrorMojoType {
 }
 
 
@@ -238,7 +238,7 @@ mojo.internal.Struct<ResultTestErrorMojoType>(
 
 
 
-export interface ResultInterface_Method_ParamsMojoType {
+export declare interface ResultInterface_Method_ParamsMojoType {
   a: boolean;
 }
 
@@ -265,7 +265,7 @@ mojo.internal.Struct<ResultInterface_Method_ParamsMojoType>(
 
 
 
-export interface ResultInterface_Method_ResponseParamsMojoType {
+export declare interface ResultInterface_Method_ResponseParamsMojoType {
   result: ResultInterface_Method_ResponseParam_Result;
 }
 
@@ -292,7 +292,7 @@ mojo.internal.Struct<ResultInterface_Method_ResponseParamsMojoType>(
 
 
 
-export interface ResultInterface_SyncMethod_ParamsMojoType {
+export declare interface ResultInterface_SyncMethod_ParamsMojoType {
   a: boolean;
 }
 
@@ -319,7 +319,7 @@ mojo.internal.Struct<ResultInterface_SyncMethod_ParamsMojoType>(
 
 
 
-export interface ResultInterface_SyncMethod_ResponseParamsMojoType {
+export declare interface ResultInterface_SyncMethod_ResponseParamsMojoType {
   result: ResultInterface_SyncMethod_ResponseParam_Result;
 }
 
@@ -357,7 +357,7 @@ mojo.internal.Union(
       },
     });
 
-export interface ResultInterface_Method_ResponseParam_Result {
+export declare interface ResultInterface_Method_ResponseParam_Result {
   success?: boolean,
   failure?: ResultTestError,
 }
@@ -389,7 +389,7 @@ mojo.internal.Union(
       },
     });
 
-export interface ResultInterface_SyncMethod_ResponseParam_Result {
+export declare interface ResultInterface_SyncMethod_ResponseParam_Result {
   success?: boolean,
   failure?: ResultTestError,
 }

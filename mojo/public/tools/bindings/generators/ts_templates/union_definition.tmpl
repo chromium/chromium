@@ -12,7 +12,7 @@ mojo.internal.Union(
 {%- endfor %}
     });
 
-export interface {{union.name}} {
+export declare interface {{union.name}} {
 {%- for field in union.fields %}
   {{field.name}}?: {{field.kind|ts_type_maybe_nullable}},
 {%- endfor %}

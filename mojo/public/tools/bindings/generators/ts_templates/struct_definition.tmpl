@@ -8,7 +8,7 @@ export const {{struct.name}}_{{constant.name}}: {{constant.kind|ts_type_maybe_nu
 {{enum_def(enum)}}
 {%  endfor %}
 
-export interface {{struct.name}}MojoType {
+export declare interface {{struct.name}}MojoType {
 {%- for packed_field in struct.packed.packed_fields %}
 {%-   if packed_field|is_nullable_value_kind_packed_field %}
 {%-     if packed_field|is_primary_nullable_value_kind_packed_field %}

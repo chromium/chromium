@@ -18,7 +18,7 @@ export const OptionalPrimitivesSpec: { $: mojo.internal.MojomType } =
 
 
 
-export interface OptionalPrimitivesMojoType {
+export declare interface OptionalPrimitivesMojoType {
   int: (number | null);
   long: (bigint | null);
   intWithDefault: (number | null);

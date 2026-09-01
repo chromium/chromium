@@ -186,7 +186,7 @@ export const IFaceWithTypemap_Echo_ResponseParamsSpec: { $: mojo.internal.MojomT
 
 
 
-export interface TypemappedMojoType {
+export declare interface TypemappedMojoType {
   field: number;
   optional: (number | null);
   optionalContainer: Array<(boolean | null)>;
@@ -258,7 +258,7 @@ mojo.internal.TypemappedStruct<number, TypemappedMojoType> (
 
 
 
-export interface IFaceWithTypemap_Echo_ParamsMojoType {
+export declare interface IFaceWithTypemap_Echo_ParamsMojoType {
   param: number;
 }
 
@@ -285,7 +285,7 @@ mojo.internal.Struct<IFaceWithTypemap_Echo_ParamsMojoType>(
 
 
 
-export interface IFaceWithTypemap_Echo_ResponseParamsMojoType {
+export declare interface IFaceWithTypemap_Echo_ResponseParamsMojoType {
   out: number;
 }
 

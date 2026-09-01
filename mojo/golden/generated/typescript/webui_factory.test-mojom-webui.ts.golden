@@ -489,7 +489,7 @@ export const WebUiPageHandlerFactory_CreatePageHandler_ParamsSpec: { $: mojo.int
 
 
 
-export interface Page_OnSomethingHappened_ParamsMojoType {
+export declare interface Page_OnSomethingHappened_ParamsMojoType {
 }
 
 
@@ -505,7 +505,7 @@ mojo.internal.Struct<Page_OnSomethingHappened_ParamsMojoType>(
 
 
 
-export interface PageHandler_DoSomething_ParamsMojoType {
+export declare interface PageHandler_DoSomething_ParamsMojoType {
 }
 
 
@@ -521,7 +521,7 @@ mojo.internal.Struct<PageHandler_DoSomething_ParamsMojoType>(
 
 
 
-export interface WebUiPageHandlerFactory_CreatePageHandler_ParamsMojoType {
+export declare interface WebUiPageHandlerFactory_CreatePageHandler_ParamsMojoType {
   page: PageRemote;
   handler: PageHandlerPendingReceiver;
 }

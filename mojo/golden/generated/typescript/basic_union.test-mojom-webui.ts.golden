@@ -31,7 +31,7 @@ export const BasicUnionSpec: { $: mojo.internal.MojomType } =
 
 
 
-export interface StructInUnionMojoType {
+export declare interface StructInUnionMojoType {
   flag: boolean;
   value: string;
 }
@@ -84,7 +84,7 @@ mojo.internal.Union(
       },
     });
 
-export interface BasicUnion {
+export declare interface BasicUnion {
   numericValue?: number,
   enumValue?: EnumInUnion,
   structValue?: StructInUnion,

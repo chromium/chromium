@@ -178,7 +178,7 @@ export const IFace_Method_ResponseParamsSpec: { $: mojo.internal.MojomType } =
 
 
 
-export interface IFace_Method_ParamsMojoType {
+export declare interface IFace_Method_ParamsMojoType {
   param: boolean;
 }
 
@@ -205,7 +205,7 @@ mojo.internal.Struct<IFace_Method_ParamsMojoType>(
 
 
 
-export interface IFace_Method_ResponseParamsMojoType {
+export declare interface IFace_Method_ResponseParamsMojoType {
   result: string;
 }
 
