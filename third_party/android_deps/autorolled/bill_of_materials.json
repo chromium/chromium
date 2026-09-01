@@ -1702,7 +1702,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.36.0"
+        "version": "4.36.1"
     },
     {
         "name": "protobuf-lite",
@@ -1887,12 +1887,12 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.83.1"
+        "version": "1.84.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.83.1"
+        "version": "1.84.0"
     },
     {
         "name": "rxandroid",
@@ -1957,12 +1957,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "4.2.2"
+        "version": "4.2.3"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "4.2.2"
+        "version": "4.2.3"
     },
     {
         "name": "animal-sniffer-annotations",
