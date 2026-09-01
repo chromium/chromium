@@ -477,14 +477,14 @@ public class TouchToFillPaymentMethodRenderTest {
                         .getBottomSheetController();
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator = new TouchToFillPaymentMethodCoordinator();
-                    mCoordinator.initialize(
-                            mActivityTestRule.getActivity(),
-                            ProfileManager.getLastUsedRegularProfile(),
-                            AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile(),
-                            mBottomSheetController,
-                            mDelegateMock,
-                            mBottomSheetFocusHelper);
+                    mCoordinator =
+                            new TouchToFillPaymentMethodCoordinator(
+                                    mActivityTestRule.getActivity(),
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile(),
+                                    mBottomSheetController,
+                                    mDelegateMock,
+                                    mBottomSheetFocusHelper);
                     mCoordinator.getViewForTesting().applyRtlLayoutForTesting();
                 });
     }

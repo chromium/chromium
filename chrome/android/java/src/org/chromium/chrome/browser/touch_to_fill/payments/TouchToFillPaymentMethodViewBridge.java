@@ -44,14 +44,14 @@ class TouchToFillPaymentMethodViewBridge {
             AutofillImageFetcher imageFetcher,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
-        mComponent = new TouchToFillPaymentMethodCoordinator();
-        mComponent.initialize(
-                context,
-                profile,
-                imageFetcher,
-                bottomSheetController,
-                delegate,
-                new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
+        mComponent =
+                new TouchToFillPaymentMethodCoordinator(
+                        context,
+                        profile,
+                        imageFetcher,
+                        bottomSheetController,
+                        delegate,
+                        new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
     }
 
     @CalledByNative

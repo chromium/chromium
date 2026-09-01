@@ -615,14 +615,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
-        mCoordinator = new TouchToFillPaymentMethodCoordinator();
-        mCoordinator.initialize(
-                mActivity,
-                mProfile,
-                mImageFetcher,
-                mBottomSheetController,
-                mDelegateMock,
-                mBottomSheetFocusHelper);
+        mCoordinator =
+                new TouchToFillPaymentMethodCoordinator(
+                        mActivity,
+                        mProfile,
+                        mImageFetcher,
+                        mBottomSheetController,
+                        mDelegateMock,
+                        mBottomSheetFocusHelper);
         mTouchToFillPaymentMethodModel = mCoordinator.getModelForTesting();
         mCoordinator
                 .getMediatorForTesting()

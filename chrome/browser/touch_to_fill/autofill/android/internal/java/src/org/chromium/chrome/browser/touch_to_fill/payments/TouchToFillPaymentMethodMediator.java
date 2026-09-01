@@ -461,16 +461,17 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
     private static final String WALLET_URL = "https://wallet.google.com/";
     // LINT.ThenChange(//components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.cc)
 
-    private Context mContext;
-    private TouchToFillPaymentMethodComponent.Delegate mDelegate;
-    private PropertyModel mModel;
+    private final Context mContext;
+    private final TouchToFillPaymentMethodComponent.Delegate mDelegate;
+    private final PropertyModel mModel;
+    private final BottomSheetFocusHelper mBottomSheetFocusHelper;
+    private final PersonalDataManager mPersonalDataManager;
     private List<AutofillSuggestion> mSuggestions;
     private List<Iban> mIbans;
     private List<LoyaltyCard> mAffiliatedLoyaltyCards;
     private List<LoyaltyCard> mAllLoyaltyCards;
     private List<BnplIssuerContext> mBnplIssuerContexts;
     private String mBnplIssuerIdWithTosShown;
-    private BottomSheetFocusHelper mBottomSheetFocusHelper;
     private TouchToFillDisplayOptions mTouchToFillDisplayOptions;
     private AutofillSuggestion mBnplSuggestion;
     // It holds the properties needed to render the BNPL chip on the bottom sheet.
@@ -478,14 +479,13 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
     private PropertyModel mBnplSuggestionModel;
     private @TouchToFillBnplSuggestionVisibility int mBnplSuggestionVisibility;
     private InputProtector mInputProtector = new InputProtector();
-    private PersonalDataManager mPersonalDataManager;
     private PrefChangeRegistrar mPrefChangeRegistrar;
     private boolean mDidShowBoldedAiTerms;
     private boolean mWasDismissed;
     private boolean mShowBnplLoadingInTab;
     private AutofillImageFetcher mImageFetcher;
 
-    void initialize(
+    TouchToFillPaymentMethodMediator(
             Context context,
             Profile profile,
             AutofillImageFetcher imageFetcher,
