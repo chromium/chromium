@@ -7,16 +7,19 @@
       "path": "agents/projects/code-health/histogram-cleanup"
     },
     {
+      "path": "agents/projects/code-health/histogram-extension"
+    },
+    {
       "path": "agents/projects/code-health/hub"
     },
     {
       "path": "agents/projects/code-health/java-inline-fqn-cleanup"
     },
     {
-      "path": "agents/projects/code-health/histogram-extension"
+      "path": "agents/projects/code-health/keep-sorted"
     },
     {
-      "path": "agents/projects/code-health/keep-sorted"
+      "path": "agents/projects/code-health/remove-unused-object-overrides"
     }
   ]
 }
