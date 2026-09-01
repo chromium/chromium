@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.android_webview.AwContentRestrictionManagerBridge;
@@ -44,7 +43,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 
 /** Unit tests for the AwContentRestrictionManagerBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AwContentRestrictionManagerBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;

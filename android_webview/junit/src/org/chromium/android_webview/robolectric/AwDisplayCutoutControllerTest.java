@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AwDisplayCutoutController;
 import org.chromium.base.Log;
@@ -42,7 +41,6 @@ import org.chromium.base.test.util.Feature;
 
 /** JUnit tests for AwDisplayCutoutController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AwDisplayCutoutControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

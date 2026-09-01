@@ -14,7 +14,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.metrics.AwOriginVisitLogger;
 import org.chromium.base.FakeTimeTestRule;
@@ -24,7 +23,6 @@ import org.chromium.base.test.util.Feature;
 
 /** Unit tests for {@link AwOriginVisitLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AwOriginVisitLoggerTest {
     private static final long MILLIS_PER_DAY = TimeUtils.SECONDS_PER_DAY * 1000;
     private static final long ORIGIN_HASH_A = 1778564728L;

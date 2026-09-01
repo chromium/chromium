@@ -9,7 +9,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.WebViewCachedFlags;
@@ -31,7 +30,6 @@ import java.util.Set;
  * androidx.webkit 1.0.0 assumes these features are present and calls the methods.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SupportLibTest {
     @Test
     @SmallTest

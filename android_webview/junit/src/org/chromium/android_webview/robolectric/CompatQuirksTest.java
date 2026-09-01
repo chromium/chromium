@@ -8,14 +8,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.CompatQuirks;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Robolectric unit tests for {@link CompatQuirks}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CompatQuirksTest {
     @After
     public void tearDown() {

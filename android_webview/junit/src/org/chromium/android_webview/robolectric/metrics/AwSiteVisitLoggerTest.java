@@ -14,7 +14,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.metrics.AwSiteVisitLogger;
 import org.chromium.base.FakeTimeTestRule;
@@ -24,7 +23,6 @@ import org.chromium.base.test.util.Feature;
 
 /** Unit tests for {@link AwSiteVisitLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AwSiteVisitLoggerTest {
     // We test for 1 millisecond after a week has passed as our logic checks are
     // for after a week has passed

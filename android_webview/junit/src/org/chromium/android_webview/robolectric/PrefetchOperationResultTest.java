@@ -14,15 +14,13 @@ import com.android.webview.chromium.PrefetchOperationStatusCode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchCallback.StatusCode;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link PrefetchOperationResult}. */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@RunWith(BaseRobolectricTestRunner.class)
 public class PrefetchOperationResultTest {
 
     @Test

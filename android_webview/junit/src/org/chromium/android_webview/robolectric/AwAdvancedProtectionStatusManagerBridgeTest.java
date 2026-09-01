@@ -37,7 +37,6 @@ import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 
 /** Tests for {@link AwAdvancedProtectionStatusManagerBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AwAdvancedProtectionStatusManagerBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

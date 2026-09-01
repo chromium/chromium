@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -23,7 +22,6 @@ import java.util.Collections;
 
 /** Tests for SupportLibSpeculativeLoadingParametersAdapter. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SupportLibSpeculativeLoadingParametersAdapterTest {
 
     @Test

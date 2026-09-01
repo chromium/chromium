@@ -9,7 +9,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.WebAddressParser;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -19,7 +18,6 @@ import java.net.URISyntaxException;
 
 /** Unit tests for WebAddressParser. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class WebAddressParserTest {
     @Test
     @SmallTest

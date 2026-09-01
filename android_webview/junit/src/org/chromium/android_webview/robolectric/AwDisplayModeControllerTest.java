@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AwDisplayModeController;
 import org.chromium.base.Log;
@@ -39,7 +38,6 @@ import org.chromium.blink.mojom.DisplayMode;
 
 /** JUnit tests for AwDisplayModeController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AwDisplayModeControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
