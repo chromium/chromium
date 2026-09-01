@@ -5991,6 +5991,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaFoundationRenderer.MFSeekRequested" units="seeks"
+    expires_after="2026-12-09">
+  <owner>xhwang@chromium.org</owner>
+  <owner>daoyuanli@microsoft.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Number of times the Media Foundation Media Engine asked Chromium to seek,
+    instead of seeking internally on its own, over the lifetime of one
+    MediaFoundationRenderer. Recorded when the renderer is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.MultiGpu.ActiveGpuDisplayInfo"
     enum="ActiveGpuDisplayInfo" expires_after="2026-12-09">
   <owner>sangbaekpark@chromium.org</owner>

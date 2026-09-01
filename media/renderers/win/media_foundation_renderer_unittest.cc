@@ -47,6 +47,8 @@ constexpr char kSubsequentEventUmaName[] =
     "Media.MediaFoundation.MediaEngineError.SubsequentEvent";
 constexpr char kSubsequentEventOrErrorReportedUmaName[] =
     "Media.MediaFoundation.MediaEngineError.SubsequentEventOrErrorReported";
+constexpr char kMFSeekRequestedUmaName[] =
+    "Media.MediaFoundationRenderer.MFSeekRequested";
 
 class MockMediaProtectionPMPServer
     : public Microsoft::WRL::RuntimeClass<
@@ -556,5 +558,46 @@ TEST_F(MediaFoundationRendererTest,
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(media_engine->IsPaused());
+}
+
+// The Media Engine asks Chromium to seek instead of seeking on its own, so
+// each request should be forwarded to the pipeline as a lost decoder state.
+TEST_F(MediaFoundationRendererTest,
+       EngineSeekRequestedReportsDecoderStateLost) {
+  base::HistogramTester histogram_tester;
+  // Use encrypted streams to avoid SetSourceOnMediaEngine() being called
+  // automatically during Initialize(). This prevents the MediaEngine from
+  // generating events that could interfere with the test.
+  AddStream(DemuxerStream::AUDIO, /*encrypted=*/true);
+  AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
+
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
+
+  mf_renderer_->Initialize(&media_resource_, &renderer_client_,
+                           renderer_init_cb_.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(renderer_client_, OnWaiting(WaitingReason::kDecoderStateLost))
+      .Times(2);
+
+  MediaEngineNotifyImpl* media_engine_notify =
+      mf_renderer_->GetMediaEngineNotifyForTesting();
+  ASSERT_TRUE(media_engine_notify);
+
+  media_engine_notify->EventNotify(MF_MEDIA_ENGINE_EVENT_ENGINE_SEEK_REQUESTED,
+                                   0L, 0L);
+  task_environment_.RunUntilIdle();
+
+  media_engine_notify->EventNotify(MF_MEDIA_ENGINE_EVENT_ENGINE_SEEK_REQUESTED,
+                                   0L, 0L);
+  task_environment_.RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(&renderer_client_);
+
+  // The number of requests is reported when the renderer is destroyed.
+  mf_renderer_.reset();
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(kMFSeekRequestedUmaName, 2, 1);
 }
 }  // namespace media

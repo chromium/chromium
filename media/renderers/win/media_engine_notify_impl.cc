@@ -79,6 +79,7 @@ std::string MediaEngineEventToString(MF_MEDIA_ENGINE_EVENT event) {
     ENUM_TO_STRING(MF_MEDIA_ENGINE_EVENT_STREAMRENDERINGERROR);
     ENUM_TO_STRING(MF_MEDIA_ENGINE_EVENT_SUPPORTEDRATES_CHANGED);
     ENUM_TO_STRING(MF_MEDIA_ENGINE_EVENT_AUDIOENDPOINTCHANGE);
+    ENUM_TO_STRING(MF_MEDIA_ENGINE_EVENT_ENGINE_SEEK_REQUESTED);
     default:
       return "Unknown MF_MEDIA_ENGINE_EVENT";
   }
@@ -127,6 +128,7 @@ HRESULT MediaEngineNotifyImpl::RuntimeClassInitialize(
     WaitingCB waiting_cb,
     FrameStepCompletedCB frame_step_completed_cb,
     TimeUpdateCB time_update_cb,
+    MFSeekRequestedCB mf_seek_requested_cb,
     std::optional<VideoDecoderConfig> video_decoder_config,
     std::optional<AudioDecoderConfig> audio_decoder_config) {
   DVLOG_FUNC(1);
@@ -140,6 +142,7 @@ HRESULT MediaEngineNotifyImpl::RuntimeClassInitialize(
   waiting_cb_ = std::move(waiting_cb);
   frame_step_completed_cb_ = std::move(frame_step_completed_cb);
   time_update_cb_ = std::move(time_update_cb);
+  mf_seek_requested_cb_ = std::move(mf_seek_requested_cb);
 
   audio_decoder_config_ = std::move(audio_decoder_config);
   video_decoder_config_ = std::move(video_decoder_config);
@@ -237,6 +240,9 @@ HRESULT MediaEngineNotifyImpl::EventNotify(DWORD event_code,
       break;
     case MF_MEDIA_ENGINE_EVENT_TIMEUPDATE:
       time_update_cb_.Run();
+      break;
+    case MF_MEDIA_ENGINE_EVENT_ENGINE_SEEK_REQUESTED:
+      mf_seek_requested_cb_.Run();
       break;
 
     default:

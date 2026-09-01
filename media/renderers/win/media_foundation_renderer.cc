@@ -26,6 +26,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_propvariant.h"
@@ -49,6 +50,18 @@ using Microsoft::WRL::ComPtr;
 using Microsoft::WRL::MakeAndInitialize;
 
 namespace {
+
+// The MF_MEDIA_ENGINE_COMPATIBILITY_MODE value Chromium requests. It opts the
+// Media Engine into behavior tailored for Chromium, notably raising
+// MF_MEDIA_ENGINE_EVENT_ENGINE_SEEK_REQUESTED when the Media Engine needs
+// Chromium to seek in response to an internal change. Not declared by the
+// Windows SDK yet.
+// {44C4A580-FC8D-473A-A703-D0C31557AB0C}
+constexpr GUID MF_MEDIA_ENGINE_COMPATIBILITY_MODE_CHROMIUM = {
+    0x44c4a580,
+    0xfc8d,
+    0x473a,
+    {0xa7, 0x03, 0xd0, 0xc3, 0x15, 0x57, 0xab, 0x0c}};
 
 ATOM g_video_window_class = 0;
 
@@ -613,6 +626,9 @@ MediaFoundationRenderer::~MediaFoundationRenderer() {
 
   StopSendingStatistics(StopSendingStatisticsReason::kShutdown);
 
+  base::UmaHistogramCounts1000("Media.MediaFoundationRenderer.MFSeekRequested",
+                               mf_seek_requested_count_);
+
   // 'mf_media_engine_notify_' should be shutdown first as errors are possible
   // if source is being created while shutdown is called (causing
   // ERROR_FILE_NOT_FOUND from Media Foundations). These errors should be
@@ -722,10 +738,12 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
           &MediaFoundationRenderer::OnFrameStepCompleted, weak_this)),
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnTimeUpdate, weak_this)),
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &MediaFoundationRenderer::OnMFSeekRequested, weak_this)),
       video_decoder_config, audio_decoder_config));
 
   ComPtr<IMFAttributes> creation_attributes;
-  RETURN_IF_FAILED(MFCreateAttributes(&creation_attributes, 6));
+  RETURN_IF_FAILED(MFCreateAttributes(&creation_attributes, 7));
   RETURN_IF_FAILED(creation_attributes->SetUnknown(
       MF_MEDIA_ENGINE_CALLBACK, mf_media_engine_notify_.Get()));
   RETURN_IF_FAILED(
@@ -733,6 +751,9 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
                                      MF_MEDIA_ENGINE_ENABLE_PROTECTED_CONTENT));
   RETURN_IF_FAILED(creation_attributes->SetUINT32(
       MF_MEDIA_ENGINE_AUDIO_CATEGORY, AudioCategory_Media));
+  RETURN_IF_FAILED(creation_attributes->SetGUID(
+      MF_MEDIA_ENGINE_COMPATIBILITY_MODE,
+      MF_MEDIA_ENGINE_COMPATIBILITY_MODE_CHROMIUM));
   if (virtual_video_window_) {
     RETURN_IF_FAILED(creation_attributes->SetUINT64(
         MF_MEDIA_ENGINE_OPM_HWND,
@@ -1639,6 +1660,15 @@ void MediaFoundationRenderer::OnWaiting() {
 void MediaFoundationRenderer::OnTimeUpdate() {
   DVLOG_FUNC(3);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+}
+
+void MediaFoundationRenderer::OnMFSeekRequested() {
+  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  TRACE_EVENT0("media", "MediaFoundationRenderer::OnMFSeekRequested");
+  mf_seek_requested_count_++;
+  renderer_client_->OnWaiting(WaitingReason::kDecoderStateLost);
 }
 
 void MediaFoundationRenderer::OnFrameStepCompleted() {
