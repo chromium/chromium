@@ -405,6 +405,18 @@ void RegisterPreProfileInitInfoBars() {
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsInfoBarMigrated(InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE)
+            .SetScope(InfoBarScope::kGlobal)
+            .SetExpireOnNavigation(false)
+            .SetShouldAnimate(false)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+#endif
 }
 
 }  // namespace infobars
