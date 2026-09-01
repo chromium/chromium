@@ -6472,6 +6472,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.TickleToFieldDetectionLatency"
+    units="ms" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the latency between receiving a push notification (tickle) from the
+    backend and detecting an OTP field on a web page. Recorded when an OTP field
+    is detected on a page after a tickle was already received.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Attempt"
     enum="BooleanAttempted" expires_after="2027-04-30">
   <owner>siyua@chromium.org</owner>

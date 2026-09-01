@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,32 @@
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 
 namespace autofill {
+
+namespace {
+
+void TryRecordLatency(std::optional<base::TimeTicks>& previous_event_time,
+                      std::optional<base::TimeTicks>& current_event_time,
+                      std::string_view histogram_name) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (previous_event_time.has_value()) {
+    base::TimeDelta latency = now - *previous_event_time;
+    previous_event_time.reset();
+    if (latency <= OtpMetricsTracker::kFieldDetectionTimeout) {
+      // `kNotificationExpirationDuration` is currently smaller than
+      // `kFieldDetectionTimeout`, but `std::min` is used in case either value
+      // changes in the future.
+      base::UmaHistogramCustomTimes(
+          histogram_name, latency, base::Milliseconds(10),
+          std::min(OtpMetricsTracker::kFieldDetectionTimeout,
+                   one_time_tokens::kNotificationExpirationDuration),
+          50);
+      return;
+    }
+  }
+  current_event_time = now;
+}
+
+}  // namespace
 
 OtpMetricsTracker::OtpMetricsTracker(
     one_time_tokens::OneTimeTokenService* one_time_token_service)
@@ -33,7 +60,8 @@ void OtpMetricsTracker::OnOtpFieldDetected() {
   if (!base::FeatureList::IsEnabled(features::kAutofillGmailOtp)) {
     return;
   }
-  field_detection_time_ = base::TimeTicks::Now();
+  TryRecordLatency(tickle_time_, field_detection_time_,
+                   kTickleToFieldDetectionLatencyHistogram);
 }
 
 void OtpMetricsTracker::OnTickleReceived(
@@ -41,18 +69,8 @@ void OtpMetricsTracker::OnTickleReceived(
   if (!base::FeatureList::IsEnabled(features::kAutofillGmailOtp)) {
     return;
   }
-  if (field_detection_time_.has_value()) {
-    base::TimeDelta latency = base::TimeTicks::Now() - *field_detection_time_;
-    if (latency <= kFieldDetectionTimeout) {
-      base::UmaHistogramCustomTimes(
-          kFieldDetectionToTickleLatencyHistogram, latency,
-          base::Milliseconds(10),
-          std::min(kFieldDetectionTimeout,
-                   one_time_tokens::kNotificationExpirationDuration),
-          50);
-    }
-    field_detection_time_.reset();
-  }
+  TryRecordLatency(field_detection_time_, tickle_time_,
+                   kFieldDetectionToTickleLatencyHistogram);
 }
 
 }  // namespace autofill

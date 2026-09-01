@@ -22,6 +22,8 @@ class OtpMetricsTracker {
  public:
   static constexpr char kFieldDetectionToTickleLatencyHistogram[] =
       "Autofill.OneTimeTokens.FieldDetectionToTickleLatency";
+  static constexpr char kTickleToFieldDetectionLatencyHistogram[] =
+      "Autofill.OneTimeTokens.TickleToFieldDetectionLatency";
 
   // Maximum duration between OTP field detection and tickle arrival for them to
   // be considered correlated. If more than this time has passed, the tickle is
@@ -54,6 +56,9 @@ class OtpMetricsTracker {
   // Timestamp of the most recently detected OTP field. `std::nullopt` before
   // any OTP field is detected or once a session has completed/timed out.
   std::optional<base::TimeTicks> field_detection_time_;
+
+  // Timestamp of the most recently received tickle.
+  std::optional<base::TimeTicks> tickle_time_;
 
   base::WeakPtrFactory<OtpMetricsTracker> weak_ptr_factory_{this};
 };

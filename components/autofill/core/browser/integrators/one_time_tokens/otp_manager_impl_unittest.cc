@@ -238,6 +238,34 @@ TEST_F(OtpManagerImplTest,
       OtpMetricsTracker::kFieldDetectionToTickleLatencyHistogram, 0);
 }
 
+// Tests that OtpMetricsTracker records latency when a tickle arrives before an
+// OTP field is detected.
+TEST_F(OtpManagerImplTest,
+       TickleReceivedBeforeOtpForm_NotifiesOtpMetricsTracker) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillGmailOtp);
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
+  one_time_tokens::ExpiringSubscriptionManager<void(
+      one_time_tokens::OneTimeTokenSource)>
+      sub_manager;
+  SetUpTickleSubscription(mock_ott_service, sub_manager);
+
+  autofill_client().set_otp_metrics_tracker(
+      std::make_unique<OtpMetricsTracker>(&mock_ott_service));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+
+  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
+  task_environment_.FastForwardBy(kTestFieldDetectionToTickleLatency);
+
+  AddFormWithOtpField();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      OtpMetricsTracker::kTickleToFieldDetectionLatencyHistogram,
+      kTestFieldDetectionToTickleLatency, 1);
+  histogram_tester_.ExpectTotalCount(
+      OtpMetricsTracker::kFieldDetectionToTickleLatencyHistogram, 0);
+}
+
 // Tests that `GetOtpSuggestions` triggers an OTP retrieval from the
 // `SmsOtpBackend` the first time it is called, and that the results are
 // correctly passed to the callback.
