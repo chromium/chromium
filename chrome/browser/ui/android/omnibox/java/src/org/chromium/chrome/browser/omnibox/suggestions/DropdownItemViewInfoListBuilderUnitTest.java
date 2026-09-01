@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -29,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -193,20 +191,19 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         actualList.add(suggestionForGroup2);
         actualList.add(suggestionForGroup2);
 
-        final InOrder verifier = inOrder(mMockSuggestionProcessor);
         final List<DropdownItemViewInfo> model =
                 mBuilder.buildDropdownViewInfoList(
                         mInput, AutocompleteResult.fromCache(actualList, groupsDetails));
 
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionWithNoGroup), any(), eq(0));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(1));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(2));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(3));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(4));
         assertEquals(5, model.size()); // 5 suggestions.
 
@@ -270,20 +267,19 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         actualList.add(suggestionForGroup2);
         actualList.add(suggestionForGroup2);
 
-        final InOrder verifier = inOrder(mMockSuggestionProcessor);
         final List<DropdownItemViewInfo> model =
                 mBuilder.buildDropdownViewInfoList(
                         mInput, AutocompleteResult.fromCache(actualList, groupsDetails));
 
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionWithNoGroup), any(), eq(0));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(1));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(2));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(3));
-        verifier.verify(mMockSuggestionProcessor, times(1))
+        verify(mMockSuggestionProcessor)
                 .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(4));
 
         var defaultGroupConfig = GroupConfig.getDefaultInstance();
