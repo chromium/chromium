@@ -115,6 +115,16 @@ BigBuffer BigBuffer::Clone() const {
   return BigBuffer(base::span(*this));
 }
 
+void BigBuffer::MakePrivateBytes() {
+  CHECK(storage_type_ != StorageType::kInvalidBuffer);
+  if (storage_type_ == StorageType::kSharedMemory) {
+    // Copy the data into a new inline buffer.
+    bytes_ = base::HeapArray<uint8_t>::CopiedFrom(base::span(*this));
+    shared_memory_.reset();
+    storage_type_ = StorageType::kBytes;
+  }
+}
+
 const uint8_t* BigBuffer::data() const {
   switch (storage_type_) {
     case StorageType::kBytes:

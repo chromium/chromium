@@ -2149,15 +2149,10 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
     static constexpr base::ByteSize kMinimumCompressionSize(64);
     static constexpr float kMinimumCompressionRatio = 0.8f;
-    if (value.bits.storage_type() ==
-        mojo_base::BigBuffer::StorageType::kSharedMemory) {
-      // Make a copy of the bits if they are in shared memory before attempting
-      // to compress. See BigBuffer docs re: TOCTOU bugs.
-      bits_copy = base::ToVector(std::move(value.bits));
-      bits_span = base::span(bits_copy);
-    } else {
-      bits_span = base::span(value.bits);
-    }
+    // Should have already been copied to private memory in `Transaction`.
+    CHECK_EQ(value.bits.storage_type(),
+             mojo_base::BigBuffer::StorageType::kBytes);
+    bits_span = base::span(value.bits);
 
     // Maybe compress, updating `bits_span` and `bits_copy` as appropriate.
     if (bits_span.size() >= kMinimumCompressionSize.InBytes()) {

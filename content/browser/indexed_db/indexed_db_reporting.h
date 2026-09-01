@@ -135,7 +135,7 @@ enum class BadMessageReason {
   kCursorPrefetchResetInvalidUsedPrefetches = 12,
   kTransactionCreateObjectStoreInvalidId = 13,
   kTransactionPutReadOnly = 14,
-  kTransactionPutInvalidValue = 15,
+  // kTransactionPutInvalidValue = 15,
   kTransactionPutInvalidExternalObjects = 16,
   kTransactionDoPutInvalidObjectStoreId = 17,
   kTransactionDoPutInvalidIndexId = 18,

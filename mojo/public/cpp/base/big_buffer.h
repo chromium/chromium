@@ -85,8 +85,11 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   static constexpr size_t kMaxInlineBytes = 64 * 1024;
 
   enum class StorageType {
+    // Stored in private memory.
     kBytes,
+    // Stored in a shared memory region.
     kSharedMemory,
+    // Contains no data and cannot be [de]serialized.
     kInvalidBuffer,
   };
 
@@ -116,6 +119,11 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   // Note that the new BigBuffer may not necessarily have the same backing
   // storage type as the original one, only the same contents.
   BigBuffer Clone() const;
+
+  // Forces the buffer to be backed by private memory, copying the contents out
+  // of shared memory if necessary. Useful for TOCTOU prevention; see above.
+  // Also useful for releasing FDs to avoid exhaustion on POSIX.
+  void MakePrivateBytes();
 
   // Returns a pointer to the data stored by this BigBuffer, regardless of
   // backing storage type. Prefer to use `base::span(big_buffer)` instead, or

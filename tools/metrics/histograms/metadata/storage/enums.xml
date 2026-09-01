@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kCursorPrefetchResetInvalidUsedPrefetches"/>
   <int value="13" label="kTransactionCreateObjectStoreInvalidId"/>
   <int value="14" label="kTransactionPutReadOnly"/>
-  <int value="15" label="kTransactionPutInvalidValue"/>
+  <int value="15" label="(Obsolete) kTransactionPutInvalidValue"/>
   <int value="16" label="kTransactionPutInvalidExternalObjects"/>
   <int value="17" label="kTransactionDoPutInvalidObjectStoreId"/>
   <int value="18" label="kTransactionDoPutInvalidIndexId"/>
