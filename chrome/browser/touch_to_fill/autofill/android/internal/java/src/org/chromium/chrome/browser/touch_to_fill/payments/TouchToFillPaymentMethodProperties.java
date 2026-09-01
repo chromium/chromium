@@ -434,7 +434,7 @@ final class TouchToFillPaymentMethodProperties {
         static final PropertyModel.ReadableIntPropertyKey TEXT_ID =
                 new PropertyModel.ReadableIntPropertyKey("text_id");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
-                new ReadableObjectPropertyKey<>("open_click_action");
+                new ReadableObjectPropertyKey<>("on_click_action");
 
         static final PropertyKey[] ALL_KEYS = {TEXT_ID, ON_CLICK_ACTION};
 
