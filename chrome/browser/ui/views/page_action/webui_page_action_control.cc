@@ -407,6 +407,11 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPointerDown() {
 
 void WebUIPageActionControl::WebUIPageActionDelegate::NotifyClick(
     PageActionTrigger trigger) {
+  // Ignore clicks received during shutdown.
+  if (!observation_.IsObserving() || !observation_.GetSource()->GetVisible()) {
+    return;
+  }
+
   const bool is_pointer_interaction = (trigger == PageActionTrigger::kMouse ||
                                        trigger == PageActionTrigger::kGesture);
   if (bubble_reopen_suppressor_.ShouldSuppressBubbleShow(

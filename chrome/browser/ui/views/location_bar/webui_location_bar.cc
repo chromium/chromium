@@ -844,6 +844,7 @@ void WebUILocationBar::SetSuppressionThresholdForTesting(
     base::TimeDelta threshold) {
   page_info_reopen_suppressor_.SetSuppressionThresholdForTesting(  // IN-TEST
       threshold);
+  page_action_control_.SetSuppressionThresholdForTesting(threshold);  // IN-TEST
 }
 
 void WebUILocationBar::OnLhsChipPointerEntered(

@@ -293,6 +293,9 @@ bool PageActionTestAccessor::IsAnimating() {
 }
 
 std::u16string PageActionTestAccessor::GetText() {
+  if (!IsChipVisible()) {
+    return std::u16string();
+  }
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
       return model->GetText();
@@ -399,6 +402,13 @@ void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
                          gfx::Point(), ui::EventTimeForNow(),
                          ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     views::test::ButtonTestApi(pav).NotifyClick(event);
+  }
+}
+
+void PageActionTestAccessor::SetSuppressionThreshold(
+    base::TimeDelta threshold) {
+  if (auto* const control = GetWebUIPageActionControl()) {
+    control->SetSuppressionThresholdForTesting(threshold);
   }
 }
 

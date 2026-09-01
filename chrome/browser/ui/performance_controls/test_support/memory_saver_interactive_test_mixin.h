@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/interactive_test.h"
 
 // Template to be used as a mixin class for memory saver tests extending
@@ -62,7 +63,13 @@ class MemorySaverInteractiveTestMixin : public MemorySaverBrowserTestMixin<T> {
                       // a tab being discarded while it is notifying its
                       // observers
         TryDiscardTab(tab_index), T::SelectTab(kTabStripElementId, tab_index),
-        T::WaitForShow(contents_id));
+        T::WaitForShow(contents_id),
+        // Wait for reload to commit, otherwise later steps (e.g. SendKeyPress)
+        // may hit old tab in the process of being discarded.
+        T::Do([=, this]() {
+          content::WaitForLoadStop(
+              MemorySaverBrowserTestMixin<T>::GetWebContentsAt(tab_index));
+        }));
   }
 };
 

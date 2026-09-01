@@ -55,6 +55,7 @@ class PageActionTestAccessor {
   ui::ImageModel GetImage();
   void Click(page_actions::PageActionTrigger trigger =
                  page_actions::PageActionTrigger::kMouse);
+  void SetSuppressionThreshold(base::TimeDelta threshold);
 
  private:
   page_actions::PageActionViewInterface* GetInterface();
