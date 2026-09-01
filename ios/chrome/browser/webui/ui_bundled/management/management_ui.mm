@@ -107,7 +107,7 @@ bool IsPageVisitEventEnabled(ConnectorsService* connectors_service) {
              connectors_service->GetAppliedRealTimeUrlCheck());
 }
 
-// Whether the "Security event occurs" event subsection under Chrome Enteprise
+// Whether the "Security event occurs" event subsection under Chrome Enterprise
 // Connectors should be displayed. This subsection is visible if Enterprise
 // Event Reporting is enabled.
 bool IsSecurityEventEnabled(ConnectorsService* connectors_service) {
