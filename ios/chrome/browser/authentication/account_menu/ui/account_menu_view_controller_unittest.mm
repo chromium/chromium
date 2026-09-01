@@ -362,12 +362,28 @@ TEST_F(AccountMenuViewControllerTest, TestSetError) {
       l10n_util::GetNSString(
           IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE),
       path_for_error_message);
+  UITableViewCell* error_message_cell = GetCell(path_for_error_message);
+  EXPECT_FALSE(error_message_cell.accessibilityElementsHidden);
+  EXPECT_TRUE(error_message_cell.isAccessibilityElement);
+  EXPECT_NSEQ(error_message_cell.accessibilityLabel,
+              l10n_util::GetNSString(
+                  IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE));
 
   NSIndexPath* path_for_error_button = [NSIndexPath indexPathForRow:1
                                                           inSection:0];
   ExpectTextAtPath(l10n_util::GetNSString(
                        IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON),
                    path_for_error_button);
+  UITableViewCell* error_button_cell = GetCell(path_for_error_button);
+  EXPECT_FALSE(error_button_cell.accessibilityElementsHidden);
+  EXPECT_TRUE(error_button_cell.isAccessibilityElement);
+  EXPECT_EQ(error_button_cell.accessibilityTraits, UIAccessibilityTraitButton);
+  EXPECT_NSEQ(error_button_cell.accessibilityLabel,
+              l10n_util::GetNSString(
+                  IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON));
+  EXPECT_NSEQ(error_button_cell.accessibilityUserInputLabels, @[
+    l10n_util::GetNSString(IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON)
+  ]);
 
   OCMExpect([mutator_ didTapErrorButton]);
   SelectCell(path_for_error_button);

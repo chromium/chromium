@@ -312,15 +312,18 @@ TEST_F(ManageSyncSettingsMediatorTest, TestSyncErrorsForSignedInAccount) {
                                        SyncErrorsSectionIdentifier];
 
   EXPECT_EQ(2UL, error_items.count);
-  EXPECT_NSEQ(
-      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0])
-          .detailText,
-      l10n_util::GetNSString(
-          IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE));
-  EXPECT_NSEQ(
-      base::apple::ObjCCastStrict<TableViewTextItem>(error_items[1]).text,
-      l10n_util::GetNSString(
-          IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON));
+  SettingsImageDetailTextItem* error_message_item =
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0]);
+  EXPECT_FALSE(error_message_item.accessibilityElementsHidden);
+  EXPECT_NSEQ(error_message_item.detailText,
+              l10n_util::GetNSString(
+                  IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE));
+  TableViewTextItem* error_button_item =
+      base::apple::ObjCCastStrict<TableViewTextItem>(error_items[1]);
+  EXPECT_NSEQ(error_button_item.text,
+              l10n_util::GetNSString(
+                  IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON));
+  EXPECT_NSEQ(error_button_item.accessibilityLabel, nil);
 }
 
 // Tests that a bookmarks limit exceeded error is displayed as a text button at

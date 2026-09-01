@@ -372,7 +372,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       base::apple::ObjCCastStrict<NSNumber>(itemIdentifier).integerValue);
   NSString* label = nil;
   NSString* accessibilityIdentifier = nil;
-  NSString* accessibilityLabel = nil;
   switch (rowIdentifier) {
     case RowIdentifierErrorExplanation: {
       return [self cellForErrorExplanationForTableView:tableView];
@@ -380,8 +379,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     case RowIdentifierErrorButton:
       label = l10n_util::GetNSString(
           self.dataSource.accountErrorUIInfo.buttonLabelID);
-      accessibilityLabel =
-          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
       accessibilityIdentifier = kAccountMenuErrorActionButtonId;
       break;
     case RowIdentifierAddAccount:
@@ -414,7 +411,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   cell.contentConfiguration = configuration;
   cell.accessibilityTraits = UIAccessibilityTraitButton;
   cell.isAccessibilityElement = YES;
-  cell.accessibilityLabel = accessibilityLabel ? accessibilityLabel : label;
+  cell.accessibilityLabel = label;
+  cell.accessibilityUserInputLabels = @[ label ];
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
 
@@ -516,7 +514,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
-  cell.accessibilityElementsHidden = YES;
   return cell;
 }
 

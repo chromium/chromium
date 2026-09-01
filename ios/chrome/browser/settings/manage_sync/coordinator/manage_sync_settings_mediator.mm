@@ -1199,15 +1199,13 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   syncErrorItem.image =
       SymbolWithPointSize(SymbolErrorCircleFill, kErrorSymbolPointSize);
   syncErrorItem.imageViewTintColor = [UIColor colorNamed:kRed500Color];
-  syncErrorItem.accessibilityElementsHidden = YES;
   return syncErrorItem;
 }
 
 // Creates an error action button item to handle the indicated sync error type
 // for signed in users.
 - (TableViewItem*)createSyncErrorButtonItemWithItemType:(NSInteger)itemType
-                                          buttonLabelID:(int)buttonLabelID
-                                              messageID:(int)messageID {
+                                          buttonLabelID:(int)buttonLabelID {
   CHECK((itemType == PrimaryAccountMdmErrorItemType) ||
         (itemType == PrimaryAccountReauthErrorItemType) ||
         (itemType == ShowPassphraseDialogErrorItemType) ||
@@ -1218,7 +1216,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   CHECK(self.accountStateSignedIn);
   TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:itemType];
   item.text = l10n_util::GetNSString(buttonLabelID);
-  item.accessibilityLabel = l10n_util::GetNSString(messageID);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   item.accessibilityIdentifier = kSyncErrorButtonIdentifier;
@@ -1305,8 +1302,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // 4. Construct and populate the error message and actionable button items.
   self.syncErrorItem =
       [self createSyncErrorButtonItemWithItemType:type.value()
-                                    buttonLabelID:errorUIInfo.buttonLabelID
-                                        messageID:errorUIInfo.messageID];
+                                    buttonLabelID:errorUIInfo.buttonLabelID];
   [model addItem:[self createSyncErrorMessageItem:errorUIInfo.messageID]
       toSectionWithIdentifier:SyncErrorsSectionIdentifier];
   [model addItem:self.syncErrorItem
