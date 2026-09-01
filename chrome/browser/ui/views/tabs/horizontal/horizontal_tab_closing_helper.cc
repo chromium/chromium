@@ -224,9 +224,16 @@ void HorizontalTabClosingHelper::OnChildWillBeRemoved(
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   int current_override =
       override_available_width_for_tabs_.value_or(GetUnpinnedContainerWidth());
-  int new_override = current_override - size_delta + tab_overlap;
 
-  SetOverrideAvailableWidth(std::max(0, new_override));
+  // When only one tab is present (or the container width is less than or equal
+  // to the removed tab's width), removing it removes no overlap, leaving 0
+  // width (avoiding leaving a residual `tab_overlap` remnant).
+  const int new_override =
+      current_override <= size_delta
+          ? 0
+          : std::max(0, current_override - size_delta + tab_overlap);
+
+  SetOverrideAvailableWidth(new_override);
 }
 
 void HorizontalTabClosingHelper::InvalidateLayout() {

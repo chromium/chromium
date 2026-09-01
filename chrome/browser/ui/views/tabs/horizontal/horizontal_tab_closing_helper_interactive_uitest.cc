@@ -26,6 +26,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view_utils.h"
 
 class HorizontalTabClosingHelperInteractiveUiTest
@@ -84,16 +85,44 @@ class HorizontalTabClosingHelperInteractiveUiTest
     return node ? views::AsViewClass<TabGroupView>(node->view()) : nullptr;
   }
 
+  void AddTabs(int count) {
+    for (int i = 0; i < count; ++i) {
+      CHECK(AddTabAtIndex(-1, GURL(url::kAboutBlankURL),
+                          ui::PAGE_TRANSITION_TYPED));
+    }
+  }
+
   void CreateConstrainedTabs(int min_tabs = 5) {
     SetWindowWidth(600);
     TabStripModel* model = browser()->tab_strip_model();
     while (model->count() < min_tabs) {
-      CHECK(AddTabAtIndex(-1, GURL(url::kAboutBlankURL),
-                          ui::PAGE_TRANSITION_TYPED));
+      AddTabs(1);
     }
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     if (browser_view && browser_view->GetWidget()) {
       browser_view->GetWidget()->LayoutRootViewIfNecessary();
+    }
+  }
+
+  bool IsUnpinnedContainerOverflowing() {
+    TabCollectionNode* unpinned_node = GetUnpinnedNode();
+    if (!unpinned_node || !unpinned_node->view()) {
+      return false;
+    }
+    views::ScrollView* scroll_view =
+        views::ScrollView::GetScrollViewForContents(unpinned_node->view());
+    return scroll_view && scroll_view->IsHorizontalContentOverflowing();
+  }
+
+  void CreateOverflowingTabs() {
+    SetWindowWidth(500);
+    TabStripModel* model = browser()->tab_strip_model();
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    while (!IsUnpinnedContainerOverflowing() && model->count() < 100) {
+      AddTabs(10);
+      if (browser_view && browser_view->GetWidget()) {
+        browser_view->GetWidget()->LayoutRootViewIfNecessary();
+      }
     }
   }
 
@@ -103,6 +132,8 @@ class HorizontalTabClosingHelperInteractiveUiTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
 // Stays in closing mode and locks tab widths while tabs are below standard
@@ -176,6 +207,11 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
 
         controller->CloseTab(model->GetTabAtIndex(model->count() - 1),
                              CloseTabSource::kFromMouse);
+
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        if (browser_view && browser_view->GetWidget()) {
+          browser_view->GetWidget()->LayoutRootViewIfNecessary();
+        }
 
         EXPECT_TRUE(helper->in_tab_close());
         EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
@@ -368,4 +404,98 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
 
                     EXPECT_FALSE(helper->in_tab_close());
                   }));
+}
+
+// When tabs are overflowing into a scroll view, closing a tab keeps the visible
+// container full and does not shrink the visible container bounds.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingTabWhenOverflowingMaintainsContainerSize) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() { CreateOverflowingTabs(); }), Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        TabCollectionNode* unpinned = GetUnpinnedNode();
+        ASSERT_NE(unpinned, nullptr);
+        ASSERT_FALSE(unpinned->children().empty());
+
+        auto* unpinned_container =
+            views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
+        ASSERT_NE(unpinned_container, nullptr);
+        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
+                        .has_value());
+        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
+                        ->is_bounded());
+
+        const int initial_available_space =
+            unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
+        const int initial_tab_width = unpinned->children()[0]->view()->width();
+
+        // Close a middle tab.
+        controller->CloseTab(model->GetTabAtIndex(2),
+                             CloseTabSource::kFromMouse);
+
+        // The override available width reflects total tab content width and
+        // remains larger than the visible container so scroll buttons remain.
+        EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
+        if (helper->override_available_width_for_tabs().has_value()) {
+          EXPECT_GT(helper->override_available_width_for_tabs().value(),
+                    initial_available_space);
+        }
+        // The container maintains its overflowing state and visible bounds.
+        EXPECT_TRUE(IsUnpinnedContainerOverflowing());
+        // Remaining tabs should maintain their width without expanding.
+        EXPECT_EQ(unpinned->children()[0]->view()->width(), initial_tab_width);
+      }));
+}
+
+// When closing tabs causes the strip to transition from overflowing to
+// non-overflowing, tab closing mode keeps tabs at their frozen size and
+// sets the override width to the exact remaining tabs' width.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingTabTransitioningFromOverflowShrinksPartially) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() { CreateOverflowingTabs(); }), Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        TabCollectionNode* unpinned = GetUnpinnedNode();
+        ASSERT_NE(unpinned, nullptr);
+        ASSERT_FALSE(unpinned->children().empty());
+
+        auto* unpinned_container =
+            views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
+        ASSERT_NE(unpinned_container, nullptr);
+        ASSERT_TRUE(unpinned_container->available_space().is_bounded());
+
+        const int available_space =
+            unpinned_container->available_space().value();
+        const int initial_tab_width = unpinned->children()[0]->view()->width();
+
+        // Close tabs until the container transitions to non-overflowing.
+        while (model->count() > 1 && IsUnpinnedContainerOverflowing()) {
+          controller->CloseTab(model->GetTabAtIndex(1),
+                               CloseTabSource::kFromMouse);
+          auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+          if (browser_view && browser_view->GetWidget()) {
+            browser_view->GetWidget()->LayoutRootViewIfNecessary();
+          }
+        }
+
+        EXPECT_TRUE(helper->in_tab_close());
+        EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
+        if (helper->override_available_width_for_tabs().has_value()) {
+          EXPECT_LE(helper->override_available_width_for_tabs().value(),
+                    available_space);
+        }
+
+        // Remaining tabs stay at their exact initial width without expanding.
+        EXPECT_EQ(unpinned->children()[0]->view()->width(), initial_tab_width);
+      }));
 }

@@ -281,17 +281,15 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateHorizontalMinimumSize(
 
   int min_width = 0;
   std::vector<const views::View*> visible_children;
-  if (tab_container_view->collection_node_) {
-    std::optional<tab_groups::TabGroupId> focused_group_id =
-        GetFocusedGroupId(tab_container_view);
+  std::optional<tab_groups::TabGroupId> focused_group_id =
+      GetFocusedGroupId(tab_container_view);
 
-    for (const auto* child :
-         tab_container_view->collection_node_->GetDirectChildren()) {
-      if (IsChildVisibleInContainer(tab_container_view, focused_group_id,
-                                    child)) {
-        min_width += child->GetMinimumSize().width();
-        visible_children.push_back(child);
-      }
+  for (const auto* child :
+       tab_container_view->collection_node_->GetDirectChildren()) {
+    if (IsChildVisibleInContainer(tab_container_view, focused_group_id,
+                                  child)) {
+      min_width += child->GetMinimumSize().width();
+      visible_children.push_back(child);
     }
   }
   int overlap_total = 0;
@@ -300,6 +298,7 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateHorizontalMinimumSize(
         GetChildOverlap(visible_children[i], visible_children[i + 1]);
   }
   min_width = std::max(0, min_width - overlap_total);
+
   return gfx::Size(min_width, TabStyle::Get()->GetStandardHeight());
 }
 

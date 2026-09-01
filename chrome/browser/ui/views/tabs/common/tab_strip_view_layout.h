@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_STRIP_VIEW_LAYOUT_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_STRIP_VIEW_LAYOUT_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "ui/views/layout/layout_manager_base.h"
 
@@ -35,6 +37,9 @@ class TabStripViewLayout : public views::LayoutManagerBase {
   views::ProposedLayout CalculateVerticalLayout(
       const TabStripView* tab_strip_view,
       const views::SizeBounds& size_bounds) const;
+
+  std::optional<int> GetClosingModeUnpinnedContainerOverrideWidth(
+      const TabStripView* tab_strip_view) const;
 
   const TabStripOrientation orientation_;
 };
