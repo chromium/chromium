@@ -1,0 +1,17 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# A list of targets for which strict_deps is not yet supported.
+STRICT_DEPS_EXCLUDE = [
+  # keep-sorted: start
+  "//*",
+  # keep-sorted: end
+]
+
+# A list of directories for which strict_deps is explicitly supported.
+# Overrides STRICT_DEPS_EXCLUDE.
+STRICT_DEPS_INCLUDE = [
+  # keep-sorted: start
+  # keep-sorted: end
+]

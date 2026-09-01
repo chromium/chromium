@@ -189,6 +189,8 @@ declare_args() {
   rust_clippy_conf_file = ""
 }
 
+import("//build/strict_deps_failures.gni")
+
 declare_args() {
   # Whether to enable strict deps checks. This ensures that your dependencies
   # are correctly declared (no missing deps and no accessing transitive deps).
@@ -617,6 +619,13 @@ foreach(_target_type,
         strict_deps = enable_strict_deps
       }
 
+      if (!defined(check_includes_strict)) {
+        _current_label = get_label_info(":$target_name", "label_no_toolchain")
+        check_includes_strict =
+            filter_include([ _current_label ], STRICT_DEPS_EXCLUDE) == [] ||
+            filter_include([ _current_label ], STRICT_DEPS_INCLUDE) != []
+      }
+
       if (use_libcxx_modules && is_clang) {
         if (strict_deps) {
           configs += [ "//build/modules:strict_deps" ]
@@ -751,6 +760,13 @@ foreach(_target_type,
 
       if (!defined(strict_deps)) {
         strict_deps = enable_strict_deps
+      }
+
+      if (!defined(check_includes_strict)) {
+        _current_label = get_label_info(":$target_name", "label_no_toolchain")
+        check_includes_strict =
+            filter_include([ _current_label ], STRICT_DEPS_EXCLUDE) == [] ||
+            filter_include([ _current_label ], STRICT_DEPS_INCLUDE) != []
       }
 
       if (use_libcxx_modules && is_clang) {

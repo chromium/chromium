@@ -37,3 +37,11 @@ per-file OWNERS.setnoparent=set noparent
 per-file OWNERS.setnoparent=file://ATL_OWNERS
 
 per-file nocompile.gni=file://tools/nocompile/OWNERS
+
+# The people working on strict deps need to be notified of any new exceptions.
+# They can also advise on the best way to resolve strict deps issues.
+per-file strict_deps_failures.gni=set noparent
+per-file strict_deps_failures.gni=jwata@google.com
+per-file strict_deps_failures.gni=msta@google.com
+per-file strict_deps_failures.gni=rysk@google.com
+per-file strict_deps_failures.gni=tikuta@google.com
