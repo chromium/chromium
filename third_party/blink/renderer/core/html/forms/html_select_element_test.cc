@@ -1630,5 +1630,83 @@ TEST_F(HTMLSelectElementTest,
   test::RunPendingTasks();
 }
 
+// Autofilling or suggesting an option which is not associated with the select
+// must be a no-op. This mimics autofill holding on to an option element across
+// script execution which removes it from the select: selecting such an option
+// would mark a detached option as selected while SelectedOption() returns
+// nullptr. Regression test for crbug.com/535975677.
+TEST_F(HTMLSelectElementTest, AutofillingUnownedOptionIsIgnored) {
+  SetHtmlInnerHTML(R"HTML(
+    <select id=main>
+      <option id=o1 value=first>First</option>
+      <option id=o2 value=second>Second</option>
+    </select>
+    <select id=other>
+      <option id=foreign value=foreign>Foreign</option>
+    </select>
+  )HTML");
+  auto* select = To<HTMLSelectElement>(GetElementById("main"));
+  auto* option1 = To<HTMLOptionElement>(GetElementById("o1"));
+  auto* option2 = To<HTMLOptionElement>(GetElementById("o2"));
+  auto* foreign_option = To<HTMLOptionElement>(GetElementById("foreign"));
+  ASSERT_EQ(select->SelectedOption(), option1);
+
+  // Autofilling an option which was removed from the select is ignored.
+  option2->remove();
+  select->SetAutofillOption(option2, WebAutofillState::kAutofilled);
+  EXPECT_FALSE(option2->Selected());
+  EXPECT_EQ(select->SelectedOption(), option1);
+  EXPECT_FALSE(select->IsAutofilled());
+
+  // Autofilling an option which belongs to another select is ignored: both
+  // selects keep their selection. Note that `foreign_option` is its own
+  // select's default-selected option.
+  auto* other_select = To<HTMLSelectElement>(GetElementById("other"));
+  ASSERT_EQ(other_select->SelectedOption(), foreign_option);
+  select->SetAutofillOption(foreign_option, WebAutofillState::kAutofilled);
+  EXPECT_EQ(select->SelectedOption(), option1);
+  EXPECT_EQ(other_select->SelectedOption(), foreign_option);
+  EXPECT_FALSE(select->IsAutofilled());
+
+  // Suggesting (previewing) such options is ignored, too.
+  select->SetSuggestedOption(option2);
+  EXPECT_EQ(select->SuggestedValue(), "");
+  select->SetSuggestedOption(foreign_option);
+  EXPECT_EQ(select->SuggestedValue(), "");
+
+  // Re-inserting the option makes it autofillable again.
+  select->AppendChild(option2);
+  select->SetAutofillOption(option2, WebAutofillState::kAutofilled);
+  EXPECT_TRUE(option2->Selected());
+  EXPECT_EQ(select->SelectedOption(), option2);
+  EXPECT_TRUE(select->IsAutofilled());
+}
+
+// CloneContentsFromOptionElement() must tolerate an option element which has
+// no owner select, e.g. an option which a caller resolved and script then
+// removed from its select. Regression test for crbug.com/535975677.
+TEST_F(HTMLSelectElementTest, SelectedcontentClonesFromUnownedOption) {
+  SetHtmlInnerHTML(R"HTML(
+    <select id=main>
+      <button><selectedcontent id=sc></selectedcontent></button>
+      <option id=o1>First</option>
+    </select>
+  )HTML");
+  auto* selectedcontent = To<HTMLSelectedContentElement>(GetElementById("sc"));
+  auto* option = To<HTMLOptionElement>(GetElementById("o1"));
+  ASSERT_FALSE(selectedcontent->IsDisabled());
+
+  // The contents of the default-selected option were cloned on insertion.
+  EXPECT_EQ(selectedcontent->textContent(), "First");
+
+  // Removing the option from the select clears the option's owner select.
+  option->remove();
+  ASSERT_EQ(option->OwnerSelectElement(), nullptr);
+  option->setTextContent("Second");
+
+  // Cloning directly from the now-unowned option must not crash.
+  selectedcontent->CloneContentsFromOptionElement(option);
+  EXPECT_EQ(selectedcontent->textContent(), "Second");
+}
 
 }  // namespace blink
