@@ -73,7 +73,7 @@ namespace {
 
 user_education::TutorialService* GetTutorialService(Profile* profile) {
   auto* service = UserEducationServiceFactory::GetForBrowserContext(profile);
-  return service ? &service->tutorial_service() : nullptr;
+  return service ? service->tutorial_service() : nullptr;
 }
 
 user_education::FeaturePromoRegistry* GetFeaturePromoRegistry(

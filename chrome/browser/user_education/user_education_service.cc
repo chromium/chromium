@@ -12,6 +12,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/user_education/browser_tutorial_service.h"
 #include "chrome/browser/user_education/recent_session_tracker.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -20,13 +21,13 @@
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/new_badge/new_badge_policy.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/product_messaging/product_messaging_policy_impl.h"
 
 UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
     : profile_(*profile),
-      tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_),
       user_education_storage_service_(
           std::make_unique<BrowserUserEducationStorageService>(profile)),
       feature_promo_session_policy_(
@@ -38,6 +39,8 @@ UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
       user_education::ProductMessagingPolicyImpl::CreateDefault());
 
   if (allows_promos) {
+    tutorial_service_ = std::make_unique<BrowserTutorialService>(
+        &tutorial_registry_, &help_bubble_factory_registry_);
     new_badge_registry_ = std::make_unique<user_education::NewBadgeRegistry>();
     new_badge_controller_ =
         std::make_unique<user_education::NewBadgeControllerImpl>(

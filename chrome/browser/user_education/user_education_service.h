@@ -39,6 +39,12 @@ namespace web_app {
 class WebAppUiManagerImpl;
 }
 
+// Provides a set of User Education services and controllers for Desktop Chrome.
+//
+// Not all services and controllers are available in all profiles; some
+// off-the-record profiles do not support IPH, tutorials, etc. Members returned
+// by reference are always present; members returned by pointer may be null for
+// some profiles.
 class UserEducationService : public KeyedService {
  public:
   explicit UserEducationService(Profile* profile, bool allows_promos);
@@ -47,8 +53,8 @@ class UserEducationService : public KeyedService {
   user_education::TutorialRegistry& tutorial_registry() {
     return tutorial_registry_;
   }
-  user_education::TutorialService& tutorial_service() {
-    return tutorial_service_;
+  user_education::TutorialService* tutorial_service() {
+    return tutorial_service_.get();
   }
   user_education::HelpBubbleFactoryRegistry& help_bubble_factory_registry() {
     return help_bubble_factory_registry_;
@@ -148,10 +154,10 @@ class UserEducationService : public KeyedService {
   friend class UserEducationServiceFactory;
 
   const raw_ref<Profile> profile_;
-  user_education::TutorialRegistry tutorial_registry_;
   user_education::HelpBubbleFactoryRegistry help_bubble_factory_registry_;
   user_education::FeaturePromoRegistry feature_promo_registry_;
-  BrowserTutorialService tutorial_service_;
+  user_education::TutorialRegistry tutorial_registry_;
+  std::unique_ptr<user_education::TutorialService> tutorial_service_;
   std::unique_ptr<BrowserUserEducationStorageService>
       user_education_storage_service_;
   user_education::UserEducationSessionManager user_education_session_manager_;

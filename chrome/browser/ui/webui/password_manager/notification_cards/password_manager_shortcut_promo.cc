@@ -41,7 +41,7 @@ bool PasswordManagerShortcutPromo::ShouldShowCard(
 
   auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
   if (service) {
-    auto* tutorial_service = &service->tutorial_service();
+    auto* tutorial_service = service->tutorial_service();
     if (tutorial_service && tutorial_service->IsRunningTutorial()) {
       return false;
     }

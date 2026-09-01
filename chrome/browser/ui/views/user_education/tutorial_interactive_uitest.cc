@@ -224,9 +224,9 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
 
  protected:
   TutorialService* GetTutorialService() {
-    return &UserEducationServiceFactory::GetForBrowserContext(
-                browser()->GetProfile())
-                ->tutorial_service();
+    return UserEducationServiceFactory::GetForBrowserContext(
+               browser()->GetProfile())
+        ->tutorial_service();
   }
 
   TutorialDescription GetDefaultTutorialDescription() {

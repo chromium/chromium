@@ -23,6 +23,7 @@ IN_PROC_BROWSER_TEST_F(UserEducationServiceBrowserTest, TestServicePresent) {
   EXPECT_NE(nullptr, service->new_badge_registry());
   EXPECT_NE(nullptr, service->ntp_promo_controller());
   EXPECT_NE(nullptr, service->ntp_promo_registry());
+  EXPECT_NE(nullptr, service->tutorial_service());
 }
 
 IN_PROC_BROWSER_TEST_F(UserEducationServiceBrowserTest,
@@ -36,6 +37,7 @@ IN_PROC_BROWSER_TEST_F(UserEducationServiceBrowserTest,
   EXPECT_EQ(nullptr, service->new_badge_registry());
   EXPECT_EQ(nullptr, service->ntp_promo_controller());
   EXPECT_EQ(nullptr, service->ntp_promo_registry());
+  EXPECT_EQ(nullptr, service->tutorial_service());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -277,7 +277,7 @@ void BrowserCommandHandler::StartTutorial(StartTutorialInPage::Params params) {
 
 bool BrowserCommandHandler::TutorialServiceExists() {
   auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
-  auto* tutorial_service = service ? &service->tutorial_service() : nullptr;
+  auto* tutorial_service = service ? service->tutorial_service() : nullptr;
   return !!tutorial_service;
 }
 

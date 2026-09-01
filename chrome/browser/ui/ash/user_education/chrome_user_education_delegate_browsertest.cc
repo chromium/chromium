@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(ChromeUserEducationDelegateBrowserTest,
                                std::move(tutorial_description));
 
   // Verify the tutorial is not running.
-  user_education::TutorialService& tutorial_service =
+  user_education::TutorialService* tutorial_service =
       UserEducationServiceFactory::GetForBrowserContext(profile())
           ->tutorial_service();
   EXPECT_FALSE(delegate()->IsRunningTutorial(account_id()));
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ChromeUserEducationDelegateBrowserTest,
       aborted_callback.Get());
 
   // Confirm the tutorial is running.
-  EXPECT_TRUE(tutorial_service.IsRunningTutorial());
+  EXPECT_TRUE(tutorial_service->IsRunningTutorial());
 
   // Verify the running tutorial's ID.
   EXPECT_TRUE(
@@ -219,10 +219,10 @@ IN_PROC_BROWSER_TEST_F(ChromeUserEducationDelegateBrowserTest,
                                std::move(tutorial_description));
 
   // Verify the tutorial is not running.
-  user_education::TutorialService& tutorial_service =
+  user_education::TutorialService* tutorial_service =
       UserEducationServiceFactory::GetForBrowserContext(profile())
           ->tutorial_service();
-  EXPECT_FALSE(tutorial_service.IsRunningTutorial(kTestTutorialIdString));
+  EXPECT_FALSE(tutorial_service->IsRunningTutorial(kTestTutorialIdString));
 
   // Attempt to start the tutorial.
   delegate()->StartTutorial(account_id(), ash::TutorialId::kTest1,
@@ -231,17 +231,17 @@ IN_PROC_BROWSER_TEST_F(ChromeUserEducationDelegateBrowserTest,
                             /*aborted_callback=*/base::DoNothing());
 
   // Confirm the tutorial is running.
-  EXPECT_TRUE(tutorial_service.IsRunningTutorial(kTestTutorialIdString));
+  EXPECT_TRUE(tutorial_service->IsRunningTutorial(kTestTutorialIdString));
 
   // Abort the tutorial with the incorrect id, and expect the tutorial to still
   // be running.
   delegate()->AbortTutorial(account_id(), ash::TutorialId::kTest2);
-  EXPECT_TRUE(tutorial_service.IsRunningTutorial(kTestTutorialIdString));
+  EXPECT_TRUE(tutorial_service->IsRunningTutorial(kTestTutorialIdString));
 
   // Abort the tutorial with the correct id, and expect no tutorial to be
   // running.
   delegate()->AbortTutorial(account_id(), ash::TutorialId::kTest1);
-  EXPECT_FALSE(tutorial_service.IsRunningTutorial());
+  EXPECT_FALSE(tutorial_service->IsRunningTutorial());
 }
 
 namespace {

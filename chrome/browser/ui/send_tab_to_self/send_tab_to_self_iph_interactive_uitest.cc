@@ -100,9 +100,9 @@ class SendTabToSelfTutorialInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   user_education::TutorialService* GetTutorialService() {
-    return &UserEducationServiceFactory::GetForBrowserContext(
-                browser()->GetProfile())
-                ->tutorial_service();
+    return UserEducationServiceFactory::GetForBrowserContext(
+               browser()->GetProfile())
+        ->tutorial_service();
   }
 
   // Starts the Send Tab to Self tutorial with optional callbacks.

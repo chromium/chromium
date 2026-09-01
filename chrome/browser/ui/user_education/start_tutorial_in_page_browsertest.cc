@@ -107,8 +107,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
   UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
 
   TutorialService& tutorial_service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
-          ->tutorial_service();
+      *UserEducationServiceFactory::GetForBrowserContext(
+           browser()->GetProfile())
+           ->tutorial_service();
 
   base::WeakPtr<StartTutorialInPage> handle;
   base::RunLoop run_loop;
@@ -148,8 +149,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest, StartTutorialInNewTab) {
   UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
 
   TutorialService& tutorial_service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
-          ->tutorial_service();
+      *UserEducationServiceFactory::GetForBrowserContext(
+           browser()->GetProfile())
+           ->tutorial_service();
 
   base::WeakPtr<StartTutorialInPage> handle;
   base::RunLoop run_loop;
@@ -193,8 +195,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
   UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
 
   TutorialService& tutorial_service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
-          ->tutorial_service();
+      *UserEducationServiceFactory::GetForBrowserContext(
+           browser()->GetProfile())
+           ->tutorial_service();
 
   base::WeakPtr<StartTutorialInPage> handle;
   base::RunLoop run_loop;

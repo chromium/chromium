@@ -1219,6 +1219,8 @@ void FeaturePromoControllerImpl::OnTutorialStarted(
   tutorial_promo_handle_ = CloseBubbleAndContinuePromoWithReason(
       *iph_feature, FeaturePromoClosedReason::kAction);
   DCHECK(tutorial_promo_handle_.is_valid());
+  CHECK(tutorial_service_) << "Attempted to start a tutorial IPH in a context "
+                              "with no tutorial service.";
   if (auto actual_context = ResolveContext(context, bubble_context)) {
     tutorial_service_->StartTutorial(
         tutorial_id, context->GetElementContext(),

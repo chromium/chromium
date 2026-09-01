@@ -712,7 +712,7 @@ void MaybeRegisterChromeFeaturePromos(
                     UserEducationServiceFactory::GetForBrowserContext(
                         browser->GetProfile());
                 user_education::TutorialService* tutorial_service =
-                    service ? &service->tutorial_service() : nullptr;
+                    service ? service->tutorial_service() : nullptr;
                 if (!tutorial_service) {
                   return;
                 }
@@ -2804,7 +2804,7 @@ CreateUserEducationResources(UserEducationService& user_education_service) {
       &user_education_service.help_bubble_factory_registry(),
       &user_education_service.user_education_storage_service(),
       &user_education_service.feature_promo_session_policy(),
-      &user_education_service.tutorial_service(),
+      user_education_service.tutorial_service(),
       user_education_service.product_messaging_controller());
   result->Init();
   return result;

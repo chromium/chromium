@@ -138,9 +138,9 @@ void ChromeUserEducationDelegate::StartTutorial(
   CHECK(IsPrimaryProfile(profile));
   UserEducationServiceFactory::GetForBrowserContext(profile)
       ->tutorial_service()
-      .StartTutorial(ash::user_education_util::ToString(tutorial_id),
-                     std::move(element_context), std::move(completed_callback),
-                     std::move(aborted_callback));
+      ->StartTutorial(ash::user_education_util::ToString(tutorial_id),
+                      std::move(element_context), std::move(completed_callback),
+                      std::move(aborted_callback));
 }
 
 void ChromeUserEducationDelegate::AbortTutorial(
@@ -151,10 +151,10 @@ void ChromeUserEducationDelegate::AbortTutorial(
   auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
 
-  auto& tutorial_service =
+  auto* tutorial_service =
       UserEducationServiceFactory::GetForBrowserContext(profile)
           ->tutorial_service();
-  tutorial_service.CancelTutorialIfRunning(ToString(tutorial_id));
+  tutorial_service->CancelTutorialIfRunning(ToString(tutorial_id));
 }
 
 void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
@@ -179,7 +179,7 @@ bool ChromeUserEducationDelegate::IsRunningTutorial(
   return UserEducationServiceFactory::GetForBrowserContext(
              GetProfile(account_id))
       ->tutorial_service()
-      .IsRunningTutorial(ToString(tutorial_id));
+      ->IsRunningTutorial(ToString(tutorial_id));
 }
 
 void ChromeUserEducationDelegate::OnUserProfileCreated(

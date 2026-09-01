@@ -1075,9 +1075,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerTrackerInitializedTest,
   waiter.Wait();
 
   // We should be running the tutorial now.
-  auto& tutorial_service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
-          ->tutorial_service();
+  auto& tutorial_service = *UserEducationServiceFactory::GetForBrowserContext(
+                                browser()->GetProfile())
+                                ->tutorial_service();
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
   tutorial_service.CancelTutorialIfRunning();
 }

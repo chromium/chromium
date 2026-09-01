@@ -81,7 +81,7 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
           UserEducationServiceFactory::GetForBrowserContext(
               browser_->GetProfile());
       if (service) {
-        return &service->tutorial_service();
+        return service->tutorial_service();
       }
     }
     return nullptr;

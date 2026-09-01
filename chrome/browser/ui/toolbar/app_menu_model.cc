@@ -1342,8 +1342,9 @@ AlertMenuItem AppMenuModel::GetAlertItemForRunningTutorial(
   }
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(browser->GetProfile());
-  return service && service->tutorial_service().IsRunningTutorial(
-                        kPasswordManagerTutorialId)
+  return service && service->tutorial_service() &&
+                 service->tutorial_service()->IsRunningTutorial(
+                     kPasswordManagerTutorialId)
              ? AlertMenuItem::kPasswordManager
              : AlertMenuItem::kNone;
 }

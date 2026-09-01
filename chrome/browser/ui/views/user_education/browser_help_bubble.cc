@@ -210,7 +210,9 @@ void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
         ->DismissNonCriticalBubbleInRegion(bounds_in_screen);
   }
 
-  service->tutorial_service().DismissBubbleInRegion(bounds_in_screen);
+  if (auto* const tutorials = service->tutorial_service()) {
+    tutorials->DismissBubbleInRegion(bounds_in_screen);
+  }
 }
 
 // static

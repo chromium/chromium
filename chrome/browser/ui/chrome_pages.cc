@@ -555,7 +555,7 @@ void ShowPasswordManager(BrowserWindowInterface* bwi) {
   auto* service =
       UserEducationServiceFactory::GetForBrowserContext(bwi->GetProfile());
   if (service) {
-    auto* tutorial_service = &service->tutorial_service();
+    auto* tutorial_service = service->tutorial_service();
     if (tutorial_service &&
         tutorial_service->IsRunningTutorial(kPasswordManagerTutorialId)) {
       ShowSingletonTab(bwi, GURL(kChromeUIPasswordManagerSettingsURL));
