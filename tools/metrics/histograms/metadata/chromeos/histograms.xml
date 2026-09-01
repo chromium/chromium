@@ -1164,7 +1164,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CountryCode.MissingVariationData"
-    enum="ChromeOSFallbackCountry" expires_after="2026-11-29">
+    enum="ChromeOSFallbackCountry" expires_after="2027-02-28">
   <owner>cschlosser@chromium.org</owner>
   <owner>chromeos-privacyhub@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -1229,7 +1229,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CWP.ParseCPUFrequencies"
-    enum="ChromeOSParseCPUFrequencyStatus" expires_after="2026-12-20">
+    enum="ChromeOSParseCPUFrequencyStatus" expires_after="2027-02-28">
   <owner>gmx@chromium.org</owner>
   <owner>cwp-team@google.com</owner>
   <summary>

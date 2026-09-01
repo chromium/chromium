@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2026-12-27">
+    units="dBFS (negated)" expires_after="2027-02-28">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.LifetimeInSeconds" units="seconds"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>asapersson@chromium.org</owner>
   <summary>
     The lifetime of a call. Recorded when a Call instance is destroyed.
@@ -1563,7 +1563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
-    enum="PeerConnectionProvisionalAnswer" expires_after="2026-12-30">
+    enum="PeerConnectionProvisionalAnswer" expires_after="2027-02-28">
   <owner>danilchap@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1790,7 +1790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidIceChars" enum="Boolean"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>danilchap@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -1891,7 +1891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FullScreenDetectorResult"
-    enum="FullScreenDetectorResult" expires_after="2026-12-20">
+    enum="FullScreenDetectorResult" expires_after="2027-02-28">
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
@@ -4144,7 +4144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Api" enum="WebRtcEventLoggingApiEnum"
-    expires_after="2026-11-06">
+    expires_after="2027-02-28">
   <owner>eladalon@chromium.org</owner>
   <owner>philipel@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -4156,7 +4156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.NetError" units="units"
-    expires_after="2026-11-06">
+    expires_after="2027-02-28">
   <owner>eladalon@chromium.org</owner>
   <owner>manj@google.com</owner>
   <owner>dmitriyg@google.com</owner>
@@ -4169,7 +4169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Upload" enum="WebRtcEventLoggingUploadEnum"
-    expires_after="2026-11-06">
+    expires_after="2027-02-28">
   <owner>eladalon@chromium.org</owner>
   <owner>manj@google.com</owner>
   <owner>dmitriyg@google.com</owner>
@@ -4204,7 +4204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.StartCalled" enum="Boolean"
-    expires_after="2026-11-06">
+    expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -4216,7 +4216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.Started" enum="WebRtcLoggingWebAppIdHash"
-    expires_after="2026-11-06">
+    expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -4227,7 +4227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.StartError"
-    enum="WebRtcTextLoggingStartError" expires_after="2026-11-06">
+    enum="WebRtcTextLoggingStartError" expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>

@@ -419,7 +419,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups2.Total{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2026-11-29">
+    units="WakeupsPerSecond" expires_after="2027-02-28">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1573,7 +1573,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1710,7 +1710,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxVoltage" units="V"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1756,7 +1756,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.ShutdownReason" enum="ShutdownReason"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>mqg@chromium.org</owner>
   <owner>sammc@chromium.org</owner>
   <owner>chromeos-power-team@google.com</owner>

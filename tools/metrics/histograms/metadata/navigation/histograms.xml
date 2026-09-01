@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.CCNS.CookieChangeCause"
-    enum="CookieChangeCause" expires_after="2026-12-27">
+    enum="CookieChangeCause" expires_after="2027-02-28">
   <owner>leimy@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.CCNS.JSNetworkRequestIncludesCredentials"
-    enum="Boolean" expires_after="2026-12-27">
+    enum="Boolean" expires_after="2027-02-28">
   <owner>leimy@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -683,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Restore.NavigationToFirstPaint" units="ms"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -696,7 +696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.RestoredNavigationDirection"
-    enum="HistoryNavigationDirection" expires_after="2026-12-27">
+    enum="HistoryNavigationDirection" expires_after="2027-02-28">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1323,7 +1323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.CacheHitOrMissReason"
-    enum="NavigationTransitionCacheHitOrMissReason" expires_after="2026-12-20">
+    enum="NavigationTransitionCacheHitOrMissReason" expires_after="2027-02-28">
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -3672,7 +3672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation{Initiator}.DuplicateNavCookieStatus"
-    enum="DuplicateNavsCookieStatus" expires_after="2026-12-20">
+    enum="DuplicateNavsCookieStatus" expires_after="2027-02-28">
   <owner>annasato@google.com</owner>
   <owner>rakina@google.com</owner>
   <owner>chrome-navigation@google.com</owner>
@@ -3941,7 +3941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Prerender.Experimental.PredictionStatus.DefaultSearchEngine"
-    enum="PrerenderPredictionStatus" expires_after="2026-12-27">
+    enum="PrerenderPredictionStatus" expires_after="2027-02-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

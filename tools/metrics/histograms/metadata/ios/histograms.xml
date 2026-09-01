@@ -487,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.AutoDeletion.ServiceFileRemovalFailure"
-    enum="AutoDeletionServiceFileRemovalFailureType" expires_after="2026-11-15">
+    enum="AutoDeletionServiceFileRemovalFailureType" expires_after="2027-02-28">
   <owner>danieltwhite@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -498,7 +498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.BGTaskSchedulerError"
-    enum="BGTaskSchedulerErrorType" expires_after="2026-12-20">
+    enum="BGTaskSchedulerErrorType" expires_after="2027-02-28">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.ExecutionDuration.Timeout" units="ms"
-    expires_after="2026-12-20">
+    expires_after="2027-02-28">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -542,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.InitStage"
-    enum="InitStageDuringBackgroundRefreshType" expires_after="2026-12-20">
+    enum="InitStageDuringBackgroundRefreshType" expires_after="2027-02-28">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.StartupWait.Completed" units="ms"
-    expires_after="2026-12-20">
+    expires_after="2027-02-28">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -1376,7 +1376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CrossPlatformPromos.PushNotification.Interaction"
-    enum="IOSCrossPlatformPromoType" expires_after="2026-11-19">
+    enum="IOSCrossPlatformPromoType" expires_after="2027-02-28">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -1508,7 +1508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2026-12-27">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2027-02-28">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1518,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoStaySafe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2026-12-27">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2027-02-28">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1965,7 +1965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DocumentDownload.FinalState" enum="DocumentDownloadState"
-    expires_after="2026-12-28">
+    expires_after="2027-02-28">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -1973,7 +1973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DocumentDownload.MimeType" enum="DownloadMimeTypeResult"
-    expires_after="2026-12-28">
+    expires_after="2027-02-28">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -3704,7 +3704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Background.UserUploaded.Outcome"
-    enum="IOSBackgroundSelectionOutcome" expires_after="2026-12-16">
+    enum="IOSBackgroundSelectionOutcome" expires_after="2027-02-28">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3859,7 +3859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IncognitoLockOverlayInteraction"
-    enum="IncognitoLockOverlayInteractionType" expires_after="2026-12-27">
+    enum="IncognitoLockOverlayInteractionType" expires_after="2027-02-28">
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -6295,7 +6295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.LifecyleEvents"
-    enum="PushNotificationLifecycleEvent" expires_after="2026-12-28">
+    enum="PushNotificationLifecycleEvent" expires_after="2027-02-28">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -6346,7 +6346,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToDenied"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>ioanabalas@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -7866,7 +7866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Start.Impression" enum="IOSNTPImpressionType"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

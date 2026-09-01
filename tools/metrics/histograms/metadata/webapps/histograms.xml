@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
-    expires_after="2026-11-29">
+    expires_after="2027-02-28">
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1958,7 +1958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.UpdateSuccess" enum="BooleanSuccess"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
@@ -1972,7 +1972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
-    expires_after="2026-11-15">
+    expires_after="2027-02-28">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1993,7 +1993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchSource" enum="LaunchSource"
-    expires_after="2026-12-20">
+    expires_after="2027-02-28">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2210,7 +2210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Migrations.ShortcutAppsToDiy2" units="count"
-    expires_after="2026-12-19">
+    expires_after="2027-02-28">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2290,7 +2290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Webapp.NavigationCapturing.LaunchParamsConsumedTime.{DidNavigate}"
-    units="ms" expires_after="2026-12-06">
+    units="ms" expires_after="2027-02-28">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -2326,7 +2326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.Result"
-    enum="NavigationCapturingResult" expires_after="2026-12-27">
+    enum="NavigationCapturingResult" expires_after="2027-02-28">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

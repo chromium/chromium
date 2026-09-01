@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Enterprise.AccountStatusCheckResult"
-    enum="EnterpriseAccountStatus" expires_after="2026-12-20">
+    enum="EnterpriseAccountStatus" expires_after="2027-02-28">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -3039,7 +3039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ExtensibleEnterpriseSSO.Supported.Result"
-    enum="Boolean" expires_after="2026-12-27">
+    enum="Boolean" expires_after="2027-02-28">
   <owner>ydago@chromium.org</owner>
   <owner>cec-growth@google.com</owner>
   <summary>
@@ -3762,7 +3762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2026-12-27">
+    enum="EnterprisePolicyInvalidations" expires_after="2027-02-28">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -5362,7 +5362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM"
-    enum="DeviceManagementAndCBCMState" expires_after="2026-12-01">
+    enum="DeviceManagementAndCBCMState" expires_after="2027-02-28">
   <owner>zmin@chromium.org</owner>
   <owner>noahrose@google.com</owner>
   <summary>
@@ -5373,7 +5373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM2"
-    enum="DeviceManagementAndCBCMState" expires_after="2026-12-01">
+    enum="DeviceManagementAndCBCMState" expires_after="2027-02-28">
   <owner>zmin@chromium.org</owner>
   <owner>noahrose@google.com</owner>
   <summary>

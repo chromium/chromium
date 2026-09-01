@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions"
-    enum="Boolean" expires_after="2026-12-27">
+    enum="Boolean" expires_after="2027-02-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualCueing.V2.CueShownLatency" units="ms"
-    expires_after="2026-12-20">
+    expires_after="2027-02-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>pulkitaga@google.com</owner>
   <summary>

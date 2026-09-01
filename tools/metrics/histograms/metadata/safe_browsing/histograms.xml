@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AsyncCheck.PendingCheckersSize" units="count"
-    expires_after="2026-12-22">
+    expires_after="2027-02-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -768,7 +768,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit2"
-    enum="BooleanRepeatVisit" expires_after="2026-12-27">
+    enum="BooleanRepeatVisit" expires_after="2027-02-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1387,7 +1387,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.ExtensionTelemetry.SearchHijackingDetector.HeuristicMatch"
-    enum="Boolean" expires_after="2026-12-20">
+    enum="Boolean" expires_after="2027-02-28">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1401,7 +1401,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.ExtensionTelemetry.SearchHijackingDetector.SearchVsSerpCount"
-    enum="SBExtensionTelemetrySearchVsSerpCount" expires_after="2026-12-20">
+    enum="SBExtensionTelemetrySearchVsSerpCount" expires_after="2027-02-28">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2423,7 +2423,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.NotificationRevocationSource"
-    enum="NotificationRevocationSource" expires_after="2026-12-27">
+    enum="NotificationRevocationSource" expires_after="2027-02-28">
   <owner>skrakowi@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2583,7 +2583,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.Daily.SafeBrowsingState"
-    enum="SafeBrowsingState" expires_after="2026-12-27">
+    enum="SafeBrowsingState" expires_after="2027-02-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3899,7 +3899,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
-    units="verdicts" expires_after="2026-12-22">
+    units="verdicts" expires_after="2027-02-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4797,7 +4797,7 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram
     name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}DatabaseInitializationTime"
-    units="ms" expires_after="2026-12-27">
+    units="ms" expires_after="2027-02-28">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4885,7 +4885,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}Store.ReadyOnStartup"
-    enum="BooleanReady" expires_after="2026-12-27">
+    enum="BooleanReady" expires_after="2027-02-28">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -5084,7 +5084,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"
-    enum="BooleanSuccess" expires_after="2026-12-27">
+    enum="BooleanSuccess" expires_after="2027-02-28">
   <owner>domfc@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

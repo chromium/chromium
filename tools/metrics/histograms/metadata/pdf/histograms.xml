@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Caret.FirstVisible" enum="Boolean"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -365,7 +365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.LoadedWithInkTextAnnotations"
-    enum="PDFLoadedWithInkTextAnnotations" expires_after="2026-12-20">
+    enum="PDFLoadedWithInkTextAnnotations" expires_after="2027-02-28">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

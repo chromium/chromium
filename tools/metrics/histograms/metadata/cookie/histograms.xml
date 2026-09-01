@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookiePartitionSizeKibibytes" units="kibibytes"
-    expires_after="2026-12-20">
+    expires_after="2027-02-28">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CreateDatabaseEarly" enum="BooleanCreated"
-    expires_after="2026-12-20">
+    expires_after="2027-02-28">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CrossSiteRedirectType.{AccessType}.Subsampled"
-    enum="ContextRedirectTypeBug1221316" expires_after="2026-10-26">
+    enum="ContextRedirectTypeBug1221316" expires_after="2027-02-28">
   <owner>miketaylr@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.OnPreconnect.LoadCookie" enum="BooleanAttempted"
-    expires_after="2026-12-27">
+    expires_after="2027-02-28">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

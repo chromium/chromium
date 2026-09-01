@@ -511,7 +511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.PlatformExperienceHelper.InstallerLaunchStatus.User"
-    enum="UserInstallerLaunchStatus" expires_after="2026-12-27">
+    enum="UserInstallerLaunchStatus" expires_after="2027-02-28">
   <owner>alsan@chromium.org</owner>
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>

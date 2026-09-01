@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="MessagePumpEpoll.WatchedFileDescriptors"
-    units="FileDescriptors" expires_after="2026-12-27">
+    units="FileDescriptors" expires_after="2027-02-28">
   <owner>mthiesse@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
-    enum="MessagePumpPhases" expires_after="2026-12-20">
+    enum="MessagePumpPhases" expires_after="2027-02-28">
   <owner>gab@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>spvm@chromium.org</owner>

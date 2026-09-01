@@ -417,7 +417,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
-    expires_after="2026-11-16">
+    expires_after="2027-02-28">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -521,7 +521,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPrice"
-    enum="BooleanContainsPrice" expires_after="2026-12-20">
+    enum="BooleanContainsPrice" expires_after="2027-02-28">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>

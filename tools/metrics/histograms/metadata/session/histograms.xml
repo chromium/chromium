@@ -401,7 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.Lock.SuppressedBeforeUnloadCount"
-    units="tabs" expires_after="2026-12-27">
+    units="tabs" expires_after="2027-02-28">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.SmartRestart.Lock.SuppressedBeforeUnloadEngagementScore"
-    units="units" expires_after="2026-12-27">
+    units="units" expires_after="2027-02-28">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.Lock.SuppressedBeforeUnloadRatio"
-    units="%" expires_after="2026-12-27">
+    units="%" expires_after="2027-02-28">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions"
-    units="ms" expires_after="2026-12-27">
+    units="ms" expires_after="2027-02-28">
   <owner>atharvmaan@google.com</owner>
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>
@@ -1427,7 +1427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.WindowDiffAfterRestart.{Type}" units="windows"
-    expires_after="2026-12-01">
+    expires_after="2027-02-28">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>

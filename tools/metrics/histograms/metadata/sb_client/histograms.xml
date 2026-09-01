@@ -800,7 +800,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.HistoryServiceDuration.GetDailyVisitsToOrigin"
-    units="ms" expires_after="2026-12-20">
+    units="ms" expires_after="2027-02-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>bcb@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -1372,7 +1372,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.RedirectChainContainsForceRequest"
-    enum="BooleanExists" expires_after="2026-12-27">
+    enum="BooleanExists" expires_after="2027-02-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1578,7 +1578,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.Viewport.EncodedResolution" units="encoded"
-    expires_after="2026-12-19">
+    expires_after="2027-02-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1590,7 +1590,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.Viewport.Height" units="pixels"
-    expires_after="2026-12-19">
+    expires_after="2027-02-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1610,7 +1610,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.Viewport.Width" units="pixels"
-    expires_after="2026-12-19">
+    expires_after="2027-02-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
