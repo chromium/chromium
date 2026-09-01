@@ -41,8 +41,8 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/test_web_ui.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -253,6 +253,7 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_helper_;
   std::unique_ptr<TestSigninController> controller_;
   std::unique_ptr<FakeChromeUserManager> user_manager_;
@@ -384,23 +385,10 @@ TEST_F(NetworkPortalSigninControllerTest, GuestLogin) {
 }
 
 TEST_F(NetworkPortalSigninControllerTest, FloatingWorkspaceDialog) {
-  // We need |profile| for this test, so we cannot reuse SimulateLogin().
-  const AccountId test_account_id(
-      AccountId::FromUserEmail("test_user@gmail.com"));
-  Profile* profile =
-      test_profile_manager_.CreateTestingProfile("test_user@gmail.com");
-  user_manager_->AddUser(test_account_id);
-  user_manager_->LoginUser(test_account_id);
-  user_manager_->SwitchActiveUser(test_account_id);
+  SimulateLogin();
 
-  // Set up web ui for testing.
-  auto web_contents_factory_ =
-      std::make_unique<content::TestWebContentsFactory>();
-  auto test_web_ui_ = std::make_unique<content::TestWebUI>();
-  test_web_ui_->set_web_contents(
-      web_contents_factory_->CreateWebContents(profile));
-  auto ui = std::make_unique<FloatingWorkspaceUI>(test_web_ui_.get());
-  test_web_ui_->SetController(std::move(ui));
+  content::ScopedWebUIConfigRegistration scoped_fws_ui_config(
+      std::make_unique<ash::FloatingWorkspaceUIConfig>());
 
   ash::FloatingWorkspaceDialog::ShowNetworkScreen();
   EXPECT_EQ(GetSigninMode(), SigninMode::kFloatingWorkspaceDialog);

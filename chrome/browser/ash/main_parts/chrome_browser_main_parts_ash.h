@@ -60,6 +60,7 @@ namespace ash {
 
 class AccessibilityEventRewriterDelegateImpl;
 class ApnMigrator;
+class AshWebUIConfigManager;
 class AudioSurveyHandler;
 class AuthEventsRecorder;
 class BluetoothLogController;
@@ -335,6 +336,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<ServicesCustomizationDocument>
       services_customization_document_;
+
+  std::unique_ptr<AshWebUIConfigManager> ash_web_ui_config_manager_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

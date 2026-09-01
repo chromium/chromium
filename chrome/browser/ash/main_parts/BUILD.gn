@@ -113,6 +113,7 @@ static_library("main_parts") {
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/session",
+    "//chrome/browser/ui/webui/ash/config",
     "//chrome/browser/ui/webui/ash/emoji",
     "//chrome/common",
     "//chrome/common:chrome_features",

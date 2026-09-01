@@ -8,10 +8,10 @@ assert(is_chromeos)
 
 static_library("config") {
   sources = [
+    "ash_web_ui_config_manager.cc",
+    "ash_web_ui_config_manager.h",
     "chrome_untrusted_web_ui_configs_chromeos.cc",
-    "chrome_untrusted_web_ui_configs_chromeos.h",
     "chrome_web_ui_configs_chromeos.cc",
-    "chrome_web_ui_configs_chromeos.h",
   ]
 
   deps = [
@@ -122,4 +122,19 @@ static_library("config") {
   if (!is_official_build) {
     deps += [ "//ash/webui/sample_system_web_app_ui" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ash_web_ui_config_manager_unittest.cc" ]
+
+  deps = [
+    ":config",
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
 }

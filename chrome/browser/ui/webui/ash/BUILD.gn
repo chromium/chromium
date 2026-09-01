@@ -13,6 +13,7 @@ group("unit_tests") {
   deps = [
     "//chrome/browser/ui/webui/ash/add_supervision:unit_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
+    "//chrome/browser/ui/webui/ash/config:unit_tests",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog:unit_tests",
     "//chrome/browser/ui/webui/ash/emoji:unit_tests",
     "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",

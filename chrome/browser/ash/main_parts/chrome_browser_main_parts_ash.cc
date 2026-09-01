@@ -192,6 +192,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
+#include "chrome/browser/ui/webui/ash/config/ash_web_ui_config_manager.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -1224,6 +1225,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   local_printer_ = std::make_unique<LocalPrinterImpl>(
       g_browser_process->GetFeatures()->application_locale_storage());
 #endif
+
+  ash_web_ui_config_manager_ = std::make_unique<AshWebUIConfigManager>();
 }
 
 class GuestLanguageSetCallbackData {
@@ -1829,6 +1832,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
+
+  ash_web_ui_config_manager_.reset();
 
 #if BUILDFLAG(USE_CUPS)
   local_printer_.reset();

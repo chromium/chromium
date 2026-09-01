@@ -77,8 +77,8 @@
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/test_web_ui.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "content/public/test/test_renderer_host.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -399,18 +399,14 @@ class FloatingWorkspaceServiceTest : public testing::Test {
                                                              cache_.get());
     mock_desks_client_ = std::make_unique<MockDesksClient>();
 
-    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
-    test_web_ui_ = std::make_unique<content::TestWebUI>();
-    test_web_ui_->set_web_contents(
-        web_contents_factory_->CreateWebContents(profile_));
-    auto ui = std::make_unique<FloatingWorkspaceUI>(test_web_ui_.get());
-    test_web_ui_->SetController(std::move(ui));
+    scoped_fws_ui_config_ =
+        std::make_unique<content::ScopedWebUIConfigRegistration>(
+            std::make_unique<ash::FloatingWorkspaceUIConfig>());
   }
 
   void TearDown() override {
     CloseStartupDialogIfNeeded();
-    test_web_ui_.reset();
-    web_contents_factory_.reset();
+    scoped_fws_ui_config_.reset();
     auto* floating_workspace_service =
         FloatingWorkspaceServiceFactory::GetForProfile(profile());
     if (floating_workspace_service) {
@@ -429,6 +425,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   syncer::TestSyncService test_sync_service_;
   std::unique_ptr<desks_storage::FakeDeskSyncService> fake_desk_sync_service_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
@@ -441,8 +438,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
   ash::SessionTerminationManager session_termination_manager_;
-  std::unique_ptr<content::TestWebUI> test_web_ui_;
-  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
+  std::unique_ptr<content::ScopedWebUIConfigRegistration> scoped_fws_ui_config_;
 
   raw_ptr<TestingProfile> profile_ = nullptr;
 };

@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/config/chrome_web_ui_configs_chromeos.h"
-
 #include <memory>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/webui/ash/config/ash_web_ui_config_manager.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
-#include "content/public/browser/webui_config_map.h"
+#include "content/public/browser/webui_config.h"
 #include "url/gurl.h"
 
 // Headers that are part of the //chrome/browser target.
@@ -255,127 +256,118 @@ std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
   return std::make_unique<RecorderAppUIConfig>(create_controller_func);
 }
 
-void RegisterAshChromeWebUIConfigs() {
+void AshWebUIConfigManager::RegisterWebUIConfigs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   //
   // All `WebUIConfig`s should be registered here, irrespective of whether their
   // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
-  auto& map = content::WebUIConfigMap::GetInstance();
-  map.AddWebUIConfig(
-      MakeComponentConfigWithDelegate<CameraAppUIConfig, CameraAppUI,
-                                      ChromeCameraAppUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<cellular_setup::MobileSetupUIConfig>());
-  map.AddWebUIConfig(std::make_unique<chromeos::ChromeURLDisabledUIConfig>());
-  map.AddWebUIConfig(std::make_unique<AccountManagerErrorUIConfig>());
-  map.AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
-  map.AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
-  map.AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
+  AddWebUIConfig(MakeComponentConfigWithDelegate<CameraAppUIConfig, CameraAppUI,
+                                                 ChromeCameraAppUIDelegate>());
+  AddWebUIConfig(std::make_unique<cellular_setup::MobileSetupUIConfig>());
+  AddWebUIConfig(std::make_unique<chromeos::ChromeURLDisabledUIConfig>());
+  AddWebUIConfig(std::make_unique<AccountManagerErrorUIConfig>());
+  AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
+  AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
+  AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
+  AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>());
+  AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
 
-  map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<BocaReceiverUIConfig>());
-  map.AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
-  map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ConfirmPasswordChangeUIConfig>());
-  map.AddWebUIConfig(MakeConnectivityDiagnosticsUIConfig());
-  map.AddWebUIConfig(std::make_unique<CrostiniCreditsUI>());
-  map.AddWebUIConfig(std::make_unique<CrostiniInstallerUIConfig>());
-  map.AddWebUIConfig(std::make_unique<CryptohomeUIConfig>());
-  map.AddWebUIConfig(MakeDiagnosticsUIConfig());
-  map.AddWebUIConfig(std::make_unique<DriveInternalsUIConfig>());
-  map.AddWebUIConfig(MakeEcheAppUIConfig());
-  map.AddWebUIConfig(std::make_unique<SensorInfoUIConfig>());
-  map.AddWebUIConfig(std::make_unique<EmojiUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<extended_updates::ExtendedUpdatesUIConfig>());
-  map.AddWebUIConfig(
+  AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  AddWebUIConfig(std::make_unique<BocaReceiverUIConfig>());
+  AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
+  AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
+  AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
+  AddWebUIConfig(std::make_unique<ConfirmPasswordChangeUIConfig>());
+  AddWebUIConfig(MakeConnectivityDiagnosticsUIConfig());
+  AddWebUIConfig(std::make_unique<CrostiniCreditsUI>());
+  AddWebUIConfig(std::make_unique<CrostiniInstallerUIConfig>());
+  AddWebUIConfig(std::make_unique<CryptohomeUIConfig>());
+  AddWebUIConfig(MakeDiagnosticsUIConfig());
+  AddWebUIConfig(std::make_unique<DriveInternalsUIConfig>());
+  AddWebUIConfig(MakeEcheAppUIConfig());
+  AddWebUIConfig(std::make_unique<SensorInfoUIConfig>());
+  AddWebUIConfig(std::make_unique<EmojiUIConfig>());
+  AddWebUIConfig(std::make_unique<extended_updates::ExtendedUpdatesUIConfig>());
+  AddWebUIConfig(
       MakeComponentConfigWithDelegate<FilesInternalsUIConfig, FilesInternalsUI,
                                       ChromeFilesInternalsUIDelegate>());
-  map.AddWebUIConfig(
+  AddWebUIConfig(
       MakeComponentConfigWithDelegate<file_manager::FileManagerUIConfig,
                                       file_manager::FileManagerUI,
                                       ChromeFileManagerUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<FocusModeUIConfig>());
-  map.AddWebUIConfig(std::make_unique<graduation::GraduationUIConfig>());
-  map.AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
-  map.AddWebUIConfig(MakeHelpAppUIConfig());
-  map.AddWebUIConfig(std::make_unique<InternetConfigDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<InternetDetailDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<KerberosInBrowserUIConfig>());
-  map.AddWebUIConfig(std::make_unique<LauncherInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<LockScreenNetworkUIConfig>());
-  map.AddWebUIConfig(std::make_unique<LockScreenStartReauthUIConfig>());
-  map.AddWebUIConfig(MakeComponentConfigWithDelegate<MallUIConfig, MallUI,
-                                                     ChromeMallUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<ManageMirrorSyncUIConfig>());
-  map.AddWebUIConfig(
-      MakeComponentConfigWithDelegate<MediaAppUIConfig, MediaAppUI,
-                                      ChromeMediaAppUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<MultideviceInternalsUIConfig>());
-  map.AddWebUIConfig(
+  AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>());
+  AddWebUIConfig(std::make_unique<FocusModeUIConfig>());
+  AddWebUIConfig(std::make_unique<graduation::GraduationUIConfig>());
+  AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
+  AddWebUIConfig(MakeHelpAppUIConfig());
+  AddWebUIConfig(std::make_unique<InternetConfigDialogUIConfig>());
+  AddWebUIConfig(std::make_unique<InternetDetailDialogUIConfig>());
+  AddWebUIConfig(std::make_unique<KerberosInBrowserUIConfig>());
+  AddWebUIConfig(std::make_unique<LauncherInternalsUIConfig>());
+  AddWebUIConfig(std::make_unique<LockScreenNetworkUIConfig>());
+  AddWebUIConfig(std::make_unique<LockScreenStartReauthUIConfig>());
+  AddWebUIConfig(MakeComponentConfigWithDelegate<MallUIConfig, MallUI,
+                                                 ChromeMallUIDelegate>());
+  AddWebUIConfig(std::make_unique<ManageMirrorSyncUIConfig>());
+  AddWebUIConfig(MakeComponentConfigWithDelegate<MediaAppUIConfig, MediaAppUI,
+                                                 ChromeMediaAppUIDelegate>());
+  AddWebUIConfig(std::make_unique<MultideviceInternalsUIConfig>());
+  AddWebUIConfig(
       std::make_unique<multidevice_setup::MultiDeviceSetupDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<NearbyInternalsUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<nearby_share::NearbyShareDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<NetworkUIConfig>());
-  map.AddWebUIConfig(std::make_unique<NotificationTesterUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<office_fallback::OfficeFallbackUIConfig>());
-  map.AddWebUIConfig(std::make_unique<OobeUIConfig>());
-  map.AddWebUIConfig(std::make_unique<OSCreditsUI>());
-  map.AddWebUIConfig(
+  AddWebUIConfig(std::make_unique<NearbyInternalsUIConfig>());
+  AddWebUIConfig(std::make_unique<nearby_share::NearbyShareDialogUIConfig>());
+  AddWebUIConfig(std::make_unique<NetworkUIConfig>());
+  AddWebUIConfig(std::make_unique<NotificationTesterUIConfig>());
+  AddWebUIConfig(std::make_unique<office_fallback::OfficeFallbackUIConfig>());
+  AddWebUIConfig(std::make_unique<OobeUIConfig>());
+  AddWebUIConfig(std::make_unique<OSCreditsUI>());
+  AddWebUIConfig(
       MakeComponentConfigWithDelegate<OSFeedbackUIConfig, OSFeedbackUI,
                                       ChromeOsFeedbackDelegate>());
-  map.AddWebUIConfig(std::make_unique<settings::OSSettingsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ParentAccessUIConfig>());
-  map.AddWebUIConfig(std::make_unique<PasswordChangeUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<reporting::EnterpriseReportingUIConfig>());
-  map.AddWebUIConfig(
+  AddWebUIConfig(std::make_unique<settings::OSSettingsUIConfig>());
+  AddWebUIConfig(std::make_unique<ParentAccessUIConfig>());
+  AddWebUIConfig(std::make_unique<PasswordChangeUIConfig>());
+  AddWebUIConfig(std::make_unique<reporting::EnterpriseReportingUIConfig>());
+  AddWebUIConfig(
       std::make_unique<personalization_app::PersonalizationAppUIConfig>(
           base::BindRepeating(
               personalization_app::CreatePersonalizationAppUI)));
-  map.AddWebUIConfig(std::make_unique<PowerUIConfig>());
-  map.AddWebUIConfig(
+  AddWebUIConfig(std::make_unique<PowerUIConfig>());
+  AddWebUIConfig(
       std::make_unique<printing::printing_manager::PrintManagementUIConfig>(
           base::BindRepeating(
               &printing::print_management::PrintingManagerFactory::
                   CreatePrintManagementUIController)));
-  map.AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
-  map.AddWebUIConfig(MakeRecorderAppUIConfig());
-  map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
-  map.AddWebUIConfig(
+  AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
+  AddWebUIConfig(MakeRecorderAppUIConfig());
+  AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
+  AddWebUIConfig(
       MakeComponentConfigWithDelegate<SanitizeDialogUIConfig, SanitizeDialogUI,
                                       ChromeSanitizeUIDelegate>());
-  map.AddWebUIConfig(
-      MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,
-                                      ChromeScanningAppDelegate>());
-  map.AddWebUIConfig(std::make_unique<SetTimeUIConfig>());
-  map.AddWebUIConfig(MakeComponentConfigWithDelegate<
-                     ShimlessRMADialogUIConfig, ShimlessRMADialogUI,
-                     shimless_rma::ChromeShimlessRmaDelegate>());
-  map.AddWebUIConfig(std::make_unique<ShortcutCustomizationAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<SlowTraceControllerConfig>());
-  map.AddWebUIConfig(std::make_unique<SlowUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<smb_dialog::SmbCredentialsDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<smb_dialog::SmbShareDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<SysInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<
-                     policy::local_user_files::LocalFilesMigrationUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
-  map.AddWebUIConfig(std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
+  AddWebUIConfig(MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,
+                                                 ChromeScanningAppDelegate>());
+  AddWebUIConfig(std::make_unique<SetTimeUIConfig>());
+  AddWebUIConfig(MakeComponentConfigWithDelegate<
+                 ShimlessRMADialogUIConfig, ShimlessRMADialogUI,
+                 shimless_rma::ChromeShimlessRmaDelegate>());
+  AddWebUIConfig(std::make_unique<ShortcutCustomizationAppUIConfig>());
+  AddWebUIConfig(std::make_unique<SlowTraceControllerConfig>());
+  AddWebUIConfig(std::make_unique<SlowUIConfig>());
+  AddWebUIConfig(std::make_unique<smb_dialog::SmbCredentialsDialogUIConfig>());
+  AddWebUIConfig(std::make_unique<smb_dialog::SmbShareDialogUIConfig>());
+  AddWebUIConfig(std::make_unique<SysInternalsUIConfig>());
+  AddWebUIConfig(std::make_unique<
+                 policy::local_user_files::LocalFilesMigrationUIConfig>());
+  AddWebUIConfig(std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
+  AddWebUIConfig(std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
       base::BindRepeating(vc_background_ui::CreateVcBackgroundUI)));
-  map.AddWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<FloatingWorkspaceUIConfig>());
+  AddWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
+  AddWebUIConfig(std::make_unique<FloatingWorkspaceUIConfig>());
 #if !defined(OFFICIAL_BUILD)
-  map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());
+  AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
+  AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 }
 

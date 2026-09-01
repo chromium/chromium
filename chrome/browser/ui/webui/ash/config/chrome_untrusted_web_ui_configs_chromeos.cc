@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/config/chrome_untrusted_web_ui_configs_chromeos.h"
-
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_ui.h"
@@ -16,6 +15,7 @@
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "base/functional/bind.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/annotator/untrusted_annotator_ui_config.h"
 #include "chrome/browser/ash/boca/receiver/receiver_handler_delegate_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -27,9 +27,9 @@
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
+#include "chrome/browser/ui/webui/ash/config/ash_web_ui_config_manager.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "content/public/browser/webui_config.h"
-#include "content/public/browser/webui_config_map.h"
 
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
@@ -63,37 +63,36 @@ std::unique_ptr<content::WebUIConfig> MakeBocaReceiverUntrustedUIConfig() {
       create_controller_func);
 }
 
-void RegisterAshChromeUntrustedWebUIConfigs() {
-  auto& map = content::WebUIConfigMap::GetInstance();
+void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Add untrusted `WebUIConfig`s for Ash ChromeOS to the list here.
   //
   // All `WebUIConfig`s should be registered here, irrespective of whether their
   // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
-  map.AddUntrustedWebUIConfig(std::make_unique<BocaUIConfig>());
-  map.AddUntrustedWebUIConfig(MakeBocaReceiverUntrustedUIConfig());
-  map.AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
-  map.AddUntrustedWebUIConfig(
+  AddUntrustedWebUIConfig(std::make_unique<BocaUIConfig>());
+  AddUntrustedWebUIConfig(MakeBocaReceiverUntrustedUIConfig());
+  AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
+  AddUntrustedWebUIConfig(
       std::make_unique<eche_app::UntrustedEcheAppUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<HelpAppUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(
+  AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<HelpAppUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(
       std::make_unique<HelpAppKidsMagazineUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<UntrustedAnnotatorUIConfig>());
-  map.AddUntrustedWebUIConfig(
+  AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<UntrustedAnnotatorUIConfig>());
+  AddUntrustedWebUIConfig(
       std::make_unique<file_manager::FileManagerUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(
+  AddUntrustedWebUIConfig(
       std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
-  map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(
-      std::make_unique<ScannerFeedbackUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
+  AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<ScannerFeedbackUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)
-  map.AddUntrustedWebUIConfig(
+  AddUntrustedWebUIConfig(
       std::make_unique<SampleSystemWebAppUntrustedUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 }
