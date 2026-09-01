@@ -124,7 +124,7 @@ TEST_F(DictationLocalHotkeyManagerTest, NoRegistrationIfPrefEmpty) {
   EXPECT_EQ(fake_state_.registration_count(), 0);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, RegistrationWithDefaultPrefAltSpace) {
+TEST_F(DictationLocalHotkeyManagerTest, RegistrationWithDefaultPref) {
   // Do not set kVoiceTypingHotkey pref explicitly.
   // It should use the default set in browser_prefs.cc.
   CreateManager();
@@ -132,7 +132,7 @@ TEST_F(DictationLocalHotkeyManagerTest, RegistrationWithDefaultPrefAltSpace) {
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ(fake_state_.last_registered_accelerator(),
             ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN));
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   EXPECT_EQ(fake_state_.last_registered_accelerator(),
             ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN));
 #else
