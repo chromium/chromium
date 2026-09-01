@@ -131,8 +131,7 @@ found in the LICENSE file.
                     android:layout_marginEnd="@dimen/readaloud_mini_player_play_button_margin_end"
                     android:src="@drawable/mini_play_button"
                     android:focusable="true"
-                    android:background="@drawable/default_icon_background"
-                    android:scaleType="center"
+                    android:background="@drawable/rounded_ripple"
                     android:contentDescription="@string/readaloud_play"/>
 
                 <!-- Title and publisher -->
