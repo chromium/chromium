@@ -145,7 +145,8 @@ BrowserWindowInterface* CreateBrowserWindow(
   return Browser::Create(std::move(create_params));
 }
 
-std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
+std::unique_ptr<BrowserWindowInterface>
+DeprecatedCreateOwnedBrowserWindowForTesting(
     BrowserWindowCreateParams create_params) {
   return Browser::DeprecatedCreateOwnedForTesting(
       std::move(create_params));  // IN-TEST

@@ -25,8 +25,7 @@ const char kTestAppName[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
  public:
-  IdleAppNameNotificationViewTest()
-      : BrowserWithTestWindowTest(Browser::TYPE_NORMAL) {}
+  IdleAppNameNotificationViewTest() = default;
 
   IdleAppNameNotificationViewTest(const IdleAppNameNotificationViewTest&) =
       delete;

@@ -29,7 +29,6 @@ class WebContents;
 }  // namespace content
 
 #if !BUILDFLAG(IS_ANDROID)
-class Browser;
 class BrowserWindow;
 #endif
 
@@ -262,7 +261,8 @@ void CreateBrowserWindow(
 // browser unittests.
 // TODO(crbug.com/417766643): Remove this once all use of Browser in unittests
 // has been eliminated.
-std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
+std::unique_ptr<BrowserWindowInterface>
+DeprecatedCreateOwnedBrowserWindowForTesting(
     BrowserWindowCreateParams create_params);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

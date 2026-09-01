@@ -594,9 +594,9 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   // creating a desktop `Browser` for `ShimlessRmaAppProfile`. This profile does
   // not instantiate regular user services like `WaapUIMetricsService`, which
   // `BrowserWindowFeatures` expects for normal browser windows.
-  std::unique_ptr<Browser> CreateBrowser(
+  std::unique_ptr<BrowserWindowInterface> CreateBrowser(
       Profile* profile,
-      Browser::Type browser_type,
+      BrowserWindowInterface::Type browser_type,
       bool hosted_app,
       BrowserWindow* browser_window) override {
     return nullptr;

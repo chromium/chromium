@@ -783,9 +783,9 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     return nullptr;
   }
 
-  std::unique_ptr<Browser> CreateBrowser(
+  std::unique_ptr<BrowserWindowInterface> CreateBrowser(
       Profile* profile,
-      Browser::Type browser_type,
+      BrowserWindowInterface::Type browser_type,
       bool hosted_app,
       BrowserWindow* browser_window) override {
     // Do not create browser.

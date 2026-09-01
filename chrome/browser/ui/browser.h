@@ -173,7 +173,8 @@ class Browser : public TabStripModelObserver,
  private:
   friend BrowserWindowInterface* CreateBrowserWindow(
       BrowserWindowCreateParams create_params);
-  friend std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
+  friend std::unique_ptr<BrowserWindowInterface>
+  DeprecatedCreateOwnedBrowserWindowForTesting(
       BrowserWindowCreateParams create_params);
 
   // Used to describe why a tab is being detached. This is used by

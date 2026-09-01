@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -218,7 +217,8 @@ void BrowserWithTestWindowTest::SetUpProfileManager(
       profile_manager_->SetUp(profiles_path, std::move(profile_manager)));
 }
 
-std::unique_ptr<Browser> BrowserWithTestWindowTest::release_browser() {
+std::unique_ptr<BrowserWindowInterface>
+BrowserWithTestWindowTest::release_browser() {
   window_ = nullptr;
   return std::move(browser_);
 }
@@ -315,9 +315,10 @@ BrowserWithTestWindowTest::CreateBrowserWindow() {
   return std::make_unique<TestBrowserWindow>();
 }
 
-std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
+std::unique_ptr<BrowserWindowInterface>
+BrowserWithTestWindowTest::CreateBrowser(
     Profile* profile,
-    Browser::Type browser_type,
+    BrowserWindowInterface::Type browser_type,
     bool hosted_app,
     BrowserWindow* browser_window) {
   BrowserWindowCreateParams params(profile, true);
@@ -331,14 +332,13 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
     params.type = browser_type;
   }
   params.window = browser_window;
-  return base::WrapUnique(static_cast<Browser*>(
-      DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params))
-          .release()));
+  return DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
 }
 
-std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
+std::unique_ptr<BrowserWindowInterface>
+BrowserWithTestWindowTest::CreateBrowser(
     Profile* profile,
-    Browser::Type browser_type,
+    BrowserWindowInterface::Type browser_type,
     bool hosted_app) {
   auto browser_window = CreateBrowserWindow();
   return CreateBrowser(profile, browser_type, hosted_app,
@@ -437,7 +437,7 @@ void BrowserWithTestWindowTest::PostUserProfileCreation(
 
 BrowserWithTestWindowTest::BrowserWithTestWindowTest(
     std::unique_ptr<content::BrowserTaskEnvironment> task_environment,
-    Browser::Type browser_type,
+    BrowserWindowInterface::Type browser_type,
     bool hosted_app)
     : task_environment_(std::move(task_environment)),
       browser_type_(browser_type),
