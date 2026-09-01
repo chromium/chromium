@@ -13,6 +13,9 @@
 #include "base/test/test_future.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model.h"
@@ -33,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -43,6 +47,20 @@ namespace {
 
 using testing::_;
 using testing::NiceMock;
+
+class TestBrowserElements : public BrowserElements {
+ public:
+  DECLARE_SAFE_CAST_TARGET()
+  TestBrowserElements(BrowserWindowInterface& browser,
+                      ui::ElementContext context)
+      : BrowserElements(browser), context_(context) {}
+  ui::ElementContext GetContext() override { return context_; }
+
+ private:
+  ui::ElementContext context_;
+};
+
+DEFINE_SAFE_CAST_TARGET(TestBrowserElements)
 
 class MockPageActionModelObserver
     : public page_actions::PageActionModelObserver {
@@ -107,6 +125,8 @@ class WebUIPageActionControlTest : public ChromeRenderViewHostTestHarness {
             .AddChild(actions::ActionItem::Builder().SetActionId(kActionAiMode))
             .AddChild(actions::ActionItem::Builder().SetActionId(
                 kActionShowTranslate))
+            .AddChild(actions::ActionItem::Builder().SetActionId(
+                kActionSidePanelShowLensOverlayResults))
             .Build();
 
     control_ =
@@ -397,6 +417,63 @@ TEST_F(WebUIPageActionControlTest, GetPageActionViewInterfaceAndMethods) {
       .Times(testing::AtLeast(1));
   view_interface->SetVisible(false);
   EXPECT_TRUE(control_->GetPageActionStates().empty());
+}
+
+TEST_F(WebUIPageActionControlTest, GetBubbleAnchor) {
+  constexpr ui::ElementContext kTestContext =
+      ui::ElementContext::CreateFakeContextForTesting(1);
+  NiceMock<MockBrowserWindowInterface> mock_browser;
+  TestBrowserElements browser_elements(mock_browser, kTestContext);
+
+  page_actions::PageActionViewInterface* ai_mode_view =
+      control_->GetPageActionViewInterface(kActionAiMode);
+  ASSERT_TRUE(ai_mode_view);
+
+  page_actions::PageActionViewInterface* lens_view =
+      control_->GetPageActionViewInterface(
+          kActionSidePanelShowLensOverlayResults);
+  ASSERT_TRUE(lens_view);
+
+  // 1. When browser is null, BubbleAnchor is null.
+  EXPECT_CALL(webui_delegate_, GetBrowser())
+      .WillRepeatedly(testing::Return(nullptr));
+  EXPECT_TRUE(ai_mode_view->GetBubbleAnchor().IsNull());
+
+  // 2. When browser is present, but neither the page action element nor the
+  // location bar element is tracked, BubbleAnchor is null.
+  EXPECT_CALL(webui_delegate_, GetBrowser())
+      .WillRepeatedly(testing::Return(&mock_browser));
+  EXPECT_TRUE(ai_mode_view->GetBubbleAnchor().IsNull());
+  EXPECT_TRUE(lens_view->GetBubbleAnchor().IsNull());
+
+  // 3. When the specific page action element is not tracked, but the location
+  // bar element is tracked, GetBubbleAnchor falls back to the location bar.
+  ui::test::TestElement location_bar_element(kLocationBarElementId,
+                                             kTestContext);
+  location_bar_element.Show();
+
+  views::BubbleAnchor fallback_anchor = ai_mode_view->GetBubbleAnchor();
+  EXPECT_FALSE(fallback_anchor.IsNull());
+  EXPECT_EQ(fallback_anchor.GetIfElement(), &location_bar_element);
+
+  // An action without a specific element identifier (e.g. LensOverlay) also
+  // anchors to the location bar.
+  views::BubbleAnchor lens_anchor = lens_view->GetBubbleAnchor();
+  EXPECT_FALSE(lens_anchor.IsNull());
+  EXPECT_EQ(lens_anchor.GetIfElement(), &location_bar_element);
+
+  // 4. When the specific page action element is tracked, GetBubbleAnchor
+  // anchors to that specific element instead of the location bar.
+  ui::test::TestElement ai_mode_element(kAiModePageActionIconElementId,
+                                        kTestContext);
+  ai_mode_element.Show();
+
+  views::BubbleAnchor specific_anchor = ai_mode_view->GetBubbleAnchor();
+  EXPECT_FALSE(specific_anchor.IsNull());
+  EXPECT_EQ(specific_anchor.GetIfElement(), &ai_mode_element);
+
+  ai_mode_element.Hide();
+  location_bar_element.Hide();
 }
 
 TEST_F(WebUIPageActionControlTest, MouseClickSuppression) {

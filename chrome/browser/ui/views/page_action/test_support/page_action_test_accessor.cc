@@ -226,7 +226,7 @@ bool PageActionTestAccessor::GetVisible() {
 bool PageActionTestAccessor::IsChipVisible() {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
-      return model->GetVisible() && model->ShouldShowSuggestionChip();
+      return model->GetVisible() && model->IsChipShowing();
     }
     return EvaluateWebUI(
         R"((el) => {
@@ -246,7 +246,7 @@ bool PageActionTestAccessor::IsChipVisible() {
 bool PageActionTestAccessor::IsIconVisible() {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
-      return model->GetVisible() && !model->ShouldShowSuggestionChip();
+      return model->GetVisible() && !model->IsChipShowing();
     }
     return EvaluateWebUI(
         R"((el) => {
