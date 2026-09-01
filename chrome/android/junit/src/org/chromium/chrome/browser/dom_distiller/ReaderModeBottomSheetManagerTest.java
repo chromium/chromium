@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -70,7 +69,6 @@ public class ReaderModeBottomSheetManagerTest {
     @Mock private DomDistillerService mDomDistillerService;
     @Mock private ThemeColorProvider mThemeColorProvider;
 
-    @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     @Captor
