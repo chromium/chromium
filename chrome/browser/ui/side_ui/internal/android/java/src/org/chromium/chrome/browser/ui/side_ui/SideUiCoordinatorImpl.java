@@ -26,6 +26,7 @@ import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -720,12 +721,20 @@ final class SideUiCoordinatorImpl
             @AnchorSide int side = marginDiff.getKey();
             @Px int topMargin = marginDiff.getValue();
 
-            // Currently, only the SidePanel can be anchored on the right side. If not in
-            // fullscreen, assert that we have a nonzero top margin for SidePanel.
-            if (side == AnchorSide.RIGHT && !mFullscreenManager.getPersistentFullscreenMode()) {
-                assert topMargin != 0
-                        : "Right anchor container topMargin should be non-zero. See"
-                                + " crbug.com/544876870";
+            // The following check is for catching crbug.com/544876870.
+            // Side panel's anchor container should always have a positive top margin, if the window
+            // isn't in fullscreen or on Android Automotive.
+            // The symptom of crbug.com/544876870 is that side panel's anchor container has 0 top
+            // margin. The bug was hard to reproduce so we only landed a speculative fix. The
+            // check here will catch the bug if it happens again.
+            var sideUiContainer = assumeNonNull(getSideUiContainerBySide(side));
+            if (sideUiContainer.getSideUiId() == SideUiId.SIDE_PANEL
+                    && !mFullscreenManager.getPersistentFullscreenMode()
+                    && !DeviceInfo.isAutomotive()
+                    && topMargin <= 0) {
+                throw new IllegalStateException(
+                        "Side panel's anchor container should have a positive top margin. See"
+                                + " crbug.com/544876870");
             }
 
             boolean willUpdateWidth =
