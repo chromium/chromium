@@ -7,8 +7,9 @@ import 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 import {createSearchMatchForTesting, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxInputElement} from 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {KeywordType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertIconMaskImageUrl, createClipboardEvent, createUrlMatch} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
@@ -258,5 +259,65 @@ suite('SearchboxInputTest', () => {
     await microtasksFinished();
 
     assertEquals(1, pasteEventCount);
+  });
+
+  test('Keyword mode displays generic keyword search loupe', async () => {
+    loadTimeData.resetForTesting({
+      isLensSearchbox: false,
+      isTopChromeSearchbox: false,
+    });
+    input = await createInput({
+      searchboxIcon: 'google_g.svg',
+    });
+
+    // Enter keyword mode.
+    input.inputKeywordModel = {
+      type: KeywordType.kInKeyword,
+      keyword: '@bookmarks',
+      displayText: 'Search Bookmarks',
+    };
+    // Even if a URL match with a destination URL is selected, keyword mode
+    // should use the generic search loupe rather than the match's favicon.
+    input.selectedMatch = createUrlMatch({
+      destinationUrl: 'https://youtube.com/',
+    });
+    await input.updateComplete;
+    await input.$.icon.updateComplete;
+
+    assertTrue(input.$.icon.inKeywordMode);
+    assertIconMaskImageUrl(
+        input.$.icon,
+        '//resources/cr_components/searchbox/icons/search_cr23.svg');
+    assertFalse(isVisible(input.$.icon.$.faviconImage));
+  });
+
+  test('Exiting keyword mode restores default icon', async () => {
+    loadTimeData.resetForTesting({
+      isLensSearchbox: false,
+      isTopChromeSearchbox: false,
+    });
+    input = await createInput({
+      searchboxIcon: 'google_g.svg',
+    });
+
+    input.inputKeywordModel = {
+      type: KeywordType.kInKeyword,
+      keyword: '@bookmarks',
+      displayText: 'Search Bookmarks',
+    };
+    await input.updateComplete;
+    await input.$.icon.updateComplete;
+    assertTrue(input.$.icon.inKeywordMode);
+    assertIconMaskImageUrl(
+        input.$.icon,
+        '//resources/cr_components/searchbox/icons/search_cr23.svg');
+
+    // Exit keyword mode.
+    input.inputKeywordModel = null;
+    await input.updateComplete;
+    await input.$.icon.updateComplete;
+
+    assertFalse(input.$.icon.inKeywordMode);
+    assertEquals('google_g.svg', input.$.icon.defaultIcon);
   });
 });
