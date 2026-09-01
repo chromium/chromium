@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.side_panel;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
-import android.graphics.Rect;
 import android.util.ArrayMap;
 import android.view.View;
 
@@ -244,14 +243,9 @@ final class SidePanelNativeBridgeSelector {
      *
      * <p>The given {@link Profile} must be the current {@link Profile}.
      */
-    void startOpeningPanel(
-            Profile profile,
-            SidePanelContent content,
-            @Nullable Rect initialContentBounds,
-            boolean suppressAnimations) {
+    void startOpeningPanel(Profile profile, SidePanelContent content, boolean suppressAnimations) {
         assertCurrentProfile(profile);
-        mSidePanelContainerCoordinator.startOpeningPanel(
-                content, initialContentBounds, suppressAnimations);
+        mSidePanelContainerCoordinator.startOpeningPanel(content, suppressAnimations);
     }
 
     /**

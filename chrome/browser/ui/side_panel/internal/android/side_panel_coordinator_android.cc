@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -42,11 +43,6 @@
   }
 
 namespace {
-constexpr int kInvalidCoordinate = -1;
-const gfx::Rect kNoBounds(kInvalidCoordinate,
-                          kInvalidCoordinate,
-                          kInvalidCoordinate,
-                          kInvalidCoordinate);
 constexpr char kAndroidSidePanelHistogramPrefix[] = "SidePanel.Android";
 
 void RecordAutoCloseOrRestoreMetric(SidePanelEntry* entry, bool is_auto_close) {
@@ -195,14 +191,16 @@ void SidePanelCoordinatorAndroid::OnActiveChanged(bool active) {
 void SidePanelCoordinatorAndroid::ShowFrom(
     SidePanelEntryKey entry_key,
     gfx::Rect starting_bounds_in_browser_coordinates) {
-  SPLOG("ShowFrom - entry_key: "
-        << entry_key.ToString() << ", starting_bounds: "
-        << starting_bounds_in_browser_coordinates.ToString());
-  std::optional<UniqueKey> unique_key = GetUniqueKeyForKey(entry_key);
-  CHECK(unique_key.has_value())
-      << "Entry should exist for the given key: " << entry_key.ToString();
-  last_starting_bounds_ = starting_bounds_in_browser_coordinates;
-  SidePanelUI::Show(entry_key);
+  // On WML, ShowFrom() is for content morph animations, such as when side panel
+  // content originates from a tab's WebContents and smoothly transitions into
+  // its final side panel position.
+  //
+  // As of Aug 31, 2026, the only use case on WML is the "Tab-to-Panel"
+  // transition for contextual tasks (AI Mode) and it is disabled (verified on
+  // Canary M154.0.8036.0).
+  //
+  // Android doesn't support this UX.
+  NOTREACHED() << "Not supported by Android UI";
 }
 
 void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
@@ -213,9 +211,6 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
 
   // Stop any pending load.
   waiter()->ResetLoadingEntryIfNecessary();
-
-  // If a ShowFrom() was pending, clear the starting bounds.
-  last_starting_bounds_.reset();
 
   // Nothing to do if the side panel is not showing or is already closing.
   if (!IsSidePanelShowing() || state_ == SidePanelState::kClosing) {
@@ -543,9 +538,6 @@ void SidePanelCoordinatorAndroid::Show(
     // we should cancel loading the new entry and keep the side panel visible.
     waiter()->ResetLoadingEntryIfNecessary();
 
-    // If a ShowFrom() was pending or attempted on a visible entry, clear it.
-    last_starting_bounds_.reset();
-
     if (state_ != SidePanelState::kClosing) {
       return;
     }
@@ -630,15 +622,12 @@ void SidePanelCoordinatorAndroid::StartOpeningPanel(
   // On WML, when the View is being shown on the UI, the ownership of the View
   // is transferred to the UI and the cache in `SidePanelEntry` is empty.
   // When the View is removed from the UI, it'll be put back into the cache.
-  gfx::Rect start_bounds = last_starting_bounds_.value_or(kNoBounds);
-  last_starting_bounds_.reset();
   std::u16string_view title = SidePanelUtil::GetTitleText(entry, browser());
 
   JNIEnv* env = AttachCurrentThread();
   Java_SidePanelCoordinatorAndroidBridge_startOpeningPanel(
       env, java_coordinator(), browser()->GetProfile(), native_view->view(),
-      title, entry->should_show_header(), start_bounds.x(), start_bounds.y(),
-      start_bounds.width(), start_bounds.height(), suppress_animations);
+      title, entry->should_show_header(), suppress_animations);
   entry->CacheView(std::move(native_view));
 }
 

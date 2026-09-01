@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.side_panel;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
-import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,12 +137,10 @@ final class SidePanelContainerCoordinatorImpl
      * panel isn't shown.
      *
      * @param content Wrapper object for the content to show in the side panel.
-     * @param startingBounds Optional bounds for the animation to start from.
      * @param suppressAnimations Whether or not to suppress animations for this populate request.
      */
-    void startOpeningPanel(
-            SidePanelContent content, @Nullable Rect startingBounds, boolean suppressAnimations) {
-        log(TAG, "startOpeningPanel", content, startingBounds, suppressAnimations);
+    void startOpeningPanel(SidePanelContent content, boolean suppressAnimations) {
+        log(TAG, "startOpeningPanel", content, suppressAnimations);
         ThreadUtils.assertOnUiThread();
 
         // TODO(crbug.com/513302000): assert the side panel is currently closed.

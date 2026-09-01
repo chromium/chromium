@@ -233,8 +233,6 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   SidePanelDeferredEntryTracker deferred_entry_tracker_{browser()};
 
-  std::optional<gfx::Rect> last_starting_bounds_;
-
   ui::ScopedUnownedUserData<SidePanelCoordinatorAndroid>
       scoped_unowned_user_data_;
 
