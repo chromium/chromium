@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserUiController;
@@ -29,10 +30,6 @@ class Page;
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
-
-namespace ui {
-class ImageModel;
-}  // namespace ui
 
 // TabUIHelper is used by UI code to obtain the title and favicon for a
 // WebContents. The values returned by TabUIHelper differ from the WebContents
@@ -122,6 +119,13 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   bool created_by_session_restore_ = false;
   bool needs_attention_ = false;
   base::CallbackListSubscription pin_tab_subscription_;
+
+  // Cached tab-background-aware default globe favicon, returned for tabs with
+  // no page-provided favicon. Created once (bound to this tab) so repeated
+  // GetFavicon() calls return an equal model -- TabData compares favicons by
+  // value -- while the bound generator still re-resolves the light/dark variant
+  // at raster time. crbug.com/544891511
+  ui::ImageModel default_favicon_model_;
 
   base::RepeatingClosureList tab_ui_change_callbacks_;
 

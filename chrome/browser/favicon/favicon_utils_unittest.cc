@@ -4,6 +4,8 @@
 
 #include "chrome/browser/favicon/favicon_utils.h"
 
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "content/public/browser/navigation_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -158,6 +160,37 @@ TEST_F(DefaultFaviconModelTest, UsesCorrectIcon_DarkBackground_Custom) {
                                  .Rasterize(color_provider);
   EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/false)
                   .BackedBySameObjectAs(favicon_image));
+}
+
+// The resolver overload picks the background color id on each rasterization, so
+// a single model tracks a background that changes over its lifetime (e.g. a tab
+// whose active/frame state changes). crbug.com/544891511
+TEST_F(DefaultFaviconModelTest, ResolvesColorIdAtRasterization) {
+  // Two background color ids on opposite sides of the IsDark() midpoint.
+  const auto initializer = [](ui::ColorProvider* provider,
+                              const ui::ColorProviderKey& key) {
+    ui::ColorMixer& mixer = provider->AddMixer();
+    mixer[ui::kColorWindowBackground] = {kLightColor};
+    mixer[ui::kColorBubbleBackground] = {kDarkColor};
+  };
+  AddInitializer(base::BindRepeating(initializer));
+  auto* color_provider =
+      GetColorProvider(ui::ColorProviderKey::ColorMode::kLight);
+
+  // The resolver chooses which color id the model reads at raster time.
+  ui::ColorId resolved_id = ui::kColorWindowBackground;
+  const ui::ImageModel model = GetDefaultFaviconModel(
+      base::BindLambdaForTesting([&resolved_id]() { return resolved_id; }));
+
+  // Light background -> light-mode default favicon.
+  EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/false)
+                  .BackedBySameObjectAs(model.Rasterize(color_provider)));
+
+  // Changing what the resolver returns flips the rasterized variant, proving
+  // the id is resolved on every rasterization rather than baked in.
+  resolved_id = ui::kColorBubbleBackground;
+  EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/true)
+                  .BackedBySameObjectAs(model.Rasterize(color_provider)));
 }
 
 }  // namespace favicon

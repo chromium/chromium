@@ -149,6 +149,20 @@ ui::ImageModel GetDefaultFaviconModel(ui::ColorId bg_color) {
       gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize));
 }
 
+ui::ImageModel GetDefaultFaviconModel(
+    base::RepeatingCallback<ui::ColorId()> bg_color_id_resolver) {
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](const base::RepeatingCallback<ui::ColorId()>& resolver,
+             const ui::ColorProvider* provider) {
+            return *GetDefaultFaviconForColorScheme(
+                        color_utils::IsDark(provider->GetColor(resolver.Run())))
+                        .ToImageSkia();
+          },
+          std::move(bg_color_id_resolver)),
+      gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize));
+}
+
 void SaveFaviconEvenIfInIncognito(content::WebContents* contents) {
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FAVICON_FAVICON_UTILS_H_
 #define CHROME_BROWSER_FAVICON_FAVICON_UTILS_H_
 
+#include "base/functional/callback.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
@@ -45,6 +46,14 @@ gfx::Image GetDefaultFavicon();
 // color will be used (which is appropriate for most use cases).
 ui::ImageModel GetDefaultFaviconModel(
     ui::ColorId bg_color = ui::kColorWindowBackground);
+
+// As above, but resolves the background color id at rasterization time via
+// `bg_color_id_resolver`, which is queried on every rasterization. Use this
+// when the appropriate background color id changes over the lifetime of the
+// returned model -- e.g. a tab whose background theming depends on its active
+// state and the window's active state. crbug.com/544891511
+ui::ImageModel GetDefaultFaviconModel(
+    base::RepeatingCallback<ui::ColorId()> bg_color_id_resolver);
 
 // Saves the favicon for the last committed navigation entry to the favicon
 // database.

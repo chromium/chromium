@@ -18,6 +18,7 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -42,6 +43,25 @@
 #include "url/gurl.h"
 
 namespace {
+
+// Returns the tab-background color id for the default globe favicon, resolved
+// from the tab's active state and the window's active state. Bound into the
+// favicon model and queried at raster time, so the globe's light/dark variant
+// tracks both. crbug.com/544891511
+ui::ColorId GetDefaultFaviconBackgroundColorId(
+    base::WeakPtr<tabs::TabInterface> tab) {
+  if (!tab) {
+    return kColorTabBackgroundActiveFrameActive;
+  }
+  const BrowserWindowInterface* const window = tab->GetBrowserWindowInterface();
+  const bool frame_active = window && window->IsActive();
+  if (tab->IsActivated()) {
+    return frame_active ? kColorTabBackgroundActiveFrameActive
+                        : kColorTabBackgroundActiveFrameInactive;
+  }
+  return frame_active ? kColorTabBackgroundInactiveFrameActive
+                      : kColorTabBackgroundInactiveFrameInactive;
+}
 
 bool IsNTP(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
@@ -201,6 +221,27 @@ ui::ImageModel TabUIHelper::GetFavicon() {
     }
   }
 
+  // When the page provides no favicon of its own, use the tab-background-aware
+  // default globe. Its light/dark variant is resolved against this tab's
+  // background at raster time -- which depends on the tab's active state and
+  // the window's active state -- rather than the global color scheme, which can
+  // disagree and render the globe low-contrast ("dim") on some Linux themes
+  // (e.g. the built-in PDF viewer). crbug.com/544891511
+  const favicon::FaviconDriver* const favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(web_contents());
+  if (!favicon_driver || !favicon_driver->FaviconIsValid()) {
+    // Cache the model so repeated calls return an equal ImageModel; TabData
+    // compares favicons by value, and a fresh BindRepeating each call would
+    // never compare equal. The bound resolver still re-runs at raster time, so
+    // the variant continues to track the tab's and window's active state.
+    if (default_favicon_model_.IsEmpty()) {
+      default_favicon_model_ =
+          favicon::GetDefaultFaviconModel(base::BindRepeating(
+              &GetDefaultFaviconBackgroundColorId, tab().GetWeakPtr()));
+    }
+    return default_favicon_model_;
+  }
+
   return ui::ImageModel::FromImage(
       favicon::TabFaviconFromWebContents(web_contents()));
 }
@@ -304,6 +345,13 @@ void TabUIHelper::PrimaryMainFrameRenderProcessGone(
 }
 
 void TabUIHelper::PrimaryPageChanged(content::Page& page) {
+  // Drop the cached default-favicon model on navigation so its identity is
+  // stable only within a page. TabData compares favicons by value, so the model
+  // must be equal across calls on the same page; but a new page must yield a
+  // different favicon (e.g. once its own favicon loads), so the cache must not
+  // persist across navigations. crbug.com/544891511
+  default_favicon_model_ = ui::ImageModel();
+
   if (tab().IsSplit()) {
     split_tabs::LogSplitViewUpdatedUKM(
         tab().GetBrowserWindowInterface()->GetTabStripModel(),
