@@ -39,6 +39,7 @@ if (argv['browser-bin']) {
 }
 if (argv['chromedriver-bin']) {
   process.env.CHROMEDRIVER_BIN = argv['chromedriver-bin'];
+  process.env.CHROMEDRIVER = 'true';
 }
 const LOG_FILE = createLogFile('e2e');
 const PYTEST_PREFIX = 'PyTest';

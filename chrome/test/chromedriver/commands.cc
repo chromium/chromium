@@ -76,8 +76,9 @@ void ExecuteBidiSessionStatus(const base::DictValue& params,
   } else {
     info.Set("ready", false);
     // The error message is borrowed from BiDiMapper code.
-    // See bidiMapper/domains/session/SessionProcessor.ts of chromium-bidi
-    // repository.
+    // See
+    // third_party/chromium-bidi/src/bidiMapper/modules/session/
+    // SessionProcessor.ts
     info.Set("message", "already connected");
   }
 

@@ -33,7 +33,9 @@ const RUN_TIME = new Date().toISOString().replace(/[:]/g, '-');
 
 export function getLogFileName(suffix) {
   const dir = process.env.LOG_DIR || 'logs';
-  return process.env.LOG_FILE || join(dir, `${RUN_TIME}.${suffix}.log`);
+  return resolve(
+    process.env.LOG_FILE || join(dir, `${RUN_TIME}.${suffix}.log`),
+  );
 }
 
 /**
@@ -48,7 +50,7 @@ export function createLogFile(suffix) {
 
   mkdirSync(dir, {recursive: true});
 
-  return name;
+  return resolve(name);
 }
 
 export function parseCommandLineArgs() {
@@ -177,6 +179,7 @@ export function createBiDiServerProcess() {
   }
   if (argv['chromedriver-bin']) {
     process.env.CHROMEDRIVER_BIN = argv['chromedriver-bin'];
+    process.env.CHROMEDRIVER = 'true';
   }
   const BROWSER_BIN = getChromePath();
 
@@ -200,7 +203,6 @@ export function createBiDiServerProcess() {
       args: [
         `--port=${PORT}`,
         `--bidi-mapper-path=${resolve(join(GEN_DIR, 'src', 'mapperTab.js'))}`,
-        `--log-path=${createLogFile('chromedriver')}`,
         `--readable-timestamp`,
         ...(VERBOSE ? ['--verbose'] : []),
       ],

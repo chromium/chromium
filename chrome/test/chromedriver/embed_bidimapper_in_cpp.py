@@ -28,9 +28,7 @@ def main():
 
   global_string_map = {}
   for js_file in args:
-    base_name = os.path.basename(js_file)[:-3].title().replace('_', '')
-    func_name = base_name[0].lower() + base_name[1:]
-    script_name = 'k%sScript' % base_name
+    script_name = 'kMapperScript'
     with open(js_file, 'r', encoding='utf-8') as f:
       contents = f.read()
       global_string_map[script_name] = contents
