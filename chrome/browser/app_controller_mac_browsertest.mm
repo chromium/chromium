@@ -1097,6 +1097,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
                         ->tab_strip_model()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
+  ASSERT_TRUE(event_navigation_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(event_navigation_observer.last_initiator_origin()->opaque());
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1186,6 +1188,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
   EXPECT_EQ(simple, new_browser->GetTabStripModel()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
+  ASSERT_TRUE(event_navigation_observer.last_initiator_origin().has_value());
+  EXPECT_TRUE(event_navigation_observer.last_initiator_origin()->opaque());
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;

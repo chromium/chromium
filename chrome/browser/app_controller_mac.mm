@@ -477,7 +477,7 @@ void OpenStartupTabsInBrowser(StartupTabs tabs) {
                 }
                 profile_tab_map[shortcut->profile_path_name().path()]
                     .emplace_back(shortcut->target_url(),
-                                  /*is_untrusted_launch=*/false);
+                                  /*is_untrusted_launch=*/true);
               }
               return profile_tab_map;
             },
