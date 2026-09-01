@@ -2608,6 +2608,481 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*field_name, "test_fieldset");
 }
 
+// Test that <select> subtree pruning ensures <option> tags
+// are not extracted as child DOM nodes.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectOneControlSubtreePruning) {
+  const std::string html =
+      "<html><body>"
+      "    <select name=\"country\" required>"
+      "        <option value=\"us\">United States</option>"
+      "        <option value=\"ca\" selected>Canada</option>"
+      "        <option value=\"fr\" disabled>France</option>"
+      "    </select>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  EXPECT_FALSE(result_value->is_none());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+
+  // Verify subtree pruning: <option> tags must NOT be child DOM nodes.
+  const base::ListValue* children = select_node.FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  EXPECT_TRUE(children->empty());
+}
+
+// Test attribute type and form control type extraction for a single select
+// element
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectOneControlType) {
+  const std::string html =
+      "<html><body>"
+      "    <select name=\"country\" required>"
+      "        <option value=\"us\">United States</option>"
+      "        <option value=\"ca\" selected>Canada</option>"
+      "        <option value=\"fr\" disabled>France</option>"
+      "    </select>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+
+  // Verify attribute and form control types.
+  std::optional<double> attribute_type =
+      select_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(attribute_type.has_value());
+  EXPECT_EQ(*attribute_type,
+            static_cast<double>(
+                optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL));
+
+  std::optional<double> form_control_type = select_node.FindDoubleByDottedPath(
+      "contentAttributes.formControlData.formControlType");
+  ASSERT_TRUE(form_control_type.has_value());
+  EXPECT_EQ(*form_control_type,
+            static_cast<double>(
+                optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE));
+}
+
+// Test field name, active value, and required constraint extraction for a
+// single select element.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectOneControlAttributes) {
+  const std::string html =
+      "<html><body>"
+      "    <select name=\"country\" required>"
+      "        <option value=\"us\">United States</option>"
+      "        <option value=\"ca\" selected>Canada</option>"
+      "        <option value=\"fr\" disabled>France</option>"
+      "    </select>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+
+  // Verify field name, active value, and required constraint.
+  const std::string* field_name = select_node.FindStringByDottedPath(
+      "contentAttributes.formControlData.fieldName");
+  ASSERT_TRUE(field_name);
+  EXPECT_EQ(*field_name, "country");
+
+  const std::string* field_value = select_node.FindStringByDottedPath(
+      "contentAttributes.formControlData.fieldValue");
+  ASSERT_TRUE(field_value);
+  EXPECT_EQ(*field_value, "ca");
+
+  std::optional<bool> is_required = select_node.FindBoolByDottedPath(
+      "contentAttributes.formControlData.isRequired");
+  ASSERT_TRUE(is_required.has_value());
+  EXPECT_TRUE(*is_required);
+}
+
+// Test extraction of selectOptions array including selected and disabled
+// states.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectOneControlOptions) {
+  const std::string html =
+      "<html><body>"
+      "    <select name=\"country\" required>"
+      "        <option value=\"us\">United States</option>"
+      "        <option value=\"ca\" selected>Canada</option>"
+      "        <option value=\"fr\" disabled>France</option>"
+      "    </select>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+
+  // Verify selectOptions array extraction.
+  const base::ListValue* select_options = select_node.FindListByDottedPath(
+      "contentAttributes.formControlData.selectOptions");
+  ASSERT_TRUE(select_options);
+  ASSERT_EQ(select_options->size(), 3u);
+
+  // Option 0: unselected
+  const base::DictValue& option0 = (*select_options)[0].GetDict();
+  const std::string* option0_value = option0.FindString("value");
+  ASSERT_TRUE(option0_value);
+  EXPECT_EQ(*option0_value, "us");
+  const std::string* option0_text = option0.FindString("text");
+  ASSERT_TRUE(option0_text);
+  EXPECT_EQ(*option0_text, "United States");
+  EXPECT_FALSE(option0.FindBool("isSelected").value_or(true));
+  EXPECT_FALSE(option0.FindBool("disabled").value_or(true));
+
+  // Option 1: selected
+  const base::DictValue& option1 = (*select_options)[1].GetDict();
+  const std::string* option1_value = option1.FindString("value");
+  ASSERT_TRUE(option1_value);
+  EXPECT_EQ(*option1_value, "ca");
+  const std::string* option1_text = option1.FindString("text");
+  ASSERT_TRUE(option1_text);
+  EXPECT_EQ(*option1_text, "Canada");
+  EXPECT_TRUE(option1.FindBool("isSelected").value_or(false));
+  EXPECT_FALSE(option1.FindBool("disabled").value_or(true));
+
+  // Option 2: disabled
+  const base::DictValue& option2 = (*select_options)[2].GetDict();
+  const std::string* option2_value = option2.FindString("value");
+  ASSERT_TRUE(option2_value);
+  EXPECT_EQ(*option2_value, "fr");
+  const std::string* option2_text = option2.FindString("text");
+  ASSERT_TRUE(option2_text);
+  EXPECT_EQ(*option2_text, "France");
+  EXPECT_FALSE(option2.FindBool("isSelected").value_or(true));
+  EXPECT_TRUE(option2.FindBool("disabled").value_or(false));
+}
+
+// Test multiple select extraction verifying FORM_CONTROL_TYPE_SELECT_MULTIPLE
+// and multi-selection preservation.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectMultipleControl) {
+  const std::string html =
+      "<html><body>"
+      "    <select name=\"filters\" multiple>"
+      "        <option value=\"books\" selected>Books</option>"
+      "        <option value=\"movies\">Movies</option>"
+      "        <option value=\"music\" selected>Music</option>"
+      "    </select>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+
+  // 1. Verify type mapping for `multiple` attribute.
+  std::optional<double> form_control_type = select_node.FindDoubleByDottedPath(
+      "contentAttributes.formControlData.formControlType");
+  ASSERT_TRUE(form_control_type.has_value());
+  EXPECT_EQ(*form_control_type,
+            static_cast<double>(
+                optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_MULTIPLE));
+
+  // 2. Verify all selected options are preserved in selectOptions.
+  const base::ListValue* select_options = select_node.FindListByDottedPath(
+      "contentAttributes.formControlData.selectOptions");
+  ASSERT_TRUE(select_options);
+  ASSERT_EQ(select_options->size(), 3u);
+
+  EXPECT_TRUE(
+      (*select_options)[0].GetDict().FindBool("isSelected").value_or(false));
+  EXPECT_FALSE(
+      (*select_options)[1].GetDict().FindBool("isSelected").value_or(true));
+  EXPECT_TRUE(
+      (*select_options)[2].GetDict().FindBool("isSelected").value_or(false));
+}
+
+// Test <select> containing <optgroup> elements and verifying label fallback
+// when option inner text is empty.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectWithOptgroupAndLabelFallback) {
+  const std::string html = R"(
+    <html>
+        <body>
+            <select name="beverage">
+                <optgroup label="Hot Drinks">
+                    <option value="coffee">Coffee</option>
+                    <option value="tea"></option>
+                </optgroup>
+                <optgroup label="Cold Drinks">
+                    <option value="soda" label="Fizzy Soda"></option>
+                </optgroup>
+            </select>
+        </body>
+    </html>
+  )";
+
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+
+  // 1. Ensure <optgroup> does not appear in the childrenNodes
+  const base::ListValue* children = select_node.FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  EXPECT_TRUE(children->empty());
+
+  // 2. All 3 options should be flattened and collected in selectOptions.
+  const base::ListValue* select_options = select_node.FindListByDottedPath(
+      "contentAttributes.formControlData.selectOptions");
+  ASSERT_TRUE(select_options);
+  ASSERT_EQ(select_options->size(), 3u);
+
+  // Option with inner text
+  const base::DictValue& option0 = (*select_options)[0].GetDict();
+  const std::string* option0_text = option0.FindString("text");
+  ASSERT_TRUE(option0_text);
+  EXPECT_EQ(*option0_text, "Coffee");
+  const std::string* option0_value = option0.FindString("value");
+  ASSERT_TRUE(option0_value);
+  EXPECT_EQ(*option0_value, "coffee");
+
+  // Option with no inner text or `label` attribute extracts an empty string for
+  // `text`.
+  const base::DictValue& option1 = (*select_options)[1].GetDict();
+  const std::string* option1_text = option1.FindString("text");
+  ASSERT_TRUE(option1_text);
+  EXPECT_EQ(*option1_text, "");
+  const std::string* option1_value = option1.FindString("value");
+  ASSERT_TRUE(option1_value);
+  EXPECT_EQ(*option1_value, "tea");
+
+  // Option with empty inner text falls back to the <option>'s label attribute
+  // ("Fizzy Soda")
+  const base::DictValue& option2 = (*select_options)[2].GetDict();
+  const std::string* option2_text = option2.FindString("text");
+  ASSERT_TRUE(option2_text);
+  EXPECT_EQ(*option2_text, "Fizzy Soda");
+  const std::string* option2_value = option2.FindString("value");
+  ASSERT_TRUE(option2_value);
+  EXPECT_EQ(*option2_value, "soda");
+}
+
+// Test <select> where <option> tags omit the value attribute, verifying that
+// value defaults to the option inner text per the HTML specification.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectOptionValueFallbackToText) {
+  const std::string html = R"(
+    <html>
+      <body>
+        <select name="shipping">
+          <option>Standard Shipping</option>
+          <option selected>Express Delivery</option>
+        </select>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+
+  // Selected value should match the second option's text
+  const std::string* field_value = select_node.FindStringByDottedPath(
+      "contentAttributes.formControlData.fieldValue");
+  ASSERT_TRUE(field_value);
+  EXPECT_EQ(*field_value, "Express Delivery");
+
+  const base::ListValue* select_options = select_node.FindListByDottedPath(
+      "contentAttributes.formControlData.selectOptions");
+  ASSERT_TRUE(select_options);
+  ASSERT_EQ(select_options->size(), 2u);
+
+  const base::DictValue& option0 = (*select_options)[0].GetDict();
+  const std::string* option0_text = option0.FindString("text");
+  ASSERT_TRUE(option0_text);
+  EXPECT_EQ(*option0_text, "Standard Shipping");
+  const std::string* option0_value = option0.FindString("value");
+  ASSERT_TRUE(option0_value);
+  EXPECT_EQ(*option0_value, "Standard Shipping");
+  EXPECT_FALSE(option0.FindBool("isSelected").value_or(true));
+
+  const base::DictValue& option1 = (*select_options)[1].GetDict();
+  const std::string* option1_text = option1.FindString("text");
+  ASSERT_TRUE(option1_text);
+  EXPECT_EQ(*option1_text, "Express Delivery");
+  const std::string* option1_value = option1.FindString("value");
+  ASSERT_TRUE(option1_value);
+  EXPECT_EQ(*option1_value, "Express Delivery");
+  EXPECT_TRUE(option1.FindBool("isSelected").value_or(false));
+}
+
+// Test single <select> without any explicit selected attribute, verifying that
+// the first option is selected by default.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_SelectDefaultSelection) {
+  const std::string html = R"(
+    <html>
+      <body>
+        <select name="fruits">
+            <option value="apple">Apple</option>
+            <option value="banana">Banana</option>
+            <option value="orange">Orange</option>
+        </select>
+      </body>
+    </html>
+  )";
+
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* root_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(root_children);
+  ASSERT_GE(root_children->size(), 1u);
+
+  const base::DictValue& select_node = (*root_children)[0].GetDict();
+  const std::string* field_value = select_node.FindStringByDottedPath(
+      "contentAttributes.formControlData.fieldValue");
+  ASSERT_TRUE(field_value);
+  EXPECT_EQ(*field_value, "apple");
+
+  const base::ListValue* select_options = select_node.FindListByDottedPath(
+      "contentAttributes.formControlData.selectOptions");
+  ASSERT_TRUE(select_options);
+  ASSERT_EQ(select_options->size(), 3u);
+  EXPECT_TRUE(
+      (*select_options)[0].GetDict().FindBool("isSelected").value_or(false));
+  EXPECT_FALSE(
+      (*select_options)[1].GetDict().FindBool("isSelected").value_or(true));
+  EXPECT_FALSE(
+      (*select_options)[2].GetDict().FindBool("isSelected").value_or(true));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContextExtractorJavaScriptFeatureTest,
                          ::testing::Values(IPCExtractionMethod::kNative,
