@@ -94,20 +94,24 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                     boolean isLargeFormFactor =
                             mBottomSheetController.isLargeFormFactorUiEnabled(
                                     BottomSheetListViewBase.this);
-                    BottomSheetListViewBase.this.onSheetStateChanged(newState, reason);
                     if (newState == BottomSheetController.SheetState.FULL) {
                         // The list of items should be scrollable in full state.
                         assumeNonNull(mSheetItemListView).suppressLayout(false);
-                    } else if (newState == BottomSheetController.SheetState.HALF
-                            && mScrollListener.isScrolledToTop()) {
-                        // The list of items should not be scrollable when the sheet transitions
-                        // into half state if it's scrolled to the top. If the list is currently
-                        // scrolled away from the top, it should stay scrolled in half state
-                        // until the user scrolls to the top.
-                        // On desktop/large form factor devices, keep the list scrollable via mouse
-                        // wheel in half state.
-                        if (!isLargeFormFactor) {
-                            assumeNonNull(mSheetItemListView).suppressLayout(true);
+                        BottomSheetListViewBase.this.onSheetStateChanged(newState, reason);
+                    } else {
+                        BottomSheetListViewBase.this.onSheetStateChanged(newState, reason);
+                        if (newState == BottomSheetController.SheetState.HALF
+                                && mScrollListener.isScrolledToTop()) {
+                            // The list of items should not be scrollable when the sheet transitions
+                            // into half state if it's scrolled to the top. If the list is currently
+                            // scrolled away from the top, it should stay scrolled in half state
+                            // until the user scrolls to the top.
+                            // On desktop/large form factor devices, keep the list scrollable via
+                            // mouse
+                            // wheel in half state.
+                            if (!isLargeFormFactor) {
+                                assumeNonNull(mSheetItemListView).suppressLayout(true);
+                            }
                         }
                     }
                     if (newState != BottomSheetController.SheetState.HIDDEN) {
@@ -471,6 +475,10 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     }
 
     private @Px int getInsetDisplayWidthPx() {
+        if (mBottomSheetController.isLargeFormFactorUiEnabled(this)) {
+            int maxSheetWidth = mBottomSheetController.getMaxSheetWidth();
+            if (maxSheetWidth > 0) return maxSheetWidth;
+        }
         return mContentView.getContext().getResources().getDisplayMetrics().widthPixels
                 - 2 * getSideMarginPx();
     }
