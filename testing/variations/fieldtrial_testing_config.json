@@ -9392,6 +9392,24 @@
             ]
         }
     ],
+    "GlicBackgroundActuation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ActorLiveNotification",
+                        "ActorNotificationIntentRouting",
+                        "ActorStepProgressNotification",
+                        "GlicBackgroundActuation"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicCSPConfig_Dogfood": [
         {
             "platforms": [
