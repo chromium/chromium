@@ -369,3 +369,35 @@ fn test_streaming_decoder_huge_map_length_no_overflow() {
     assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(21)));
     assert_eq!(decoder.next_event(&mut data), Err(Error::UnknownAdditionalInfo));
 }
+
+#[gtest(CBORReaderRustTest, TestStreamingDecoderReadCompleteValueIncompleteBacktrack)]
+fn test_streaming_decoder_read_complete_value_incomplete_backtrack() {
+    let mut decoder = Decoder::new();
+    // Array of 7 elements, but only provides 6 (1 to 6)
+    let original: &[u8] = &[0x87, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06];
+    let mut data = original;
+    let res = decoder.read_complete_value(&mut data);
+    assert_eq!(res.unwrap_err(), Error::IncompleteCborData);
+
+    // The data pointer must be fully backtracked to the original!
+    assert_eq!(data, original);
+
+    // The decoder's internal nesting stack state must also be reverted,
+    // meaning the next_event should interpret the array start cleanly.
+    assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(7)));
+}
+
+#[gtest(CBORReaderRustTest, TestOnePassHugeMapLengthNoOverflow)]
+fn test_one_pass_huge_map_length_no_overflow() {
+    // Map with length 0x9595959595959595 (> u64::MAX / 2).
+    // An array [21] followed by 0xBF (unsupported additional info 31).
+    let data: &[u8] = &[
+        0xBB, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, // Map header
+        0x95, // Array of length 21
+        0x15, // Uint 21
+        0xBF, // Map with additional info 31 (invalid)
+        0xBE, 0x3B, 0x4F, 0x2F, 0x9E,
+    ];
+    let res = parse_with_config(data, Config::default());
+    assert_eq!(res, Err(Error::UnknownAdditionalInfo));
+}

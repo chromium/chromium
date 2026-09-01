@@ -4,7 +4,6 @@
 
 use alloc::vec::Vec;
 use core::cmp::Ordering;
-use core::str;
 
 use crate::constants::*;
 use crate::values::{Map, MapEntry, MapKey, Value};
@@ -89,14 +88,6 @@ impl Default for Config {
     }
 }
 
-fn get_u8(bytes: &mut &[u8]) -> Result<u8, Error> {
-    bytes.split_off_first().copied().ok_or(Error::IncompleteCborData)
-}
-
-fn get<'a>(bytes: &mut &'a [u8], num_bytes: usize) -> Result<&'a [u8], Error> {
-    bytes.split_off(..num_bytes).ok_or(Error::IncompleteCborData)
-}
-
 #[repr(C)]
 #[derive(Debug, PartialEq, Clone)]
 pub struct ParseResult<'a> {
@@ -112,45 +103,10 @@ pub fn parse_with_config<'a>(
     config: Config,
 ) -> Result<ParseResult<'a>, Error> {
     let orig_len = input.len();
-    let value = parse_value(&mut input, 0, &config)?;
+    let mut decoder = Decoder::with_config(config);
+    let value = decoder.parse_value(&mut input, 0)?;
     let bytes_consumed = orig_len - input.len();
     Ok(ParseResult { value, bytes_consumed })
-}
-
-fn parse_value<'a>(
-    input: &mut &'a [u8],
-    depth: usize,
-    config: &Config,
-) -> Result<Value<'a>, Error> {
-    if depth > config.max_nesting_level {
-        return Err(Error::TooMuchNesting);
-    }
-    let (major_type, info, arg) = parse_header(input)?;
-    match major_type {
-        MAJOR_TYPE_UNSIGNED_INT => to_int(arg, false).map(Value::Int),
-        MAJOR_TYPE_NEGATIVE_INT => to_int(arg, true).map(Value::Int),
-        MAJOR_TYPE_BYTE_STRING => to_bytestring(input, arg).map(Value::Bytestring),
-        MAJOR_TYPE_TEXT_STRING => to_string(input, arg, config),
-        MAJOR_TYPE_ARRAY => to_array(input, arg, depth + 1, config).map(Value::Array),
-        MAJOR_TYPE_MAP => to_map(input, arg, depth + 1, config).map(Value::Map),
-        MAJOR_TYPE_SIMPLE_VALUE => to_simple_value(info),
-        _ => Err(Error::UnsupportedMajorType),
-    }
-}
-
-fn parse_header(input: &mut &[u8]) -> Result<(u8, u8, u64), Error> {
-    let b = get_u8(input)?;
-    let major_type = b >> 5;
-    let info = b & 0x1f;
-    let arg = match (major_type, info) {
-        (_, 0..=23) => Ok(info as u64),
-        (_, ADDL_INFO_1_BYTE) => get_argument::<1, u8>(input),
-        (_, ADDL_INFO_2_BYTES) => get_argument::<2, u16>(input),
-        (_, ADDL_INFO_4_BYTES) => get_argument::<4, u32>(input),
-        (_, ADDL_INFO_8_BYTES) => get_argument::<8, u64>(input),
-        _ => Err(Error::UnknownAdditionalInfo),
-    }?;
-    Ok((major_type, info, arg))
 }
 
 // N should really be an associated const, or even replaced with `const {
@@ -181,128 +137,6 @@ impl FromBytes<4> for u32 {
 impl FromBytes<8> for u64 {
     fn from_be_bytes(bytes: [u8; 8]) -> Self {
         Self::from_be_bytes(bytes)
-    }
-}
-
-fn u64_from_be_bytes<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u64, Error> {
-    const {
-        assert!(N == core::mem::size_of::<T>());
-    }
-
-    let Some((bytes, rest)) = input.split_first_chunk::<N>() else {
-        return Err(Error::IncompleteCborData);
-    };
-    *input = rest;
-    Ok(T::from_be_bytes(*bytes).into())
-}
-
-fn get_argument<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u64, Error> {
-    let v = u64_from_be_bytes::<N, T>(input)?;
-    let (_, expected_num_bytes) = crate::writer::low_bits_and_length(v);
-    if N != expected_num_bytes {
-        Err(Error::NonMinimalCborEncoding)
-    } else {
-        Ok(v)
-    }
-}
-
-fn to_int(arg: u64, is_negative: bool) -> Result<i64, Error> {
-    if is_negative {
-        if arg > i64::MAX as u64 {
-            Err(Error::OutOfRangeIntegerValue)
-        } else {
-            Ok(!arg as i64)
-        }
-    } else if arg > i64::MAX as u64 {
-        Err(Error::OutOfRangeIntegerValue)
-    } else {
-        Ok(arg as i64)
-    }
-}
-
-fn to_bytestring<'a>(input: &mut &'a [u8], len64: u64) -> Result<&'a [u8], Error> {
-    let Ok(len) = usize::try_from(len64) else {
-        return Err(Error::IncompleteCborData);
-    };
-    get(input, len)
-}
-
-fn to_string<'a>(input: &mut &'a [u8], len64: u64, config: &Config) -> Result<Value<'a>, Error> {
-    let bytes = to_bytestring(input, len64)?;
-    match str::from_utf8(bytes) {
-        Ok(string) => Ok(Value::String(string)),
-        Err(_) => {
-            if config.allow_invalid_utf8 {
-                Ok(Value::InvalidUtf8(bytes))
-            } else {
-                Err(Error::InvalidUtf8)
-            }
-        }
-    }
-}
-
-fn to_array<'a>(
-    input: &mut &'a [u8],
-    num_elements: u64,
-    depth: usize,
-    config: &Config,
-) -> Result<Vec<Value<'a>>, Error> {
-    let mut ret = Vec::new();
-    for _ in 0..num_elements {
-        ret.push(parse_value(input, depth, config)?);
-    }
-    Ok(ret)
-}
-
-fn to_map<'a>(
-    input: &mut &'a [u8],
-    num_elements: u64,
-    depth: usize,
-    config: &Config,
-) -> Result<Map<'a>, Error> {
-    let mut ret: Vec<MapEntry> = Vec::new();
-
-    for _ in 0..num_elements {
-        // TODO(crbug.com/259749095): Validate key type + order (and possibly return
-        // early) before attempting to parse the value.
-        let key_value = parse_value(input, depth, config)?;
-        let value = parse_value(input, depth, config)?;
-
-        let key = match MapKey::try_from(key_value) {
-            Ok(key) => key,
-            Err(Value::InvalidUtf8(_)) => return Err(Error::InvalidUtf8),
-            Err(_) => return Err(Error::IncorrectMapKeyType),
-        };
-
-        if let Some(previous) = ret.last() {
-            match previous.key.cmp(&key) {
-                Ordering::Less => {}
-                Ordering::Greater
-                    if ret.binary_search_by_key(&&key, |entry| &entry.key).is_err() =>
-                {
-                    return Err(Error::OutOfOrderKey);
-                }
-                // Covers `Ordering::Equal` and `Ordering::Greater` when the key is already
-                // in the map (e.g. an out-of-order duplicate).
-                _ => {
-                    return Err(Error::DuplicateKey);
-                }
-            }
-        }
-
-        ret.push(MapEntry { key, value });
-    }
-    Ok(Map::from_sorted_vec_unchecked(ret))
-}
-
-fn to_simple_value(info: u8) -> Result<Value<'static>, Error> {
-    match info {
-        SIMPLE_VALUE_FALSE => Ok(Value::Boolean(false)),
-        SIMPLE_VALUE_TRUE => Ok(Value::Boolean(true)),
-        SIMPLE_VALUE_NULL => Ok(Value::Null),
-        SIMPLE_VALUE_UNDEFINED => Ok(Value::Undefined),
-        SIMPLE_VALUE_FLOAT_16..=SIMPLE_VALUE_FLOAT_64 => Err(Error::UnsupportedFloatingPointValue),
-        _ => Err(Error::UnsupportedSimpleValue),
     }
 }
 
@@ -475,11 +309,109 @@ impl Default for Decoder {
 }
 
 impl Decoder {
+    fn parse_value<'a>(&mut self, data: &mut &'a [u8], depth: usize) -> Result<Value<'a>, Error> {
+        if depth > self.config.max_nesting_level {
+            return Err(Error::TooMuchNesting);
+        }
+
+        let event = match self.next_event(data) {
+            Ok(CborEvent::NeedsMoreData(_)) => return Err(Error::IncompleteCborData),
+            Ok(e) => e,
+            Err(e) => return Err(e),
+        };
+
+        match event {
+            CborEvent::BytesStart(_) => self.read_complete_bytestring(data).map(Value::Bytestring),
+            CborEvent::ArrayStart(num_elements) => self.parse_array(data, num_elements, depth),
+            CborEvent::MapStart(num_elements) => self.parse_map(data, num_elements, depth),
+            CborEvent::BytesChunk(_)
+            | CborEvent::BytesEnd
+            | CborEvent::Done
+            | CborEvent::NeedsMoreData(_) => {
+                unreachable!("unexpected streaming event in one-pass parser")
+            }
+            leaf_event @ (CborEvent::Int(_)
+            | CborEvent::String(_)
+            | CborEvent::InvalidUtf8(_)
+            | CborEvent::Boolean(_)
+            | CborEvent::Null
+            | CborEvent::Undefined) => Value::try_from(leaf_event)
+                .map_err(|_| unreachable!("unexpected non-scalar event in leaf handler")),
+        }
+    }
+
+    fn parse_array<'a>(
+        &mut self,
+        data: &mut &'a [u8],
+        num_elements: u64,
+        depth: usize,
+    ) -> Result<Value<'a>, Error> {
+        let mut ret = Vec::new();
+        for _ in 0..num_elements {
+            ret.push(self.parse_value(data, depth + 1)?);
+        }
+        Ok(Value::Array(ret))
+    }
+
+    fn parse_map<'a>(
+        &mut self,
+        data: &mut &'a [u8],
+        num_elements: u64,
+        depth: usize,
+    ) -> Result<Value<'a>, Error> {
+        let mut ret: Vec<MapEntry> = Vec::new();
+
+        for _ in 0..num_elements {
+            // TODO(crbug.com/259749095): Validate key type + order (and possibly return
+            // early) before attempting to parse the value.
+            let key_value = self.parse_value(data, depth + 1)?;
+            let value = self.parse_value(data, depth + 1)?;
+
+            let key = match MapKey::try_from(key_value) {
+                Ok(key) => key,
+                Err(Value::InvalidUtf8(_)) => return Err(Error::InvalidUtf8),
+                Err(_) => return Err(Error::IncorrectMapKeyType),
+            };
+
+            if let Some(previous) = ret.last() {
+                match previous.key.cmp(&key) {
+                    Ordering::Less => {}
+                    Ordering::Greater
+                        if ret.binary_search_by_key(&&key, |entry| &entry.key).is_err() =>
+                    {
+                        return Err(Error::OutOfOrderKey);
+                    }
+                    // Covers `Ordering::Equal` and `Ordering::Greater` when the key is already
+                    // in the map (e.g. an out-of-order duplicate).
+                    _ => {
+                        return Err(Error::DuplicateKey);
+                    }
+                }
+            }
+
+            ret.push(MapEntry { key, value });
+        }
+        Ok(Value::Map(Map::from_sorted_vec_unchecked(ret)))
+    }
+
     pub fn read_complete_value<'a>(&mut self, data: &mut &'a [u8]) -> Result<Value<'a>, Error> {
         if self.state != DecoderState::Value {
             return Err(Error::UnknownError);
         }
-        parse_value(data, 0, &self.config)
+
+        let original_data = *data;
+        let original_state = self.state;
+        let original_nesting_stack = self.nesting_stack.clone();
+
+        match self.parse_value(data, 0) {
+            Ok(val) => Ok(val),
+            Err(e) => {
+                *data = original_data;
+                self.state = original_state;
+                self.nesting_stack = original_nesting_stack;
+                Err(e)
+            }
+        }
     }
 
     pub fn read_complete_bytestring<'a>(&mut self, data: &mut &'a [u8]) -> Result<&'a [u8], Error> {
