@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.CustomTabFetchResults.Count"
-    units="count" expires_after="2026-09-22">
+    units="count" expires_after="2027-10-01">
   <owner>hanxi@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <summary>
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.TimeToCreateControllerInCustomTab"
-    units="ms" expires_after="2026-09-08">
+    units="ms" expires_after="2027-10-01">
   <owner>hanxi@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <summary>
