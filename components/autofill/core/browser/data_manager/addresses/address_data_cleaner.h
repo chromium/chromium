@@ -62,9 +62,7 @@ class AddressDataCleaner : public AddressDataManager::Observer,
  private:
   friend class AddressDataCleanerTestApi;
 
-  // Depending on the feature flag
-  // `kAutofillEnableDeduplicationOnBackgroundThread`, either initiates the
-  // cleanup on a background thread or directly on the current thread.
+  // Initiates the addresses cleanup on a background thread.
   void MaybeCleanupAddressData();
 
   // AddressDataManager::Observer

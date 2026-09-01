@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
@@ -22,7 +21,6 @@
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
@@ -35,17 +33,14 @@ namespace {
 using testing::Pointee;
 using testing::UnorderedElementsAre;
 
-class AddressDataCleanerTest : public testing::TestWithParam<bool> {
+class AddressDataCleanerTest : public testing::Test {
  public:
   AddressDataCleanerTest()
       : prefs_(test::PrefServiceForTesting()),
         data_cleaner_(test_adm_,
                       &sync_service_,
                       *prefs_,
-                      /*alternative_state_name_map_updater=*/nullptr) {
-    feature_list_.InitWithFeatureState(
-        features::kAutofillEnableDeduplicationOnBackgroundThread, GetParam());
-  }
+                      /*alternative_state_name_map_updater=*/nullptr) {}
 
   void MaybeCleanupAddressData() {
     test_api(data_cleaner_).MaybeCleanupAddressData();
@@ -53,7 +48,6 @@ class AddressDataCleanerTest : public testing::TestWithParam<bool> {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PrefService> prefs_;
@@ -75,7 +69,7 @@ MATCHER(IsEqualForDeduplicationPurposes, "") {
 
 // Tests that for users not syncing addresses, `MaybeCleanupAddressData()`
 // immediately performs clean-ups.
-TEST_P(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncingAddresses) {
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncingAddresses) {
   // Disable UserSelectableType::kAutofill.
   sync_service_.GetUserSettings()->SetSelectedTypes(false, {});
   ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
@@ -85,7 +79,7 @@ TEST_P(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncingAddresses) {
 
 // Tests that for syncing users `MaybeCleanupAddressData()` doesn't perform
 // clean-ups, since it's expecting another call once sync is ready.
-TEST_P(AddressDataCleanerTest, MaybeCleanupAddressData_SyncingAddresses) {
+TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_SyncingAddresses) {
   sync_service_.SetDownloadStatusFor(
       {syncer::DataType::AUTOFILL_PROFILE, syncer::DataType::CONTACT_INFO},
       syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
@@ -103,7 +97,7 @@ TEST_P(AddressDataCleanerTest, MaybeCleanupAddressData_SyncingAddresses) {
 // Tests that ApplyAddressDedupingRoutine merges the profile values correctly,
 // i.e. never lose information and keep the syntax of the profile with the
 // higher ranking score.
-TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   test_api(data_cleaner_).SetAreCleanupsPending(false);
   // Create three profiles with slightly different values and decreasing ranking
   // scores.
@@ -173,7 +167,7 @@ TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
 
 // Tests that ApplyDeduplicationRoutine doesn't affect profiles that shouldn't
 // get deduplicated.
-TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_UnrelatedProfile) {
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_UnrelatedProfile) {
   test_api(data_cleaner_).SetAreCleanupsPending(false);
   // Expect that the `SubsetOfStandardProfile()` is deduplicated into the
   // `StandardProfile()`, but the `DifferentFromStandardProfile()` remains
@@ -191,7 +185,7 @@ TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_UnrelatedProfile) {
                                    Pointee(different_profile)));
 }
 
-TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_Metrics) {
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_Metrics) {
   test_api(data_cleaner_).SetAreCleanupsPending(false);
   test_adm_.AddProfile(test::StandardProfile());
   test_adm_.AddProfile(test::SubsetOfStandardProfile());
@@ -206,7 +200,7 @@ TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_Metrics) {
 }
 
 // Tests that deduplication is not run a second time on the same major version.
-TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
+TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
   test_adm_.AddProfile(test::StandardProfile());
   test_adm_.AddProfile(test::SubsetOfStandardProfile());
   // Pretend that deduplication was already run this milestone.
@@ -218,7 +212,7 @@ TEST_P(AddressDataCleanerTest, ApplyDeduplicationRoutine_OncePerVersion) {
 
 // Tests that `kAccount` profiles are deduplicated when mergeable with either a
 // different `kAccount` profile or a `kLocalOrSyncable` profile.
-TEST_P(AddressDataCleanerTest, Deduplicate_kAccountExactDuplicates) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountExactDuplicates) {
   test_api(data_cleaner_).SetAreCleanupsPending(false);
   AutofillProfile account_profile1 = test::StandardProfile();
   test_api(account_profile1)
@@ -242,7 +236,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountExactDuplicates) {
 
 // Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
 // profile are deduplicated.
-TEST_P(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
   test_api(data_cleaner_).SetAreCleanupsPending(false);
   AutofillProfile account_profile = test::StandardProfile();
   test_api(account_profile)
@@ -265,7 +259,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
 // A ⊆ B and A ⊆ C
 // B ⊄ C and C ⊄ B
 // Both B and C profiles may benefit from the usage information that A had.
-TEST_P(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
+TEST_F(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
   base::Time now = base::Time::Now();
   test_api(data_cleaner_).SetAreCleanupsPending(false);
 
@@ -326,7 +320,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
 
 // Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
 // profile are deduplicated.
-TEST_P(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
   test_api(data_cleaner_).SetAreCleanupsPending(false);
   AutofillProfile local_profile = test::StandardProfile();
   test_api(local_profile)
@@ -346,7 +340,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
 
 // Tests that `kAccount` profiles which are a mergeable with a
 // `kLocalOrSyncable` profile are deduplicated into the local profile.
-TEST_P(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
   base::Time now = base::Time::Now();
   test_api(data_cleaner_).SetAreCleanupsPending(false);
 
@@ -406,7 +400,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
           false));
 }
 
-TEST_P(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
   base::Time now = base::Time::Now();
   test_api(data_cleaner_).SetAreCleanupsPending(false);
 
@@ -444,7 +438,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
           true));
 }
 
-TEST_P(AddressDataCleanerTest, DeduplicateOncePerMilestone) {
+TEST_F(AddressDataCleanerTest, DeduplicateOncePerMilestone) {
   // Enable early return in MaybeCleanupAddressData for data_cleaner_
   test_api(data_cleaner_).SetAreCleanupsPending(false);
 
@@ -463,7 +457,7 @@ TEST_P(AddressDataCleanerTest, DeduplicateOncePerMilestone) {
   EXPECT_EQ(test_adm_.GetProfiles().size(), 2U);
 }
 
-TEST_P(AddressDataCleanerTest, DeleteDisusedAddresses) {
+TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
   test_api(data_cleaner_).SetAreCleanupsPending(false);
   // Create a disused local address (deletable).
   AutofillProfile local_profile1 = test::GetFullProfile();
@@ -501,7 +495,7 @@ TEST_P(AddressDataCleanerTest, DeleteDisusedAddresses) {
       UnorderedElementsAre(Pointee(local_profile2), Pointee(account_profile2)));
 }
 
-TEST_P(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
+TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
   const AutofillProfileComparator comparator("en_US");
   AutofillProfile profile = test::GetFullProfile();
   // FullProfile2 differs from `profile` in numerious ways.
@@ -532,9 +526,6 @@ TEST_P(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
           autofill_metrics::DifferingProfileWithTypeSet{
               &other_profile3, {PHONE_HOME_WHOLE_NUMBER}}));
 }
-
-
-INSTANTIATE_TEST_SUITE_P(All, AddressDataCleanerTest, testing::Bool());
 
 }  // namespace
 }  // namespace autofill
