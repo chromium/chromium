@@ -1,1 +1,5 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [Input field] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [Input field] class_name=android.widget.EditText
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=UNDEFINED] on [Input field] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CONTENT_INVALID] on [Input field] class_name=android.widget.EditText

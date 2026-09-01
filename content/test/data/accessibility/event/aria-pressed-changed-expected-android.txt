@@ -1,3 +1,10 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ToggleButton [contentTypes=UNDEFINED] on [button1] class_name=android.widget.ToggleButton
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [button1] class_name=android.widget.ToggleButton
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on [button1] class_name=android.widget.ToggleButton
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ToggleButton [contentTypes=UNDEFINED] on [button1] class_name=android.widget.ToggleButton
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ToggleButton [contentTypes=UNDEFINED] on [button2] class_name=android.widget.ToggleButton
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=CHECKED] on [button2] class_name=android.widget.ToggleButton
 TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on [button2] class_name=android.widget.ToggleButton
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ToggleButton [contentTypes=UNDEFINED] on [button2] class_name=android.widget.ToggleButton
