@@ -8,7 +8,7 @@
 
 SendTabToSelfLoadNavigationUserData::SendTabToSelfLoadNavigationUserData(
     web::WebState* web_state,
-    const std::string& entry_guid)
+    std::string_view entry_guid)
     : entry_guid_(entry_guid) {}
 
 SendTabToSelfLoadNavigationUserData::~SendTabToSelfLoadNavigationUserData() =

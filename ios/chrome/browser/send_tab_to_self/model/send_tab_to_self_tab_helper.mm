@@ -25,7 +25,7 @@ namespace {
 // Returns the SendTabToSelfEntry with the given `guid`, or nullptr if not
 // found.
 const send_tab_to_self::SendTabToSelfEntry* GetEntry(web::WebState* web_state,
-                                                     const std::string& guid) {
+                                                     std::string_view guid) {
   if (guid.empty()) {
     return nullptr;
   }
@@ -41,7 +41,7 @@ const send_tab_to_self::SendTabToSelfEntry* GetEntry(web::WebState* web_state,
               : nullptr;
   send_tab_to_self::SendTabToSelfModel* model =
       sync_service ? sync_service->GetSendTabToSelfModel() : nullptr;
-  return model ? model->GetEntryByGUID(guid) : nullptr;
+  return model ? model->GetEntryByGUID(std::string(guid)) : nullptr;
 }
 
 // Attempts to perform scroll restoration for the given `entry` if a text
@@ -102,8 +102,8 @@ void SendTabToSelfTabHelper::WasShown(web::WebState* web_state) {
     return;
   }
 
-  const std::string guid = std::move(deferred_scroll_restoration_guid_);
-  deferred_scroll_restoration_guid_.clear();
+  const std::string guid =
+      std::exchange(deferred_scroll_restoration_guid_, std::string());
 
   const send_tab_to_self::SendTabToSelfEntry* entry = GetEntry(web_state, guid);
   if (entry) {
