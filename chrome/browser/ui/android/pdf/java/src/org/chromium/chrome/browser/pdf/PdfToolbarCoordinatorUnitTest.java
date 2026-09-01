@@ -23,6 +23,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -236,6 +239,26 @@ public class PdfToolbarCoordinatorUnitTest {
                         + pageCount.getText().toString());
         TextView zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
         assertEquals("100%", zoomValue.getText().toString());
+    }
+
+    @Test
+    public void testCurrentPageAccessibilityNodeInfo() {
+        EditText currentPage = mPdfPageView.findViewById(R.id.current_page);
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(currentPage);
+        assertNotNull(delegate);
+        AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(currentPage, info);
+        assertEquals("Page 50 of 100", info.getStateDescription().toString());
+
+        mPdfToolbarCoordinator.onViewportChanged(9, 1.0f);
+        info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(currentPage, info);
+        assertEquals("Page 10 of 100", info.getStateDescription().toString());
+
+        mPdfToolbarCoordinator.onDocumentLoaded(200, "new_title.pdf");
+        info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(currentPage, info);
+        assertEquals("Page 10 of 200", info.getStateDescription().toString());
     }
 
     // Regression test: onViewportChanged with a zoom value just below 5.0
@@ -741,7 +764,8 @@ public class PdfToolbarCoordinatorUnitTest {
         View editButton = pageView.findViewById(R.id.edit_button);
         View fitEditDivider = pageView.findViewById(R.id.fit_edit_divider);
 
-        // Wide screen (e.g. 900dp) -> Edit button and fit_edit_divider should be GONE when edit is disabled
+        // Wide screen (e.g. 900dp) -> Edit button and fit_edit_divider should be
+        // GONE when edit is disabled
         setToolbarWidth(toolbar, 900);
 
         assertEquals(View.GONE, editButton.getVisibility());

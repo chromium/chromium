@@ -9,6 +9,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -66,6 +70,21 @@ class PdfToolbarViewBinder {
                     .setEnabled(model.get(PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED));
         } else if (PdfToolbarProperties.PAGE_NUMBER_EDIT_LISTENER == key) {
             EditText currentPage = view.findViewById(R.id.current_page);
+            ViewCompat.setAccessibilityDelegate(
+                    currentPage,
+                    new AccessibilityDelegateCompat() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfoCompat info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            int current = model.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
+                            int total = model.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
+                            String desc =
+                                    host.getContext()
+                                            .getString(R.string.pdf_page_number, current, total);
+                            info.setStateDescription(desc);
+                        }
+                    });
             Callback<Integer> listener = model.get(PdfToolbarProperties.PAGE_NUMBER_EDIT_LISTENER);
             currentPage.setOnFocusChangeListener(
                     (v, hasFocus) -> {
@@ -133,7 +152,8 @@ class PdfToolbarViewBinder {
         } else if (PdfToolbarProperties.ZOOM_CONTROLS_VISIBLE == key) {
             view.setZoomControlsVisible(model.get(PdfToolbarProperties.ZOOM_CONTROLS_VISIBLE));
         } else if (PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE == key) {
-            view.setPageNavAndEditVisible(model.get(PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE));
+            view.setPageNavAndEditVisible(
+                    model.get(PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE));
         } else if (PdfToolbarProperties.EDIT_MODE_ACTIVE == key) {
             View editButton = view.findViewById(R.id.edit_button);
             editButton.setSelected(model.get(PdfToolbarProperties.EDIT_MODE_ACTIVE));
