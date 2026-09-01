@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -106,6 +107,40 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenuDarkMode) {
           << " has placeholder color red background!";
     }
   }
+
+  menu_button->CloseMenu();
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+}
+
+class ActionAppMenuWithSearchBrowserTest : public ActionAppMenuBrowserTest {
+ public:
+  ActionAppMenuWithSearchBrowserTest() {
+    search_feature_list_.InitAndEnableFeature(features::kChroMenuSearch);
+  }
+  ~ActionAppMenuWithSearchBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList search_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
+                       ShowActionAppMenuWithSearch) {
+  BrowserAppMenuButton* menu_button = GetMenuButton();
+  ASSERT_TRUE(menu_button);
+
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+  EXPECT_FALSE(menu_button->action_app_menu());
+
+  menu_button->ShowMenu(views::MenuRunner::NO_FLAGS);
+
+  EXPECT_TRUE(menu_button->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ASSERT_TRUE(action_menu);
+
+  ActionAppMenuSearchBarView* search_bar =
+      action_menu->search_bar_for_testing();
+  ASSERT_TRUE(search_bar);
+  EXPECT_TRUE(search_bar->search_icon_for_testing()->GetVisible());
 
   menu_button->CloseMenu();
   EXPECT_FALSE(menu_button->IsMenuShowing());

@@ -15,12 +15,15 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -31,13 +34,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -466,6 +473,111 @@ TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
   EXPECT_EQ(zoom_label->GetText(),
             base::FormatPercent(zoom_controller->GetZoomPercent()));
 
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  EXPECT_EQ(menu.search_bar_for_testing(), nullptr);
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(root->HasSubmenu());
+  EXPECT_EQ(root->GetSubmenu()->GetInsets().top(), 16);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kChroMenuSearch);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  ActionAppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(root->HasSubmenu());
+
+  // Check padding: 4px on top, 16px left and right on submenu.
+  gfx::Insets insets = root->GetSubmenu()->GetInsets();
+  EXPECT_EQ(insets.top(), 4);
+  EXPECT_EQ(insets.left(), 16);
+  EXPECT_EQ(insets.right(), 16);
+
+  // Search bar is at index 0 of submenu.
+  EXPECT_EQ(root->GetSubmenu()->children()[0], search_bar);
+
+  // Check initial empty state.
+  views::ImageView* icon = search_bar->search_icon_for_testing();
+  ASSERT_NE(icon, nullptr);
+
+  EXPECT_TRUE(search_bar->GetText().empty());
+  EXPECT_EQ(search_bar->GetPlaceholderText(),
+            l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_PLACEHOLDER));
+  EXPECT_EQ(search_bar->GetPlaceholderText(),
+            u"Search menu, or type an action");
+  EXPECT_EQ(search_bar->placeholder_text_color_id(),
+            ui::kColorTextfieldForegroundPlaceholder);
+  EXPECT_TRUE(icon->GetVisible());
+
+  // Verify empty border with insets and background is transparent.
+  ASSERT_NE(search_bar->GetBorder(), nullptr);
+  const auto* provider = ChromeLayoutProvider::Get();
+  int icon_size =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+  int icon_padding = 12;
+  int icon_text_spacing =
+      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
+  int left_inset = icon_padding + icon_size + icon_text_spacing;
+  EXPECT_EQ(search_bar->GetBorder()->GetInsets(),
+            gfx::Insets::TLBR(6, left_inset, 6, 12));
+  EXPECT_EQ(search_bar->GetBackgroundColor(), SK_ColorTRANSPARENT);
+
+  // Verify inkdrop is enabled on the search bar.
+  EXPECT_EQ(views::InkDrop::Get(search_bar)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+
+  // Mouse press should focus the textfield and enable the cursor.
+  EXPECT_TRUE(search_bar->OnMousePressed(ui::MouseEvent(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON)));
+  EXPECT_TRUE(search_bar->is_active_for_testing());
+  EXPECT_TRUE(search_bar->GetCursorEnabled());
+
+  // Type text: icon remains visible and text appears.
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
+  key_event.set_character('a');
+  search_bar->HandleKeyEvent(&key_event);
+  EXPECT_EQ(search_bar->GetText(), u"a");
+  EXPECT_TRUE(icon->GetVisible());
+
+  // Hitting Enter should do nothing and not trigger any action.
+  ui::KeyEvent enter_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                           ui::EF_NONE);
+  search_bar->HandleKeyEvent(&enter_event);
+  EXPECT_EQ(search_bar->GetText(), u"a");
+
+  // Hitting Backspace deletes the text.
+  ui::KeyEvent backspace_event(ui::EventType::kKeyPressed, ui::VKEY_BACK,
+                               ui::EF_NONE);
+  search_bar->HandleKeyEvent(&backspace_event);
+  EXPECT_EQ(search_bar->GetText(), u"");
+  EXPECT_TRUE(icon->GetVisible());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
 }  // namespace

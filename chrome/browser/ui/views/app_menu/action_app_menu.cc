@@ -4,17 +4,18 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -23,7 +24,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -59,6 +59,7 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
 }
 
 ActionAppMenu::~ActionAppMenu() {
+  search_bar_ = nullptr;
   command_to_action_map_.clear();
   menu_manager_->GetAppMenuRoot()->ResetActionList();
 }
@@ -74,8 +75,16 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
 
   root_->set_children_use_full_width(true);
   views::SubmenuView* submenu = root_->CreateSubmenu();
-  submenu->SetBorder(views::CreateEmptyBorder(
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP)));
+
+  gfx::Insets insets = provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP);
+  if (base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
+    auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
+    search_bar_ = search_bar.get();
+    submenu->AddChildViewAt(std::move(search_bar), 0);
+    insets.set_top(4);
+  }
+
+  submenu->SetBorder(views::CreateEmptyBorder(insets));
   submenu->set_minimum_preferred_width(
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_MINIMUM_WIDTH));
 
@@ -111,6 +120,7 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
 }
 
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
+  search_bar_ = nullptr;
   command_to_action_map_.clear();
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
