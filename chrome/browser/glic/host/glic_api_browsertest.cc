@@ -2917,17 +2917,19 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testShowClientErrorDialog) {
   histogram_tester.ExpectUniqueSample("Glic.Api.Client.ErrorDialogShown",
                                       /*kDisabledByOrganization*/ 1, 1);
 
-  if (base::FeatureList::IsEnabled(features::kGlicCookieSyncOnError) &&
-      base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
-    // Sync will happen automatically if kGlicCookieSyncOnError is enabled.
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return !service()->GetAuthController().NeedsSyncForTesting();
-    }));
-  } else {
-    // Verify that the pref was set to true.
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return service()->GetAuthController().NeedsSyncForTesting();
-    }));
+  if (service()->GetAuthController()) {
+    if (base::FeatureList::IsEnabled(features::kGlicCookieSyncOnError) &&
+        base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
+      // Sync will happen automatically if kGlicCookieSyncOnError is enabled.
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        return !service()->GetAuthController()->NeedsSyncForTesting();
+      }));
+    } else {
+      // Verify that the pref was set to true.
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        return service()->GetAuthController()->NeedsSyncForTesting();
+      }));
+    }
   }
 }
 
@@ -2944,17 +2946,19 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testReportClientTransientError) {
   histogram_tester.ExpectUniqueSample("Glic.Api.Client.TransientError",
                                       /*kUnauthenticated*/ 16, 1);
 
-  if (base::FeatureList::IsEnabled(features::kGlicCookieSyncOnError) &&
-      base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
-    // Sync will happen automatically if kGlicCookieSyncOnError is enabled.
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return !service()->GetAuthController().NeedsSyncForTesting();
-    }));
-  } else {
-    // Verify that the pref was set to true.
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return service()->GetAuthController().NeedsSyncForTesting();
-    }));
+  if (service()->GetAuthController()) {
+    if (base::FeatureList::IsEnabled(features::kGlicCookieSyncOnError) &&
+        base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
+      // Sync will happen automatically if kGlicCookieSyncOnError is enabled.
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        return !service()->GetAuthController()->NeedsSyncForTesting();
+      }));
+    } else {
+      // Verify that the pref was set to true.
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        return service()->GetAuthController()->NeedsSyncForTesting();
+      }));
+    }
   }
 }
 

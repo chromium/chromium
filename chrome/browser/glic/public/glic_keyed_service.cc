@@ -195,11 +195,12 @@ GlicKeyedService::GlicKeyedService(
           enabling_.get(),
           contextual_cueing_service)),
       auth_controller_(
-          std::make_unique<AuthController>(profile, identity_manager)),
+          base::FeatureList::IsEnabled(features::kGlicNoWebview)
+              ? nullptr
+              : std::make_unique<AuthController>(profile, identity_manager)),
 
       tab_data_observer_(std::make_unique<GlicTabDataObserver>(profile)),
       tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>(profile)) {
-
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
 
   // TODO(crbug.com/450026474): Consider not constructing this metrics

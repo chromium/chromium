@@ -126,8 +126,11 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler,
         },
         this->weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
-    GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
-        std::move(wrapped_callback));
+    if (auto* auth_controller = GetGlicService()->GetAuthController()) {
+      auth_controller->CheckAuthBeforeLoad(std::move(wrapped_callback));
+    } else {
+      std::move(wrapped_callback).Run(mojom::PrepareForClientResult::kSuccess);
+    }
   }
 
  private:

@@ -1194,8 +1194,12 @@ class GlicWebClientHandler
   }
 
   void SyncCookies(SyncCookiesCallback callback) override {
-    glic_service_->GetAuthController().ForceSyncCookies(
-        GlicCookieSyncTrigger::kGlicClient, std::move(callback));
+    if (auto* auth_controller = glic_service_->GetAuthController()) {
+      auth_controller->ForceSyncCookies(GlicCookieSyncTrigger::kGlicClient,
+                                        std::move(callback));
+    } else {
+      std::move(callback).Run(true);
+    }
   }
 
   void ClientErrorDialogStateChanged(
@@ -1204,13 +1208,17 @@ class GlicWebClientHandler
     if (shown_dialog_type) {
       base::UmaHistogramEnumeration("Glic.Api.Client.ErrorDialogShown",
                                     *shown_dialog_type);
-      glic_service_->GetAuthController().OnClientError();
+      if (auto* auth_controller = glic_service_->GetAuthController()) {
+        auth_controller->OnClientError();
+      }
     }
   }
 
   void ReportClientTransientError(
       mojo_base::mojom::AbslStatusCode status_code) override {
-    glic_service_->GetAuthController().OnClientTransientError(status_code);
+    if (auto* auth_controller = glic_service_->GetAuthController()) {
+      auth_controller->OnClientTransientError(status_code);
+    }
     base::UmaHistogramSparse("Glic.Api.Client.TransientError",
                              static_cast<int>(status_code));
   }

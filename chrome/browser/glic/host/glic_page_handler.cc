@@ -116,8 +116,11 @@ void GlicPageHandler::PrepareForClient(
       },
       this->weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
-  GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
-      std::move(wrapped_callback));
+  if (auto* auth_controller = GetGlicService()->GetAuthController()) {
+    auth_controller->CheckAuthBeforeLoad(std::move(wrapped_callback));
+  } else {
+    std::move(wrapped_callback).Run(mojom::PrepareForClientResult::kSuccess);
+  }
 }
 
 void GlicPageHandler::WebviewCommitted(const GURL& url) {
@@ -300,7 +303,9 @@ void GlicPageHandler::OpenHelpCenterTopicAndClosePanel(
 }
 
 void GlicPageHandler::SignInAndClosePanel() {
-  GetGlicService()->GetAuthController().ShowReauthForAccount(webui_contents_);
+  if (auto* auth_controller = GetGlicService()->GetAuthController()) {
+    auth_controller->ShowReauthForAccount(webui_contents_);
+  }
 }
 
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,

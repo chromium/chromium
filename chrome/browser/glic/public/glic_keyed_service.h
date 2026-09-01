@@ -208,7 +208,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
                          content::RenderFrameHost* frame,
                          const ::GURL& src_url);
 
-  AuthController& GetAuthController() { return *auth_controller_; }
+  // Null when kGlicNoWebview is enabled.
+  AuthController* GetAuthController() { return auth_controller_.get(); }
 
   void AddPreloadCallback(base::OnceCallback<void()> callback);
 

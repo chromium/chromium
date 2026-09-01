@@ -156,8 +156,10 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
     auto cookie_synchronizer = std::make_unique<TestCookieSynchronizer>(
         profile, IdentityManagerFactory::GetForProfile(profile));
     TestCookieSynchronizer* ptr = cookie_synchronizer.get();
-    service->GetAuthController().SetCookieSynchronizerForTesting(
-        std::move(cookie_synchronizer));
+    if (auto* auth_controller = service->GetAuthController()) {
+      auth_controller->SetCookieSynchronizerForTesting(
+          std::move(cookie_synchronizer));
+    }
 
     return ptr;
   }
