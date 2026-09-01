@@ -48,6 +48,8 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "gr-context-type",
     "oop_read_failure",
     "gpu-gl-error-message",
+    "skia-compile-error",
+    "skia-error-shader",
 
     // components/viz
     "viz_deserialization",
