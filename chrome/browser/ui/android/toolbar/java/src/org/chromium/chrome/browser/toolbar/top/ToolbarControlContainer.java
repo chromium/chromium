@@ -1223,10 +1223,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // Don't react on touch events if the toolbar container is not fully visible.
         if (!isToolbarContainerFullyVisible()) return true;
 
-        // Don't consume the event if it should be passed to the CompositorViewHolder and handled by
-        // the tab strip.
-        if (isOnTabStrip(event)) return false;
-
         // Don't consume the event if it is below the toolbar container and was not handled by any
         // child (such as the tablet find toolbar).
         if (isBelowToolbarContainer(event)) return false;
@@ -1234,10 +1230,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // If we have ACTION_DOWN in this context, that means either no child consumed the event or
         // this class is the top UI at the event position. Then, we don't need to feed the event to
         // mGestureDetector here because the event is already once fed in onInterceptTouchEvent().
-        // Moreover, we have to return true so that this class can continue to intercept all the
-        // subsequent events.
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN && !isOnTabStrip(event)) {
-            return true;
+        // For ACTION_DOWN on the tab strip, return false so that the event is passed to the
+        // CompositorViewHolder and handled by the tab strip.
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            return !isOnTabStrip(event);
         }
 
         return mSwipeGestureListener.onTouchEvent(event);

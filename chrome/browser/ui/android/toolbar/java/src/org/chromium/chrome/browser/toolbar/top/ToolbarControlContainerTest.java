@@ -1197,6 +1197,48 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    public void testOnTouchEvent() {
+        ToolbarControlContainer controlContainer =
+                (ToolbarControlContainer)
+                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+        controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
+        controlContainer.setPostInitializationDependencies(
+                mToolbar,
+                mToolbarView,
+                false,
+                mConstraintsSupplier,
+                mTabSupplier,
+                mCompositorInMotionSupplier,
+                mBrowserStateBrowserControlsVisibilityDelegate,
+                mLayoutStateProviderSupplier,
+                mFullscreenManager,
+                mToolbarDataProvider,
+                mBrowserControlsStateProvider,
+                null,
+                mTopControlsStacker);
+
+        SwipeHandler swipeHandler = mock(SwipeHandler.class);
+        controlContainer.setSwipeHandler(swipeHandler);
+        doReturn(100).when(mToolbar).getTabStripHeight();
+
+        // ACTION_DOWN on the tab strip (y <= 100) should return false so that the tab strip
+        // handles it.
+        MotionEvent downTabStripEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 50, 0);
+        assertFalse(controlContainer.onTouchEvent(downTabStripEvent));
+
+        // ACTION_DOWN on the toolbar (y > 100) should return true so the toolbar captures the
+        // gesture.
+        MotionEvent downToolbarEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 150, 0);
+        assertTrue(controlContainer.onTouchEvent(downToolbarEvent));
+
+        // ACTION_MOVE on the tab strip during an ongoing toolbar gesture should not return false
+        // early, but be delegated to the swipe gesture listener.
+        MotionEvent moveTabStripEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 50, 50, 0);
+        controlContainer.onTouchEvent(moveTabStripEvent);
+    }
+
+    @Test
     public void testHeightSupplier() {
         var controlContainer = new ToolbarControlContainer(mActivity, null);
         var heightSupplier = ObservableSuppliers.createNonNull(-1);
