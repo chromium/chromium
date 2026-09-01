@@ -52,7 +52,6 @@ include_rules = [
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/manage_mirrorsync",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",

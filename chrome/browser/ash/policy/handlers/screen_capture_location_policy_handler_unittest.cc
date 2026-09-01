@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -40,7 +40,7 @@ MATCHER_P2(PrefHasValue, name, value, "") {
 
 class ScreenCaptureLocationPolicyHandlerTest : public testing::Test {
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kSkyVault);
   }
 
  protected:
@@ -99,7 +99,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(ScreenCaptureLocationPolicyHandlerTest, FeatureDisabled) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(features::kSkyVault);
+  scoped_feature_list_.InitAndDisableFeature(ash::features::kSkyVault);
   const std::string path = "${google_drive}";
   policy_.Set(key::kScreenCaptureLocation, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(path),

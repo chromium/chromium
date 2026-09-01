@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator_test_api.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -575,7 +574,7 @@ TEST_F(StorageHandlerTest, CrostiniSize) {
 
   // Enable Borealis.
   features_.InitWithFeatures(
-      {::features::kBorealis, ash::features::kBorealisPermitted}, {});
+      {::ash::features::kBorealis, ash::features::kBorealisPermitted}, {});
   profile_->GetPrefs()->SetBoolean(borealis::prefs::kBorealisInstalledOnDevice,
                                    /*also_enable=*/true);
 
@@ -601,7 +600,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
 
   // Enable Borealis.
   features_.InitWithFeatures(
-      {::features::kBorealis, ash::features::kBorealisPermitted}, {});
+      {::ash::features::kBorealis, ash::features::kBorealisPermitted}, {});
   profile_->GetPrefs()->SetBoolean(borealis::prefs::kBorealisInstalledOnDevice,
                                    /*also_enable=*/true);
 

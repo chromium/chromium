@@ -34,7 +34,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/common/buildflags.h",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_switches.h",
 ]
 

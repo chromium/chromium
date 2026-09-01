@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -1547,7 +1546,7 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSkyVault, ash::features::kSkyVaultV2}, {});
+        {ash::features::kSkyVault, ash::features::kSkyVaultV2}, {});
     VolumeManagerArcTest::SetUp();
   }
 

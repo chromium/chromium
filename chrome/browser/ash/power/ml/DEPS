@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/component_updater",
   "+chrome/browser/profiles",
   "+chrome/browser/tab_contents",
-  "+chrome/common/chrome_features.h",
   "+chrome/grit",
 ]
 

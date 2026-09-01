@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"

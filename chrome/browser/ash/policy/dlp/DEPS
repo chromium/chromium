@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/webui/ash/cloud_upload",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/extensions",
   "+chrome/grit",

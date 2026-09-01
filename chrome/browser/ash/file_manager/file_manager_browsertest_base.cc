@@ -2478,11 +2478,11 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   }
 
   if (options.enable_skyvault) {
-    enabled_features.push_back(features::kSkyVault);
+    enabled_features.push_back(ash::features::kSkyVault);
     enabled_features.push_back(ash::features::kSkyVaultV2);
     enabled_features.push_back(ash::features::kSkyVaultV3);
   } else {
-    disabled_features.push_back(features::kSkyVault);
+    disabled_features.push_back(ash::features::kSkyVault);
     disabled_features.push_back(ash::features::kSkyVaultV2);
     disabled_features.push_back(ash::features::kSkyVaultV3);
   }

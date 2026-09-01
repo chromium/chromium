@@ -17,6 +17,5 @@ include_rules = [
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login/users",
-  "+chrome/common/chrome_features.h",
   "+chrome/test/base",
 ]

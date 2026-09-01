@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -99,7 +98,7 @@ void BorealisFeatures::IsAllowed(
 AllowStatus BorealisFeatures::PreHardwareChecks() {
   // Only put failures here if the user has no means of changing them.  I.e.
   // failures here should be as set-in-stone as hardware.
-  if (!base::FeatureList::IsEnabled(features::kBorealis)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kBorealis)) {
     return AllowStatus::kFeatureDisabled;
   }
 

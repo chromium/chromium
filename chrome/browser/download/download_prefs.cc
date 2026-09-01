@@ -31,7 +31,6 @@
 #include "chrome/browser/download/download_target_determiner.h"
 #include "chrome/browser/download/trusted_sources_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,6 +46,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/json/values_util.h"
 #include "base/scoped_observation.h"
@@ -675,7 +675,7 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
 
   // Allow paths under /tmp if the feature flag is enabled.
   base::FilePath temp_path;
-  if (base::FeatureList::IsEnabled(features::kSkyVault) &&
+  if (base::FeatureList::IsEnabled(ash::features::kSkyVault) &&
       base::GetTempDir(&temp_path) &&
       ((temp_path == path) || temp_path.IsParent(path))) {
     return path;

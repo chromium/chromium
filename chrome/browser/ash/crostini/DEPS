@@ -34,7 +34,6 @@ include_rules = [
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/views/crostini",
   "+chrome/browser/ui/webui/ash",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
 
   "+ui/message_center",

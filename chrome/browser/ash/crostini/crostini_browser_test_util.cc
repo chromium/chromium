@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/prefs/pref_service.h"
@@ -99,7 +99,7 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
 
 CrostiniBrowserTestBase::CrostiniBrowserTestBase(bool register_termina)
     : register_termina_(register_termina) {
-  scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kCrostini);
   fake_crostini_features_.SetAll(true);
 
   dmgr_ = new ash::disks::MockDiskMountManager;

@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/guest_os/virtual_machines/virtual_machines_util.h"
@@ -58,7 +57,7 @@ CrostiniFeatures::~CrostiniFeatures() = default;
 
 bool CrostiniFeatures::CouldBeAllowed(Profile* profile,
                                       std::string* reason) const {
-  if (!base::FeatureList::IsEnabled(features::kCrostini)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kCrostini)) {
     VLOG(1) << "Crostini is not enabled in feature list.";
     // Prior to M105, the /dev/kvm check used the same reason string.
     *reason = "Crostini is not supported on this device";

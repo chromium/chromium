@@ -301,11 +301,18 @@ const base::FeatureParam<int> kBocaReceiverCustomPollingMaxFailuresCount{
 
 BASE_FEATURE(kCrosSwitcher, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Camera Cloud Storage for saving photos and videos on Google Drive
+// or OneDrive, controlled by CameraSaveLocation policy.
+BASE_FEATURE(kCameraCloudStorage, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Indicates whether the camera super resolution is supported. Note that this
 // feature is overridden by login_manager based on whether a per-board build
 // sets the USE camera_feature_super_res flag. Refer to:
 // chromiumos/src/platform2/login_manager/chrome_setup.cc
 BASE_FEATURE(kCameraSuperResSupported, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable Borealis on Chrome OS.
+BASE_FEATURE(kBorealis, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable Big GL when using Borealis.
 BASE_FEATURE(kBorealisBigGl, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -453,6 +460,9 @@ BASE_FEATURE(kCrosSafetyService, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables syncing attestation certificates to cryptauth for use by Cross Device
 // features, including Eche and Phone Hub.
 BASE_FEATURE(kCryptauthAttestationSyncing, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable project Crostini, Linux VMs on Chrome OS.
+BASE_FEATURE(kCrostini, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables experimental containerless Crostini VMs.
 BASE_FEATURE(kCrostiniContainerless, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2143,6 +2153,11 @@ BASE_FEATURE(kHappinessTrackingSystemSlowAndLaggyDeepDive,
 
 // Enables new UX for files policy restrictions on ChromeOS.
 BASE_FEATURE(kNewFilesPolicyUX, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the SkyVault (cloud-first) changes, some of which are also controlled
+// by policies: removing local storage, saving downloads and screen captures to
+// the cloud, and related UX changes, primarily in the Files App.
+BASE_FEATURE(kSkyVault, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the SkyVault V2 changes, which are also controlled by policies:
 // LocalUserFilesAllowed, DownloadDirectory and ScreenCaptureLocation.

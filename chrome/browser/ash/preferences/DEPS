@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system",
   "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]

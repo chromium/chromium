@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/webui/bluetooth_internals",
-  "+chrome/common/chrome_features.h",
 ]
 
 specific_include_rules = {

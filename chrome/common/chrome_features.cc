@@ -99,20 +99,12 @@ const base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
     "");
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enable Borealis on Chrome OS.
-BASE_FEATURE(kBorealis, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCaptureHandleForStandalonePwasAndIwas,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Enable project Crostini, Linux VMs on Chrome OS.
-BASE_FEATURE(kCrostini, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, use the restricted/unified locked state controller.
 BASE_FEATURE(kUseUnifiedLockedStateController,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1734,18 +1726,6 @@ BASE_FEATURE(kProcessPerSiteForDSE,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Enables Camera Cloud Storage for saving photos and videos on Google Drive
-// or OneDrive, controlled by CameraSaveLocation policy.
-BASE_FEATURE(kCameraCloudStorage, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the SkyVault (cloud-first) changes, some of which are also controlled
-// by policies: removing local storage, saving downloads and screen captures to
-// the cloud, and related UX changes, primarily in the Files App.
-BASE_FEATURE(kSkyVault, base::FEATURE_ENABLED_BY_DEFAULT);
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Disable downloads of unsafe file types over insecure transports if initiated
 // from a secure page. As of M89, mixed downloads are blocked on all platforms.

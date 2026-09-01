@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/event_router.h"

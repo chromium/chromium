@@ -527,7 +527,7 @@ void PopulateChromeWebUIFrameBindersPartsCros(
   RegisterWebUIControllerInterfaceBinder<
       new_window_proxy::mojom::NewWindowProxy, ash::EmojiUI>(map);
 
-  if (base::FeatureList::IsEnabled(features::kSkyVault) &&
+  if (base::FeatureList::IsEnabled(ash::features::kSkyVault) &&
       base::FeatureList::IsEnabled(ash::features::kSkyVaultV2)) {
     RegisterWebUIControllerInterfaceBinder<
         policy::local_user_files::mojom::PageHandlerFactory,

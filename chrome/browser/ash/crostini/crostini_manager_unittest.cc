@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -149,7 +148,7 @@ class CrostiniManagerTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         browser_part_(g_browser_process->platform_part()) {
-    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kCrostini}, {});
   }
 
   CrostiniManagerTest(const CrostiniManagerTest&) = delete;

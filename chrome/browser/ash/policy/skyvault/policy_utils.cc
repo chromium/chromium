@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy::local_user_files {
@@ -56,14 +55,14 @@ constexpr char kMigrationDestinationDelete[] = "delete";
 
 bool LocalUserFilesAllowed(const PrefService& local_state) {
   // If the flag is disabled, ignore the policy value and allow local storage.
-  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVault)) {
     return true;
   }
   return local_state.GetBoolean(ash::prefs::kLocalUserFilesAllowed);
 }
 
 MigrationDestination GetMigrationDestination(const PrefService& local_state) {
-  if (!base::FeatureList::IsEnabled(features::kSkyVault) ||
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVault) ||
       !base::FeatureList::IsEnabled(ash::features::kSkyVaultV2)) {
     return MigrationDestination::kNotSpecified;
   }
@@ -104,7 +103,7 @@ FileSaveDestination GetCameraDestination(Profile* profile) {
 }
 
 bool DownloadToTemp(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kSkyVault) &&
+  return base::FeatureList::IsEnabled(ash::features::kSkyVault) &&
          GetDownloadsDestination(profile) == FileSaveDestination::kOneDrive;
 }
 

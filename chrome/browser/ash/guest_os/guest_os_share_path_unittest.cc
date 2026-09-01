@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -574,7 +574,7 @@ TEST_F(GuestOsSharePathTest, FailFuseboxRoot) {
 }
 
 TEST_F(GuestOsSharePathTest, SharePathErrorSeneschal) {
-  features_.InitWithFeatures({features::kCrostini}, {});
+  features_.InitWithFeatures({ash::features::kCrostini}, {});
   user_manager::UserManager::Get()->UserLoggedIn(
       account_id_, user_manager::TestHelper::GetFakeUsernameHash(account_id_));
   vm_tools::concierge::StartVmResponse start_vm_response;
@@ -631,7 +631,7 @@ TEST_F(GuestOsSharePathTest, SharePathErrorNotUnderDownloads) {
 }
 
 TEST_F(GuestOsSharePathTest, SharePathVmToBeRestarted) {
-  features_.InitWithFeatures({features::kCrostini}, {});
+  features_.InitWithFeatures({ash::features::kCrostini}, {});
   user_manager::UserManager::Get()->UserLoggedIn(
       account_id_, user_manager::TestHelper::GetFakeUsernameHash(account_id_));
   guest_os_share_path_->SharePath(

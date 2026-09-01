@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -96,7 +95,7 @@ class CrostiniFeaturesAllowedTest : public testing::Test {
   CrostiniFeaturesAllowedTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kCrostini}, {});
   }
 
   void AddUserWithAffiliation(bool is_affiliated) {

@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/policy/external_storage/device_id.h"
 #include "chromeos/ash/components/policy/external_storage/external_storage_policy_controller.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -992,7 +991,7 @@ void VolumeManager::ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(
 
 // TODO(aidazolic): Figure out why it's called twice for every update.
 void VolumeManager::OnLocalUserFilesPolicyChanged() {
-  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVault)) {
     return;
   }
 

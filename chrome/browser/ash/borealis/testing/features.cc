@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 
@@ -17,7 +16,7 @@ void AllowBorealis(Profile* profile,
                    ash::FakeChromeUserManager* user_manager,
                    bool also_enable) {
   features->InitWithFeatures(
-      {features::kBorealis, ash::features::kBorealisPermitted}, {});
+      {ash::features::kBorealis, ash::features::kBorealisPermitted}, {});
   AccountId account_id =
       AccountId::FromUserEmail(profile->GetProfileUserName());
   user_manager->AddUserWithAffiliation(account_id, /*is_affiliated=*/false);

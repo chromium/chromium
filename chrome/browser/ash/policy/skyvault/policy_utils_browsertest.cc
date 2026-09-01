@@ -6,12 +6,12 @@
 
 #include <tuple>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -36,9 +36,9 @@ class LocalUserFilesPolicyUtilsBrowserTest
 
   LocalUserFilesPolicyUtilsBrowserTest() {
     if (EnableSkyvault()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+      scoped_feature_list_.InitAndEnableFeature(ash::features::kSkyVault);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSkyVault);
+      scoped_feature_list_.InitAndDisableFeature(ash::features::kSkyVault);
     }
   }
   ~LocalUserFilesPolicyUtilsBrowserTest() override = default;
@@ -121,7 +121,7 @@ class ScreenCaptureDestinationUtilsTest : public policy::PolicyTest {
                                   base::Value(destination));
     provider_.UpdateChromePolicy(policies);
   }
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSkyVault};
+  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kSkyVault};
 };
 
 IN_PROC_BROWSER_TEST_F(ScreenCaptureDestinationUtilsTest,
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(ScreenCaptureDestinationUtilsTest,
 class DownloadsDestinationUtilsTestWithSkyvault
     : public DownloadsDestinationUtilsTest {
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSkyVault};
+  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kSkyVault};
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadsDestinationUtilsTestWithSkyvault,

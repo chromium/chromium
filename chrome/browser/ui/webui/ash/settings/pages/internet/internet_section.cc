@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

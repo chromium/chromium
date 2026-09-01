@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -38,7 +37,8 @@ class MigrationNotificationManagerTest : public InProcessBrowserTest {
  public:
   MigrationNotificationManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkyVault, ash::features::kSkyVaultV2},
+        /*enabled_features=*/{ash::features::kSkyVault,
+                              ash::features::kSkyVaultV2},
         /*disabled_features=*/{});
   }
   ~MigrationNotificationManagerTest() override = default;

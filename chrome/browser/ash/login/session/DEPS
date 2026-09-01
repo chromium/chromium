@@ -72,7 +72,6 @@ include_rules = [
   "+chrome/browser/ui/startup",
   "+chrome/browser/ui/webui/ash",
   "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/logging_chrome.h",
   "+chrome/test/base",

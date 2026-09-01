@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/device_scheduled_reboot",
-  "+chrome/common/chrome_features.h",
   "+chrome/test/base",
 ]
 

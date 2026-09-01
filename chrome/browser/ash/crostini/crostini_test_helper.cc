@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -30,7 +30,7 @@ constexpr SkColor kTestContainerBadgeColor = SK_ColorBLUE;
 
 CrostiniTestHelper::CrostiniTestHelper(Profile* profile, bool enable_crostini)
     : profile_(CHECK_DEREF(profile)) {
-  scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kCrostini);
   if (enable_crostini) {
     EnableCrostini(profile);
   }

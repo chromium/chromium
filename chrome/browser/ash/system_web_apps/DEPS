@@ -64,7 +64,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/url_constants.h",

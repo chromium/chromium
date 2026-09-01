@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/chrome_pref_names.h"
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_item_utils.h"
@@ -45,7 +45,7 @@ bool ShouldUploadFile(Profile* profile,
 std::unique_ptr<SkyvaultRenameHandler> SkyvaultRenameHandler::CreateIfNeeded(
     const PrefService& local_state,
     download::DownloadItem* download_item) {
-  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVault)) {
     return nullptr;
   }
 

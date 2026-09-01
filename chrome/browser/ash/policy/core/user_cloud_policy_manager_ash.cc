@@ -41,7 +41,6 @@
 #include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chrome/common/chrome_features.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
@@ -136,7 +135,7 @@ class UserCloudPolicyManagerAshNotifierFactory
 
 // Returns true only if SkyVault TT is enabled, but GA is not.
 bool IsSkyVaultTTEnabled() {
-  return base::FeatureList::IsEnabled(features::kSkyVault) &&
+  return base::FeatureList::IsEnabled(ash::features::kSkyVault) &&
          !base::FeatureList::IsEnabled(ash::features::kSkyVaultV2);
 }
 

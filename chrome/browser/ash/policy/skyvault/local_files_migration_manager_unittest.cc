@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/policy/skyvault/test/skyvault_test_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -72,7 +71,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
     testing::Test::SetUp();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kSkyVault, ash::features::kSkyVaultV2,
+        {ash::features::kSkyVault, ash::features::kSkyVaultV2,
          ash::features::kSkyVaultV3},
         /*disabled_features=*/{});
 

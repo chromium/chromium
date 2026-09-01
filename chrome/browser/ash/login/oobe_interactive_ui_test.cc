@@ -70,7 +70,6 @@
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"

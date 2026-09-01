@@ -39,7 +39,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"

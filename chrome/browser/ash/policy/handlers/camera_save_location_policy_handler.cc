@@ -7,11 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
@@ -57,7 +57,7 @@ void CameraSaveLocationPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kCameraCloudStorage)) {
+  if (base::FeatureList::IsEnabled(ash::features::kCameraCloudStorage)) {
     const std::string str = value->GetString();
     prefs->SetString(ash::prefs::kCameraSaveLocation, str);
   } else {

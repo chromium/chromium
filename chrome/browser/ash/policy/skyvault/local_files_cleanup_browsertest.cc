@@ -16,7 +16,6 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 
@@ -27,7 +26,7 @@ class LocalFilesCleanupTest : public policy::PolicyTest {
   LocalFilesCleanupTest() {
     // Disable SkyVaultV2 - cleanup doesn't apply for GA.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkyVault},
+        /*enabled_features=*/{ash::features::kSkyVault},
         /*disabled_features=*/{ash::features::kSkyVaultV2});
   }
   ~LocalFilesCleanupTest() override = default;

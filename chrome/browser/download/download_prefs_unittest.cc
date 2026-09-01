@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_features.h"
@@ -26,6 +25,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -617,7 +617,7 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   // Temp for OneDrive.
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(features::kSkyVault);
+    scoped_feature_list.InitAndEnableFeature(ash::features::kSkyVault);
 
     base::FilePath temp_path;
     base::GetTempDir(&temp_path);

@@ -46,7 +46,6 @@ include_rules = [
   "+chrome/browser/upgrade_detector",
   "+chrome/browser/web_applications/isolated_web_apps",
   "+chrome/browser/web_applications/policy/app_service_web_app_policy.h",
-  "+chrome/common/chrome_features.h",
 ]
 
 specific_include_rules = {

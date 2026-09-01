@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/constants/ash_extension_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
@@ -59,7 +60,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/disks/disk.h"
@@ -1567,7 +1567,7 @@ void EventRouter::OnConnectionChanged(
 }
 
 void EventRouter::OnLocalUserFilesPolicyChanged() {
-  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVault)) {
     return;
   }
   OnFileManagerPrefsChanged();

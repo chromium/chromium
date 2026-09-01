@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -42,7 +42,7 @@ class TestObserver : public LocalUserFilesPolicyObserver {
 class LocalUserFilesPolicyObserverTest : public policy::PolicyTest {
  public:
   LocalUserFilesPolicyObserverTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kSkyVault);
   }
   ~LocalUserFilesPolicyObserverTest() override = default;
 

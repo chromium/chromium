@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <limits>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -57,7 +57,7 @@ class BorealisFeaturesTest : public testing::Test {
 
 TEST_F(BorealisFeaturesTest, DisallowedWhenFeatureIsDisabled) {
   features_.Reset();
-  features_.InitAndDisableFeature(features::kBorealis);
+  features_.InitAndDisableFeature(ash::features::kBorealis);
   EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kFeatureDisabled);
 }
 TEST_F(BorealisFeaturesTest, AllowedWhenFeatureIsEnabled) {

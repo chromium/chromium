@@ -38,7 +38,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
@@ -108,7 +107,8 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
  public:
   LocalFilesMigrationManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkyVault, ash::features::kSkyVaultV2,
+        /*enabled_features=*/{ash::features::kSkyVault,
+                              ash::features::kSkyVaultV2,
                               ash::features::kSkyVaultV3,
                               chromeos::features::kUploadOfficeToCloud},
         /*disabled_features=*/{});

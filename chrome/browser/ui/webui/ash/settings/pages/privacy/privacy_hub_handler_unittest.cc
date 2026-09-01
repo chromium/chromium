@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"

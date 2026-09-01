@@ -14182,7 +14182,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
           entry.internal_name ||
       std::string_view(kBorealisZinkGlDriverInternalName) ==
           entry.internal_name) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
+    return !base::FeatureList::IsEnabled(ash::features::kBorealis);
   }
 
   // Only show wallpaper fast refresh flag if channel is one of

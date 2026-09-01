@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
@@ -405,7 +405,7 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
 class FileManagerEventRouterLocalFilesTest : public FileManagerEventRouterTest {
  public:
   FileManagerEventRouterLocalFilesTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kSkyVault);
   }
   ~FileManagerEventRouterLocalFilesTest() override = default;
 

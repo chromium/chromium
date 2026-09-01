@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/web_app_id.h"
@@ -401,7 +401,7 @@ class AppServiceShelfContextMenuCrostiniAppBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kCrostini};
+  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kCrostini};
 };
 
 // Crostini apps have `LAUNCH_NEW` menu item at non-0 position without submenu.

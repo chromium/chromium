@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

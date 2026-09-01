@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/skyvault_resources.h"
 #include "chrome/grit/skyvault_resources_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,7 +28,7 @@ namespace policy::local_user_files {
 
 bool LocalFilesMigrationUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kSkyVault) &&
+  return base::FeatureList::IsEnabled(ash::features::kSkyVault) &&
          base::FeatureList::IsEnabled(ash::features::kSkyVaultV2);
 }
 

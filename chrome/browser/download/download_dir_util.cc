@@ -7,10 +7,10 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/policy/policy_path_parser.h"
-#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -66,7 +66,7 @@ bool ExpandDrivePolicyVariable(Profile* profile,
 bool ExpandOneDrivePolicyVariable(Profile* profile,
                                   const base::FilePath& old_path,
                                   base::FilePath* new_path) {
-  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVault)) {
     return false;
   }
 
