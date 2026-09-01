@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_linked_pill.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_badge_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_identifier.h"

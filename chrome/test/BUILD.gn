@@ -3739,6 +3739,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/autofill/payments:save_card_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:save_card_manage_cards_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:save_payment_method_and_virtual_card_enroll_confirmation_bubble_views",
+        "//chrome/browser/ui/views/autofill/payments:select_bnpl_issuer_dialog",
         "//chrome/browser/ui/views/autofill/payments:wallet_reminder_notice_bubble_view",
         "//chrome/browser/ui/views/autofill/payments:webauthn_dialog_view",
         "//chrome/browser/ui/views/extensions:extensions_views_utils",
@@ -3808,8 +3809,13 @@ if (!is_android) {
       ]
 
       deps += [
+        "//chrome/browser/ui/views/autofill/payments:bnpl_issuer_linked_pill",
+        "//chrome/browser/ui/views/autofill/payments:omnibox_autofill_bubble_view",
+        "//chrome/browser/ui/views/autofill/payments:select_bnpl_issuer_dialog",
         "//chrome/browser/ui/views/autofill/popup",
         "//chrome/browser/ui/views/autofill/popup:password_favicon_loader",
+        "//chrome/browser/ui/views/autofill/popup:popup_loading_view",
+        "//chrome/browser/ui/views/autofill/popup:popup_row_factory_utils",
         "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
       ]
       if (is_win) {
@@ -7770,6 +7776,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views:tab_icon_view",
       "//chrome/browser/ui/views/apps/app_info_dialog:unit_tests",
       "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
+      "//chrome/browser/ui/views/autofill/payments:select_bnpl_issuer_dialog",
       "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
@@ -7916,13 +7923,16 @@ test("unit_tests") {
     # TODO(crbug.com/353332589): Remove this dependency when the
     # views/autofill/popup/ unit tests get modularized.
     deps += [
+      "//chrome/browser/ui/views/autofill/payments:bnpl_issuer_linked_pill",
       "//chrome/browser/ui/views/autofill/popup",
       "//chrome/browser/ui/views/autofill/popup:lazy_loading_image_view",
       "//chrome/browser/ui/views/autofill/popup:password_favicon_loader",
       "//chrome/browser/ui/views/autofill/popup:popup_at_memory_ai_disclosure_view",
       "//chrome/browser/ui/views/autofill/popup:popup_cell_utils",
       "//chrome/browser/ui/views/autofill/popup:popup_centered_text_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_loading_view",
       "//chrome/browser/ui/views/autofill/popup:popup_row_content_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_row_factory_utils",
       "//chrome/browser/ui/views/autofill/popup:popup_row_with_button_view",
       "//chrome/browser/ui/views/autofill/popup:popup_separator_view",
       "//chrome/browser/ui/views/autofill/popup:popup_title_view",
@@ -8740,6 +8750,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/autofill/payments:save_card_bubble_views",
       "//chrome/browser/ui/views/autofill/payments:save_iban_bubble_view",
       "//chrome/browser/ui/views/autofill/payments:save_payment_method_and_virtual_card_enroll_confirmation_bubble_views",
+      "//chrome/browser/ui/views/autofill/payments:select_bnpl_issuer_dialog",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/contextual_tasks:interactive_ui_tests",

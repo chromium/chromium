@@ -610,3 +610,80 @@ source_set("save_card_offer_bubble_views") {
     "//ui/gfx",
   ]
 }
+
+source_set("bnpl_issuer_linked_pill") {
+  public = [ "bnpl_issuer_linked_pill.h" ]
+  sources = [ "bnpl_issuer_linked_pill.cc" ]
+  public_deps = [
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/accessibility",
+    "//chrome/browser/ui/views/autofill/popup:popup_badge_constants",
+    "//components/autofill/core/common:features",
+    "//components/strings:components_strings",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base",
+    "//ui/color",
+  ]
+}
+
+source_set("select_bnpl_issuer_dialog") {
+  public = [
+    "bnpl_issuer_view.h",
+    "select_bnpl_issuer_dialog.h",
+  ]
+  sources = [
+    "bnpl_issuer_view.cc",
+    "select_bnpl_issuer_dialog.cc",
+  ]
+  public_deps = [
+    ":payments_view_util",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/tabs:public",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":bnpl_dialog_footnote",
+    ":bnpl_issuer_linked_pill",
+    ":dialog_view_ids",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/controls",
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
+}
+
+source_set("omnibox_autofill_bubble_view") {
+  public = [ "omnibox_autofill_bubble_view.h" ]
+  sources = [ "omnibox_autofill_bubble_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+    "//ui/base/metadata",
+  ]
+  deps = [
+    ":omnibox_autofill_suggestion_view",
+    ":payments_view_util",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/autofill/popup:popup_row_content_view",
+    "//chrome/browser/ui/views/autofill/popup:popup_row_factory_utils",
+    "//components/autofill/core/browser",
+    "//content/public/browser",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/display",
+    "//ui/views",
+  ]
+}

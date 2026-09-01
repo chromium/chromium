@@ -194,6 +194,7 @@ source_set("popup_bnpl_footnote_view") {
     "//chrome/common:constants",
     "//components/autofill/core/browser",
     "//components/strings:components_strings",
+    "//components/user_education/views",
     "//ui/base",
     "//ui/views",
   ]
@@ -215,6 +216,7 @@ source_set("popup_notice_view") {
     "//chrome/browser/ui/views:layout_provider",
     "//components/autofill/core/browser",
     "//components/strings:components_strings",
+    "//components/user_education/views",
     "//components/vector_icons",
     "//ui/base",
     "//ui/color",
@@ -236,6 +238,7 @@ source_set("popup_search_bar_view") {
     "//chrome/browser/ui/views:layout_provider",
     "//components/omnibox/browser:vector_icons",
     "//components/strings:components_strings",
+    "//components/user_education/views",
     "//components/vector_icons",
     "//ui/base",
     "//ui/color",
@@ -266,6 +269,7 @@ source_set("popup_cell_utils") {
     "//components/omnibox/browser:vector_icons",
     "//components/qr_code_generator:bitmap_generator",
     "//components/strings:components_strings",
+    "//components/user_education/views",
     "//components/vector_icons",
     "//ui/accessibility:ax_base",
     "//ui/color",
@@ -290,6 +294,7 @@ source_set("popup_row_with_button_view") {
     "//chrome/browser/ui/views:layout_provider",
     "//components/autofill/core/browser",
     "//components/strings:components_strings",
+    "//components/user_education/views",
     "//components/vector_icons",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo",
@@ -314,6 +319,7 @@ source_set("popup_at_memory_ai_disclosure_view") {
     "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//components/strings:components_strings",
+    "//components/user_education/views",
     "//content/public/browser",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
@@ -352,4 +358,57 @@ source_set("browser_tests") {
       "//url",
     ]
   }
+}
+
+source_set("popup_badge_constants") {
+  public = [ "popup_badge_constants.h" ]
+  public_deps = [
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("popup_row_factory_utils") {
+  public = [ "popup_row_factory_utils.h" ]
+  sources = [ "popup_row_factory_utils.cc" ]
+  public_deps = [
+    ":password_favicon_loader",
+    ":popup",
+    ":popup_badge_constants",
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//components/autofill/core/browser",
+    "//components/user_education/common",
+    "//ui/views",
+  ]
+  deps = [
+    ":lazy_loading_image_view",
+    ":popup_cell_utils",
+    ":popup_row_content_view",
+    ":popup_row_with_button_view",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/autofill/payments:bnpl_issuer_linked_pill",
+    "//chrome/browser/user_education",
+    "//components/strings:components_strings",
+    "//components/user_education/views",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("popup_loading_view") {
+  public = [ "popup_loading_view.h" ]
+  sources = [ "popup_loading_view.cc" ]
+  public_deps = [
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":popup_row_content_view",
+    ":popup_row_factory_utils",
+    "//components/autofill/core/browser",
+    "//ui/accessibility:ax_enums_mojo",
+  ]
 }
