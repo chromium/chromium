@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -438,21 +439,32 @@ class InteractiveViewsTestMixin : public T, public InteractiveViewsTestApi {
 // static
 template <class T>
 T* InteractiveViewsTestApi::AsView(ui::TrackedElement* el) {
-  auto* const views_el = el->AsA<TrackedElementViews>();
-  CHECK(views_el);
-  T* const view = AsViewClass<T>(views_el->view());
-  CHECK(view);
-  return view;
+  return const_cast<T*>(InteractiveViewsTestApi::AsView<T>(
+      const_cast<const ui::TrackedElement*>(el)));
 }
 
 // static
 template <class T>
 const T* InteractiveViewsTestApi::AsView(const ui::TrackedElement* el) {
-  const auto* const views_el = el->AsA<TrackedElementViews>();
-  CHECK(views_el);
-  const T* const view = AsViewClass<T>(views_el->view());
-  CHECK(view);
-  return view;
+  if (const auto* const views_el = el->AsA<TrackedElementViews>()) {
+    const T* const view = AsViewClass<T>(views_el->view());
+    CHECK(view);
+    return view;
+  }
+  for (const auto* v : ElementTrackerViews::GetInstance()->GetAllMatchingViews(
+           el->identifier(), el->context(), /*require_visible=*/true)) {
+    if (const T* const view = AsViewClass<T>(v)) {
+      return view;
+    }
+  }
+  for (const auto* v :
+       ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+           el->identifier(), /*require_visible=*/true)) {
+    if (const T* const view = AsViewClass<T>(v)) {
+      return view;
+    }
+  }
+  NOTREACHED();
 }
 
 // static

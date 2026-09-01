@@ -134,12 +134,16 @@ class OmniboxWebUiInteractiveTestBase
   // `OmniboxPopupView` may host multiple content views, but only one is
   // visible at any given time.
   auto GetActiveClassicPopupWebView() {
-    return base::BindLambdaForTesting([&]() -> views::View* {
+    return base::BindLambdaForTesting([this]() -> views::View* {
+      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+      if (!browser_view || !browser_view->GetLocationBar()) {
+        return nullptr;
+      }
       auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->toolbar()
-              ->location_bar()
-              ->GetOmniboxPopupView());
+          browser_view->GetLocationBar()->GetOmniboxPopupView());
+      if (!popup_view || !popup_view->presenter()) {
+        return nullptr;
+      }
       return popup_view->presenter()->GetWebUIContent();
     });
   }
@@ -335,14 +339,21 @@ class OmniboxAimWebUiInteractiveTestBase
           base::test::RunUntil([&]() { return service->IsAimEligible(); }));
     });
   }
-
   auto GetActiveAimPopupWebView() {
-    return base::BindLambdaForTesting([&]() -> views::View* {
-      auto* aim_presenter = BrowserView::GetBrowserViewForBrowser(browser())
-                                ->toolbar()
-                                ->location_bar()
-                                ->GetPresenterDelegate()
-                                ->GetOmniboxPopupAimPresenter();
+    return base::BindLambdaForTesting([this]() -> views::View* {
+      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+      if (!browser_view || !browser_view->GetLocationBar()) {
+        return nullptr;
+      }
+      auto* presenter_delegate =
+          browser_view->GetLocationBar()->GetPresenterDelegate();
+      if (!presenter_delegate) {
+        return nullptr;
+      }
+      auto* aim_presenter = presenter_delegate->GetOmniboxPopupAimPresenter();
+      if (!aim_presenter) {
+        return nullptr;
+      }
       return aim_presenter->GetWebUIContent();
     });
   }

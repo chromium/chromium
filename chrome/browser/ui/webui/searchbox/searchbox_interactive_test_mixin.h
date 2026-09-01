@@ -70,8 +70,16 @@ class SearchboxInteractiveTestMixin : public T {
             T::PollElement(
                 kGoogleSearchNavigated, tab_id,
                 [expected_params](const ui::TrackedElement* el) {
-                  const GURL url = el->AsA<TrackedElementWebContents>()
-                                       ->owner()
+                  if (!el) {
+                    return false;
+                  }
+                  const auto* const tracked_wc =
+                      el->AsA<TrackedElementWebContents>();
+                  if (!tracked_wc || !tracked_wc->owner() ||
+                      !tracked_wc->owner()->web_contents()) {
+                    return false;
+                  }
+                  const GURL url = tracked_wc->owner()
                                        ->web_contents()
                                        ->GetLastCommittedURL();
                   if (!google_util::IsGoogleSearchUrl(url)) {
