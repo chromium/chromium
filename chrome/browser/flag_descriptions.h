@@ -2012,6 +2012,12 @@ inline constexpr char kEnableAccountPreviewPreferredAccountName[] =
 inline constexpr char kEnableAccountPreviewPreferredAccountDescription[] =
     "Controls whether computing and storing the preferred account is enabled.";
 
+inline constexpr char kEnableAccountPreviewUseAppAccountName[] =
+    "Use 1P App Account for Preferred Account Computing";
+inline constexpr char kEnableAccountPreviewUseAppAccountDescription[] =
+    "Controls whether the 1P app account is used in computing the preferred "
+    "account.";
+
 inline constexpr char kEnableAiSubscriptionAvatarRingName[] =
     "Enable AI Subscription Avatar Ring";
 inline constexpr char kEnableAiSubscriptionAvatarRingDescription[] =

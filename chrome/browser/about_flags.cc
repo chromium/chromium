@@ -13775,6 +13775,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewPreferredAccount)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-account-preview-use-app-account",
+     flag_descriptions::kEnableAccountPreviewUseAppAccountName,
+     flag_descriptions::kEnableAccountPreviewUseAppAccountDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewUseAppAccount)},
     {"universal-keyboard-handling",
      flag_descriptions::kUniversalKeyboardHandlingName,
      flag_descriptions::kUniversalKeyboardHandlingDescription, kOsAndroid,
