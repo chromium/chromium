@@ -8,6 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -15,6 +18,7 @@
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
@@ -157,4 +161,51 @@ TEST_F(WellKnownChangePasswordNavigationThrottleFencedFramesTest,
 
   GURL url("https://google.com/.well-known/change-password");
   EXPECT_FALSE(CreateNavigationThrottle({url, fenced_frame}));
+}
+
+TEST_F(WellKnownChangePasswordNavigationThrottleTest,
+       CreateNavigationThrottle_IncognitoProfile) {
+  Profile* incognito_profile = profile()->GetPrimaryOTRProfile(true);
+  ASSERT_TRUE(incognito_profile->IsIncognitoProfile());
+
+  std::unique_ptr<content::WebContents> incognito_web_contents =
+      content::WebContentsTester::CreateTestWebContents(incognito_profile,
+                                                        nullptr);
+
+  GURL url("https://google.com/.well-known/change-password");
+  content::MockNavigationHandle handle(
+      url, incognito_web_contents->GetPrimaryMainFrame());
+  handle.set_page_transition(ui::PAGE_TRANSITION_FROM_API);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_FALSE(registry.throttles().empty());
+}
+
+TEST_F(WellKnownChangePasswordNavigationThrottleTest,
+       CreateNavigationThrottle_EnterpriseIsolatedModeProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  profile()->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+  Profile* isolated_profile = profile()->GetPrimaryOTRProfile(true);
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  std::unique_ptr<content::WebContents> isolated_web_contents =
+      content::WebContentsTester::CreateTestWebContents(isolated_profile,
+                                                        nullptr);
+
+  GURL url("https://google.com/.well-known/change-password");
+  content::MockNavigationHandle handle(
+      url, isolated_web_contents->GetPrimaryMainFrame());
+  handle.set_page_transition(ui::PAGE_TRANSITION_FROM_API);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_FALSE(registry.throttles().empty());
 }

@@ -70,9 +70,11 @@ void WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(
   auto& handle = registry.GetNavigationHandle();
   auto* profile =
       Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
-  // Create WellKnownChangePasswordNavigationThrottle only for regular or
-  // incognito profiles.
-  if (!profile->IsRegularProfile() && !profile->IsIncognitoProfile()) {
+  // Create WellKnownChangePasswordNavigationThrottle only for regular
+  // profiles or primary OTR profiles with a regular parent (e.g. incognito or
+  // enterprise isolated mode).
+  if (!profile->IsRegularProfile() &&
+      !profile->IsPrimaryOTRProfileWithRegularParent()) {
     return;
   }
 
