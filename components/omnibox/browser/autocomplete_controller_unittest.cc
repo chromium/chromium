@@ -2154,6 +2154,43 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ContextualSuggestionsAndLens) {
     check_results(/*expect_contextual=*/true, /*expect_lens=*/true);
   }
 }
+
+TEST_F(AutocompleteControllerTest, UpdateResult_HasContextualChips) {
+  AutocompleteInput zps_input(u"", 0u, metrics::OmniboxEventProto::OTHER,
+                              TestSchemeClassifier());
+  zps_input.set_current_url(GURL("https://google.com"));
+  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  EXPECT_CALL(*provider_client(), IsOmniboxNextAimPopupEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*provider_client(), IsPagePaywalled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*provider_client(), IsLensEnabled())
+      .WillRepeatedly(testing::Return(false));
+
+  // When neither Lens nor AskG is enabled and page is paywalled, has_contextual_chips is false.
+  EXPECT_CALL(*provider_client(), IsAskGShowChipEnabled())
+      .WillRepeatedly(testing::Return(false));
+  controller_.SimulateAutocompletePass(/*sync=*/true, /*done=*/true, {},
+                                       zps_input);
+  EXPECT_FALSE(controller_.result().has_contextual_chips());
+
+  // When IsAskGShowChipEnabled is true, has_contextual_chips is true.
+  EXPECT_CALL(*provider_client(), IsAskGShowChipEnabled())
+      .WillRepeatedly(testing::Return(true));
+  controller_.SimulateAutocompletePass(/*sync=*/true, /*done=*/true, {},
+                                       zps_input);
+  EXPECT_TRUE(controller_.result().has_contextual_chips());
+
+  // When IsLensEnabled is true, has_contextual_chips is true.
+  EXPECT_CALL(*provider_client(), IsAskGShowChipEnabled())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*provider_client(), IsLensEnabled())
+      .WillRepeatedly(testing::Return(true));
+  controller_.SimulateAutocompletePass(/*sync=*/true, /*done=*/true, {},
+                                       zps_input);
+  EXPECT_TRUE(controller_.result().has_contextual_chips());
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(AutocompleteControllerTest, ExtraHeaders) {

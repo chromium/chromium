@@ -1591,12 +1591,13 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   }
 
   PostProcessMatches();
-
-  const bool is_lens_enabled = autocomplete_provider_client()->IsLensEnabled();
-
+  // TODO (crbug.com/555355466): Refactor or remove this logic when we remove
+  // OB simplification code paths.
+  const auto* client = autocomplete_provider_client();
   internal_result_.set_has_contextual_chips(
-      autocomplete_provider_client()->IsOmniboxNextAimPopupEnabled() &&
-      (is_lens_enabled || can_show_contextual_suggestions));
+      client->IsOmniboxNextAimPopupEnabled() &&
+      (client->IsLensEnabled() || client->IsAskGShowChipEnabled() ||
+       can_show_contextual_suggestions));
 
   bool default_match_changed = CheckWhetherDefaultMatchChanged(
       old_result.last_default_match,
