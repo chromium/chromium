@@ -9186,7 +9186,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* iframe_rfh =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_NE(iframe_rfh, nullptr);
-  iframe_rfh->UpdateIsAdFrame(/*is_ad_frame=*/true);
+  iframe_rfh->UpdateToAdFrame();
   ASSERT_TRUE(iframe_rfh->IsAdFrame());
 
   // TODO(crbug.com/461821799): If only ad subframe remains loading,

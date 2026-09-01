@@ -357,25 +357,33 @@ void BrowsingContextState::OnSetHadStickyUserActivationBeforeNavigation(
   replication_state_->has_received_user_gesture_before_nav = value;
 }
 
-void BrowsingContextState::SetIsAdFrame(bool is_ad_frame) {
-  if (is_ad_frame == replication_state_->is_ad_frame)
+void BrowsingContextState::SetAdFrameStatus(
+    blink::mojom::FrameAdStatus ad_frame_status) {
+  // A frame's ad status can only be upgraded monotonically. Ignore redundant
+  // updates and reject attempted downgrades. This fails safe in production
+  // and DCHECKs in debug builds.
+  if (ad_frame_status <= replication_state_->ad_frame_status) {
+    DCHECK_EQ(ad_frame_status, replication_state_->ad_frame_status)
+        << "A frame's ad status must not be downgraded.";
     return;
+  }
 
-  replication_state_->is_ad_frame = is_ad_frame;
+  replication_state_->ad_frame_status = ad_frame_status;
   {
-    TRACE_EVENT("navigation", "BrowsingContextState::SetIsAdFrame broadcast",
-                "is_ad_frame", is_ad_frame);
+    TRACE_EVENT("navigation",
+                "BrowsingContextState::SetAdFrameStatus broadcast",
+                "ad_frame_status", static_cast<int>(ad_frame_status));
     ExecuteRemoteFramesBroadcastMethod(
-        [is_ad_frame](RenderFrameProxyHost* proxy) {
-          proxy->GetAssociatedRemoteFrame()->SetReplicatedIsAdFrame(
-              is_ad_frame);
+        [ad_frame_status](RenderFrameProxyHost* proxy) {
+          proxy->GetAssociatedRemoteFrame()->SetReplicatedAdFrameStatus(
+              ad_frame_status);
         },
         /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
   }
 }
 
-bool BrowsingContextState::IsAdFrame() const {
-  return replication_state_->is_ad_frame;
+blink::mojom::FrameAdStatus BrowsingContextState::ad_frame_status() const {
+  return replication_state_->ad_frame_status;
 }
 
 void BrowsingContextState::SetIsSecureContextRoot(bool is_secure_context_root) {

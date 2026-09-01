@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerExcludeAdRequestsTest,
   ASSERT_TRUE(iframe_rfh);
 
   // Mark the iframe as an ad frame.
-  iframe_rfh->UpdateIsAdFrame(/*is_ad_frame=*/true);
+  iframe_rfh->UpdateToAdFrame();
 
   const GURL iframe_url = embedded_test_server()->GetURL("/actor/simple.html");
   TestNavigationManager iframe_manager(web_contents(), iframe_url);

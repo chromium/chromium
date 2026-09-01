@@ -146,8 +146,9 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
 
   std::optional<blink::FrameAdEvidence> ad_evidence_for_navigation;
 
-  // Update the ad status of a frame given the new navigation. This may tag or
-  // untag a frame as an ad.
+  // Update the ad status of a frame given the new navigation. Note that
+  // ad_evidence.IndicatesAdFrame() evaluates to true if the frame was already
+  // an ad; it only returns false if the frame was never an ad to begin with.
   if (!IsInSubresourceFilterRoot(navigation_handle)) {
     blink::FrameAdEvidence& ad_evidence =
         EnsureFrameAdEvidence(navigation_handle);
@@ -161,7 +162,18 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
     ad_evidence.set_is_complete();
     ad_evidence_for_navigation = ad_evidence;
 
-    SetIsAdFrame(frame_host, ad_evidence.IndicatesAdFrame());
+    bool new_is_ad_frame = ad_evidence.IndicatesAdFrame();
+
+    // A frame's ad status can not be downgraded. Even if a compromised renderer
+    // sends malicious IPCs (e.g., `FrameIsAd()`), it lacks the mechanism to
+    // downgrade the status.
+    DCHECK(!ad_frames_.contains(frame_host->GetFrameTreeNodeId()) ||
+           new_is_ad_frame)
+        << "A frame's ad status must not be downgraded.";
+
+    if (new_is_ad_frame) {
+      UpdateToAdFrame(frame_host);
+    }
   }
 
   mojom::ActivationState activation_state =
@@ -752,65 +764,48 @@ void ContentSubresourceFilterThrottleManager::OnFrameIsAd(
   EnsureFrameAdEvidence(render_frame_host).set_is_complete();
 
   // The renderer has indicated that the frame is an ad.
-  SetIsAdFrame(render_frame_host, /*is_ad_frame=*/true);
+  UpdateToAdFrame(render_frame_host);
 }
 
-void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
-    content::RenderFrameHost* render_frame_host,
-    bool is_ad_frame) {
+void ContentSubresourceFilterThrottleManager::UpdateToAdFrame(
+    content::RenderFrameHost* render_frame_host) {
   content::FrameTreeNodeId frame_tree_node_id =
       render_frame_host->GetFrameTreeNodeId();
   CHECK(tracked_ad_evidence_.contains(frame_tree_node_id));
 
   // TODO(crbug.com/373985560): This is rarely hit. After fixing, upgrade to a
   // CHECK.
-  DCHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
-            is_ad_frame);
+  DCHECK(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame());
   CHECK(render_frame_host->GetParentOrOuterDocument());
 
-  // `ad_frames_` does not need updating.
-  if (is_ad_frame == ad_frames_.contains(frame_tree_node_id)) {
+  // Early return if the frame was already marked as an ad frame to avoid
+  // redundant observer notifications.
+  if (!ad_frames_.insert(frame_tree_node_id).second) {
     return;
   }
 
-  if (is_ad_frame) {
-    ad_frames_.insert(frame_tree_node_id);
-  } else {
-    ad_frames_.erase(frame_tree_node_id);
-  }
-
-  // Replicate `is_ad_frame` to this frame's proxies, so that it can be
+  // Replicate the ad status to this frame's proxies, so that it can be
   // looked up in any process involved in rendering the current page.
-  render_frame_host->UpdateIsAdFrame(is_ad_frame);
+  render_frame_host->UpdateToAdFrame();
 
   SubresourceFilterObserverManager::FromWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host))
-      ->NotifyIsAdFrameChanged(render_frame_host, is_ad_frame);
+      ->NotifyFrameTaggedAsAd(render_frame_host);
 }
 
-void ContentSubresourceFilterThrottleManager::SetIsAdFrameForTesting(
-    content::RenderFrameHost* render_frame_host,
-    bool is_ad_frame) {
+void ContentSubresourceFilterThrottleManager::UpdateToAdFrameForTesting(
+    content::RenderFrameHost* render_frame_host) {
   CHECK(render_frame_host->GetParentOrOuterDocument());
-  if (is_ad_frame ==
-      ad_frames_.contains(render_frame_host->GetFrameTreeNodeId())) {
+  if (ad_frames_.contains(render_frame_host->GetFrameTreeNodeId())) {
     return;
   }
 
-  if (is_ad_frame) {
-    // We mark the frame as matching a blocking rule so that the ad evidence
-    // indicates an ad frame.
-    EnsureFrameAdEvidence(render_frame_host)
-        .UpdateFilterListResult(
-            blink::mojom::FilterListResult::kMatchedBlockingRule);
-    OnFrameIsAd(render_frame_host);
-  } else {
-    // There's currently no legal transition that can untag a frame. Instead, to
-    // mimic future behavior, we simply replace the FrameAdEvidence.
-    // TODO(crbug.com/40138413): Replace with legal transition when one exists.
-    tracked_ad_evidence_.erase(render_frame_host->GetFrameTreeNodeId());
-    EnsureFrameAdEvidence(render_frame_host).set_is_complete();
-  }
+  // We mark the frame as matching a blocking rule so that the ad evidence
+  // indicates an ad frame.
+  EnsureFrameAdEvidence(render_frame_host)
+      .UpdateFilterListResult(
+          blink::mojom::FilterListResult::kMatchedBlockingRule);
+  OnFrameIsAd(render_frame_host);
 }
 
 std::optional<blink::FrameAdEvidence>

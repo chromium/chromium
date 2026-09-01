@@ -181,10 +181,10 @@ class CONTENT_EXPORT BrowsingContextState
   // update.
   void OnSetHadStickyUserActivationBeforeNavigation(bool value);
 
-  // Sets and retrieves whether this is an ad frame and notifies the proxies
-  // about the update.
-  void SetIsAdFrame(bool is_ad_frame);
-  bool IsAdFrame() const;
+  // Sets and retrieves the ad frame status and notifies the proxies about the
+  // update.
+  void SetAdFrameStatus(blink::mojom::FrameAdStatus ad_frame_status);
+  blink::mojom::FrameAdStatus ad_frame_status() const;
 
   // Sets the is-secure-context-root bit and broadcasts to all RemoteFrame
   // proxies. No-op if the value is unchanged.

@@ -14,6 +14,7 @@ import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
@@ -324,9 +325,9 @@ interface RemoteFrame {
   SetReplicatedOrigin(url.mojom.Origin origin,
     bool is_potentially_trustworthy_unique_origin);
 
-  // Update the replicated ad status. Used when the frame is tagged or untagged
-  // as an ad frame by Ad Tagging.
-  SetReplicatedIsAdFrame(bool is_ad_frame);
+  // Update the replicated ad status. A frame's ad status can only be upgraded
+  // monotonically, and this constraint is enforced at API boundaries.
+  SetReplicatedAdFrameStatus(blink.mojom.FrameAdStatus ad_frame_status);
 
   // Update the replicated is-secure-context-root bit. Sourced from
   // `ContentBrowserClient::IsSecureContextRoot()` at navigation commit;

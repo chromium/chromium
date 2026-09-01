@@ -50,8 +50,7 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
   void OnChildFrameNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy) override;
-  void OnIsAdFrameChanged(content::RenderFrameHost* render_frame_host,
-                          bool is_ad_frame) override;
+  void OnFrameTaggedAsAd(content::RenderFrameHost* render_frame_host) override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(

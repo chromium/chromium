@@ -214,8 +214,7 @@ class ContentSubresourceFilterThrottleManager
 
   static void LogAction(SubresourceFilterAction action);
 
-  void SetIsAdFrameForTesting(content::RenderFrameHost* render_frame_host,
-                              bool is_ad_frame);
+  void UpdateToAdFrameForTesting(content::RenderFrameHost* render_frame_host);
 
   // Returns the matching FrameAdEvidence for the frame indicated by
   // `render_frame_host` or `std::nullopt` if there is none (i.e. the frame is
@@ -345,10 +344,9 @@ class ContentSubresourceFilterThrottleManager
       const mojom::SubresourceFilterDisabledReason& disabled_reason,
       bool did_inherit_opener_activation);
 
-  // Sets whether the frame is considered an ad frame. If the value has changed,
-  // we also update the replication state and inform observers.
-  void SetIsAdFrame(content::RenderFrameHost* render_frame_host,
-                    bool is_ad_frame);
+  // Marks the frame as an ad frame. If the frame was not already marked as
+  // an ad frame, we update the replication state and inform observers.
+  void UpdateToAdFrame(content::RenderFrameHost* render_frame_host);
 
   // For each RenderFrameHost where the last committed load (or the initial load
   // if no committed load has occurred) has subresource filtering activated,

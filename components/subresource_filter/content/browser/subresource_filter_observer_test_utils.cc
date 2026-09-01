@@ -46,14 +46,9 @@ void TestSubresourceFilterObserver::OnChildFrameNavigationEvaluated(
   child_frame_load_evaluations_[navigation_handle->GetURL()] = load_policy;
 }
 
-void TestSubresourceFilterObserver::OnIsAdFrameChanged(
-    content::RenderFrameHost* render_frame_host,
-    bool is_ad_frame) {
-  if (is_ad_frame) {
-    ad_frames_.insert(render_frame_host->GetFrameTreeNodeId());
-  } else {
-    ad_frames_.erase(render_frame_host->GetFrameTreeNodeId());
-  }
+void TestSubresourceFilterObserver::OnFrameTaggedAsAd(
+    content::RenderFrameHost* render_frame_host) {
+  ad_frames_.insert(render_frame_host->GetFrameTreeNodeId());
 }
 
 void TestSubresourceFilterObserver::DidFinishNavigation(

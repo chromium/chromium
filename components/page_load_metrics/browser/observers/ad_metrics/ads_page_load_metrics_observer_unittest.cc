@@ -1252,7 +1252,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, CountAbortedNavigation) {
   auto navigation_simulator = CreateNavigationSimulator(kAdUrl, subframe_ad);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  SetIsAdFrame(subframe_ad, /*is_ad_frame=*/true);
+  UpdateToAdFrame(subframe_ad);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1282,7 +1282,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, CountAbortedSecondNavigationForFrame) {
   auto navigation_simulator = CreateNavigationSimulator(kAdUrl, sub_frame);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  SetIsAdFrame(sub_frame, /*is_ad_frame=*/true);
+  UpdateToAdFrame(sub_frame);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1313,7 +1313,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
 
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  SetIsAdFrame(subframe_ad, /*is_ad_frame=*/true);
+  UpdateToAdFrame(subframe_ad);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Renavigate the subframe to a successful commit. But again, the resource
@@ -1328,30 +1328,6 @@ TEST_P(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
                  {{base::ByteSize(0), base::KiB(20)}},
                  /*non_ad_cached=*/base::KiB(0),
                  /*non_ad_uncached=*/base::KiB(10));
-}
-
-TEST_P(AdsPageLoadMetricsObserverTest, UntaggingAdFrame) {
-  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-
-  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10));
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10));
-
-  // Renavigate and untag the ad frame.
-  auto navigation_simulator = CreateNavigationSimulator(kNonAdUrl, ad_frame);
-  SetIsAdFrame(ad_frame, /*is_ad_frame=*/false);
-  navigation_simulator->Commit();
-
-  ResourceDataUpdate(navigation_simulator->GetFinalRenderFrameHost(),
-                     ResourceCached::kNotCached, base::KiB(10));
-
-  // Navigate again to trigger histograms.
-  NavigateFrame(kNonAdUrl, main_frame);
-
-  // As the frame was untagged, no ad bytes should have been recorded.
-  TestHistograms(histogram_tester(), test_ukm_recorder(), {},
-                 /*non_ad_cached=*/base::KiB(0),
-                 /*non_ad_uncached=*/base::KiB(20));
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, MainFrameResource) {
@@ -1573,7 +1549,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* subframe = AppendChildFrame(main_frame);
   auto navigation_simulator =
       CreateNavigationSimulator("https://foo.com", subframe);
-  SetIsAdFrame(subframe, /*is_ad_frame=*/true);
+  UpdateToAdFrame(subframe);
   navigation_simulator->Commit();
 
   subframe = navigation_simulator->GetFinalRenderFrameHost();

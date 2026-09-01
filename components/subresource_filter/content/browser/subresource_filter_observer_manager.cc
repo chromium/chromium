@@ -61,11 +61,10 @@ void SubresourceFilterObserverManager::NotifyChildFrameNavigationEvaluated(
   }
 }
 
-void SubresourceFilterObserverManager::NotifyIsAdFrameChanged(
-    content::RenderFrameHost* render_frame_host,
-    bool is_ad_frame) {
+void SubresourceFilterObserverManager::NotifyFrameTaggedAsAd(
+    content::RenderFrameHost* render_frame_host) {
   for (auto& observer : observers_) {
-    observer.OnIsAdFrameChanged(render_frame_host, is_ad_frame);
+    observer.OnFrameTaggedAsAd(render_frame_host);
   }
 }
 

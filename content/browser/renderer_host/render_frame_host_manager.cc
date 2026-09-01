@@ -826,7 +826,7 @@ void RenderFrameHostManager::InitRoot(
               false /* is_secure_context_root */,
               false /* has_active_user_gesture */,
               false /* has_received_user_gesture_before_nav */,
-              false /* is_ad_frame */),
+              blink::mojom::FrameAdStatus::kNotAd),
           frame_tree_node_->parent(),
           is_legacy_browsing_context_state_mode
               ? static_cast<std::optional<BrowsingInstanceId>>(std::nullopt)
@@ -884,7 +884,7 @@ void RenderFrameHostManager::InitChild(
               false /* is_secure_context_root */,
               false /* has_active_user_gesture */,
               false /* has_received_user_gesture_before_nav */,
-              false /* is_ad_frame */),
+              blink::mojom::FrameAdStatus::kNotAd),
           frame_tree_node_->parent(),
           is_legacy_browsing_context_state_mode
               ? static_cast<std::optional<BrowsingInstanceId>>(std::nullopt)

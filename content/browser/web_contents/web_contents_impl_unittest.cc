@@ -4156,7 +4156,7 @@ TEST_F(WebContentsImplTest, IsLoadingExcludingAdFrames) {
                   .root()
                   ->child_at(0)
                   ->current_frame_host();
-  child_rfh->UpdateIsAdFrame(/*is_ad_frame=*/true);
+  child_rfh->UpdateToAdFrame();
 
   // Start the navigation again for the ad frame.
   auto ad_frame_navigation =

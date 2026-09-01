@@ -19167,7 +19167,8 @@ bool RenderFrameHostImpl::IsOutermostMainFrame() const {
 }
 
 bool RenderFrameHostImpl::IsAdFrame() const {
-  return browsing_context_state_->IsAdFrame();
+  return browsing_context_state_->ad_frame_status() !=
+         blink::mojom::FrameAdStatus::kNotAd;
 }
 
 void RenderFrameHostImpl::SetIsLoadingForRendererDebugURL() {
@@ -19194,13 +19195,18 @@ bool RenderFrameHostImpl::IsDOMContentLoaded() {
   return document_associated_data_->dom_content_loaded();
 }
 
-void RenderFrameHostImpl::UpdateIsAdFrame(bool is_ad_frame) {
+void RenderFrameHostImpl::UpdateToAdFrame() {
+  UpdateAdFrameStatus(blink::mojom::FrameAdStatus::kAd);
+}
+
+void RenderFrameHostImpl::UpdateAdFrameStatus(
+    blink::mojom::FrameAdStatus ad_frame_status) {
   if (!CanApplyFrameReplicationUpdate(
-          this,
-          BackForwardCacheMetrics::NotRestoredReason::kRfhUpdateIsAdFrame)) {
+          this, BackForwardCacheMetrics::NotRestoredReason::
+                    kRfhUpdateAdFrameStatus)) {
     return;
   }
-  browsing_context_state_->SetIsAdFrame(is_ad_frame);
+  browsing_context_state_->SetAdFrameStatus(ad_frame_status);
 }
 
 #if BUILDFLAG(IS_ANDROID)

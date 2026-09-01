@@ -84,8 +84,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness {
     return database_manager_.get();
   }
 
-  void SetIsAdFrame(content::RenderFrameHost* render_frame_host,
-                    bool is_ad_frame);
+  void UpdateToAdFrame(content::RenderFrameHost* render_frame_host);
 
   content::WebContents* web_contents() {
     return content::RenderViewHostTestHarness::web_contents();

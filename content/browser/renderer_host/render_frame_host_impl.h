@@ -611,7 +611,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::UserActivationNotificationType notification_type) override;
   bool Reload() override;
   bool IsDOMContentLoaded() override;
-  void UpdateIsAdFrame(bool is_ad_frame) override;
+  void UpdateToAdFrame() override;
   bool IsAdFrame() const override;
   void SetIsXrOverlaySetup() override;
   ukm::SourceId GetPageUkmSourceId() override;
@@ -4512,6 +4512,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool is_cross_origin,
       blink::mojom::AuthenticatorStatus status);
 #endif
+
+  // Updates the frame's ad status to `ad_frame_status`.
+  void UpdateAdFrameStatus(blink::mojom::FrameAdStatus ad_frame_status);
 
   // Notifies the RenderProcessHost instance that this frame no longer has any
   // media stream. Called when this render frame is deleted or when the process

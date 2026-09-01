@@ -68,11 +68,9 @@ class SubresourceFilterObserverManager
       LoadPolicy load_policy);
 
   // Called in DidCreateNewDocument or ReadyToCommitNavigation to notify
-  // observers that an frame with the associated RenderFrameHost has either been
-  // detected as an ad or is no longer considered one. The frame's new status is
-  // passed as `is_ad_frame`.
-  void NotifyIsAdFrameChanged(content::RenderFrameHost* render_frame_host,
-                              bool is_ad_frame);
+  // observers that a frame with the associated RenderFrameHost has been
+  // detected as an ad.
+  void NotifyFrameTaggedAsAd(content::RenderFrameHost* render_frame_host);
 
  private:
   friend class content::WebContentsUserData<SubresourceFilterObserverManager>;

@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
@@ -108,6 +109,6 @@ struct FrameReplicationState {
   // long as a the frame has staying on the same eTLD+1.
   bool has_received_user_gesture_before_nav = false;
 
-  // Whether this frame is an ad frame.
-  bool is_ad_frame = false;
+  // The ad status of this frame.
+  FrameAdStatus ad_frame_status = kNotAd;
 };

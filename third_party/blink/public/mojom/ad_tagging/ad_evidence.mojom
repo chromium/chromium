@@ -26,6 +26,13 @@ enum FrameCreationStackEvidence {
   kCreatedByAdScript
 };
 
+// Represents the ad status and type of a given frame.
+// Note: Ad status can only transition from lower enum values to higher ones.
+enum FrameAdStatus {
+  kNotAd = 0,
+  kAd = 1,
+};
+
 // Mapped to `blink::FrameAdEvidence`.
 struct FrameAdEvidence {
   bool is_complete;

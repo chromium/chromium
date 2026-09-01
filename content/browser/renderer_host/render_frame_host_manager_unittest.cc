@@ -4315,11 +4315,12 @@ class AdTaggingSimulator : public WebContentsObserver {
 
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
     auto it = ad_urls_.find(navigation_handle->GetURL());
-    navigation_handle->GetRenderFrameHost()->UpdateIsAdFrame(it !=
-                                                             ad_urls_.end());
+    if (it != ad_urls_.end()) {
+      navigation_handle->GetRenderFrameHost()->UpdateToAdFrame();
+    }
   }
 
-  void SimulateOnFrameIsAd(RenderFrameHost* rfh) { rfh->UpdateIsAdFrame(true); }
+  void SimulateOnFrameIsAd(RenderFrameHost* rfh) { rfh->UpdateToAdFrame(); }
 
  private:
   std::set<GURL> ad_urls_;
@@ -4327,19 +4328,21 @@ class AdTaggingSimulator : public WebContentsObserver {
 
 class AdStatusInterceptingRemoteFrame : public content::FakeRemoteFrame {
  public:
-  void SetReplicatedIsAdFrame(bool is_ad_frame) override {
-    is_ad_frame_ = is_ad_frame;
+  void SetReplicatedAdFrameStatus(
+      blink::mojom::FrameAdStatus ad_frame_status) override {
+    ad_frame_status_ = ad_frame_status;
   }
 
   // These methods reset state back to default when they are called.
   bool LastAdFrame() {
-    bool is_ad_frame = is_ad_frame_;
-    is_ad_frame_ = false;
+    bool is_ad_frame = ad_frame_status_ != blink::mojom::FrameAdStatus::kNotAd;
+    ad_frame_status_ = blink::mojom::FrameAdStatus::kNotAd;
     return is_ad_frame;
   }
 
  private:
-  bool is_ad_frame_ = false;
+  blink::mojom::FrameAdStatus ad_frame_status_ =
+      blink::mojom::FrameAdStatus::kNotAd;
 };
 
 class RenderFrameHostManagerAdTaggingSignalTest
@@ -4365,7 +4368,7 @@ class RenderFrameHostManagerAdTaggingSignalTest
 
     if (proxy_host->frame_tree_node()
             ->current_replication_state()
-            .is_ad_frame) {
+            .ad_frame_status != blink::mojom::FrameAdStatus::kNotAd) {
       ad_frames_on_proxy_created_.insert(proxy_host);
     }
   }
@@ -4439,7 +4442,8 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   ExpectAdStatusOnFrameProxyCreated(
       subframe_node->render_manager()->GetProxyToParent());
 
-  EXPECT_TRUE(subframe_node->current_replication_state().is_ad_frame);
+  EXPECT_NE(subframe_node->current_replication_state().ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
   EXPECT_TRUE(subframe_node->current_frame_host()->IsAdFrame());
 }
 
@@ -4457,11 +4461,12 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   AdTaggingSimulator ad_tagging_simulator({}, contents());
 
   contents()->NavigateAndCommit(kUrlA);
-  EXPECT_FALSE(contents()
-                   ->GetPrimaryFrameTree()
-                   .root()
-                   ->current_replication_state()
-                   .is_ad_frame);
+  EXPECT_EQ(contents()
+                ->GetPrimaryFrameTree()
+                .root()
+                ->current_replication_state()
+                .ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
 
   AppendChildToFrame("subframe_b", kUrlB,
                      web_contents()->GetPrimaryMainFrame());
@@ -4478,7 +4483,8 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   RenderFrameProxyHost* proxy_a1_to_b =
       GetProxyHost(subframe_node_a1, subframe_node_b);
 
-  EXPECT_TRUE(subframe_node_a1->current_replication_state().is_ad_frame);
+  EXPECT_NE(subframe_node_a1->current_replication_state().ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
   ExpectAdSubframeSignalForFrameProxy(proxy_a1_to_b, true);
 }
 
@@ -4500,11 +4506,12 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   AdTaggingSimulator ad_tagging_simulator(ad_urls, contents());
 
   contents()->NavigateAndCommit(kUrlA);
-  EXPECT_FALSE(contents()
-                   ->GetPrimaryFrameTree()
-                   .root()
-                   ->current_replication_state()
-                   .is_ad_frame);
+  EXPECT_EQ(contents()
+                ->GetPrimaryFrameTree()
+                .root()
+                ->current_replication_state()
+                .ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
 
   AppendChildToFrame("subframe_b", kUrlB,
                      web_contents()->GetPrimaryMainFrame());
@@ -4515,8 +4522,10 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   FrameTreeNode* subframe_node_b = top_frame_node_a->child_at(0);
   FrameTreeNode* subframe_node_c = top_frame_node_a->child_at(1);
 
-  EXPECT_FALSE(subframe_node_b->current_replication_state().is_ad_frame);
-  EXPECT_FALSE(subframe_node_c->current_replication_state().is_ad_frame);
+  EXPECT_EQ(subframe_node_b->current_replication_state().ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
+  EXPECT_EQ(subframe_node_c->current_replication_state().ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
 
   RenderFrameProxyHost* proxy_c_to_a =
       GetProxyHost(subframe_node_c, top_frame_node_a);
@@ -4534,7 +4543,8 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   NavigationSimulator::NavigateAndCommitFromDocument(
       kUrlD, subframe_node_c->current_frame_host());
 
-  EXPECT_TRUE(subframe_node_c->current_replication_state().is_ad_frame);
+  EXPECT_NE(subframe_node_c->current_replication_state().ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
 
   ExpectAdSubframeSignalForFrameProxy(proxy_c_to_a, true);
   ExpectAdSubframeSignalForFrameProxy(proxy_c_to_b, true);
@@ -4615,8 +4625,10 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest, RemoteGrandchildAdTagSignal) {
 
   NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, grandchild_host);
 
-  EXPECT_TRUE(subframe_node->current_replication_state().is_ad_frame);
-  EXPECT_TRUE(grandchild_node->current_replication_state().is_ad_frame);
+  EXPECT_NE(subframe_node->current_replication_state().ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
+  EXPECT_NE(grandchild_node->current_replication_state().ad_frame_status,
+            blink::mojom::FrameAdStatus::kNotAd);
   ExpectAdSubframeSignalForFrameProxy(proxy_to_main_frame, true);
 }
 

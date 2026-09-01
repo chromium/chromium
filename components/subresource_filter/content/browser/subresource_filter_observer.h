@@ -61,12 +61,10 @@ class SubresourceFilterObserver {
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy) {}
 
-  // Called when a frame is tagged or untagged as an ad, along with the frame's
-  // current status as an ad frame and the evidence which resulted in the
-  // change. This will be called prior to commit time in the case of an initial
-  // synchronous load or at ReadyToCommitNavigation otherwise.
-  virtual void OnIsAdFrameChanged(content::RenderFrameHost* render_frame_host,
-                                  bool is_ad_frame) {}
+  // Called when a frame is tagged as an ad. This will be called prior to commit
+  // time in the case of an initial synchronous load or at
+  // ReadyToCommitNavigation otherwise.
+  virtual void OnFrameTaggedAsAd(content::RenderFrameHost* render_frame_host) {}
 };
 
 }  // namespace subresource_filter
