@@ -49,6 +49,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -2986,12 +2987,16 @@ base::SysInfo::DiskSpaceInfo QuotaManagerImpl::CallGetVolumeInfo(
     return {};
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, `statvfs()` may return `f_bavail > f_blocks`, producing
+  // `available > total`. The root cause is unknown. See crbug.com/501709109
+  // and crbug.com/520534362.
   if (disk_space->available > disk_space->total) {
-    // On Android, `statvfs()` may return `f_bavail > f_blocks`, producing
-    // `available > total`. The root cause is unknown. See crbug.com/501709109
-    // and crbug.com/520534362.
     disk_space->available = disk_space->total;
   }
+#else
+  CHECK_GE(disk_space->total, disk_space->available);
+#endif
 
   base::UmaHistogramMemoryMB("Quota.TotalDiskSpace", disk_space->total);
   base::UmaHistogramMemoryMB("Quota.AvailableDiskSpace", disk_space->available);

@@ -33,6 +33,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -2438,7 +2439,9 @@ TEST_F(QuotaManagerImplTest, GetDiskAvailabilityAndTempPoolSize_Incognito) {
   EXPECT_EQ(kDefaultPoolSize, std::get<2>(quota_internals_result));
 }
 
-// Regression test for crbug.com/520534362.
+#if BUILDFLAG(IS_ANDROID)
+// Regression test for crbug.com/520534362. The clamping workaround only
+// applies on Android; other platforms CHECK that `available <= total`.
 TEST_F(QuotaManagerImplTest,
        GetDiskAvailabilityAndTempPoolSize_AvailableExceedsTotal) {
   ResetQuotaManagerImpl(/*is_incognito=*/false);
@@ -2464,6 +2467,7 @@ TEST_F(QuotaManagerImplTest,
   EXPECT_EQ(kDiskSize, std::get<1>(quota_internals_result));
   EXPECT_EQ(kDefaultPoolSize, std::get<2>(quota_internals_result));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
   static const ClientBucketData kData[] = {
