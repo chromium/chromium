@@ -7,12 +7,10 @@
 
 #include <string>
 
-namespace base {
-namespace swift {
+namespace base::swift {
 
-std::string GetIOSBuildNumber();
+std::string OperatingSystemBuildVersion();
 
-}  // namespace swift
-}  // namespace base
+}  // namespace base::swift
 
 #endif  // BASE_IOS_SWIFT_SHIMS_SYS_INFO_H_

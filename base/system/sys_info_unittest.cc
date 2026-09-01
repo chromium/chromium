@@ -235,12 +235,12 @@ TEST_F(SysInfoTest, OperatingSystemVersionNumbers) {
 }
 #endif
 
-#if BUILDFLAG(IS_IOS)
-TEST_F(SysInfoTest, GetIOSBuildNumber) {
-  std::string build_number(SysInfo::GetIOSBuildNumber());
+#if BUILDFLAG(IS_APPLE)
+TEST_F(SysInfoTest, OperatingSystemBuildVersion) {
+  std::string build_number(SysInfo::OperatingSystemBuildVersion());
   EXPECT_GT(build_number.length(), 0U);
 }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_APPLE)
 
 TEST_F(SysInfoTest, Uptime) {
   TimeDelta up_time_1 = SysInfo::Uptime();

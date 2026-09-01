@@ -91,13 +91,6 @@ std::string SysInfo::OperatingSystemArchitecture() {
 }
 
 // static
-std::string SysInfo::GetIOSBuildNumber() {
-  std::optional<std::string> build_number =
-      StringSysctl({CTL_KERN, KERN_OSVERSION});
-  return build_number.value();
-}
-
-// static
 void SysInfo::OverrideHardwareModelName(std::string name) {
   // Normally, HardwareModelName() should not be called before overriding the
   // value, but StartCrashController(), which eventually calls

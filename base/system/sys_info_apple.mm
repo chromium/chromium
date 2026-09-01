@@ -6,6 +6,7 @@
 
 #include <sys/sysctl.h>
 
+#include "base/posix/sysctl.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info_internal.h"
 
@@ -56,6 +57,13 @@ ByteSize SysInfo::AmountOfTotalPhysicalMemoryImpl() {
   int rv = sysctlbyname("hw.memsize", &physical_memory, &size, nullptr, 0);
   PCHECK(rv == 0) << "sysctlbyname(\"hw.memsize\")";
   return ByteSize(physical_memory);
+}
+
+// static
+std::string SysInfo::OperatingSystemBuildVersion() {
+  std::optional<std::string> build_number =
+      StringSysctl({CTL_KERN, KERN_OSVERSION});
+  return build_number.value();
 }
 
 }  // namespace base

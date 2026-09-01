@@ -98,7 +98,8 @@ constexpr std::string_view kThirdPartyModsDirectory =
           "23a5287g",  // iOS 26 beta3
       });
 
-  std::string build = base::ToLowerASCII(base::SysInfo::GetIOSBuildNumber());
+  std::string build =
+      base::ToLowerASCII(base::SysInfo::OperatingSystemBuildVersion());
   return kBadOSVersions.contains(std::string_view(build));
 }
 

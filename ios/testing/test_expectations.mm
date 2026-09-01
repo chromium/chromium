@@ -216,12 +216,12 @@ TagCategory GetTagCategory(NSString* tag) {
   }
 
   // Add build number
-  std::string buildNumber = base::SysInfo::GetIOSBuildNumber();
-  if (!buildNumber.empty()) {
-    NSString* buildNSString = base::SysUTF8ToNSString(buildNumber);
+  std::string buildVersion = base::SysInfo::OperatingSystemBuildVersion();
+  if (!buildVersion.empty()) {
+    NSString* buildNSString = base::SysUTF8ToNSString(buildVersion);
     NSString* prefixedBuild =
         [NSString stringWithFormat:@"build-%@", buildNSString];
-    [tags addObject:[prefixedBuild lowercaseString]];
+    [tags addObject:prefixedBuild.lowercaseString];
   }
 
 #if TARGET_OS_SIMULATOR

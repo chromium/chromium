@@ -424,11 +424,19 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   response->emplace(kChromeVersionTag, GetChromeVersionString());
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the kOsVersionTag information will be pulled in from the
+  // LSB_RELEASE. Add ChromeOS-specific information here.
   response->emplace(kChromeEnrollmentTag, GetEnrollmentStatusString());
+#elif BUILDFLAG(IS_MAC)
+  std::string os_version =
+      base::StrCat({base::SysInfo::OperatingSystemName(), ": ",
+                    base::SysInfo::OperatingSystemVersion(), " (",
+                    base::SysInfo::OperatingSystemBuildVersion(), ")"});
+  response->emplace(kOsVersionTag, os_version);
 #else
-  // On ChromeOS, this will be pulled in from the LSB_RELEASE.
-  std::string os_version = base::SysInfo::OperatingSystemName() + ": " +
-                           base::SysInfo::OperatingSystemVersion();
+  std::string os_version =
+      base::StrCat({base::SysInfo::OperatingSystemName(), ": ",
+                    base::SysInfo::OperatingSystemVersion()});
   response->emplace(kOsVersionTag, os_version);
 #endif
 

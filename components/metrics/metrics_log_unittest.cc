@@ -342,9 +342,9 @@ TEST_F(MetricsLogTest, BasicRecord) {
   system_profile->mutable_hardware()->set_manufacturer(
       base::SysInfo::HardwareManufacturer());
   system_profile->set_app_package_name("test app");
-#elif BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_APPLE)
   system_profile->mutable_os()->set_build_number(
-      base::SysInfo::GetIOSBuildNumber());
+      base::SysInfo::OperatingSystemBuildVersion());
 #endif
 
 #if BUILDFLAG(IS_LINUX)

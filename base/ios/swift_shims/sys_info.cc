@@ -6,12 +6,10 @@
 
 #include "base/system/sys_info.h"
 
-namespace base {
-namespace swift {
+namespace base::swift {
 
-std::string GetIOSBuildNumber() {
-  return base::SysInfo::GetIOSBuildNumber();
+std::string OperatingSystemBuildVersion() {
+  return base::SysInfo::OperatingSystemBuildVersion();
 }
 
-}  // namespace swift
-}  // namespace base
+}  // namespace base::swift

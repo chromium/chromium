@@ -461,8 +461,8 @@ void MetricsLog::RecordCoreSystemProfile(
   }
   system_profile->set_installer_package(internal::ToInstallerPackage(
       base::android::apk_info::installer_package_name()));
-#elif BUILDFLAG(IS_IOS)
-  os->set_build_number(base::SysInfo::GetIOSBuildNumber());
+#elif BUILDFLAG(IS_APPLE)
+  os->set_build_number(base::SysInfo::OperatingSystemBuildVersion());
 #endif
 
 #if BUILDFLAG(IS_LINUX)
