@@ -1531,7 +1531,7 @@ class CONTENT_EXPORT WebContentsImpl
   // Called when a file selection is to be done.
   void RunFileChooser(
       base::WeakPtr<FileChooserImpl> file_chooser,
-      RenderFrameHost* render_frame_host,
+      RenderFrameHostImpl* render_frame_host,
       scoped_refptr<FileChooserImpl::FileSelectListenerImpl> listener,
       const blink::mojom::FileChooserParams& params);
 
