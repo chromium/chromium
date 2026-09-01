@@ -59,13 +59,19 @@ const int kHttpPartialContent = 206;
 
 enum NetworkState { kNone, kLoaded, kLoading };
 
-// Predicate that checks the Accept-Encoding request header.
-static bool CorrectAcceptEncoding(const WebURLRequest& request) {
+static bool HasIdentityAcceptEncoding(const WebURLRequest& request) {
   std::string value = request
                           .HttpHeaderField(WebString::FromUtf8(
                               net::HttpRequestHeaders::kAcceptEncoding))
                           .Utf8();
-  return (value.contains("identity;q=1")) && (value.contains("*;q=0"));
+  return value.contains("identity;q=1") && value.contains("*;q=0");
+}
+
+static bool HasNoAcceptEncoding(const WebURLRequest& request) {
+  return request
+      .HttpHeaderField(
+          WebString::FromUtf8(net::HttpRequestHeaders::kAcceptEncoding))
+      .IsNull();
 }
 
 class ResourceMultiBufferDataProviderTest : public testing::Test {
@@ -212,8 +218,15 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   std::unique_ptr<WebAssociatedURLLoader> CreateUrlLoader(
       const WebAssociatedURLLoaderOptions& options) {
     auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-    EXPECT_CALL(*url_loader, LoadAsynchronously(Truly(CorrectAcceptEncoding),
-                                                loader_.get()));
+    EXPECT_CALL(
+        *url_loader,
+        LoadAsynchronously(
+            Truly([this](const WebURLRequest& request) {
+              return expect_identity_accept_encoding_
+                         ? HasIdentityAcceptEncoding(request)
+                         : HasNoAcceptEncoding(request);
+            }),
+            loader_.get()));
     return url_loader;
   }
 
@@ -228,10 +241,23 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   // The loader is owned by the UrlData above.
   raw_ptr<ResourceMultiBufferDataProvider> loader_;
 
+  bool expect_identity_accept_encoding_ = false;
+
   std::array<uint8_t, kDataSize> data_;
 };
 
 TEST_F(ResourceMultiBufferDataProviderTest, StartStop) {
+  Initialize(kHttpUrl, 0);
+  Start();
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       KillSwitchRestoresAcceptEncodingInjection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDeferMediaAcceptEncodingInjection);
+  expect_identity_accept_encoding_ = true;
+
   Initialize(kHttpUrl, 0);
   Start();
   StopWhenLoad();

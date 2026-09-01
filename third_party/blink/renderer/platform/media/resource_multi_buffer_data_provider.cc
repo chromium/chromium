@@ -37,6 +37,13 @@
 
 namespace blink {
 
+// Defers Accept-Encoding injection to the network layer for media range
+// requests so service workers run before the user-agent header is added.
+// TODO(crbug.com/510987448): Remove this kill switch after the new behavior has
+// shipped to stable without regressions.
+BASE_FEATURE(kDeferMediaAcceptEncodingInjection,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The number of milliseconds to wait before retrying a failed load.
 const int kLoaderFailedRetryDelayMs = 250;
 
@@ -110,12 +117,13 @@ void ResourceMultiBufferDataProvider::Start() {
 
   if (url_data_->encoding_mode() ==
       media::DataSource::EncodingMode::kAllowGzip) {
-    // Allow gzip for manifests or when explicitly requested.
+    // Override range requests' default identity encoding for manifests or
+    // when explicitly requested.
     request.SetHttpHeaderField(
         WebString::FromUtf8(net::HttpRequestHeaders::kAcceptEncoding),
         WebString("gzip, identity;q=1, *;q=0"));
-  } else {
-    // Disable compression, compression for audio/video doesn't make sense...
+  } else if (!base::FeatureList::IsEnabled(
+                 kDeferMediaAcceptEncodingInjection)) {
     request.SetHttpHeaderField(
         WebString::FromUtf8(net::HttpRequestHeaders::kAcceptEncoding),
         WebString("identity;q=1, *;q=0"));

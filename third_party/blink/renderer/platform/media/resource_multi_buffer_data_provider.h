@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,8 @@ class SingleThreadTaskRunner;
 }
 
 namespace blink {
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kDeferMediaAcceptEncodingInjection);
 
 class WebAssociatedURLLoader;
 
