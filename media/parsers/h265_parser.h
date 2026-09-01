@@ -39,6 +39,10 @@ enum {
 
 struct MEDIA_EXPORT H265ProfileTierLevel {
   H265ProfileTierLevel();
+  H265ProfileTierLevel(const H265ProfileTierLevel&);
+  H265ProfileTierLevel& operator=(const H265ProfileTierLevel&);
+  H265ProfileTierLevel(H265ProfileTierLevel&&) noexcept;
+  H265ProfileTierLevel& operator=(H265ProfileTierLevel&&) noexcept;
   bool operator==(const H265ProfileTierLevel&) const = default;
 
   enum H265ProfileIdc {
@@ -63,7 +67,16 @@ struct MEDIA_EXPORT H265ProfileTierLevel {
   bool general_interlaced_source_flag = false;
   bool general_non_packed_constraint_flag = false;
   bool general_frame_only_constraint_flag = false;
+  bool general_max_12bit_constraint_flag = false;
+  bool general_max_10bit_constraint_flag = false;
+  bool general_max_8bit_constraint_flag = false;
+  bool general_max_422chroma_constraint_flag = false;
+  bool general_max_420chroma_constraint_flag = false;
+  bool general_max_monochrome_constraint_flag = false;
+  bool general_intra_constraint_flag = false;
   bool general_one_picture_only_constraint_flag = false;
+  bool general_lower_bit_rate_constraint_flag = false;
+  bool general_max_14bit_constraint_flag = false;
 
   // From Table A.8 - General tier and level limits.
   int GetMaxLumaPs() const;

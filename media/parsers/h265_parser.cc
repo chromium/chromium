@@ -199,6 +199,14 @@ H265SPS::H265SPS(H265SPS&&) noexcept = default;
 H265SPS& H265SPS::operator=(H265SPS&&) noexcept = default;
 
 H265ProfileTierLevel::H265ProfileTierLevel() = default;
+H265ProfileTierLevel::H265ProfileTierLevel(const H265ProfileTierLevel&) =
+    default;
+H265ProfileTierLevel& H265ProfileTierLevel::operator=(
+    const H265ProfileTierLevel&) = default;
+H265ProfileTierLevel::H265ProfileTierLevel(H265ProfileTierLevel&&) noexcept =
+    default;
+H265ProfileTierLevel& H265ProfileTierLevel::operator=(
+    H265ProfileTierLevel&&) noexcept = default;
 
 H265VUIParameters::H265VUIParameters() = default;
 H265VUIParameters::H265VUIParameters(const H265VUIParameters&) = default;
@@ -1586,10 +1594,54 @@ H265Parser::Result H265Parser::ParseProfileTierLevel(
         &profile_tier_level->general_non_packed_constraint_flag);
     READ_BOOL_OR_RETURN(
         &profile_tier_level->general_frame_only_constraint_flag);
-    SKIP_BITS_OR_RETURN(7);  // general_reserved_zero_7bits
-    READ_BOOL_OR_RETURN(
-        &profile_tier_level->general_one_picture_only_constraint_flag);
-    SKIP_BITS_OR_RETURN(35);  // general_reserved_zero_35bits
+    // The 44 bits following the frame-only constraint flag carry the
+    // general_constraint_indicator_flags when a range extension capable
+    // profile is signalled (profile_idc >= 4, or one of the compatibility
+    // flags for those profiles is set), and are reserved zeroes otherwise.
+    constexpr uint32_t kRangeExtensionCompatibilityFlags =
+        0x0FF00000;  // general_profile_compatibility_flag[4]..[11].
+    if (profile_tier_level->general_profile_idc >= 4 ||
+        (profile_tier_level->general_profile_compatibility_flags &
+         kRangeExtensionCompatibilityFlags)) {
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_max_12bit_constraint_flag);
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_max_10bit_constraint_flag);
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_max_8bit_constraint_flag);
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_max_422chroma_constraint_flag);
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_max_420chroma_constraint_flag);
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_max_monochrome_constraint_flag);
+      READ_BOOL_OR_RETURN(&profile_tier_level->general_intra_constraint_flag);
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_one_picture_only_constraint_flag);
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_lower_bit_rate_constraint_flag);
+      // general_max_14bit_constraint_flag is only present for the 12/14-bit
+      // profiles (profile_idc 5, 9, 10, 11, H.265 7.3.3); the remaining bits
+      // are reserved zeroes otherwise.
+      constexpr uint32_t k14BitProfileCompatibilityFlags =
+          0x04700000;  // general_profile_compatibility_flag[5],[9],[10],[11].
+      const int profile_idc = profile_tier_level->general_profile_idc;
+      if (profile_idc == 5 || profile_idc == 9 || profile_idc == 10 ||
+          profile_idc == 11 ||
+          (profile_tier_level->general_profile_compatibility_flags &
+           k14BitProfileCompatibilityFlags)) {
+        READ_BOOL_OR_RETURN(
+            &profile_tier_level->general_max_14bit_constraint_flag);
+        SKIP_BITS_OR_RETURN(33);  // general_reserved_zero_33bits
+      } else {
+        SKIP_BITS_OR_RETURN(34);  // general_reserved_zero_34bits
+      }
+    } else {
+      SKIP_BITS_OR_RETURN(7);  // general_reserved_zero_7bits
+      READ_BOOL_OR_RETURN(
+          &profile_tier_level->general_one_picture_only_constraint_flag);
+      SKIP_BITS_OR_RETURN(35);  // general_reserved_zero_35bits
+    }
     SKIP_BITS_OR_RETURN(1);   // general_inbld_flag
   }
   READ_BITS_OR_RETURN(8, &profile_tier_level->general_level_idc);
