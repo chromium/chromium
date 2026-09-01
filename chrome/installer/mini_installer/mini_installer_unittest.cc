@@ -76,21 +76,18 @@ TEST(MiniInstallerTest, GetModuleDir) {
 struct UnpackParams {
   UnpackParams(base::FilePath mini_installer_file_path,
                std::wstring expected_unpacked_archive_file_name,
-               base::FilePath expected_archive_file_path,
                const wchar_t* expected_setup_resource_type,
                const wchar_t* expected_archive_resource_type,
                bool is_compressed)
       : mini_installer_file_path(mini_installer_file_path),
         expected_unpacked_archive_file_name(
             expected_unpacked_archive_file_name),
-        expected_archive_file_path(expected_archive_file_path),
         expected_setup_resource_type(expected_setup_resource_type),
         expected_archive_resource_type(expected_archive_resource_type),
         is_compressed(is_compressed) {}
 
   base::FilePath mini_installer_file_path;
   std::wstring expected_unpacked_archive_file_name;
-  base::FilePath expected_archive_file_path;
   const wchar_t* expected_setup_resource_type;
   const wchar_t* expected_archive_resource_type;
   bool is_compressed;
@@ -104,8 +101,6 @@ INSTANTIATE_TEST_SUITE_P(CompressedArchive,
                              GetTestFileRootPath().Append(
                                  FILE_PATH_LITERAL("mini_installer.exe.test")),
                              std::wstring(L"CHROME.PACKED.7Z"),
-                             GetTestFileRootPath().Append(
-                                 FILE_PATH_LITERAL("test_chrome.packed.7z")),
                              kLZCResourceType,
                              kLZMAResourceType,
                              true)));
@@ -117,20 +112,19 @@ INSTANTIATE_TEST_SUITE_P(
         GetTestFileRootPath().Append(
             FILE_PATH_LITERAL("mini_installer_uncompressed.exe.test")),
         std::wstring(L"CHROME.7Z"),
-        GetTestFileRootPath().Append(FILE_PATH_LITERAL("test_chrome.7z")),
         kBinResourceType,
         kBinResourceType,
         false)));
 
-// Tests unpacking the compressed chrome.packed.7z and setup.ex_ from a test
-// mini_installer.
+// Tests unpacking setup.exe from a test mini_installer without writing archive
+// to disk.
 TEST_P(MiniInstallerTest, UnpackMiniInstaller) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   int max_delete_attempts = 0;
   PathString setup_path;
-  PathString archive_path;
+  PathString archive_name;
   ResourceTypeString archive_type;
 
   base::ScopedNativeLibrary loaded_module(
@@ -141,7 +135,7 @@ TEST_P(MiniInstallerTest, UnpackMiniInstaller) {
   std::wstring temp_path = temp_dir.GetPath().value() + L"\\";
   ProcessExitResult exit_code =
       UnpackBinaryResources(loaded_module.get(), temp_path.c_str(), setup_path,
-                            archive_path, archive_type, max_delete_attempts);
+                            archive_name, archive_type, max_delete_attempts);
   EXPECT_EQ(exit_code.exit_code, SUCCESS_EXIT_CODE);
 
   base::FilePath expected_setup_path =
@@ -151,14 +145,14 @@ TEST_P(MiniInstallerTest, UnpackMiniInstaller) {
   std::string actual_setup_data;
   EXPECT_TRUE(base::ReadFileToString(expected_setup_path, &actual_setup_data));
   EXPECT_STREQ(actual_setup_data.c_str(), "fakesetupdata");
-  base::FilePath expected_unpacked_archive_file_path =
-      temp_dir.GetPath().Append(GetParam().expected_unpacked_archive_file_name);
-  ASSERT_TRUE(base::FilePath::CompareEqualIgnoreCase(
-      archive_path.get(), expected_unpacked_archive_file_path.value()));
+
+  EXPECT_STREQ(archive_name.get(),
+               GetParam().expected_unpacked_archive_file_name.c_str());
   EXPECT_STREQ(archive_type.get(), GetParam().expected_archive_resource_type);
 
-  EXPECT_TRUE(base::ContentsEqual(base::FilePath(archive_path.get()),
-                                  GetParam().expected_archive_file_path));
+  // The archive resource must NOT be written to disk.
+  EXPECT_FALSE(base::PathExists(temp_dir.GetPath().Append(
+      GetParam().expected_unpacked_archive_file_name)));
 
   if (GetParam().is_compressed) {
     EXPECT_TRUE(!base::PathExists(

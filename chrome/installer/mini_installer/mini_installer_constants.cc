@@ -17,8 +17,9 @@ const wchar_t kChromeArchivePrefix[] = L"chrome";
 const wchar_t kSetupPrefix[] = L"setup";
 
 // Command line switch names for setup.exe.
-const wchar_t kCmdInstallArchive[] = L"install-archive";
-const wchar_t kCmdUncompressedArchive[] = L"uncompressed-archive";
+const wchar_t kCmdMiniInstallerPath[] = L"mini-installer-path";
+const wchar_t kCmdArchiveResourceName[] = L"archive-resource-name";
+const wchar_t kCmdArchiveResourceType[] = L"archive-resource-type";
 
 // Temp directory prefix that this process creates.
 const wchar_t kTempPrefix[] = L"CR_";

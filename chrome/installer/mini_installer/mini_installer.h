@@ -28,11 +28,13 @@ struct ProcessExitResult {
   bool IsSuccess() const { return exit_code == SUCCESS_EXIT_CODE; }
 };
 
-// A stack-based string large enough to hold an executable to run
-// (which is a path), two additional path arguments, plus a few extra
-// arguments. Figure that MAX_PATH (260) is sufficient breathing room for the
-// extra arguments.
-using CommandString = StackString<MAX_PATH * 4>;
+// A stack-based string large enough to hold an executable to run. The size is
+// chosen to accomodate:
+// - the path to the target executable (MAX_PATH),
+// - the path to the current executable (MAX_PATH),
+// - the path to an optional log file (MAX_PATH),
+// - breathing room for some number of arguments (MAX_PATH * 2).
+using CommandString = StackString<MAX_PATH * 5>;
 
 // A stack-based string large enough to hold a resource type, plus the null
 // terminator.
@@ -54,9 +56,13 @@ bool GetModuleDir(HMODULE module, PathString* directory);
 // etc. |buffer| is unchanged in case of error.
 void AppendCommandLineFlags(const wchar_t* command_line, CommandString* buffer);
 
-// Finds and writes to disk resources of various types. Returns false
-// if there is a problem in writing any resource to disk. setup.exe resource
-// can come in one of these possible forms:
+// Extracts the `setup` resource and finds the name and type of the `chrome`
+// resource in `module`. On success:
+// - `setup_path` contains the path to the extracted setup executable.
+// - `archive_name` contains the name of the archive resource in `module`.
+// - `archive_type` contains the resource type of the above.
+//
+// The setup.exe resource can come in one of these possible forms:
 // - Resource type 'BL', compressed using LZ (*.ex_)
 // - Resource type 'BN', uncompressed (*.exe)
 // - Resource type 'BD', uncompressed dependencies for component builds
@@ -66,13 +72,13 @@ void AppendCommandLineFlags(const wchar_t* command_line, CommandString* buffer);
 //
 // For component builds, all files stored as uncompressed 'BD' resources
 // are also extracted. This is generally the set of DLLs/resources needed by
-// setup.exe to run. |max_delete_attempts| is set to the highest number of
+// setup.exe to run. `max_delete_attempts` is set to the highest number of
 // attempts needed by DeleteWithRetry to delete files that are unpacked and
 // processed (setup.ex_, or setup.exe).
 ProcessExitResult UnpackBinaryResources(HMODULE module,
                                         const wchar_t* base_path,
                                         PathString& setup_path,
-                                        PathString& archive_path,
+                                        PathString& archive_name,
                                         ResourceTypeString& archive_type,
                                         int& max_delete_attempts);
 

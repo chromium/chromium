@@ -249,17 +249,17 @@ void AppendCommandLineFlags(const wchar_t* command_line,
 
 namespace {
 
-// A ResourceEnumeratorDelegate that captures the resource name and data range
-// for the chrome 7zip archive and the setup.
+// A ResourceEnumeratorDelegate that captures the full names of the resources
+// that begin with "chrome" and "setup" -- the Chrome archive and setup
+// executable, respectively. Also captures the data range for the setup
+// resource.
 class ChromeResourceDelegate : public ResourceEnumeratorDelegate {
  public:
   ChromeResourceDelegate(PathString& archive_name,
-                         MemoryRange& archive_range,
                          PathString& setup_name,
                          MemoryRange& setup_range,
                          DWORD& error_code)
       : archive_name_(archive_name),
-        archive_range_(archive_range),
         setup_name_(setup_name),
         setup_range_(setup_range),
         error_code_(error_code) {}
@@ -267,7 +267,6 @@ class ChromeResourceDelegate : public ResourceEnumeratorDelegate {
 
  private:
   PathString& archive_name_;
-  MemoryRange& archive_range_;
   PathString& setup_name_;
   MemoryRange& setup_range_;
   DWORD& error_code_;
@@ -278,7 +277,7 @@ class ChromeResourceDelegate : public ResourceEnumeratorDelegate {
 bool ChromeResourceDelegate::OnResource(const wchar_t* name,
                                         const MemoryRange& data_range) {
   if (StrStartsWith(name, kChromeArchivePrefix)) {
-    if (!archive_range_.empty()) {
+    if (!archive_name_.empty()) {
       error_code_ = ERROR_TOO_MANY_NAMES;
       return false;  // Break: duplicate resource name.
     }
@@ -286,7 +285,6 @@ bool ChromeResourceDelegate::OnResource(const wchar_t* name,
       error_code_ = ERROR_FILENAME_EXCED_RANGE;
       return false;  // Break: resource name is too long.
     }
-    archive_range_ = data_range;
   } else if (StrStartsWith(name, kSetupPrefix)) {
     if (!setup_range_.empty()) {
       error_code_ = ERROR_TOO_MANY_NAMES;
@@ -355,15 +353,18 @@ bool ResourceDeleterDelegate::OnResource(const wchar_t* name,
 ProcessExitResult UnpackBinaryResources(HMODULE module,
                                         const wchar_t* base_path,
                                         PathString& setup_path,
-                                        PathString& archive_path,
+                                        PathString& archive_name,
                                         ResourceTypeString& archive_type,
                                         int& max_delete_attempts) {
+  // Logic below requires that these outputs are initially empty. Ensure it.
+  setup_path.clear();
+  archive_name.clear();
+  archive_type.clear();
+
   // Generate the setup.exe path where we uncompress setup resource.
   ResourceTypeString setup_type;
   PathString setup_name;
   MemoryRange setup_range;
-  PathString archive_name;
-  MemoryRange archive_range;
 
   // Scan through all types of resources looking for the chrome archive (which
   // is expected to be either a B7 chrome.packed.7z or a BN chrome.7z) and
@@ -371,12 +372,11 @@ ProcessExitResult UnpackBinaryResources(HMODULE module,
   for (const auto* type :
        {kLZMAResourceType, kLZCResourceType, kBinResourceType}) {
     DWORD error_code = ERROR_SUCCESS;
-    // We ignore the result of EnumerateResources here because a non-success
-    // does not always indicate an error occurred.
-    EnumerateResources(
-        ChromeResourceDelegate(archive_name, archive_range, setup_name,
-                               setup_range, error_code),
-        module, type);
+    // Ignore the result of EnumerateResources because a non-success does not
+    // always indicate an error occurred.
+    EnumerateResources(ChromeResourceDelegate(archive_name, setup_name,
+                                              setup_range, error_code),
+                       module, type);
     // `error_code` will have been modified by the delegate in case of error.
     if (error_code != ERROR_SUCCESS) {
       return ProcessExitResult(archive_type.empty()
@@ -385,7 +385,7 @@ ProcessExitResult UnpackBinaryResources(HMODULE module,
                                error_code);
     }
     // If this iteration found either resource, remember its type.
-    if (archive_type.empty() && !archive_range.empty()) {
+    if (archive_type.empty() && !archive_name.empty()) {
       if (!archive_type.assign(type)) {
         return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP,
                                  UNABLE_TO_EXTRACT_CHROME_ARCHIVE);
@@ -400,22 +400,12 @@ ProcessExitResult UnpackBinaryResources(HMODULE module,
     // will propagate an error from `EnumerateResources` in case of duplicate
     // resources.
   }
-  if (archive_range.empty()) {
+  if (archive_name.empty()) {
     return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE,
                              ERROR_FILE_NOT_FOUND);
   }
   if (setup_range.empty()) {
     return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP_EXE, ERROR_FILE_NOT_FOUND);
-  }
-
-  // Write the archive to disk.
-  if (!archive_path.assign(base_path) ||
-      !archive_path.append(archive_name.get())) {
-    return ProcessExitResult(PATH_STRING_OVERFLOW);
-  }
-  if (!WriteToDisk(archive_range, archive_path.get())) {
-    return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE,
-                             ::GetLastError());
   }
 
   // Extract directly to "setup.exe" if the resource is not compressed.
@@ -464,9 +454,19 @@ ProcessExitResult UnpackBinaryResources(HMODULE module,
 
 // Executes setup.exe, waits for it to finish and returns the exit code.
 ProcessExitResult RunSetup(const Configuration& configuration,
-                           const wchar_t* archive_path,
-                           const wchar_t* setup_path,
-                           bool compressed_archive) {
+                           HMODULE module,
+                           const wchar_t* archive_name,
+                           const wchar_t* archive_type,
+                           const wchar_t* setup_path) {
+  // Get the path to mini_installer.
+  PathString mini_installer_path;
+  DWORD len =
+      ::GetModuleFileName(module, mini_installer_path.get(),
+                          static_cast<DWORD>(mini_installer_path.capacity()));
+  if (!len || len >= mini_installer_path.capacity()) {
+    return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+  }
+
   // Get the path to setup.exe.
   PathString setup_exe;
   if (!setup_exe.assign(setup_path)) {
@@ -474,7 +474,7 @@ ProcessExitResult RunSetup(const Configuration& configuration,
   }
 
   // There could be three full paths in the command line for setup.exe (path
-  // to exe itself, path to archive and path to log file), so we declare
+  // to exe itself, path to mini_installer and path to log file), so we declare
   // total size as three + one additional to hold command line options.
   CommandString cmd_line;
   // Put the quoted path to setup.exe in cmd_line first.
@@ -483,11 +483,14 @@ ProcessExitResult RunSetup(const Configuration& configuration,
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 
-  // Append the command line param for chrome archive file.
-  const wchar_t* const archive_switch =
-      compressed_archive ? kCmdInstallArchive : kCmdUncompressedArchive;
-  if (!cmd_line.append(L" --") || !cmd_line.append(archive_switch) ||
-      !cmd_line.append(L"=\"") || !cmd_line.append(archive_path) ||
+  // Append the command line params for the mini_installer binary and archive
+  // resource.
+  if (!cmd_line.append(L" --") || !cmd_line.append(kCmdMiniInstallerPath) ||
+      !cmd_line.append(L"=\"") || !cmd_line.append(mini_installer_path.get()) ||
+      !cmd_line.append(L"\" --") || !cmd_line.append(kCmdArchiveResourceName) ||
+      !cmd_line.append(L"=\"") || !cmd_line.append(archive_name) ||
+      !cmd_line.append(L"\" --") || !cmd_line.append(kCmdArchiveResourceType) ||
+      !cmd_line.append(L"=\"") || !cmd_line.append(archive_type) ||
       !cmd_line.append(L"\"")) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
@@ -505,13 +508,9 @@ ProcessExitResult RunSetup(const Configuration& configuration,
 // Deletes the files extracted by UnpackBinaryResources and the work directory
 // created by GetWorkDir.
 void DeleteExtractedFiles(HMODULE module,
-                          const PathString& archive_path,
                           const PathString& setup_path,
                           const PathString& base_path,
                           int& max_delete_attempts) {
-  if (!archive_path.empty()) {
-    DeleteWithRetryAndMetrics(archive_path.get(), max_delete_attempts);
-  }
   if (!setup_path.empty()) {
     DeleteWithRetryAndMetrics(setup_path.get(), max_delete_attempts);
   }
@@ -729,11 +728,11 @@ ProcessExitResult WMain(HMODULE module) {
 
   int max_delete_attempts = 0;
   PathString setup_path;
-  PathString archive_path;
+  PathString archive_name;
   ResourceTypeString archive_type;
 
   exit_code =
-      UnpackBinaryResources(module, base_path.get(), setup_path, archive_path,
+      UnpackBinaryResources(module, base_path.get(), setup_path, archive_name,
                             archive_type, max_delete_attempts);
 
   // While unpacking the binaries, we paged in a whole bunch of memory that
@@ -742,13 +741,12 @@ ProcessExitResult WMain(HMODULE module) {
   ::SetProcessWorkingSetSize(::GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 
   if (exit_code.IsSuccess()) {
-    exit_code = RunSetup(configuration, archive_path.get(), setup_path.get(),
-                         archive_type.compare(kLZMAResourceType) == 0);
+    exit_code = RunSetup(configuration, module, archive_name.get(),
+                         archive_type.get(), setup_path.get());
   }
 
   if (configuration.should_delete_extracted_files()) {
-    DeleteExtractedFiles(module, archive_path, setup_path, base_path,
-                         max_delete_attempts);
+    DeleteExtractedFiles(module, setup_path, base_path, max_delete_attempts);
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
