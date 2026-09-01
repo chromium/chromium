@@ -357,9 +357,6 @@ source_set("browser_sources") {
     "process_selection_user_data.cc",
     "process_selection_user_data.h",
     "process_visibility_util.h",
-    "provision_fetcher_factory.h",
-    "provision_fetcher_impl.cc",
-    "provision_fetcher_impl.h",
     "push_messaging_service.cc",
     "push_messaging_service.h",
     "reduce_accept_language_controller_delegate.h",
@@ -564,6 +561,14 @@ source_set("browser_sources") {
 
   if (is_android) {
     sources += [ "color_chooser.h" ]
+  }
+
+  if (enable_cdm_provision_fetcher) {
+    sources += [
+      "provision_fetcher_factory.h",
+      "provision_fetcher_impl.cc",
+      "provision_fetcher_impl.h",
+    ]
   }
 
   if (is_linux || is_mac) {

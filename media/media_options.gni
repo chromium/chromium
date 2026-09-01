@@ -127,6 +127,9 @@ declare_args() {
   # session.
   enable_media_drm_storage = is_android || is_castos
 
+  # Enable the URL-based CDM provisioning fetcher.
+  enable_cdm_provision_fetcher = is_android || is_castos || is_fuchsia
+
   # Enable HLS manifest parser and demuxer.
   enable_hls_demuxer = proprietary_codecs
 

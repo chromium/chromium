@@ -67,8 +67,10 @@ class MockCdmStorage : public mojom::CdmStorage {
 
 class TestFrameInterfaceFactory : public mojom::FrameInterfaceFactory {
  public:
+#if BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
   void CreateProvisionFetcher(
       mojo::PendingReceiver<mojom::ProvisionFetcher>) override {}
+#endif  // BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
   void CreateCdmStorage(
       mojo::PendingReceiver<mojom::CdmStorage> receiver) override {
     mojo::MakeSelfOwnedReceiver(std::make_unique<MockCdmStorage>(),

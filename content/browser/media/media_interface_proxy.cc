@@ -42,13 +42,13 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-#if BUILDFLAG(ENABLE_MOJO_CDM)
+#if BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/provision_fetcher_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "base/feature_list.h"
@@ -170,16 +170,16 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 
   // media::mojom::FrameInterfaceFactory implementation:
 
+#if BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
   void CreateProvisionFetcher(
       mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver) override {
-#if BUILDFLAG(ENABLE_MOJO_CDM)
     ProvisionFetcherImpl::Create(render_frame_host_,
                                  render_frame_host_->GetBrowserContext()
                                      ->GetDefaultStoragePartition()
                                      ->GetURLLoaderFactoryForBrowserProcess(),
                                  std::move(receiver));
-#endif
   }
+#endif  // BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
 
   void CreateCdmStorage(
       mojo::PendingReceiver<media::mojom::CdmStorage> receiver) override {

@@ -2659,7 +2659,6 @@ test("content_unittests") {
     "../browser/media/media_power_experiment_manager_unittest.cc",
     "../browser/media/media_web_contents_observer_unittest.cc",
     "../browser/media/midi_host_unittest.cc",
-    "../browser/media/provision_fetcher_impl_unittest.cc",
     "../browser/media/session/media_players_callback_aggregator_unittest.cc",
     "../browser/media/session/media_session_controller_unittest.cc",
     "../browser/media/session/media_session_controllers_manager_unittest.cc",
@@ -2667,7 +2666,6 @@ test("content_unittests") {
     "../browser/media/session/media_session_impl_unittest.cc",
     "../browser/media/session/media_session_uma_helper_unittest.cc",
     "../browser/media/system_media_controls/system_media_controls_notifier_unittest.cc",
-    "../browser/media/url_provision_fetcher_unittest.cc",
     "../browser/media/webaudio/audio_context_manager_impl_unittest.cc",
     "../browser/memory/swap_metrics_driver_impl_unittest.cc",
     "../browser/memory_coordinator/browser_memory_coordinator_unittest.cc",
@@ -3105,6 +3103,13 @@ test("content_unittests") {
       "../common/android/child_process_id_unittest.cc",
       "../common/android/cpu_time_metrics_unittest.cc",
       "../common/android/gin_java_bridge_value_unittest.cc",
+    ]
+  }
+
+  if (enable_cdm_provision_fetcher) {
+    sources += [
+      "../browser/media/provision_fetcher_impl_unittest.cc",
+      "../browser/media/url_provision_fetcher_unittest.cc",
     ]
   }
 

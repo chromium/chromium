@@ -62,9 +62,6 @@ class MockFrameInterfaceFactory : public media::mojom::FrameInterfaceFactory {
   MockFrameInterfaceFactory() = default;
   ~MockFrameInterfaceFactory() override = default;
 
-  MOCK_METHOD(void,
-              CreateProvisionFetcher,
-              (mojo::PendingReceiver<media::mojom::ProvisionFetcher>));
   MOCK_METHOD(void, CreateCdmStorage, (mojo::PendingReceiver<BrowserStorage>));
   MOCK_METHOD(bool, GetCdmOrigin, (url::Origin*));
   MOCK_METHOD(void, GetCdmOrigin, (GetCdmOriginCallback));

@@ -1306,8 +1306,6 @@ source_set("browser") {
     "media/session/media_session_uma_helper.h",
     "media/system_media_controls/system_media_controls_notifier.cc",
     "media/system_media_controls/system_media_controls_notifier.h",
-    "media/url_provision_fetcher.cc",
-    "media/url_provision_fetcher.h",
     "media/webaudio/audio_context_manager_impl.cc",
     "media/webaudio/audio_context_manager_impl.h",
     "media_session/media_session_service.cc",
@@ -2639,6 +2637,13 @@ source_set("browser") {
     sources += [
       "file_system_access/file_system_access_local_path_watcher.cc",
       "file_system_access/file_system_access_local_path_watcher.h",
+    ]
+  }
+
+  if (enable_cdm_provision_fetcher) {
+    sources += [
+      "media/url_provision_fetcher.cc",
+      "media/url_provision_fetcher.h",
     ]
   }
 

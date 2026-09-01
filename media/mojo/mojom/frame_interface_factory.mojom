@@ -5,11 +5,15 @@
 module media.mojom;
 
 import "media/mojo/mojom/cdm_storage.mojom";
-import "media/mojo/mojom/provision_fetcher.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "url/mojom/origin.mojom";
+
 [EnableIf=is_win]
 import "media/mojo/mojom/dcomp_surface_registry.mojom";
+
+[EnableIf=enable_cdm_provision_fetcher]
+import "media/mojo/mojom/provision_fetcher.mojom";
+
 [EnableIf=is_win]
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -29,7 +33,9 @@ interface MuteStateObserver {
 // a document's lifetime.
 interface FrameInterfaceFactory {
   // Binds the ProvisionFetcher for the frame.
-  CreateProvisionFetcher(pending_receiver<ProvisionFetcher> provision_fetcher);
+  [EnableIf=enable_cdm_provision_fetcher]
+  CreateProvisionFetcher(
+      pending_receiver<ProvisionFetcher> provision_fetcher);
 
   // Binds the CdmStorage for the frame. This requires that the frame have
   // CDM storage available.
@@ -42,7 +48,8 @@ interface FrameInterfaceFactory {
 
   // Binds a DCOMPSurfaceRegistry to register a surface handle in GPU process.
   [EnableIf=is_win]
-  CreateDCOMPSurfaceRegistry(pending_receiver<DCOMPSurfaceRegistry> registry);
+  CreateDCOMPSurfaceRegistry(
+      pending_receiver<DCOMPSurfaceRegistry> registry);
 
   // Gets the origin of the frame associated with the CDM.
   [Sync]
