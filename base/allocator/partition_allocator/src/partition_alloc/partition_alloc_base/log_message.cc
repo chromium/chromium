@@ -192,7 +192,7 @@ void SystemErrorCodeToStream(base::strings::CStringBuilder& os,
                              GetLastError(), error_code);
   os << buffer;
 #elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
-  base::safe_strerror_r(error_code, buffer, sizeof(buffer));
+  base::safe_strerror_r(error_code, buffer);
   os << buffer << " (" << error_code << ")";
 #endif  // PA_BUILDFLAG(IS_WIN)
 }

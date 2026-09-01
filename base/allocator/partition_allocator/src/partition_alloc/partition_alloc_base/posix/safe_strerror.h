@@ -9,6 +9,7 @@
 #include <string>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 
 namespace partition_alloc::internal::base {
 
@@ -29,7 +30,7 @@ namespace partition_alloc::internal::base {
 //
 // Use this instead of strerror_r().
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
-void safe_strerror_r(int err, char* buf, size_t len);
+void safe_strerror_r(int err, span<char, 256> buf);
 
 // Calls safe_strerror_r with a buffer of suitable size and returns the result
 // in a C++ string.
