@@ -228,7 +228,7 @@ class VideoResourceUpdaterTest : public testing::Test {
     metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
     metadata.alpha_type = kOpaque_SkAlphaType;
     metadata.usage = needs_raster_access ? gpu::SHARED_IMAGE_USAGE_RASTER_READ
-                                         : gpu::SharedImageUsageSet();
+                                         : gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu::ClientSharedImage::CreateForTesting(metadata, target);
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(

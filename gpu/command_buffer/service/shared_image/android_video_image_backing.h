@@ -29,11 +29,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
  public:
   static std::unique_ptr<AndroidVideoImageBacking> Create(
       const Mailbox& mailbox,
-      const gfx::Size& size,
-      const gfx::ColorSpace color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<RefCountedLock> drdc_lock);
@@ -60,11 +56,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
 
  protected:
   AndroidVideoImageBacking(const Mailbox& mailbox,
-                           const gfx::Size& size,
-                           const gfx::ColorSpace color_space,
-                           GrSurfaceOrigin surface_origin,
-                           SkAlphaType alpha_type,
-                           std::string debug_label,
+                           const SharedImageInfo& si_info,
                            bool is_thread_safe);
 };
 

@@ -28,11 +28,7 @@ class GPU_GLES2_EXPORT VideoImageReaderImageBacking
  public:
   VideoImageReaderImageBacking(
       const Mailbox& mailbox,
-      const gfx::Size& size,
-      const gfx::ColorSpace color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
       scoped_refptr<SharedContextState> shared_context_state,
       scoped_refptr<RefCountedLock> drdc_lock);

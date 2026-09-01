@@ -24,44 +24,26 @@ namespace gpu {
 
 AndroidVideoImageBacking::AndroidVideoImageBacking(
     const Mailbox& mailbox,
-    const gfx::Size& size,
-    const gfx::ColorSpace color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe)
-    : AndroidImageBacking(
-          mailbox,
-          SharedImageInfo(
-              viz::SinglePlaneFormat::kRGBA_8888,
-              size,
-              color_space,
-              surface_origin,
-              alpha_type,
-              {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_GLES2_READ,
-               SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_SCANOUT},
-              std::move(debug_label)),
-          viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
-          is_thread_safe,
-          base::ScopedFD()) {}
+    : AndroidImageBacking(mailbox,
+                          si_info,
+                          si_info.format.EstimatedSizeInBytes(si_info.size),
+                          is_thread_safe,
+                          base::ScopedFD()) {}
 
 AndroidVideoImageBacking::~AndroidVideoImageBacking() {}
 
 // Static.
 std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
     const Mailbox& mailbox,
-    const gfx::Size& size,
-    const gfx::ColorSpace color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<RefCountedLock> drdc_lock) {
   return std::make_unique<VideoImageReaderImageBacking>(
-      mailbox, size, color_space, surface_origin, alpha_type,
-      std::move(debug_label), std::move(stream_texture_sii),
-      std::move(context_state), std::move(drdc_lock));
+      mailbox, si_info, std::move(stream_texture_sii), std::move(context_state),
+      std::move(drdc_lock));
 }
 
 // Static.

@@ -1001,6 +1001,13 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
 BASE_FEATURE(kUseTaskRunnerForMojoAudioDecoderService,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, determines whether a VideoFrame requires copying before display
+// based on whether the SharedImage usage includes
+// SHARED_IMAGE_USAGE_DISPLAY_READ, rather than using
+// VideoFrameMetadata::copy_required.
+BASE_FEATURE(kUseSharedImageUsageForVideoFrameCopy,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Safety switch to allow us to revert to the previous behavior of using the
 // restored bounds for PiP windows, rather than the window bounds.  If this
 // feature is enabled (the default), then we'll use the window bounds.

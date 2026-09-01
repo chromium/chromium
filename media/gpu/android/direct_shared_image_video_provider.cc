@@ -13,7 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/command_buffer/service/shared_image/android_video_image_backing.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -140,13 +140,38 @@ void GpuSharedImageVideoFactory::CreateImage(
 
   TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
 
+  gpu::SharedImageUsageSet usage = {gpu::SHARED_IMAGE_USAGE_GLES2_READ,
+                                    gpu::SHARED_IMAGE_USAGE_RASTER_READ};
+  if (base::FeatureList::IsEnabled(
+          media::kUseSharedImageUsageForVideoFrameCopy)) {
+    const bool enable_threaded_texture_mailboxes =
+        stub_->channel()
+            ->gpu_channel_manager()
+            ->gpu_preferences()
+            .enable_threaded_texture_mailboxes;
+    const bool is_thread_safe = !drdc_lock;
+    // When threaded texture mailboxes are enabled and the SharedImage is not
+    // thread-safe, it cannot be shared directly between contexts of different
+    // share groups. Hence, DISPLAY_READ and SCANOUT usages are omitted so that
+    // the frame is copied before use.
+    const bool copy_required =
+        enable_threaded_texture_mailboxes && !is_thread_safe;
+    if (!copy_required) {
+      usage.PutAll({gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+                    gpu::SHARED_IMAGE_USAGE_SCANOUT});
+    }
+  } else {
+    usage.PutAll({gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+                  gpu::SHARED_IMAGE_USAGE_SCANOUT});
+  }
+
   scoped_refptr<gpu::GpuChannelSharedImageInterface>
       gpu_channel_shared_image_interface =
           stub_->channel()->shared_image_stub()->shared_image_interface();
   CHECK(spec.color_space.IsValid());
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       gpu_channel_shared_image_interface->CreateSharedImageForAndroidVideo(
-          spec.coded_size, spec.color_space, codec_image, drdc_lock);
+          spec.coded_size, spec.color_space, usage, codec_image, drdc_lock);
   if (!shared_image) {
     return;
   }

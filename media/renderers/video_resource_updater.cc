@@ -807,7 +807,12 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     return VideoFrameExternalResource();
   }
 
-  if (video_frame->metadata().copy_required) {
+  const bool copy_required =
+      base::FeatureList::IsEnabled(media::kUseSharedImageUsageForVideoFrameCopy)
+          ? !video_frame->shared_image()->usage().Has(
+                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)
+          : video_frame->metadata().copy_required;
+  if (copy_required) {
     return CopyHardwareResource(video_frame.get());
   }
 

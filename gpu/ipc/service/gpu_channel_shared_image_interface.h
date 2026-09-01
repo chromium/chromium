@@ -50,6 +50,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   scoped_refptr<ClientSharedImage> CreateSharedImageForAndroidVideo(
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      SharedImageUsageSet usage,
       scoped_refptr<StreamTextureSharedImageInterface> image,
       scoped_refptr<RefCountedLock> drdc_lock);
 #endif
