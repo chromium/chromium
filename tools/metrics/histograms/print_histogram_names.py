@@ -8,10 +8,16 @@ from __future__ import print_function
 
 import argparse
 import io
+import os
 import subprocess
 import sys
+import re
+from typing import Any, Callable, Iterable, List, Set
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
+
+import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils

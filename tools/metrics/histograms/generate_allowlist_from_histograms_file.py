@@ -6,7 +6,8 @@
 import argparse
 import pathlib
 import sys
-import xml.dom.minidom
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -109,7 +110,7 @@ def _GenerateFile(arguments):
       arguments.output_dir: A directory to put the generated file.
       arguments.allow_list_name: A name of the variant or enum list.
   """
-  histograms = xml.dom.minidom.parse(arguments.input)
+  histograms = ET.parse(arguments.input).getroot()
   values = _GenerateValueList(
     histograms, arguments.tag, arguments.allow_list_name
   )

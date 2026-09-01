@@ -4,14 +4,14 @@
 # found in the LICENSE file.
 
 import unittest
-import xml.dom.minidom
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.generate_allowlist_from_histograms_file as generate_allowlist_from_histograms_file
 
-_EXPECTED_FILE_CONTENT = """// Generated from generate_allowlist_from_histograms_file.py. \
-Do not edit!
+_EXPECTED_FILE_CONTENT = """\
+// Generated from generate_allowlist_from_histograms_file.py. Do not edit!
 
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
@@ -74,7 +74,7 @@ class VariantAllowListTest(unittest.TestCase):
     self.assertEqual(_EXPECTED_FILE_CONTENT, content)
 
   def testGenerateListFromVariants(self):
-    histograms = xml.dom.minidom.parseString(_TEST_VARIANT_INPUT)
+    histograms = ET.fromstring(_TEST_VARIANT_INPUT)
     allow_list_name = 'BubbleName'
     variants = generate_allowlist_from_histograms_file._GenerateValueList(
       histograms, 'variant', allow_list_name
@@ -89,7 +89,7 @@ class VariantAllowListTest(unittest.TestCase):
       )
 
   def testGenerateListFromEnums(self):
-    histograms = xml.dom.minidom.parseString(_TEST_ENUM_INPUT)
+    histograms = ET.fromstring(_TEST_ENUM_INPUT)
     allow_list_name = 'URLHashes'
     variants = generate_allowlist_from_histograms_file._GenerateValueList(
       histograms, 'enum', allow_list_name

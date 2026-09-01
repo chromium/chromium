@@ -224,7 +224,7 @@ def _GenerateFileContent(
   Raises:
     Error if there is an error in input xml files.
   """
-  histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(
+  histograms, had_errors = extract_histograms.ExtractHistogramsFromXmlET(
     descriptions
   )
   if had_errors:
@@ -277,7 +277,7 @@ def _GenerateFile(arguments):
     '  add: %s\n  remove: %s' % (', '.join(to_add), ', '.join(to_remove))
   )
 
-  descriptions = merge_xml.MergeFilesDeprecated(arguments.inputs)
+  descriptions = merge_xml.MergeFiles(arguments.inputs)
   with open(arguments.major_branch_date_filepath, 'r') as date_file:
     branch_file_content = date_file.read()
   with open(arguments.milestone_filepath, 'r') as milestone_file:
