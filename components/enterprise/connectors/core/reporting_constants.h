@@ -6,15 +6,8 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_CONSTANTS_H_
 
 #include <array>
-#include <string_view>
-
-#include "base/containers/fixed_flat_map.h"
-#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 
 namespace enterprise_connectors {
-
-// Alias to reduce verbosity when using Event::EventCase.
-using EventCase = ::chrome::cros::reporting::proto::Event::EventCase;
 
 inline constexpr char kExtensionInstallEvent[] = "browserExtensionInstallEvent";
 inline constexpr char kExtensionTelemetryEvent[] = "extensionTelemetryEvent";
@@ -156,51 +149,6 @@ inline constexpr char kBrowserLaunchUmaMetricName[] =
     "Enterprise.ReportingEvent.BrowserLaunch.";
 inline constexpr char kUnknownUmaMetricName[] =
     "Enterprise.ReportingEvent.Unknown.";
-
-
-// Mapping from event case to UMA metric name.
-inline constexpr auto kEventCaseToUmaMetricNameMap =
-    base::MakeFixedFlatMap<EventCase, std::string_view>(
-        {{EventCase::kPasswordReuseEvent, kPasswordReuseUmaMetricName},
-         {EventCase::kPasswordChangedEvent, kPasswordChangedUmaMetricName},
-         {EventCase::kDangerousDownloadEvent, kDangerousDownloadUmaMetricName},
-         {EventCase::kInterstitialEvent, kInterstitialUmaMetricName},
-         {EventCase::kSensitiveDataEvent, kSensitiveDataUmaMetricName},
-         {EventCase::kUnscannedFileEvent, kUnscannedFileUmaMetricName},
-         {EventCase::kLoginEvent, kLoginUmaMetricName},
-         {EventCase::kPasswordBreachEvent, kPasswordBreachUmaMetricName},
-         {EventCase::kUrlFilteringInterstitialEvent,
-          kUrlFilteringInterstitialUmaMetricName},
-         {EventCase::kBrowserExtensionInstallEvent,
-          kExtensionInstallUmaMetricName},
-         {EventCase::kBrowserCrashEvent, kBrowserCrashUmaMetricName},
-         {EventCase::kExtensionTelemetryEvent,
-          kExtensionTelemetryUmaMetricName},
-         {EventCase::kSaasUsageReportEvent, kSaasUsageUmaMetricName},
-         {EventCase::kBrowserLaunchEvent, kBrowserLaunchUmaMetricName}});
-
-// Mapping from event case to UMA metric name.
-inline constexpr auto kEventCaseToEventNameMap =
-    base::MakeFixedFlatMap<EventCase, std::string_view>(
-        {{EventCase::kPasswordReuseEvent, kKeyPasswordReuseEvent},
-         {EventCase::kPasswordChangedEvent, kKeyPasswordChangedEvent},
-         {EventCase::kDangerousDownloadEvent, kKeyDangerousDownloadEvent},
-         {EventCase::kInterstitialEvent, kKeyInterstitialEvent},
-         {EventCase::kSensitiveDataEvent, kKeySensitiveDataEvent},
-         {EventCase::kUnscannedFileEvent, kKeyUnscannedFileEvent},
-         {EventCase::kLoginEvent, kKeyLoginEvent},
-         {EventCase::kPasswordBreachEvent, kKeyPasswordBreachEvent},
-         {EventCase::kUrlFilteringInterstitialEvent,
-          kKeyUrlFilteringInterstitialEvent},
-         {EventCase::kBrowserExtensionInstallEvent, kExtensionInstallEvent},
-         {EventCase::kBrowserCrashEvent, kBrowserCrashEvent},
-         {EventCase::kExtensionTelemetryEvent, kExtensionTelemetryEvent},
-         {EventCase::kSaasUsageReportEvent, kKeySaasUsageEvent},
-         {EventCase::kBrowserLaunchEvent, kKeyBrowserLaunchEvent}});
-
-std::string GetPayloadSizeUmaMetricName(EventCase event_case);
-
-std::string GetEventName(EventCase event_case);
 
 enum EnterpriseRealTimeUrlCheckMode : int {
   REAL_TIME_CHECK_DISABLED = 0,

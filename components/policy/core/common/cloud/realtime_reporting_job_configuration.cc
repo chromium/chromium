@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/enterprise/common/strings.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_mappings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

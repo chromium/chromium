@@ -191,8 +191,9 @@ if (enterprise_cloud_content_analysis || is_android) {
 
 source_set("constants") {
   sources = [
-    "reporting_constants.cc",
     "reporting_constants.h",
+    "reporting_event_mappings.cc",
+    "reporting_event_mappings.h",
   ]
   deps = [
     "//base",
