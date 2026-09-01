@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -289,6 +290,68 @@ SortedTokenComparisonResult CompareSortedTokens(
 // Convenience wrapper to supply untokenized strings.
 SortedTokenComparisonResult CompareSortedTokens(std::u16string_view first,
                                                 std::u16string_view second);
+
+// Returns true if `sub` is a subsequence of `super`.
+//
+// A subsequence of span of strings `super` is a span of strings that can be
+// derived from `super` by deleting zero or more span items (strings) without
+// changing the relative order of the remaining items.
+//
+// For example, for the span
+//   ["john", "quincy", "public"],
+// the following spans are valid subsequences:
+//   ["john", "quincy"          ],
+//   [        "quincy"          ],
+//   ["john",          "public" ]...
+//
+// Note: Empty tokens are considered to be equivalent to the absence of the
+// token and just bypassed by the algorithm.
+//
+// The number of iterations does not exceed `super.size() + sub.size()`.
+bool IsSubsequence(base::span<const std::u16string_view> super,
+                   base::span<const std::u16string_view> sub);
+
+// Returns true if `sub` is an abbreviated concatenated subsequence of `super`.
+//
+// This means each token in `sub` must match a corresponding subsequence of
+// tokens from `super`, processed in order. Tokens from `super` can be skipped.
+// The matching for a `sub` token can be one of the following:
+//
+// 1.  Exact Match:
+//     A token in `sub` is identical to a token in `super`.
+//
+// 2.  Concatenated Initials:
+//     A token in `sub` is formed by concatenating the first letters (initials)
+//     of an ordered subsequence of tokens from `super`.
+//     - Example: Given `super` = ["john", "quincy", "public"],
+//       `sub` = ["jqp"] matches by taking initials from all three.
+//       `sub` = ["jq"] matches by taking initials from "john", "quincy",
+//       skipping "public".
+//
+// Key Rules:
+// - Tokens from `super` are always consumed in their original order.
+// - Tokens in `super` can be skipped between matches for different `sub`
+//   tokens.
+// - Tokens in `super` can also be skipped when forming a single concatenated
+//   initials token in `sub`.
+//   (e.g., "jp" from ["john", "quincy", "public"], skipping "quincy").
+//
+// Examples with `super` = ["john", "quincy", "public"]:
+// Valid `sub` sequences:
+//   ["john", "quincy"          ]
+//   ["j"   , "q"     , "p"     ]
+//   ["jq"  ,           "public"]
+//   ["jqp"                     ]
+//   ["john",           "p"     ]
+//   ["jp"                      ]...
+//
+// Note: Empty tokens are considered to be equivalent to the absence of the
+// token and just bypassed by the algorithm.
+//
+// The number of iterations does not exceed `super.size() + sub.size()`.
+bool IsAbbreviatedConcatenatedSubsequence(
+    base::span<const std::u16string_view> super,
+    base::span<const std::u16string_view> sub);
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_STRUCTURED_ADDRESS_UTIL_H_

@@ -243,4 +243,80 @@ TEST(AutofillStructuredAddressUtils, AreStringTokenCompatible) {
   EXPECT_FALSE(AreStringTokenCompatible(u"us foo", u"used, foo"));
 }
 
+TEST(AutofillStructuredAddressUtils, SubsequenceMatching) {
+  struct TestCase {
+    std::vector<std::u16string_view> super;
+    std::vector<std::u16string_view> sub;
+    bool is_subsequence = true;
+  };
+
+  const std::vector<TestCase> test_cases = {
+      // Exact and subsequence matches.
+      {.super = {u"a", u"b", u"c"}, .sub = {u"a", u"b", u"c"}},
+      {.super = {u"a", u"b", u"c"}, .sub = {u"a", u"c"}},
+      {.super = {u"a", u"b", u"c"}, .sub = {u"b"}},
+
+      // Empty tokens in `super` and `sub` are ignored.
+      {.super = {u"a", u"b"}, .sub = {u"a", u"b", u"", u""}},
+      {.super = {u"a", u"b", u"", u""}, .sub = {u"a", u"b"}},
+      {.super = {u"", u"a", u"", u"b", u""}, .sub = {u"a", u"b"}},
+      {.super = {u"a", u"b"}, .sub = {u"", u"a", u""}},
+      {.super = {u"a", u"b"}, .sub = {u""}},
+      {.super = {}, .sub = {u""}},
+
+      // Negative cases.
+      {.super = {u"a", u"b"},
+       .sub = {u"a", u"b", u"c"},
+       .is_subsequence = false},
+      {.super = {u"a", u"b"},
+       .sub = {u"a", u"b", u"", u"c"},
+       .is_subsequence = false},
+      {.super = {u"a", u"b"}, .sub = {u"c"}, .is_subsequence = false},
+      {.super = {u"a", u"b"}, .sub = {u"b", u"a"}, .is_subsequence = false},
+      {.super = {}, .sub = {u"a"}, .is_subsequence = false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(IsSubsequence(test_case.super, test_case.sub),
+              test_case.is_subsequence);
+    EXPECT_EQ(
+        IsAbbreviatedConcatenatedSubsequence(test_case.super, test_case.sub),
+        test_case.is_subsequence);
+  }
+}
+
+TEST(AutofillStructuredAddressUtils,
+     IsAbbreviatedConcatenatedSubsequence_AbbreviationsAndInitials) {
+  struct TestCase {
+    std::vector<std::u16string_view> super;
+    std::vector<std::u16string_view> sub;
+    bool is_abbreviated_subsequence = true;
+  };
+
+  const std::vector<TestCase> test_cases = {
+      // Standalone initials.
+      {.super = {u"abc", u"def", u"ghi"}, .sub = {u"a", u"g"}},
+      {.super = {u"abc", u"def", u"ghi"}, .sub = {u"d"}},
+
+      // Concatenated initials.
+      {.super = {u"abc", u"def", u"ghi"}, .sub = {u"adg"}},
+      {.super = {u"abc", u"def", u"ghi"}, .sub = {u"ad"}},
+      {.super = {u"abc", u"def", u"ghi"}, .sub = {u"ag"}},
+
+      // Multi-letter prefixes are not valid abbreviations.
+      {.super = {u"abc", u"def", u"ghi"},
+       .sub = {u"ab"},
+       .is_abbreviated_subsequence = false},
+      {.super = {u"john", u"quincy", u"public"},
+       .sub = {u"jo", u"public"},
+       .is_abbreviated_subsequence = false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(
+        IsAbbreviatedConcatenatedSubsequence(test_case.super, test_case.sub),
+        test_case.is_abbreviated_subsequence);
+  }
+}
+
 }  // namespace autofill

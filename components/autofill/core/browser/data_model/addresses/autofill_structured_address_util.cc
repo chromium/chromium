@@ -476,4 +476,79 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
   return tokens;
 }
 
+bool IsSubsequence(base::span<const std::u16string_view> super,
+                   base::span<const std::u16string_view> sub) {
+  size_t super_idx = 0;
+  size_t sub_idx = 0;
+  while (sub_idx < sub.size()) {
+    if (sub[sub_idx].empty()) {
+      ++sub_idx;
+      continue;
+    }
+    // All `super` tokens are consumed. The current `sub` token is not
+    // empty, so it cannot be matched.
+    if (super_idx == super.size()) {
+      return false;
+    }
+    if (super[super_idx].empty()) {
+      ++super_idx;
+      continue;
+    }
+    if (super[super_idx] == sub[sub_idx]) {
+      ++super_idx;
+      ++sub_idx;
+      continue;
+    }
+    ++super_idx;
+  }
+
+  return true;
+}
+
+bool IsAbbreviatedConcatenatedSubsequence(
+    base::span<const std::u16string_view> super,
+    base::span<const std::u16string_view> sub) {
+  size_t super_idx = 0;
+  size_t sub_idx = 0;
+  // Index within the current `sub[sub_idx]` token. Tracks progress when
+  // matching `sub[sub_idx]` as a concatenated initials string.
+  size_t sub_inner_idx = 0;
+
+  while (sub_idx < sub.size()) {
+    if (sub[sub_idx].empty()) {
+      ++sub_idx;
+      continue;
+    }
+    // All `super` tokens are consumed. The current `sub` token is not
+    // empty, so it cannot be matched.
+    if (super_idx == super.size()) {
+      return false;
+    }
+    if (super[super_idx].empty()) {
+      ++super_idx;
+      continue;
+    }
+    // Check if the initial of the current `super` token matches the
+    // `sub_inner_idx`-th character of the current `sub` token, as part of
+    // matching `sub[sub_idx]` as a concatenated initials string.
+    if (super[super_idx][0] == sub[sub_idx][sub_inner_idx]) {
+      ++sub_inner_idx;
+    }
+    // Checks if `sub[sub_idx]` is fully matched. This occurs if:
+    // 1. All its characters are matched as concatenated initials from 'super'
+    //    tokens in order (`sub_inner_idx == sub[sub_idx].size()`).
+    // 2. It exactly matches the current 'super' token (`super[super_idx] ==
+    //    sub[sub_idx]`).
+    if (sub_inner_idx == sub[sub_idx].size() ||
+        super[super_idx] == sub[sub_idx]) {
+      ++super_idx;
+      ++sub_idx;
+      sub_inner_idx = 0;
+      continue;
+    }
+    ++super_idx;
+  }
+  return true;
+}
+
 }  // namespace autofill

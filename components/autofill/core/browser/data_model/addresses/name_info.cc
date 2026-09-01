@@ -236,126 +236,6 @@ bool IsNormalizedNameVariantOfExponential(std::u16string_view full_name_1,
   return false;
 }
 
-// Returns true if `sub` is a subsequence of `super`.
-//
-// A subsequence of span of strings `super` is a span of strings that can be
-// derived from `super` by deleting zero or more span items (strings) without
-// changing the relative order of the remaining items.
-//
-// For example, for the span
-//   ["john", "quincy", "public"],
-// the following spans are valid subsequences:
-//   ["john", "quincy"          ],
-//   [        "quincy"          ],
-//   ["john",          "public" ]...
-//
-// Note: Empty tokens are considered to be equivalent to the absence of the
-// token and just bypassed by the algorithm.
-//
-// The number of iterations does not exceed `super.size() + sub.size()`.
-bool IsSubsequence(base::span<const std::u16string_view> super,
-                   base::span<const std::u16string_view> sub) {
-  size_t super_idx = 0;
-  size_t sub_idx = 0;
-  while (super_idx < super.size() && sub_idx < sub.size()) {
-    if (sub[sub_idx].empty()) {
-      ++sub_idx;
-      continue;
-    }
-    if (super[super_idx].empty()) {
-      ++super_idx;
-      continue;
-    }
-    if (super[super_idx] == sub[sub_idx]) {
-      ++super_idx;
-      ++sub_idx;
-      continue;
-    }
-    ++super_idx;
-  }
-
-  return sub_idx == sub.size();
-}
-
-// Returns true if `sub` is an abbreviated concatenated subsequence of `super`.
-//
-// This means each token in `sub` must match a corresponding subsequence of
-// tokens from `super`, processed in order. Tokens from `super` can be skipped.
-// The matching for a `sub` token can be one of the following:
-//
-// 1.  Exact Match:
-//     A token in `sub` is identical to a token in `super`.
-//
-// 2.  Concatenated Initials:
-//     A token in `sub` is formed by concatenating the first letters (initials)
-//     of an ordered subsequence of tokens from `super`.
-//     - Example: Given `super` = ["john", "quincy", "public"],
-//       `sub` = ["jqp"] matches by taking initials from all three.
-//       `sub` = ["jq"] matches by taking initials from "john", "quincy",
-//       skipping "public".
-//
-// Key Rules:
-// - Tokens from `super` are always consumed in their original order.
-// - Tokens in `super` can be skipped between matches for different `sub`
-//   tokens.
-// - Tokens in `super` can also be skipped when forming a single concatenated
-//   initials token in `sub`.
-//   (e.g., "jp" from ["john", "quincy", "public"], skipping "quincy").
-//
-// Examples with `super` = ["john", "quincy", "public"]:
-// Valid `sub` sequences:
-//   ["john", "quincy"          ]
-//   ["j"   , "q"     , "p"     ]
-//   ["jq"  ,           "public"]
-//   ["jqp"                     ]
-//   ["john",           "p"     ]
-//   ["jp"                      ]...
-//
-// Note: Empty tokens are considered to be equivalent to the absence of the
-// token and just bypassed by the algorithm.
-//
-// The number of iterations does not exceed `super.size() + sub.size()`.
-bool IsAbbreviatedConcatenatedSubsequence(
-    base::span<const std::u16string_view> super,
-    base::span<const std::u16string_view> sub) {
-  size_t super_idx = 0;
-  size_t sub_idx = 0;
-  // Index within the current `sub[sub_idx]` token. Tracks progress when
-  // matching `sub[sub_idx]` as a concatenated initials string.
-  size_t sub_inner_idx = 0;
-
-  while (super_idx < super.size() && sub_idx < sub.size()) {
-    if (sub[sub_idx].empty()) {
-      ++sub_idx;
-      continue;
-    }
-    if (super[super_idx].empty()) {
-      ++super_idx;
-      continue;
-    }
-    // Check if the initial of the current `super` token matches the
-    // `sub_inner_idx`-th character of the current `sub` token, as part of
-    // matching `sub[sub_idx]` as a concatenated initials string.
-    if (super[super_idx][0] == sub[sub_idx][sub_inner_idx]) {
-      ++sub_inner_idx;
-    }
-    // Checks if `sub[sub_idx]` is fully matched. This occurs if:
-    // 1. All its characters are matched as concatenated initials from 'super'
-    //    tokens in order (`sub_inner_idx == sub[sub_idx].size()`).
-    // 2. It exactly matches the current 'super' token (`super[super_idx] ==
-    //    sub[sub_idx]`).
-    if (sub_inner_idx == sub[sub_idx].size() ||
-        super[super_idx] == sub[sub_idx]) {
-      ++super_idx;
-      ++sub_idx;
-      sub_inner_idx = 0;
-      continue;
-    }
-    ++super_idx;
-  }
-  return sub_idx == sub.size();
-}
-
 // Tokenizes CJK names into individual characters.
 // Unlike names written in the Latin script, CJK names are not separated
 // by spaces, and the boundary between family and given names can be
@@ -368,6 +248,7 @@ bool IsAbbreviatedConcatenatedSubsequence(
 std::vector<std::u16string_view> TokenizeNormalizedCjkName(
     std::u16string_view name) {
   std::vector<std::u16string_view> tokens;
+  tokens.reserve(name.size());
 
   base::i18n::UTF16CharIterator iter(name);
   while (!iter.end()) {
