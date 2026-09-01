@@ -2453,7 +2453,9 @@ void CacheStorageCache::CloseImpl(base::OnceClosure callback) {
 
 void CacheStorageCache::DeleteBackendCompletedIO() {
   if (!post_backend_closed_callback_.is_null()) {
-    CHECK_NE(BACKEND_CLOSED, backend_state_, base::NotFatalUntil::M158);
+    // TODO(crbug.com/555074520): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_NE(BACKEND_CLOSED, backend_state_);
     backend_state_ = BACKEND_CLOSED;
     std::move(post_backend_closed_callback_).Run();
   }
