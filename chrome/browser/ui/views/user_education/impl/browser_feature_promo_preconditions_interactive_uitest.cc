@@ -25,11 +25,11 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxNotOpenPreconditionUiTest,
             AutocompleteInput input(
                 u"chrome", metrics::OmniboxEventProto::NTP,
                 ChromeAutocompleteSchemeClassifier(browser_view->GetProfile()));
-            browser_view->GetLocationBarView()
+            browser_view->GetLocationBar()
                 ->GetOmniboxController()
                 ->autocomplete_controller()
                 ->Start(input);

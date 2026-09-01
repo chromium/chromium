@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerWithPromosUiTest,
             AutocompleteInput input(
                 u"chrome", metrics::OmniboxEventProto::NTP,
                 ChromeAutocompleteSchemeClassifier(browser_view->GetProfile()));
-            browser_view->GetLocationBarView()
+            browser_view->GetLocationBar()
                 ->GetOmniboxController()
                 ->autocomplete_controller()
                 ->Start(input);
