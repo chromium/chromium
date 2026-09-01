@@ -30,14 +30,26 @@ class SlotSpanStart;
 
 }  // namespace internal
 
+// Note on Aggregate Layout for SlotSpanStart, SlotStart, and UntaggedSlotStart:
+// These classes intentionally have a public `address_` member and no
+// user-declared constructors so that they remain standard-layout aggregate
+// types (verified by static_assert below).
+//
+// Under the MSVC x64 ABI (unlike System V AMD64), user-defined types (even if
+// <= 8 bytes) are only returned in the %rax register if they have no
+// user-declared constructors and no private or protected non-static data
+// members. If any user-declared constructor or private non-static member is
+// added, MSVC classifies the type as a non-aggregate and forces a hidden return
+// pointer in %rcx (sret). That shifts all caller arguments by one register and
+// forces stack buffer allocation, memory store, and memory reload on every
+// function return.
+
 // Represents an address of a slot span start.
 // A slot span start is always also a slot start. This type is MTE-untagged.
 // It can be safely converted to `UntaggedSlotStart` or `SlotStart`.
 class internal::SlotSpanStart {
  public:
-  PA_ALWAYS_INLINE constexpr SlotSpanStart() = default;
-  PA_ALWAYS_INLINE explicit constexpr SlotSpanStart(uintptr_t address)
-      : address_(address) {}
+  uintptr_t address_ = 0;
 
   PA_ALWAYS_INLINE explicit constexpr operator bool() const {
     return address_ != 0;
@@ -66,22 +78,22 @@ class internal::SlotSpanStart {
   PA_ALWAYS_INLINE constexpr bool operator!=(uintptr_t other) const {
     return value() != other;
   }
-
- private:
-  uintptr_t address_ = 0;
 };
 
 static_assert(sizeof(internal::SlotSpanStart) == sizeof(void*));
 static_assert(std::is_trivially_copyable_v<internal::SlotSpanStart>);
 static_assert(std::is_trivially_destructible_v<internal::SlotSpanStart>);
+static_assert(std::is_standard_layout_v<internal::SlotSpanStart>);
+static_assert(std::is_aggregate_v<internal::SlotSpanStart>);
 
 // Represents an address of a slot start, MTE-tagged.
 // This type should be used when dealing with pointers that may carry an MTE
 // tag. It provides methods for checked and unchecked construction, as well as
-// untagging.
+// NOTE: Must remain an aggregate type (see note above internal::SlotSpanStart)
+// to be returned in %rax under MSVC x64 ABI without hidden pointer (sret).
 class SlotStart {
  public:
-  PA_ALWAYS_INLINE constexpr SlotStart() = default;
+  uintptr_t address_ = 0;
 
   // `SlotStart::Checked()` may perform runtime check to confirm that it is
   // indeed a slot start. Prefer this variant for untrusted input or payload
@@ -89,7 +101,7 @@ class SlotStart {
   // no check at all and faster.
   static SlotStart Checked(uintptr_t tagged_address,
                            const PartitionRoot* root) {
-    SlotStart ret(tagged_address);
+    SlotStart ret{tagged_address};
     ret.Check(root);
     return ret;
   }
@@ -99,10 +111,10 @@ class SlotStart {
   }
   PA_ALWAYS_INLINE static constexpr SlotStart Unchecked(
       uintptr_t tagged_address) {
-    return SlotStart(tagged_address);
+    return SlotStart{tagged_address};
   }
-  PA_ALWAYS_INLINE static constexpr SlotStart Unchecked(const void* ptr) {
-    return SlotStart(reinterpret_cast<uintptr_t>(ptr));
+  PA_ALWAYS_INLINE static SlotStart Unchecked(const void* ptr) {
+    return SlotStart{reinterpret_cast<uintptr_t>(ptr)};
   }
 
   PA_ALWAYS_INLINE explicit constexpr operator bool() const {
@@ -134,25 +146,22 @@ class SlotStart {
   PA_ALWAYS_INLINE constexpr bool operator!=(uintptr_t other) const {
     return value() != other;
   }
-
- private:
-  PA_ALWAYS_INLINE explicit constexpr SlotStart(uintptr_t address)
-      : address_(address) {}
-
-  uintptr_t address_ = 0;
 };
 
 static_assert(sizeof(SlotStart) == sizeof(void*));
 static_assert(std::is_trivially_copyable_v<SlotStart>);
 static_assert(std::is_trivially_destructible_v<SlotStart>);
+static_assert(std::is_standard_layout_v<SlotStart>);
+static_assert(std::is_aggregate_v<SlotStart>);
 
 // Represents an address of a slot start, MTE-untagged.
 // This type should be used when the MTE tag bits are not relevant or have been
 // explicitly removed. It provides methods for checked and unchecked
-// construction, as well as tagging.
+// NOTE: Must remain an aggregate type (see note above internal::SlotSpanStart)
+// to be returned in %rax under MSVC x64 ABI without hidden pointer (sret).
 class UntaggedSlotStart {
  public:
-  PA_ALWAYS_INLINE constexpr UntaggedSlotStart() = default;
+  uintptr_t address_ = 0;
 
   // `UntaggedSlotStart::Checked()` may perform runtime check to confirm that
   // it is indeed a slot start. Prefer this variant for untrusted input or
@@ -160,13 +169,13 @@ class UntaggedSlotStart {
   // `UntaggedSlotStart::Unchecked()` has no check at all and faster.
   static UntaggedSlotStart Checked(uintptr_t address,
                                    const PartitionRoot* root) {
-    UntaggedSlotStart ret(address);
+    UntaggedSlotStart ret{address};
     ret.Check(root);
     return ret;
   }
   PA_ALWAYS_INLINE static constexpr UntaggedSlotStart Unchecked(
       uintptr_t address) {
-    return UntaggedSlotStart(address);
+    return UntaggedSlotStart{address};
   }
 
   PA_ALWAYS_INLINE explicit constexpr operator bool() const {
@@ -183,6 +192,10 @@ class UntaggedSlotStart {
 
   PA_ALWAYS_INLINE SlotStart Tag() const;
 
+  PA_ALWAYS_INLINE constexpr ptrdiff_t offset(UntaggedSlotStart other) const {
+    return static_cast<ptrdiff_t>(address_ - other.address_);
+  }
+
   PA_ALWAYS_INLINE constexpr bool operator==(UntaggedSlotStart other) const {
     return value() == other.value();
   }
@@ -196,17 +209,13 @@ class UntaggedSlotStart {
   PA_ALWAYS_INLINE constexpr bool operator!=(uintptr_t other) const {
     return value() != other;
   }
-
- private:
-  PA_ALWAYS_INLINE explicit constexpr UntaggedSlotStart(uintptr_t address)
-      : address_(address) {}
-
-  uintptr_t address_ = 0;
 };
 
 static_assert(sizeof(UntaggedSlotStart) == sizeof(void*));
 static_assert(std::is_trivially_copyable_v<UntaggedSlotStart>);
 static_assert(std::is_trivially_destructible_v<UntaggedSlotStart>);
+static_assert(std::is_standard_layout_v<UntaggedSlotStart>);
+static_assert(std::is_aggregate_v<UntaggedSlotStart>);
 
 namespace internal {
 
