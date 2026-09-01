@@ -164,6 +164,9 @@ class BASE_EXPORT SysInfo {
   // synchronously. This is only supported on Android as Windows and Linux
   // would require IO operations and other platforms are static.
   static std::string HardwareManufacturer();
+
+  // Returns true if the device has support for large process counts.
+  static bool HasLargeProcessCountSupport();
 #endif
 
 #if BUILDFLAG(IS_MAC)

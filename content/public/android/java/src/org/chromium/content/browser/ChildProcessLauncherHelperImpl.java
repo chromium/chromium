@@ -7,7 +7,6 @@ package org.chromium.content.browser;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -30,6 +29,7 @@ import org.chromium.base.CpuFeatures;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
+import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
@@ -693,12 +693,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 sandboxed);
             } else if (ChildProcessConnection.supportVariableConnections()) {
                 final int maxIsolatedServices;
-
-                // Safesetid is only guaranteed to be enabled for 6.18 kernel on Android 17 and
-                // therefore the process limit can only be increased for devices with a new enough
-                // kernel that are also running Android 17.
-                if (isKernelVersionAtLeast6_18()
-                        && Build.VERSION.SDK_INT >= 37
+                if (SysUtils.hasLargeProcessCountSupport()
                         && ContentFeatureList.sSandboxedProcessServiceLimitOnAndroid.isEnabled()) {
                     maxIsolatedServices = Integer.MAX_VALUE;
                 } else {
@@ -1138,24 +1133,6 @@ public final class ChildProcessLauncherHelperImpl {
 
                     responseHandler.post(callback.bind(map));
                 });
-    }
-
-    private static boolean isKernelVersionAtLeast6_18() {
-        String osVersion = System.getProperty("os.version");
-        if (osVersion == null) return false;
-
-        String[] pieces = osVersion.split("\\.");
-        if (pieces.length >= 2) {
-            try {
-                int major = Integer.parseInt(pieces[0]);
-                int minor = Integer.parseInt(pieces[1]);
-                if (major > 6) return true;
-                if (major == 6 && minor >= 18) return true;
-            } catch (NumberFormatException e) {
-                // Ignore
-            }
-        }
-        return false;
     }
 
     // Testing only related methods.

@@ -1515,6 +1515,15 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
   // This has shown to have adversarial effects, so we fall back to desktop
   // behavior for desktop-like form factors.
   if (base::FeatureList::IsEnabled(features::kRendererProcessLimitOnAndroid)) {
+    if (base::SysInfo::HasLargeProcessCountSupport() &&
+        base::FeatureList::IsEnabled(
+            features::kHigherRendererProcessLimitOnAndroid)) {
+      size_t memory_mib = base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
+      // Arbitrary, 200 for a 16GiB machine is not implausible for actual
+      // workloads.
+      return std::max(memory_mib / 80,
+                      features::kRendererProcessLimitOnAndroidCount.Get());
+    }
     return features::kRendererProcessLimitOnAndroidCount.Get();
   } else {
     return std::numeric_limits<size_t>::max();

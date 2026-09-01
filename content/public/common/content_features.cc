@@ -935,6 +935,10 @@ BASE_FEATURE(kSpareRendererProcessPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 // Adams' book. 1GB is a carve-out for integrated GPU VRAM.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRendererProcessLimitOnAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+// Only active if the one above is. Used to lift the limit based on memory, on
+// systems where large process counts are supported.
+BASE_FEATURE(kHigherRendererProcessLimitOnAndroid,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kRendererProcessLimitOnAndroidCount,
