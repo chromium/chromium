@@ -159,12 +159,30 @@ void TraceStartupConfig::Initialize() {
     DCHECK(IsEnabled());
   } else if (EnableFromJsonConfigFile()) {
     DCHECK(IsEnabled());
-  } else if (EnableFromPerfettoConfigFile()) {
+  } else if (EnableFromPerfettoConfig()) {
     DCHECK(IsEnabled());
   } else if (EnableFromBackgroundTracing()) {
     DCHECK(IsEnabled());
     DCHECK_EQ(SessionOwner::kBackgroundTracing, session_owner_);
     CHECK(GetResultFile().empty());
+  }
+
+  if (IsEnabled() && session_owner_ != SessionOwner::kBackgroundTracing &&
+      command_line->HasSwitch(switches::kTraceStartupDuration)) {
+    std::string startup_duration_str =
+        command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
+    int startup_duration_in_seconds = 0;
+    if (!startup_duration_str.empty() &&
+        !base::StringToInt(startup_duration_str,
+                           &startup_duration_in_seconds)) {
+      DLOG(WARNING) << "Could not parse --" << switches::kTraceStartupDuration
+                    << "=" << startup_duration_str << " defaulting to "
+                    << kDefaultStartupDurationInSeconds << " (secs)";
+      startup_duration_in_seconds = kDefaultStartupDurationInSeconds;
+    }
+    if (startup_duration_in_seconds > 0) {
+      perfetto_config_.set_duration_ms(startup_duration_in_seconds * 1000);
+    }
   }
 }
 
@@ -250,22 +268,6 @@ bool TraceStartupConfig::EnableFromCommandLine() {
     return false;
   }
 
-  int startup_duration_in_seconds = 0;
-  if (command_line->HasSwitch(switches::kTraceStartupDuration)) {
-    std::string startup_duration_str =
-        command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
-    if (!startup_duration_str.empty() &&
-        !base::StringToInt(startup_duration_str,
-                           &startup_duration_in_seconds)) {
-      DLOG(WARNING) << "Could not parse --" << switches::kTraceStartupDuration
-                    << "=" << startup_duration_str << " defaulting to 5 (secs)";
-      startup_duration_in_seconds = kDefaultStartupDurationInSeconds;
-    }
-  } else if (command_line->HasSwitch(switches::kEnableTracing)) {
-    // For --enable-tracing, tracing should last until browser shutdown.
-    startup_duration_in_seconds = 0;
-  }
-
   std::string categories;
   if (command_line->HasSwitch(switches::kTraceStartup)) {
     categories = command_line->GetSwitchValueASCII(switches::kTraceStartup);
@@ -291,9 +293,6 @@ bool TraceStartupConfig::EnableFromCommandLine() {
   perfetto_config_ = tracing::GetDefaultPerfettoConfig(
       chrome_config, false, output_format_ != OutputFormat::kProto, "");
 
-  if (startup_duration_in_seconds > 0) {
-    perfetto_config_.set_duration_ms(startup_duration_in_seconds * 1000);
-  }
   result_file_ = command_line->GetSwitchValuePath(switches::kTraceStartupFile);
 
   is_enabled_ = true;
@@ -378,45 +377,59 @@ bool TraceStartupConfig::EnableFromJsonConfigFile() {
   return true;
 }
 
-bool TraceStartupConfig::EnableFromPerfettoConfigFile() {
+bool TraceStartupConfig::EnableFromPerfettoConfig() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kTracePerfettoConfigFile)) {
-    return false;
-  }
-  base::FilePath config_file =
-      command_line->GetSwitchValuePath(switches::kTracePerfettoConfigFile);
-
-  if (config_file.empty()) {
-    DLOG(WARNING) << "--perfetto-config-file needs a config file path.";
-    return false;
-  }
-
-  if (!base::PathExists(config_file)) {
-    DLOG(WARNING) << "The perfetto config file does not exist.";
-    return false;
-  }
-
-  std::string config_text;
-  if (!base::ReadFileToString(config_file, &config_text)) {
-    DLOG(WARNING) << "Cannot read the trace config file correctly.";
-    return false;
-  }
-
   std::optional<perfetto::TraceConfig> config;
-  if (base::FilePath::CompareEqualIgnoreCase(config_file.Extension(),
-                                             FILE_PATH_LITERAL(".pb"))) {
-    config = ParseSerializedPerfettoConfig(base::as_byte_span(config_text));
-  } else {
+
+  if (command_line->HasSwitch(switches::kTracePerfettoConfig)) {
+    std::string config_text =
+        command_line->GetSwitchValueASCII(switches::kTracePerfettoConfig);
+    if (config_text.empty()) {
+      DLOG(WARNING) << "--" << switches::kTracePerfettoConfig
+                    << " needs a config string.";
+      return false;
+    }
     config = ParseEncodedPerfettoConfig(config_text);
-  }
-  if (!config) {
-    DLOG(WARNING) << "Failed to parse perfetto config file.";
+    if (!config) {
+      DLOG(WARNING) << "Failed to parse perfetto config.";
+      return false;
+    }
+  } else if (command_line->HasSwitch(switches::kTracePerfettoConfigFile)) {
+    base::FilePath config_file =
+        command_line->GetSwitchValuePath(switches::kTracePerfettoConfigFile);
+    if (config_file.empty()) {
+      DLOG(WARNING) << "--" << switches::kTracePerfettoConfigFile
+                    << " needs a config file path.";
+      return false;
+    }
+    if (!base::PathExists(config_file)) {
+      DLOG(WARNING) << "The perfetto config file does not exist.";
+      return false;
+    }
+    std::string config_text;
+    if (!base::ReadFileToString(config_file, &config_text)) {
+      DLOG(WARNING) << "Cannot read the trace config file correctly.";
+      return false;
+    }
+    if (base::FilePath::CompareEqualIgnoreCase(config_file.Extension(),
+                                               FILE_PATH_LITERAL(".pb"))) {
+      config = ParseSerializedPerfettoConfig(base::as_byte_span(config_text));
+    } else {
+      config = ParseEncodedPerfettoConfig(config_text);
+    }
+    if (!config) {
+      DLOG(WARNING) << "Failed to parse perfetto config file.";
+      return false;
+    }
+  } else {
     return false;
   }
-  if (AdaptPerfettoConfigForChrome(&*config)) {
-    DLOG(WARNING) << "Failed to adapt perfetto config file.";
+
+  if (!AdaptPerfettoConfigForChrome(&*config)) {
+    DLOG(WARNING) << "Failed to adapt perfetto config.";
+    return false;
   }
-  perfetto_config_ = *config;
+  perfetto_config_ = std::move(*config);
   is_enabled_ = true;
   return true;
 }

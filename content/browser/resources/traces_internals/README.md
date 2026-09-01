@@ -84,7 +84,8 @@ chrome://traces/recorder?trace_config=CgYIgIAEIAEKBQiAAiACEvYECvMECgt0cmFja19ldm
 ```
 
 * Use selectors UI to craft a custom trace config. The resulting config is
-  synced to URL which can be shared.
+  synced to URL which can be shared, and can also be copied from the Command
+  Line card (`--trace-perfetto-config=...`) to record startup traces.
 
 Once you have a trace config, simply use "Start Tracing" and "Stop Tracing".
 Once the tracing session ends, a .pb trace is downloaded, which can be opened with

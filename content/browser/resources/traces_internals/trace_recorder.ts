@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
@@ -130,6 +131,8 @@ export class TraceRecorderElement extends CrLitElement {
       heapSamplingIntervalTicks_: {type: Array},
       bufferUsage: {type: Number},
       hadDataLoss: {type: Boolean},
+      encodedConfigString: {type: String},
+      commandLineExpanded_: {type: Boolean},
     };
   }
 
@@ -146,7 +149,8 @@ export class TraceRecorderElement extends CrLitElement {
   private onTraceCompleteListenerId_: number|null = null;
   // ID for the polling interval
   private bufferPollIntervalId_: number|null = null;
-  private encodedConfigString: string = '';
+  protected accessor encodedConfigString: string = '';
+  protected accessor commandLineExpanded_: boolean = false;
 
   protected accessor toastMessage: string = '';
 
@@ -332,6 +336,20 @@ export class TraceRecorderElement extends CrLitElement {
 
   protected onTagsExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.tagsExpanded_ = e.detail.value;
+  }
+
+  protected onCommandLineExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.commandLineExpanded_ = e.detail.value;
+  }
+
+  protected getCommandLine_(): string {
+    return `--trace-perfetto-config=${
+        this.encodedConfigString} --trace-startup-duration=5`;
+  }
+
+  protected async onCopyCommandLineClick_(): Promise<void> {
+    await navigator.clipboard.writeText(this.getCommandLine_());
+    this.showToast_('Command line copied to clipboard');
   }
 
   protected isCategoryEnabled(category: TraceCategory): boolean {
@@ -783,6 +801,7 @@ export class TraceRecorderElement extends CrLitElement {
       if (this.encodedConfigString === newEncodedConfigString) {
         return;
       }
+      this.encodedConfigString = newEncodedConfigString;
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.set('trace_config', newEncodedConfigString);
 

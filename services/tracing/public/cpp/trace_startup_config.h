@@ -161,7 +161,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
 
   bool EnableFromCommandLine();
   bool EnableFromJsonConfigFile();
-  bool EnableFromPerfettoConfigFile();
+  bool EnableFromPerfettoConfig();
   bool EnableFromConfigHandle();
   bool EnableFromBackgroundTracing();
 

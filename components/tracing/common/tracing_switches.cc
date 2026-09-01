@@ -23,6 +23,12 @@ const char kEnableBackgroundTracing[] = "enable-background-tracing";
 // is provided.
 const char kTraceConfigFile[]               = "trace-config-file";
 
+// Enables startup tracing by passing the perfetto config as an argument. The
+// config is a base64 encoded proto `perfetto.protos.TraceConfig` defined in
+// third_party/perfetto/protos/perfetto/config/trace_config.proto. This flag
+// will be ignored if --trace-startup is provided.
+const char kTracePerfettoConfig[] = "trace-perfetto-config";
+
 // Enables startup tracing by passing a file path containing the perfetto config
 // as an argument. The config is a serialized or base64 encoded proto
 // `perfetto.protos.TraceConfig` defined in

@@ -6,10 +6,11 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #import=./config_toggle.css.js
  * #import=//resources/cr_elements/md_select_lit.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit md-select-lit config-toggle
+ * #include=cr-shared-style-lit cr-icons-lit md-select-lit config-toggle
  * #css_wrapper_metadata_end */
 
 :host {
@@ -151,4 +152,31 @@
 
 .expanded-content {
   padding: 0 12px 8px;
+}
+
+.command-line-container {
+  align-items: center;
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 4px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 8px 12px;
+}
+
+.command-line-text {
+  flex: 1;
+  font-family: monospace;
+  font-size: 12px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: all;
+  white-space: nowrap;
+}
+
+.command-line-container cr-icon-button {
+  flex-shrink: 0;
 }

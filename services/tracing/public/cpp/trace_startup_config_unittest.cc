@@ -207,6 +207,56 @@ TEST_F(TraceStartupConfigTest, ValidBase64Content) {
   EXPECT_EQ(10000U, config.duration_ms());
 }
 
+TEST_F(TraceStartupConfigTest, ValidInlinePerfettoConfig) {
+  std::string config_string =
+      ParseTracingConfigFromText(kPerfettoConfig).SerializeAsString();
+  std::string serialized_config = base::Base64Encode(config_string);
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTracePerfettoConfig, serialized_config);
+
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_EQ(1, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(10000U, config.duration_ms());
+}
+
+TEST_F(TraceStartupConfigTest, ValidInlinePerfettoConfigWithDuration) {
+  std::string config_string =
+      ParseTracingConfigFromText(kPerfettoConfig).SerializeAsString();
+  std::string serialized_config = base::Base64Encode(config_string);
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTracePerfettoConfig, serialized_config);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTraceStartupDuration, "7");
+
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_EQ(1, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(7000U, config.duration_ms());
+}
+
+TEST_F(TraceStartupConfigTest, InvalidInlinePerfettoConfig) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTracePerfettoConfig, "invalid base64 content");
+
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
+}
+
+TEST_F(TraceStartupConfigTest, EmptyInlinePerfettoConfig) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTracePerfettoConfig, "");
+
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
+}
+
 TEST_F(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
   std::string content = GetTraceConfigFileContent(kTraceConfig, "", "");
 
