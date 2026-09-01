@@ -39,14 +39,20 @@ source_set("supervised_user") {
     "//url",
   ]
 
-  if (!is_android) {
+  if (!is_chromeos) {
     public += [
-      "desktop/supervised_user_service_platform_delegate.h",
       "supervised_user_verification_controller_client.h",
+      "supervised_user_verification_page.h",
+      "supervised_user_verification_page_blocked_sites.h",
     ]
     public_deps += [
       "//components/security_interstitials/content:security_interstitial_page",
+      "//components/tabs:public",
     ]
+  }
+
+  if (!is_android) {
+    public += [ "desktop/supervised_user_service_platform_delegate.h" ]
   }
 
   if (is_linux || is_mac || is_win) {
@@ -55,12 +61,9 @@ source_set("supervised_user") {
       "linux_mac_windows/parent_access_view.h",
       "linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.h",
       "linux_mac_windows/supervised_user_web_content_handler_impl.h",
-      "supervised_user_verification_page.h",
-      "supervised_user_verification_page_blocked_sites.h",
       "supervised_user_verification_page_youtube.h",
     ]
     public_deps += [
-      "//components/tabs:public",
       "//ui/base/interaction",
       "//ui/views",
       "//ui/views/controls/webview",
@@ -180,15 +183,22 @@ source_set("impl") {
     ]
   }
 
-  if (!is_android) {
+  if (!is_chromeos) {
     sources += [
-      "desktop/supervised_user_service_platform_delegate.cc",
       "supervised_user_verification_controller_client.cc",
+      "supervised_user_verification_page.cc",
+      "supervised_user_verification_page_blocked_sites.cc",
     ]
+    deps += [
+      "//components/security_interstitials/content:security_interstitial_page",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [ "desktop/supervised_user_service_platform_delegate.cc" ]
     deps += [
       "//chrome/browser/lifetime",
       "//chrome/browser/profiles:profile",
-      "//components/security_interstitials/content:security_interstitial_page",
     ]
   }
 
@@ -198,8 +208,6 @@ source_set("impl") {
       "linux_mac_windows/parent_access_view.cc",
       "linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.cc",
       "linux_mac_windows/supervised_user_web_content_handler_impl.cc",
-      "supervised_user_verification_page.cc",
-      "supervised_user_verification_page_blocked_sites.cc",
       "supervised_user_verification_page_youtube.cc",
     ]
     deps += [

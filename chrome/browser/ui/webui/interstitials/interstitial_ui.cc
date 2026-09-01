@@ -75,9 +75,13 @@
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page_blocked_sites.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/supervised_user/supervised_user_verification_page_youtube.h"
 #endif
 
@@ -421,7 +425,10 @@ CreateSupervisedUserVerificationPageForYouTube(
           chrome::ChromeUINewTabURLAsGURL(), kRequestUrl),
       is_main_frame);
 }
+#endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 std::unique_ptr<SupervisedUserVerificationPageForBlockedSites>
 CreateSupervisedUserVerificationPageForBlockedSites(
     content::WebContents* web_contents,
@@ -635,12 +642,15 @@ void InterstitialHTMLSource::StartDataRequest(
   } else if (path_without_query == "/supervised-user-verify") {
     interstitial_delegate = CreateSupervisedUserVerificationPageForYouTube(
         web_contents, /*is_main_frame=*/true);
-  } else if (path_without_query == "/supervised-user-verify-blocked-site") {
-    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSites(
-        web_contents, /*is_main_frame=*/true);
   } else if (path_without_query == "/supervised-user-verify-subframe") {
     interstitial_delegate = CreateSupervisedUserVerificationPageForYouTube(
         web_contents, /*is_main_frame=*/false);
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  } else if (path_without_query == "/supervised-user-verify-blocked-site") {
+    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSites(
+        web_contents, /*is_main_frame=*/true);
   } else if (path_without_query ==
              "/supervised-user-verify-blocked-site-subframe") {
     interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSites(

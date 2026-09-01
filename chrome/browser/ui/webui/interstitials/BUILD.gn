@@ -18,6 +18,7 @@ source_set("interstitials") {
     "//chrome/browser/lookalikes",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ssl",
+    "//chrome/browser/supervised_user",
     "//chrome/common",
     "//components/captive_portal/core:buildflags",
     "//components/lookalikes/core",
@@ -39,10 +40,6 @@ source_set("interstitials") {
 
   if (safe_browsing_mode != 0) {
     deps += [ "//chrome/browser/safe_browsing" ]
-  }
-
-  if (is_linux || is_mac || is_win || is_chromeos) {
-    deps += [ "//chrome/browser/supervised_user" ]
   }
 }
 

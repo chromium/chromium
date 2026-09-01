@@ -10,7 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/signin/signin_promo.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/signin/signin_promo.h"  // nogncheck
+#endif
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
@@ -20,8 +22,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "services/metrics/public/cpp/metrics_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_android.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/android/window_android.h"
+#endif
 
 // static
 bool SupervisedUserVerificationPage::ShouldShowPage(
@@ -61,8 +70,10 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
       email_to_reauth_(email_to_reauth),
       request_url_(request_url),
       sign_in_continue_url_(GaiaUrls::GetInstance()->blank_page_url()),
+#if !BUILDFLAG(IS_ANDROID)
       reauth_url_(signin::GetChromeReauthURL(
           {.email = email_to_reauth_, .continue_url = sign_in_continue_url_})),
+#endif
       child_account_service_(child_account_service) {
   if (child_account_service_) {
     // Reloads the interstitial to continue navigation once the supervised user
@@ -166,6 +177,26 @@ void SupervisedUserVerificationPage::CommandReceived(
 
   switch (cmd) {
     case security_interstitials::CMD_OPEN_LOGIN: {
+#if BUILDFLAG(IS_ANDROID)
+      content::WebContents* web_contents =
+          SecurityInterstitialPage::web_contents();
+      if (web_contents && web_contents->GetNativeView() &&
+          web_contents->GetNativeView()->GetWindowAndroid()) {
+        Profile* profile =
+            Profile::FromBrowserContext(web_contents->GetBrowserContext());
+        signin::IdentityManager* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile);
+        if (identity_manager) {
+          CoreAccountInfo account_info =
+              identity_manager->GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin);
+          if (!account_info.IsEmpty()) {
+            ReauthenticateChildAccount(web_contents, account_info,
+                                       base::DoNothing());
+          }
+        }
+      }
+#else
       content::OpenURLParams params(reauth_url_, content::Referrer(),
                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                     ui::PAGE_TRANSITION_LINK, false);
@@ -177,6 +208,7 @@ void SupervisedUserVerificationPage::CommandReceived(
             tabs::TabInterface::GetFromContents(signin_web_contents);
         signin_tabs_handle_list_.emplace_back(tab_interface->GetHandle());
       }
+#endif
       break;
     }
     case security_interstitials::CMD_DONT_PROCEED:
