@@ -68,8 +68,6 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_LOGS
 })
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 @NullMarked
 public class SidePanelContainerCoordinatorIntegrationTest {
     private static final String RESPONSIVE_WEB_PAGE_URL =

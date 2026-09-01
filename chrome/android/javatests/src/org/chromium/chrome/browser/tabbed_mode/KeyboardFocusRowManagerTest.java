@@ -32,7 +32,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -63,8 +62,6 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures(
         ChromeFeatureList.HOME_BUTTON_REMOVAL
                 + ":set_default_to_false_on_homepage_on_desktop/false")
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class KeyboardFocusRowManagerTest {
 
     @Rule
