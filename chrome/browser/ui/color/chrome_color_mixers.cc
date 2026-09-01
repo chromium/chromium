@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/color/material_chrome_color_mixer.h"
 #include "chrome/browser/ui/color/material_new_tab_page_color_mixer.h"
 #include "chrome/browser/ui/color/material_omnibox_color_mixer.h"
@@ -30,6 +31,8 @@ class ChromeColorProviderUtilsCallbacks
     : public ui::ColorProviderUtilsCallbacks {
  public:
   bool ColorIdName(ui::ColorId color_id, std::string_view* color_name) override;
+  bool ColorIdToCSSColorId(ui::ColorId color_id,
+                           std::string_view* css_name) override;
 };
 
 #include "ui/color/color_id_map_macros.inc"
@@ -42,6 +45,17 @@ bool ChromeColorProviderUtilsCallbacks::ColorIdName(
   auto i = chrome_color_id_map.find(color_id);
   if (i != chrome_color_id_map.cend()) {
     *color_name = i->second;
+    return true;
+  }
+  return false;
+}
+
+bool ChromeColorProviderUtilsCallbacks::ColorIdToCSSColorId(
+    ui::ColorId color_id,
+    std::string_view* css_name) {
+  std::string_view name = ChromeColorIdToCSSColorId(color_id);
+  if (!name.empty()) {
+    *css_name = name;
     return true;
   }
   return false;

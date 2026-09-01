@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -149,9 +150,33 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
 
 ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
 
+// Appends the decimal ASCII representation of a uint8_t value (0-255) to `out`.
+// Direct branching on magnitude (>= 100, >= 10, < 10) allows emitting 1, 2, or
+// 3 ASCII digits directly without general division loops or dynamic
+// allocations.
+inline void FastAppendUint8(uint8_t value, std::string& out) {
+  if (value >= 100) {
+    out.push_back(static_cast<char>('0' + value / 100));
+    value %= 100;
+    out.push_back(static_cast<char>('0' + value / 10));
+    out.push_back(static_cast<char>('0' + value % 10));
+  } else if (value >= 10) {
+    out.push_back(static_cast<char>('0' + value / 10));
+    out.push_back(static_cast<char>('0' + value % 10));
+  } else {
+    out.push_back(static_cast<char>('0' + value));
+  }
+}
+
 }  // namespace
 
 ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
+
+bool ColorProviderUtilsCallbacks::ColorIdToCSSColorId(
+    ColorId color_id,
+    std::string_view* css_name) {
+  return false;
+}
 
 bool ColorProviderUtilsCallbacks::NameToColorId(std::string_view color_name,
                                                 ColorId* color_id) {
@@ -176,6 +201,38 @@ std::string ColorIdName(ColorId color_id) {
     return std::string(color_name);
   }
   return base::StringPrintf("ColorId(%d)", color_id);
+}
+
+std::string_view ColorIdToCSSColorId(ColorId color_id) {
+  // Populate the compile-time map using `color_id_map_macros.inc`. Each entry
+  // expands `COLOR_ID_MAP_ENTRY` to map the `ColorId` enum value to a static
+  // `std::string_view` stored in `internal::CssNameHolder`.
+#define COLOR_ID_MAP_ENTRY(enum_name, string_name)                      \
+  {                                                                     \
+    enum_name, internal::CssNameHolder<internal::ConstexprCssColorName( \
+                   string_name)>::kName.view()                          \
+  }
+#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
+  static constexpr auto kColorIdToCssMap =
+      base::MakeFixedFlatMap<ColorId, std::string_view>({COLOR_IDS});
+// Note that this second include is not redundant. The second inclusion of the
+// .inc file serves to undefine the macros the first inclusion defined.
+#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
+
+  // Perform an O(log N) lookup in the compile-time map.
+  auto it = kColorIdToCssMap.find(color_id);
+  if (it != kColorIdToCssMap.cend()) {
+    return it->second;
+  }
+  // Fall back to embedder-registered callbacks (e.g. ChromeColorProviderUtils)
+  // for embedder-specific color IDs.
+  std::string_view css_name;
+  if (g_color_provider_utils_callbacks &&
+      g_color_provider_utils_callbacks->ColorIdToCSSColorId(color_id,
+                                                            &css_name)) {
+    return css_name;
+  }
+  return std::string_view();
 }
 
 std::optional<ColorId> NameToColorId(std::string_view color_id_name) {
@@ -348,10 +405,42 @@ std::string ConvertColorProviderColorIdToCSSColorId(
   return css_color_id_name;
 }
 
+void FastAppendCssHexColor(SkColor color, std::string& out) {
+  static constexpr char kHexDigits[] = "0123456789abcdef";
+  const uint8_t r = SkColorGetR(color);
+  const uint8_t g = SkColorGetG(color);
+  const uint8_t b = SkColorGetB(color);
+  const uint8_t a = SkColorGetA(color);
+
+  char buf[9];
+  // SAFETY: `buf` is a fixed 9-byte array and exactly indices 0-8 are written.
+  UNSAFE_BUFFERS({
+    buf[0] = '#';
+    buf[1] = kHexDigits[(r >> 4) & 0x0F];
+    buf[2] = kHexDigits[r & 0x0F];
+    buf[3] = kHexDigits[(g >> 4) & 0x0F];
+    buf[4] = kHexDigits[g & 0x0F];
+    buf[5] = kHexDigits[(b >> 4) & 0x0F];
+    buf[6] = kHexDigits[b & 0x0F];
+    buf[7] = kHexDigits[(a >> 4) & 0x0F];
+    buf[8] = kHexDigits[a & 0x0F];
+    out.append(buf, 9);
+  });
+}
+
+void FastAppendRgbColor(SkColor color, std::string& out) {
+  FastAppendUint8(SkColorGetR(color), out);
+  out.push_back(',');
+  FastAppendUint8(SkColorGetG(color), out);
+  out.push_back(',');
+  FastAppendUint8(SkColorGetB(color), out);
+}
+
 std::string ConvertSkColorToCSSColor(SkColor color) {
-  return base::StringPrintf("#%.2x%.2x%.2x%.2x", SkColorGetR(color),
-                            SkColorGetG(color), SkColorGetB(color),
-                            SkColorGetA(color));
+  std::string result;
+  result.reserve(9);
+  FastAppendCssHexColor(color, result);
+  return result;
 }
 
 RendererColorMap CreateRendererColorMap(const ColorProvider& color_provider) {

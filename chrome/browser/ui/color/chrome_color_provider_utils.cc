@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
@@ -14,14 +15,35 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id_map_macros.inc"
+#include "ui/color/color_provider_utils.h"
 
 std::string ChromeColorIdName(ui::ColorId color_id) {
+#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
   static constexpr const auto color_id_map =
       base::MakeFixedFlatMap<ui::ColorId, const char*>({CHROME_COLOR_IDS});
+#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
   auto i = color_id_map.find(color_id);
   DCHECK(i != color_id_map.cend());
   return {i->second};
+}
+
+// Converts a ChromeColorId to its CSS variable name format "--color-..." with
+// zero runtime allocations. Uses a compile-time fixed flat map populated via
+// macro expansion, mapping ChromeColorIds to persistent `std::string_view`s
+// stored in `ui::internal::CssNameHolder`.
+std::string_view ChromeColorIdToCSSColorId(ui::ColorId color_id) {
+#define COLOR_ID_MAP_ENTRY(enum_name, string_name)                       \
+  {                                                                      \
+    enum_name,                                                           \
+        ui::internal::CssNameHolder<ui::internal::ConstexprCssColorName( \
+            string_name)>::kName.view()                                  \
+  }
+#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
+  static constexpr auto kChromeColorIdToCssMap =
+      base::MakeFixedFlatMap<ui::ColorId, std::string_view>({CHROME_COLOR_IDS});
+#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
+  auto i = kChromeColorIdToCssMap.find(color_id);
+  return (i != kChromeColorIdToCssMap.cend()) ? i->second : std::string_view();
 }
 
 color_utils::HSL GetThemeTint(int id, const ui::ColorProviderKey& key) {

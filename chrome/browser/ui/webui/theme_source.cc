@@ -40,10 +40,12 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
@@ -274,8 +276,99 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
   std::vector<std::string_view> color_id_sets = base::SplitStringPiece(
       sets_param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  // Define the logic for each set. This allows us to validate input before
-  // generating the CSS string.
+  if (features::IsColorIdCssStyleSheetOptimizationEnabled()) {
+    // Define the logic for each set. This allows us to validate input before
+    // generating the CSS string.
+    struct ColorSetDefinition {
+      std::string_view name;
+      ui::ColorId start;
+      ui::ColorId end;
+      // Callback converts ColorId to CSS variable name view.
+      base::RepeatingCallback<std::string_view(ui::ColorId)> name_mapper;
+    };
+
+    const std::vector<ColorSetDefinition> definitions = {
+        {"ui", ui::kUiColorsStart, ui::kUiColorsEnd,
+         base::BindRepeating(&ui::ColorIdToCSSColorId)},
+        {"chrome", kChromeColorsStart, kChromeColorsEnd,
+         base::BindRepeating(&ChromeColorIdToCSSColorId)},
+#if BUILDFLAG(IS_CHROMEOS)
+        {"ref", cros_tokens::kCrosRefColorsStart,
+         cros_tokens::kCrosRefColorsEnd,
+         base::BindRepeating(&cros_tokens::ColorIdName)},
+        {"sys", cros_tokens::kCrosSysColorsStart,
+         cros_tokens::kCrosSysColorsEnd,
+         base::BindRepeating(&cros_tokens::ColorIdName)},
+        {"legacy", cros_tokens::kLegacySemanticColorsStart,
+         cros_tokens::kLegacySemanticColorsEnd,
+         base::BindRepeating(&cros_tokens::ColorIdName)},
+#elif BUILDFLAG(IS_ANDROID)
+        {"ref", ui::kColorRefPrimary0, ui::kColorRefNeutralVariant100,
+         base::BindRepeating(&ui::ColorIdToCSSColorId)},
+        {"sys", ui::kColorSysPrimary, ui::kColorSysOmniboxContainer,
+         base::BindRepeating(&ui::ColorIdToCSSColorId)},
+#endif
+    };
+
+    // Validate only valid `color_id_sets` were requested.
+    for (const auto& set_name : color_id_sets) {
+      bool is_valid = std::ranges::any_of(
+          definitions, [&](const auto& def) { return def.name == set_name; });
+      if (!is_valid) {
+        LOG(ERROR) << "Unrecognized color set specified: " << set_name;
+        return std::nullopt;
+      }
+    }
+
+    // Generate the CSS. Pre-calculate selector and theme info.
+    std::string css_string;
+    css_string.reserve(75000);
+
+    if (shadow_host) {
+      css_string.append(":host{");
+    } else {
+      css_string.append("html:not(#z){");
+    }
+
+    if (is_grayscale) {
+      css_string.append("--user-color-source:baseline-grayscale;");
+    } else if (is_baseline) {
+      css_string.append("--user-color-source:baseline-default;");
+    }
+
+    for (const auto& def : definitions) {
+      if (!std::ranges::contains(color_id_sets, def.name)) {
+        continue;
+      }
+
+      for (ui::ColorId id = def.start; id < def.end; ++id) {
+        const SkColor color = color_provider.GetColor(id);
+        const std::string_view var_name = def.name_mapper.Run(id);
+        if (var_name.empty()) {
+          continue;
+        }
+
+        // Format: --var-name:#RRGGBBAA;
+        css_string.append(var_name);
+        css_string.push_back(':');
+        ui::FastAppendCssHexColor(color, css_string);
+        css_string.push_back(';');
+
+        if (generate_rgb_vars) {
+          // Format: --var-name-rgb:R,G,B;
+          css_string.append(var_name);
+          css_string.append("-rgb:");
+          ui::FastAppendRgbColor(color, css_string);
+          css_string.push_back(';');
+        }
+      }
+    }
+
+    css_string.push_back('}');
+    return css_string;
+  }
+
+  // Legacy unoptimized path.
   struct ColorSetDefinition {
     std::string_view name;
     ui::ColorId start;

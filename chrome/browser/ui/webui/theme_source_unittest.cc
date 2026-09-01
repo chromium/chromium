@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/common/url_constants.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 
 class WebUISourcesTest : public testing::Test {
  public:
@@ -133,14 +135,19 @@ TEST_F(WebUISourcesTest, ThemeSourceCSS) {
 }
 
 TEST_F(WebUISourcesTest, ThemeSourceColorsCSS) {
-  // Check for a successful request and that the data is non-null. The actual
-  // conversion of color provider colors to css colors is tested in helper
-  // functions.
-  size_t empty_size = 0;
+  // Check for a successful request and that the data is non-null under both
+  // optimized and unoptimized (baseline) paths. The actual conversion of color
+  // provider colors to css colors is tested in helper functions.
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(
+        features::kColorIdCssStyleSheetOptimization, feature_enabled);
 
-  StartDataRequest("colors.css?sets=ui");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_NE(result_data_size_, empty_size);
+    result_data_size_ = 0;
+    StartDataRequest("colors.css?sets=ui");
+    base::RunLoop().RunUntilIdle();
+    EXPECT_NE(result_data_size_, 0u);
+  }
 }
 
 TEST_F(WebUISourcesTest, ThemeAllowedOrigin) {
