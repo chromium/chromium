@@ -4,10 +4,10 @@
 package org.chromium.components.browser_ui.widget.chips;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -66,13 +66,14 @@ public class ChipViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE)
-                    .setRevision(3)
+                    .setRevision(4)
                     .build();
 
+    private final boolean mUseRtlLayout;
     private ViewGroup mContentView;
 
     public ChipViewRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
-        setRtlForTesting(useRtlLayout);
+        mUseRtlLayout = useRtlLayout;
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(useRtlLayout ? "RTL" : "LTR");
@@ -88,6 +89,9 @@ public class ChipViewRenderTest {
                             LinearLayout contentView = new LinearLayout(activity);
                             contentView.setOrientation(LinearLayout.VERTICAL);
                             contentView.setBackgroundColor(Color.WHITE);
+                            if (mUseRtlLayout) {
+                                contentView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                            }
 
                             activity.setContentView(
                                     contentView,

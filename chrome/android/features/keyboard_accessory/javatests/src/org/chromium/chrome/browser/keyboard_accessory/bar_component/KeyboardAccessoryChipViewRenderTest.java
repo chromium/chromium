@@ -11,7 +11,6 @@ import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
-import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -103,7 +102,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
-                    .setRevision(7)
+                    .setRevision(8)
                     .build();
 
     @Mock private KeyboardAccessoryView mKeyboardAccessoryView;
@@ -112,11 +111,12 @@ public class KeyboardAccessoryChipViewRenderTest {
     @Mock private Profile mMockProfile;
     @Mock private PersonalDataManager mMockPersonalDataManager;
 
+    private final boolean mUseRtlLayout;
     private ViewGroup mContentView;
     private KeyboardAccessoryViewBinder.UiConfiguration mUiConfiguration;
 
     public KeyboardAccessoryChipViewRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
-        setRtlForTesting(useRtlLayout);
+        mUseRtlLayout = useRtlLayout;
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(useRtlLayout ? "RTL" : "LTR");
@@ -144,6 +144,9 @@ public class KeyboardAccessoryChipViewRenderTest {
                             LinearLayout contentView = new LinearLayout(activity);
                             contentView.setOrientation(LinearLayout.VERTICAL);
                             contentView.setBackgroundColor(Color.WHITE);
+                            if (mUseRtlLayout) {
+                                contentView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                            }
 
                             activity.setContentView(
                                     contentView,
@@ -158,7 +161,6 @@ public class KeyboardAccessoryChipViewRenderTest {
     @After
     public void tearDown() throws Exception {
         runOnUiThreadBlocking(NightModeTestUtils::tearDownNightModeForBlankUiTestActivity);
-        setRtlForTesting(false);
         try {
             finishActivity(mActivityTestRule.getActivity());
         } catch (Exception e) {

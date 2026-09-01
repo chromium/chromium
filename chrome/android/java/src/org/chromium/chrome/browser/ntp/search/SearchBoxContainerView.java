@@ -69,9 +69,6 @@ public class SearchBoxContainerView extends LinearLayout {
         mLensButton = findViewById(R.id.lens_camera_button);
         mPlusButton = findViewById(R.id.search_box_plus_button);
         mAiChip = findViewById(R.id.search_box_ai_chip);
-        // TODO(crbug.com/544731730): Remove this once ChipView#updateLayoutDirection is cleaned up
-        // and its render tests are updated to set layout direction on their test containers.
-        mAiChip.setLayoutDirection(LAYOUT_DIRECTION_INHERIT);
         mPlusButton.addOnLayoutChangeListener((_, _, _, _, _, _, _, _, _) -> updateTouchDelegate());
         mIsNtpAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
 

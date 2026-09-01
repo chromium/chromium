@@ -38,7 +38,6 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.RippleBackgroundHelper;
@@ -332,7 +331,6 @@ public class ChipView extends LinearLayout {
             setIconWithTint(INVALID_ICON_ID, /* tintWithTextColor= */ false);
         }
 
-        updateLayoutDirection();
         a.recycle();
     }
 
@@ -505,7 +503,6 @@ public class ChipView extends LinearLayout {
         // Remove the end padding from the chip to make X icon touch target extend till the end of
         // the chip.
         this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
-        updateLayoutDirection();
     }
 
     /** Adds a dropdown icon at the trailing end of the chip next to the primary text. */
@@ -533,7 +530,6 @@ public class ChipView extends LinearLayout {
         // Remove the end padding from the chip to make X icon touch target extend till the end of
         // the chip.
         this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
-        updateLayoutDirection();
     }
 
     /**
@@ -635,7 +631,6 @@ public class ChipView extends LinearLayout {
             } else {
                 addView(mSecondaryText);
             }
-            updateLayoutDirection();
         }
         return mSecondaryText;
     }
@@ -792,15 +787,6 @@ public class ChipView extends LinearLayout {
         return mTextViewsWrapper == null;
     }
 
-    private void updateLayoutDirection() {
-        // Apply RTL layout changes, this is mostly relevant for render tests.
-        int layoutDirection =
-                LocalizationUtils.isLayoutRtl()
-                        ? View.LAYOUT_DIRECTION_RTL
-                        : View.LAYOUT_DIRECTION_LTR;
-
-        setLayoutDirection(layoutDirection);
-    }
 
     /**
      * Set a handler to be invoked when the selection state of the chip changes.
