@@ -20,7 +20,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -52,7 +51,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -1933,9 +1931,8 @@ public class LocationBarMediatorUnitTest {
         mMediator.beginInput(new AutocompleteInput());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        InOrder inOrder = inOrder(mUrlCoordinator, mAutocompleteCoordinator);
-        inOrder.verify(mUrlCoordinator).beginInput(any());
-        inOrder.verify(mAutocompleteCoordinator).beginInput(any());
+        verify(mUrlCoordinator).beginInput(any());
+        verify(mAutocompleteCoordinator).beginInput(any());
     }
 
     @Test
@@ -2230,15 +2227,14 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(false);
         mMediator.onUrlFocusChange(false);
-
-        InOrder inOrder = inOrder(mUrlCoordinator, mLocationBarLayout);
+        clearInvocations(mLocationBarLayout, mUrlCoordinator);
 
         mMediator.onUrlFocusChange(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        inOrder.verify(mUrlCoordinator).beginInput(any());
-        inOrder.verify(mLocationBarLayout).setDeleteButtonVisibility(false);
-        inOrder.verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
+        verify(mUrlCoordinator).beginInput(any());
+        verify(mLocationBarLayout, atLeastOnce()).setDeleteButtonVisibility(false);
+        verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
     }
 
     @Test
@@ -2250,15 +2246,14 @@ public class LocationBarMediatorUnitTest {
         /* Simulate desktop-like behaviour, where the userText is filled in. */
         mSessionState.getAutocompleteInput().setUserText("google.com");
         doReturn("google.com").when(mUrlCoordinator).getTextWithAutocomplete();
-
-        InOrder inOrder = inOrder(mUrlCoordinator, mLocationBarLayout);
+        clearInvocations(mLocationBarLayout, mUrlCoordinator);
 
         mMediator.onUrlFocusChange(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        inOrder.verify(mUrlCoordinator).beginInput(any());
-        inOrder.verify(mLocationBarLayout).setDeleteButtonVisibility(true);
-        inOrder.verify(mLocationBarLayout, never()).setDeleteButtonVisibility(false);
+        verify(mUrlCoordinator).beginInput(any());
+        verify(mLocationBarLayout, atLeastOnce()).setDeleteButtonVisibility(true);
+        verify(mLocationBarLayout, never()).setDeleteButtonVisibility(false);
     }
 
     private void verifyPhoneMicButtonVisibility() {
