@@ -220,15 +220,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)addDeviceItems {
-  for (auto iter = _targetDeviceList.begin(); iter != _targetDeviceList.end();
-       ++iter) {
-
+  BOOL isFirst = YES;
+  for (const auto& targetDevice : _targetDeviceList) {
     SendTabToSelfImageDetailTextItem* deviceItem =
         [[SendTabToSelfImageDetailTextItem alloc] initWithType:ItemTypeDevice];
-    deviceItem.text = base::SysUTF8ToNSString(iter->device_name);
+    deviceItem.text = base::SysUTF8ToNSString(targetDevice.device_name);
     deviceItem.detailText =
-        base::SysUTF16ToNSString(iter->GetLastActiveTimeForDisplay());
-    switch (iter->form_factor) {
+        base::SysUTF16ToNSString(targetDevice.GetLastActiveTimeForDisplay());
+    switch (targetDevice.form_factor) {
       case syncer::DeviceInfo::FormFactor::kTablet:
         deviceItem.image =
             MakeSymbolMonochrome(SymbolWithPointSize(SymbolIPad, kSymbolSize));
@@ -249,12 +248,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     deviceItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];
 
-    if (iter == _targetDeviceList.begin()) {
+    if (isFirst) {
       deviceItem.accessoryType = UITableViewCellAccessoryCheckmark;
       self.selectedItem = deviceItem;
+      isFirst = NO;
     }
 
-    deviceItem.cacheGuid = base::SysUTF8ToNSString(iter->cache_guid);
+    deviceItem.cacheGuid = base::SysUTF8ToNSString(targetDevice.cache_guid);
 
     [self.tableViewModel addItem:deviceItem
          toSectionWithIdentifier:kSectionIdentifierEnumZero];
