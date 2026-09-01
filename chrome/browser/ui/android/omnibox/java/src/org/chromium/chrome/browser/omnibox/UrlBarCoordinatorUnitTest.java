@@ -11,7 +11,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -28,6 +27,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
@@ -40,13 +40,14 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 /** Unit tests for {@link UrlBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class UrlBarCoordinatorUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private UrlBar mUrlBar;
-    private @Mock UrlBarDelegate mDelegate;
-    private @Mock KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    private @Mock Callback<UrlBarFocusChangeInfo> mFocusChangeCallback;
-    private @Captor ArgumentCaptor<Runnable> mRunnableCaptor;
+    @Mock private UrlBarDelegate mDelegate;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private Callback<UrlBarFocusChangeInfo> mFocusChangeCallback;
+    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     private Context mContext;
     private UrlBarCoordinator mCoordinator;
@@ -114,18 +115,18 @@ public class UrlBarCoordinatorUnitTest {
     public void setKeyboardVisibility_showWhenAlreadyShowingOrShown_noOp() {
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar, times(1)).postDelayed(any(), eq(150L));
+        verify(mUrlBar).postDelayed(any(), eq(150L));
 
         // Subsequent show requests while SHOWING are no-ops
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar, times(1)).postDelayed(any(), eq(150L));
+        verify(mUrlBar).postDelayed(any(), eq(150L));
 
         // When confirmed SHOWN, show requests are still no-ops
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar, times(1)).postDelayed(any(), eq(150L));
+        verify(mUrlBar).postDelayed(any(), eq(150L));
     }
 
     @Test
@@ -172,12 +173,12 @@ public class UrlBarCoordinatorUnitTest {
         // First hide schedules debounce
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        verify(mUrlBar, times(1)).postDelayed(any(), eq(150L));
+        verify(mUrlBar).postDelayed(any(), eq(150L));
 
         // Second hide while HIDING is a no-op
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        verify(mUrlBar, times(1)).postDelayed(any(), eq(150L));
+        verify(mUrlBar).postDelayed(any(), eq(150L));
     }
 
     @Test
