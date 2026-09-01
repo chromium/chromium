@@ -10,7 +10,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -22,7 +21,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
-#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -111,12 +109,12 @@ bool SendTabPushNotificationClient::HandleNotificationInteraction(
 std::optional<UIBackgroundFetchResult>
 SendTabPushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
-  UNAuthorizationStatus authStatus =
+  UNAuthorizationStatus auth_status =
       [PushNotificationUtil getSavedPermissionSettings];
-  push_notification::SettingsAuthorizationStatus settingsAuthStatus =
-      [PushNotificationUtil getNotificationSettingsStatusFrom:authStatus];
+  push_notification::SettingsAuthorizationStatus settings_auth_status =
+      [PushNotificationUtil getNotificationSettingsStatusFrom:auth_status];
   base::UmaHistogramEnumeration("IOS.Notifications.SendTab.Received",
-                                settingsAuthStatus);
+                                settings_auth_status);
   return UIBackgroundFetchResultNoData;
 }
 
