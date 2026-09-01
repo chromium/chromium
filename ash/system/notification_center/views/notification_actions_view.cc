@@ -56,8 +56,8 @@ NotificationActionsView::NotificationActionsView() {
 
   textfield_ = inline_reply_container_->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium));
-  textfield_->SetBackgroundColorId(cros_tokens::kCrosSysSurface);
-  textfield_->SetShowBackground(true);
+  textfield_->SetBackgroundColor(cros_tokens::kCrosSysSurface);
+  textfield_->SetBackgroundMode(SystemTextfield::BackgroundMode::kAlways);
   textfield_->SetCornerRadius(24);
   textfield_->SetProperty(
       views::kFlexBehaviorKey,

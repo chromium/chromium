@@ -481,7 +481,13 @@ bool Textfield::GetBackgroundEnabled() const {
 }
 
 void Textfield::SetBackgroundEnabled(bool enabled) {
+  if (is_background_enabled_ == enabled) {
+    return;
+  }
   is_background_enabled_ = enabled;
+  if (GetWidget()) {
+    UpdateBackgroundColor();
+  }
 }
 
 SkColor Textfield::GetSelectionTextColor() const {
@@ -3379,9 +3385,25 @@ void Textfield::DropDraggedText(
   output_drag_op = move ? DragOperation::kMove : DragOperation::kCopy;
 }
 
-float Textfield::GetCornerRadius() {
+float Textfield::GetCornerRadius() const {
+  if (corner_radius_.has_value()) {
+    return *corner_radius_;
+  }
   return LayoutProvider::Get()->GetCornerRadiusMetric(
       ShapeContextTokens::kTextfieldRadius, size());
+}
+
+void Textfield::SetCornerRadius(std::optional<float> corner_radius) {
+  if (corner_radius_ == corner_radius) {
+    return;
+  }
+  corner_radius_ = corner_radius;
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                GetCornerRadius());
+  UpdateDefaultBorder();
+  if (GetWidget()) {
+    UpdateBackgroundColor();
+  }
 }
 
 void Textfield::OnGestureScrollBegin(int drag_start_location_x) {

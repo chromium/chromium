@@ -131,7 +131,6 @@ class TaskViewTextField : public SystemTextfield,
         on_finished_editing_(std::move(on_finished_editing)) {
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_TEXTFIELD_PLACEHOLDER));
-    SetBackgroundColor(SK_ColorTRANSPARENT);
     SetController(this);
     SetID(std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
     SetPlaceholderText(

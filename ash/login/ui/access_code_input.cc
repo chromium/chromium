@@ -107,7 +107,7 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
   code_field_->SetBorder(views::CreateSolidSidedBorder(
       gfx::Insets::TLBR(0, 0, kAccessCodeFlexUnderlineThicknessDp, 0),
       input_color_id));
-  code_field_->SetBackgroundEnabled(false);
+  code_field_->SetBackgroundMode(SystemTextfield::BackgroundMode::kNever);
   code_field_->SetFocusBehavior(FocusBehavior::ALWAYS);
   code_field_->SetPreferredSize(
       gfx::Size(kAccessCodeFlexLengthWidthDp, kAccessCodeInputFieldHeightDp));
@@ -283,7 +283,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     auto* field = new AccessibleInputField();
     views::FocusRing::Get(field)->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) { return false; }));
-    field->SetBackgroundEnabled(false);
+    field->SetBackgroundMode(SystemTextfield::BackgroundMode::kNever);
     field->set_controller(this);
     field->SetPreferredSize(
         gfx::Size(kAccessCodeInputFieldWidthDp, kAccessCodeInputFieldHeightDp));

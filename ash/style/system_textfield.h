@@ -27,14 +27,18 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
     kLarge,
   };
 
+  enum class BackgroundMode {
+    kOnHoverOrFocus,  // Default: Only show background when hovered or focused.
+    kAlways,          // Always show background.
+    kNever,           // Never show background.
+  };
+
   explicit SystemTextfield(Type type);
   SystemTextfield(const SystemTextfield&) = delete;
   SystemTextfield& operator=(const SystemTextfield&) = delete;
   ~SystemTextfield() override;
 
-  void SetBackgroundColorId(ui::ColorId color_id);
   void SetActiveStateChangedCallback(base::RepeatingClosure callback);
-  void SetCornerRadius(int corner_radius);
 
   // Activates or deactivates the textfield. The textfield can only be edited if
   // it is active.
@@ -42,9 +46,11 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   bool IsActive() const;
   // Sets if the focus ring should be shown despite the active state.
   void SetShowFocusRing(bool show);
-  // Sets if the themed rounded rect background should be shown.
-  // TODO(zxdan): Move this to be determined by textfield controller.
-  void SetShowBackground(bool show);
+  // Sets the background mode. Callers should use this method instead of
+  // `SetBackgroundEnabled()` to configure whether and when the background
+  // is displayed.
+  void SetBackgroundMode(BackgroundMode mode);
+  BackgroundMode GetBackgroundMode() const { return background_mode_; }
   // Restores to previous text when the changes are discarded.
   void RestoreText();
   // Creates themed or transparent background according to the textfield states.
@@ -54,9 +60,9 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void SetBorder(std::unique_ptr<views::Border> b) override;
+  void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnThemeChanged() override;
   void OnFocus() override;
   void OnBlur() override;
 
@@ -69,16 +75,13 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
 
   Type type_;
   std::unique_ptr<EventHandler> event_handler_;
-  int corner_radius_;
 
   // Text content to restore when changes are discarded.
   std::u16string restored_text_content_;
   // Indicates if the textfield should show focus ring.
   bool show_focus_ring_ = false;
-  // Indicates if the textfield should show background.
-  bool show_background_ = false;
-
-  std::optional<ui::ColorId> background_color_id_;
+  // Controls when the background is painted.
+  BackgroundMode background_mode_ = BackgroundMode::kOnHoverOrFocus;
 
   // Active state changed callback.
   base::RepeatingClosure active_state_changed_callback_;

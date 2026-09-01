@@ -233,6 +233,10 @@ class VIEWS_EXPORT Textfield : public View,
   bool GetBackgroundEnabled() const;
   void SetBackgroundEnabled(bool enabled);
 
+  // Gets the corner radius used for painting the background and highlight path.
+  float GetCornerRadius() const;
+  void SetCornerRadius(std::optional<float> corner_radius);
+
   // Gets/sets the selection text color to be used when painting the Textfield.
   SkColor GetSelectionTextColor() const;
   std::optional<ui::ColorId> selection_text_color_id() const {
@@ -632,6 +636,9 @@ class VIEWS_EXPORT Textfield : public View,
   void UpdateAccessibleTextOffsetsIfNeeded();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
+  // Updates the painted background color.
+  void UpdateBackgroundColor();
+
  private:
   friend class TextfieldTestApi;
 
@@ -659,9 +666,6 @@ class VIEWS_EXPORT Textfield : public View,
   void PasteSelectionClipboard(
       base::OnceCallback<void(bool)> callback) override;
   void UpdateSelectionClipboard() override;
-
-  // Updates the painted background color.
-  void UpdateBackgroundColor();
 
   // Updates the border per the state of the textfield (i.e. Normal, Invalid,
   // Readonly, Disabled). This will not do anything if a custom border has been
@@ -773,8 +777,6 @@ class VIEWS_EXPORT Textfield : public View,
       ui::mojom::DragOperation& output_drag_op,
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
-  // Returns the corner radius of the text field.
-  float GetCornerRadius();
 
   // Prepares the Textfield for gesture scrolling by setting the drag start
   // state.
@@ -842,6 +844,8 @@ class VIEWS_EXPORT Textfield : public View,
   std::optional<ui::ColorVariant> background_color_;
   std::optional<ui::ColorId> selection_text_color_id_;
   std::optional<ui::ColorId> selection_background_color_id_;
+
+  std::optional<float> corner_radius_;
 
   // Text to display when empty and its color.
   std::u16string placeholder_text_;
@@ -1019,6 +1023,7 @@ class VIEWS_EXPORT Textfield : public View,
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textfield, View)
 VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, BackgroundColor)
 VIEW_BUILDER_PROPERTY(bool, BackgroundEnabled)
+VIEW_BUILDER_PROPERTY(std::optional<float>, CornerRadius)
 VIEW_BUILDER_PROPERTY(TextfieldController*, Controller)
 VIEW_BUILDER_PROPERTY(bool, CursorEnabled)
 VIEW_BUILDER_PROPERTY(int, DefaultWidthInChars)

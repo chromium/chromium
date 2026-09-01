@@ -65,9 +65,7 @@ AuthTextfield::AuthTextfield(AuthType auth_type)
   views::FocusRing::Remove(this);
 
   // Don't show background.
-  SetShowBackground(false);
-  SetBackgroundEnabled(false);
-  SetBackground(nullptr);
+  SetBackgroundMode(BackgroundMode::kNever);
 
   // Remove the border.
   SetBorder(nullptr);
