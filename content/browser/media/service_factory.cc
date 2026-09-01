@@ -191,7 +191,6 @@ class ServiceMap {
   auto& GetOrCreateRemote(const ServiceKey& key) { return remotes_[key]; }
 
   void EraseRemote(const ServiceKey& key) {
-    DCHECK(remotes_.count(key));
     remotes_.erase(key);
   }
 
@@ -289,6 +288,12 @@ media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
       cdm_info.type, browser_context, site, cdm_info.name, cdm_info.path);
 }
 
+void ResetCdmService(BrowserContext* browser_context,
+                     const GURL& site,
+                     const media::CdmType& cdm_type) {
+  EraseCdmService<media::mojom::CdmService>({cdm_type, browser_context, site});
+}
+
 #if BUILDFLAG(IS_WIN)
 media::mojom::MediaFoundationService& GetMediaFoundationService(
     const media::CdmType& cdm_type,
@@ -297,6 +302,12 @@ media::mojom::MediaFoundationService& GetMediaFoundationService(
     const base::FilePath& cdm_path) {
   return GetService<media::mojom::MediaFoundationService>(
       cdm_type, browser_context, site, "Media Foundation Service", cdm_path);
+}
+
+void ResetMediaFoundationService(BrowserContext* browser_context,
+                                 const GURL& site) {
+  EraseCdmService<media::mojom::MediaFoundationService>(
+      {media::CdmType(), browser_context, site});
 }
 #endif  // BUILDFLAG(IS_WIN)
 

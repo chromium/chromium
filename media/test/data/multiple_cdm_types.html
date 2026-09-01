@@ -78,10 +78,12 @@
     log('Session3 created');
     session3 = session;
     log('Crash session2');
-    return session2.update(crashJwkSet);
-  }).finally(function() {
-    // Due to the crash, the update() above could resolve or reject.
-    // So use "finally" so that we continue the test regardless.
+    return session2.update(crashJwkSet).catch(function(error) {
+      // Due to the crash, the update() above could resolve or reject.
+      // So catch the error so that we continue the test regardless.
+      log('Session2 update rejected as expected due to crash: ' + error);
+    });
+  }).then(function() {
     log('Session2 crashed');
     return session2.closed;
   }).then(function() {

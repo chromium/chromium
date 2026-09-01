@@ -1,7 +1,7 @@
 # http://crbug.com/1029355
 
 CDM_10/ECKEncryptedMediaTest.DecryptOnly_VideoOnly_MP4_CBCS/0
-CDM_10/ECKEncryptedMediaTest.MultipeCdmTypes/0
+CDM_10/ECKEncryptedMediaTest.MultipleCdmTypes/0
 CDM_11/ECKEncryptedMediaTest.DecryptOnly_VideoOnly_MP4_CBCS/0
 MSE_ClearKey/EncryptedMediaTest.FrameSizeChangeVideo/0
 MSE_ClearKey/EncryptedMediaTest.Playback_AudioOnly_MP4_OPUS/0

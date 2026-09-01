@@ -100,7 +100,18 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> GetFrameServices(
       const media::CdmType& cdm_type);
 
+  void OnCdmCreated(
+      const media::CdmConfig& cdm_config,
+      CreateCdmCallback callback,
+      bool is_cached_factory,
+      mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
+      media::mojom::CdmContextPtr cdm_context,
+      media::CreateCdmStatus status);
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  void CreateLibraryCdm(const media::CdmConfig& cdm_config,
+                        CreateCdmCallback callback);
+
   // Gets a CdmFactory pointer for |key_system|. Returns null if unexpected
   // error happened.
   media::mojom::CdmFactory* GetCdmFactory(const std::string& key_system);

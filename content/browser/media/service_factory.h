@@ -26,6 +26,12 @@ media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
                                         const GURL& site,
                                         const CdmInfo& cdm_info);
 
+// Erases any cached CdmService instance for the `browser_context`, `site`, and
+// `cdm_type`.
+void ResetCdmService(BrowserContext* browser_context,
+                     const GURL& site,
+                     const media::CdmType& cdm_type);
+
 #if BUILDFLAG(IS_WIN)
 // Gets an instance of the MediaFoundationService for the `browser_context` and
 // the `site`. Instances are started lazily as needed. The CDM located at
@@ -35,6 +41,11 @@ media::mojom::MediaFoundationService& GetMediaFoundationService(
     BrowserContext* browser_context,
     const GURL& site,
     const base::FilePath& cdm_path);
+
+// Erases any cached MediaFoundationService instance for the `browser_context`
+// and `site`.
+void ResetMediaFoundationService(BrowserContext* browser_context,
+                                 const GURL& site);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content
