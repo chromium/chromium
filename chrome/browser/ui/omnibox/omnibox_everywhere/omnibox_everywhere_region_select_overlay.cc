@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
@@ -125,9 +126,15 @@ class InstructionToastChipView : public views::View {
     constexpr SkColor kForegroundColor = SkColorSetRGB(0xEE, 0xF0, 0xF9);
     constexpr int kIconSize = 20;
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    const gfx::VectorIcon& icon = vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+    const gfx::VectorIcon& icon = vector_icons::kSearchIcon;
+#endif
+
     auto icon_view = std::make_unique<views::ImageView>();
-    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kSearchIcon, kForegroundColor, kIconSize));
+    icon_view->SetImage(
+        ui::ImageModel::FromVectorIcon(icon, kForegroundColor, kIconSize));
     AddChildView(std::move(icon_view));
 
     auto label = std::make_unique<views::Label>(l10n_util::GetStringUTF16(
@@ -226,7 +233,12 @@ class TeardropCursorChipView : public views::View {
     const int icon_y = kPadding + (kChipSize - kIconSize) / 2;
     canvas->Save();
     canvas->Translate(gfx::Vector2d(icon_x, icon_y));
-    gfx::PaintVectorIcon(canvas, vector_icons::kSearchIcon, kIconSize,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    const gfx::VectorIcon& icon = vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+    const gfx::VectorIcon& icon = vector_icons::kSearchIcon;
+#endif
+    gfx::PaintVectorIcon(canvas, icon, kIconSize,
                          SkColorSetRGB(0x1F, 0x1F, 0x1F));
     canvas->Restore();
   }
