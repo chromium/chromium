@@ -471,6 +471,13 @@ void ContextHubService::OnAllAutoTodosFetchedForTabBasedTodos(
     if (tab->GetVisibility() == content::Visibility::VISIBLE) {
       continue;
     }
+    // Only consider unpinned tabs.
+    if (tabs::TabInterface* tab_interface =
+            tabs::TabInterface::MaybeGetFromContents(tab.get())) {
+      if (tab_interface->IsPinned()) {
+        continue;
+      }
+    }
     // Only consider tabs that have a valid last active time.
     // All tabs are sent to the model and filtered out by varying time
     // thresholds based on group type. This will be simplified in the future to

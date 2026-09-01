@@ -173,6 +173,7 @@ export class AiTaskboxElement extends CrLitElement {
                 this.isGeneratingGmailTodos_ = isGenerating;
                 if (!isGenerating) {
                   this.lastGmailGenerationTime_ = new Date();
+                  this.hasGeneratedGmail_ = true;
                 }
               }));
       this.listenerIds_.push(
@@ -182,6 +183,7 @@ export class AiTaskboxElement extends CrLitElement {
                 this.isGeneratingTabTodos_ = isGenerating;
                 if (!isGenerating) {
                   this.lastTabGenerationTime_ = new Date();
+                  this.hasGeneratedTab_ = true;
                 }
               }));
       this.fetchAutoTodos_();
@@ -208,11 +210,13 @@ export class AiTaskboxElement extends CrLitElement {
            lastFirstPartyGenerationTime.internalValue > 0n) ?
           convertMojoTimeToDate(lastFirstPartyGenerationTime) :
           null;
+      this.hasGeneratedGmail_ = this.lastGmailGenerationTime_ !== null;
       this.lastTabGenerationTime_ =
           (lastThirdPartyGenerationTime &&
            lastThirdPartyGenerationTime.internalValue > 0n) ?
           convertMojoTimeToDate(lastThirdPartyGenerationTime) :
           null;
+      this.hasGeneratedTab_ = this.lastTabGenerationTime_ !== null;
       const feedbackMap = new Map<string, boolean>();
       for (const feedback of feedbacks) {
         feedbackMap.set(feedback.todoId, feedback.liked);

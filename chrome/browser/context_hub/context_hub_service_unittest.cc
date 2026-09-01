@@ -651,6 +651,33 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_VisibleTabNotEligible) {
   EXPECT_TRUE(future.Get());
 }
 
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_PinnedTabNotEligible) {
+  // Tab is pinned and therefore not eligible.
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost user_data_host;
+  ON_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+  ON_CALL(mock_tab, IsPinned()).WillByDefault(testing::Return(true));
+
+  auto web_contents = CreateEligibleTab(GURL("https://example.com"));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents.get(),
+                                                       &mock_tab);
+
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(_, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(service_.GetLastThirdPartyGenerationTime(), base::Time::Now());
+}
+
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_ReentrancyBlocked) {
   auto web_contents = CreateEligibleTab();
 
