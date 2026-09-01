@@ -37,6 +37,7 @@
 #include "ash/wm/window_properties.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -224,7 +225,7 @@ class PanelRowAnimator : public views::ViewObserver {
     std::vector<views::View*> animatable_views;
 
     // Add the views that show up below `resized_view_` into `animatable_views`.
-    for (auto* v : shift_views_) {
+    for (views::View* v : shift_views_) {
       if (v->GetVisible()) {
         animatable_views.push_back(v);
       }
@@ -239,7 +240,7 @@ class PanelRowAnimator : public views::ViewObserver {
 
   const raw_ptr<RoundedContainer> resized_view_ = nullptr;
   // `shift_views_` are the views below `resized_view_` on the focus panel.
-  std::vector<views::View*> shift_views_;
+  std::vector<raw_ptr<views::View>> shift_views_;
   // Records the height of the `resized_view_`.
   int resized_view_height_ = 0;
 };

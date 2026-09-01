@@ -21,6 +21,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/nudge_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -142,7 +143,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemNudgeView,
 class SystemNudgeView::FocusableChildrenObserver : public views::ViewObserver {
  public:
   FocusableChildrenObserver(
-      std::vector<views::View*> observed_children,
+      std::vector<raw_ptr<views::View>> observed_children,
       base::RepeatingCallback<void(/*has_focus=*/bool)> focus_callback)
       : observed_children_(std::move(observed_children)),
         focus_callback_(std::move(focus_callback)) {
@@ -170,8 +171,7 @@ class SystemNudgeView::FocusableChildrenObserver : public views::ViewObserver {
   void OnViewBlurred(views::View* observed_view) override {
     focus_callback_.Run(/*has_focus=*/false);
   }
-
-  const std::vector<views::View*> observed_children_;
+  const std::vector<raw_ptr<views::View>> observed_children_;
 
   base::RepeatingCallback<void(/*has_focus=*/bool)> focus_callback_;
 };
@@ -402,7 +402,7 @@ SystemNudgeView::SystemNudgeView(
           .Build());
   buttons_container->SetDefault(views::kMarginsKey, kButtonsMargins);
 
-  std::vector<views::View*> focusable_children;
+  std::vector<raw_ptr<views::View>> focusable_children;
   focusable_children.push_back(buttons_container->AddChildView(
       views::Builder<PillButton>()
           .SetID(VIEW_ID_SYSTEM_NUDGE_PRIMARY_BUTTON)

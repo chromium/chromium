@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -61,7 +62,7 @@ class ASH_EXPORT SoundSectionView : public views::View {
   void CreatePlaylistViewsContainer(focus_mode_util::SoundType type);
 
   const focus_mode_util::SoundType type_;
-  std::vector<PlaylistView*> playlist_view_list_;
+  std::vector<raw_ptr<PlaylistView>> playlist_view_list_;
   raw_ptr<views::FlexLayoutView> playlist_views_container_ = nullptr;
 
   // For a non-premium users, the "YouTube Music" `playlist_views_container_`

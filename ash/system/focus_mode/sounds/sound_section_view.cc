@@ -57,7 +57,7 @@ void SoundSectionView::UpdateContents(
 
   for (size_t i = 0; i < kFocusModePlaylistViewsNum; ++i) {
     const auto& playlist_data = data.at(i);
-    auto* playlist_view = playlist_view_list_.at(i);
+    PlaylistView* playlist_view = playlist_view_list_.at(i);
     playlist_view->UpdateContents(i, *playlist_data);
   }
 
@@ -89,7 +89,7 @@ bool SoundSectionView::IsAlternateViewVisible() const {
 
 void SoundSectionView::UpdateStateForSelectedPlaylist(
     const focus_mode_util::SelectedPlaylist& selected_playlist) {
-  for (auto* playlist_view : playlist_view_list_) {
+  for (PlaylistView* playlist_view : playlist_view_list_) {
     if (!selected_playlist.empty() && selected_playlist.type == type_ &&
         selected_playlist.id == playlist_view->playlist_data().id) {
       playlist_view->SetState(selected_playlist.state);
@@ -101,7 +101,7 @@ void SoundSectionView::UpdateStateForSelectedPlaylist(
 
 void SoundSectionView::UpdateSelectedPlaylistForNewState(
     focus_mode_util::SoundState new_state) {
-  for (auto* playlist_view : playlist_view_list_) {
+  for (PlaylistView* playlist_view : playlist_view_list_) {
     if (playlist_view->playlist_data().state !=
         focus_mode_util::SoundState::kNone) {
       playlist_view->SetState(new_state);

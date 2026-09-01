@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/system/focus_mode/sounds/soundscape/soundscape_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 
 namespace ash {
@@ -37,7 +38,7 @@ class PlaylistTracker {
 
   // Contains pointers to the tracks in the playlist which haven't been played
   // in shuffled order. The next track is always at the back.
-  std::vector<const SoundscapeTrack*> remaining_tracks_;
+  std::vector<raw_ptr<const SoundscapeTrack>> remaining_tracks_;
 };
 
 }  // namespace ash
