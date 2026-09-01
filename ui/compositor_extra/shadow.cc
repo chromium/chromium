@@ -21,12 +21,58 @@ namespace {
 // Duration for opacity animation in milliseconds.
 constexpr int kShadowAnimationDurationMs = 100;
 
+constexpr Shadow::ElevationColors kDefaultMdShadowColors = {
+    SkColorSetA(SK_ColorBLACK, 0x3d),
+    SkColorSetA(SK_ColorBLACK, 0x1f),
+};
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr Shadow::ElevationColors kDefaultChromeOSSystemUIShadowColors = {
+    SkColorSetA(SK_ColorBLACK, 0x3d),
+    SkColorSetA(SK_ColorBLACK, 0x1a),
+};
+#endif
+
+constexpr Shadow::ElevationColors GetDefaultElevationColors(
+    Shadow::Style style) {
+  switch (style) {
+    case Shadow::Style::kMaterialDesign:
+      return kDefaultMdShadowColors;
+#if BUILDFLAG(IS_CHROMEOS)
+    case Shadow::Style::kChromeOSSystemUI:
+      return kDefaultChromeOSSystemUIShadowColors;
+#endif
+  }
+}
+
 bool IsValidRoundedCorners(const gfx::RoundedCornersF& radii) {
   return radii.upper_left() >= 0.0f && radii.upper_right() >= 0.0f &&
          radii.lower_right() >= 0.0f && radii.lower_left() >= 0.0f;
 }
 
 }  // namespace
+
+// static
+gfx::ShadowValues Shadow::MakeShadowValues(
+    int elevation,
+    Style style,
+    std::optional<ElevationColors> colors,
+    bool is_pill_shaped) {
+  const ElevationColors shadow_colors =
+      colors.value_or(GetDefaultElevationColors(style));
+
+  switch (style) {
+    case Style::kMaterialDesign:
+      return gfx::ShadowValue::MakeMdShadowValues(
+          elevation, shadow_colors.key_color, shadow_colors.ambient_color,
+          is_pill_shaped);
+#if BUILDFLAG(IS_CHROMEOS)
+    case Style::kChromeOSSystemUI:
+      return gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+          elevation, shadow_colors.key_color, shadow_colors.ambient_color,
+          is_pill_shaped);
+#endif
+  }
+}
 
 Shadow::Shadow() : shadow_layer_owner_(this) {}
 
@@ -99,7 +145,7 @@ void Shadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
   UpdateShadowAppearance();
 }
 
-void Shadow::SetStyle(gfx::ShadowStyle style) {
+void Shadow::SetStyle(Style style) {
   if (style_ == style)
     return;
 
@@ -188,16 +234,13 @@ void Shadow::UpdateShadowAppearance() {
   CHECK_GE(size_adjusted_elevation, 0);
 
   auto iter = color_map_.find(elevation_);
+  const gfx::ShadowValues values = MakeShadowValues(
+      size_adjusted_elevation, style_,
+      iter != color_map_.end() ? std::make_optional(iter->second)
+                               : std::nullopt,
+      is_pill_shaped);
   const auto& details =
-      (iter == color_map_.end())
-          ? gfx::ShadowDetails::Get(size_adjusted_elevation,
-                                    size_adjusted_rounded_corners,
-                                    is_pill_shaped, style_)
-          : gfx::ShadowDetails::Get(
-                size_adjusted_elevation, size_adjusted_rounded_corners,
-                /*key_color=*/iter->second.key_color,
-                /*ambient_color=*/iter->second.ambient_color, is_pill_shaped,
-                style_);
+      gfx::ShadowDetails::Get(size_adjusted_rounded_corners, values);
 
   const gfx::Insets aperture_insets =
       gfx::ShadowDetails::GetNineboxApertureInsets(

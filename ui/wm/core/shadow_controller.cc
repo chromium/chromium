@@ -347,7 +347,7 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   MaybeSetShadowRadiusForWindow(window);
   shadow->Init(GetShadowElevationForActiveState(window));
 #if BUILDFLAG(IS_CHROMEOS)
-  shadow->SetStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+  shadow->SetStyle(ui::Shadow::Style::kChromeOSSystemUI);
 #endif
   shadow->SetContentBounds(gfx::Rect(window->bounds().size()));
   shadow->layer()->SetVisible(ShouldShowShadowForWindow(window));

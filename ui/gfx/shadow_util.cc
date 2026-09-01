@@ -131,41 +131,9 @@ bool ShadowDetails::operator==(const ShadowDetails& other) const {
 const ShadowDetails& ShadowDetails::Get(
     int elevation,
     const gfx::RoundedCornersF& rounded_corners,
-    bool is_pill_shaped,
-    ShadowStyle style) {
-  switch (style) {
-    case ShadowStyle::kMaterialDesign:
-      return Get(rounded_corners,
-                 ShadowValue::MakeMdShadowValues(elevation, SK_ColorBLACK,
-                                                 is_pill_shaped));
-#if BUILDFLAG(IS_CHROMEOS)
-    case ShadowStyle::kChromeOSSystemUI:
-      return Get(rounded_corners,
-                 ShadowValue::MakeChromeOSSystemUIShadowValues(
-                     elevation, SK_ColorBLACK, is_pill_shaped));
-#endif
-  }
-}
-
-const ShadowDetails& ShadowDetails::Get(
-    int elevation,
-    const gfx::RoundedCornersF& rounded_corners,
-    SkColor key_color,
-    SkColor ambient_color,
-    bool is_pill_shaped,
-    ShadowStyle style) {
-  switch (style) {
-    case ShadowStyle::kMaterialDesign:
-      return Get(rounded_corners,
-                 ShadowValue::MakeMdShadowValues(
-                     elevation, key_color, ambient_color, is_pill_shaped));
-#if BUILDFLAG(IS_CHROMEOS)
-    case ShadowStyle::kChromeOSSystemUI:
-      return Get(rounded_corners,
-                 ShadowValue::MakeChromeOSSystemUIShadowValues(
-                     elevation, key_color, ambient_color, is_pill_shaped));
-#endif
-  }
+    bool is_pill_shaped) {
+  return Get(rounded_corners, ShadowValue::MakeMdShadowValues(
+                                  elevation, SK_ColorBLACK, is_pill_shaped));
 }
 
 const ShadowDetails& ShadowDetails::Get(

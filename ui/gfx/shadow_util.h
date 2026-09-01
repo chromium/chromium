@@ -14,16 +14,6 @@
 
 namespace gfx {
 
-// The shadow style for different UI components.
-enum class ShadowStyle {
-  // The MD style is mainly used for view's shadow.
-  kMaterialDesign,
-#if BUILDFLAG(IS_CHROMEOS)
-  // The system style is mainly used for Chrome OS UI components.
-  kChromeOSSystemUI,
-#endif
-};
-
 // A struct that describes a vector of shadows and their depiction as an image
 // suitable for ninebox tiling.
 struct COMPONENT_EXPORT(GFX) ShadowDetails {
@@ -40,22 +30,11 @@ struct COMPONENT_EXPORT(GFX) ShadowDetails {
 
   bool operator==(const ShadowDetails& other) const;
 
-  // Returns a cached ShadowDetails for the given elevation, rounded corners,
-  // and shadow style. Creates the ShadowDetails first if necessary.
-  static const ShadowDetails& Get(
-      int elevation,
-      const gfx::RoundedCornersF& rounded_corners,
-      bool is_pill_shaped = false,
-      ShadowStyle style = ShadowStyle::kMaterialDesign);
-
-  // Returns a cached ShadowDetails for the given elevation, corner radius,
-  // key shadow color, ambient shadow color, and shadow style.
+  // Returns a cached ShadowDetails for the given elevation and rounded corners.
+  // Creates the ShadowDetails first if necessary.
   static const ShadowDetails& Get(int elevation,
                                   const gfx::RoundedCornersF& rounded_corners,
-                                  SkColor key_color,
-                                  SkColor ambient_color,
-                                  bool is_pill_shaped,
-                                  ShadowStyle style);
+                                  bool is_pill_shaped = false);
 
   // Returns a cached ShadowDetails for given corner radius and shadow values.
   static const ShadowDetails& Get(const gfx::RoundedCornersF& rounded_corners,

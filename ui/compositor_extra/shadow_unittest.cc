@@ -330,19 +330,19 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
 }
 
 class ShadowColorTest : public ShadowTest,
-                        public testing::WithParamInterface<gfx::ShadowStyle> {
+                        public testing::WithParamInterface<ui::Shadow::Style> {
  public:
   ShadowColorTest() = default;
   ShadowColorTest(const ShadowColorTest&) = delete;
   ShadowColorTest& operator=(const ShadowColorTest&) = delete;
   ~ShadowColorTest() override = default;
 
-  static std::vector<gfx::ShadowStyle> GetTestParamValues() {
+  static std::vector<ui::Shadow::Style> GetTestParamValues() {
 #if BUILDFLAG(IS_CHROMEOS)
-    return {gfx::ShadowStyle::kMaterialDesign,
-            gfx::ShadowStyle::kChromeOSSystemUI};
+    return {ui::Shadow::Style::kMaterialDesign,
+            ui::Shadow::Style::kChromeOSSystemUI};
 #else
-    return {gfx::ShadowStyle::kMaterialDesign};
+    return {ui::Shadow::Style::kMaterialDesign};
 #endif
   }
 };
@@ -399,6 +399,37 @@ TEST_P(ShadowColorTest, ElevationToColorsMap) {
   shadow.SetElevation(kElevationSmall + 1);
   EXPECT_EQ(get_colors(shadow),
             (ElevationColors{default_key_color, default_ambient_color}));
+}
+
+// Tests MakeShadowValues static method with default and custom colors.
+TEST(ShadowStaticTest, MakeShadowValues) {
+  constexpr int kElevation = 6;
+  const gfx::ShadowValues default_md_values =
+      Shadow::MakeShadowValues(kElevation, Shadow::Style::kMaterialDesign);
+  EXPECT_EQ(default_md_values,
+            gfx::ShadowValue::MakeMdShadowValues(kElevation, SK_ColorBLACK));
+
+  const SkColor key_color = SK_ColorRED;
+  const SkColor ambient_color = SK_ColorBLUE;
+  const Shadow::ElevationColors colors{key_color, ambient_color};
+  const gfx::ShadowValues custom_md_values = Shadow::MakeShadowValues(
+      kElevation, Shadow::Style::kMaterialDesign, colors);
+  EXPECT_EQ(custom_md_values, gfx::ShadowValue::MakeMdShadowValues(
+                                  kElevation, key_color, ambient_color));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  const gfx::ShadowValues default_cros_values =
+      Shadow::MakeShadowValues(kElevation, Shadow::Style::kChromeOSSystemUI);
+  EXPECT_EQ(default_cros_values,
+            gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(kElevation,
+                                                               SK_ColorBLACK));
+
+  const gfx::ShadowValues custom_cros_values = Shadow::MakeShadowValues(
+      kElevation, Shadow::Style::kChromeOSSystemUI, colors);
+  EXPECT_EQ(custom_cros_values,
+            gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+                kElevation, key_color, ambient_color));
+#endif
 }
 
 }  // namespace

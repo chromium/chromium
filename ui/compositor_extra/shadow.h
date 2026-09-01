@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_owner.h"
@@ -22,6 +23,16 @@ namespace ui {
 // Simple class that draws a drop shadow around content at given bounds.
 class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
  public:
+  // The shadow style for different UI components.
+  enum class Style {
+    // The MD style is mainly used for view's shadow.
+    kMaterialDesign,
+#if BUILDFLAG(IS_CHROMEOS)
+    // The system style is mainly used for Chrome OS UI components.
+    kChromeOSSystemUI,
+#endif
+  };
+
   // Key and ambient shadow colors for an elevation.
   struct ElevationColors {
     SkColor key_color = gfx::kPlaceholderColor;
@@ -32,6 +43,14 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Mapping from elevation to key and ambient shadow colors.
   using ElevationToColorsMap = base::flat_map<int, ElevationColors>;
+
+  // Makes ShadowValues for the given elevation and shadow style. If |colors| is
+  // not provided, default colors are used.
+  static gfx::ShadowValues MakeShadowValues(
+      int elevation,
+      Style style = Style::kMaterialDesign,
+      std::optional<ElevationColors> colors = std::nullopt,
+      bool is_pill_shaped = false);
 
   Shadow();
 
@@ -75,8 +94,8 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   }
 
   // Set shadow style.
-  void SetStyle(gfx::ShadowStyle style);
-  gfx::ShadowStyle style() const { return style_; }
+  void SetStyle(Style style);
+  Style style() const { return style_; }
 
   // Set customized key and ambient shadows color map for certain elevations.
   void SetColorMap(const ElevationToColorsMap& color_map);
@@ -131,7 +150,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   std::optional<gfx::ShadowDetails> details_;
 
   // The style of shadow. Use MD style by default.
-  gfx::ShadowStyle style_ = gfx::ShadowStyle::kMaterialDesign;
+  Style style_ = Style::kMaterialDesign;
 
   // The customized key and ambient shadows color map for certain elevations.
   ElevationToColorsMap color_map_;
