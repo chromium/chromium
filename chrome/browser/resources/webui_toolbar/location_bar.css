@@ -8,13 +8,18 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --border-radius: calc(var(--location-bar-height)/2);
+  --border-radius: calc(var(--location-bar-height) / 2);
   --location-bar-background: var(--color-location-bar-background);
   --omnibox-start-padding: 0px;
   align-self: center;
   align-items: center;
   background-color: var(--location-bar-background);
-  border: none;
+
+  /* We use outline instead of border or box-shadow.
+   * outline-offset: -1px perfectly mimics the C++ inner 1px bounding box
+   * without affecting child flexbox dimensions. */
+  outline: 1px solid transparent;
+  outline-offset: -1px;
   border-radius: var(--border-radius);
   box-sizing: border-box;
   display: flex;
@@ -50,12 +55,18 @@
   --location-bar-background: var(--color-location-bar-background-hovered);
 }
 
+:host(.aim-last-page-action) {
+  /* kTrailingEdgePaddingForAim = 5 in LocationBarView::Layout. */
+  padding-inline-end: 5px;
+}
+
 @media not (prefers-contrast: more) {
   :host(.input-in-progress) {
     --location-bar-background: var(--color-omnibox-results-background);
     background-color: var(--location-bar-background);
-    border: 1px solid var(--color-location-bar-border-on-mismatch);
+    outline-color: var(--color-location-bar-border-on-mismatch);
   }
+
   :host(.input-in-progress:hover:not([chip-hovered])) {
     --location-bar-background: var(--color-omnibox-results-background-hovered);
     background-color: var(--location-bar-background);
@@ -64,17 +75,17 @@
   /* The border override for input-in-progress is only visible if
    * the location bar isn't visibly focused */
   :host(#location-bar):has(> readonly-omnibox:focus-within) {
-    border: none;
+    outline-color: transparent;
   }
 }
 
 @media (prefers-contrast: more) {
   :host {
-    border: 1px solid var(--color-location-bar-border);
+    outline-color: var(--color-location-bar-border);
   }
 
   :host:has(> readonly-omnibox:focus-within) {
-    border: 1px solid var(--color-omnibox-results-background);
+    outline-color: var(--color-omnibox-results-background);
   }
 }
 
@@ -91,7 +102,14 @@
 }
 
 :host(#location-bar:not(.no-focus-ring)):has(> readonly-omnibox:focus-within) {
-  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  /* In Native C++ Views, the 2px focus ring bleeds 1px outside the bounds and
+   * 1px inside (overlapping the 1px background border, HaloInset = -1). In
+   * WebUI, bleeding outside causes clipping against the parent WebContents
+   * bounds. Thus, we must inset the entire 2px focus ring internally via
+   * outline-offset: -2px, which optically leaves the gap to trailing chips 1px
+   * tighter than Native. */
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: -2px;
 }
 
 @media (forced-colors: active) {
@@ -154,4 +172,3 @@ content-settings-icons {
       2 * var(--location-bar-page-info-icon-vertical-padding));
   flex-shrink: 0;
 }
-

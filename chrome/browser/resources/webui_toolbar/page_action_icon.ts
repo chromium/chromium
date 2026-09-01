@@ -131,6 +131,8 @@ export class PageActionIconElement extends PageActionIconElementBase {
       this.$.button.toggleAttribute('force-focus-ring', this.forceFocusRing);
     }
     if (changedProperties.has('state')) {
+      this.toggleAttribute(
+          'is-aim', this.state.pageActionId === PageActionId.kActionAiMode);
       const oldState = changedProperties.get('state');
       if (!oldState || oldState.shouldShowChip !== this.state.shouldShowChip) {
         const fireIpc = () => {

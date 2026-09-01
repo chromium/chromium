@@ -122,27 +122,25 @@ suite('LocationBarFocus', function() {
         style.get('background-color')?.toString());
   });
 
-  test('Border (and box-shadow) computation', async () => {
+  test('Outline layout computation', async () => {
     locationBar.locationBarState = initialState;
     blurLocationBar();
     await microtasksFinished();
     const style = locationBar.computedStyleMap();
-    assertEquals('none', style.get('border-style')?.toString());
-    assertEquals('none', style.get('box-shadow')?.toString());
 
-    // Focus doesn't add a border.
+    // Default invisible outline
+    assertEquals('solid', style.get('outline-style')?.toString());
+    assertEquals('1px', style.get('outline-width')?.toString());
+    assertEquals('rgba(0, 0, 0, 0)', style.get('outline-color')?.toString());
+
+    // Focus upgrades the outline to a 2px boundary.
     focusLocationBar();
     await microtasksFinished();
-    assertEquals('none', style.get('border-style')?.toString());
-    // It does hover have a box-shadow that's pretty border-like.
-    assertEquals(
-        crFocusOutlineColor + ' 0px 0px 0px 2px inset',
-        style.get('box-shadow')?.toString());
+    assertEquals('solid', style.get('outline-style')?.toString());
+    assertEquals('2px', style.get('outline-width')?.toString());
+    assertEquals(crFocusOutlineColor, style.get('outline-color')?.toString());
 
-    // No outline in regular contrast.
-    assertEquals('none', style.get('outline-style')?.toString());
-
-    // If popup is open, the box-shadow goes away.
+    // If popup is open, the outline reverts.
     locationBar.locationBarState = {
       ...initialState,
       locationBarFlags: {
@@ -151,9 +149,10 @@ suite('LocationBarFocus', function() {
       },
     };
     await microtasksFinished();
-    assertEquals('none', style.get('box-shadow')?.toString());
+    assertEquals('1px', style.get('outline-width')?.toString());
+    assertEquals('rgba(0, 0, 0, 0)', style.get('outline-color')?.toString());
 
-    // In-progress gets a special border....
+    // In-progress gets a special outline color....
     blurLocationBar();
     locationBar.locationBarState = {
       ...initialState,
@@ -163,20 +162,18 @@ suite('LocationBarFocus', function() {
       },
     };
     await microtasksFinished();
-    assertEquals('solid', style.get('border-style')?.toString());
+    assertEquals('solid', style.get('outline-style')?.toString());
+    assertEquals('1px', style.get('outline-width')?.toString());
     assertEquals(
         colorLocationBarBorderOnMismatch,
-        style.get('border-color')?.toString());
-    assertEquals('none', style.get('box-shadow')?.toString());
+        style.get('outline-color')?.toString());
 
-    // ...unless it has focus, too.
+    // ...unless it has focus, too. (The 2px focus ring overrides it).
     focusLocationBar();
     await microtasksFinished();
-    assertEquals('none', style.get('border-style')?.toString());
-    assertEquals(
-        crFocusOutlineColor + ' 0px 0px 0px 2px inset',
-        style.get('box-shadow')?.toString());
-    assertEquals('none', style.get('outline-style')?.toString());
+    assertEquals('solid', style.get('outline-style')?.toString());
+    assertEquals('2px', style.get('outline-width')?.toString());
+    assertEquals(crFocusOutlineColor, style.get('outline-color')?.toString());
   });
 
   test('Focus state events', async () => {

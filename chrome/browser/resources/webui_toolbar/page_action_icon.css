@@ -14,9 +14,6 @@
   display: flex;
   align-items: center;
   width: auto;
-
-  /* Matches the C++ slide duration in PageActionView. */
-  --chip-slide-duration: 600ms;
 }
 
 /* Target the toolbar-chip-button directly to apply layout variables.
@@ -24,26 +21,66 @@
  * on :host, because toolbar-chip-button's own :host block defines default
  * values that would override any values inherited from page-action-icon. */
 #button {
-  --toolbar-chip-height: calc(
-      var(--location-bar-trailing-icon-size) +
-      var(--location-bar-page-action-icon-padding-top) +
-      var(--location-bar-page-action-icon-padding-bottom));
+  /* Matches the C++ slide duration in PageActionView. */
+  --toolbar-chip-expand-duration: 600ms;
+
+  /* Native LocationBarLayout forces chips to be exactly 24px
+   * (location_bar_height - 10) */
+  --toolbar-chip-height: calc(var(--location-bar-height) - 10px);
+
+  /* Standard C++ PageActions use 20px icons natively. */
   --toolbar-chip-icon-size: var(--location-bar-trailing-icon-size);
+
+  /* Whenever an icon natively shrinks (like AIM using 16px instead of 20px),
+   * C++ dynamically expands the base padding by half the size delta (e.g. 2px
+   * on all sides) to cleanly re-center it. */
+  --dynamic-base-padding: calc(
+      (var(--location-bar-trailing-icon-size) -
+       var(--toolbar-chip-icon-size)) / 2);
+
+
   --toolbar-chip-padding-start: calc(
       var(--location-bar-page-action-icon-padding-start) +
-      var(--location-bar-icon-interior-padding-start));
+      var(--dynamic-base-padding));
   --toolbar-chip-padding-end: calc(
       var(--location-bar-page-action-icon-padding-end) +
-      var(--location-bar-icon-interior-padding-end));
-  /* The 4px manually mirrors the SetExpandedLabelAdditionalInsets(4, 8) gap
-   * added dynamically in Native C++ PageActionView::PageActionView(). */
-  --toolbar-chip-icon-label-gap:
-      calc(var(--location-bar-child-internal-spacing) + 4px);
-  --toolbar-chip-expand-duration: var(--chip-slide-duration);
+      var(--dynamic-base-padding));
+
+  /* Standard location bar internal spacing between icon and text (4px) */
+  --toolbar-chip-icon-label-gap: var(--location-bar-child-internal-spacing);
+}
+
+:host([is-aim]) #button {
+  /* AiModePageActionController natively forces its layout down to 16px. Our
+   * --dynamic-base-padding CSS variable will instantly and automatically react
+   * to this override and recalculate the perfect centering offset! */
+  --toolbar-chip-icon-size: var(--location-bar-chip-icon-size);
 }
 
 #button[has-label] {
+  /* When fully expanded, C++ Native (PageActionView) explicitly adds
+   * Inset1D(4, 8) to the label. */
+
+  --toolbar-chip-padding-start: calc(
+      var(--location-bar-page-action-icon-padding-start) +
+      var(--dynamic-base-padding) + 4px);
+
+  /* TODO(crbug.com/526660612): toolbar-chip-button autonomously adds its own
+   * H/4 rounding cushion (6px) to the right edge via --label-side-spacing. This
+   * collides with Native which already manually supplies the 8px cushion.
+   * As a workaround, we subtract the dynamic-rounding-cushion from our padding
+   * to prevent double-counting. Remove this subtraction once
+   * --label-side-spacing is removed from toolbar-chip-button. */
+  --dynamic-rounding-cushion: calc(
+      round(down, var(--toolbar-chip-height) / 4, 1px));
+
+  --toolbar-chip-padding-end: calc(
+      var(--location-bar-page-action-icon-padding-end) +
+      var(--dynamic-base-padding) + 8px -
+      var(--dynamic-rounding-cushion));
+
   --toolbar-chip-bg-color: var(--color-omnibox-icon-background-tonal);
+  --toolbar-chip-fg-color: var(--color-omnibox-icon-foreground-tonal);
 }
 
 #text {

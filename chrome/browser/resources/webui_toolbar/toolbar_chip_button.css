@@ -186,8 +186,14 @@
   color: inherit;
   gap: var(--toolbar-chip-icon-label-gap);
 
-  /* Add extra padding to move button text away from rounded corners */
+  /* TODO(crbug.com/526660612): Remove --label-side-spacing.
+   * This implicitly adds a generic rounding cushion (H/4) to the chip. However,
+   * native views use different values for different chips, and none of them
+   * uses H/4. To keep 1:1 pixel parity with native views, each chip still needs
+   * to set its own cushion. Then this is no longer needed, and also causes
+   * double-counting the cushion if the WebUI chips set their own cushion. */
   --label-side-spacing: calc(round(down, var(--toolbar-chip-height) / 4, 1px));
+
   padding-inline-start: calc(var(--toolbar-chip-padding-start)
                              + var(--label-side-spacing));
   padding-inline-end: calc(var(--toolbar-chip-padding-end)

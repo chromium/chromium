@@ -50,9 +50,11 @@ suite('LocationBarHighContrastFocus', function() {
         colorLocationBarBorderOnMismatch);
     locationBar.style.setProperty(
         '--cr-focus-outline-color', crFocusOutlineColor);
-    // Matches what cr_shared_vars.css uses
+    // Use a distinct color mockup against the cr_shared_vars.css default
+    // (transparent) to ensure the CSS variable is properly bound during the
+    // test.
     locationBar.style.setProperty(
-        '--cr-focus-outline-hcm', '2px solid transparent');
+        '--cr-focus-outline-hcm', '2px solid fuchsia');
     locationBar.style.setProperty(
         '--color-location-bar-border', colorLocationBarBorder);
     document.body.appendChild(locationBar);
@@ -98,28 +100,32 @@ suite('LocationBarHighContrastFocus', function() {
         style.get('background-color')?.toString());
   });
 
-  test('Border (and box-shadow) computation', async () => {
+  test('Outline layout computation', async () => {
     locationBar.locationBarState = initialState;
     blurLocationBar();
     await microtasksFinished();
     const style = locationBar.computedStyleMap();
-    // Since we're in high-contrast, we get a border.
-    assertEquals('solid', style.get('border-style')?.toString());
-    assertEquals(colorLocationBarBorder, style.get('border-color')?.toString());
-    assertEquals('none', style.get('box-shadow')?.toString());
 
-    // When focused, we use --color-omnibox-results-background as a border.
+    // Since we're in high-contrast (prefers-contrast), the outline inherits
+    // the location bar border color organically.
+    assertEquals('solid', style.get('outline-style')?.toString());
+    assertEquals('1px', style.get('outline-width')?.toString());
+    assertEquals(
+        colorLocationBarBorder, style.get('outline-color')?.toString());
+
+    // When focused, rule specificity promotes the focus outline color
+    // (which in HCM is mapped via --cr-focus-outline-hcm).
     focusLocationBar();
     await microtasksFinished();
-    assertEquals('solid', style.get('border-style')?.toString());
-    assertEquals(
-        colorOmniboxResultsBackground, style.get('border-color')?.toString());
-    // HCM has an outline; fox-shadow appears to report as none and not
-    // render.
+    // Verify that the focus ring binds correctly to our custom
+    // --cr-focus-outline-hcm mockup (fuchsia / rgb(255, 0, 255)) rather than
+    // falling back to transparent.
+    assertEquals('rgb(255, 0, 255)', style.get('outline-color')?.toString());
     assertEquals('solid', style.get('outline-style')?.toString());
-    assertEquals('none', style.get('box-shadow')?.toString());
+    assertEquals('2px', style.get('outline-width')?.toString());
 
-    // If popup is open, the box-shadow goes away.
+    // If popup is open, the explicit focus-ring goes away. Because we are
+    // in prefers-contrast and still focused, it falls back to the results bg.
     locationBar.locationBarState = {
       ...initialState,
       locationBarFlags: {
@@ -128,11 +134,13 @@ suite('LocationBarHighContrastFocus', function() {
       },
     };
     await microtasksFinished();
-    assertEquals('none', style.get('outline-style')?.toString());
-    assertEquals('none', style.get('box-shadow')?.toString());
+    assertEquals(
+        colorOmniboxResultsBackground, style.get('outline-color')?.toString());
+    assertEquals('1px', style.get('outline-width')?.toString());
 
-    // Input-in-progress for high-contrast just uses the same color as if it
-    // were not set.
+    // Input-in-progress for high-contrast just uses the same base outline color
+    // as if it were not set, because standard mismatch outlines are disabled
+    // in prefers-contrast.
     blurLocationBar();
     locationBar.locationBarState = {
       ...initialState,
@@ -142,13 +150,12 @@ suite('LocationBarHighContrastFocus', function() {
       },
     };
     await microtasksFinished();
-    assertEquals('solid', style.get('border-style')?.toString());
-    assertEquals(colorLocationBarBorder, style.get('border-color')?.toString());
-    assertEquals('none', style.get('outline-style')?.toString());
-    assertEquals('none', style.get('box-shadow')?.toString());
+    assertEquals(
+        colorLocationBarBorder, style.get('outline-color')?.toString());
+    assertEquals('1px', style.get('outline-width')?.toString());
 
-    // And in high-contrast focus + input-in-progress just uses the focus
-    // color.
+    // And in high-contrast focus + input-in-progress it leverages the focus hcm
+    // again.
     focusLocationBar();
     locationBar.locationBarState = {
       ...initialState,
@@ -158,10 +165,7 @@ suite('LocationBarHighContrastFocus', function() {
       },
     };
     await microtasksFinished();
-    assertEquals('solid', style.get('border-style')?.toString());
-    assertEquals(
-        colorOmniboxResultsBackground, style.get('border-color')?.toString());
-    assertEquals('solid', style.get('outline-style')?.toString());
-    assertEquals('none', style.get('box-shadow')?.toString());
+    assertEquals('rgb(255, 0, 255)', style.get('outline-color')?.toString());
+    assertEquals('2px', style.get('outline-width')?.toString());
   });
 });

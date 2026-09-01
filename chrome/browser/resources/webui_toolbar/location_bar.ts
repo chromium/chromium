@@ -16,6 +16,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {LocationBarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {PageActionId} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import type {ToolbarAppElement} from './app.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -157,6 +158,11 @@ export class LocationBarElement extends CrLitElement implements
           'no-focus-ring',
           this.locationBarState.locationBarFlags.popupOpen ||
               this.locationBarState.locationBarFlags.forceAimButtonFocusRing);
+      const pageActions = this.locationBarState.pageActionStates;
+      const isAimLastVisible = pageActions && pageActions.length === 1 &&
+          pageActions[0]?.pageActionId === PageActionId.kActionAiMode;
+      this.classList.toggle('aim-last-page-action', isAimLastVisible);
+
       const aimButton = this.$.pageActions.aiModePageAction();
       if (aimButton) {
         aimButton.forceFocusRing =
