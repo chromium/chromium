@@ -5768,6 +5768,10 @@ inline constexpr char kHomeButtonRemovalName[] = "Home Button Removal";
 inline constexpr char kHomeButtonRemovalDescription[] =
     "Enables the Home Button Removal feature.";
 
+inline constexpr char kInAppUpdateFlowName[] = "In-App Updates flow";
+inline constexpr char kInAppUpdateFlowDescription[] =
+    "Enables Google Play In-App Updates flow on Android.";
+
 inline constexpr char kLongScreenshotsNoMemoryCheckName[] =
     "Long Screenshots No Memory Check";
 inline constexpr char kLongScreenshotsNoMemoryCheckDescription[] =

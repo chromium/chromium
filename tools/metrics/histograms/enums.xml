@@ -9925,6 +9925,7 @@ from previous Chrome versions.
   <int value="-1486731455"
       label="AccessibilityDictationKeyboardImprovements:enabled"/>
   <int value="-1486728231" label="Win10TabSearchCaptionButton:disabled"/>
+  <int value="-1486525581" label="InAppUpdateFlow:disabled"/>
   <int value="-1486198877" label="VrIconInDaydreamHome:disabled"/>
   <int value="-1485461805" label="EnterpriseReportingInBrowser:enabled"/>
   <int value="-1484786356" label="ClipboardHistoryUrlTitles:enabled"/>
@@ -14763,6 +14764,7 @@ from previous Chrome versions.
   <int value="10929486" label="WebNNDirectML:disabled"/>
   <int value="11390425" label="TabGroupParityBottomSheetAndroid:disabled"/>
   <int value="11744127" label="EnableToolbarSwipeOnNonDesktopLff:disabled"/>
+  <int value="11761554" label="InAppUpdateFlow:enabled"/>
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
