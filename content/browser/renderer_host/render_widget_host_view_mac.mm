@@ -112,7 +112,7 @@ BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
 
 // If enabled, throttles resize IPCs on Mac to prevent jank during window
 // resize.
-BASE_FEATURE(kThrottleResizeIpc, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kThrottleResizeIpc, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, checks the `had_saved_frame_at_start` parameter of a
 // VisibleTimeEvent to decide whether to log it in the "WithSavedFrames" metric.

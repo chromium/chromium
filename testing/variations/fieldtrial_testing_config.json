@@ -19156,21 +19156,6 @@
             ]
         }
     ],
-    "ThrottleResizeIpc": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ThrottleResizeIpc"
-                    ]
-                }
-            ]
-        }
-    ],
     "ToolbarCaptureFixForSPAs": [
         {
             "platforms": [
