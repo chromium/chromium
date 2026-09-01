@@ -166,5 +166,23 @@ IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
   ASSERT_TRUE(result.Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
+                       MouseMoveTool_HandlesSynchronousFrameDetachment) {
+  SetupAbaFrames("/actor/mouse_move_tool_detached_frame_inner.html");
+  RenderFrameHost* inner_rfh = GetInnerRfh();
+  ASSERT_TRUE(inner_rfh);
+
+  const int32_t target_id = GetDOMNodeId(*inner_rfh, "#target").value();
+
+  std::unique_ptr<ToolRequest> action =
+      MakeMouseMoveRequest(*inner_rfh, target_id);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // Frame detachment during mouse move event dispatch should be handled cleanly
+  // without crashing the renderer.
+  ASSERT_TRUE(result.Wait());
+}
+
 }  // namespace
 }  // namespace actor
