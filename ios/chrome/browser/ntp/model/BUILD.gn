@@ -9,10 +9,6 @@ source_set("model") {
     "new_tab_page_tab_helper.h",
     "new_tab_page_tab_helper.mm",
     "new_tab_page_tab_helper_delegate.h",
-    "ntp_background_image_cache_service.h",
-    "ntp_background_image_cache_service.mm",
-    "ntp_background_image_cache_service_factory.h",
-    "ntp_background_image_cache_service_factory.mm",
   ]
   deps = [
     "//base",
@@ -132,7 +128,6 @@ source_set("unit_tests") {
   sources = [
     "browser_policy_new_tab_page_rewriter_unittest.mm",
     "new_tab_page_tab_helper_unittest.mm",
-    "ntp_background_image_cache_service_unittest.mm",
     "set_up_list_unittest.mm",
   ]
   deps = [

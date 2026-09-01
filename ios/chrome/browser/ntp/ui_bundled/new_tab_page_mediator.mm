@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
@@ -69,7 +68,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
@@ -361,8 +359,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   // Observer for the customization service.
   std::unique_ptr<HomeBackgroundCustomizationServiceObserverBridge>
       _backgroundCustomizationServiceObserverBridge;
-  // Used to cache the background image.
-  raw_ptr<NTPBackgroundImageCacheService> _backgroundImageCacheService;
   // Used to fetch and cache images for the background.
   raw_ptr<image_fetcher::ImageFetcherService> _imageFetcherService;
   raw_ptr<UserUploadedImageManager, DanglingUntriaged>
@@ -419,8 +415,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
                    regionalCapabilitiesService
         backgroundCustomizationService:
             (HomeBackgroundCustomizationService*)backgroundCustomizationService
-           backgroundImageCacheService:
-               (NTPBackgroundImageCacheService*)backgroundImageCacheService
                    imageFetcherService:
                        (image_fetcher::ImageFetcherService*)imageFetcherService
               userUploadedImageManager:
@@ -467,7 +461,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     _subscriptionEligibilityService = subscriptionEligibilityService;
     _regionalCapabilitiesService = regionalCapabilitiesService;
     _backgroundCustomizationService = backgroundCustomizationService;
-    _backgroundImageCacheService = backgroundImageCacheService;
     _imageFetcherService = imageFetcherService;
     _userUploadedImageManager = userUploadedImageManager;
     _signedInIdentity = _authService->GetPrimaryIdentity();
@@ -636,7 +629,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   _backgroundCustomizationServiceObserverBridge = nullptr;
   _backgroundCustomizationService = nullptr;
   _imageFetcherService = nullptr;
-  _backgroundImageCacheService = nullptr;
   self.placeholderService = nullptr;
   _fullscreenBrowserAgentObserverBridge.reset();
   _fullscreenBrowserAgent = nullptr;
@@ -798,25 +790,16 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 }
 
 // Sets the background image through the consumer and updates the traits.
-// Caches the image when `cache` is YES.
 - (void)setCustomBackground:(HomeCustomBackground)customBackground
-                      image:(UIImage*)image
-                      cache:(BOOL)cache {
+                      image:(UIImage*)image {
   [self setCustomBackground:customBackground
                       image:image
-          originalImageSize:CGSizeZero
-                      cache:cache];
+          originalImageSize:CGSizeZero];
 }
 
 - (void)setCustomBackground:(HomeCustomBackground)customBackground
                       image:(UIImage*)image
-          originalImageSize:(CGSize)originalImageSize
-                      cache:(BOOL)cache {
-  if (cache && _backgroundImageCacheService &&
-      IsNTPBackgroundImageCacheEnabled()) {
-    _backgroundImageCacheService->SetCachedBackgroundImage(image,
-                                                           originalImageSize);
-  }
+          originalImageSize:(CGSize)originalImageSize {
   HomeCustomizationFramingCoordinates* coordinates =
       [self framingCoordinatesForCustomBackground:customBackground];
   coordinates.originalImageSize = originalImageSize;
@@ -834,27 +817,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     CleanupImageFetcherCacheIfNeeded(
         _prefService, self.webState->GetBrowserState(), self, customBackground);
   }
-}
-
-// Attempts to apply the cached background image. Returns YES if a cached image
-// was found and applied, NO otherwise.
-- (BOOL)applyCachedBackground:(const HomeCustomBackground&)customBackground {
-  if (!_backgroundImageCacheService) {
-    return NO;
-  }
-  UIImage* cachedImage =
-      _backgroundImageCacheService->GetCachedBackgroundImage();
-  if (!cachedImage) {
-    return NO;
-  }
-
-  CGSize originalImageSize =
-      _backgroundImageCacheService->GetCachedOriginalImageSize();
-  [self setCustomBackground:customBackground
-                      image:cachedImage
-          originalImageSize:originalImageSize
-                      cache:NO];
-  return YES;
 }
 
 // Records any necessary logging for after a custom background loaded..
@@ -993,10 +955,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       _backgroundCustomizationService->GetCurrentCustomBackground();
 
   if (customBackground) {
-    if (initialLoad && [self applyCachedBackground:customBackground.value()]) {
-      // Cached background image applied. Nothing else to do.
-    } else if (std::holds_alternative<sync_pb::NtpCustomBackground>(
-                   customBackground.value())) {
+    if (std::holds_alternative<sync_pb::NtpCustomBackground>(
+            customBackground.value())) {
       sync_pb::NtpCustomBackground background =
           std::get<sync_pb::NtpCustomBackground>(customBackground.value());
       [self fetchCustomBackground:background];
@@ -1011,8 +971,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
                            UserUploadedImageError error) {
             [weakSelf setCustomBackground:userBackground
                                     image:image
-                        originalImageSize:originalSize
-                                    cache:YES];
+                        originalImageSize:originalSize];
             if (!image) {
               base::UmaHistogramEnumeration("IOS.HomeCustomization.Background."
                                             "Ntp.ImageUserUploadedFetchError",
@@ -1106,7 +1065,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
           if (image) {
             // Temporarily sets the thumbnail as the background until the
             // high-resolution image is loaded.
-            [weakSelf setCustomBackground:background image:image cache:NO];
+            [weakSelf setCustomBackground:background image:image];
           }
           return;
         }
@@ -1138,7 +1097,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
                                         length:image_data.length()];
           UIImage* image = [UIImage imageWithData:data];
           if (image) {
-            [strongSelf setCustomBackground:background image:image cache:YES];
+            [strongSelf setCustomBackground:background image:image];
           }
         } else {
           base::UmaHistogramSparse(

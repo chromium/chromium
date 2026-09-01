@@ -30,13 +30,12 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service.h"
-#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service_factory.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -129,14 +128,6 @@ class NewTabPageMediatorTest : public PlatformTest {
                   HomeBackgroundImageServiceFactory::GetForProfile(profile));
             }));
     test_profile_builder.AddTestingFactory(
-        NTPBackgroundImageCacheServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<NTPBackgroundImageCacheService>(
-                  HomeBackgroundCustomizationServiceFactory::GetForProfile(
-                      profile));
-            }));
-    test_profile_builder.AddTestingFactory(
         ImageFetcherServiceFactory::GetInstance(),
         base::BindRepeating(
             [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
@@ -189,8 +180,6 @@ class NewTabPageMediatorTest : public PlatformTest {
     HomeBackgroundCustomizationService* background_customization_service =
         HomeBackgroundCustomizationServiceFactory::GetForProfile(
             profile_.get());
-    NTPBackgroundImageCacheService* background_image_cache_service =
-        NTPBackgroundImageCacheServiceFactory::GetForProfile(profile_.get());
     image_fetcher::ImageFetcherService* image_fetcher_service =
         ImageFetcherServiceFactory::GetForProfile(profile_.get());
     UserUploadedImageManager* user_uploaded_image_manager =
@@ -214,7 +203,6 @@ class NewTabPageMediatorTest : public PlatformTest {
                    ios::RegionalCapabilitiesServiceFactory::GetForProfile(
                        profile_.get())
             backgroundCustomizationService:background_customization_service
-               backgroundImageCacheService:background_image_cache_service
                        imageFetcherService:image_fetcher_service
                   userUploadedImageManager:user_uploaded_image_manager
              browserViewVisibilityNotifier:browser_view_visibility_notifier_

@@ -780,11 +780,6 @@ inline constexpr char kEnableLensInOmniboxCopiedImageDescription[] =
     "when Google is the selected search engine, accessible from the omnibox or "
     "popup menu.";
 
-inline constexpr char kEnableNTPBackgroundImageCacheName[] =
-    "Enable NTP Background Image Cache";
-inline constexpr char kEnableNTPBackgroundImageCacheDescription[] =
-    "Enables the NTP background image cache service to improve performance.";
-
 inline constexpr char kEnableNewStartupFlowName[] = "EnableNewStartupFlow";
 inline constexpr char kEnableNewStartupFlowDescription[] =
     "Enables the EnableNewStartupFlow feature.";

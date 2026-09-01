@@ -25,8 +25,6 @@ BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableNTPBackgroundImageCache, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kConsistentLogoDoodleHeight, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -122,10 +120,6 @@ bool IsAimEnabledInNtp() {
   }
 
   return YES;
-}
-
-bool IsNTPBackgroundImageCacheEnabled() {
-  return base::FeatureList::IsEnabled(kEnableNTPBackgroundImageCache);
 }
 
 bool IsConsistentLogoDoodleHeightEnabled() {
