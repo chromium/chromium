@@ -13,8 +13,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,13 +28,16 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_interactive_test_base.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -44,6 +49,8 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/url_loader_interceptor.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace {
 
@@ -101,6 +108,8 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
   }
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("www.google.com", "127.0.0.1");
+    host_resolver()->AddRule("www.g.ai", "127.0.0.1");
     LensOverlayInteractiveTestBase::SetUpOnMainThread();
 
     WaitForTemplateURLServiceToLoad();
@@ -256,6 +265,146 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
         auto* lens_controller1 =
             LensSearchController::FromTabWebContents(web_contents1);
         EXPECT_TRUE(lens_controller1->IsClosing() || lens_controller1->IsOff());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       TitleResetsWhenTransitioningFromAimToLensPage) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const DeepQuery kPathToToolbarTitle{"contextual-tasks-app", "top-toolbar",
+                                      ".top-toolbar-title"};
+
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  contextual_tasks::ContextualTasksPanelController* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"www.google.com"});
+  base::ScopedClosureRunner clear_host_override(base::BindOnce([]() {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  }));
+
+  content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com" ||
+            params->url_request.url.host() == "www.g.ai") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
+              "<html><body>Mock Page</body></html>", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToBody{"body"};
+
+  auto off_center_point = base::BindLambdaForTesting([this]() {
+    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    gfx::Point off_center =
+        browser_view->contents_web_view()->GetBoundsInScreen().CenterPoint();
+    off_center.Offset(50, 50);
+    return off_center;
+  });
+
+  RunTestSequence(
+      // 1. Open the Contextual Tasks side panel with an AIM query URL.
+      Do([&]() {
+        contextual_tasks::ContextualTasksUiService* ui_service =
+            contextual_tasks::ContextualTasksUiServiceFactory::
+                GetForBrowserContext(browser()->GetProfile());
+        tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+        GURL aim_url("https://www.g.ai/?q=summary");
+        ui_service->StartTaskUiInSidePanel(browser(), tab, aim_url, nullptr);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](contextual_tasks::ContextualTasksWebView* web_view) {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+      EnsurePresent(kSidePanelWebContentsId,
+                    DeepQuery{"contextual-tasks-app", "top-toolbar"}),
+      WaitForJsResultAt(kSidePanelWebContentsId, kPathToToolbarTitle,
+                        "el => el.textContent.trim()", "summary"),
+      // Wait for the inner AIM page to finish loading and notify the WebUI of
+      // the AI page status so that any trailing CloseLensAsync calls from
+      // SetIsAiPage are processed before we open the Lens overlay.
+      WaitForJsResultAt(kSidePanelWebContentsId,
+                        DeepQuery{"contextual-tasks-app"},
+                        "el => el.hasAttribute('is-ai-page_')"),
+
+      // 2. Open Lens Overlay and make a selection to trigger a Lens query.
+      InAnyContext(InstrumentTab(kActiveTab),
+                   NavigateWebContents(kActiveTab, page_url),
+                   EnsurePresent(kActiveTab, kPathToBody),
+                   WaitForWebContentsPainted(kActiveTab),
+                   WaitForWebContentsReady(kActiveTab, page_url),
+                   PressButton(kToolbarAppMenuButtonElementId),
+                   WaitForShow(AppMenuModel::kShowLensOverlay),
+                   SelectMenuItem(AppMenuModel::kShowLensOverlay)),
+      InAnyContext(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+      InSameContext(
+          WaitForShow(LensOverlayController::kOverlayId), Do([&]() {
+            auto* web_contents =
+                browser()->GetTabStripModel()->GetActiveWebContents();
+            auto* lens_controller =
+                LensSearchController::FromTabWebContents(web_contents);
+            CHECK(lens_controller);
+            auto* query_router = static_cast<lens::FakeLensQueryFlowRouter*>(
+                lens_controller->query_router());
+            CHECK(query_router);
+            auto* session_handle = static_cast<
+                contextual_search::MockContextualSearchSessionHandle*>(
+                query_router->GetContextualSearchSessionHandle());
+            CHECK(session_handle);
+            ON_CALL(*session_handle,
+                    CreateSearchUrl(::testing::_, ::testing::_))
+                .WillByDefault(::testing::WithArg<1>(
+                    [](base::OnceCallback<void(GURL)> callback) {
+                      std::move(callback).Run(
+                          GURL("https://www.google.com/search?q=lens_result"));
+                    }));
+          }),
+          ExecuteJsAt(kOverlayId, {}, R"(
+            () => {
+              const style = document.createElement('style');
+              style.textContent = `
+                * {
+                  animation-duration: 0s !important;
+                  transition-duration: 0s !important;
+                }
+              `;
+              document.head.appendChild(style);
+            }
+          )"),
+          WaitForScreenshotRendered(kOverlayId),
+          EnsurePresent(kOverlayId,
+                        DeepQuery{"lens-overlay-app", "lens-selection-overlay",
+                                  "region-selection"}),
+          MoveMouseTo(LensOverlayController::kOverlayId),
+          DragMouseTo(std::move(off_center_point)), FinishScreenshotUpload(0)),
+
+      // 3. Verify that the Lens query resets the toolbar title.
+      WaitForJsResultAt(kSidePanelWebContentsId, kPathToToolbarTitle,
+                        "el => el.textContent.trim()", ""),
+      Do([&]() {
+        auto* web_ui_interface = contextual_tasks::GetWebUiInterface(
+            controller->GetToolbarWebContents());
+        ASSERT_TRUE(web_ui_interface);
+        EXPECT_EQ(web_ui_interface->GetThreadTitle(), std::nullopt);
       }));
 }
 

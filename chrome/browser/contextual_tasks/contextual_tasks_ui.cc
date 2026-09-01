@@ -1720,6 +1720,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   }
 
   if (!is_ai_page) {
+    task_info_delegate_->SetThreadTitle(std::nullopt);
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: "
            "FrameNavObserver::DidFinishNavigation returning early, not AI page";
