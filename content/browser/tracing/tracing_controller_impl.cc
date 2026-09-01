@@ -55,7 +55,6 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -129,9 +128,6 @@ TracingControllerImpl::TracingControllerImpl()
 TracingControllerImpl::~TracingControllerImpl() = default;
 
 void TracingControllerImpl::InitializeDataSources() {
-  tracing::TracedProcessImpl::GetInstance()->SetTaskRunner(
-      base::SequencedTaskRunner::GetCurrentDefault());
-
   // Metadata only needs to be installed in the browser process.
   tracing::MetadataDataSource::Register(
       base::SequencedTaskRunner::GetCurrentDefault(),

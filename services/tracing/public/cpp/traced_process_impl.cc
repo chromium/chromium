@@ -28,25 +28,13 @@ TracedProcessImpl::TracedProcessImpl() {
 TracedProcessImpl::~TracedProcessImpl() = default;
 
 void TracedProcessImpl::ResetTracedProcessReceiver() {
-  if (task_runner_ && !task_runner_->RunsTasksInCurrentSequence()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TracedProcessImpl::ResetTracedProcessReceiver,
-                       base::Unretained(this)));
-    return;
-  }
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receiver_.reset();
 }
 
 void TracedProcessImpl::OnTracedProcessRequest(
     mojo::PendingReceiver<mojom::TracedProcess> receiver) {
-  if (task_runner_ && !task_runner_->RunsTasksInCurrentSequence()) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&TracedProcessImpl::OnTracedProcessRequest,
-                                  base::Unretained(this), std::move(receiver)));
-    return;
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // We only need one binding per process. If a new binding request is made,
   // ignore it.
@@ -79,15 +67,6 @@ void TracedProcessImpl::EnableSystemTracingService(
   }
 
   system_tracing_service_.Bind(std::move(remote), nullptr);
-}
-
-// SetTaskRunner must be called before we start receiving
-// any OnTracedProcessRequest calls.
-void TracedProcessImpl::SetTaskRunner(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  DCHECK(!receiver_.is_bound());
-  DCHECK(!task_runner_);
-  task_runner_ = task_runner;
 }
 
 void TracedProcessImpl::ConnectToTracingService(

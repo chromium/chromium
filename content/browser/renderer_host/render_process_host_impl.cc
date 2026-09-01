@@ -6216,10 +6216,12 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   aec_dump_manager_.set_pid(GetProcess().Pid());
   aec_dump_manager_.AutoStart();
 
-  tracing_registration_ = TracingServiceController::Get().RegisterClient(
-      GetProcess().Pid(),
-      base::BindRepeating(&RenderProcessHostImpl::BindTracedProcess,
-                          instance_weak_factory_.GetWeakPtr()));
+  if (!run_renderer_in_process()) {
+    tracing_registration_ = TracingServiceController::Get().RegisterClient(
+        GetProcess().Pid(),
+        base::BindRepeating(&RenderProcessHostImpl::BindTracedProcess,
+                            instance_weak_factory_.GetWeakPtr()));
+  }
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   system_tracing_service_ = std::make_unique<tracing::SystemTracingService>();

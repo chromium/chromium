@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/system_tracing_service.mojom.h"
@@ -36,9 +35,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
   void EnableSystemTracingService(
       mojo::PendingRemote<mojom::SystemTracingService> remote);
 
-  // Set which taskrunner to bind any incoming requests on.
-  void SetTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner);
-
   mojo::Remote<mojom::SystemTracingService>& system_tracing_service();
 
  private:
@@ -53,7 +49,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
 
   mojo::Receiver<tracing::mojom::TracedProcess> receiver_{this};
   mojo::Remote<mojom::SystemTracingService> system_tracing_service_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
