@@ -548,6 +548,26 @@ TEST_F(WorkletAnimationTest, SkipLockedAnimations) {
   EXPECT_EQ(input->updated_animations.size(), 1u);
 }
 
+TEST_F(WorkletAnimationTest, ToWorkletAnimation) {
+  scoped_refptr<WorkletAnimation> worklet_animation =
+      WorkletAnimation::Create(worklet_animation_id_, "test_name", 1.0,
+                               /* options */ nullptr,
+                               /* effect_timings */ nullptr);
+  scoped_refptr<Animation> plain_animation = Animation::Create(1);
+
+  EXPECT_EQ(ToWorkletAnimation(worklet_animation.get()),
+            worklet_animation.get());
+  const Animation* const_worklet_animation = worklet_animation.get();
+  EXPECT_EQ(ToWorkletAnimation(const_worklet_animation),
+            worklet_animation.get());
+
+#if GTEST_HAS_DEATH_TEST
+  EXPECT_DEATH_IF_SUPPORTED(ToWorkletAnimation(plain_animation.get()), "");
+  const Animation* const_plain_animation = plain_animation.get();
+  EXPECT_DEATH_IF_SUPPORTED(ToWorkletAnimation(const_plain_animation), "");
+#endif
+}
+
 }  // namespace
 
 }  // namespace cc
