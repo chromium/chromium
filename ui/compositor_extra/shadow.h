@@ -63,7 +63,6 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Sets the radii for the rounded corners to take into account when
   // adjusting the shadow layer to frame |content_bounds|.
-  void SetRoundedCornerRadius(int rounded_corner_radius);
   void SetRoundedCorners(const gfx::RoundedCornersF& radii);
 
   // Set shadow style.

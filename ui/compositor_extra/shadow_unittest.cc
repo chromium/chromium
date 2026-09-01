@@ -131,7 +131,7 @@ TEST_F(ShadowTest, AdjustElevationForSmallContents) {
   shadow.Init(kElevationLarge);
 
   // Test with corner radius 0.
-  shadow.SetRoundedCornerRadius(0);
+  shadow.SetRoundedCorners(gfx::RoundedCornersF());
   {
     gfx::Rect content_bounds(100, 100, 300, 300);
     shadow.SetContentBounds(content_bounds);
@@ -159,7 +159,7 @@ TEST_F(ShadowTest, AdjustElevationForSmallContents) {
   }
 
   // Test with default corner radius 2.
-  shadow.SetRoundedCornerRadius(2);
+  shadow.SetRoundedCorners(gfx::RoundedCornersF(2));
   {
     constexpr int kWidth = 80;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
@@ -179,7 +179,7 @@ TEST_F(ShadowTest, AdjustElevationForSmallContents) {
   }
 
   // Test with pill shaped contents.
-  shadow.SetRoundedCornerRadius(40);
+  shadow.SetRoundedCorners(gfx::RoundedCornersF(40));
   {
     constexpr int kWidth = 80;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
@@ -220,7 +220,7 @@ TEST_F(ShadowTest, AdjustRoundedCorners) {
   shadow.SetContentBounds(content_bounds);
   EXPECT_EQ(content_bounds, shadow.content_bounds());
 
-  shadow.SetRoundedCornerRadius(0);
+  shadow.SetRoundedCorners(gfx::RoundedCornersF());
   gfx::Rect shadow_bounds(content_bounds);
   shadow_bounds.Inset(InsetsForElevation(kElevationSmall));
   EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
@@ -233,7 +233,7 @@ TEST_F(ShadowTest, AdjustRoundedCorners) {
   EXPECT_EQ(GetNineboxImageSize(6, radii),
             shadow.details_for_testing()->nine_patch_image.size());
 
-  shadow.SetRoundedCornerRadius(150);
+  shadow.SetRoundedCorners(gfx::RoundedCornersF(150));
   EXPECT_EQ(GetNineboxImageSize(6, gfx::RoundedCornersF(150),
                                 /*is_pill_shaped=*/true),
             shadow.details_for_testing()->nine_patch_image.size());
@@ -269,7 +269,7 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
   {
     Shadow shadow_new;
     shadow_new.Init(kElevationUnique);
-    shadow_new.SetRoundedCornerRadius(2);
+    shadow_new.SetRoundedCorners(gfx::RoundedCornersF(2));
 
     const gfx::Size min_content_size = GetMinContentSize(kElevationUnique);
     shadow_new.SetContentBounds(gfx::Rect(min_content_size));
@@ -279,7 +279,7 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
     // Creating a shadow with the same detail won't increase the cache size.
     Shadow shadow_same;
     shadow_same.Init(kElevationUnique);
-    shadow_same.SetRoundedCornerRadius(2);
+    shadow_same.SetRoundedCorners(gfx::RoundedCornersF(2));
     shadow_same.SetContentBounds(
         gfx::Rect(gfx::Point(10, 10), min_content_size + gfx::Size(50, 50)));
     // The cache size is unchanged.
@@ -293,26 +293,26 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
     // detail.
     Shadow shadow_small;
     shadow_small.Init(kElevationSmall);
-    shadow_small.SetRoundedCornerRadius(2);
+    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(2));
     shadow_small.SetContentBounds(
         gfx::Rect(GetMinContentSize(kElevationSmall)));
     EXPECT_EQ(2u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Changing the shadow appearance will insert a new detail in the cache and
     // make the old detail uniquely owned.
-    shadow_small.SetRoundedCornerRadius(3);
+    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(3));
     EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Changing the shadow with another appearance will replace the uniquely
     // owned detail.
-    shadow_small.SetRoundedCornerRadius(4);
+    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(4));
     EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Changing the shadow to be pill shaped will replace the uniquely owned
     // detail.
     shadow_small.SetContentBounds(gfx::Rect(GetMinContentSize(
         kElevationSmall, gfx::RoundedCornersF(14), /*is_pill_shaped=*/true)));
-    shadow_small.SetRoundedCornerRadius(14);
+    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(14));
     EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
   }
 
@@ -323,7 +323,7 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
   // After inserting a new detail, the uniquely owned details will be evicted.
   Shadow shadow_large;
   shadow_large.Init(kElevationLarge);
-  shadow_large.SetRoundedCornerRadius(2);
+  shadow_large.SetRoundedCorners(gfx::RoundedCornersF(2));
   shadow_large.SetContentBounds(gfx::Rect(GetMinContentSize(kElevationLarge)));
   // The cache size is unchanged.
   EXPECT_EQ(1u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());

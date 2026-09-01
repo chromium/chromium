@@ -2216,7 +2216,7 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
   }
 
   // TODO(crbug.com/40256581): Support shadow with variable radius corners.
-  shadow->SetRoundedCornerRadius(shadow_radii.upper_left());
+  shadow->SetRoundedCorners(gfx::RoundedCornersF(shadow_radii.upper_left()));
 }
 
 void ShellSurfaceBase::UpdateFrameType() {

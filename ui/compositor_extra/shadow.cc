@@ -88,10 +88,6 @@ void Shadow::SetElevation(int elevation) {
   }
 }
 
-void Shadow::SetRoundedCornerRadius(int rounded_corner_radius) {
-  SetRoundedCorners(gfx::RoundedCornersF(rounded_corner_radius));
-}
-
 void Shadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
   CHECK(IsValidRoundedCorners(radii));
   if (rounded_corners_ == radii) {

@@ -31,7 +31,7 @@ ViewShadow::~ViewShadow() {
 }
 
 void ViewShadow::SetRoundedCornerRadius(int corner_radius) {
-  shadow_->SetRoundedCornerRadius(corner_radius);
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(corner_radius));
 }
 
 void ViewShadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
