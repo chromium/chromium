@@ -971,6 +971,34 @@ TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
   EXPECT_FALSE(submenu->SubmenuIsShowing());
 }
 
+TEST_F(MenuItemViewA11yTest, AccessibleDefaultActionVerbs) {
+  MenuItemView* normal = menu_item_view()->AppendMenuItem(1, u"Normal");
+  MenuItemView* submenu = menu_item_view()->AppendSubMenu(2, u"Submenu");
+  MenuItemView* title = menu_item_view()->AppendTitle(u"Title");
+
+  ui::AXNodeData data;
+  normal->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kSelect);
+
+  data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+
+  data = ui::AXNodeData();
+  title->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kNone);
+
+  normal->SetEnabled(false);
+  data = ui::AXNodeData();
+  normal->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kNone);
+
+  normal->SetEnabled(true);
+  data = ui::AXNodeData();
+  normal->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kSelect);
+}
+
 TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {
   MenuItemView* item = menu_item_view();
   ui::AXNodeData data;

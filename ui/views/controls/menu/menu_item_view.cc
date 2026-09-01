@@ -175,6 +175,7 @@ void MenuItemView::UpdateAccessibleCheckedState() {
 
 void MenuItemView::RefreshCheckmarkState() {
   UpdateAccessibleCheckedState();
+  UpdateAccessibleDefaultActionVerb();
   if (radio_check_image_view_) {
     if (type_ == Type::kCheckbox) {
       bool is_checked =
@@ -190,6 +191,7 @@ void MenuItemView::RefreshCheckmarkState() {
 void MenuItemView::SetCommand(int command) {
   command_ = command;
   UpdateAccessibleCheckedState();
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void MenuItemView::ViewHierarchyChanged(
@@ -995,10 +997,15 @@ MenuItemView::MenuItemView(MenuItemView* parent,
       &MenuItemView::UpdateAccessibleSelection, base::Unretained(this)));
   enabled_changed_callback_ =
       AddEnabledInViewsSubtreeChangedCallback(base::BindRepeating(
-          &MenuItemView::UpdateAccessibleSelection, base::Unretained(this)));
+          [](MenuItemView* item) {
+            item->UpdateAccessibleSelection();
+            item->UpdateAccessibleDefaultActionVerb();
+          },
+          base::Unretained(this)));
 
   UpdateAccessibleSelection();
   UpdateAccessibleKeyShortcuts();
+  UpdateAccessibleDefaultActionVerb();
   UpdateAccessibleExpandedCollapsedState();
 
   UpdateTooltipText();
@@ -1854,6 +1861,38 @@ void MenuItemView::UpdateAccessibleKeyShortcuts() {
 
 void MenuItemView::UpdateAccessibleSelection() {
   GetViewAccessibility().SetIsSelected(IsTraversableByKeyboard() && selected_);
+}
+
+void MenuItemView::UpdateAccessibleDefaultActionVerb() {
+  if (!parent_menu_item_ || !GetEnabledInViewsSubtree()) {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+    return;
+  }
+
+  switch (type_) {
+    case Type::kSubMenu:
+    case Type::kActionableSubMenu:
+      GetViewAccessibility().SetDefaultActionVerb(
+          ax::mojom::DefaultActionVerb::kOpen);
+      return;
+    case Type::kCheckbox:
+      GetViewAccessibility().SetDefaultActionVerb(
+          GetDelegate() && GetDelegate()->IsItemChecked(GetCommand())
+              ? ax::mojom::DefaultActionVerb::kUncheck
+              : ax::mojom::DefaultActionVerb::kCheck);
+      return;
+    case Type::kRadio:
+    case Type::kNormal:
+    case Type::kHighlighted:
+      GetViewAccessibility().SetDefaultActionVerb(
+          ax::mojom::DefaultActionVerb::kSelect);
+      return;
+    case Type::kTitle:
+    case Type::kSeparator:
+    case Type::kEmpty:
+      GetViewAccessibility().RemoveDefaultActionVerb();
+      return;
+  }
 }
 
 void MenuItemView::UpdateAccessibleRole() {

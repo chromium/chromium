@@ -659,6 +659,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   void UpdateAccessibleName();
   void UpdateAccessibleSelection();
   void UpdateAccessibleKeyShortcuts();
+  void UpdateAccessibleDefaultActionVerb();
 
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
