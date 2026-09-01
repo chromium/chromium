@@ -136,8 +136,7 @@ void ShareGroupAtIndex(unsigned int index) {
       performAction:grey_tap()];
 
   // Verify that this opened the fake Share flow.
-  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeShareFlowView()];
 
   // Actually share the group.
   [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
