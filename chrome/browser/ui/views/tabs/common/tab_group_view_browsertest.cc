@@ -563,16 +563,8 @@ class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/555304805): Fix failure.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_UnboundedLayoutQueryDoesNotClearAvailableSpace \
-  DISABLED_UnboundedLayoutQueryDoesNotClearAvailableSpace
-#else
-#define MAYBE_UnboundedLayoutQueryDoesNotClearAvailableSpace \
-  UnboundedLayoutQueryDoesNotClearAvailableSpace
-#endif
 IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
-                       MAYBE_UnboundedLayoutQueryDoesNotClearAvailableSpace) {
+                       UnboundedLayoutQueryDoesNotClearAvailableSpace) {
   AppendTab();
   AppendTab();
   tab_groups::TabGroupId group_id = GetTabStripModel()->AddToNewGroup({1, 2});
@@ -620,6 +612,42 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
             original_unpinned_available);
 
   EXPECT_TRUE(group_view->available_space().is_bounded());
+  EXPECT_EQ(group_view->available_space().value(), original_group_available);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       ZeroSizedLayoutQueryDoesNotClearAvailableSpace) {
+  AppendTab();
+  AppendTab();
+  tab_groups::TabGroupId group_id = GetTabStripModel()->AddToNewGroup({1, 2});
+
+  auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  auto* tab_strip_view =
+      views::AsViewClass<TabStripView>(base_region_view->GetTabStripView());
+  auto* unpinned_container = tab_strip_view->GetUnpinnedTabsContainer();
+  auto* group_node = root_node()->GetNodeForHandle(GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->GetCollectionHandle());
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+  const int original_unpinned_available =
+      unpinned_container->available_space().value();
+  const int original_group_available = group_view->available_space().value();
+  ASSERT_GT(original_unpinned_available, 0);
+  ASSERT_GT(original_group_available, 0);
+
+  // Perform zero-sized layout measurement queries on TabStripView and
+  // UnpinnedTabContainerView (e.g. minimum size calculations).
+  tab_strip_view->GetMinimumSize();
+  tab_strip_view->GetPreferredSize(views::SizeBounds(0, 0));
+  unpinned_container->GetMinimumSize();
+  unpinned_container->GetPreferredSize(views::SizeBounds(0, 0));
+
+  EXPECT_EQ(unpinned_container->available_space().value(),
+            original_unpinned_available);
   EXPECT_EQ(group_view->available_space().value(), original_group_available);
 }
 

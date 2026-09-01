@@ -143,8 +143,11 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
       show_scroll_buttons = true;
     }
 
-    tab_strip_view->SetAvailableUnpinnedSpace(
-        views::SizeBound(available_unpinned_width));
+    // Do not overwrite available space during zero-size measurement queries.
+    if (available_width.value() > 0) {
+      tab_strip_view->SetAvailableUnpinnedSpace(
+          views::SizeBound(available_unpinned_width));
+    }
     unpinned_width = std::min(unpinned_width, available_unpinned_width);
   }
   gfx::Rect unpinned_bounds(x, 0, unpinned_width, container_height);
