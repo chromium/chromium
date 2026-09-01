@@ -42,9 +42,15 @@
 namespace supervised_user {
 namespace {
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 bool ShouldShowReAuthInterstitial(
     content::NavigationHandle& navigation_handle) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kSupervisedUserVerificationPageOnAndroid)) {
+    return false;
+  }
+#endif
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle.GetWebContents()->GetBrowserContext());
   ChildAccountService* child_account_service =
@@ -216,12 +222,11 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
     }
     case InterstitialResultCallbackActions::kCancelWithInterstitial: {
       CHECK(navigation_handle());
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
       if (ShouldShowReAuthInterstitial(*navigation_handle())) {
         // Show the re-authentication interstitial if the user signed out of
         // the content area, as parent's approval requires authentication.
-        // This interstitial is only available on Linux/Mac/Windows as
-        // ChromeOS and Android have different re-auth mechanisms.
         CancelDeferredNavigation(
             content::NavigationThrottle::ThrottleCheckResult(
                 CANCEL, net::ERR_BLOCKED_BY_CLIENT,
