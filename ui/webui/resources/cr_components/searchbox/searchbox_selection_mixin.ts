@@ -40,6 +40,11 @@ function findSelectionIndex(
         s =>
             selectionsEqual({...target, state: SelectionLineState.kNormal}, s));
   }
+  if (index < 0 && target.state === SelectionLineState.kNormal) {
+    index = selections.findIndex(
+        s => selectionsEqual(
+            {...target, state: SelectionLineState.kKeywordMode}, s));
+  }
   return index;
 }
 
@@ -50,7 +55,9 @@ function getSelectionsForMatch(
   }
   const selections: OmniboxPopupSelection[] = [{
     line: matchIndex,
-    state: SelectionLineState.kNormal,
+    state: match.keywordModel?.type === KeywordType.kInstant ?
+        SelectionLineState.kKeywordMode :
+        SelectionLineState.kNormal,
     actionIndex: 0,
   }];
   if (match.keywordModel?.type === KeywordType.kChip) {
@@ -234,7 +241,10 @@ export const SearchboxSelectionMixin = <
         return from;
       }
       const isNormal = (selection: OmniboxPopupSelection) =>
-          selection.state === SelectionLineState.kNormal &&
+          (selection.state === SelectionLineState.kNormal ||
+           (selection.state === SelectionLineState.kKeywordMode &&
+            result?.matches[selection.line]?.keywordModel?.type ===
+                KeywordType.kInstant)) &&
           selection.line !== -1;
       let fromIndex = findSelectionIndex(available, from);
 

@@ -251,8 +251,13 @@ export class KeywordModeManager {
     }
     if (this.isInKeywordMode) {
       const keyword = this.inputKeywordModel_?.keyword;
-      if (keyword && match.fillIntoEdit.startsWith(keyword + ' ')) {
-        return match.fillIntoEdit.substring(keyword.length + 1);
+      if (keyword) {
+        if (match.fillIntoEdit.startsWith(keyword + ' ')) {
+          return match.fillIntoEdit.substring(keyword.length + 1);
+        }
+        if (match.fillIntoEdit === keyword) {
+          return '';
+        }
       }
     }
     return match.fillIntoEdit;
@@ -263,11 +268,25 @@ export class KeywordModeManager {
    * changes.
    */
   onSelectedMatchChanged(selectedMatch: AutocompleteMatch|null): void {
-    // If the input is in keyword mode, preserve keyword mode.
-    if (this.isInKeywordMode) {
+    if (!selectedMatch) {
+      if (!this.isInKeywordMode) {
+        this.inputKeywordModel = null;
+      }
       return;
     }
-    if (!selectedMatch?.keywordModel) {
+    if (selectedMatch.keywordModel?.type === KeywordType.kInstant) {
+      this.enter(
+          selectedMatch.keywordModel.keyword,
+          selectedMatch.keywordModel.chipHint, KeywordModeEntryMethod.TAB);
+      return;
+    }
+    if (selectedMatch.keywordModel?.type === KeywordType.kInKeyword) {
+      return;
+    }
+    if (this.isInKeywordMode) {
+      this.exit();
+    }
+    if (!selectedMatch.keywordModel) {
       this.inputKeywordModel = null;
       return;
     }

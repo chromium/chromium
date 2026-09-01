@@ -2844,4 +2844,55 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         // The event should not be intercepted with preventDefault.
         assertFalse(tabEvent.defaultPrevented);
       });
+
+  test(
+      'ArrowDown through instant keyword mode matches enters keyword mode',
+      async () => {
+        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+        element.virtualFocusEnabledOverride = true;
+
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, '@');
+
+        const defaultMatch = createSearchMatchForTesting({
+          fillIntoEdit: '@',
+          allowedToBeDefaultMatch: true,
+        });
+        const instantMatch = createSearchMatchForTesting({
+          fillIntoEdit: '@bookmarks',
+          allowedToBeDefaultMatch: false,
+          keywordModel: createMatchKeywordModelForTesting({
+            type: KeywordType.kInstant,
+            keyword: '@bookmarks',
+            chipHint: 'Bookmarks',
+          }),
+        });
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: '@',
+          matches: [defaultMatch, instantMatch],
+        }));
+        await microtasksFinished();
+
+        // ArrowDown to instant keyword match.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+
+        assertEquals(1, element.selection.line);
+        assertEquals(SelectionLineState.kKeywordMode, element.selection.state);
+        assertTrue(element.keywordModeManager.isInKeywordMode);
+        assertEquals('@bookmarks', element.inputKeywordModel?.keyword);
+        assertEquals('', mockInput.inputElement.value);
+
+        // ArrowUp back to default search match.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowUp'));
+        await microtasksFinished();
+
+        assertEquals(0, element.selection.line);
+        assertEquals(SelectionLineState.kNormal, element.selection.state);
+        assertFalse(element.keywordModeManager.isInKeywordMode);
+        assertEquals(null, element.inputKeywordModel);
+        assertEquals('@', mockInput.inputElement.value);
+      });
 });

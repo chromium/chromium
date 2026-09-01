@@ -4,10 +4,10 @@
 
 import {createActionForTesting, createAutocompleteMatch, createAutocompleteResultForTesting, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {kDefaultSelection} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
-import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual, selectionToString} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
+import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {PageHandlerRemote, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordType, PageHandlerRemote, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -442,9 +442,38 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     }));
   });
 
-  test('selectionToString', () => {
-    const str = selectionToString(
-        {line: 5, state: SelectionLineState.kNormal, actionIndex: 0});
-    assertEquals('{5,1,0}', str);
+  test('instant keyword match selection', () => {
+    const normalMatch = createAutocompleteMatch();
+    const instantMatch = createAutocompleteMatch();
+    instantMatch.keywordModel = createMatchKeywordModelForTesting({
+      type: KeywordType.kInstant,
+      keyword: '@bookmarks',
+      chipHint: 'Bookmarks',
+    });
+
+    const result = createAutocompleteResultForTesting({
+      matches: [normalMatch, instantMatch],
+    });
+
+    const available = element.getAvailableSelections(result);
+    assertEquals(2, available.length);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+        available[0]);
+    assertDeepEquals(
+        {line: 1, state: SelectionLineState.kKeywordMode, actionIndex: 0},
+        available[1]);
+
+    // WholeLine stepping navigates directly to kKeywordMode on the instant
+    // match.
+    const next = element.getNextSelection(
+        result, available[0]!, SelectionDirection.kForward,
+        SelectionStep.kWholeLine);
+    assertDeepEquals(available[1]!, next);
+
+    const prev = element.getNextSelection(
+        result, available[1]!, SelectionDirection.kBackward,
+        SelectionStep.kWholeLine);
+    assertDeepEquals(available[0]!, prev);
   });
 });

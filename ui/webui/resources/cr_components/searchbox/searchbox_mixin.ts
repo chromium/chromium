@@ -207,7 +207,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
       if (changedPrivateProperties.has('result') ||
           changedPrivateProperties.has('selectedMatchIndex') ||
-          changedPrivateProperties.has('selectedMatch')) {
+          changedPrivateProperties.has('selectedMatch') ||
+          changedPrivateProperties.has('selection')) {
         this.keywordModeManager_.onSelectedMatchChanged(this.selectedMatch);
       }
     }
@@ -610,20 +611,18 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     private updateInputForSelection_(
         nextSelection: OmniboxPopupSelection, key: string) {
       if (this.selectedMatch) {
-        const newFill = this.selectedMatch.fillIntoEdit;
+        const newFill = this.computeMatchFillIntoEdit(this.selectedMatch);
         const newInline = nextSelection.line === 0 &&
                 this.selectedMatch.allowedToBeDefaultMatch ?
             this.selectedMatch.inlineAutocompletion :
             '';
         const newFillEnd = newFill.length - newInline.length;
         const text = newFill.substr(0, newFillEnd);
-        if (text) {
-          this.getInputElement().setInput({
-            text: text,
-            inline: newInline,
-            moveCursorToEnd: newInline.length === 0,
-          });
-        }
+        this.getInputElement().setInput({
+          text: text,
+          inline: newInline,
+          moveCursorToEnd: newInline.length === 0,
+        });
 
         if (key === 'ArrowDown' || key === 'ArrowUp') {
           this.pageHandler().onNavigationLikely(
