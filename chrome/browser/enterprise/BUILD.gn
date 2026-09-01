@@ -420,6 +420,7 @@ source_set("impl") {
     "data_protection/data_protection_navigation_observer.cc",
     "data_protection/data_protection_page_user_data.cc",
     "data_protection/data_protection_url_lookup_service_factory.cc",
+    "data_protection/delayed_interstitial_reporter.cc",
     "data_protection/view_source_navigation_throttle.cc",
     "encryption/cache_encryption_provider_impl.cc",
     "identifiers/profile_id_delegate_impl.cc",

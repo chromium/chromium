@@ -1319,6 +1319,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DelayedReportingInterstitial.Timeout{EventType}"
+    enum="BooleanTimedOut" expires_after="2027-08-28">
+  <owner>rslan@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records whether the delayed interstitial reporter successfully captured the
+    destination title before the 5-second hard timeout. True means it timed out.
+  </summary>
+  <token key="EventType">
+    <variant name=".SafeBrowsing" summary="SafeBrowsing events"/>
+    <variant name=".UrlFiltering" summary="URL filtering events"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DelayedReportingInterstitial.Time{EventType}"
+    units="ms" expires_after="2027-08-28">
+  <owner>rslan@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the time taken (in milliseconds) from when the reporting
+    interstitial is triggered to when the target URL finishes loading and the
+    report is actually dispatched. Timeouts are recorded separately.
+  </summary>
+  <token key="EventType">
+    <variant name=".SafeBrowsing" summary="SafeBrowsing events"/>
+    <variant name=".UrlFiltering" summary="URL filtering events"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceLocalAccountCount" units="accounts"
     expires_after="M130">
   <owner>igorcov@chromium.org</owner>

@@ -34,7 +34,7 @@ source_set("unit_tests") {
   # destructors.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
-  sources = []
+  sources = [ "delayed_interstitial_reporter_unittest.cc" ]
 
   deps = [
     "//base",
