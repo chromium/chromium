@@ -2310,6 +2310,67 @@ TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ProfileManagerTest, ProfileAvatarRecordedAtProfileInit) {
+  using base::Bucket;
+  using base::BucketsAre;
+
+  base::HistogramTester histogram_tester;
+  const std::string kHistogramName = "Profile.AvatarOnLoad";
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath dest_path = temp_dir_.GetPath();
+
+  // 1. Regular profile with default avatar (AVATAR_PLACEHOLDER).
+  base::FilePath path_1 = dest_path.Append(FILE_PATH_LITERAL("Profile 1"));
+  Profile* profile_1 = profile_manager->GetProfile(path_1);
+  ProfileAttributesEntry* entry_1 =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(path_1);
+  ASSERT_NE(entry_1, nullptr);
+  EXPECT_EQ(entry_1->GetAvatarIconIndex(),
+            static_cast<size_t>(ProfileMetrics::AVATAR_PLACEHOLDER));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1)));
+
+  // 2. Incognito profile should not record the avatar histogram.
+  EXPECT_TRUE(profile_1->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1)));
+
+  // 3. Regular profile initialized with a custom avatar index
+  // (AVATAR_GENERIC_PURPLE).
+  base::FilePath path_2 = dest_path.Append(FILE_PATH_LITERAL("Profile 2"));
+  ProfileAttributesInitParams params_2;
+  params_2.profile_path = path_2;
+  params_2.profile_name = u"Profile 2";
+  params_2.icon_index = ProfileMetrics::AVATAR_GENERIC_PURPLE;
+  profile_manager->GetProfileAttributesStorage().AddProfile(
+      std::move(params_2));
+  profile_manager->GetProfile(path_2);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(ProfileMetrics::AVATAR_GENERIC_PURPLE, 1),
+                         Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1)));
+
+  // 4. Regular profile using GAIA avatar (AVATAR_GAIA).
+  base::FilePath path_3 = dest_path.Append(FILE_PATH_LITERAL("Profile 3"));
+  ProfileAttributesInitParams params_3;
+  params_3.profile_path = path_3;
+  params_3.profile_name = u"Profile 3";
+  profile_manager->GetProfileAttributesStorage().AddProfile(
+      std::move(params_3));
+  ProfileAttributesEntry* entry_3 =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(path_3);
+  ASSERT_NE(entry_3, nullptr);
+  entry_3->SetIsUsingGAIAPicture(true);
+  profile_manager->GetProfile(path_3);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(ProfileMetrics::AVATAR_GENERIC_PURPLE, 1),
+                         Bucket(ProfileMetrics::AVATAR_PLACEHOLDER, 1),
+                         Bucket(ProfileMetrics::AVATAR_GAIA, 1)));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class ProfileManagerDeferredAsyncLoadingTest : public ProfileManagerTestBase {
  public:
   std::unique_ptr<ProfileManager> CreateProfileManagerForTest() override {
