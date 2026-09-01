@@ -269,6 +269,13 @@ inline constexpr char kAutofillEnableWalletBrandingV2Description[] =
     "When enabled, further brings certain strings and images referencing "
     "Google Pay and Google Wallet into consistency with branding requirements.";
 
+inline constexpr char kAutofillEnableWalletDisclosureNoticePublicPassName[] =
+    "Enable Wallet Disclosure Notice for public passes";
+inline constexpr char
+    kAutofillEnableWalletDisclosureNoticePublicPassDescription[] =
+        "When enabled, shows the Wallet Disclosure Notice at the end of the "
+        "save prompt for public passes.";
+
 inline constexpr char kAutofillEnableWalletReminderNoticeName[] =
     "Enable Wallet Reminder Notice for cards";
 inline constexpr char kAutofillEnableWalletReminderNoticeDescription[] =

@@ -147,6 +147,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,
     &autofill::features::kAutofillEnableWalletBranding,
     &autofill::features::kAutofillEnableWalletBrandingV2,
+    &autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
     &autofill::features::kAutofillEnableWalletReminderNotice,
     &autofill::features::kAutofillEnableWalletReminderNoticePublicPass,
     &autofill::features::kAutofillRetryImageFetchOnFailure,

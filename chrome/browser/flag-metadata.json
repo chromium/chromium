@@ -1174,6 +1174,14 @@
     "expiry_milestone": 165
   },
   {
+    "name": "autofill-enable-wallet-disclosure-notice-public-pass",
+    "owners": [
+      "brunobraga@google.com",
+      "yungyichen@google.com"
+    ],
+    "expiry_milestone": 161
+  },
+  {
     "name": "autofill-enable-wallet-reminder-notice",
     "owners": [
       "jamessun@google.com",

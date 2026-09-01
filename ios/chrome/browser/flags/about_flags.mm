@@ -2990,6 +2990,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kMetrickitDeferRegistrationName,
      flag_descriptions::kMetrickitDeferRegistrationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMetrickitDeferRegistration)},
+    {"autofill-enable-wallet-disclosure-notice-public-pass",
+     flag_descriptions::kAutofillEnableWalletDisclosureNoticePublicPassName,
+     flag_descriptions::
+         kAutofillEnableWalletDisclosureNoticePublicPassDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass)},
     {"autofill-enable-wallet-reminder-notice-public-pass",
      flag_descriptions::kAutofillEnableWalletReminderNoticePublicPassName,
      flag_descriptions::

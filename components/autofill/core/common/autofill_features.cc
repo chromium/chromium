@@ -790,6 +790,11 @@ BASE_FEATURE(kAutofillEnableSkippingUnrecognizedAttribute,
 BASE_FEATURE(kAutofillEnableStreetAddressMergeModes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, shows the Wallet Disclosure Notice after submitting a form with
+// a public pass.
+BASE_FEATURE(kAutofillEnableWalletDisclosureNoticePublicPass,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, shows the Wallet Reminder Notice after submitting a form with a
 // non-private (public) pass.
 BASE_FEATURE(kAutofillEnableWalletReminderNoticePublicPass,
