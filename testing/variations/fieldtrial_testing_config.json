@@ -16870,21 +16870,6 @@
             ]
         }
     ],
-    "RecoverTabsOfLastClosedWindow": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RecoverTabsOfLastClosedWindow"
-                    ]
-                }
-            ]
-        }
-    ],
     "RedWarningSurvey": [
         {
             "platforms": [
