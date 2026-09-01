@@ -70,14 +70,13 @@ OnTaskSystemWebAppManagerImpl::OnTaskSystemWebAppManagerImpl(Profile* profile)
 OnTaskSystemWebAppManagerImpl::~OnTaskSystemWebAppManagerImpl() = default;
 
 void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
-    base::OnceCallback<void(bool)> callback,
-    const GURL& url) {
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Include Boca URL in the SWA launch params so the downstream helper triggers
   // the specified callback on launch.
   SystemAppLaunchParams launch_params;
-  launch_params.url = url;
+  launch_params.url = GURL(kChromeBocaAppUntrustedIndexURL);
   ash::LaunchSystemWebAppAsync(
       profile_, SystemWebAppType::BOCA, launch_params,
       /*window_info=*/nullptr,

@@ -60,7 +60,7 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
 
   MOCK_METHOD(void,
               LaunchSystemWebAppAsync,
-              (base::OnceCallback<void(bool)>, const GURL& url),
+              (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void, CloseSystemWebAppWindow, (SessionID window_id), (override));
   MOCK_METHOD(SessionID, GetActiveSystemWebAppWindowID, (), (override));
@@ -220,9 +220,8 @@ class OnTaskSessionManagerTest : public ::testing::Test {
 TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillRepeatedly(Return(SessionID::InvalidValue()));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
-      .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*boca_session_manager_,
@@ -249,9 +248,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
       SetParentTabsRestriction(
           kWindowId, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
       .Times(1);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
-      .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*boca_session_manager_,
@@ -425,10 +423,9 @@ TEST_F(OnTaskSessionManagerTest,
       .WillOnce(Return(
           SessionID::InvalidValue()))  // Initial check before spawning SWA
       .WillRepeatedly(Return(kWindowId));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .InSequence(s)
-      .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -574,10 +571,9 @@ TEST_F(OnTaskSessionManagerTest,
       .WillOnce(Return(
           SessionID::InvalidValue()))  // Initial check before spawning SWA
       .WillRepeatedly(Return(kWindowId));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .InSequence(s)
-      .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*extensions_manager_ptr_, DisableExtensions)
@@ -720,10 +716,9 @@ TEST_F(OnTaskSessionManagerTest,
       .WillOnce(
           Return(SessionID::InvalidValue()))  // No window found initially.
       .WillRepeatedly(Return(kWindowId));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .InSequence(s1, s2)
-      .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -966,9 +961,8 @@ TEST_F(OnTaskSessionManagerTest,
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillOnce(Return(SessionID::InvalidValue()))  // Session init check.
       .WillRepeatedly(Return(kWindowId));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
-      .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -1094,9 +1088,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldRelockWindowAfterInterval) {
   // Session start
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillRepeatedly(Return(SessionID::InvalidValue()));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
-      .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*boca_session_manager_,

@@ -33,8 +33,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
 
   // OnTaskSystemWebAppManager:
   void LaunchSystemWebAppAsync(
-      base::OnceCallback<void(bool)> callback,
-      const GURL& url = GURL(kChromeBocaAppUntrustedIndexURL)) override;
+      base::OnceCallback<void(bool)> callback) override;
   void CloseSystemWebAppWindow(SessionID window_id) override;
   SessionID GetActiveSystemWebAppWindowID() override;
   void SetPinStateForSystemWebAppWindow(bool pinned,
