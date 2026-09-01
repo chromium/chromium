@@ -209,6 +209,16 @@ class ExtensionTabUtil {
                            tab_groups::TabGroupVisualData* out_visual_data,
                            std::string* error);
 
+  // Gets the metadata for the split with ID `split_id`. Sets the `error` if not
+  // found. `out_window` or `out_id` may be nullptr and will not be set within
+  // the function if so.
+  static bool GetSplitById(int split_id,
+                           content::BrowserContext* browser_context,
+                           bool include_incognito,
+                           WindowController** out_window,
+                           split_tabs::SplitTabId* out_id,
+                           std::string* error);
+
   // Returns whether the group is shared or not.
   static bool GetSharedStateOfGroup(const tab_groups::TabGroupId& id);
 

@@ -324,6 +324,10 @@ std::vector<tab_groups::TabGroupId> TabListBridge::ListTabGroups() {
   return tab_strip_->group_model()->ListTabGroups();
 }
 
+std::set<split_tabs::SplitTabId> TabListBridge::ListSplits() {
+  return tab_strip_->ListSplits();
+}
+
 std::optional<tab_groups::TabGroupVisualData>
 TabListBridge::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
   // Not all browsers support tab groups.

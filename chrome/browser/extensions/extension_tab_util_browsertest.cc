@@ -37,13 +37,20 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "extensions/common/error_utils.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -595,6 +602,92 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetGroupById) {
   EXPECT_EQ(visual_data.title(), u"Test");
   EXPECT_EQ(visual_data.color(), tab_groups::TabGroupColorId::kCyan);
   EXPECT_TRUE(error.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetSplitById) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  ASSERT_TRUE(NavigateToURLInNewTab(GURL("about:blank")));
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_strip_model->AddToNewSplit(
+          {0, 1}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kExtensionsApi);
+  ASSERT_TRUE(split_id.has_value());
+
+  int raw_split_id = ExtensionTabUtil::GetSplitId(*split_id);
+
+  WindowController* window = nullptr;
+  split_tabs::SplitTabId found_id = split_tabs::SplitTabId::CreateEmpty();
+  std::string error;
+  bool found = ExtensionTabUtil::GetSplitById(raw_split_id, profile(),
+                                              /*include_incognito=*/true,
+                                              &window, &found_id, &error);
+
+  EXPECT_TRUE(found);
+  EXPECT_TRUE(window);
+  EXPECT_EQ(*split_id, found_id);
+  EXPECT_TRUE(error.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetSplitById_Error) {
+  WindowController* window = nullptr;
+  split_tabs::SplitTabId found_id = split_tabs::SplitTabId::CreateEmpty();
+  std::string error;
+  bool found_invalid_id = ExtensionTabUtil::GetSplitById(
+      api::tabs::SPLIT_VIEW_ID_NONE, profile(),
+      /*include_incognito=*/true, &window, &found_id, &error);
+
+  EXPECT_FALSE(found_invalid_id);
+  EXPECT_EQ(error, "Invalid split view id: -1.");
+
+  bool found_nonexistent_id = ExtensionTabUtil::GetSplitById(
+      100, profile(),
+      /*include_incognito=*/true, &window, &found_id, &error);
+  EXPECT_FALSE(found_nonexistent_id);
+  EXPECT_EQ(error, "No split view with id: 100.");
+
+  bool found_with_invalid_browser_context = ExtensionTabUtil::GetSplitById(
+      100, /*browser_context=*/nullptr,
+      /*include_incognito=*/true, &window, &found_id, &error);
+  EXPECT_FALSE(found_with_invalid_browser_context);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
+                       GetSplitById_WindowIterationContinues) {
+  // 1. Create an incognito browser and add a split tab in it.
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  TabStripModel* incognito_tab_strip = incognito_browser->GetTabStripModel();
+  ASSERT_EQ(1, incognito_tab_strip->count());
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      incognito_browser, GURL("about:blank"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(2, incognito_tab_strip->count());
+
+  std::optional<split_tabs::SplitTabId> incognito_split_id =
+      incognito_tab_strip->AddToNewSplit(
+          {0, 1}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kExtensionsApi);
+  ASSERT_TRUE(incognito_split_id.has_value());
+  int raw_incognito_split_id =
+      ExtensionTabUtil::GetSplitId(*incognito_split_id);
+
+  // 2. Create a browser window whose deletion is scheduled.
+  BrowserWindowInterface* closing_browser = CreateBrowser(profile());
+  closing_browser->GetTabStripModel()->CloseAllTabs();
+  UnloadController::From(closing_browser)->OnWindowClosing();
+  ASSERT_TRUE(closing_browser->IsDeleteScheduled());
+
+  WindowController* window = nullptr;
+  split_tabs::SplitTabId found_id = split_tabs::SplitTabId::CreateEmpty();
+  std::string error;
+  bool found = ExtensionTabUtil::GetSplitById(raw_incognito_split_id, profile(),
+                                              /*include_incognito=*/false,
+                                              &window, &found_id, &error);
+  EXPECT_FALSE(found);
+  EXPECT_FALSE(error.empty());
 }
 
 class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {

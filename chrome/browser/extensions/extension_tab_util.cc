@@ -98,6 +98,8 @@ namespace {
 bool g_disable_tab_list_editing_for_testing = false;
 
 constexpr char kGroupNotFoundError[] = "No group with id: *.";
+constexpr char kSplitNotFoundError[] = "No split view with id: *.";
+constexpr char kInvalidSplitIdError[] = "Invalid split view id: *.";
 constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
 
 // This enum is used for counting schemes used via a navigation triggered by
@@ -817,6 +819,73 @@ bool ExtensionTabUtil::GetGroupById(
 
   *error = ErrorUtils::FormatErrorMessage(kGroupNotFoundError,
                                           base::NumberToString(group_id));
+
+  return false;
+}
+
+// static
+bool ExtensionTabUtil::GetSplitById(int split_id,
+                                    content::BrowserContext* browser_context,
+                                    bool include_incognito,
+                                    WindowController** out_window,
+                                    split_tabs::SplitTabId* out_id,
+                                    std::string* error) {
+  // Zero output parameters for the error cases.
+  if (out_window) {
+    *out_window = nullptr;
+  }
+  if (out_id) {
+    *out_id = split_tabs::SplitTabId::CreateEmpty();
+  }
+
+  if (split_id == api::tabs::SPLIT_VIEW_ID_NONE) {
+    if (error) {
+      *error = ErrorUtils::FormatErrorMessage(kInvalidSplitIdError,
+                                              base::NumberToString(split_id));
+    }
+    return false;
+  }
+
+  // `browser_context` can be null during shutdown.
+  if (!browser_context) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  Profile* incognito_profile =
+      include_incognito && profile->HasPrimaryOTRProfile()
+          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
+          : nullptr;
+  for (WindowController* target_window : *WindowControllerList::GetInstance()) {
+    if (target_window->profile() != profile &&
+        target_window->profile() != incognito_profile) {
+      continue;
+    }
+    BrowserWindowInterface* target_browser =
+        target_window->GetBrowserWindowInterface();
+    if (!target_browser || target_browser->IsDeleteScheduled()) {
+      continue;
+    }
+    TabListInterface* tab_list = TabListInterface::From(target_browser);
+    if (!tab_list) {
+      continue;
+    }
+    for (split_tabs::SplitTabId target_split : tab_list->ListSplits()) {
+      if (ExtensionTabUtil::GetSplitId(target_split) == split_id) {
+        if (out_window) {
+          *out_window = target_window;
+        }
+        if (out_id) {
+          *out_id = target_split;
+        }
+        return true;
+      }
+    }
+  }
+  if (error) {
+    *error = ErrorUtils::FormatErrorMessage(kSplitNotFoundError,
+                                            base::NumberToString(split_id));
+  }
 
   return false;
 }

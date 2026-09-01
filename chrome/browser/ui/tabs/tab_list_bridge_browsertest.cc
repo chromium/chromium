@@ -1058,6 +1058,27 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Unsplit) {
   EXPECT_FALSE(tab_list_interface->GetTab(1)->GetSplit().has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, ListSplits) {
+  SetupTabs(browser(), 4);
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+  EXPECT_TRUE(tab_list_interface->ListSplits().empty());
+
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list_interface->CreateSplit(
+          {tab_list_interface->GetTab(0)->GetHandle(),
+           tab_list_interface->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(split_id.has_value());
+
+  std::set<split_tabs::SplitTabId> splits = tab_list_interface->ListSplits();
+  ASSERT_EQ(1u, splits.size());
+  EXPECT_EQ(*split_id, *splits.begin());
+
+  tab_list_interface->Unsplit(*split_id);
+  EXPECT_TRUE(tab_list_interface->ListSplits().empty());
+}
+
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, OpenTab) {
   const GURL url1("about:blank?q=1");
   const GURL url2("about:blank?q=2");

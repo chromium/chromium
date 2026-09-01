@@ -88,6 +88,7 @@ class MockTabListInterface : public TabListInterface {
               ListTabGroups,
               (),
               (override));
+  MOCK_METHOD(std::set<split_tabs::SplitTabId>, ListSplits, (), (override));
   MOCK_METHOD(std::optional<tab_groups::TabGroupVisualData>,
               GetTabGroupVisualData,
               (tab_groups::TabGroupId),

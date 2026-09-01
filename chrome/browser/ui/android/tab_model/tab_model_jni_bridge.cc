@@ -731,6 +731,13 @@ std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
   return group_ids;
 }
 
+std::set<split_tabs::SplitTabId> TabModelJniBridge::ListSplits() {
+  // TODO(https://crbug.com/480192698): Implement this once split tabs are
+  // supported on Desktop Android.
+  NOTIMPLEMENTED();
+  return {};
+}
+
 std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
     tab_groups::TabGroupId group_id) {
   JNIEnv* env = AttachCurrentThread();

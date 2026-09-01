@@ -262,6 +262,11 @@ std::vector<tab_groups::TabGroupId> TestTabModel::ListTabGroups() {
   return {};
 }
 
+std::set<split_tabs::SplitTabId> TestTabModel::ListSplits() {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 std::optional<tab_groups::TabGroupVisualData>
 TestTabModel::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
   NOTIMPLEMENTED();
@@ -691,6 +696,11 @@ std::optional<split_tabs::SplitTabId> OwningTestTabModel::CreateSplit(
 }
 
 std::vector<tab_groups::TabGroupId> OwningTestTabModel::ListTabGroups() {
+  NOTIMPLEMENTED();
+  return {};
+}
+
+std::set<split_tabs::SplitTabId> OwningTestTabModel::ListSplits() {
   NOTIMPLEMENTED();
   return {};
 }
