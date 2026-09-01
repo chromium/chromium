@@ -13,11 +13,15 @@
 #include "base/values.h"
 
 // Provides access to the contents of a preference hash store. The store
-// contains the following data:
+//   contains the following data:
 // Contents: a client-defined dictionary that should map preference names to
-// MACs.
+//   authenticators. We currently use two types of authenticator: encrypted
+//   hashes (modern) and HMACs (legacy fallback).
 // Version: a client-defined version number for the format of Contents.
-// Super MAC: a MAC that authenticates the entirety of Contents.
+// Super authenticators: an authenticator that validates the entirety of
+//   Contents. Just as we use two types of authenticator (encrypted hashes and
+//   HMACs), we use two types of super authenticator: super encrypted hashes and
+//   super HMACs.
 class HashStoreContents {
  public:
   virtual ~HashStoreContents() {}
@@ -39,51 +43,55 @@ class HashStoreContents {
   // Discards all data related to this hash store.
   virtual void Reset() = 0;
 
-  // Outputs the MAC validating the preference at path. Returns true if a MAC
-  // was successfully read and false otherwise.
-  virtual bool GetMac(const std::string& path, std::string* out_value) = 0;
+  // Outputs the authenticator validating the atomic preference at path.
+  // Returns true if an authenticator was successfully read and false otherwise.
+  virtual bool GetAtomicPrefAuthenticator(const std::string& path,
+                                          std::string* out_value) = 0;
 
-  // Outputs the MACS validating the split preference at path. Returns true if
-  // MACS were successfully read and false otherwise.
-  virtual bool GetSplitMacs(const std::string& path,
-                            std::map<std::string, std::string>* out_value) = 0;
+  // Outputs the authenticators validating the split preference at path.
+  // Returns true if authenticators were successfully read and false otherwise.
+  virtual bool GetSplitPrefAuthenticators(
+      const std::string& path,
+      std::map<std::string, std::string>* out_value) = 0;
 
-  // Set the MAC validating the preference at path.
-  virtual void SetMac(const std::string& path, const std::string& value) = 0;
+  // Sets the authenticator validating the atomic preference at path.
+  virtual void SetAtomicPrefAuthenticator(const std::string& path,
+                                          const std::string& value) = 0;
 
-  // Set the MAC validating the split preference at path and split_path.
-  // For example, |path| is 'extension' and |split_path| is some extenson id.
-  virtual void SetSplitMac(const std::string& path,
-                           const std::string& split_path,
-                           const std::string& value) = 0;
+  // Sets the authenticator validating the split preference at path and
+  // split_path. For example, |path| is 'extension' and |split_path| is some
+  // extension id.
+  virtual void SetSplitPrefAuthenticator(const std::string& path,
+                                         const std::string& split_path,
+                                         const std::string& value) = 0;
 
-  // Sets the MAC for the preference at |path|.
+  // Sets the authenticator for the preference at |path|.
   // If |path| is a split preference |in_value| must be a DictionaryValue whose
-  // keys are keys in the split preference and whose values are MACs of the
-  // corresponding values in the split preference.
-  // If |path| is an atomic preference |in_value| must be a StringValue
-  // containing a MAC of the preference value.
-  virtual void ImportEntry(const std::string& path,
-                           const base::Value* in_value) = 0;
+  // keys are keys in the split preference and whose values are authenticators
+  // of the corresponding values in the split preference. If |path| is an atomic
+  // preference |in_value| must be a StringValue containing an authenticator of
+  // the preference value.
+  virtual void ImportAuthenticator(const std::string& path,
+                                   const base::Value* in_value) = 0;
 
-  // Removes the MAC (for atomic preferences) or MACs (for split preferences)
-  // at |path|. Returns true if there was an entry at |path| which was
-  // successfully removed.
-  virtual bool RemoveEntry(const std::string& path) = 0;
+  // Removes the authenticator (for atomic preferences) or authenticators (for
+  // split preferences) at |path|. Returns true if there was an entry at |path|
+  // which was successfully removed.
+  virtual bool RemoveAuthenticator(const std::string& path) = 0;
 
-  // Returns true if this store supports super MACs.
-  virtual bool SupportsSuperMac() const = 0;
+  // Returns true if this store supports super authenticators.
+  virtual bool SupportsSuperAuthenticator() const = 0;
 
-  // Only needed if this store supports super MACs.
+  // Only needed if this store supports super authenticators.
   virtual const base::DictValue* GetContents() const = 0;
 
-  // Retrieves the super MAC value previously stored by SetSuperMac. May be
-  // empty if no super MAC has been stored or if this store does not support
-  // super MACs.
-  virtual std::string GetSuperMac() const = 0;
+  // Retrieves the super HMAC value previously stored by SetSuperHmac. May be
+  // empty if no super HMAC has been stored or if this store does not support
+  // super authenticators.
+  virtual std::string GetSuperHmac() const = 0;
 
-  // Stores a super MAC value for this hash store.
-  virtual void SetSuperMac(const std::string& super_mac) = 0;
+  // Stores a super HMAC value for this hash store.
+  virtual void SetSuperHmac(const std::string& super_hmac) = 0;
 
   // Retrieves the super encrypted hash value previously stored by
   // SetSuperEncryptedHash. May be empty if no super encrypted hash has been

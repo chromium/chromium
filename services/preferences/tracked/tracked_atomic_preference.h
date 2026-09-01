@@ -24,7 +24,7 @@ class TrackedPreferenceValidationDelegate;
 }
 }
 
-// A TrackedAtomicPreference is tracked as a whole. A hash is stored for its
+// A TrackedAtomicPreference is tracked as a whole. Auth data is stored for its
 // entire value and it is entirely reset on mismatch. An optional delegate is
 // notified of the status of the preference during enforcement.
 class TrackedAtomicPreference : public TrackedPreference {

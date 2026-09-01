@@ -43,8 +43,8 @@ bool ReadMacFromRegistry(const base::win::RegKey& key,
 
 // Removes |value_name| under |reg_key_name|. Returns true if found and
 // successfully removed.
-bool ClearAtomicMac(const std::wstring& reg_key_name,
-                    const std::string& value_name) {
+bool ClearAtomicAuthenticator(const std::wstring& reg_key_name,
+                              const std::string& value_name) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, reg_key_name.c_str(),
                KEY_SET_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
@@ -56,8 +56,8 @@ bool ClearAtomicMac(const std::wstring& reg_key_name,
 
 // Deletes |split_key_name| under |reg_key_name|. Returns true if found and
 // successfully removed.
-bool ClearSplitMac(const std::wstring& reg_key_name,
-                   const std::string& split_key_name) {
+bool ClearSplitAuthenticator(const std::wstring& reg_key_name,
+                             const std::string& split_key_name) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER,
                GetSplitPrefKeyName(reg_key_name, split_key_name).c_str(),
@@ -125,8 +125,9 @@ void RegistryHashStoreContentsWin::Reset() {
   DeleteRegistryKey(preference_key_name_);
 }
 
-bool RegistryHashStoreContentsWin::GetMac(const std::string& path,
-                                          std::string* out_value) {
+bool RegistryHashStoreContentsWin::GetAtomicPrefAuthenticator(
+    const std::string& path,
+    std::string* out_value) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, preference_key_name_.c_str(),
                KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
@@ -136,7 +137,7 @@ bool RegistryHashStoreContentsWin::GetMac(const std::string& path,
   return false;
 }
 
-bool RegistryHashStoreContentsWin::GetSplitMacs(
+bool RegistryHashStoreContentsWin::GetSplitPrefAuthenticators(
     const std::string& path,
     std::map<std::string, std::string>* split_macs) {
   DCHECK(split_macs);
@@ -154,8 +155,9 @@ bool RegistryHashStoreContentsWin::GetSplitMacs(
   return !split_macs->empty();
 }
 
-void RegistryHashStoreContentsWin::SetMac(const std::string& path,
-                                          const std::string& value) {
+void RegistryHashStoreContentsWin::SetAtomicPrefAuthenticator(
+    const std::string& path,
+    const std::string& value) {
   base::win::RegKey key;
   DCHECK_EQ(kMacSize, value.size());
 
@@ -166,9 +168,10 @@ void RegistryHashStoreContentsWin::SetMac(const std::string& path,
   }
 }
 
-void RegistryHashStoreContentsWin::SetSplitMac(const std::string& path,
-                                               const std::string& split_path,
-                                               const std::string& value) {
+void RegistryHashStoreContentsWin::SetSplitPrefAuthenticator(
+    const std::string& path,
+    const std::string& split_path,
+    const std::string& value) {
   base::win::RegKey key;
   DCHECK_EQ(kMacSize, value.size());
 
@@ -180,19 +183,21 @@ void RegistryHashStoreContentsWin::SetSplitMac(const std::string& path,
   }
 }
 
-bool RegistryHashStoreContentsWin::RemoveEntry(const std::string& path) {
-  return ClearAtomicMac(preference_key_name_, path) ||
-         ClearSplitMac(preference_key_name_, path);
+bool RegistryHashStoreContentsWin::RemoveAuthenticator(
+    const std::string& path) {
+  return ClearAtomicAuthenticator(preference_key_name_, path) ||
+         ClearSplitAuthenticator(preference_key_name_, path);
 }
 
-bool RegistryHashStoreContentsWin::SupportsSuperMac() const {
+bool RegistryHashStoreContentsWin::SupportsSuperAuthenticator() const {
   return false;
 }
 
-void RegistryHashStoreContentsWin::ImportEntry(const std::string& path,
-                                               const base::Value* in_value) {
-  NOTREACHED()
-      << "RegistryHashStoreContents does not support the ImportEntry operation";
+void RegistryHashStoreContentsWin::ImportAuthenticator(
+    const std::string& path,
+    const base::Value* in_value) {
+  NOTREACHED() << "RegistryHashStoreContents does not support the "
+                  "ImportAuthenticator operation";
 }
 
 const base::DictValue* RegistryHashStoreContentsWin::GetContents() const {
@@ -200,14 +205,14 @@ const base::DictValue* RegistryHashStoreContentsWin::GetContents() const {
       << "RegistryHashStoreContents does not support the GetContents operation";
 }
 
-std::string RegistryHashStoreContentsWin::GetSuperMac() const {
-  NOTREACHED()
-      << "RegistryHashStoreContents does not support the GetSuperMac operation";
+std::string RegistryHashStoreContentsWin::GetSuperHmac() const {
+  NOTREACHED() << "RegistryHashStoreContents does not support the GetSuperHmac "
+                  "operation";
 }
 
-void RegistryHashStoreContentsWin::SetSuperMac(const std::string& super_mac) {
-  NOTREACHED()
-      << "RegistryHashStoreContents does not support the SetSuperMac operation";
+void RegistryHashStoreContentsWin::SetSuperHmac(const std::string& super_hmac) {
+  NOTREACHED() << "RegistryHashStoreContents does not support the SetSuperHmac "
+                  "operation";
 }
 
 std::string RegistryHashStoreContentsWin::GetSuperEncryptedHash() const {

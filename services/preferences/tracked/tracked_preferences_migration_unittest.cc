@@ -164,12 +164,12 @@ class TrackedPreferencesMigrationTest : public testing::Test {
                         const std::string& key,
                         const std::string value) {
     PresetStoreValueOnly(store_id, key, value);
-    PresetStoreValueHash(store_id, key, value);
+    PresetStoreValueHmac(store_id, key, value);
   }
 
-  // Stores a hash for |key| and |value| in the hash store identified by
+  // Stores an HMAC for |key| and |value| in the hash store identified by
   // |store_id| before migration begins.
-  void PresetStoreValueHash(MockPrefStoreID store_id,
+  void PresetStoreValueHmac(MockPrefStoreID store_id,
                             const std::string& key,
                             const std::string value) {
     base::DictValue* store = nullptr;
@@ -190,7 +190,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
 
     base::Value string_value(value);
     DictionaryHashStoreContents contents(*store);
-    pref_hash_store->BeginTransaction(&contents)->StoreHash(key, &string_value);
+    pref_hash_store->BeginTransaction(&contents)->StoreHmac(key, &string_value);
   }
 
   // Returns true if the store opposite to |store_id| is observed for its next

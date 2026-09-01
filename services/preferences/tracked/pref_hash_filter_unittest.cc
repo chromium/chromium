@@ -212,7 +212,7 @@ class MockPrefHashStore : public PrefHashStore {
   void ClearTestState() { checked_values_.clear(); }
 
   // Sets the value that will be returned from
-  // PrefHashStoreTransaction::IsSuperMACValid().
+  // PrefHashStoreTransaction::IsSuperHmacValid().
   void set_is_super_mac_valid_result(bool result) {
     is_super_mac_valid_result_ = result;
   }
@@ -255,9 +255,9 @@ class MockPrefHashStore : public PrefHashStore {
   std::unique_ptr<PrefHashStoreTransaction> BeginTransaction(
       HashStoreContents* storage,
       scoped_refptr<const os_crypt_async::Encryptor> encryptor_ptr) override;
-  std::string ComputeMac(const std::string& path,
-                         const base::Value* new_value) override;
-  base::DictValue ComputeSplitMacs(
+  std::string ComputeHmac(const std::string& path,
+                          const base::Value* new_value) override;
+  base::DictValue ComputeSplitHmacs(
       const std::string& path,
       const base::DictValue* split_values) override;
   std::string ComputeEncryptedHash(
@@ -304,21 +304,22 @@ class MockPrefHashStore : public PrefHashStore {
     ValueState CheckValue(const std::string& path,
                           const base::Value* value,
                           std::optional<size_t> reporting_id) const override;
-    void StoreHash(const std::string& path,
+    void StoreHmac(const std::string& path,
                    const base::Value* new_value) override;
     ValueState CheckSplitValue(
         const std::string& path,
         const base::DictValue* initial_split_value,
         std::vector<std::string>* invalid_keys,
         std::optional<size_t> reporting_id) const override;
-    void StoreSplitHash(const std::string& path,
+    void StoreSplitHmac(const std::string& path,
                         const base::DictValue* split_value) override;
-    bool HasHash(const std::string& path) const override;
-    void ImportHash(const std::string& path, const base::Value* hash) override;
-    void ClearHash(const std::string& path) override;
+    bool HasAuthenticator(const std::string& path) const override;
+    void ImportAuthData(const std::string& path,
+                        const base::Value* auth_data) override;
+    void ClearAuthenticators(const std::string& path) override;
     void ClearEncryptedHash(const std::string& path) override;
-    bool IsSuperMACValid() const override;
-    bool StampSuperMac() override;
+    bool IsSuperHmacValid() const override;
+    bool StampSuperHmac() override;
     void StoreEncryptedHash(const std::string& path,
                             const base::Value* value) override {
       outer_->store_encrypted_hash_called_ = true;
@@ -341,7 +342,7 @@ class MockPrefHashStore : public PrefHashStore {
         const std::string& path) const override {
       return std::nullopt;
     }
-    std::optional<std::string> GetMac(const std::string& path) const override {
+    std::optional<std::string> GetHmac(const std::string& path) const override {
       return std::nullopt;
     }
     bool HasEncryptedHash(const std::string& path) const override {
@@ -417,12 +418,12 @@ std::unique_ptr<PrefHashStoreTransaction> MockPrefHashStore::BeginTransaction(
       new MockPrefHashStoreTransaction(this));
 }
 
-std::string MockPrefHashStore::ComputeMac(const std::string& path,
-                                          const base::Value* new_value) {
+std::string MockPrefHashStore::ComputeHmac(const std::string& path,
+                                           const base::Value* new_value) {
   return "atomic mac for: " + path;
 }
 
-base::DictValue MockPrefHashStore::ComputeSplitMacs(
+base::DictValue MockPrefHashStore::ComputeSplitHmacs(
     const std::string& path,
     const base::DictValue* split_values) {
   base::DictValue macs_dict;
@@ -515,7 +516,7 @@ ValueState MockPrefHashStore::MockPrefHashStoreTransaction::CheckValue(
   return outer_->RecordCheckValue(path, value, PrefTrackingStrategy::ATOMIC);
 }
 
-void MockPrefHashStore::MockPrefHashStoreTransaction::StoreHash(
+void MockPrefHashStore::MockPrefHashStoreTransaction::StoreHmac(
     const std::string& path,
     const base::Value* new_value) {
   outer_->RecordStoreHash(path, new_value, PrefTrackingStrategy::ATOMIC);
@@ -540,25 +541,25 @@ ValueState MockPrefHashStore::MockPrefHashStoreTransaction::CheckSplitValue(
                                   PrefTrackingStrategy::SPLIT);
 }
 
-void MockPrefHashStore::MockPrefHashStoreTransaction::StoreSplitHash(
+void MockPrefHashStore::MockPrefHashStoreTransaction::StoreSplitHmac(
     const std::string& path,
     const base::DictValue* new_value) {
   outer_->RecordStoreHash(path, new_value, PrefTrackingStrategy::SPLIT);
 }
 
-bool MockPrefHashStore::MockPrefHashStoreTransaction::HasHash(
+bool MockPrefHashStore::MockPrefHashStoreTransaction::HasAuthenticator(
     const std::string& path) const {
   ADD_FAILURE() << "Unexpected call.";
   return false;
 }
 
-void MockPrefHashStore::MockPrefHashStoreTransaction::ImportHash(
+void MockPrefHashStore::MockPrefHashStoreTransaction::ImportAuthData(
     const std::string& path,
-    const base::Value* hash) {
+    const base::Value* auth_data) {
   ADD_FAILURE() << "Unexpected call.";
 }
 
-void MockPrefHashStore::MockPrefHashStoreTransaction::ClearHash(
+void MockPrefHashStore::MockPrefHashStoreTransaction::ClearAuthenticators(
     const std::string& path) {
   // Allow this to be called by PrefHashFilter's deprecated tracked prefs
   // cleanup tasks.
@@ -572,11 +573,11 @@ void MockPrefHashStore::MockPrefHashStoreTransaction::ClearEncryptedHash(
   outer_->ClearStoreHash(encrypted_path);
 }
 
-bool MockPrefHashStore::MockPrefHashStoreTransaction::IsSuperMACValid() const {
+bool MockPrefHashStore::MockPrefHashStoreTransaction::IsSuperHmacValid() const {
   return outer_->is_super_mac_valid_result_;
 }
 
-bool MockPrefHashStore::MockPrefHashStoreTransaction::StampSuperMac() {
+bool MockPrefHashStore::MockPrefHashStoreTransaction::StampSuperHmac() {
   return outer_->stamp_super_mac_result_;
 }
 
@@ -620,27 +621,31 @@ class MockHashStoreContents : public HashStoreContents {
   std::unique_ptr<HashStoreContents> MakeCopy() const override;
   std::string_view GetUMASuffix() const override;
   void Reset() override;
-  bool GetMac(const std::string& path, std::string* out_value) override;
-  bool GetSplitMacs(const std::string& path,
-                    std::map<std::string, std::string>* split_macs) override;
-  void SetMac(const std::string& path, const std::string& value) override;
-  void SetSplitMac(const std::string& path,
-                   const std::string& split_path,
-                   const std::string& value) override;
-  void ImportEntry(const std::string& path,
-                   const base::Value* in_value) override;
-  bool RemoveEntry(const std::string& path) override;
-  bool SupportsSuperMac() const override { return false; }
+  bool GetAtomicPrefAuthenticator(const std::string& path,
+                                  std::string* out_value) override;
+  bool GetSplitPrefAuthenticators(
+      const std::string& path,
+      std::map<std::string, std::string>* split_macs) override;
+  void SetAtomicPrefAuthenticator(const std::string& path,
+                                  const std::string& value) override;
+  void SetSplitPrefAuthenticator(const std::string& path,
+                                 const std::string& split_path,
+                                 const std::string& value) override;
+  void ImportAuthenticator(const std::string& path,
+                           const base::Value* in_value) override;
+  bool RemoveAuthenticator(const std::string& path) override;
+  bool SupportsSuperAuthenticator() const override { return false; }
   const base::DictValue* GetContents() const override;
-  std::string GetSuperMac() const override;
-  void SetSuperMac(const std::string& super_mac) override;
+  std::string GetSuperHmac() const override;
+  void SetSuperHmac(const std::string& super_mac) override;
   std::string GetSuperEncryptedHash() const override;
   void SetSuperEncryptedHash(const std::string& super_encrypted_hash) override;
 
  private:
   explicit MockHashStoreContents(MockHashStoreContents* origin_mock);
 
-  // Records calls to this mock's SetMac/SetSplitMac methods.
+  // Records calls to this mock's
+  // SetAtomicPrefAuthenticator/SetSplitPrefAuthenticator methods.
   void RecordSetMac(const std::string& path, const std::string& mac) {
     dictionary_.Set(path, mac);
   }
@@ -650,8 +655,8 @@ class MockHashStoreContents : public HashStoreContents {
     dictionary_.SetByDottedPath(base::StrCat({path, ".", split_path}), mac);
   }
 
-  // Records a call to this mock's RemoveEntry method.
-  void RecordRemoveEntry(const std::string& path) {
+  // Records a call to this mock's RemoveAuthenticator method.
+  void RecordRemoveAuthenticator(const std::string& path) {
     // Don't expect the same pref to be cleared more than once.
     EXPECT_EQ(removed_entries_.end(), removed_entries_.find(path));
     removed_entries_.insert(path);
@@ -719,21 +724,22 @@ void MockHashStoreContents::Reset() {
   ADD_FAILURE() << "Unexpected call.";
 }
 
-bool MockHashStoreContents::GetMac(const std::string& path,
-                                   std::string* out_value) {
+bool MockHashStoreContents::GetAtomicPrefAuthenticator(const std::string& path,
+                                                       std::string* out_value) {
   ADD_FAILURE() << "Unexpected call.";
   return false;
 }
 
-bool MockHashStoreContents::GetSplitMacs(
+bool MockHashStoreContents::GetSplitPrefAuthenticators(
     const std::string& path,
     std::map<std::string, std::string>* split_macs) {
   ADD_FAILURE() << "Unexpected call.";
   return false;
 }
 
-void MockHashStoreContents::SetMac(const std::string& path,
-                                   const std::string& value) {
+void MockHashStoreContents::SetAtomicPrefAuthenticator(
+    const std::string& path,
+    const std::string& value) {
   if (origin_mock_) {
     origin_mock_->RecordSetMac(path, value);
   } else {
@@ -741,9 +747,10 @@ void MockHashStoreContents::SetMac(const std::string& path,
   }
 }
 
-void MockHashStoreContents::SetSplitMac(const std::string& path,
-                                        const std::string& split_path,
-                                        const std::string& value) {
+void MockHashStoreContents::SetSplitPrefAuthenticator(
+    const std::string& path,
+    const std::string& split_path,
+    const std::string& value) {
   if (origin_mock_) {
     origin_mock_->RecordSetSplitMac(path, split_path, value);
   } else {
@@ -751,16 +758,16 @@ void MockHashStoreContents::SetSplitMac(const std::string& path,
   }
 }
 
-void MockHashStoreContents::ImportEntry(const std::string& path,
-                                        const base::Value* in_value) {
+void MockHashStoreContents::ImportAuthenticator(const std::string& path,
+                                                const base::Value* in_value) {
   ADD_FAILURE() << "Unexpected call.";
 }
 
-bool MockHashStoreContents::RemoveEntry(const std::string& path) {
+bool MockHashStoreContents::RemoveAuthenticator(const std::string& path) {
   if (origin_mock_) {
-    origin_mock_->RecordRemoveEntry(path);
+    origin_mock_->RecordRemoveAuthenticator(path);
   } else {
-    RecordRemoveEntry(path);
+    RecordRemoveAuthenticator(path);
   }
   return true;
 }
@@ -770,12 +777,12 @@ const base::DictValue* MockHashStoreContents::GetContents() const {
   return nullptr;
 }
 
-std::string MockHashStoreContents::GetSuperMac() const {
+std::string MockHashStoreContents::GetSuperHmac() const {
   ADD_FAILURE() << "Unexpected call.";
   return std::string();
 }
 
-void MockHashStoreContents::SetSuperMac(const std::string& super_mac) {
+void MockHashStoreContents::SetSuperHmac(const std::string& super_mac) {
   ADD_FAILURE() << "Unexpected call.";
 }
 
@@ -1803,7 +1810,7 @@ TEST_P(PrefHashFilterTest, CleanupDeprecatedTrackedDictionary) {
   {
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         mock_pref_hash_store_->PrefHashStore::BeginTransaction(nullptr));
-    transaction->StoreHash(kDeprecatedTrackedDictionaryEntry, &pref_value);
+    transaction->StoreHmac(kDeprecatedTrackedDictionaryEntry, &pref_value);
   }
 
   ASSERT_EQ(1u, mock_pref_hash_store_->stored_paths_count());

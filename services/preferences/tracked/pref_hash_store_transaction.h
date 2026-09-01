@@ -29,8 +29,8 @@ class PrefHashStoreTransaction {
              const base::Value* initial_value,
              std::optional<size_t> reporting_id = std::nullopt) const = 0;
 
-  // Stores a hash of the current |value| of the preference at |path|.
-  virtual void StoreHash(const std::string& path, const base::Value* value) = 0;
+  // Stores an HMAC of the current |value| of the preference at |path|.
+  virtual void StoreHmac(const std::string& path, const base::Value* value) = 0;
 
   // Checks |initial_value| against the existing stored hashes for the split
   // preference at |path|. |initial_split_value| being an empty dictionary or
@@ -44,38 +44,51 @@ class PrefHashStoreTransaction {
                   std::vector<std::string>* invalid_keys,
                   std::optional<size_t> reporting_id = std::nullopt) const = 0;
 
-  // Stores hashes for the |value| of the split preference at |path|.
+  // Stores HMACs for the |value| of the split preference at |path|.
   // |split_value| being an empty dictionary or NULL is equivalent.
-  virtual void StoreSplitHash(const std::string& path,
+  virtual void StoreSplitHmac(const std::string& path,
                               const base::DictValue* split_value) = 0;
 
-  // Indicates whether the store contains a hash for the preference at |path|.
-  virtual bool HasHash(const std::string& path) const = 0;
+  // Indicates whether the store contains any authenticator (HMAC and / or
+  // encrypted hash) for the preference at |path|.
+  virtual bool HasAuthenticator(const std::string& path) const = 0;
 
-  // Sets the hash for the preference at |path|.
-  // If |path| is a split preference |hash| must be a DictionaryValue whose
-  // keys are keys in the split preference and whose values are MACs of the
-  // corresponding values in the split preference.
-  // If |path| is an atomic preference |hash| must be a StringValue
-  // containing a MAC of the preference value.
-  // |hash| should originate from a PrefHashStore sharing the same MAC
-  // parameters as this transaction's store.
-  // The (in)validity of the super MAC will be maintained by this call.
-  virtual void ImportHash(const std::string& path, const base::Value* hash) = 0;
+  // Sets the authentication data for the preference at `path` to the values in
+  // `auth_data`.
+  //
+  // If `auth_data` is a StringValue, `auth_data` will be imported as an HMAC of
+  // the preference value.
+  //
+  // If `auth_data` is a DictValue, the encrypted hash and legacy HMAC will be
+  // set based on the keys present in the dictionary:
+  //   - If the `"mac"` key is present, its value will be imported as an HMAC of
+  //     the preference value. If the key is absent, any existing HMAC for the
+  //     preference will be cleared.
+  //   - If the `"encrypted_hash"` key is present, its value will be imported as
+  //     the encrypted hash for the preference value. If the key is absent,
+  //     any existing encrypted hash for the preference will be cleared.
+  //
+  // Any HMACs in `auth_data` should originate from a PrefHashStore sharing the
+  // same MAC parameters as this transaction's store.
+  // The (in)validity of the super HMAC and super encrypted hash will be
+  // maintained by this call.
+  virtual void ImportAuthData(const std::string& path,
+                              const base::Value* auth_data) = 0;
 
-  // Removes the hash stored at |path|. The (in)validity of the super MAC will
-  // be maintained by this call.
-  virtual void ClearHash(const std::string& path) = 0;
+  // Removes all authenticators at the path `path`, if any exist. The
+  // (in)validity of the super HMAC and super encrypted hash is maintained by
+  // this call.
+  virtual void ClearAuthenticators(const std::string& path) = 0;
 
-  // Indicates whether the super MAC was successfully verified at the beginning
+  // Indicates whether the super HMAC was successfully verified at the beginning
   // of this transaction.
-  virtual bool IsSuperMACValid() const = 0;
+  virtual bool IsSuperHmacValid() const = 0;
 
-  // Forces a valid super MAC to be stored when this transaction terminates.
+  // Forces a valid super HMAC to be stored when this transaction terminates.
   // Returns true if this results in a change to the store contents.
-  virtual bool StampSuperMac() = 0;
+  virtual bool StampSuperHmac() = 0;
 
-  // Removes the encrypted hash stored at |path|.
+  // Removes the encrypted hash for the authenticator path `path`.
   virtual void ClearEncryptedHash(const std::string& path) = 0;
 
   // Stores the OS-encrypted hash of the preference at |path| and |value|.
@@ -95,9 +108,9 @@ class PrefHashStoreTransaction {
   virtual std::optional<std::string> GetEncryptedHash(
       const std::string& path) const = 0;
 
-  // Retrieves the stored legacy MAC for the preference at |path|.
-  // Returns nullopt if no MAC is stored.
-  virtual std::optional<std::string> GetMac(const std::string& path) const = 0;
+  // Retrieves the stored legacy HMAC for the preference at |path|.
+  // Returns nullopt if no HMAC is stored.
+  virtual std::optional<std::string> GetHmac(const std::string& path) const = 0;
 
   // Returns true if an OS-encrypted hash is stored for the preference at
   // |path|. This could be an atomic hash or hashes for a split dictionary.

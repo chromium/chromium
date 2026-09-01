@@ -39,9 +39,9 @@ std::string GetEncKey(const std::string& path) {
 std::string GetSplitEncKeyBase(const std::string& path) {
   return GetEncKey(path);
 }
-// Keys expected in the dictionary passed to ImportHash if it contains
+// Keys expected in the dictionary passed to ImportAuthData if it contains
 // structured data.
-const char kImportMacKey[] = "mac";
+const char kImportHmacKey[] = "mac";
 const char kImportEncryptedHashKey[] = "encrypted_hash";
 }  // namespace
 
@@ -67,24 +67,24 @@ class PrefHashStoreImplTest : public testing::Test {
   DictionaryHashStoreContents contents_;
 };
 
-TEST_F(PrefHashStoreImplTest, ComputeMac) {
+TEST_F(PrefHashStoreImplTest, ComputeHmac) {
   base::Value string_1("string1");
   base::Value string_2("string2");
   PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
 
-  std::string computed_mac_1 = pref_hash_store.ComputeMac("path1", &string_1);
-  std::string computed_mac_2 = pref_hash_store.ComputeMac("path1", &string_2);
-  std::string computed_mac_3 = pref_hash_store.ComputeMac("path2", &string_1);
+  std::string computed_hmac_1 = pref_hash_store.ComputeHmac("path1", &string_1);
+  std::string computed_hmac_2 = pref_hash_store.ComputeHmac("path1", &string_2);
+  std::string computed_hmac_3 = pref_hash_store.ComputeHmac("path2", &string_1);
 
   // Quick sanity checks here, see pref_hash_calculator_unittest.cc for more
   // complete tests.
-  EXPECT_EQ(computed_mac_1, pref_hash_store.ComputeMac("path1", &string_1));
-  EXPECT_NE(computed_mac_1, computed_mac_2);
-  EXPECT_NE(computed_mac_1, computed_mac_3);
-  EXPECT_EQ(64U, computed_mac_1.size());
+  EXPECT_EQ(computed_hmac_1, pref_hash_store.ComputeHmac("path1", &string_1));
+  EXPECT_NE(computed_hmac_1, computed_hmac_2);
+  EXPECT_NE(computed_hmac_1, computed_hmac_3);
+  EXPECT_EQ(64U, computed_hmac_1.size());
 }
 
-TEST_F(PrefHashStoreImplTest, ComputeSplitMacs) {
+TEST_F(PrefHashStoreImplTest, ComputeSplitHmacs) {
   base::DictValue dict;
   dict.Set("a", "string1");
   dict.Set("b", "string2");
@@ -92,32 +92,32 @@ TEST_F(PrefHashStoreImplTest, ComputeSplitMacs) {
   dict.Set("http://www.example.com", "string3");
   PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
 
-  base::DictValue computed_macs =
-      pref_hash_store.ComputeSplitMacs("foo.bar", &dict);
+  base::DictValue computed_hmacs =
+      pref_hash_store.ComputeSplitHmacs("foo.bar", &dict);
 
-  const std::string mac_1 = computed_macs.Find("a")->GetString();
-  const std::string mac_2 = computed_macs.Find("b")->GetString();
+  const std::string mac_1 = computed_hmacs.Find("a")->GetString();
+  const std::string mac_2 = computed_hmacs.Find("b")->GetString();
   const std::string mac_3 =
-      computed_macs.Find("http://www.example.com")->GetString();
+      computed_hmacs.Find("http://www.example.com")->GetString();
 
-  EXPECT_EQ(3U, computed_macs.size());
+  EXPECT_EQ(3U, computed_hmacs.size());
 
   base::Value string_1("string1");
   base::Value string_2("string2");
   base::Value string_3("string3");
-  EXPECT_EQ(pref_hash_store.ComputeMac("foo.bar.a", &string_1), mac_1);
-  EXPECT_EQ(pref_hash_store.ComputeMac("foo.bar.b", &string_2), mac_2);
+  EXPECT_EQ(pref_hash_store.ComputeHmac("foo.bar.a", &string_1), mac_1);
+  EXPECT_EQ(pref_hash_store.ComputeHmac("foo.bar.b", &string_2), mac_2);
   EXPECT_EQ(
-      pref_hash_store.ComputeMac("foo.bar.http://www.example.com", &string_3),
+      pref_hash_store.ComputeHmac("foo.bar.http://www.example.com", &string_3),
       mac_3);
 }
 
-TEST_F(PrefHashStoreImplTest, ComputeNullSplitMacs) {
+TEST_F(PrefHashStoreImplTest, ComputeNullSplitHmacs) {
   PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
-  base::DictValue computed_macs =
-      pref_hash_store.ComputeSplitMacs("foo.bar", nullptr);
+  base::DictValue computed_hmacs =
+      pref_hash_store.ComputeSplitHmacs("foo.bar", nullptr);
 
-  EXPECT_TRUE(computed_macs.empty());
+  EXPECT_TRUE(computed_hmacs.empty());
 }
 
 TEST_F(PrefHashStoreImplTest, FilterEncryptedHashesRecursive) {
@@ -164,11 +164,11 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
               transaction->CheckValue("path1", nullptr));
 
-    transaction->StoreHash("path1", &string_1);
+    transaction->StoreHmac("path1", &string_1);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
     EXPECT_EQ(ValueState::CLEARED, transaction->CheckValue("path1", nullptr));
-    transaction->StoreHash("path1", nullptr);
+    transaction->StoreHmac("path1", nullptr);
     EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckValue("path1", nullptr));
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));
 
@@ -179,12 +179,12 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
     dict.Set("b", "bar");
     dict.Set("c", "baz");
 
-    transaction->StoreHash("path1", &dict_val);
+    transaction->StoreHmac("path1", &dict_val);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &dict_val));
   }
 
-  ASSERT_FALSE(GetHashStoreContents()->GetSuperMac().empty());
+  ASSERT_FALSE(GetHashStoreContents()->GetSuperHmac().empty());
 
   {
     // |pref_hash_store| should trust its initial hashes dictionary and thus
@@ -200,8 +200,8 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
               transaction->CheckValue("new_path", nullptr));
   }
 
-  // Manually corrupt the super MAC.
-  GetHashStoreContents()->SetSuperMac(std::string(64, 'A'));
+  // Manually corrupt the super HMAC.
+  GetHashStoreContents()->SetSuperHmac(std::string(64, 'A'));
 
   {
     // |pref_hash_store| should no longer trust its initial hashes dictionary
@@ -222,19 +222,19 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
   base::Value string_1("string1");
   base::Value string_2("string2");
 
-  // Initial state: no super MAC.
+  // Initial state: no super HMAC.
   {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_FALSE(transaction->IsSuperMACValid());
+    ASSERT_FALSE(transaction->IsSuperHmacValid());
 
-    ASSERT_FALSE(transaction->HasHash("path1"));
+    ASSERT_FALSE(transaction->HasAuthenticator("path1"));
 
-    // Storing a hash will stamp the super MAC.
-    transaction->StoreHash("path1", &string_1);
+    // Storing a hash will stamp the super HMAC.
+    transaction->StoreHmac("path1", &string_1);
 
-    ASSERT_TRUE(transaction->HasHash("path1"));
+    ASSERT_TRUE(transaction->HasAuthenticator("path1"));
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));
@@ -247,19 +247,19 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
   base::Value path_1_string_1_hash_copy(hash->Clone());
   hash = nullptr;
 
-  // Verify that the super MAC was stamped.
+  // Verify that the super HMAC was stamped.
   {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_TRUE(transaction->IsSuperMACValid());
-    ASSERT_TRUE(transaction->HasHash("path1"));
+    ASSERT_TRUE(transaction->IsSuperHmacValid());
+    ASSERT_TRUE(transaction->HasAuthenticator("path1"));
 
     // Clearing the hash should preserve validity.
-    transaction->ClearHash("path1");
+    transaction->ClearAuthenticators("path1");
 
     // The effects of the clear should be immediately visible.
-    ASSERT_FALSE(transaction->HasHash("path1"));
+    ASSERT_FALSE(transaction->HasAuthenticator("path1"));
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
               transaction->CheckValue("path1", nullptr));
     EXPECT_EQ(ValueState::TRUSTED_UNKNOWN_VALUE,
@@ -271,24 +271,24 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_TRUE(transaction->IsSuperMACValid());
-    ASSERT_FALSE(transaction->HasHash("path1"));
+    ASSERT_TRUE(transaction->IsSuperHmacValid());
+    ASSERT_FALSE(transaction->HasAuthenticator("path1"));
   }
 
-  // Invalidate the super MAC.
-  GetHashStoreContents()->SetSuperMac(std::string());
+  // Invalidate the super HMAC.
+  GetHashStoreContents()->SetSuperHmac(std::string());
 
   {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_FALSE(transaction->IsSuperMACValid());
-    ASSERT_FALSE(transaction->HasHash("path1"));
+    ASSERT_FALSE(transaction->IsSuperHmacValid());
+    ASSERT_FALSE(transaction->HasAuthenticator("path1"));
 
     // An import should preserve invalidity.
-    transaction->ImportHash("path1", &path_1_string_1_hash_copy);
+    transaction->ImportAuthData("path1", &path_1_string_1_hash_copy);
 
-    ASSERT_TRUE(transaction->HasHash("path1"));
+    ASSERT_TRUE(transaction->HasAuthenticator("path1"));
 
     // The imported hash should be usable for validating the original value.
     EXPECT_EQ(ValueState::UNCHANGED,
@@ -300,13 +300,13 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_FALSE(transaction->IsSuperMACValid());
-    ASSERT_TRUE(transaction->HasHash("path1"));
+    ASSERT_FALSE(transaction->IsSuperHmacValid());
+    ASSERT_TRUE(transaction->HasAuthenticator("path1"));
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
 
     // After clearing the hash, non-null values are UNTRUSTED_UNKNOWN.
-    transaction->ClearHash("path1");
+    transaction->ClearAuthenticators("path1");
 
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
               transaction->CheckValue("path1", nullptr));
@@ -318,10 +318,10 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_FALSE(transaction->IsSuperMACValid());
+    ASSERT_FALSE(transaction->IsSuperHmacValid());
 
-    // Test StampSuperMac.
-    transaction->StampSuperMac();
+    // Test StampSuperHmac.
+    transaction->StampSuperHmac();
   }
 
   // Verify that the store is now valid.
@@ -329,10 +329,10 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_TRUE(transaction->IsSuperMACValid());
+    ASSERT_TRUE(transaction->IsSuperHmacValid());
 
     // Store the hash of a different value to test an "over-import".
-    transaction->StoreHash("path1", &string_2);
+    transaction->StoreHmac("path1", &string_2);
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_1));
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_2));
@@ -342,10 +342,10 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_TRUE(transaction->IsSuperMACValid());
+    ASSERT_TRUE(transaction->IsSuperHmacValid());
 
     // "Over-import". An import should preserve validity.
-    transaction->ImportHash("path1", &path_1_string_1_hash_copy);
+    transaction->ImportAuthData("path1", &path_1_string_1_hash_copy);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));
@@ -356,29 +356,29 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, true);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
-    ASSERT_TRUE(transaction->IsSuperMACValid());
+    ASSERT_TRUE(transaction->IsSuperHmacValid());
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));
   }
 }
 
-TEST_F(PrefHashStoreImplTest, SuperMACDisabled) {
+TEST_F(PrefHashStoreImplTest, SuperHmacDisabled) {
   base::Value string_1("string1");
   base::Value string_2("string2");
 
   {
-    // Pass |use_super_mac| => false.
+    // Pass |use_super_hmac| => false.
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), false, false);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
 
-    transaction->StoreHash("path1", &string_2);
+    transaction->StoreHmac("path1", &string_2);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_2));
   }
 
-  ASSERT_TRUE(GetHashStoreContents()->GetSuperMac().empty());
+  ASSERT_TRUE(GetHashStoreContents()->GetSuperHmac().empty());
   EXPECT_TRUE(GetHashStoreContents()->GetSuperEncryptedHash().empty());
 
   {
@@ -394,18 +394,18 @@ TEST_F(PrefHashStoreImplTest, SuperEncryptedHashDisabled) {
   base::Value string_1("string1");
 
   {
-    // Pass |use_super_mac| => true, |use_super_encrypted_hash| => false.
+    // Pass |use_super_hmac| => true, |use_super_encrypted_hash| => false.
     PrefHashStoreImpl pref_hash_store(std::string(32, 0), true, false);
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
 
-    transaction->StoreHash("path1", &string_1);
+    transaction->StoreHmac("path1", &string_1);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckValue("path1", &string_1));
   }
 
-  // SuperMAC should be stored.
-  EXPECT_FALSE(GetHashStoreContents()->GetSuperMac().empty());
+  // Super HMAC should be stored.
+  EXPECT_FALSE(GetHashStoreContents()->GetSuperHmac().empty());
   // SuperEncryptedHash should NOT be stored.
   EXPECT_TRUE(GetHashStoreContents()->GetSuperEncryptedHash().empty());
 }
@@ -436,7 +436,7 @@ TEST_F(PrefHashStoreImplTest, SplitHashStoreAndCheck) {
               transaction->CheckSplitValue("path1", &dict, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
 
-    transaction->StoreSplitHash("path1", &dict);
+    transaction->StoreSplitHmac("path1", &dict);
 
     // Verify match post storage.
     EXPECT_EQ(ValueState::UNCHANGED,
@@ -487,7 +487,7 @@ TEST_F(PrefHashStoreImplTest, SplitHashStoreAndCheck) {
     EXPECT_TRUE(invalid_keys.empty());
 
     // Store hash for |modified_dict|.
-    transaction->StoreSplitHash("path1", &modified_dict);
+    transaction->StoreSplitHmac("path1", &modified_dict);
 
     // Verify |modified_dict| is now the one that verifies correctly.
     EXPECT_EQ(
@@ -527,8 +527,8 @@ TEST_F(PrefHashStoreImplTest, SplitHashStoreAndCheck) {
     EXPECT_TRUE(invalid_keys.empty());
   }
 
-  // Manually corrupt the super MAC.
-  GetHashStoreContents()->SetSuperMac(std::string(64, 'A'));
+  // Manually corrupt the super HMAC.
+  GetHashStoreContents()->SetSuperHmac(std::string(64, 'A'));
 
   {
     // |pref_hash_store| should no longer trust its initial hashes dictionary
@@ -565,10 +565,10 @@ TEST_F(PrefHashStoreImplTest, EmptyAndNULLSplitDict) {
     // Store hashes for a random dict to be overwritten below.
     base::DictValue initial_dict;
     initial_dict.Set("a", "foo");
-    transaction->StoreSplitHash("path1", &initial_dict);
+    transaction->StoreSplitHmac("path1", &initial_dict);
 
     // Verify stored empty dictionary matches NULL and empty dictionary back.
-    transaction->StoreSplitHash("path1", &empty_dict);
+    transaction->StoreSplitHmac("path1", &empty_dict);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckSplitValue("path1", nullptr, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
@@ -577,7 +577,7 @@ TEST_F(PrefHashStoreImplTest, EmptyAndNULLSplitDict) {
     EXPECT_TRUE(invalid_keys.empty());
 
     // Same when storing NULL directly.
-    transaction->StoreSplitHash("path1", nullptr);
+    transaction->StoreSplitHmac("path1", nullptr);
     EXPECT_EQ(ValueState::UNCHANGED,
               transaction->CheckSplitValue("path1", nullptr, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
@@ -626,7 +626,7 @@ TEST_F(PrefHashStoreImplTest, TrustedUnknownSplitValueFromExistingAtomic) {
     std::unique_ptr<PrefHashStoreTransaction> transaction(
         pref_hash_store.BeginTransaction(GetHashStoreContents()));
 
-    transaction->StoreHash("path1", &string);
+    transaction->StoreHmac("path1", &string);
     EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckValue("path1", &string));
   }
 
@@ -648,7 +648,7 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
 
   PrefHashStoreImplEncryptedTest()
       : hash_store_(kSeed,
-                    /*use_super_mac=*/true,
+                    /*use_super_hmac=*/true,
                     /*use_super_encrypted_hash=*/true),
         test_encryptor_(os_crypt_async::GetTestEncryptorForTesting()),
         dictionary_contents_(pref_store_contents_) {}
@@ -663,17 +663,19 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
 
   void VerifyStoredHashes(
       const std::string& path,
-      const std::optional<std::string>& expected_mac,
+      const std::optional<std::string>& expected_hmac,
       const std::optional<std::string>& expected_encrypted_b64) {
     SCOPED_TRACE("Verifying hashes for path: " + path);
-    std::string stored_mac;
-    bool has_mac = dictionary_contents_.GetMac(path, &stored_mac);
-    EXPECT_EQ(expected_mac.has_value(), has_mac);
-    if (expected_mac) {
-      EXPECT_EQ(*expected_mac, stored_mac);
+    std::string stored_hmac;
+    bool has_hmac =
+        dictionary_contents_.GetAtomicPrefAuthenticator(path, &stored_hmac);
+    EXPECT_EQ(expected_hmac.has_value(), has_hmac);
+    if (expected_hmac) {
+      EXPECT_EQ(*expected_hmac, stored_hmac);
     }
     std::string stored_enc;
-    bool has_enc = dictionary_contents_.GetMac(GetEncKey(path), &stored_enc);
+    bool has_enc = dictionary_contents_.GetAtomicPrefAuthenticator(
+        GetEncKey(path), &stored_enc);
     EXPECT_EQ(expected_encrypted_b64.has_value(), has_enc);
     if (expected_encrypted_b64) {
       EXPECT_EQ(*expected_encrypted_b64, stored_enc);
@@ -683,23 +685,23 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
   void VerifyStoredSplitHashes(
       const std::string& base_path,
       const std::string& key,  // sub-key within the split dict
-      const std::optional<std::string>& expected_mac,
+      const std::optional<std::string>& expected_hmac,
       const std::optional<std::string>& expected_encrypted_b64) {
     SCOPED_TRACE("Verifying split hashes for path: " + base_path + "." + key);
-    std::map<std::string, std::string> split_macs;
-    dictionary_contents_.GetSplitMacs(base_path, &split_macs);
+    std::map<std::string, std::string> split_hmacs;
+    dictionary_contents_.GetSplitPrefAuthenticators(base_path, &split_hmacs);
 
-    auto mac_it = split_macs.find(key);
-    EXPECT_EQ(expected_mac.has_value(), mac_it != split_macs.end());
-    if (expected_mac && mac_it != split_macs.end()) {
-      EXPECT_EQ(*expected_mac, mac_it->second);
-    } else if (expected_mac) {
+    auto mac_it = split_hmacs.find(key);
+    EXPECT_EQ(expected_hmac.has_value(), mac_it != split_hmacs.end());
+    if (expected_hmac && mac_it != split_hmacs.end()) {
+      EXPECT_EQ(*expected_hmac, mac_it->second);
+    } else if (expected_hmac) {
       ADD_FAILURE() << "Expected MAC for " << key << " not found.";
     }
 
     std::map<std::string, std::string> split_enc_hashes;
-    dictionary_contents_.GetSplitMacs(GetSplitEncKeyBase(base_path),
-                                      &split_enc_hashes);
+    dictionary_contents_.GetSplitPrefAuthenticators(
+        GetSplitEncKeyBase(base_path), &split_enc_hashes);
     auto enc_it = split_enc_hashes.find(key);
     EXPECT_EQ(expected_encrypted_b64.has_value(),
               enc_it != split_enc_hashes.end());
@@ -710,39 +712,40 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
     }
   }
 
-  void MakeSuperMACInvalid() { dictionary_contents_.SetSuperMac("invalid"); }
-  void MakeSuperMACValid() {
+  void MakeSuperHmacInvalid() { dictionary_contents_.SetSuperHmac("invalid"); }
+  void MakeSuperHmacValid() {
     const base::DictValue* macs_dict = GetCurrentDictionaryContents();
-    std::string valid_super_mac;
+    std::string valid_super_hmac;
     if (macs_dict) {
       base::Value dict_value_wrapper(macs_dict->Clone());
-      valid_super_mac = hash_store_.ComputeMac("", &dict_value_wrapper);
+      valid_super_hmac = hash_store_.ComputeHmac("", &dict_value_wrapper);
     } else {
-      valid_super_mac =
-          hash_store_.ComputeMac("", static_cast<const base::Value*>(nullptr));
+      valid_super_hmac =
+          hash_store_.ComputeHmac("", static_cast<const base::Value*>(nullptr));
     }
-    dictionary_contents_.SetSuperMac(valid_super_mac);
+    dictionary_contents_.SetSuperHmac(valid_super_hmac);
   }
 
-  void SeedAtomicMac(const std::string& path, const std::string& mac_value) {
-    dictionary_contents_.SetMac(path, mac_value);
+  void SeedAtomicHmac(const std::string& path, const std::string& hmac_value) {
+    dictionary_contents_.SetAtomicPrefAuthenticator(path, hmac_value);
   }
 
   void SeedAtomicEncryptedHash(const std::string& path,
                                const std::string& eh_value_b64) {
-    dictionary_contents_.SetMac(GetEncKey(path), eh_value_b64);
+    dictionary_contents_.SetAtomicPrefAuthenticator(GetEncKey(path),
+                                                    eh_value_b64);
   }
 
-  void SeedSplitMacs(const std::string& path,
-                     const base::DictValue* dict_to_hash) {
+  void SeedSplitHmacs(const std::string& path,
+                      const base::DictValue* dict_to_hash) {
     // Remove any existing entry at this path (atomic or old split dict)
-    dictionary_contents_.RemoveEntry(path);
+    dictionary_contents_.RemoveAuthenticator(path);
     if (dict_to_hash) {
-      base::DictValue macs = hash_store_.ComputeSplitMacs(path, dict_to_hash);
-      for (const auto item : macs) {
+      base::DictValue hmacs = hash_store_.ComputeSplitHmacs(path, dict_to_hash);
+      for (const auto item : hmacs) {
         if (item.second.is_string()) {
-          dictionary_contents_.SetSplitMac(path, item.first,
-                                           item.second.GetString());
+          dictionary_contents_.SetSplitPrefAuthenticator(
+              path, item.first, item.second.GetString());
         }
       }
     }
@@ -751,15 +754,15 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
   void SeedSplitEncryptedHashes(const std::string& path,
                                 const base::DictValue* computed_hashes_dict) {
     std::string enc_base_key = GetSplitEncKeyBase(path);
-    dictionary_contents_.RemoveEntry(
+    dictionary_contents_.RemoveAuthenticator(
         enc_base_key);  // Remove potentially conflicting atomic entry
-    dictionary_contents_.RemoveEntry(
+    dictionary_contents_.RemoveAuthenticator(
         enc_base_key);  // Remove old split dict if present
     if (computed_hashes_dict) {
       for (auto item : *computed_hashes_dict) {
         if (item.second.is_string()) {
-          dictionary_contents_.SetSplitMac(enc_base_key, item.first,
-                                           item.second.GetString());
+          dictionary_contents_.SetSplitPrefAuthenticator(
+              enc_base_key, item.first, item.second.GetString());
         }
       }
     }
@@ -770,14 +773,14 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
       const std::string& path,
       const base::DictValue* values_to_hash) {
     std::string enc_base_key = GetSplitEncKeyBase(path);
-    dictionary_contents_.RemoveEntry(enc_base_key);
+    dictionary_contents_.RemoveAuthenticator(enc_base_key);
     if (values_to_hash) {
       base::DictValue computed_hashes = hash_store_.ComputeSplitEncryptedHashes(
           path, values_to_hash, test_encryptor_.get());
       for (auto item : computed_hashes) {
         if (item.second.is_string()) {
-          dictionary_contents_.SetSplitMac(enc_base_key, item.first,
-                                           item.second.GetString());
+          dictionary_contents_.SetSplitPrefAuthenticator(
+              enc_base_key, item.first, item.second.GetString());
         }
       }
     }
@@ -798,15 +801,15 @@ TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashOnly) {
   std::string path = "test.pref";
 
   {
-    // Pass |use_super_mac| => false, |use_super_encrypted_hash| => true.
+    // Pass |use_super_hmac| => false, |use_super_encrypted_hash| => true.
     PrefHashStoreImpl local_hash_store(kSeed, false, true);
     auto tx = local_hash_store.BeginTransaction(&dictionary_contents_,
                                                 test_encryptor_);
     tx->StoreEncryptedHash(path, &value);
   }
 
-  // SuperMAC should NOT be stored.
-  EXPECT_TRUE(dictionary_contents_.GetSuperMac().empty());
+  // Super HMAC should NOT be stored.
+  EXPECT_TRUE(dictionary_contents_.GetSuperHmac().empty());
   // SuperEncryptedHash should be stored.
   EXPECT_FALSE(dictionary_contents_.GetSuperEncryptedHash().empty());
 }
@@ -814,33 +817,33 @@ TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashOnly) {
 TEST_F(PrefHashStoreImplEncryptedTest, StoreAndGetHashes) {
   base::Value value("test_value");
   std::string path = "test.pref";
-  std::optional<std::string> stored_mac;
+  std::optional<std::string> stored_hmac;
   std::optional<std::string> stored_enc_b64;
 
   // Store both hashes using transaction with encryptor
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
-    tx->StoreHash(path, &value);
+    tx->StoreHmac(path, &value);
     tx->StoreEncryptedHash(path, &value);
-    stored_mac = tx->GetMac(path);
+    stored_hmac = tx->GetHmac(path);
     stored_enc_b64 = tx->GetEncryptedHash(path);
   }
 
   // Verify the transaction stored non-empty hashes
-  ASSERT_TRUE(stored_mac.has_value());
-  ASSERT_FALSE(stored_mac->empty());
+  ASSERT_TRUE(stored_hmac.has_value());
+  ASSERT_FALSE(stored_hmac->empty());
   ASSERT_TRUE(stored_enc_b64.has_value());
   ASSERT_FALSE(stored_enc_b64->empty());
 
   // Verify storage in contents directly.
-  VerifyStoredHashes(path, stored_mac, stored_enc_b64);
+  VerifyStoredHashes(path, stored_hmac, stored_enc_b64);
 
   // Verify retrieval via a new transaction matches what was stored
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
-    EXPECT_TRUE(tx->HasHash(path));
+    EXPECT_TRUE(tx->HasAuthenticator(path));
     EXPECT_TRUE(tx->HasEncryptedHash(path));
-    EXPECT_EQ(stored_mac, tx->GetMac(path));
+    EXPECT_EQ(stored_hmac, tx->GetHmac(path));
     EXPECT_EQ(stored_enc_b64, tx->GetEncryptedHash(path));
   }
 }
@@ -863,7 +866,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashDualWrite) {
   DictionaryHashStoreContents fresh_contents(fresh_store_contents);
   {
     auto tx = hash_store_.BeginTransaction(&fresh_contents, nullptr);
-    tx->StoreHash(path, &value);
+    tx->StoreHmac(path, &value);
   }
   std::string hash = fresh_contents.GetSuperEncryptedHash();
   EXPECT_TRUE(hash.empty()) << "Hash was not empty! Value: " << hash;
@@ -872,27 +875,27 @@ TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashDualWrite) {
 TEST_F(PrefHashStoreImplEncryptedTest, StoreHashOnly) {
   base::Value value("mac_only_value");
   std::string path = "mac.only.pref";
-  std::optional<std::string> stored_mac;
+  std::optional<std::string> stored_hmac;
 
-  // Store only MAC hash
+  // Store only HMAC
   {
     auto tx = BeginTransaction(/*with_encryptor=*/false);
-    tx->StoreHash(path, &value);
-    stored_mac = tx->GetMac(path);
+    tx->StoreHmac(path, &value);
+    stored_hmac = tx->GetHmac(path);
   }
 
-  ASSERT_TRUE(stored_mac.has_value());
-  ASSERT_FALSE(stored_mac->empty());
+  ASSERT_TRUE(stored_hmac.has_value());
+  ASSERT_FALSE(stored_hmac->empty());
 
   // Verify storage in contents
-  VerifyStoredHashes(path, stored_mac, std::nullopt);
+  VerifyStoredHashes(path, stored_hmac, std::nullopt);
 
   // Verify retrieval via transaction
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
-    EXPECT_TRUE(tx->HasHash(path));
+    EXPECT_TRUE(tx->HasAuthenticator(path));
     EXPECT_FALSE(tx->HasEncryptedHash(path));
-    EXPECT_EQ(stored_mac, tx->GetMac(path));
+    EXPECT_EQ(stored_hmac, tx->GetHmac(path));
     EXPECT_EQ(std::nullopt, tx->GetEncryptedHash(path));
   }
 }
@@ -907,10 +910,10 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckValueValidation) {
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
     ASSERT_TRUE(tx);
-    MakeSuperMACInvalid();
+    MakeSuperHmacInvalid();
 
     // Scenario 1: Store both, check valid, check wrong, check null
-    tx->StoreHash(path, &value);
+    tx->StoreHmac(path, &value);
     tx->StoreEncryptedHash(path, &value);
     EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
     EXPECT_EQ(ValueState::CHANGED_ENCRYPTED,
@@ -918,10 +921,10 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckValueValidation) {
     EXPECT_EQ(ValueState::CLEARED_ENCRYPTED,
               tx->CheckValue(path, null_value_ptr));
 
-    // Scenario 2: Store only MAC, check valid, check wrong, check null
-    tx->ClearHash(path);
-    tx->StoreHash(path, &value);
-    // Encrypted missing, fallback to MAC
+    // Scenario 2: Store only HMAC, check valid, check wrong, check null
+    tx->ClearAuthenticators(path);
+    tx->StoreHmac(path, &value);
+    // Encrypted missing, fallback to HMAC
     EXPECT_EQ(ValueState::UNCHANGED_VIA_HMAC_FALLBACK,
               tx->CheckValue(path, &value));
     EXPECT_EQ(ValueState::CHANGED_VIA_HMAC_FALLBACK,
@@ -930,43 +933,45 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckValueValidation) {
               tx->CheckValue(path, null_value_ptr));
 
     // Scenario 3: Store only Encrypted, check valid, check wrong, check null
-    tx->ClearHash(path);
+    tx->ClearAuthenticators(path);
     tx->StoreEncryptedHash(path, &value);
-    // MAC missing, Encrypted OK
+    // HMAC missing, Encrypted OK
     EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
     EXPECT_EQ(ValueState::CHANGED_ENCRYPTED,
               tx->CheckValue(path, &wrong_value));
     EXPECT_EQ(ValueState::CLEARED_ENCRYPTED,
               tx->CheckValue(path, null_value_ptr));
 
-    // Scenario 4: Store invalid Encrypted, valid MAC -> CHANGED (Enc preferred)
-    tx->ClearHash(path);
-    tx->StoreHash(path, &value);
+    // Scenario 4: Store invalid Encrypted, valid HMAC -> CHANGED (Enc
+    // preferred)
+    tx->ClearAuthenticators(path);
+    tx->StoreHmac(path, &value);
     // Manually seed bad data.
-    dictionary_contents_.SetMac(GetEncKey(path), "Invalid Base64");
+    dictionary_contents_.SetAtomicPrefAuthenticator(GetEncKey(path),
+                                                    "Invalid Base64");
     EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &value));
 
-    // Scenario 5: Store MAC for null, check null, check value.
-    tx->ClearHash(path);
-    tx->StoreHash(path, null_value_ptr);
+    // Scenario 5: Store HMAC for null, check null, check value.
+    tx->ClearAuthenticators(path);
+    tx->StoreHmac(path, null_value_ptr);
     tx->StoreEncryptedHash(path, null_value_ptr);
     EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED,
               tx->CheckValue(path, null_value_ptr));
     EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &value));
 
-    // Scenario 6: No Hashes stored, SuperMAC invalid
-    tx->ClearHash(path);
-    MakeSuperMACInvalid();
+    // Scenario 6: No Hashes stored, Super HMAC invalid
+    tx->ClearAuthenticators(path);
+    MakeSuperHmacInvalid();
     EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
               tx->CheckValue(path, &value));
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
               tx->CheckValue(path, null_value_ptr));
 
-    // Scenario 7: No Hashes stored, SuperMAC valid
-    MakeSuperMACValid();
+    // Scenario 7: No Hashes stored, Super HMAC valid
+    MakeSuperHmacValid();
     // Stamp based on current transaction state
-    ASSERT_TRUE(tx->StampSuperMac());
-    ASSERT_TRUE(tx->IsSuperMACValid());
+    ASSERT_TRUE(tx->StampSuperHmac());
+    ASSERT_TRUE(tx->IsSuperHmacValid());
     EXPECT_EQ(ValueState::TRUSTED_UNKNOWN_VALUE, tx->CheckValue(path, &value));
     EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
               tx->CheckValue(path, null_value_ptr));
@@ -976,33 +981,35 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckValueValidation) {
   {
     auto tx = BeginTransaction(/*with_encryptor=*/false);
     ASSERT_TRUE(tx);
-    MakeSuperMACInvalid();
+    MakeSuperHmacInvalid();
 
-    // Scenario 1: Store only MAC (cannot store encrypted), check valid, check
+    // Scenario 1: Store only HMAC (cannot store encrypted), check valid, check
     // wrong, check null
-    tx->StoreHash(path, &value);
+    tx->StoreHmac(path, &value);
     EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, &value));
     EXPECT_EQ(ValueState::CHANGED, tx->CheckValue(path, &wrong_value));
     EXPECT_EQ(ValueState::CLEARED, tx->CheckValue(path, null_value_ptr));
 
-    // Scenario 2: Store MAC for null, check null, check value
-    tx->ClearHash(path);
-    tx->StoreHash(path, null_value_ptr);
+    // Scenario 2: Store HMAC for null, check null, check value
+    tx->ClearAuthenticators(path);
+    tx->StoreHmac(path, null_value_ptr);
     EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, null_value_ptr));
     EXPECT_EQ(ValueState::CHANGED, tx->CheckValue(path, &value));
 
     // Scenario 3: Simulate Encrypted Hash only present (can't store this way
     // w/o encryptor).
-    tx->ClearHash(path);
+    tx->ClearAuthenticators(path);
     std::string enc_only_hash = base::Base64Encode("OnlyEncryptedData");
-    dictionary_contents_.SetMac(GetEncKey(path), enc_only_hash);
+    dictionary_contents_.SetAtomicPrefAuthenticator(GetEncKey(path),
+                                                    enc_only_hash);
     EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
               tx->CheckValue(path, &value));
 
-    // Scenario 4: Simulate Invalid Enc, Valid MAC present
-    tx->ClearHash(path);
-    tx->StoreHash(path, &value);
-    dictionary_contents_.SetMac(GetEncKey(path), "Invalid Base64");
+    // Scenario 4: Simulate Invalid Enc, Valid HMAC present
+    tx->ClearAuthenticators(path);
+    tx->StoreHmac(path, &value);
+    dictionary_contents_.SetAtomicPrefAuthenticator(GetEncKey(path),
+                                                    "Invalid Base64");
     EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, &value));
   }
 }
@@ -1019,29 +1026,29 @@ TEST_F(PrefHashStoreImplEncryptedTest,
 
   auto tx = BeginTransaction(/*with_encryptor=*/true);
   ASSERT_TRUE(tx);
-  MakeSuperMACInvalid();
+  MakeSuperHmacInvalid();
 
-  // Scenario 1: Store only MAC (legacy). With fallback disallowed, this must
+  // Scenario 1: Store only HMAC (legacy). With fallback disallowed, this must
   // NOT return UNCHANGED_VIA_HMAC_FALLBACK and should be treated as untrusted.
-  tx->ClearHash(path);
-  tx->StoreHash(path, &value);
+  tx->ClearAuthenticators(path);
+  tx->StoreHmac(path, &value);
   EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE, tx->CheckValue(path, &value));
   EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE,
             tx->CheckValue(path, &wrong_value));
   EXPECT_EQ(ValueState::TRUSTED_NULL_VALUE,
             tx->CheckValue(path, null_value_ptr));
 
-  // Scenario 2: Store both MAC and Encrypted Hash. Encrypted hash is valid.
-  tx->ClearHash(path);
-  tx->StoreHash(path, &value);
+  // Scenario 2: Store both HMAC and Encrypted Hash. Encrypted hash is valid.
+  tx->ClearAuthenticators(path);
+  tx->StoreHmac(path, &value);
   tx->StoreEncryptedHash(path, &value);
   EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
   EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &wrong_value));
   EXPECT_EQ(ValueState::CLEARED_ENCRYPTED,
             tx->CheckValue(path, null_value_ptr));
 
-  // Scenario 3: Store only Encrypted Hash (no MAC).
-  tx->ClearHash(path);
+  // Scenario 3: Store only Encrypted Hash (no HMAC).
+  tx->ClearAuthenticators(path);
   tx->StoreEncryptedHash(path, &value);
   EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
   EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &wrong_value));
@@ -1061,30 +1068,30 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   current_prefs.Set("key1", "value1");
   current_prefs.Set("key2", "value2");
 
-  // Scenario 1: Store only split MACs (legacy). With fallback disallowed, this
+  // Scenario 1: Store only split HMACs (legacy). With fallback disallowed, this
   // must NOT return UNCHANGED_VIA_HMAC_FALLBACK and should be treated as
   // untrusted.
   pref_store_contents_.clear();
   dictionary_contents_.Reset();
   actual_invalid_keys.clear();
-  MakeSuperMACInvalid();
+  MakeSuperHmacInvalid();
 
-  base::DictValue computed_split_macs =
-      hash_store_.ComputeSplitMacs(kPrefPath, &current_prefs);
-  SeedSplitMacs(kPrefPath, &computed_split_macs);
+  base::DictValue computed_split_hmacs =
+      hash_store_.ComputeSplitHmacs(kPrefPath, &current_prefs);
+  SeedSplitHmacs(kPrefPath, &computed_split_hmacs);
 
   auto tx = BeginTransaction(/*with_encryptor=*/true);
   ValueState result_state =
       tx->CheckSplitValue(kPrefPath, &current_prefs, &actual_invalid_keys);
   EXPECT_EQ(ValueState::UNTRUSTED_UNKNOWN_VALUE, result_state);
 
-  // Scenario 2: Store both split MACs and split encrypted hashes.
+  // Scenario 2: Store both split HMACs and split encrypted hashes.
   pref_store_contents_.clear();
   dictionary_contents_.Reset();
   actual_invalid_keys.clear();
-  MakeSuperMACInvalid();
+  MakeSuperHmacInvalid();
 
-  SeedSplitMacs(kPrefPath, &computed_split_macs);
+  SeedSplitHmacs(kPrefPath, &computed_split_hmacs);
   base::DictValue computed_split_encrypted_hashes =
       hash_store_.ComputeSplitEncryptedHashes(kPrefPath, &current_prefs,
                                               test_encryptor_.get());
@@ -1100,30 +1107,32 @@ TEST_F(PrefHashStoreImplEncryptedTest,
 TEST_F(PrefHashStoreImplEncryptedTest, ClearHashTest) {
   base::Value value("value");
   std::string path = "clear.test";
-  std::optional<std::string> stored_mac;
+  std::optional<std::string> stored_hmac;
   std::optional<std::string> stored_enc_b64;
 
   // Store both using transaction
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
-    tx->StoreHash(path, &value);
+    tx->StoreHmac(path, &value);
     tx->StoreEncryptedHash(path, &value);
-    stored_mac = tx->GetMac(path);
+    stored_hmac = tx->GetHmac(path);
     stored_enc_b64 = tx->GetEncryptedHash(path);
   }
-  ASSERT_TRUE(stored_mac.has_value());
+  ASSERT_TRUE(stored_hmac.has_value());
   ASSERT_TRUE(stored_enc_b64.has_value());
-  ASSERT_TRUE(dictionary_contents_.GetMac(path, nullptr));
-  ASSERT_TRUE(dictionary_contents_.GetMac(GetEncKey(path), nullptr));
+  ASSERT_TRUE(dictionary_contents_.GetAtomicPrefAuthenticator(path, nullptr));
+  ASSERT_TRUE(dictionary_contents_.GetAtomicPrefAuthenticator(GetEncKey(path),
+                                                              nullptr));
 
   // Clear via transaction
   {
     auto tx = BeginTransaction(/*with_encryptor=*/false);
-    tx->ClearHash(path);
+    tx->ClearAuthenticators(path);
   }
   // Verify cleared from contents using direct check
-  EXPECT_FALSE(dictionary_contents_.GetMac(path, nullptr));
-  EXPECT_FALSE(dictionary_contents_.GetMac(GetEncKey(path), nullptr));
+  EXPECT_FALSE(dictionary_contents_.GetAtomicPrefAuthenticator(path, nullptr));
+  EXPECT_FALSE(dictionary_contents_.GetAtomicPrefAuthenticator(GetEncKey(path),
+                                                               nullptr));
 }
 
 TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
@@ -1142,7 +1151,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
         pref_store_contents_.clear();
         dictionary_contents_.Reset();
         actual_invalid_keys.clear();
-        MakeSuperMACInvalid();
+        MakeSuperHmacInvalid();
         // 1. Seed the encrypted hashes into dictionary_contents_
         // These are the "stored" hashes.
         base::DictValue computed_split_encrypted_hashes =
@@ -1150,9 +1159,9 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
                 kPrefPath, &original_values_for_hashing, test_encryptor_.get());
         SeedSplitEncryptedHashes(kPrefPath, &computed_split_encrypted_hashes);
 
-        // 2. Ensure no MACs are present for this path to isolate the encrypted
+        // 2. Ensure no HMACs are present for this path to isolate the encrypted
         // path
-        SeedSplitMacs(kPrefPath, nullptr);
+        SeedSplitHmacs(kPrefPath, nullptr);
 
         // 3. Perform CheckSplitValue with encryptor present
         auto tx = BeginTransaction(/*with_encryptor=*/true);
@@ -1242,7 +1251,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
     pref_store_contents_.clear();
     dictionary_contents_.Reset();
     actual_invalid_keys.clear();
-    MakeSuperMACInvalid();
+    MakeSuperHmacInvalid();
 
     base::DictValue s8_current_prefs;
     s8_current_prefs.Set("keyA", "valueA");
@@ -1255,8 +1264,8 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
     pref_store_contents_.SetByDottedPath(full_dotted_path, base::DictValue());
     // ^^^ Creates an empty dictionary at the full path
 
-    // 2. Ensure no MACs are present for this path
-    SeedSplitMacs(kPrefPath, nullptr);
+    // 2. Ensure no HMACs are present for this path
+    SeedSplitHmacs(kPrefPath, nullptr);
 
     // 3. Perform CheckSplitValue with encryptor present
     auto tx = BeginTransaction(/*with_encryptor=*/true);
@@ -1317,8 +1326,8 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeSplitEncryptedHashes) {
 
   // Verify these hashes are usable by CheckSplitValue
   SeedSplitEncryptedHashes(kBasePath, &computed_hashes_for_dict4);
-  SeedSplitMacs(kBasePath, nullptr);
-  MakeSuperMACValid();
+  SeedSplitHmacs(kBasePath, nullptr);
+  MakeSuperHmacValid();
   {
     auto tx = BeginTransaction(true);
     std::vector<std::string> invalid_keys;
@@ -1362,8 +1371,8 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeSplitEncryptedHashes) {
   // CheckSplitValue will re-calculate hashes for good_key1, bad_key_binary (as
   // empty string), good_key2 and they should match the stored ones.
   SeedSplitEncryptedHashes(kBasePath, &computed_hashes_for_dict5);
-  SeedSplitMacs(kBasePath, nullptr);
-  MakeSuperMACValid();
+  SeedSplitHmacs(kBasePath, nullptr);
+  MakeSuperHmacValid();
   {
     auto tx = BeginTransaction(true);
     std::vector<std::string> invalid_keys;
@@ -1395,15 +1404,16 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   const std::string kPath = "test.no.encryptor.store.eh";
   const std::string kEncKey = GetEncKey(kPath);
   base::Value test_value("value to try storing");
-  SeedAtomicMac(kPath, "some_existing_mac");
+  SeedAtomicHmac(kPath, "some_existing_hmac");
 
   {
     auto tx = BeginTransaction(/*with_encryptor=*/false);
     tx->StoreEncryptedHash(kPath, &test_value);
 
-    EXPECT_FALSE(dictionary_contents_.GetMac(kEncKey, nullptr))
+    EXPECT_FALSE(
+        dictionary_contents_.GetAtomicPrefAuthenticator(kEncKey, nullptr))
         << "Encrypted hash should not be stored.";
-    VerifyStoredHashes(kPath, "some_existing_mac", std::nullopt);
+    VerifyStoredHashes(kPath, "some_existing_hmac", std::nullopt);
   }
 }
 
@@ -1416,7 +1426,7 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   original_seeded_values.Set("keyA", "valA");
   original_seeded_values.Set("keyB_in_store_only", "valB");
   SeedSplitEncryptedHashesFromValues(kPath, &original_seeded_values);
-  SeedSplitMacs(kPath, nullptr);
+  SeedSplitHmacs(kPath, nullptr);
 
   base::DictValue current_pref_dict;
   current_pref_dict.Set("keyA", "valA");
@@ -1437,8 +1447,8 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   base::DictValue values_for_eh;
   values_for_eh.Set("key1", "value1");
   SeedSplitEncryptedHashesFromValues(kPath, &values_for_eh);
-  SeedSplitMacs(kPath, nullptr);
-  MakeSuperMACInvalid();
+  SeedSplitHmacs(kPath, nullptr);
+  MakeSuperHmacInvalid();
 
   base::DictValue current_pref_dict = values_for_eh.Clone();
 
@@ -1452,8 +1462,8 @@ TEST_F(PrefHashStoreImplEncryptedTest,
 }
 
 TEST_F(PrefHashStoreImplEncryptedTest,
-       CheckSplitValue_NoEncryptor_EHAndMACsExist_UsesMACs) {
-  const std::string kPath = "split.no_encryptor.eh_and_macs";
+       CheckSplitValue_NoEncryptor_EHAndHmacsExist_UsesHmacs) {
+  const std::string kPath = "split.no_encryptor.eh_and_hmacs";
   base::DictValue base_values;
   base_values.Set("key1", "value1");
   base_values.Set("key2", "value2");
@@ -1462,8 +1472,8 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   eh_seed_values.Set("key1", "value1");
   SeedSplitEncryptedHashesFromValues(kPath, &eh_seed_values);
 
-  SeedSplitMacs(kPath, &base_values);
-  MakeSuperMACInvalid();
+  SeedSplitHmacs(kPath, &base_values);
+  MakeSuperHmacInvalid();
 
   base::DictValue current_pref_dict1 = base_values.Clone();
   {
@@ -1472,7 +1482,7 @@ TEST_F(PrefHashStoreImplEncryptedTest,
     ValueState state =
         tx->CheckSplitValue(kPath, &current_pref_dict1, &invalid_keys);
     EXPECT_EQ(ValueState::UNCHANGED, state)
-        << "Should rely on MACs when encryptor is off";
+        << "Should rely on HMACs when encryptor is off";
     EXPECT_TRUE(invalid_keys.empty());
   }
 
@@ -1522,181 +1532,184 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   EXPECT_TRUE(BeginTransaction(true)->HasEncryptedHash(kFullSubPath1));
 }
 
-// For PrefHashStoreTransactionImpl::ImportHash
+// For PrefHashStoreTransactionImpl::ImportAuthData
 TEST_F(PrefHashStoreImplEncryptedTest,
-       ImportHash_StringMac_ClearsOldEH_AndStampsSuperMACIfValid) {
+       ImportAuthData_StringHmac_ClearsOldEH_AndStampsSuperHmacIfValid) {
   const std::string kPath = "import.string.mac.specific";
   SeedAtomicEncryptedHash(kPath, "eh_to_be_cleared_b64");
-  MakeSuperMACValid();
+  MakeSuperHmacValid();
 
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
-    ASSERT_TRUE(tx->IsSuperMACValid());
+    ASSERT_TRUE(tx->IsSuperHmacValid());
 
-    base::Value mac_to_import("newly_imported_mac");
-    tx->ImportHash(kPath, &mac_to_import);
+    base::Value hmac_to_import("newly_imported_hmac");
+    tx->ImportAuthData(kPath, &hmac_to_import);
 
-    VerifyStoredHashes(kPath, "newly_imported_mac", std::nullopt);
-    EXPECT_TRUE(tx->StampSuperMac());
-    EXPECT_TRUE(tx->IsSuperMACValid());
+    VerifyStoredHashes(kPath, "newly_imported_hmac", std::nullopt);
+    EXPECT_TRUE(tx->StampSuperHmac());
+    EXPECT_TRUE(tx->IsSuperHmacValid());
   }
 }
 
 TEST_F(PrefHashStoreImplEncryptedTest,
-       ImportHash_Dict_MacOnly_ClearsOldEH_AndStampsSuperMACIfValid) {
-  const std::string kPath = "import.dict.maconly.specific";
+       ImportAuthData_Dict_HmacOnly_ClearsOldEH_AndStampsSuperHmacIfValid) {
+  const std::string kPath = "import.dict.hmaconly.specific";
   SeedAtomicEncryptedHash(kPath, "eh_to_be_cleared_b64");
-  SeedAtomicMac(kPath, "old_mac_to_be_overwritten");
-  MakeSuperMACValid();
+  SeedAtomicHmac(kPath, "old_hmac_to_be_overwritten");
+  MakeSuperHmacValid();
 
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
-    ASSERT_TRUE(tx->IsSuperMACValid());
+    ASSERT_TRUE(tx->IsSuperHmacValid());
 
     base::DictValue dict_to_import_data;
-    dict_to_import_data.Set(kImportMacKey, "imported_dict_mac");
+    dict_to_import_data.Set(kImportHmacKey, "imported_dict_hmac");
     base::Value value_for_import(dict_to_import_data.Clone());
-    tx->ImportHash(kPath, &value_for_import);
+    tx->ImportAuthData(kPath, &value_for_import);
 
-    VerifyStoredHashes(kPath, "imported_dict_mac", std::nullopt);
-    EXPECT_TRUE(tx->StampSuperMac());
-    EXPECT_TRUE(tx->IsSuperMACValid());
+    VerifyStoredHashes(kPath, "imported_dict_hmac", std::nullopt);
+    EXPECT_TRUE(tx->StampSuperHmac());
+    EXPECT_TRUE(tx->IsSuperHmacValid());
   }
 }
 
 TEST_F(PrefHashStoreImplEncryptedTest,
-       ImportHash_Dict_EHOnly_ClearsOldMac_AndStampsSuperMACIfValid) {
+       ImportAuthData_Dict_EHOnly_ClearsOldHmac_AndStampsSuperHmacIfValid) {
   const std::string kPath = "import.dict.ehonly.specific";
-  SeedAtomicMac(kPath, "mac_to_be_cleared");
+  SeedAtomicHmac(kPath, "hmac_to_be_cleared");
   SeedAtomicEncryptedHash(kPath, "old_eh_to_be_overwritten_b64");
-  MakeSuperMACValid();
+  MakeSuperHmacValid();
 
   {
     auto tx = BeginTransaction(/*with_encryptor=*/true);
-    ASSERT_TRUE(tx->IsSuperMACValid());
+    ASSERT_TRUE(tx->IsSuperHmacValid());
 
     base::DictValue dict_to_import_data;
     dict_to_import_data.Set(kImportEncryptedHashKey, "imported_dict_eh_b64");
     base::Value value_for_import(dict_to_import_data.Clone());
-    tx->ImportHash(kPath, &value_for_import);
+    tx->ImportAuthData(kPath, &value_for_import);
 
     VerifyStoredHashes(kPath, std::nullopt, "imported_dict_eh_b64");
-    EXPECT_TRUE(tx->StampSuperMac());
-    EXPECT_TRUE(tx->IsSuperMACValid());
+    EXPECT_TRUE(tx->StampSuperHmac());
+    EXPECT_TRUE(tx->IsSuperHmacValid());
   }
 }
 
 TEST_F(
     PrefHashStoreImplEncryptedTest,
-    ImportHash_Dict_NoRelevantKeys_NoOldHashes_SuperMACValid_StampsSuperMAC) {
+    ImportAuthData_Dict_NoRelevantKeys_NoOldHashes_SuperHmacValid_StampsSuperHmac) {
   const std::string kPath = "import.dict.norelevant.noold";
-  dictionary_contents_.RemoveEntry(kPath);
-  dictionary_contents_.RemoveEntry(GetEncKey(kPath));
-  MakeSuperMACValid();
+  dictionary_contents_.RemoveAuthenticator(kPath);
+  dictionary_contents_.RemoveAuthenticator(GetEncKey(kPath));
+  MakeSuperHmacValid();
 
   auto tx = BeginTransaction(/*with_encryptor=*/true);
-  ASSERT_TRUE(tx->IsSuperMACValid());
-  // Initial StampSuperMac will be true because the transaction's
-  // super_mac_dirty_ is set by constructor if it reads a valid MAC (or by
-  // StampSuperMac if it had to make it valid). Given the provided StampSuperMac
-  // impl, it will always be true here.
-  EXPECT_TRUE(tx->StampSuperMac())
-      << "First stamp will always be true if use_super_mac is on.";
+  ASSERT_TRUE(tx->IsSuperHmacValid());
+  // Initial StampSuperHmac will be true because the transaction's
+  // super_hmac_dirty_ is set by constructor if it reads a valid HMAC (or by
+  // StampSuperHmac if it had to make it valid). Given the provided
+  // StampSuperHmac impl, it will always be true here.
+  EXPECT_TRUE(tx->StampSuperHmac())
+      << "First stamp will always be true if use_super_hmac is on.";
 
   base::DictValue dict_to_import_data;
   dict_to_import_data.Set("some_other_key", "some_value");
   base::Value value_for_import(dict_to_import_data.Clone());
-  tx->ImportHash(kPath, &value_for_import);
+  tx->ImportAuthData(kPath, &value_for_import);
 
   VerifyStoredHashes(kPath, std::nullopt, std::nullopt);
 
-  EXPECT_TRUE(tx->StampSuperMac())
-      << "Importing dict when SuperMAC was valid makes it stampable again.";
-  EXPECT_TRUE(tx->IsSuperMACValid());
+  EXPECT_TRUE(tx->StampSuperHmac())
+      << "Importing dict when Super HMAC was valid makes it stampable again.";
+  EXPECT_TRUE(tx->IsSuperHmacValid());
 }
 
 TEST_F(PrefHashStoreImplEncryptedTest,
-       ImportHash_OtherType_NoChange_NoStampIfWasClean) {
+       ImportAuthData_OtherType_NoChange_NoStampIfWasClean) {
   const std::string kPath = "import.othertype.nochange";
-  SeedAtomicMac(kPath, "old_mac_data");
-  MakeSuperMACValid();
+  SeedAtomicHmac(kPath, "old_hmac_data");
+  MakeSuperHmacValid();
 
   auto tx = BeginTransaction(/*with_encryptor=*/true);
-  ASSERT_TRUE(tx->IsSuperMACValid());
-  tx->StampSuperMac();
+  ASSERT_TRUE(tx->IsSuperHmacValid());
+  tx->StampSuperHmac();
 
   base::Value int_value(123);
-  tx->ImportHash(kPath, &int_value);
+  tx->ImportAuthData(kPath, &int_value);
 
-  VerifyStoredHashes(kPath, "old_mac_data", std::nullopt);
-  EXPECT_TRUE(
-      tx->StampSuperMac());  // This will be true with the current StampSuperMac
-  EXPECT_TRUE(tx->IsSuperMACValid());
+  VerifyStoredHashes(kPath, "old_hmac_data", std::nullopt);
+  EXPECT_TRUE(tx->StampSuperHmac());  // This will be true with the current
+                                      // StampSuperHmac
+  EXPECT_TRUE(tx->IsSuperHmacValid());
 }
 
 // For PrefHashStoreTransactionImpl::ClearEncryptedHash - private, tested via
-// public ClearHash.
+// public ClearAuthData.
 TEST_F(PrefHashStoreImplEncryptedTest,
-       ClearHash_TargetingPrivateClearEncryptedHashLogic) {
-  const std::string kPath = "clear.eh.via.clearhash";
+       ClearAuthData_TargetingPrivateClearEncryptedHashLogic) {
+  const std::string kPath = "clear.eh.via.clearhashes";
   const std::string kEncKey = GetEncKey(kPath);
 
-  // Scenario 1: Both exist, SuperMAC valid
+  // Scenario 1: Both exist, Super HMAC valid
   SeedAtomicEncryptedHash(kPath, "eh_data_b64");
-  SeedAtomicMac(kPath, "mac_data_also");
-  MakeSuperMACValid();
+  SeedAtomicHmac(kPath, "hmac_data_also");
+  MakeSuperHmacValid();
   auto tx1 = BeginTransaction(/*with_encryptor=*/true);
-  ASSERT_TRUE(tx1->IsSuperMACValid());
+  ASSERT_TRUE(tx1->IsSuperHmacValid());
 
-  tx1->ClearHash(kPath);
+  tx1->ClearAuthenticators(kPath);
 
-  EXPECT_FALSE(dictionary_contents_.GetMac(kPath, nullptr));
-  EXPECT_FALSE(dictionary_contents_.GetMac(kEncKey, nullptr));
-  EXPECT_TRUE(tx1->StampSuperMac());
-  EXPECT_TRUE(tx1->IsSuperMACValid());
+  EXPECT_FALSE(dictionary_contents_.GetAtomicPrefAuthenticator(kPath, nullptr));
+  EXPECT_FALSE(
+      dictionary_contents_.GetAtomicPrefAuthenticator(kEncKey, nullptr));
+  EXPECT_TRUE(tx1->StampSuperHmac());
+  EXPECT_TRUE(tx1->IsSuperHmacValid());
 
-  // Scenario 2: Both exist, SuperMAC invalid
+  // Scenario 2: Both exist, Super HMAC invalid
   SeedAtomicEncryptedHash(kPath, "eh_data_b64_sm_invalid");
-  SeedAtomicMac(kPath, "mac_data_sm_invalid");
-  MakeSuperMACInvalid();
+  SeedAtomicHmac(kPath, "mac_data_sm_invalid");
+  MakeSuperHmacInvalid();
   auto tx2 = BeginTransaction(/*with_encryptor=*/true);
-  ASSERT_FALSE(tx2->IsSuperMACValid());
+  ASSERT_FALSE(tx2->IsSuperHmacValid());
 
-  tx2->ClearHash(kPath);
+  tx2->ClearAuthenticators(kPath);
 
-  EXPECT_FALSE(dictionary_contents_.GetMac(kEncKey, nullptr));
-  EXPECT_FALSE(dictionary_contents_.GetMac(kPath, nullptr));
-  EXPECT_TRUE(tx2->StampSuperMac());
-  EXPECT_TRUE(tx2->IsSuperMACValid());
+  EXPECT_FALSE(
+      dictionary_contents_.GetAtomicPrefAuthenticator(kEncKey, nullptr));
+  EXPECT_FALSE(dictionary_contents_.GetAtomicPrefAuthenticator(kPath, nullptr));
+  EXPECT_TRUE(tx2->StampSuperHmac());
+  EXPECT_TRUE(tx2->IsSuperHmacValid());
 
-  // Scenario 3: Neither EH nor MAC exists, SuperMAC valid
-  dictionary_contents_.RemoveEntry(kPath);
-  dictionary_contents_.RemoveEntry(GetEncKey(kPath));
-  MakeSuperMACValid();
+  // Scenario 3: Neither EH nor HMAC exists, Super HMAC valid
+  dictionary_contents_.RemoveAuthenticator(kPath);
+  dictionary_contents_.RemoveAuthenticator(GetEncKey(kPath));
+  MakeSuperHmacValid();
   auto tx3 = BeginTransaction(/*with_encryptor=*/true);
-  ASSERT_TRUE(tx3->IsSuperMACValid());
-  tx3->StampSuperMac();
+  ASSERT_TRUE(tx3->IsSuperHmacValid());
+  tx3->StampSuperHmac();
 
-  tx3->ClearHash(kPath);
+  tx3->ClearAuthenticators(kPath);
 
-  // If StampSuperMac always returns true, we can't differentiate a "no-op
+  // If StampSuperHmac always returns true, we can't differentiate a "no-op
   // clean" from "op dirty". We can only check that contents are still empty.
   VerifyStoredHashes(kPath, std::nullopt, std::nullopt);
-  EXPECT_TRUE(tx3->StampSuperMac());
+  EXPECT_TRUE(tx3->StampSuperHmac());
 }
 
 TEST_F(
     PrefHashStoreImplEncryptedTest,
-    StoreSplitEncryptedHash_ClearsOldSplitEncHashes_KeepsLegacyMAC_StoresNew) {
-  const std::string kPath = "split.clear.old.split.keepmac";
+    StoreSplitEncryptedHash_ClearsOldSplitEncHashes_KeepsLegacyHmac_StoresNew) {
+  const std::string kPath = "split.clear.old.split.keephmac";
   const std::string kEncKeyForSplitHashes = GetEncKey(kPath);
 
-  // 1. Seed a legacy MAC for the base path.
-  const std::string kLegacyMacValue = "legacy_mac_for_split_test";
-  SeedAtomicMac(kPath, kLegacyMacValue);
+  // 1. Seed a legacy HMAC for the base path.
+  const std::string kLegacyHmacValue = "legacy_hmac_for_split_test";
+  SeedAtomicHmac(kPath, kLegacyHmacValue);
   std::string temp_check_val;
-  ASSERT_TRUE(dictionary_contents_.GetMac(kPath, &temp_check_val));
-  ASSERT_EQ(kLegacyMacValue, temp_check_val);
+  ASSERT_TRUE(
+      dictionary_contents_.GetAtomicPrefAuthenticator(kPath, &temp_check_val));
+  ASSERT_EQ(kLegacyHmacValue, temp_check_val);
 
   // 2. Seed old split encrypted hashes.
   base::DictValue old_split_content;
@@ -1709,8 +1722,8 @@ TEST_F(
 
   // Verify old split EHs are present.
   std::map<std::string, std::string> temp_split_ehs;
-  ASSERT_TRUE(dictionary_contents_.GetSplitMacs(kEncKeyForSplitHashes,
-                                                &temp_split_ehs));
+  ASSERT_TRUE(dictionary_contents_.GetSplitPrefAuthenticators(
+      kEncKeyForSplitHashes, &temp_split_ehs));
   ASSERT_TRUE(temp_split_ehs.count("old_subkey"));
 
   // 3. Prepare new split value.
@@ -1724,14 +1737,15 @@ TEST_F(
     tx->StoreSplitEncryptedHash(kPath, &new_split_content);
   }
 
-  // 5. Verify the legacy MAC is still present.
-  EXPECT_TRUE(dictionary_contents_.GetMac(kPath, &temp_check_val));
-  EXPECT_EQ(kLegacyMacValue, temp_check_val);
+  // 5. Verify the legacy HMAC is still present.
+  EXPECT_TRUE(
+      dictionary_contents_.GetAtomicPrefAuthenticator(kPath, &temp_check_val));
+  EXPECT_EQ(kLegacyHmacValue, temp_check_val);
 
   // 6. Verify new split encrypted hashes are stored and old ones are gone.
   std::map<std::string, std::string> stored_split_ehs;
-  ASSERT_TRUE(dictionary_contents_.GetSplitMacs(kEncKeyForSplitHashes,
-                                                &stored_split_ehs));
+  ASSERT_TRUE(dictionary_contents_.GetSplitPrefAuthenticators(
+      kEncKeyForSplitHashes, &stored_split_ehs));
   EXPECT_FALSE(stored_split_ehs.count("old_subkey"));
   EXPECT_TRUE(stored_split_ehs.count("new_subkey"));
   EXPECT_FALSE(stored_split_ehs.at("new_subkey").empty());
@@ -1747,10 +1761,10 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   const std::string kPath = "enterprise.roaming.pref";
   base::Value value("enterprise_value");
 
-  SeedAtomicMac(kPath, hash_store_.ComputeMac(kPath, &value));
+  SeedAtomicHmac(kPath, hash_store_.ComputeHmac(kPath, &value));
   SeedAtomicEncryptedHash(kPath, hash_store_.ComputeEncryptedHash(
                                      kPath, &value, test_encryptor_.get()));
-  SeedAtomicMac(kPath, "invalid_roaming_mac");
+  SeedAtomicHmac(kPath, "invalid_roaming_hmac");
 
   std::optional<base::AutoReset<bool>> is_enterprise_device_for_testing_ =
       base::SetIsEnterpriseDeviceForTesting(true);

@@ -84,45 +84,47 @@ TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
   PrefHashCalculator calc2("seed2", "deviceid");
   PrefHashCalculator calc3("seed1", "deviceid2");
 
-  // Two calculators with same seed produce same hash.
-  ASSERT_EQ(calc1.Calculate("pref_path", &string_value_1),
-            calc1_dup.Calculate("pref_path", &string_value_1));
-  ASSERT_EQ(PrefHashCalculator::VALID,
-            calc1_dup.Validate("pref_path", &string_value_1,
-                               calc1.Calculate("pref_path", &string_value_1)));
+  // Two calculators with same seed produce same HMAC.
+  ASSERT_EQ(calc1.CalculateHmac("pref_path", &string_value_1),
+            calc1_dup.CalculateHmac("pref_path", &string_value_1));
+  ASSERT_EQ(PrefHashCalculator::VALID_HMAC,
+            calc1_dup.ValidateHmac(
+                "pref_path", &string_value_1,
+                calc1.CalculateHmac("pref_path", &string_value_1)));
 
-  // Different seeds, different hashes.
-  ASSERT_NE(calc1.Calculate("pref_path", &string_value_1),
-            calc2.Calculate("pref_path", &string_value_1));
-  ASSERT_EQ(PrefHashCalculator::INVALID,
-            calc2.Validate("pref_path", &string_value_1,
-                           calc1.Calculate("pref_path", &string_value_1)));
+  // Different seeds, different HMACs.
+  ASSERT_NE(calc1.CalculateHmac("pref_path", &string_value_1),
+            calc2.CalculateHmac("pref_path", &string_value_1));
+  ASSERT_EQ(
+      PrefHashCalculator::INVALID_HMAC,
+      calc2.ValidateHmac("pref_path", &string_value_1,
+                         calc1.CalculateHmac("pref_path", &string_value_1)));
 
-  // Different device IDs, different hashes.
-  ASSERT_NE(calc1.Calculate("pref_path", &string_value_1),
-            calc3.Calculate("pref_path", &string_value_1));
+  // Different device IDs, different HMACs.
+  ASSERT_NE(calc1.CalculateHmac("pref_path", &string_value_1),
+            calc3.CalculateHmac("pref_path", &string_value_1));
 
-  // Different values, different hashes.
-  ASSERT_NE(calc1.Calculate("pref_path", &string_value_1),
-            calc1.Calculate("pref_path", &string_value_2));
+  // Different values, different HMACs.
+  ASSERT_NE(calc1.CalculateHmac("pref_path", &string_value_1),
+            calc1.CalculateHmac("pref_path", &string_value_2));
 
-  // Different paths, different hashes.
-  ASSERT_NE(calc1.Calculate("pref_path", &string_value_1),
-            calc1.Calculate("pref_path_2", &string_value_1));
+  // Different paths, different HMACs.
+  ASSERT_NE(calc1.CalculateHmac("pref_path", &string_value_1),
+            calc1.CalculateHmac("pref_path_2", &string_value_1));
 
   // Works for dictionaries.
-  ASSERT_EQ(calc1.Calculate("pref_path", &dictionary_value_1),
-            calc1.Calculate("pref_path", &dictionary_value_1));
-  ASSERT_NE(calc1.Calculate("pref_path", &dictionary_value_1),
-            calc1.Calculate("pref_path", &dictionary_value_2));
+  ASSERT_EQ(calc1.CalculateHmac("pref_path", &dictionary_value_1),
+            calc1.CalculateHmac("pref_path", &dictionary_value_1));
+  ASSERT_NE(calc1.CalculateHmac("pref_path", &dictionary_value_1),
+            calc1.CalculateHmac("pref_path", &dictionary_value_2));
 
   // Empty dictionary children are pruned.
-  ASSERT_EQ(calc1.Calculate("pref_path", &dictionary_value_1),
-            calc1.Calculate("pref_path", &dictionary_value_1_equivalent));
+  ASSERT_EQ(calc1.CalculateHmac("pref_path", &dictionary_value_1),
+            calc1.CalculateHmac("pref_path", &dictionary_value_1_equivalent));
 
   // NULL value is supported.
   ASSERT_FALSE(
-      calc1.Calculate("pref_path", static_cast<const base::Value*>(nullptr))
+      calc1.CalculateHmac("pref_path", static_cast<const base::Value*>(nullptr))
           .empty());
 }
 
@@ -141,17 +143,17 @@ TEST_F(PrefHashCalculatorEnterpriseTest, EnterpriseDevice) {
 
   is_enterprise_device_for_testing_ =
       base::SetIsEnterpriseDeviceForTesting(true);
-  ASSERT_EQ(PrefHashCalculator::VALID,
-            calculator_.Validate(
+  ASSERT_EQ(PrefHashCalculator::VALID_HMAC,
+            calculator_.ValidateHmac(
                 "pref_path", &string_value_1,
-                calculator_.Calculate("pref_path", &string_value_2)));
+                calculator_.CalculateHmac("pref_path", &string_value_2)));
   is_enterprise_device_for_testing_.reset();
 }
 #endif
 
 // Tests the output against a known value to catch unexpected algorithm changes.
-// The test hashes below must NEVER be updated, the serialization algorithm used
-// must always be able to generate data that will produce these exact hashes.
+// The test HMACs below must NEVER be updated, the serialization algorithm used
+// must always be able to generate data that will produce these exact HMACs.
 TEST(PrefHashCalculatorTest, CatchHashChanges) {
   static const char kSeed[] = "0123456789ABCDEF0123456789ABCDEF";
   static const char kDeviceId[] = "test_device_id1";
@@ -163,7 +165,7 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   base::Value string_value("testing with special chars:\n<>{}:^^@#$\\/");
 
   // For legacy reasons, we have to support pruning of empty lists/dictionaries
-  // and nested empty lists/dicts in the hash generation algorithm.
+  // and nested empty lists/dicts in the HMAC generation algorithm.
   base::DictValue nested_empty_dict;
   nested_empty_dict.Set("a", base::DictValue());
   nested_empty_dict.Set("b", base::ListValue());
@@ -199,45 +201,47 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   // isn't even allowed in JSONWriter's input.
   static const char kExpectedNullValue[] =
       "82A9F3BBC7F9FF84C76B033C854E79EEB162783FA7B3E99FF9372FA8E12C44F7";
-  EXPECT_EQ(PrefHashCalculator::VALID,
+  EXPECT_EQ(PrefHashCalculator::VALID_HMAC,
             PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &null_value, kExpectedNullValue));
+                .ValidateHmac("pref.path", &null_value, kExpectedNullValue));
 
   static const char kExpectedBooleanValue[] =
       "A520D8F43EA307B0063736DC9358C330539D0A29417580514C8B9862632C4CCC";
-  EXPECT_EQ(PrefHashCalculator::VALID,
+  EXPECT_EQ(PrefHashCalculator::VALID_HMAC,
             PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &bool_value, kExpectedBooleanValue));
+                .ValidateHmac("pref.path", &bool_value, kExpectedBooleanValue));
 
   static const char kExpectedIntegerValue[] =
       "8D60DA1F10BF5AA29819D2D66D7CCEF9AABC5DA93C11A0D2BD21078D63D83682";
-  EXPECT_EQ(PrefHashCalculator::VALID,
+  EXPECT_EQ(PrefHashCalculator::VALID_HMAC,
             PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &int_value, kExpectedIntegerValue));
+                .ValidateHmac("pref.path", &int_value, kExpectedIntegerValue));
 
   static const char kExpectedDoubleValue[] =
       "C9D94772516125BEEDAE68C109D44BC529E719EE020614E894CC7FB4098C545D";
-  EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &double_value, kExpectedDoubleValue));
+  EXPECT_EQ(
+      PrefHashCalculator::VALID_HMAC,
+      PrefHashCalculator(kSeed, kDeviceId)
+          .ValidateHmac("pref.path", &double_value, kExpectedDoubleValue));
 
   static const char kExpectedStringValue[] =
       "05ACCBD3B05C45C36CD06190F63EC577112311929D8380E26E5F13182EB68318";
-  EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &string_value, kExpectedStringValue));
+  EXPECT_EQ(
+      PrefHashCalculator::VALID_HMAC,
+      PrefHashCalculator(kSeed, kDeviceId)
+          .ValidateHmac("pref.path", &string_value, kExpectedStringValue));
 
   static const char kExpectedDictValue[] =
       "7A84DCC710D796C771F789A4DA82C952095AA956B6F1667EE42D0A19ECAA3C4A";
-  EXPECT_EQ(PrefHashCalculator::VALID,
+  EXPECT_EQ(PrefHashCalculator::VALID_HMAC,
             PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &dict_value, kExpectedDictValue));
+                .ValidateHmac("pref.path", &dict_value, kExpectedDictValue));
 
   static const char kExpectedListValue[] =
       "8D5A25972DF5AE20D041C780E7CA54E40F614AD53513A0724EE8D62D4F992740";
-  EXPECT_EQ(PrefHashCalculator::VALID,
+  EXPECT_EQ(PrefHashCalculator::VALID_HMAC,
             PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &list_value, kExpectedListValue));
+                .ValidateHmac("pref.path", &list_value, kExpectedListValue));
 
   // Also test every value type together in the same dictionary.
   base::DictValue everything;
@@ -250,9 +254,10 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   everything.Set("dict", std::move(dict_value));
   static const char kExpectedEverythingValue[] =
       "B97D09BE7005693574DCBDD03D8D9E44FB51F4008B73FB56A49A9FA671A1999B";
-  EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId)
-                .Validate("pref.path", &everything, kExpectedEverythingValue));
+  EXPECT_EQ(
+      PrefHashCalculator::VALID_HMAC,
+      PrefHashCalculator(kSeed, kDeviceId)
+          .ValidateHmac("pref.path", &everything, kExpectedEverythingValue));
 }
 
 TEST_F(PrefHashCalculatorEncryptedTest, CalculateEncryptedHash) {
@@ -293,7 +298,7 @@ TEST_F(PrefHashCalculatorEncryptedTest, CalculateEncryptedHash) {
   EXPECT_FALSE(hash_dict_opt->empty());
   EXPECT_FALSE(hash_null_opt->empty());
 
-  // Check different inputs produce different hashes
+  // Check different inputs produce different encrypted hashes.
   EXPECT_NE(hash1_opt.value(), hash2_opt.value());
   EXPECT_NE(hash1_opt.value(), hash1_again_opt.value());
   EXPECT_NE(hash_dict_opt.value(), hash_dict_ptr_opt.value());
@@ -305,7 +310,7 @@ TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHash) {
   const base::Value* null_value_ptr = static_cast<const base::Value*>(nullptr);
   std::string path = "p.validate";
 
-  // Generate a VALID hash using the calculator and test encryptor instance
+  // Generate a VALID_HMAC hash using the calculator and test encryptor instance
   std::optional<std::string> valid_hash_opt =
       calculator_.CalculateEncryptedHash(path, &value_int,
                                          test_encryptor_.get());
@@ -320,41 +325,41 @@ TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHash) {
 
   // Valid case: Correct value, path, and generated hash
   EXPECT_EQ(PrefHashCalculator::VALID_ENCRYPTED,
-            calculator_.ValidateEncrypted(path, &value_int, valid_hash_base64,
-                                          test_encryptor_.get()));
+            calculator_.ValidateEncryptedHash(
+                path, &value_int, valid_hash_base64, test_encryptor_.get()));
 
   // Wrong value: Correct path and hash, but different value being checked
   EXPECT_EQ(
       PrefHashCalculator::INVALID_ENCRYPTED,
-      calculator_.ValidateEncrypted(path, &value_other_int, valid_hash_base64,
-                                    test_encryptor_.get()));
+      calculator_.ValidateEncryptedHash(
+          path, &value_other_int, valid_hash_base64, test_encryptor_.get()));
 
   // Wrong path: Correct value and hash, but different path being checked
   EXPECT_EQ(
       PrefHashCalculator::INVALID_ENCRYPTED,
-      calculator_.ValidateEncrypted("p.wrong", &value_int, valid_hash_base64,
-                                    test_encryptor_.get()));
+      calculator_.ValidateEncryptedHash(
+          "p.wrong", &value_int, valid_hash_base64, test_encryptor_.get()));
 
   // Non-Base64 stored hash: Validation should fail (Base64Decode returns false)
   EXPECT_EQ(
       PrefHashCalculator::INVALID_ENCRYPTED,
-      calculator_.ValidateEncrypted(path, &value_int, "this is not base64!",
-                                    test_encryptor_.get()));
+      calculator_.ValidateEncryptedHash(path, &value_int, "this is not base64!",
+                                        test_encryptor_.get()));
 
   // Test validation of null value
   EXPECT_EQ(
       PrefHashCalculator::VALID_ENCRYPTED,
-      calculator_.ValidateEncrypted("p.null", null_value_ptr, null_hash_base64,
-                                    test_encryptor_.get()));
+      calculator_.ValidateEncryptedHash(
+          "p.null", null_value_ptr, null_hash_base64, test_encryptor_.get()));
   // Null expected, int provided -> Invalid
   EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
-            calculator_.ValidateEncrypted(
+            calculator_.ValidateEncryptedHash(
                 "p.null", &value_int, null_hash_base64, test_encryptor_.get()));
   // Int expected, null provided -> Invalid
   EXPECT_EQ(
       PrefHashCalculator::INVALID_ENCRYPTED,
-      calculator_.ValidateEncrypted(path, null_value_ptr, valid_hash_base64,
-                                    test_encryptor_.get()));
+      calculator_.ValidateEncryptedHash(path, null_value_ptr, valid_hash_base64,
+                                        test_encryptor_.get()));
 }
 
 TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {
@@ -416,7 +421,7 @@ TEST_P(PrefHashCalculatorEncryptedWeakHashFeatureTest, WeakHash) {
     // This encrypted hash is now encrypted with v10 key.
     encrypted_hash = calculator_.CalculateEncryptedHash("p.dict", &value_int,
                                                         encryptor.get());
-    const auto validation_result = calculator_.ValidateEncrypted(
+    const auto validation_result = calculator_.ValidateEncryptedHash(
         "p.dict", &value_int, *encrypted_hash, encryptor.get());
     EXPECT_EQ(validation_result, PrefHashCalculator::VALID_ENCRYPTED);
   }
@@ -437,7 +442,7 @@ TEST_P(PrefHashCalculatorEncryptedWeakHashFeatureTest, WeakHash) {
     os_crypt.GetInstance(future.GetCallback());
     const auto encryptor = future.Take();
 
-    const auto validation_result = calculator_.ValidateEncrypted(
+    const auto validation_result = calculator_.ValidateEncryptedHash(
         "p.dict", &value_int, *encrypted_hash, encryptor.get());
     EXPECT_EQ(validation_result, GetParam()
                                      ? PrefHashCalculator::WEAK_HASH_ENCRYPTED

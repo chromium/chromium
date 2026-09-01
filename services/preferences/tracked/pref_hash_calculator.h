@@ -11,12 +11,13 @@
 #include "base/values.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
-// Calculates and validates preference value hashes.
+// Calculates and validates preference value authenticators, both HMACs (legacy)
+// and encrypted hashes (modern).
 class PrefHashCalculator {
  public:
   enum ValidationResult {
-    INVALID,
-    VALID,
+    INVALID_HMAC,
+    VALID_HMAC,
     VALID_ENCRYPTED,
     INVALID_ENCRYPTED,
     WEAK_HASH_ENCRYPTED,
@@ -32,21 +33,21 @@ class PrefHashCalculator {
 
   ~PrefHashCalculator();
 
-  // Calculates a hash value for the supplied preference |path| and |value|.
+  // Calculates an HMAC value for the supplied preference |path| and |value|.
   // |value| may be null if the preference has no value.
-  std::string Calculate(const std::string& path,
-                        const base::Value* value) const;
-  std::string Calculate(const std::string& path,
-                        const base::DictValue* dict) const;
+  std::string CalculateHmac(const std::string& path,
+                            const base::Value* value) const;
+  std::string CalculateHmac(const std::string& path,
+                            const base::DictValue* dict) const;
 
-  // Validates the provided preference hash using current and legacy hashing
+  // Validates the provided preference HMAC using current and legacy hashing
   // algorithms.
-  ValidationResult Validate(const std::string& path,
-                            const base::Value* value,
-                            const std::string& hash) const;
-  ValidationResult Validate(const std::string& path,
-                            const base::DictValue* dict,
-                            const std::string& hash) const;
+  ValidationResult ValidateHmac(const std::string& path,
+                                const base::Value* value,
+                                const std::string& hash) const;
+  ValidationResult ValidateHmac(const std::string& path,
+                                const base::DictValue* dict,
+                                const std::string& hash) const;
 
   // Calculates the OS-encrypted SHA256 hash of the preference's |path| and
   // |value|. Requires a non-null |encryptor|. Returns an empty string on
@@ -66,7 +67,7 @@ class PrefHashCalculator {
 
   // Validates the OS-encrypted SHA256 |stored_encrypted_hash| of the
   // preference's |path| and |value|. Requires a non-null |encryptor|.
-  ValidationResult ValidateEncrypted(
+  ValidationResult ValidateEncryptedHash(
       const std::string& path,
       const base::Value* value,
       const std::string& stored_encrypted_hash,
@@ -84,9 +85,9 @@ class PrefHashCalculator {
   // std::string, unencoded.
   std::string Hash(std::string_view path, std::string_view value) const;
 
-  ValidationResult Validate(const std::string& path,
-                            const std::string& value_as_string,
-                            const std::string& hash) const;
+  ValidationResult ValidateHmac(const std::string& path,
+                                const std::string& value_as_string,
+                                const std::string& hash) const;
 
   const std::string seed_;
   const std::string device_id_;

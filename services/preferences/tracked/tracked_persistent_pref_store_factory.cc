@@ -43,9 +43,9 @@ void RemoveValueSilently(const base::WeakPtr<JsonPrefStore> pref_store,
 
 std::unique_ptr<PrefHashStore> CreatePrefHashStore(
     const prefs::mojom::TrackedPersistentPrefStoreConfiguration& config,
-    bool use_super_mac,
+    bool use_super_hmac,
     bool use_super_encrypted_hash) {
-  return std::make_unique<PrefHashStoreImpl>(config.seed, use_super_mac,
+  return std::make_unique<PrefHashStoreImpl>(config.seed, use_super_hmac,
                                              use_super_encrypted_hash);
 }
 
@@ -56,7 +56,7 @@ GetExternalVerificationPrefHashStorePair(
 #if BUILDFLAG(IS_WIN)
   return std::make_pair(
       std::make_unique<PrefHashStoreImpl>(config.registry_seed,
-                                          false /* use_super_mac */,
+                                          false /* use_super_hmac */,
                                           false /* use_super_encrypted_hash */),
       std::make_unique<RegistryHashStoreContentsWin>(
           base::AsWString(config.registry_path),
@@ -120,14 +120,14 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
 
   std::unique_ptr<PrefHashFilter> unprotected_pref_hash_filter(
       new PrefHashFilter(
-          CreatePrefHashStore(*config, /*use_super_mac=*/false,
+          CreatePrefHashStore(*config, /*use_super_hmac=*/false,
                               /*use_super_encrypted_hash=*/false),
           GetExternalVerificationPrefHashStorePair(*config,
                                                    temp_scoped_dir_cleaner),
           unprotected_configuration, mojo::NullRemote(),
           validation_delegate_ref, config->reporting_ids_count, os_crypt));
   std::unique_ptr<PrefHashFilter> protected_pref_hash_filter(new PrefHashFilter(
-      CreatePrefHashStore(*config, /*use_super_mac=*/true,
+      CreatePrefHashStore(*config, /*use_super_hmac=*/true,
                           /*use_super_encrypted_hash=*/true),
       GetExternalVerificationPrefHashStorePair(*config,
                                                temp_scoped_dir_cleaner),
@@ -156,9 +156,9 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
                           unprotected_pref_store->AsWeakPtr()),
       base::BindRepeating(&JsonPrefStore::RegisterOnNextSuccessfulWriteReply,
                           protected_pref_store->AsWeakPtr()),
-      CreatePrefHashStore(*config, /*use_super_mac=*/false,
+      CreatePrefHashStore(*config, /*use_super_hmac=*/false,
                           /*use_super_encrypted_hash=*/false),
-      CreatePrefHashStore(*config, /*use_super_mac=*/true,
+      CreatePrefHashStore(*config, /*use_super_hmac=*/true,
                           /*use_super_encrypted_hash=*/true),
       raw_unprotected_pref_hash_filter, raw_protected_pref_hash_filter);
 

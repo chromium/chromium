@@ -23,7 +23,8 @@ class TempScopedDirRegistryCleaner : public TempScopedDirCleaner {
   std::wstring registry_path_;
 };
 
-// Implements HashStoreContents by storing MACs in the Windows registry.
+// Implements HashStoreContents by storing authenticators in the Windows
+// registry.
 class RegistryHashStoreContentsWin : public HashStoreContents {
  public:
   // Constructs a RegistryHashStoreContents which acts on a registry entry
@@ -39,22 +40,25 @@ class RegistryHashStoreContentsWin : public HashStoreContents {
   std::unique_ptr<HashStoreContents> MakeCopy() const override;
   std::string_view GetUMASuffix() const override;
   void Reset() override;
-  bool GetMac(const std::string& path, std::string* out_value) override;
-  bool GetSplitMacs(const std::string& path,
-                    std::map<std::string, std::string>* split_macs) override;
-  void SetMac(const std::string& path, const std::string& value) override;
-  void SetSplitMac(const std::string& path,
-                   const std::string& split_path,
-                   const std::string& value) override;
-  bool RemoveEntry(const std::string& path) override;
-  bool SupportsSuperMac() const override;
+  bool GetAtomicPrefAuthenticator(const std::string& path,
+                                  std::string* out_value) override;
+  bool GetSplitPrefAuthenticators(
+      const std::string& path,
+      std::map<std::string, std::string>* split_macs) override;
+  void SetAtomicPrefAuthenticator(const std::string& path,
+                                  const std::string& value) override;
+  void SetSplitPrefAuthenticator(const std::string& path,
+                                 const std::string& split_path,
+                                 const std::string& value) override;
+  bool RemoveAuthenticator(const std::string& path) override;
+  bool SupportsSuperAuthenticator() const override;
 
   // Unsupported HashStoreContents overrides:
-  void ImportEntry(const std::string& path,
-                   const base::Value* in_value) override;
+  void ImportAuthenticator(const std::string& path,
+                           const base::Value* in_value) override;
   const base::DictValue* GetContents() const override;
-  std::string GetSuperMac() const override;
-  void SetSuperMac(const std::string& super_mac) override;
+  std::string GetSuperHmac() const override;
+  void SetSuperHmac(const std::string& super_hmac) override;
   std::string GetSuperEncryptedHash() const override;
   void SetSuperEncryptedHash(const std::string& super_encrypted_hash) override;
 

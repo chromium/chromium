@@ -23,11 +23,11 @@ class PrefHashStore;
 // (un)protected_store_cleaner| and
 // |register_on_successful_(un)protected_store_write_callback| are used to do
 // post-migration cleanup tasks. Those should be bound to weak pointers to avoid
-// blocking shutdown. |(un)protected_pref_hash_store| is used to migrate MACs
-// along with their protected preferences. Migrated MACs will only be cleared
-// from their old location in a subsequent run. The migration framework is
-// resilient to a failed cleanup (it will simply try again in the next Chrome
-// run).
+// blocking shutdown. |(un)protected_pref_hash_store| is used to migrate
+// authenticators along with their protected preferences. Migrated
+// authenticators will only be cleared from their old location in a subsequent
+// run. The migration framework is resilient to a failed cleanup (it will simply
+// try again in the next Chrome run).
 void SetupTrackedPreferencesMigration(
     const PrefNameSet& unprotected_pref_names,
     const PrefNameSet& protected_pref_names,

@@ -116,31 +116,32 @@ PrefHashCalculator::PrefHashCalculator(const std::string& seed,
 
 PrefHashCalculator::~PrefHashCalculator() {}
 
-std::string PrefHashCalculator::Calculate(const std::string& path,
-                                          const base::Value* value) const {
+std::string PrefHashCalculator::CalculateHmac(const std::string& path,
+                                              const base::Value* value) const {
   return HmacSign(path, ValueAsString(value));
 }
 
-std::string PrefHashCalculator::Calculate(const std::string& path,
-                                          const base::DictValue* dict) const {
+std::string PrefHashCalculator::CalculateHmac(
+    const std::string& path,
+    const base::DictValue* dict) const {
   return HmacSign(path, ValueAsString(dict));
 }
 
-PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
+PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateHmac(
     const std::string& path,
     const base::Value* value,
     const std::string& digest_string) const {
-  return Validate(path, ValueAsString(value), digest_string);
+  return ValidateHmac(path, ValueAsString(value), digest_string);
 }
 
-PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
+PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateHmac(
     const std::string& path,
     const base::DictValue* dict,
     const std::string& digest_string) const {
-  return Validate(path, ValueAsString(dict), digest_string);
+  return ValidateHmac(path, ValueAsString(dict), digest_string);
 }
 
-PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
+PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateHmac(
     const std::string& path,
     const std::string& value_as_string,
     const std::string& digest_string) const {
@@ -150,10 +151,11 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
   // upon roaming. Preference integrity on these devices is maintained by the
   // encrypted hash.
   if (base::IsEnterpriseDevice()) {
-    return VALID;
+    return VALID_HMAC;
   }
 #endif
-  return HmacVerify(path, value_as_string, digest_string) ? VALID : INVALID;
+  return HmacVerify(path, value_as_string, digest_string) ? VALID_HMAC
+                                                          : INVALID_HMAC;
 }
 
 std::optional<std::string> PrefHashCalculator::CalculateEncryptedHash(
@@ -188,7 +190,7 @@ std::optional<std::string> PrefHashCalculator::CalculateEncryptedHash(
   return base::Base64Encode(*encrypted_bytes);
 }
 
-PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateEncrypted(
+PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateEncryptedHash(
     const std::string& path,
     const base::Value* value,
     const std::string& stored_encrypted_hash_base64,

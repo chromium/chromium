@@ -32,11 +32,11 @@ class PrefHashStoreImpl : public PrefHashStore {
   //
   // The same `seed` must be used to load and validate previously stored hashes.
   //
-  // `use_super_mac` controls whether a Super MAC is calculated and verified.
+  // `use_super_hmac` controls whether a Super HMAC is calculated and verified.
   // `use_super_encrypted_hash` controls whether a Super Encrypted Hash is
   // verified on startup.
   PrefHashStoreImpl(const std::string& seed,
-                    bool use_super_mac,
+                    bool use_super_hmac,
                     bool use_super_encrypted_hash);
 
   PrefHashStoreImpl(const PrefHashStoreImpl&) = delete;
@@ -53,9 +53,9 @@ class PrefHashStoreImpl : public PrefHashStore {
       HashStoreContents* storage,
       scoped_refptr<const os_crypt_async::Encryptor> encryptor) override;
 
-  std::string ComputeMac(const std::string& path,
-                         const base::Value* new_value) override;
-  base::DictValue ComputeSplitMacs(
+  std::string ComputeHmac(const std::string& path,
+                          const base::Value* new_value) override;
+  base::DictValue ComputeSplitHmacs(
       const std::string& path,
       const base::DictValue* split_values) override;
 
@@ -79,14 +79,14 @@ class PrefHashStoreImpl : public PrefHashStore {
   friend class PrefHashStoreImplEncryptedTest;
   class PrefHashStoreTransactionImpl;
 
-  std::string ComputeMac(const std::string& path,
-                         const base::DictValue* new_dict);
+  std::string ComputeHmac(const std::string& path,
+                          const base::DictValue* new_dict);
 
   static void FilterEncryptedHashesRecursive(const base::DictValue& src,
                                              base::DictValue& dest);
 
   const PrefHashCalculator pref_hash_calculator_;
-  bool use_super_mac_;
+  bool use_super_hmac_;
   bool use_super_encrypted_hash_;
 };
 

@@ -56,76 +56,88 @@ class RegistryHashStoreContentsWinTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(RegistryHashStoreContentsWinTest, TestSetAndGetMac) {
+TEST_F(RegistryHashStoreContentsWinTest, TestSetAndGetAtomicPrefAuthenticator) {
   std::string stored_mac;
-  EXPECT_FALSE(contents->GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_FALSE(
+      contents->GetAtomicPrefAuthenticator(kAtomicPrefPath, &stored_mac));
 
-  contents->SetMac(kAtomicPrefPath, kTestStringA);
+  contents->SetAtomicPrefAuthenticator(kAtomicPrefPath, kTestStringA);
 
-  EXPECT_TRUE(contents->GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_TRUE(
+      contents->GetAtomicPrefAuthenticator(kAtomicPrefPath, &stored_mac));
   EXPECT_EQ(kTestStringA, stored_mac);
 }
 
-TEST_F(RegistryHashStoreContentsWinTest, TestSetAndGetSplitMacs) {
+TEST_F(RegistryHashStoreContentsWinTest, TestSetAndGetSplitPrefAuthenticators) {
   std::map<std::string, std::string> split_macs;
-  EXPECT_FALSE(contents->GetSplitMacs(kSplitPrefPath, &split_macs));
+  EXPECT_FALSE(
+      contents->GetSplitPrefAuthenticators(kSplitPrefPath, &split_macs));
 
-  contents->SetSplitMac(kSplitPrefPath, "a", kTestStringA);
-  contents->SetSplitMac(kSplitPrefPath, "b", kTestStringB);
+  contents->SetSplitPrefAuthenticator(kSplitPrefPath, "a", kTestStringA);
+  contents->SetSplitPrefAuthenticator(kSplitPrefPath, "b", kTestStringB);
 
-  EXPECT_TRUE(contents->GetSplitMacs(kSplitPrefPath, &split_macs));
+  EXPECT_TRUE(
+      contents->GetSplitPrefAuthenticators(kSplitPrefPath, &split_macs));
   EXPECT_EQ(2U, split_macs.size());
   EXPECT_EQ(kTestStringA, split_macs.at("a"));
   EXPECT_EQ(kTestStringB, split_macs.at("b"));
 }
 
-TEST_F(RegistryHashStoreContentsWinTest, TestRemoveAtomicMac) {
-  contents->SetMac(kAtomicPrefPath, kTestStringA);
+TEST_F(RegistryHashStoreContentsWinTest, TestRemoveAtomicPrefAuthenticator) {
+  contents->SetAtomicPrefAuthenticator(kAtomicPrefPath, kTestStringA);
 
   std::string stored_mac;
-  EXPECT_TRUE(contents->GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_TRUE(
+      contents->GetAtomicPrefAuthenticator(kAtomicPrefPath, &stored_mac));
   EXPECT_EQ(kTestStringA, stored_mac);
 
-  contents->RemoveEntry(kAtomicPrefPath);
+  contents->RemoveAuthenticator(kAtomicPrefPath);
 
-  EXPECT_FALSE(contents->GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_FALSE(
+      contents->GetAtomicPrefAuthenticator(kAtomicPrefPath, &stored_mac));
 }
 
-TEST_F(RegistryHashStoreContentsWinTest, TestRemoveSplitMacs) {
-  contents->SetSplitMac(kSplitPrefPath, "a", kTestStringA);
-  contents->SetSplitMac(kSplitPrefPath, "b", kTestStringB);
+TEST_F(RegistryHashStoreContentsWinTest, TestRemoveSplitPrefAuthenticators) {
+  contents->SetSplitPrefAuthenticator(kSplitPrefPath, "a", kTestStringA);
+  contents->SetSplitPrefAuthenticator(kSplitPrefPath, "b", kTestStringB);
 
   std::map<std::string, std::string> split_macs;
-  EXPECT_TRUE(contents->GetSplitMacs(kSplitPrefPath, &split_macs));
+  EXPECT_TRUE(
+      contents->GetSplitPrefAuthenticators(kSplitPrefPath, &split_macs));
   EXPECT_EQ(2U, split_macs.size());
 
-  contents->RemoveEntry(kSplitPrefPath);
+  contents->RemoveAuthenticator(kSplitPrefPath);
 
   split_macs.clear();
-  EXPECT_FALSE(contents->GetSplitMacs(kSplitPrefPath, &split_macs));
+  EXPECT_FALSE(
+      contents->GetSplitPrefAuthenticators(kSplitPrefPath, &split_macs));
   EXPECT_EQ(0U, split_macs.size());
 }
 
 TEST_F(RegistryHashStoreContentsWinTest, TestReset) {
-  contents->SetMac(kAtomicPrefPath, kTestStringA);
-  contents->SetSplitMac(kSplitPrefPath, "a", kTestStringA);
+  contents->SetAtomicPrefAuthenticator(kAtomicPrefPath, kTestStringA);
+  contents->SetSplitPrefAuthenticator(kSplitPrefPath, "a", kTestStringA);
 
   std::string stored_mac;
-  EXPECT_TRUE(contents->GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_TRUE(
+      contents->GetAtomicPrefAuthenticator(kAtomicPrefPath, &stored_mac));
   EXPECT_EQ(kTestStringA, stored_mac);
 
   std::map<std::string, std::string> split_macs;
-  EXPECT_TRUE(contents->GetSplitMacs(kSplitPrefPath, &split_macs));
+  EXPECT_TRUE(
+      contents->GetSplitPrefAuthenticators(kSplitPrefPath, &split_macs));
   EXPECT_EQ(1U, split_macs.size());
 
   contents->Reset();
 
   stored_mac.clear();
-  EXPECT_FALSE(contents->GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_FALSE(
+      contents->GetAtomicPrefAuthenticator(kAtomicPrefPath, &stored_mac));
   EXPECT_TRUE(stored_mac.empty());
 
   split_macs.clear();
-  EXPECT_FALSE(contents->GetSplitMacs(kSplitPrefPath, &split_macs));
+  EXPECT_FALSE(
+      contents->GetSplitPrefAuthenticators(kSplitPrefPath, &split_macs));
   EXPECT_EQ(0U, split_macs.size());
 }
 
@@ -149,19 +161,22 @@ TEST(RegistryHashStoreContentsWinScopedTest, TestScopedDirsCleared) {
       std::make_unique<RegistryHashStoreContentsWin>(registry_path, kStoreKey,
                                                      temp_scoped_dir_cleaner);
 
-  contentsA->SetMac(kAtomicPrefPath, kTestStringA);
-  contentsB->SetMac(kAtomicPrefPath, kTestStringB);
+  contentsA->SetAtomicPrefAuthenticator(kAtomicPrefPath, kTestStringA);
+  contentsB->SetAtomicPrefAuthenticator(kAtomicPrefPath, kTestStringB);
 
   temp_scoped_dir_cleaner = nullptr;
-  EXPECT_TRUE(verifying_contents.GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_TRUE(verifying_contents.GetAtomicPrefAuthenticator(kAtomicPrefPath,
+                                                            &stored_mac));
   EXPECT_EQ(kTestStringB, stored_mac);
 
   contentsB.reset();
-  EXPECT_TRUE(verifying_contents.GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_TRUE(verifying_contents.GetAtomicPrefAuthenticator(kAtomicPrefPath,
+                                                            &stored_mac));
   EXPECT_EQ(kTestStringB, stored_mac);
 
   contentsA.reset();
-  EXPECT_FALSE(verifying_contents.GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_FALSE(verifying_contents.GetAtomicPrefAuthenticator(kAtomicPrefPath,
+                                                             &stored_mac));
 }
 
 void OffThreadTempScopedDirDestructor(
@@ -172,12 +187,14 @@ void OffThreadTempScopedDirDestructor(
   RegistryHashStoreContentsWin verifying_contents(registry_path, kStoreKey,
                                                   nullptr);
 
-  contents->SetMac(kAtomicPrefPath, kTestStringB);
-  EXPECT_TRUE(verifying_contents.GetMac(kAtomicPrefPath, &stored_mac));
+  contents->SetAtomicPrefAuthenticator(kAtomicPrefPath, kTestStringB);
+  EXPECT_TRUE(verifying_contents.GetAtomicPrefAuthenticator(kAtomicPrefPath,
+                                                            &stored_mac));
   EXPECT_EQ(kTestStringB, stored_mac);
 
   contents.reset();
-  EXPECT_FALSE(verifying_contents.GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_FALSE(verifying_contents.GetAtomicPrefAuthenticator(kAtomicPrefPath,
+                                                             &stored_mac));
 }
 
 TEST(RegistryHashStoreContentsWinScopedTest, TestScopedDirsClearedMultiThread) {
@@ -202,15 +219,17 @@ TEST(RegistryHashStoreContentsWinScopedTest, TestScopedDirsClearedMultiThread) {
   base::OnceClosure other_thread_closure = base::BindOnce(
       &OffThreadTempScopedDirDestructor, registry_path, contents->MakeCopy());
 
-  contents->SetMac(kAtomicPrefPath, kTestStringA);
+  contents->SetAtomicPrefAuthenticator(kAtomicPrefPath, kTestStringA);
   contents.reset();
 
-  EXPECT_TRUE(verifying_contents.GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_TRUE(verifying_contents.GetAtomicPrefAuthenticator(kAtomicPrefPath,
+                                                            &stored_mac));
   EXPECT_EQ(kTestStringA, stored_mac);
 
   test_thread.task_runner()->PostTask(FROM_HERE,
                                       std::move(other_thread_closure));
   test_thread.FlushForTesting();
 
-  EXPECT_FALSE(verifying_contents.GetMac(kAtomicPrefPath, &stored_mac));
+  EXPECT_FALSE(verifying_contents.GetAtomicPrefAuthenticator(kAtomicPrefPath,
+                                                             &stored_mac));
 }

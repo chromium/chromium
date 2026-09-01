@@ -73,7 +73,7 @@ void CleanupDeprecatedTrackedPreferences(
     PrefHashStoreTransaction* hash_store_transaction) {
   for (const char* key : *GetDeprecatedPrefs()) {
     pref_store_contents.RemoveByDottedPath(key);
-    hash_store_transaction->ClearHash(key);
+    hash_store_transaction->ClearAuthenticators(key);
   }
 }
 
@@ -367,7 +367,7 @@ void PrefHashFilter::FinalizeFilterOnLoad(
         prefs_altered = true;
       }
     }
-    if (hash_store_transaction->StampSuperMac()) {
+    if (hash_store_transaction->StampSuperHmac()) {
       prefs_altered = true;
     }
   }
@@ -535,7 +535,7 @@ void PrefHashFilter::ClearFromExternalStore(
   DCHECK(!changed_paths_and_macs->empty());
 
   for (const auto item : *changed_paths_and_macs) {
-    external_validation_hash_store_contents->RemoveEntry(item.first);
+    external_validation_hash_store_contents->RemoveAuthenticator(item.first);
   }
 }
 
@@ -561,13 +561,13 @@ void PrefHashFilter::FlushToExternalStore(
         bool is_string = !!mac;
         DCHECK(is_string);
 
-        external_validation_hash_store_contents->SetSplitMac(
+        external_validation_hash_store_contents->SetSplitPrefAuthenticator(
             changed_path, inner_item.first, *mac);
       }
     } else {
       DCHECK(item.second.is_string());
-      external_validation_hash_store_contents->SetMac(changed_path,
-                                                      item.second.GetString());
+      external_validation_hash_store_contents->SetAtomicPrefAuthenticator(
+          changed_path, item.second.GetString());
     }
   }
 }
@@ -593,7 +593,7 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
             pref_store_contents.FindByDottedPath(changed_path);
         changed_paths_macs->Set(
             changed_path,
-            external_validation_hash_store_pair_->first->ComputeMac(
+            external_validation_hash_store_pair_->first->ComputeHmac(
                 changed_path, new_value));
         break;
       }
@@ -602,7 +602,7 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
             pref_store_contents.FindDictByDottedPath(changed_path);
         changed_paths_macs->Set(
             changed_path,
-            external_validation_hash_store_pair_->first->ComputeSplitMacs(
+            external_validation_hash_store_pair_->first->ComputeSplitHmacs(
                 changed_path, dict));
         break;
       }
