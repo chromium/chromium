@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
@@ -17,10 +18,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
 #include "chrome/browser/platform_experience/delegated_tasks/test_support/mock_delegated_task_runner.h"
+#include "chrome/browser/platform_experience/delegated_tasks/test_support/mock_peh_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -48,26 +51,65 @@
 
 namespace {
 
-class MockSearchPromotionManager : public SearchPromotionManager {
- public:
-  MockSearchPromotionManager(Profile& profile,
-                             CreateTaskRunnerCallback callback)
-      : SearchPromotionManager(profile, std::move(callback)) {}
-  MOCK_METHOD(void,
-              OnTargetURLVisited,
-              (BrowserUserEducationInterface & user_education),
-              (override));
-};
-
 std::unique_ptr<platform_experience::DelegatedTaskRunner>
 CreateMockTaskRunner() {
-  return std::make_unique<platform_experience::MockDelegatedTaskRunner>();
+  return std::make_unique<
+      testing::NiceMock<platform_experience::MockDelegatedTaskRunner>>();
 }
 
 SearchPromotionManager::CreateTaskRunnerCallback
 GetCreateMockTaskRunnerCallback() {
   return base::BindRepeating([]() { return CreateMockTaskRunner(); });
 }
+
+std::unique_ptr<platform_experience::PehLauncher>
+CreateEligibleMockPehLauncher() {
+  auto launcher = std::make_unique<
+      testing::NiceMock<platform_experience::MockPehLauncher>>();
+  ON_CALL(*launcher, GetBinaryPath())
+      .WillByDefault(testing::Return(
+          base::FilePath(FILE_PATH_LITERAL("C:\\test\\peh.exe"))));
+  ON_CALL(*launcher, IsBinaryVerified(testing::_))
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*launcher, GetBinaryVersion(testing::_))
+      .WillByDefault(testing::Return(base::Version("999.0.0.0")));
+  return launcher;
+}
+
+using PehLauncherFactory = base::RepeatingCallback<
+    std::unique_ptr<platform_experience::PehLauncher>()>;
+
+PehLauncherFactory GetEligibleMockPehLauncherFactory() {
+  return base::BindRepeating(&CreateEligibleMockPehLauncher);
+}
+
+std::unique_ptr<platform_experience::PehLauncher>
+CreateIneligibleMockPehLauncher() {
+  auto launcher = std::make_unique<
+      testing::NiceMock<platform_experience::MockPehLauncher>>();
+  ON_CALL(*launcher, GetBinaryPath())
+      .WillByDefault(testing::Return(base::FilePath()));
+  return launcher;
+}
+
+PehLauncherFactory GetIneligibleMockPehLauncherFactory() {
+  return base::BindRepeating(&CreateIneligibleMockPehLauncher);
+}
+
+class MockSearchPromotionManager : public SearchPromotionManager {
+ public:
+  MockSearchPromotionManager(Profile& profile,
+                             CreateTaskRunnerCallback callback,
+                             CreatePehLauncherCallback peh_callback =
+                                 base::BindOnce(&CreateEligibleMockPehLauncher))
+      : SearchPromotionManager(profile,
+                               std::move(callback),
+                               std::move(peh_callback)) {}
+  MOCK_METHOD(void,
+              OnTargetURLVisited,
+              (BrowserUserEducationInterface & user_education),
+              (override));
+};
 
 std::unique_ptr<KeyedService> BuildMockSearchPromotionManager(
     content::BrowserContext* context) {
@@ -76,9 +118,11 @@ std::unique_ptr<KeyedService> BuildMockSearchPromotionManager(
 }
 
 std::unique_ptr<KeyedService> BuildSearchPromotionManager(
+    PehLauncherFactory peh_factory,
     content::BrowserContext* context) {
   return std::make_unique<SearchPromotionManager>(
-      *Profile::FromBrowserContext(context), GetCreateMockTaskRunnerCallback());
+      *Profile::FromBrowserContext(context), GetCreateMockTaskRunnerCallback(),
+      std::move(peh_factory));
 }
 
 std::unique_ptr<KeyedService> BuildMockSegmentationPlatformService(
@@ -136,10 +180,27 @@ class SearchPromotionManagerTest : public ChromeRenderViewHostTestHarness {
         {{"action", feature_engagement::kSearchPromotionActionOpen}});
   }
 
-  SearchPromotionManager* RecreateSearchPromotionManager() {
-    return static_cast<SearchPromotionManager*>(
+  SearchPromotionManager* RecreateSearchPromotionManager(
+      PehLauncherFactory peh_factory = GetEligibleMockPehLauncherFactory()) {
+    auto* manager = static_cast<SearchPromotionManager*>(
         SearchPromotionManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), base::BindRepeating(&BuildSearchPromotionManager)));
+            profile(), base::BindRepeating(&BuildSearchPromotionManager,
+                                           std::move(peh_factory))));
+    if (base::FeatureList::IsEnabled(
+            feature_engagement::kIPHSearchPromotionFeature) &&
+        feature_engagement::kSearchPromotionAction.Get() !=
+            feature_engagement::SearchPromotionAction::kDisabled) {
+      EXPECT_TRUE(base::test::RunUntil(
+          [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+    }
+    return manager;
+  }
+
+  std::unique_ptr<SearchPromotionManager> CreateSearchPromotionManager(
+      SearchPromotionManager::CreatePehLauncherCallback peh_callback =
+          base::BindOnce(&CreateEligibleMockPehLauncher)) {
+    return std::make_unique<SearchPromotionManager>(
+        *profile(), GetCreateMockTaskRunnerCallback(), std::move(peh_callback));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -150,18 +211,278 @@ TEST_F(SearchPromotionManagerTest, IsPromoAllowedGuardedByFeature) {
   feature_list_.InitAndDisableFeature(
       feature_engagement::kIPHSearchPromotionFeature);
   {
-    SearchPromotionManager manager(*profile(),
-                                   GetCreateMockTaskRunnerCallback());
-    EXPECT_FALSE(IsPromoAllowed(manager));
+    auto manager = CreateSearchPromotionManager();
+    EXPECT_FALSE(IsPromoAllowed(*manager));
   }
 
   feature_list_.Reset();
   InitSearchPromotionFeature();
   {
-    SearchPromotionManager manager(*profile(),
-                                   GetCreateMockTaskRunnerCallback());
-    EXPECT_TRUE(IsPromoAllowed(manager));
+    auto manager = CreateSearchPromotionManager();
+    EXPECT_TRUE(IsPromoAllowed(*manager));
   }
+}
+
+TEST_F(SearchPromotionManagerTest, PehEligibilityGating_Ineligible) {
+  InitSearchPromotionFeature();
+
+  SearchPromotionManager* manager =
+      RecreateSearchPromotionManager(GetIneligibleMockPehLauncherFactory());
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(window_user_data_host));
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface);
+
+  // Promo should NOT be shown when PEH is ineligible.
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(testing::_)).Times(0);
+
+  base::HistogramTester histogram_tester;
+  manager->OnTargetURLVisited(mock_user_education);
+
+  // Evaluated metric is still recorded for baseline.
+  histogram_tester.ExpectTotalCount("Search.SearchPromotion.Evaluated", 1);
+  // DefaultBrowserState should not be recorded since it returns before
+  // checking.
+  histogram_tester.ExpectTotalCount(
+      "Search.SearchPromotion.DefaultBrowserState", 0);
+}
+
+TEST_F(SearchPromotionManagerTest, PehEligibilityGating_Eligible) {
+  InitSearchPromotionFeature();
+
+  SearchPromotionManager* manager = RecreateSearchPromotionManager();
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(window_user_data_host));
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface);
+
+  // Promo should be shown when PEH is eligible.
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(testing::_))
+      .WillOnce(testing::Return(true));
+
+  manager->OnTargetURLVisited(mock_user_education);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsEligibleState) {
+  InitSearchPromotionFeature();
+
+  base::HistogramTester histogram_tester;
+  auto manager = CreateSearchPromotionManager();
+  // Before background query runs, state is in pending / nullopt state.
+  EXPECT_FALSE(manager->IsPehEligibleForTesting().has_value());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  // After background query runs, state is resolved to true and histogram is
+  // logged.
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), true);
+  histogram_tester.ExpectUniqueSample("Search.SearchPromotion.PehEligible",
+                                      SearchPromotionPehEligibility::kEligible,
+                                      1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsIneligibleWhenLauncherUnavailable) {
+  InitSearchPromotionFeature();
+
+  base::HistogramTester histogram_tester;
+  auto manager = CreateSearchPromotionManager(
+      base::BindOnce([]() -> std::unique_ptr<platform_experience::PehLauncher> {
+        return nullptr;
+      }));
+  EXPECT_FALSE(manager->IsPehEligibleForTesting().has_value());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), false);
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.PehEligible",
+      SearchPromotionPehEligibility::kLauncherUnavailable, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsIneligibleWhenBinaryMissing) {
+  InitSearchPromotionFeature();
+
+  base::HistogramTester histogram_tester;
+  auto manager = CreateSearchPromotionManager(
+      base::BindOnce(&CreateIneligibleMockPehLauncher));
+  // Before background query runs, state is in pending / nullopt state.
+  EXPECT_FALSE(manager->IsPehEligibleForTesting().has_value());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  // After background query runs, state is resolved to false.
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), false);
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.PehEligible",
+      SearchPromotionPehEligibility::kBinaryNotFound, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsIneligibleWhenBinaryUnverified) {
+  InitSearchPromotionFeature();
+
+  auto create_unverified_launcher =
+      []() -> std::unique_ptr<platform_experience::PehLauncher> {
+    auto launcher = std::make_unique<
+        testing::NiceMock<platform_experience::MockPehLauncher>>();
+    ON_CALL(*launcher, GetBinaryPath())
+        .WillByDefault(testing::Return(
+            base::FilePath(FILE_PATH_LITERAL("C:\\test\\peh.exe"))));
+    ON_CALL(*launcher, IsBinaryVerified(testing::_))
+        .WillByDefault(testing::Return(false));
+    return launcher;
+  };
+
+  base::HistogramTester histogram_tester;
+  auto manager =
+      CreateSearchPromotionManager(base::BindOnce(create_unverified_launcher));
+  EXPECT_FALSE(manager->IsPehEligibleForTesting().has_value());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), false);
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.PehEligible",
+      SearchPromotionPehEligibility::kBinaryNotVerified, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsIneligibleWhenBinaryVersionInvalid) {
+  InitSearchPromotionFeature();
+
+  auto create_invalid_version_launcher =
+      []() -> std::unique_ptr<platform_experience::PehLauncher> {
+    auto launcher = std::make_unique<
+        testing::NiceMock<platform_experience::MockPehLauncher>>();
+    ON_CALL(*launcher, GetBinaryPath())
+        .WillByDefault(testing::Return(
+            base::FilePath(FILE_PATH_LITERAL("C:\\test\\peh.exe"))));
+    ON_CALL(*launcher, IsBinaryVerified(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*launcher, GetBinaryVersion(testing::_))
+        .WillByDefault(testing::Return(base::Version()));
+    return launcher;
+  };
+
+  base::HistogramTester histogram_tester;
+  auto manager = CreateSearchPromotionManager(
+      base::BindOnce(create_invalid_version_launcher));
+  EXPECT_FALSE(manager->IsPehEligibleForTesting().has_value());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), false);
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.PehEligible",
+      SearchPromotionPehEligibility::kBinaryVersionInvalid, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsIneligibleWhenVersionTooLow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"action", feature_engagement::kSearchPromotionActionOpen},
+       {"min_peh_version", "2.0.0.0"}});
+
+  auto create_low_version_launcher =
+      []() -> std::unique_ptr<platform_experience::PehLauncher> {
+    auto launcher = std::make_unique<
+        testing::NiceMock<platform_experience::MockPehLauncher>>();
+    ON_CALL(*launcher, GetBinaryPath())
+        .WillByDefault(testing::Return(
+            base::FilePath(FILE_PATH_LITERAL("C:\\test\\peh.exe"))));
+    ON_CALL(*launcher, IsBinaryVerified(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*launcher, GetBinaryVersion(testing::_))
+        .WillByDefault(testing::Return(base::Version("1.0.0.0")));
+    return launcher;
+  };
+
+  base::HistogramTester histogram_tester;
+  auto manager =
+      CreateSearchPromotionManager(base::BindOnce(create_low_version_launcher));
+  EXPECT_FALSE(manager->IsPehEligibleForTesting().has_value());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), false);
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.PehEligible",
+      SearchPromotionPehEligibility::kBinaryVersionTooLow, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsIneligibleWhenMinVersionEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"action", feature_engagement::kSearchPromotionActionOpen},
+       {"min_peh_version", ""}});
+
+  base::HistogramTester histogram_tester;
+  auto manager = CreateSearchPromotionManager();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), false);
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.PehEligible",
+      SearchPromotionPehEligibility::kMinVersionInvalid, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_BackgroundQuerySetsIneligibleWhenMinVersionInvalid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"action", feature_engagement::kSearchPromotionActionOpen},
+       {"min_peh_version", "invalid.version.str"}});
+
+  base::HistogramTester histogram_tester;
+  auto manager = CreateSearchPromotionManager();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsPehEligibleForTesting().has_value(); }));
+
+  EXPECT_EQ(manager->IsPehEligibleForTesting(), false);
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.PehEligible",
+      SearchPromotionPehEligibility::kMinVersionInvalid, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PehEligibility_PromoSuppressedWhileCheckInFlight) {
+  InitSearchPromotionFeature();
+
+  auto manager = CreateSearchPromotionManager();
+  ASSERT_FALSE(manager->IsPehEligibleForTesting().has_value());
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(window_user_data_host));
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface);
+
+  // Promo should NOT be shown while eligibility check is still pending.
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(testing::_)).Times(0);
+
+  manager->OnTargetURLVisited(mock_user_education);
 }
 
 TEST_F(SearchPromotionManagerTest, EngagementThresholdGating_NotReady) {
@@ -1188,8 +1509,8 @@ TEST_F(SearchPromotionManagerTest, InvalidCohortDefaultsToAll) {
 class SearchPromotionManagerTaskRunnerTest : public SearchPromotionManagerTest {
  protected:
   void SetUp() override {
-    mock_runner_ =
-        std::make_unique<platform_experience::MockDelegatedTaskRunner>();
+    mock_runner_ = std::make_unique<
+        testing::NiceMock<platform_experience::MockDelegatedTaskRunner>>();
 
     SearchPromotionManagerTest::SetUp();
     SearchPromotionManagerFactory::GetInstance()->SetTestingFactory(

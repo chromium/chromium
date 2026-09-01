@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -21,9 +22,29 @@ class BrowserUserEducationInterface;
 class Profile;
 class RegisterSearchPromotionTask;
 
+namespace platform_experience {
+class PehLauncher;
+}
+
 namespace segmentation_platform {
 struct ClassificationResult;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SearchPromotionPehEligibility)
+enum class SearchPromotionPehEligibility {
+  kEligible = 0,
+  kLauncherUnavailable = 1,
+  kMinVersionInvalid = 2,
+  kBinaryNotFound = 3,
+  kBinaryNotVerified = 4,
+  kBinaryVersionInvalid = 5,
+  kBinaryVersionTooLow = 6,
+  kMaxValue = kBinaryVersionTooLow,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchPromotionPehEligibility)
 
 // SearchPromotionManager coordinates promotional states and actions for
 // search-related features. At times, the promos may be OS-specific.
@@ -45,9 +66,13 @@ class SearchPromotionManager : public KeyedService {
 
   using CreateTaskRunnerCallback = base::RepeatingCallback<
       std::unique_ptr<platform_experience::DelegatedTaskRunner>()>;
+  using CreatePehLauncherCallback =
+      base::OnceCallback<std::unique_ptr<platform_experience::PehLauncher>()>;
 
-  SearchPromotionManager(Profile& profile,
-                         CreateTaskRunnerCallback create_task_runner_callback);
+  SearchPromotionManager(
+      Profile& profile,
+      CreateTaskRunnerCallback create_task_runner_callback,
+      CreatePehLauncherCallback create_peh_launcher_callback = {});
   SearchPromotionManager(const SearchPromotionManager&) = delete;
   SearchPromotionManager& operator=(const SearchPromotionManager&) = delete;
   ~SearchPromotionManager() override;
@@ -67,6 +92,10 @@ class SearchPromotionManager : public KeyedService {
 
   std::string_view GetEngagementLabelForTesting() const;
 
+  // Returns the cached PEH eligibility, or std::nullopt if the background query
+  // is still pending / in flight.
+  std::optional<bool> IsPehEligibleForTesting() const;
+
  private:
   // Checks whether the user's engagement matches the requirements of the
   // configured experiment cohort.
@@ -75,6 +104,10 @@ class SearchPromotionManager : public KeyedService {
   void QueryEngagementLevel();
   void OnEngagementResultRetrieved(
       const segmentation_platform::ClassificationResult& result);
+
+  void QueryPehEligibility(
+      CreatePehLauncherCallback create_peh_launcher_callback);
+  void OnPehEligibilityRetrieved(SearchPromotionPehEligibility eligibility);
 
   void ExecuteAction();
   void PerformOpen();
@@ -95,6 +128,7 @@ class SearchPromotionManager : public KeyedService {
       feature_engagement::SearchPromotionCohort::kAll;
   std::string engagement_label_;
   bool was_accepted_ = false;
+  std::optional<bool> is_peh_eligible_;
 
   const raw_ref<Profile> profile_;
 

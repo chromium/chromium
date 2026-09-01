@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"

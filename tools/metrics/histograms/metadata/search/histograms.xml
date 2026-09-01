@@ -2016,6 +2016,19 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.SearchPromotion.PehEligible"
+    enum="SearchPromotionPehEligibility" expires_after="2027-05-22">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records whether the Platform Experience Helper (PEH) binary is eligible
+    (present, verified, and meets minimum version requirement) or the first
+    check which failed. Recorded asynchronously when SearchPromotionManager
+    initializes and queries PEH eligibility. Only recorded on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchProviderOverrideStatus"
     enum="SearchProviderOverrideStatus" expires_after="2027-01-17">
   <owner>dgn@chromium.org</owner>

@@ -5,16 +5,20 @@
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "base/version.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
+#include "chrome/browser/platform_experience/delegated_tasks/peh_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/shell_integration.h"
@@ -44,11 +48,40 @@ enum class DefaultBrowserType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchPromotionDefaultBrowserType)
 
+// Checks if a verified PEH binary exists on disk and meets `min_version_str`.
+SearchPromotionPehEligibility CheckPehEligibility(
+    std::unique_ptr<platform_experience::PehLauncher> launcher,
+    std::string min_version_str) {
+  if (!launcher) {
+    return SearchPromotionPehEligibility::kLauncherUnavailable;
+  }
+  const base::Version min_version(min_version_str);
+  if (!min_version.IsValid()) {
+    return SearchPromotionPehEligibility::kMinVersionInvalid;
+  }
+  const base::FilePath path = launcher->GetBinaryPath();
+  if (path.empty()) {
+    return SearchPromotionPehEligibility::kBinaryNotFound;
+  }
+  if (!launcher->IsBinaryVerified(path)) {
+    return SearchPromotionPehEligibility::kBinaryNotVerified;
+  }
+  const base::Version version = launcher->GetBinaryVersion(path);
+  if (!version.IsValid()) {
+    return SearchPromotionPehEligibility::kBinaryVersionInvalid;
+  }
+  if (version < min_version) {
+    return SearchPromotionPehEligibility::kBinaryVersionTooLow;
+  }
+  return SearchPromotionPehEligibility::kEligible;
+}
+
 }  // namespace
 
 SearchPromotionManager::SearchPromotionManager(
     Profile& profile,
-    CreateTaskRunnerCallback create_task_runner_callback)
+    CreateTaskRunnerCallback create_task_runner_callback,
+    CreatePehLauncherCallback create_peh_launcher_callback)
     : profile_(profile),
       create_task_runner_callback_(std::move(create_task_runner_callback)) {
   // SearchPromotionManager is currently a Windows-only feature intended to
@@ -64,6 +97,7 @@ SearchPromotionManager::SearchPromotionManager(
 
   if (action_ != feature_engagement::SearchPromotionAction::kDisabled) {
     QueryEngagementLevel();
+    QueryPehEligibility(std::move(create_peh_launcher_callback));
   }
 }
 
@@ -78,7 +112,7 @@ void SearchPromotionManager::OnTargetURLVisited(
   // Record baseline evaluation across all evaluated users (including Control).
   base::UmaHistogramBoolean("Search.SearchPromotion.Evaluated", true);
 
-  if (!IsEngagementEligible()) {
+  if (!is_peh_eligible_.value_or(false) || !IsEngagementEligible()) {
     return;
   }
 
@@ -205,6 +239,30 @@ bool SearchPromotionManager::IsPromoAllowedForTesting() const {
 
 std::string_view SearchPromotionManager::GetEngagementLabelForTesting() const {
   return engagement_label_;
+}
+
+std::optional<bool> SearchPromotionManager::IsPehEligibleForTesting() const {
+  return is_peh_eligible_;
+}
+
+void SearchPromotionManager::QueryPehEligibility(
+    CreatePehLauncherCallback create_peh_launcher_callback) {
+  auto launcher = create_peh_launcher_callback
+                      ? std::move(create_peh_launcher_callback).Run()
+                      : std::make_unique<platform_experience::PehLauncher>();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&CheckPehEligibility, std::move(launcher),
+                     feature_engagement::kSearchPromotionMinPehVersion.Get()),
+      base::BindOnce(&SearchPromotionManager::OnPehEligibilityRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SearchPromotionManager::OnPehEligibilityRetrieved(
+    SearchPromotionPehEligibility eligibility) {
+  is_peh_eligible_ = (eligibility == SearchPromotionPehEligibility::kEligible);
+  base::UmaHistogramEnumeration("Search.SearchPromotion.PehEligible",
+                                eligibility);
 }
 
 bool SearchPromotionManager::IsEngagementEligible() const {

@@ -701,6 +701,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/search_promotion/register_search_promotion_task.h:SearchPromotionExitCode) -->
 
+<!-- LINT.IfChange(SearchPromotionPehEligibility) -->
+
+<enum name="SearchPromotionPehEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Launcher unavailable"/>
+  <int value="2" label="Min version parameter invalid"/>
+  <int value="3" label="Binary not found"/>
+  <int value="4" label="Binary not verified"/>
+  <int value="5" label="Binary version invalid"/>
+  <int value="6" label="Binary version too low"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/search_promotion/search_promotion_manager.h:SearchPromotionPehEligibility) -->
+
 <enum name="SearchProviderOverrideStatus">
   <int value="0" label="kNoPref"/>
   <int value="1" label="kEmptyPref"/>
