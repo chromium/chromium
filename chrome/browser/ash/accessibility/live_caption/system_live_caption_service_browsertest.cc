@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, UsesCorrectLanguage) {
 // This tests that while there are non chrome outputs running that the session
 // restarts automatically.
 IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest,
-                       DISABLED_SwitchesLanguageCorrectly) {
+                       SwitchesLanguageCorrectly) {
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 
