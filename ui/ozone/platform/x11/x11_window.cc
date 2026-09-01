@@ -280,7 +280,7 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   }
   if (!startup_id.empty()) {
     connection_->SetStringProperty(xwindow_, x11::GetAtom("_NET_STARTUP_ID"),
-                                   x11::Atom::STRING, startup_id);
+                                   x11::GetAtom("UTF8_STRING"), startup_id);
   }
 
   // It can be a status icon window.  If it fails to initialize, don't provide
@@ -827,7 +827,7 @@ void X11Window::Activate() {
 
   if (auto token = base::nix::TakeXdgActivationToken()) {
     connection_->SetStringProperty(xwindow_, x11::GetAtom("_NET_STARTUP_ID"),
-                                   x11::Atom::STRING, token.value());
+                                   x11::GetAtom("UTF8_STRING"), token.value());
   }
 
   BeforeActivationStateChanged();
