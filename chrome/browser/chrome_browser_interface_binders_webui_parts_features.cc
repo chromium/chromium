@@ -7,6 +7,8 @@
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
+#include "chrome/browser/glic/host/glic_internals_ui.h"
+#include "chrome/browser/glic/host/glic_overlay_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -120,6 +122,8 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
                                            glic::GlicUI>(map);
     RegisterWebUIControllerInterfaceBinder<
+        glic::mojom::GlicOverlayPageHandlerFactory, glic::GlicOverlayUI>(map);
+    RegisterWebUIControllerInterfaceBinder<
         glic::mojom::GlicPreloadHandlerFactory, glic::GlicUI>(map);
     RegisterWebUIControllerInterfaceBinder<
         glic::mojom::ExperimentalOptInPageHandler,
@@ -129,7 +133,8 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
   if (glic::GlicEnabling::IsInternalsWebUIEnabled(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
-        glic::mojom::InternalsPageHandlerFactory, glic::GlicUI>(map);
+        glic::mojom::InternalsPageHandlerFactory, glic::GlicUI,
+        glic::GlicInternalsUI>(map);
   }
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {

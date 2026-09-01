@@ -45,3 +45,19 @@ IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestMojoLogging) {
 IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestPostMessageTransport) {
   RunTest("glic/unit_tests/post_message_transport_test.js", "mocha.run()");
 }
+
+class GlicOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
+ protected:
+  GlicOverlayWebUIBrowserTest() {
+    set_test_loader_host(std::string(chrome::kChromeUIGlicHost) + "/overlay");
+  }
+
+  void SetUp() override { WebUIMochaBrowserTest::SetUp(); }
+
+ private:
+  glic::GlicTestEnvironment glic_test_env_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicOverlayWebUIBrowserTest, UnitTestOverlay) {
+  RunTestWithoutTestLoader("glic/unit_tests/overlay_test.js", "mocha.run()");
+}

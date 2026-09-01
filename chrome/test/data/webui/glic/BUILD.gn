@@ -127,12 +127,16 @@ if (!is_android) {
       "unit_tests/glic_api_client_test.ts",
       "unit_tests/observable_test.ts",
       "unit_tests/mojo_logging_test.ts",
+      "unit_tests/overlay_test.ts",
       "unit_tests/post_message_transport_test.ts",
       "unit_tests/test_helpers.ts",
       "unit_tests/webview_test.ts",
     ]
 
     ts_path_mappings = [
+      "chrome://glic/*|" +
+          rebase_path("$root_gen_dir/chrome/browser/resources/glic/tsc/*",
+                      target_gen_dir),
       "chrome://glic/glic.js|" + rebase_path(
               "$root_gen_dir/chrome/browser/resources/glic/tsc/glic.d.ts",
               target_gen_dir),

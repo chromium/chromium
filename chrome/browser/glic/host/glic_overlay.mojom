@@ -1,0 +1,73 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module glic.mojom;
+
+enum ErrorPanelType {
+  kOffline = 0,
+  kError = 1,
+  kUnavailable = 2,
+  kIneligibleAccount = 3,
+  kDisabledByAdmin = 4,
+  kDisabledByAdminWithLink = 5,
+  kSignIn = 6,
+  kLocationMismatch = 7,
+};
+
+enum LoadingStyle {
+  kFloating = 0,
+  kSidePanel = 1,
+};
+
+union OverlayState {
+  LoadingStyle loading;
+  ErrorPanelType error;
+};
+
+// Interface implemented by the WebUI overlay (TypeScript) and called by C++.
+interface GlicOverlayPage {
+  // Configures the active overlay display (either a loading style or an error
+  // panel).
+  SetOverlayState(OverlayState state);
+};
+
+// Interface implemented by C++ (GlicOverlayUI / GlicNoWebviewContentsManager)
+// and
+// called by WebUI.
+interface GlicOverlayPageHandler {
+  // Called when the user clicks the retry or reload button on an error panel.
+  OnRetryClicked();
+
+  // Called when the user clicks the sign-in button on the sign-in panel.
+  OnSignInClicked();
+
+  // Called when the user clicks the switch profile button on the unavailable
+  // panel.
+  OnProfilePickerClicked();
+
+  // Called when the user clicks the help button on the ineligible account
+  // panel.
+  OnIneligibleAccountHelpClicked();
+
+  // Called when the user clicks the help button on the location mismatch panel.
+  OnLocationMismatchHelpClicked();
+
+  // Called when the user clicks the close button on the disabled-by-admin
+  // panel.
+  OnDisabledByAdminCloseClicked();
+
+  // Called when the user clicks the learn more link on the disabled-by-admin
+  // panel.
+  OnDisabledByAdminLinkClicked();
+
+  // Called when the user clicks a panel close (X) button.
+  OnClosePanelClicked();
+};
+
+// Factory to bind the page and page handler.
+interface GlicOverlayPageHandlerFactory {
+  // Creates the page handler and establishes the bidirectional Mojo connection.
+  CreatePageHandler(pending_remote<GlicOverlayPage> page,
+                    pending_receiver<GlicOverlayPageHandler> handler);
+};
