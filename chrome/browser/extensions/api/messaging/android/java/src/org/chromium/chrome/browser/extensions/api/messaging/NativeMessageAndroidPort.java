@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.extensions.api.messaging;
 
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.os.TransactionTooLargeException;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -16,6 +17,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +35,9 @@ import java.util.List;
 @JNINamespace("extensions")
 @NullMarked
 public class NativeMessageAndroidPort {
+    private static final int MAX_SUCCESS_MESSAGE_SIZE_BYTES = 1024 * 1024; // 1 MB
+    private static final int MAX_TOO_LARGE_MESSAGE_SIZE_BYTES = 64 * 1024 * 1024; // 64 MB
+
     // An observer interface for classes which keep a reference to this class
     // but do not own it, like ExtensionSession.
     public interface Observer {
@@ -189,13 +194,29 @@ public class NativeMessageAndroidPort {
 
     private void send(String message) {
         assert mRemotePort != null;
+        byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
         try {
             // TODO(crbug.com/515159909): Handle messages that exceed Binder transaction size limits
             // by putting them into SharedMemory instead of byte[].
             MessagePayload payload = new MessagePayload();
-            payload.setInlineBytes(message.getBytes(StandardCharsets.UTF_8));
+            payload.setInlineBytes(bytes);
             Bundle extras = new Bundle();
             mRemotePort.postMessage(payload, extras);
+            RecordHistogram.recordCustomCountHistogram(
+                    "Extensions.NativeMessaging.Android.SentMessageSize.Success",
+                    bytes.length,
+                    1,
+                    MAX_SUCCESS_MESSAGE_SIZE_BYTES,
+                    50);
+        } catch (TransactionTooLargeException e) {
+            RecordHistogram.recordCustomCountHistogram(
+                    "Extensions.NativeMessaging.Android.SentMessageSize.TooLarge",
+                    bytes.length,
+                    1,
+                    MAX_TOO_LARGE_MESSAGE_SIZE_BYTES,
+                    50);
+            Log.w(TAG, "Failed to post message to external app: message too large", e);
+            closeChannel("Error when communicating with the native messaging host.");
         } catch (RemoteException e) {
             Log.w(TAG, "Failed to post message to external app", e);
             closeChannel("Error when communicating with the native messaging host.");

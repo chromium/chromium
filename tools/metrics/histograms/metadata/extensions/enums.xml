@@ -3591,6 +3591,14 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Hard-disabled by Chrome"/>
 </enum>
 
+<enum name="NativeMessagingAndroidDisconnectionReason">
+  <int value="0" label="CleanUnbind"/>
+  <int value="1" label="ServiceDisconnected"/>
+  <int value="2" label="BindingDied"/>
+  <int value="3" label="NullBinding"/>
+  <int value="4" label="ServiceConnectionTimedOut"/>
+</enum>
+
 <enum name="OpenChannelMessagePipelineResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Channel opened"/>

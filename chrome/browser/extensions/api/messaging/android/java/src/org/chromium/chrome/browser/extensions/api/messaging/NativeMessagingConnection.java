@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -18,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -45,12 +47,30 @@ public class NativeMessagingConnection implements ServiceConnection {
     // external app but has become idle (zero active or pending ports).
     @VisibleForTesting static final long IDLE_DISCONNECT_TIMEOUT_MS = 60_000L;
 
+    @IntDef({
+        DisconnectionReason.CLEAN_UNBIND,
+        DisconnectionReason.SERVICE_DISCONNECTED,
+        DisconnectionReason.BINDING_DIED,
+        DisconnectionReason.NULL_BINDING,
+        DisconnectionReason.SERVICE_CONNECTION_TIMED_OUT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DisconnectionReason {
+        int CLEAN_UNBIND = 0;
+        int SERVICE_DISCONNECTED = 1;
+        int BINDING_DIED = 2;
+        int NULL_BINDING = 3;
+        int SERVICE_CONNECTION_TIMED_OUT = 4;
+        int COUNT = 5;
+    }
+
     public interface Observer {
         void onUnbound(String packageName);
     }
 
     private final String mPackageName;
     private boolean mIsBound;
+    private long mConnectedTimeMs;
     private final Map<String, ExtensionSession> mSessions = new HashMap<>();
 
     private @Nullable IBrowserNativeMessageService mService;
@@ -81,7 +101,7 @@ public class NativeMessagingConnection implements ServiceConnection {
                     () -> {
                         if (mIsBound && mService == null) {
                             Log.w(TAG, "Service connection timed out for package: " + mPackageName);
-                            unbind();
+                            unbind(DisconnectionReason.SERVICE_CONNECTION_TIMED_OUT);
                         }
                     },
                     CONNECT_TIMEOUT_MS);
@@ -115,10 +135,27 @@ public class NativeMessagingConnection implements ServiceConnection {
     }
 
     public void unbind() {
+        unbind(DisconnectionReason.CLEAN_UNBIND);
+    }
+
+    private void unbind(@DisconnectionReason int reason) {
         if (!mIsBound) {
             return;
         }
         mIsBound = false;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Extensions.NativeMessaging.Android.DisconnectionReason",
+                reason,
+                DisconnectionReason.COUNT);
+
+        if (reason != DisconnectionReason.CLEAN_UNBIND && mConnectedTimeMs > 0) {
+            long durationMs = SystemClock.elapsedRealtime() - mConnectedTimeMs;
+            RecordHistogram.recordLongTimesHistogram(
+                    "Extensions.NativeMessaging.Android.UnexpectedDisconnectionDuration",
+                    durationMs);
+        }
+        mConnectedTimeMs = 0;
 
         try {
             ContextUtils.getApplicationContext().unbindService(this);
@@ -155,6 +192,7 @@ public class NativeMessagingConnection implements ServiceConnection {
             return;
         }
 
+        mConnectedTimeMs = SystemClock.elapsedRealtime();
         mService = IBrowserNativeMessageService.Stub.asInterface(service);
         for (ExtensionSession session : mSessions.values()) {
             session.authenticateExtensionAndConnectPorts(mService);
@@ -171,19 +209,19 @@ public class NativeMessagingConnection implements ServiceConnection {
         //   happen it will not retain any state.
         // Therefore it's cleaner to just unbind.
         Log.i(TAG, "Service disconnected for package: " + mPackageName);
-        unbind();
+        unbind(DisconnectionReason.SERVICE_DISCONNECTED);
     }
 
     @Override
     public void onBindingDied(@Nullable ComponentName name) {
         Log.w(TAG, "Binding died for package: " + mPackageName);
-        unbind();
+        unbind(DisconnectionReason.BINDING_DIED);
     }
 
     @Override
     public void onNullBinding(@Nullable ComponentName name) {
         Log.w(TAG, "Null binding for package: " + mPackageName);
-        unbind();
+        unbind(DisconnectionReason.NULL_BINDING);
     }
 
     public void onSessionDisconnected(String extensionId) {

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.TransactionTooLargeException;
 
 import androidx.annotation.Nullable;
 
@@ -33,6 +34,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.nio.charset.StandardCharsets;
@@ -82,6 +84,7 @@ public class NativeMessageAndroidPortTest {
         public final @Nullable IExtensionNativeMessageCallback callback;
         public boolean isDisconnected;
         public boolean shouldThrowOnPostMessage;
+        public boolean shouldThrowTransactionTooLarge;
         public int failAfterMessageCount = -1;
 
         public FakeNativeMessagePort(@Nullable IExtensionNativeMessageCallback callback) {
@@ -90,6 +93,9 @@ public class NativeMessageAndroidPortTest {
 
         @Override
         public void postMessage(MessagePayload payload, Bundle extras) throws RemoteException {
+            if (shouldThrowTransactionTooLarge) {
+                throw new TransactionTooLargeException("Payload too large.");
+            }
             if (shouldThrowOnPostMessage || receivedMessages.size() == failAfterMessageCount) {
                 throw new DeadObjectException("Target process is dead.");
             }
@@ -193,6 +199,18 @@ public class NativeMessageAndroidPortTest {
         TestPortObserver portObserver = new TestPortObserver();
         port.setTestObserver(portObserver);
 
+        var successWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Extensions.NativeMessaging.Android.SentMessageSize.Success",
+                                "msg_1".getBytes(StandardCharsets.UTF_8).length)
+                        .expectIntRecord(
+                                "Extensions.NativeMessaging.Android.SentMessageSize.Success",
+                                "msg_2".getBytes(StandardCharsets.UTF_8).length)
+                        .expectNoRecords(
+                                "Extensions.NativeMessaging.Android.SentMessageSize.TooLarge")
+                        .build();
+
         // 1. Queue messages before service is connected.
         port.forwardMessageToApp("msg_1");
         port.forwardMessageToApp("msg_2");
@@ -202,6 +220,8 @@ public class NativeMessageAndroidPortTest {
         // 2. Service connects and completes authentication.
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
+
+        successWatcher.assertExpected();
 
         // 3. Verify port connected and flushed pending messages in FIFO order.
         Assert.assertEquals(1, createdPorts.size());
@@ -419,6 +439,14 @@ public class NativeMessageAndroidPortTest {
         // Configure fake app port to throw DeadObjectException when postMessage is called.
         fakeAppPort.shouldThrowOnPostMessage = true;
 
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Extensions.NativeMessaging.Android.SentMessageSize.Success")
+                        .expectNoRecords(
+                                "Extensions.NativeMessaging.Android.SentMessageSize.TooLarge")
+                        .build();
+
         // Sending a message fails and should trigger channel closure.
         port.forwardMessageToApp("msg_fail");
         RobolectricUtil.runAllBackgroundAndUi();
@@ -426,6 +454,7 @@ public class NativeMessageAndroidPortTest {
         Assert.assertEquals(
                 "Error when communicating with the native messaging host.",
                 portObserver.closedError);
+        watcher.assertExpected();
     }
 
     // Test that if sending queued pending messages fails mid-flush (e.g. on message #2),
@@ -723,5 +752,52 @@ public class NativeMessageAndroidPortTest {
 
         // Observer should not be notified a second time.
         Assert.assertEquals(1, closeCallCount[0]);
+    }
+
+    // Test that hitting TransactionTooLargeException records SentMessageSize.TooLarge and closes
+    // channel.
+    @Test
+    public void testSendMessageTransactionTooLargeHistogram() throws RemoteException {
+        FakeNativeMessagePort fakeAppPort = new FakeNativeMessagePort(null);
+        Mockito.doAnswer(
+                        invocation -> {
+                            IConnectPortCallback callback = invocation.getArgument(1);
+                            callback.onSuccess(fakeAppPort);
+                            return null;
+                        })
+                .when(mMockExtensionService)
+                .connectPort(Mockito.any(), Mockito.any());
+
+        NativeMessageAndroidPort port = new NativeMessageAndroidPort();
+        TestPortObserver portObserver = new TestPortObserver();
+        port.setTestObserver(portObserver);
+
+        Assert.assertNull(connectToApp(port));
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        fakeAppPort.shouldThrowTransactionTooLarge = true;
+
+        String message = "msg_large";
+        int expectedSize = message.getBytes(StandardCharsets.UTF_8).length;
+
+        var tooLargeWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Extensions.NativeMessaging.Android.SentMessageSize.TooLarge",
+                        expectedSize);
+        var successWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Extensions.NativeMessaging.Android.SentMessageSize.Success")
+                        .build();
+
+        port.forwardMessageToApp(message);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        tooLargeWatcher.assertExpected();
+        successWatcher.assertExpected();
+        Assert.assertEquals(
+                "Error when communicating with the native messaging host.",
+                portObserver.closedError);
     }
 }
