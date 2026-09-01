@@ -172,6 +172,7 @@
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_qualities_pref_delegate.h"
 #include "services/network/network_service.h"
+#include "services/network/network_service_network_delegate.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -6519,6 +6520,38 @@ TEST_F(NetworkContextActivateDohProbesTest, NotPrimaryContext) {
   network_context.reset();
 
   EXPECT_FALSE(state->IsDohProbeRunning());
+}
+
+TEST_F(NetworkContextTest,
+       ShouldForceIgnoreSiteForCookiesCalledForEveryRedirectHop) {
+  std::vector<std::vector<GURL>> url_chains;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  auto* network_delegate = static_cast<NetworkServiceNetworkDelegate*>(
+      network_context->url_request_context()->network_delegate());
+  network_delegate->SetShouldForceIgnoreSiteForCookiesCallbackForTesting(
+      base::BindLambdaForTesting([&url_chains](const net::URLRequest& request) {
+        url_chains.push_back(request.url_chain());
+      }));
+
+  net::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(test_server.Start());
+  const GURL target_url = test_server.GetURL("/echo");
+  const GURL redirect_url =
+      test_server.GetURL("/server-redirect-307?" + target_url.spec());
+
+  net::TestDelegate delegate;
+  std::unique_ptr<net::URLRequest> request =
+      network_context->url_request_context()->CreateRequest(
+          redirect_url, net::DEFAULT_PRIORITY, &delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
+  request->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(), net::test::IsOk());
+  EXPECT_THAT(url_chains, Contains(ElementsAre(redirect_url)));
+  EXPECT_THAT(url_chains, Contains(ElementsAre(redirect_url, target_url)));
 }
 
 TEST_F(NetworkContextTest, PrivacyModeDisabledByDefault) {

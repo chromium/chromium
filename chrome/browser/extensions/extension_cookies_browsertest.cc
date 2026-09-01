@@ -165,10 +165,11 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
 // Tests for special handling of SameSite cookies for extensions:
 // A request should be treated as same-site for the purposes of SameSite
 // cookies if either
-//  1) the request initiator is an extension with access to the requested URL,
-//  2) the site_for_cookies is an extension with access to the requested URL,
-//     and the request initiator (if it exists) is same-site to the requested
-//     URL and also the extension has access to it.
+//  1) the request initiator is an extension with access to every URL in the
+//     request's URL chain,
+//  2) the site_for_cookies is an extension with access to the initiator and
+//     every URL in the request's URL chain, and the request initiator is
+//     same-site to every URL in the chain.
 // See url_loader_util::ShouldForceIgnoreSiteForCookies().
 //
 // The test fixture param is whether or not legacy SameSite semantics are
@@ -299,10 +300,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 }
 
 // Extension initiates a no-cors request to a permitted host that redirects to
-// a disallowed host => SameSite cookies are not sent on the redirected
-// request.
-IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
-                       ExtensionInitiatedNoCorsRedirectNotPermitted) {
+// a disallowed host => SameSite=Lax/Strict cookies are not sent on the
+// redirected request. A request must not retain the extension's SameSite
+// bypass after crossing an origin access boundary.
+IN_PROC_BROWSER_TEST_P(
+    ExtensionSameSiteCookiesTest,
+    ExtensionInitiatedNoCorsRedirectFromPermittedToNotPermitted) {
   SetCookies(ExtensionCookiesTestHelper::kNotPermittedHost);
   content::RenderFrameHost* frame = NavigateMainFrameToExtensionPage();
   GURL target_url =
@@ -310,6 +313,25 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
                             ExtensionCookiesTestHelper::kFetchCookiesPath);
   GURL redirect_url =
       test_server()->GetURL(ExtensionCookiesTestHelper::kPermittedHost,
+                            "/server-redirect-307?" + target_url.spec());
+  std::string cookies = helper().FetchCookiesNoCors(frame, redirect_url);
+  ExpectNoSameSiteCookies(cookies);
+}
+
+// Extension initiates a no-cors request to a disallowed host that redirects to
+// a permitted host => SameSite=Lax/Strict cookies are not sent on the
+// redirected request. A request must not acquire the extension's SameSite
+// bypass mid-chain.
+IN_PROC_BROWSER_TEST_P(
+    ExtensionSameSiteCookiesTest,
+    ExtensionInitiatedNoCorsRedirectFromNotPermittedToPermitted) {
+  SetCookies(ExtensionCookiesTestHelper::kPermittedHost);
+  content::RenderFrameHost* frame = NavigateMainFrameToExtensionPage();
+  GURL target_url =
+      test_server()->GetURL(ExtensionCookiesTestHelper::kPermittedHost,
+                            ExtensionCookiesTestHelper::kFetchCookiesPath);
+  GURL redirect_url =
+      test_server()->GetURL(ExtensionCookiesTestHelper::kNotPermittedHost,
                             "/server-redirect-307?" + target_url.spec());
   std::string cookies = helper().FetchCookiesNoCors(frame, redirect_url);
   ExpectNoSameSiteCookies(cookies);

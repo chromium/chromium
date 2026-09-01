@@ -220,17 +220,33 @@ class FileElementReader : public net::UploadFileElementReader {
 }  // namespace
 
 bool ShouldForceIgnoreSiteForCookies(
-    const GURL& url,
+    const std::vector<GURL>& url_chain,
     const std::optional<url::Origin>& request_initiator,
     const net::SiteForCookies& site_for_cookies,
     const cors::OriginAccessList& origin_access_list) {
+  if (url_chain.empty()) {
+    return false;
+  }
+
+  // This decision may be queried again after a redirect. One authorization
+  // path must cover every hop so a request cannot gain or retain the SameSite
+  // bypass across an origin access boundary.
+
   // Ignore site for cookies in requests from an initiator covered by the
-  // same-origin-policy exclusions in `origin_access_list_` (typically requests
+  // same-origin-policy exclusions in `origin_access_list` (typically requests
   // initiated by Chrome Extensions).
-  if (request_initiator.has_value() &&
-      cors::OriginAccessList::AccessState::kAllowed ==
+  if (request_initiator.has_value()) {
+    bool initiator_can_access_entire_chain = true;
+    for (const GURL& url : url_chain) {
+      if (cors::OriginAccessList::AccessState::kAllowed !=
           origin_access_list.CheckAccessState(request_initiator.value(), url)) {
-    return true;
+        initiator_can_access_entire_chain = false;
+        break;
+      }
+    }
+    if (initiator_can_access_entire_chain) {
+      return true;
+    }
   }
 
   // Convert `site_for_cookies` into an origin (an opaque origin if
@@ -243,37 +259,41 @@ bool ShouldForceIgnoreSiteForCookies(
   url::Origin site_origin =
       url::Origin::Create(site_for_cookies.RepresentativeUrl());
 
-  // If `site_for_cookies` represents an origin that is granted access to the
-  // initiator and the target by `origin_access_list_` (typically such
-  // `site_for_cookies` represents a Chrome Extension), then we also should
-  // force ignoring of site for cookies if the initiator and the target are
-  // same-site.
+  // If `site_for_cookies` represents an origin (typically a Chrome Extension),
+  // it can force ignoring of site for cookies only if `origin_access_list`
+  // grants it access to the initiator and every URL in `url_chain`. The
+  // initiator must also be same-site to every URL in the chain. All URLs must
+  // pass this path; permissions from the two paths must not be combined across
+  // redirect hops.
   //
   // Ideally we would walk up the frame tree and check that each ancestor is
-  // first-party to the main frame (treating the `origin_access_list_`
+  // first-party to the main frame (treating the `origin_access_list`
   // exceptions as "first-party").  But walking up the tree is not possible in
   // //services/network and so we make do with just checking the direct
   // initiator of the request.
   //
-  // We also check same-siteness between the initiator and the requested URL,
+  // We also check that the initiator is same-site to every URL in the chain,
   // because setting `force_ignore_site_for_cookies` to true causes Strict
-  // cookies to be attached, and having the initiator be same-site to the
-  // request URL is a requirement for Strict cookies (see
+  // cookies to be attached, and this is a requirement for Strict cookies (see
   // net::cookie_util::ComputeSameSiteContext).
   if (!site_origin.opaque() && request_initiator.has_value()) {
-    bool site_can_access_target =
-        cors::OriginAccessList::AccessState::kAllowed ==
-        origin_access_list.CheckAccessState(site_origin, url);
     bool site_can_access_initiator =
         cors::OriginAccessList::AccessState::kAllowed ==
         origin_access_list.CheckAccessState(site_origin,
                                             request_initiator->GetURL());
-    net::SiteForCookies site_of_initiator =
-        net::SiteForCookies::FromOrigin(request_initiator.value());
-    bool are_initiator_and_target_same_site =
-        site_of_initiator.IsFirstParty(url);
-    if (site_can_access_initiator && site_can_access_target &&
-        are_initiator_and_target_same_site) {
+    if (site_can_access_initiator) {
+      net::SiteForCookies site_of_initiator =
+          net::SiteForCookies::FromOrigin(request_initiator.value());
+      for (const GURL& url : url_chain) {
+        bool site_can_access_target =
+            cors::OriginAccessList::AccessState::kAllowed ==
+            origin_access_list.CheckAccessState(site_origin, url);
+        bool are_initiator_and_target_same_site =
+            site_of_initiator.IsFirstParty(url);
+        if (!site_can_access_target || !are_initiator_and_target_same_site) {
+          return false;
+        }
+      }
       return true;
     }
   }
