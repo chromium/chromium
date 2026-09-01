@@ -18,6 +18,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -435,7 +437,13 @@ void ChipController::ResetPermissionPromptChip() {
           committed_url.host() == chrome::kChromeUIOmniboxPopupHost ||
           committed_url.host() == chrome::kChromeUIContextualTasksHost;
 
-      if (GetLocationBar()->IsEditingOrEmpty() &&
+      const bool is_user_input_in_progress =
+          GetLocationBar() && GetLocationBar()->GetOmniboxController() &&
+          GetLocationBar()
+              ->GetOmniboxController()
+              ->edit_model()
+              ->user_input_in_progress();
+      if (is_user_input_in_progress &&
           active_chip_permission_request_manager_.value()
               ->IsRequestInProgress() &&
           !should_ignore_omnibox_state_check) {

@@ -2189,7 +2189,8 @@ OmniboxPopupUI* LocationBarView::GetOmniboxPopupUI() {
 }
 
 void LocationBarView::UpdateChipVisibility() {
-  if (!IsEditingOrEmpty()) {
+  if (!omnibox_controller_ ||
+      !omnibox_controller_->edit_model()->user_input_in_progress()) {
     return;
   }
 

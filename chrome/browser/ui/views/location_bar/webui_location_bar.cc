@@ -578,10 +578,12 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
     }
   }
 
-  if (is_editing_or_empty &&
-      (!ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(
-           GetWebContents()) ||
-       omnibox_controller_->IsPopupOpen())) {
+  if (omnibox_controller_ &&
+      omnibox_controller_->edit_model()->user_input_in_progress() &&
+          (!ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(
+              GetWebContents()) ||
+          omnibox_controller_->IsPopupOpen())
+      ) {
     // Permission requests get cancelled if user edits the URL.
     // (And won't show up if it was already edited when they occurred).
     bool has_visible_chip = GetChipController()->chip()->GetVisible();
