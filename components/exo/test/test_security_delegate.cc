@@ -45,6 +45,10 @@ bool TestSecurityDelegate::CanSetRestoreInfo() const {
   return restore_info_allowed_;
 }
 
+bool TestSecurityDelegate::CanSetSystemModal() const {
+  return system_modal_allowed_;
+}
+
 std::vector<ui::FileInfo> TestSecurityDelegate::GetFilenames(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
@@ -88,6 +92,10 @@ void TestSecurityDelegate::SetCanAccessRemoteShell(bool allowed) {
 
 void TestSecurityDelegate::SetCanSetRestoreInfo(bool allowed) {
   restore_info_allowed_ = allowed;
+}
+
+void TestSecurityDelegate::SetCanSetSystemModal(bool allowed) {
+  system_modal_allowed_ = allowed;
 }
 
 void TestSecurityDelegate::RunSendPickleCallback(std::vector<GURL> urls) {
