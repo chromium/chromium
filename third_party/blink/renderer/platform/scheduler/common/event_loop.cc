@@ -12,7 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/bindings/cpp_heap_external_tag.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "v8/include/v8-cpp-heap-external.h"
 #include "v8/include/v8.h"
@@ -53,9 +52,7 @@ EventLoop::EventLoop(Delegate* delegate,
       &EventLoop::RunEndOfCheckpointTasks, this);
 }
 
-EventLoop::~EventLoop() {
-  DCHECK(schedulers_.empty());
-}
+EventLoop::~EventLoop() = default;
 
 void EventLoop::EnqueueMicrotask(base::OnceClosure task) {
   pending_microtasks_.push_back(std::move(task));
@@ -115,22 +112,6 @@ void EventLoop::PerformMicrotaskCheckpoint() {
 // static
 void EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(v8::Isolate* isolate) {
   v8::MicrotasksScope::PerformCheckpoint(isolate);
-}
-
-void EventLoop::AttachScheduler(FrameOrWorkerScheduler* scheduler) {
-  DCHECK(loop_enabled_);
-  DCHECK(!schedulers_.Contains(scheduler));
-  schedulers_.insert(scheduler);
-}
-
-void EventLoop::DetachScheduler(FrameOrWorkerScheduler* scheduler) {
-  DCHECK(loop_enabled_);
-  DCHECK(schedulers_.Contains(scheduler));
-  schedulers_.erase(scheduler);
-}
-
-bool EventLoop::IsSchedulerAttachedForTest(FrameOrWorkerScheduler* scheduler) {
-  return schedulers_.Contains(scheduler);
 }
 
 std::unique_ptr<EventLoop::PauseMicrotasksHandle> EventLoop::PauseMicrotasks() {

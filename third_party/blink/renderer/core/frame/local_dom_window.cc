@@ -266,7 +266,6 @@ void LocalDOMWindow::BindContentSecurityPolicy() {
 }
 
 void LocalDOMWindow::Initialize() {
-  GetAgent()->AttachContext(this);
   network_state_observer_->Initialize();
 }
 
@@ -290,7 +289,6 @@ void LocalDOMWindow::ClearForReuse() {
 }
 
 void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
-  GetAgent()->DetachContext(this);
   ResetAgent(agent);
   if (document_) {
     document_->ResetAgent(*agent);
@@ -311,8 +309,6 @@ void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
       main_world_context->SetMicrotaskQueue(microtask_queue);
     }
   }
-
-  GetAgent()->AttachContext(this);
 }
 
 void LocalDOMWindow::AcceptLanguagesChanged() {
@@ -1136,7 +1132,6 @@ void LocalDOMWindow::FrameDestroyed() {
     soft_navigation_heuristics_->Shutdown();
     soft_navigation_heuristics_ = nullptr;
   }
-  GetAgent()->DetachContext(this);
   NotifyContextDestroyed();
   RemoveAllEventListeners();
   MainThreadDebugger::Instance(GetIsolate())

@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 namespace blink {
 
@@ -48,14 +47,6 @@ Agent::~Agent() = default;
 
 void Agent::Trace(Visitor* visitor) const {
   Supplementable<Agent>::Trace(visitor);
-}
-
-void Agent::AttachContext(ExecutionContext* context) {
-  event_loop_->AttachScheduler(context->GetScheduler());
-}
-
-void Agent::DetachContext(ExecutionContext* context) {
-  event_loop_->DetachScheduler(context->GetScheduler());
 }
 
 bool Agent::IsCrossOriginIsolated() const {
@@ -118,10 +109,6 @@ bool Agent::IsWindowAgent() const {
 
 void Agent::PerformMicrotaskCheckpoint() {
   event_loop_->PerformMicrotaskCheckpoint();
-}
-
-void Agent::Dispose() {
-  rejected_promises_->Dispose();
 }
 
 RejectedPromises& Agent::GetRejectedPromises() {

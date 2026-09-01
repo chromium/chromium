@@ -20,7 +20,6 @@
 
 namespace blink {
 
-class ExecutionContext;
 class RejectedPromises;
 
 // Corresponding spec concept is:
@@ -59,9 +58,6 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
 
   void Trace(Visitor*) const override;
 
-  void AttachContext(ExecutionContext*);
-  void DetachContext(ExecutionContext*);
-
   const base::UnguessableToken& cluster_id() const { return cluster_id_; }
 
   // Representing agent cluster's "cross-origin isolated" concept.
@@ -91,7 +87,6 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   // Returns if this is a Window Agent or not.
   virtual bool IsWindowAgent() const;
 
-  virtual void Dispose();
   virtual void PerformMicrotaskCheckpoint();
 
   RejectedPromises& GetRejectedPromises();

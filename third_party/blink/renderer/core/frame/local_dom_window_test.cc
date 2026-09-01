@@ -85,16 +85,6 @@ class LocalDOMWindowTest : public PageTestBase {
   }
 };
 
-TEST_F(LocalDOMWindowTest, AttachExecutionContext) {
-  auto* scheduler = GetFrame().GetFrameScheduler();
-  auto* window = GetFrame().DomWindow();
-  EXPECT_TRUE(
-      window->GetAgent()->event_loop()->IsSchedulerAttachedForTest(scheduler));
-  window->FrameDestroyed();
-  EXPECT_FALSE(
-      window->GetAgent()->event_loop()->IsSchedulerAttachedForTest(scheduler));
-}
-
 TEST_F(LocalDOMWindowTest, referrerPolicyParsing) {
   LocalDOMWindow* window = GetFrame().DomWindow();
   EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
