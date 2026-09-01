@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, HostCapability} from '../../glic_api/glic_api.js';
 import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
@@ -30,10 +31,12 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
   constructor(
       private directPair: ReturnType<
           typeof createDirectMessagingPair<WebClientHost, WebClient>>,
+      private handler?: WebClientHandlerRemote,
   ) {}
 
   async registerWebClient(webClient: GlicWebClient): Promise<void> {
-    this.host = new GlicBrowserHostImpl(webClient, this.directPair);
+    this.host =
+        new GlicBrowserHostImpl(webClient, this.directPair, this.handler);
     const clientCapabilities = webClient.getClientCapabilities?.() ?? new Set();
     await this.host.webClientCreated(clientCapabilities);
     let success = false;
@@ -349,6 +352,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       public webClient: GlicWebClient,
       directPair: ReturnType<
           typeof createDirectMessagingPair<WebClientHost, WebClient>>,
+      private handler?: WebClientHandlerRemote,
   ) {
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
@@ -383,6 +387,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   destroy() {
+    this.skillsClient.destroySkills();
     this.router.destroy();
   }
 
@@ -393,9 +398,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.actorClient.initialize(
         response.initialState, response.actorRemote, response.actorReceiver);
     this.annotationClient.initialize(response.initialState);
-    this.skillsClient.initialize(
-        response.initialState, this.router, response.skillsRemote,
-        response.skillsReceiver);
+    this.skillsClient.initialize(response.initialState, this.handler);
     this.experimentalTriggeringClient.initialize(
         this.router, response.experimentalTriggeringReceiver, this.webClient,
         this.clientRemote);

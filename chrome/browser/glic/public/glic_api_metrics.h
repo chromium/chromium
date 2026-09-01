@@ -112,7 +112,9 @@ enum class GlicHostApiRequestId {
   kUpdateActorTaskStepProgress = 103,
   kOpenPinnedTabPicker = 104,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicHostApiRequestType)
+// LINT.ThenChange(
+// //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,
+// //tools/metrics/histograms/metadata/glic/enums.xml:GlicHostApiRequestType)
 
 // Returns the string name for a GlicHostApiRequestId (e.g. "CreateSkill").
 std::string_view ToString(GlicHostApiRequestId request_id);

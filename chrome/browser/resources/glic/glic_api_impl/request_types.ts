@@ -8,7 +8,6 @@ import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, Captur
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
 import type {AnnotationClient, AnnotationHost} from './annotation/annotation_types.js';
 import type {ExperimentalTriggeringClient} from './experimental_triggering/experimental_triggering_types.js';
-import type {SkillsClient, SkillsHost} from './skills/skills_types.js';
 import type {InterfaceDef, InterfaceDefMethods, ReplaceProperties} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
 import type {ErrorCodec, PendingReceiver, PendingRemote, TransferableException} from './transport/post_message_transport.js';
@@ -20,8 +19,6 @@ export type {
   AnnotationClient,
   AnnotationHost,
   ExperimentalTriggeringClient,
-  SkillsClient,
-  SkillsHost,
   ZeroStateSuggestionsClient,
   ZeroStateSuggestionsHost,
 };
@@ -47,8 +44,6 @@ export const WebClientHostDef = defInterface({
         initialState: WebClientInitialStatePrivate,
         actorRemote?: PendingRemote<ActorHost>,
         actorReceiver?: PendingReceiver<ActorClient>,
-        skillsRemote?: PendingRemote<SkillsHost>,
-        skillsReceiver?: PendingReceiver<SkillsClient>,
         experimentalTriggeringReceiver?: PendingReceiver<
                                           ExperimentalTriggeringClient>,
         zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
@@ -810,9 +805,6 @@ type InterfaceHistogramIds<I extends InterfaceDef> = {
 // Note: We are migrating API request reporting to C++. This list should be
 // trimmed down and fully deleted eventually.
 // See chrome/browser/glic/public/glic_api_metrics.h.
-// LINT.IfChange(ApiRequestType)
-// New values here must be added to histograms.xml and to enums.xml.
-// Note: Not for accessing in code, so it can be stripped from compiled js.
 export const RECORDED_REQUEST_IDS = {
   WebClientCreated: 1,
   WebClientInitialized: 2,
@@ -894,20 +886,20 @@ export const RECORDED_REQUEST_IDS = {
   OpenPasswordManagerSettingsPage: 78,
   SetOnboardingCompleted: 80,
   SubscribeToTabData: 81,
-  CreateSkill: 82,
-  UpdateSkill: 83,
-  GetSkill: 84,
+  // Do not reuse deleted request ID: 82,
+  // Do not reuse deleted request ID: 83,
+  // Do not reuse deleted request ID: 84,
   CancelActions: 85,
-  ShowManageSkillsUi: 86,
+  // Do not reuse deleted request ID: 86,
   AutofillSuggestionDialogOnFormPresented: 87,
   AutofillSuggestionDialogOnFormPreviewChanged: 88,
   AutofillSuggestionDialogOnFormConfirmed: 89,
   OnMicrophoneStatusChange: 90,
-  RecordSkillsWebClientEvent: 91,
+  // Do not reuse deleted request ID: 91,
   DeleteCapturedRegion: 92,
   OnActionSubmitted: 93,
   SubscribeToTabFavicon: 94,
-  ShowBrowseSkillsUi: 95,
+  // Do not reuse deleted request ID: 95,
   SubscribeToZoomLevel: 96,
   UnsubscribeFromZoomLevel: 97,
   OnExperimentalTriggeringUpdate: 98,
@@ -918,11 +910,8 @@ export const RECORDED_REQUEST_IDS = {
   UpdateActorTaskStepProgress: 103,
   OpenPinnedTabPicker: 104,
 } as const satisfies
-// LINT.ThenChange(
-// //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,
-// //tools/metrics/histograms/metadata/glic/enums.xml:GlicHostApiRequestType)
 InterfaceHistogramIds<WebClientHost>&InterfaceHistogramIds<ActorHost>&
-    InterfaceHistogramIds<AnnotationHost>&InterfaceHistogramIds<SkillsHost>;
+    InterfaceHistogramIds<AnnotationHost>;
 export const MAX_REQUEST_ID = Math.max(...Object.values(RECORDED_REQUEST_IDS));
 
 // Provides metrics histogram information for a host request type.

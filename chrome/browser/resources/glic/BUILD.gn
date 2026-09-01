@@ -131,8 +131,6 @@ glic_api_ts_files = [
   "glic_api_impl/mojo_logging.ts",
   "glic_api_impl/request_types.ts",
   "glic_api_impl/skills/skills_client.ts",
-  "glic_api_impl/skills/skills_host.ts",
-  "glic_api_impl/skills/skills_types.ts",
   "glic_api_impl/transport/messaging.ts",
   "glic_api_impl/transport/post_message_transport.ts",
   "glic_api_impl/zero_state_suggestions/zero_state_suggestions_client.ts",

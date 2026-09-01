@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
   <variant name="WebClientInitialized"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->
 
 <variants name="AttachedTabCount">
   <variant name="0" summary="0 tabs attached"/>

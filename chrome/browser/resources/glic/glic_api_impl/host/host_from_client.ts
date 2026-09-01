@@ -17,7 +17,7 @@ import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, Count
 import {replaceProperties} from '../conversions.js';
 import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
 import {getGuestLoadTimeData} from '../guest_load_time_data.js';
-import type {ActorClient, ActorHost, AnnotationHost, GlicException, ImageBytesResultPrivate, RgbaImage, SkillsClient, SkillsHost, TabContextResultPrivate, WebClientHost, WebClientInitialStatePrivate, WebClientPinCandidatesObserver, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver, ZeroStateSuggestionsHost} from '../request_types.js';
+import type {ActorClient, ActorHost, AnnotationHost, GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientInitialStatePrivate, WebClientPinCandidatesObserver, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver, ZeroStateSuggestionsHost} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, SubscriberObservationType} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
@@ -59,8 +59,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     initialState: WebClientInitialStatePrivate,
     actorRemote?: PendingRemote<ActorHost>,
     actorReceiver?: PendingReceiver<ActorClient>,
-    skillsRemote?: PendingRemote<SkillsHost>,
-    skillsReceiver?: PendingReceiver<SkillsClient>,
     experimentalTriggeringReceiver?: PendingReceiver<
                                       ExperimentalTriggeringClient>,
     zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
@@ -113,8 +111,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
       }),
       actorRemote: initialPipes.actorRemote,
       actorReceiver: initialPipes.actorReceiver,
-      skillsRemote: initialPipes.skillsRemote,
-      skillsReceiver: initialPipes.skillsReceiver,
       experimentalTriggeringReceiver:
           initialPipes.experimentalTriggeringReceiver,
       zeroStateSuggestionsRemote: initialPipes.zeroStateSuggestionsRemote,

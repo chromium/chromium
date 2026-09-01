@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
@@ -304,6 +305,11 @@ void GlicSkillsManagerImpl::NotifyContextualSkillsChanged(
   }
 }
 
+void GlicSkillsManagerImpl::RecordSkillsWebClientEvent(
+    mojom::SkillsWebClientEvent event) {
+  instance_metrics_->RecordSkillsWebClientEvent(event);
+}
+
 // GlicSkillsClientSession implementation:
 
 GlicSkillsClientSession::GlicSkillsClientSession(
@@ -341,6 +347,7 @@ GlicSkillsClientSession::~GlicSkillsClientSession() {
 
 void GlicSkillsClientSession::CreateSkill(mojom::CreateSkillRequestPtr request,
                                           CreateSkillCallback callback) {
+  LogApiRequestCount(GlicHostApiRequestId::kCreateSkill);
   auto scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
 
@@ -365,6 +372,7 @@ void GlicSkillsClientSession::CreateSkill(mojom::CreateSkillRequestPtr request,
 
 void GlicSkillsClientSession::UpdateSkill(mojom::UpdateSkillRequestPtr request,
                                           UpdateSkillCallback callback) {
+  LogApiRequestCount(GlicHostApiRequestId::kUpdateSkill);
   auto scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
 
@@ -395,6 +403,7 @@ void GlicSkillsClientSession::UpdateSkill(mojom::UpdateSkillRequestPtr request,
 
 void GlicSkillsClientSession::GetSkill(const std::string& id,
                                        GetSkillCallback callback) {
+  LogApiRequestCount(GlicHostApiRequestId::kGetSkill);
   if (!skills::SkillsServiceFactory::IsSkillsEnabledForProfile(
           manager_->profile())) {
     std::move(callback).Run(nullptr);
@@ -404,13 +413,9 @@ void GlicSkillsClientSession::GetSkill(const std::string& id,
   std::move(callback).Run(std::move(skill));
 }
 
-void GlicSkillsManagerImpl::RecordSkillsWebClientEvent(
-    mojom::SkillsWebClientEvent event) {
-  instance_metrics_->RecordSkillsWebClientEvent(event);
-}
-
 void GlicSkillsClientSession::RecordSkillsWebClientEvent(
     mojom::SkillsWebClientEvent event) {
+  LogApiRequestCount(GlicHostApiRequestId::kRecordSkillsWebClientEvent);
   if (!skills::SkillsServiceFactory::IsSkillsEnabledForProfile(
           manager_->profile())) {
     return;
@@ -419,10 +424,12 @@ void GlicSkillsClientSession::RecordSkillsWebClientEvent(
 }
 
 void GlicSkillsClientSession::ShowManageSkillsUi() {
+  LogApiRequestCount(GlicHostApiRequestId::kShowManageSkillsUi);
   manager_->ShowManageSkillsUi();
 }
 
 void GlicSkillsClientSession::ShowBrowseSkillsUi() {
+  LogApiRequestCount(GlicHostApiRequestId::kShowBrowseSkillsUi);
   manager_->ShowBrowseSkillsUi();
 }
 
