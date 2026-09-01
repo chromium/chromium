@@ -12,6 +12,7 @@
 #include "android_webview/common/aw_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
@@ -159,6 +160,21 @@ TEST_F(AwBrowserContextTest, MigrateVisitedLinksEnabled) {
       visitedlink::VisitedLinkCommon::ComputePseudoPartitionedFingerprint(
           url.spec());
   ASSERT_TRUE(GetPartitionedVisitedLinkWriter(context)->IsVisited(expected_fp));
+}
+
+TEST_F(AwBrowserContextTest, CreateAwPrefetchManagerDurationHistogramRecorded) {
+  base::HistogramTester histogram_tester;
+  AwBrowserContext context(
+      AwBrowserContextStore::kDefaultContextName,
+      base::FilePath(AwBrowserContextStore::kDefaultContextPath),
+      /*is_default=*/true);
+
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.AwBrowserContext.CreateAwPrefetchManager.Duration", 1);
+
+  // Wait until all pending tasks are processed before the browser context is
+  // destroyed.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace android_webview
