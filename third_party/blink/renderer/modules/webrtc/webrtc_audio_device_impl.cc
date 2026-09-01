@@ -351,7 +351,7 @@ bool WebRtcAudioDeviceImpl::Recording() const {
 }
 
 int32_t WebRtcAudioDeviceImpl::PlayoutDelay(uint16_t* delay_ms) const {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  // May be called on the worker thread or the audio renderer thread.
   base::AutoLock auto_lock(lock_);
   const int64_t output_delay_ms = output_delay_.InMilliseconds();
   DCHECK_LE(output_delay_ms, std::numeric_limits<uint16_t>::max());
