@@ -93,9 +93,13 @@ static_library("test_support") {
     "browser_event_waiter.cc",
     "browser_event_waiter.h",
     "fake_global_browser_collection.h",
+    "mock_browser_window_interface.cc",
+    "mock_browser_window_interface.h",
   ]
   deps = [
     "//base",
     "//chrome/browser/ui/browser_window",
+    "//testing/gmock",
+    "//ui/base/unowned_user_data",
   ]
 }

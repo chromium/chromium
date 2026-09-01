@@ -3799,11 +3799,12 @@ if (!is_android) {
 static_library("test_support") {
   testonly = true
 
-  sources = [
-    "browser_window/test/mock_browser_window_interface.cc",
-    "browser_window/test/mock_browser_window_interface.h",
+  sources = []
+
+  public_deps = [
+    ":ui",
+    "//chrome/browser/ui/browser_window/test:test_support",
   ]
-  public_deps = [ ":ui" ]
 
   deps = [
     "//chrome/app/theme:theme_resources",
