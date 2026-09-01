@@ -101,14 +101,18 @@ gsutil ls gs://chromeos-localmirror/distfiles/espeak\*
 Pick the latest version and
 
 ```
-VERSION=1.51
+VERSION=1.51.8
 TMPDIR=$(mktemp -d)
 gsutil cp gs://chromeos-localmirror/distfiles/espeak-ng-$VERSION.tar.xz $TMPDIR
 mkdir $TMPDIR/extract
 tar -C $TMPDIR/extract -xvf $TMPDIR/espeak-ng-$VERSION.tar.xz
+sudo mkdir -p /usr/share/chromeos-assets/speech_synthesis/espeak-ng/
 sudo mkdir -p /usr/share/chromeos-assets/speech_synthesis/espeak-ng-mv3/
 sudo chown -R $(whoami) /usr/share/chromeos-assets/
-sudo cp -r $TMPDIR/extract/espeak-ng-mv3/* /usr/share/chromeos-assets/speech_synthesis/espeak-ng-mv3/
+sudo cp -r $TMPDIR/extract/espeak-ng-mv2/* \
+  /usr/share/chromeos-assets/speech_synthesis/espeak-ng/
+sudo cp -r $TMPDIR/extract/espeak-ng-mv3/* \
+  /usr/share/chromeos-assets/speech_synthesis/espeak-ng-mv3/
 rm -rf $TMPDIR
 ```
 
