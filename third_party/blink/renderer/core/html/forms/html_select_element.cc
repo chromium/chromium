@@ -1381,14 +1381,9 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
   if (!GetLayoutObject())
     return;
 
-  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-  const bool is_repeat_keyboard_event =
-      keyboard_event && keyboard_event->repeat();
-
   if (event.type() == event_type_names::kClick ||
       event.type() == event_type_names::kChange ||
-      (event.type() == event_type_names::kKeydown &&
-       !is_repeat_keyboard_event)) {
+      event.type() == event_type_names::kKeydown) {
     SetUserHasEditedTheField();
   }
 
@@ -1397,21 +1392,18 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  if (!is_repeat_keyboard_event) {
-    if (select_type_->DefaultEventHandler(event)) {
+  if (select_type_->DefaultEventHandler(event)) {
+    event.SetDefaultHandled();
+    return;
+  }
+
+  if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event)) {
+    if (TypeAhead::ShouldHandleKeyboardEvent(*keyboard_event)) {
+      TypeAheadFind(*keyboard_event);
       event.SetDefaultHandled();
       return;
     }
-
-    if (keyboard_event) {
-      if (TypeAhead::ShouldHandleKeyboardEvent(*keyboard_event)) {
-        TypeAheadFind(*keyboard_event);
-        event.SetDefaultHandled();
-        return;
-      }
-    }
   }
-
   HTMLFormControlElementWithState::DefaultEventHandler(event);
 }
 

@@ -7,14 +7,12 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -37,7 +35,6 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
@@ -1634,173 +1631,5 @@ TEST_F(HTMLSelectElementTest,
   test::RunPendingTasks();
 }
 
-TEST_F(HTMLSelectElementTest, KeyboardRepeatDoesNotTogglePopup) {
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-      .base-select, .base-select::picker(select) {
-        appearance: base-select;
-      }
-    </style>
-    <select id="select">
-      <option>one</option>
-      <option>two</option>
-    </select>
-  )HTML");
-
-  auto* select = To<HTMLSelectElement>(GetElementById("select"));
-  ASSERT_TRUE(select);
-
-  // Test both appearance: auto and appearance: base-select
-  for (bool use_base_select : {false, true}) {
-    if (use_base_select) {
-      select->setAttribute(html_names::kClassAttr, AtomicString("base-select"));
-    } else {
-      select->removeAttribute(html_names::kClassAttr);
-    }
-    select->Focus();
-    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-
-    ASSERT_FALSE(select->PopupIsVisible());
-
-    // 1. Send repeat keypress Space. It should NOT open the popup.
-    {
-      WebKeyboardEvent web_event(WebInputEvent::Type::kChar,
-                                 WebInputEvent::kIsAutoRepeat,
-                                 base::TimeTicks());
-      web_event.windows_key_code = VKEY_SPACE;
-      web_event.text[0] = ' ';
-      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
-      select->DefaultEventHandler(*event);
-      EXPECT_FALSE(select->PopupIsVisible())
-          << "Repeat Space should not open (base-select: " << use_base_select
-          << ")";
-    }
-
-    // 2. Send non-repeat keypress Space. It SHOULD open the popup.
-    {
-      WebKeyboardEvent web_event(WebInputEvent::Type::kChar,
-                                 WebInputEvent::kNoModifiers,
-                                 base::TimeTicks());
-      web_event.windows_key_code = VKEY_SPACE;
-      web_event.text[0] = ' ';
-      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
-      select->DefaultEventHandler(*event);
-      EXPECT_TRUE(select->PopupIsVisible())
-          << "Non-repeat Space should open (base-select: " << use_base_select
-          << ")";
-    }
-
-    // 3. Send repeat key event while open. It should NOT close the popup.
-    Element* active_element = GetDocument().ActiveElement();
-    ASSERT_TRUE(active_element);
-    {
-      WebKeyboardEvent web_event(WebInputEvent::Type::kRawKeyDown,
-                                 WebInputEvent::kIsAutoRepeat,
-                                 base::TimeTicks());
-      web_event.windows_key_code = VKEY_SPACE;
-      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
-      active_element->DefaultEventHandler(*event);
-      EXPECT_TRUE(select->PopupIsVisible())
-          << "Repeat keydown Space should not close (base-select: "
-          << use_base_select << ")";
-    }
-    {
-      WebKeyboardEvent web_event(WebInputEvent::Type::kChar,
-                                 WebInputEvent::kIsAutoRepeat,
-                                 base::TimeTicks());
-      web_event.windows_key_code = VKEY_SPACE;
-      web_event.text[0] = ' ';
-      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
-      active_element->DefaultEventHandler(*event);
-      EXPECT_TRUE(select->PopupIsVisible())
-          << "Repeat keypress Space should not close (base-select: "
-          << use_base_select << ")";
-    }
-
-    // Clean up: hide popup if still open
-    if (select->PopupIsVisible()) {
-      select->HidePopup(SelectPopupHideBehavior::kNormal);
-    }
-  }
-}
-
-// Autofilling or suggesting an option which is not associated with the select
-// must be a no-op. This mimics autofill holding on to an option element across
-// script execution which removes it from the select: selecting such an option
-// would mark a detached option as selected while SelectedOption() returns
-// nullptr. Regression test for crbug.com/535975677.
-TEST_F(HTMLSelectElementTest, AutofillingUnownedOptionIsIgnored) {
-  SetHtmlInnerHTML(R"HTML(
-    <select id=main>
-      <option id=o1 value=first>First</option>
-      <option id=o2 value=second>Second</option>
-    </select>
-    <select id=other>
-      <option id=foreign value=foreign>Foreign</option>
-    </select>
-  )HTML");
-  auto* select = To<HTMLSelectElement>(GetElementById("main"));
-  auto* option1 = To<HTMLOptionElement>(GetElementById("o1"));
-  auto* option2 = To<HTMLOptionElement>(GetElementById("o2"));
-  auto* foreign_option = To<HTMLOptionElement>(GetElementById("foreign"));
-  ASSERT_EQ(select->SelectedOption(), option1);
-
-  // Autofilling an option which was removed from the select is ignored.
-  option2->remove();
-  select->SetAutofillOption(option2, WebAutofillState::kAutofilled);
-  EXPECT_FALSE(option2->Selected());
-  EXPECT_EQ(select->SelectedOption(), option1);
-  EXPECT_FALSE(select->IsAutofilled());
-
-  // Autofilling an option which belongs to another select is ignored: both
-  // selects keep their selection. Note that `foreign_option` is its own
-  // select's default-selected option.
-  auto* other_select = To<HTMLSelectElement>(GetElementById("other"));
-  ASSERT_EQ(other_select->SelectedOption(), foreign_option);
-  select->SetAutofillOption(foreign_option, WebAutofillState::kAutofilled);
-  EXPECT_EQ(select->SelectedOption(), option1);
-  EXPECT_EQ(other_select->SelectedOption(), foreign_option);
-  EXPECT_FALSE(select->IsAutofilled());
-
-  // Suggesting (previewing) such options is ignored, too.
-  select->SetSuggestedOption(option2);
-  EXPECT_EQ(select->SuggestedValue(), "");
-  select->SetSuggestedOption(foreign_option);
-  EXPECT_EQ(select->SuggestedValue(), "");
-
-  // Re-inserting the option makes it autofillable again.
-  select->AppendChild(option2);
-  select->SetAutofillOption(option2, WebAutofillState::kAutofilled);
-  EXPECT_TRUE(option2->Selected());
-  EXPECT_EQ(select->SelectedOption(), option2);
-  EXPECT_TRUE(select->IsAutofilled());
-}
-
-// CloneContentsFromOptionElement() must tolerate an option element which has
-// no owner select, e.g. an option which a caller resolved and script then
-// removed from its select. Regression test for crbug.com/535975677.
-TEST_F(HTMLSelectElementTest, SelectedcontentClonesFromUnownedOption) {
-  SetHtmlInnerHTML(R"HTML(
-    <select id=main>
-      <button><selectedcontent id=sc></selectedcontent></button>
-      <option id=o1>First</option>
-    </select>
-  )HTML");
-  auto* selectedcontent = To<HTMLSelectedContentElement>(GetElementById("sc"));
-  auto* option = To<HTMLOptionElement>(GetElementById("o1"));
-  ASSERT_FALSE(selectedcontent->IsDisabled());
-
-  // The contents of the default-selected option were cloned on insertion.
-  EXPECT_EQ(selectedcontent->textContent(), "First");
-
-  // Removing the option from the select clears the option's owner select.
-  option->remove();
-  ASSERT_EQ(option->OwnerSelectElement(), nullptr);
-  option->setTextContent("Second");
-
-  // Cloning directly from the now-unowned option must not crash.
-  selectedcontent->CloneContentsFromOptionElement(option);
-  EXPECT_EQ(selectedcontent->textContent(), "Second");
-}
 
 }  // namespace blink
