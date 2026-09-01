@@ -49,6 +49,10 @@ NSString* kAppSpecificSettingsInstructionsVideo =
 NSString* kDefaultAppsSettingsInstructionsVideo =
     @"default_apps_settings_instructions_video";
 
+// The video file to use for the picture-in-picture default browser video
+// instructions with text.
+NSString* kTextInstructionsVideo = @"text_instructions_video";
+
 // Time threshold for the last URL open before no URL opens likely indicates
 // Chrome is no longer the default browser.
 constexpr base::TimeDelta kLatestURLOpenForDefaultBrowser = base::Days(21);
@@ -143,6 +147,9 @@ void showDefaultBrowserPictureInPictureInstructions(
       pip_param == kDefaultBrowserPictureInPictureParamEnabledDefaultApps
           ? kDefaultAppsSettingsInstructionsVideo
           : kAppSpecificSettingsInstructionsVideo;
+  if (IsDefaultBrowserPipTextVideoEnabled()) {
+    view_source = kTextInstructionsVideo;
+  }
   config.videoURL = [[NSBundle mainBundle] URLForResource:view_source
                                             withExtension:@"mp4"];
   config.title = l10n_util::GetNSString(

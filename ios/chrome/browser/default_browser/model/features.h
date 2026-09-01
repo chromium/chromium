@@ -58,4 +58,11 @@ BASE_DECLARE_FEATURE(kOmniboxPastePromoExperiment);
 
 // Returns the active experiment arm (1 through 10).
 int GetOmniboxPastePromoExperimentType();
+
+// Feature to display a text video in the default browser picture in picture.
+BASE_DECLARE_FEATURE(kDefaultBrowserPipTextVideo);
+
+// Returns whether `kDefaultBrowserPipTextVideo` is enabled.
+bool IsDefaultBrowserPipTextVideoEnabled();
+
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_FEATURES_H_

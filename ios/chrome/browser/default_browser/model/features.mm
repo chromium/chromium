@@ -89,3 +89,9 @@ BASE_FEATURE_PARAM(int,
 int GetOmniboxPastePromoExperimentType() {
   return kOmniboxPastePromoExperimentType.Get();
 }
+
+BASE_FEATURE(kDefaultBrowserPipTextVideo, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDefaultBrowserPipTextVideoEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserPipTextVideo);
+}

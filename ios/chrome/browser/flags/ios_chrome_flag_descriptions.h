@@ -610,6 +610,12 @@ inline constexpr char kDefaultBrowserPictureInPictureDescription[] =
     "When enabled, default browser instructions will be displayed in "
     "picture-in-picture format over the iOS settings.";
 
+inline constexpr char kDefaultBrowserPipTextVideoName[] =
+    "Default Browser PiP Text Video";
+inline constexpr char kDefaultBrowserPipTextVideoDescription[] =
+    "When enabled, displays a text video in the default browser "
+    "picture-in-picture instead of the current one.";
+
 inline constexpr char kDefaultBrowserPromoIpadInstructionsName[] =
     "Default Browser Promo iPad Instructions";
 inline constexpr char kDefaultBrowserPromoIpadInstructionsDescription[] =
