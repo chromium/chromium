@@ -9,6 +9,9 @@ const exceptionHandler = require('uncaught_exception_handler');
 
 const INT32_MAX = 2147483647;
 
+// Reusable buffer for generating cryptographic random action request IDs.
+const randomBuffer = new Uint32Array(1);
+
 const natives = requireNative('automationInternal');
 
 const IsInteractPermitted = natives.IsInteractPermitted;
@@ -1967,8 +1970,9 @@ AutomationRootNodeImpl.prototype = {
     let requestID;
     const map = AutomationRootNodeImpl.actionRequestIDToCallback;
     do {
-      requestID = Math.floor(Math.random() * INT32_MAX);
-    } while (Object.hasOwn(map, requestID));
+      crypto.getRandomValues(randomBuffer);
+      requestID = randomBuffer[0] & INT32_MAX;
+    } while (requestID === 0 || Object.hasOwn(map, requestID));
 
     map[requestID] = {
       actionType,
