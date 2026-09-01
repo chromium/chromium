@@ -467,7 +467,7 @@ def _read_all_xml_histograms() -> set[str]:
   Returns:
     A set containing the parsed histogram names.
   """
-  merged = merge_xml.MergeFiles(histogram_paths.ALL_XMLS)
+  merged = merge_xml.MergeFilesDeprecated(histogram_paths.ALL_XMLS)
   histograms, _ = extract_histograms.ExtractHistogramsFromDom(merged)
   return set(extract_histograms.ExtractNames(histograms))
 

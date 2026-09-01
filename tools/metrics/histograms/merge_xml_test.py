@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import unittest
 import xml.dom.minidom
 
@@ -209,7 +210,7 @@ class MergeXmlTest(unittest.TestCase):
     self.assertMultiLineEqual(expected_merged_xml.strip(), merged.strip())
 
   def testMergeFiles_InvalidPrimaryOwner(self):
-    histograms_without_valid_first_owner = xml.dom.minidom.parseString("""
+    xml_content = """
 <histogram-configuration>
 <histograms>
 
@@ -220,7 +221,7 @@ class MergeXmlTest(unittest.TestCase):
 
 </histograms>
 </histogram-configuration>
-""")
+"""
 
     with self.assertRaisesRegex(
       expand_owners.Error,
@@ -228,8 +229,9 @@ class MergeXmlTest(unittest.TestCase):
       'Googler with an @google.com or @chromium.org email address. Please '
       'manually update the histogram with a valid primary owner.',
     ):
-      merge_xml.MergeTrees(
-        [histograms_without_valid_first_owner], should_expand_owners=True
+      merge_xml.MergeFilesDeprecated(
+        files=[io.StringIO(xml_content)],
+        expand_owners_and_extract_components=True,
       )
 
   def testMergeFiles_WithComponentMetadata(self):

@@ -66,7 +66,7 @@ ENUMS_PATH = path_util.GetInputFile('tools/metrics/histograms/enums.xml')
 
 def _get_enums_from_files(files):
   """Finds the names of all referenced enums from the specified XML files."""
-  merged = merge_xml.MergeFiles(files)
+  merged = merge_xml.MergeFilesDeprecated(files)
   histograms, _ = extract_histograms.ExtractHistogramsFromDom(merged)
   enums_used_in_file = set()
   for _, data in histograms.items():

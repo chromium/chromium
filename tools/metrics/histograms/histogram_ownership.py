@@ -61,7 +61,7 @@ def main():
     python histogram_ownership.py
   """
   if len(sys.argv) == 1:
-    merged_xml_string = merge_xml.MergeFiles(
+    merged_xml_string = merge_xml.MergeFilesDeprecated(
       histogram_paths.ALL_XMLS, expand_owners_and_extract_components=True
     ).toxml()
     root = ET.fromstring(merged_xml_string)

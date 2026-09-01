@@ -87,7 +87,7 @@ def main(argv=sys.argv[1:]):
 
   # Extract all histograms into a dict. This is the expensive part that
   # handles expansion of suffixes and variants.
-  doc = merge_xml.MergeFiles(
+  doc = merge_xml.MergeFilesDeprecated(
     filenames=files,
     expand_owners_and_extract_components=expand_owners_and_extract_components,
   )

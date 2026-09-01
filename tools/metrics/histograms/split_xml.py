@@ -80,7 +80,9 @@ _PREDEFINED_NAMES_MAPPING = {
 
 def _ParseMergedXML():
   """Parses merged xml into different types of nodes"""
-  merged_histograms = merge_xml.MergeFiles(histogram_paths.HISTOGRAMS_XMLS)
+  merged_histograms = merge_xml.MergeFilesDeprecated(
+    histogram_paths.HISTOGRAMS_XMLS
+  )
   histogram_nodes = merged_histograms.getElementsByTagName('histogram')
   variants_nodes = merged_histograms.getElementsByTagName('variants')
   histogram_suffixes_nodes = merged_histograms.getElementsByTagName(

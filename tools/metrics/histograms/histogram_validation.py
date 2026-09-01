@@ -181,12 +181,16 @@ def get_files_to_check(
       )
 
   old_variants_doc = (
-    merge_xml.MergeTrees(old_variants_trees, should_expand_owners=False)
+    merge_xml.MergeTreesDeprecated(
+      old_variants_trees, should_expand_owners=False
+    )
     if old_variants_trees
     else None
   )
   new_variants_doc = (
-    merge_xml.MergeTrees(new_variants_trees, should_expand_owners=False)
+    merge_xml.MergeTreesDeprecated(
+      new_variants_trees, should_expand_owners=False
+    )
     if new_variants_trees
     else None
   )
@@ -251,9 +255,7 @@ def get_histograms_with_modified_variants(
     file_modified_variants = histogram_utils.get_modified_variants_blocks(
       '\n'.join(file_state.old_contents), '\n'.join(file_state.new_contents)
     )
-    all_modified_variants = (
-      modified_variants_blocks | file_modified_variants
-    )
+    all_modified_variants = modified_variants_blocks | file_modified_variants
     if not all_modified_variants:
       continue
 

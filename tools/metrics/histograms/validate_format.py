@@ -185,7 +185,7 @@ def main():
   )
   paths_to_check = parser.parse_args().xml_paths
 
-  doc = merge_xml.MergeFiles(
+  doc = merge_xml.MergeFilesDeprecated(
     paths_to_check, expand_owners_and_extract_components=False
   )
   histograms, errors = extract_histograms.ExtractHistogramsFromDom(doc)

@@ -29,7 +29,7 @@ def get_names(xml_files):
   Returns:
     The set of histogram names.
   """
-  doc = merge_xml.MergeFiles(files=xml_files)
+  doc = merge_xml.MergeFilesDeprecated(files=xml_files)
   histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
   if had_errors:
     raise ValueError('Error parsing inputs.')
@@ -72,7 +72,7 @@ def _merge_histograms_with_variants(
   content_doc: xml.dom.minidom.Document, variants_doc: xml.dom.minidom.Document
 ) -> xml.dom.minidom.Document:
   variants_clone = variants_doc.cloneNode(True)
-  return merge_xml.MergeTrees(
+  return merge_xml.MergeTreesDeprecated(
     [content_doc, variants_clone], should_expand_owners=False
   )
 

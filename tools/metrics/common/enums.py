@@ -63,6 +63,6 @@ def get_all_used_enums(
 def get_enums_used_in_files() -> set[str]:
   """Finds referenced enum names from all XML files."""
   logging.info('Reading histogram XML files...')
-  merged = merge_xml.MergeFiles(histogram_paths.ALL_XMLS)
+  merged = merge_xml.MergeFilesDeprecated(histogram_paths.ALL_XMLS)
   histograms, _ = extract_histograms.ExtractHistogramsFromDom(merged)
   return get_all_used_enums(histograms)
