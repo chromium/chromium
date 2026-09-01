@@ -389,6 +389,8 @@ class ReadAnythingUntrustedPageHandler :
 
   content::WebContents* GetWebContents() const;
 
+  bool HasTransientUserActivation() const;
+
   // Returns the actual language of the text currently displayed in the Reading
   // Mode panel.
   std::string GetDisplayLanguage();
