@@ -83,7 +83,6 @@
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 #include "components/cast_streaming/common/public/cast_streaming_url.h"  // nogncheck
-#include "components/cast_streaming/common/public/features.h"  // nogncheck
 #include "components/cast_streaming/renderer/public/resource_provider.h"  // nogncheck
 #include "components/cast_streaming/renderer/public/wrapping_renderer_factory_selector.h"  // nogncheck
 #endif
@@ -530,8 +529,7 @@ MediaFactory::CreateRendererFactorySelector(
   bool is_base_renderer_factory_set = false;
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
-  if (cast_streaming::IsCastRemotingEnabled() &&
-      cast_streaming::IsCastStreamingMediaSourceUrl(url) &&
+  if (cast_streaming::IsCastStreamingMediaSourceUrl(url) &&
       cast_streaming_resource_provider_) {
     factory_selector =
         std::make_unique<cast_streaming::WrappingRendererFactorySelector>(
