@@ -9065,7 +9065,7 @@
       "cjgrant@chromium.org",
       "koretadaniel@chromium.org"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "search-engine-unconditional-dialog",
@@ -9073,7 +9073,7 @@
       "koretadaniel@chromium.org",
       "cjgrant@chromium.org"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "search-in-cct",
@@ -9797,7 +9797,7 @@
       "cjgrant@chromium.org",
       "dfried@chromium.org"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 165
   },
   {
     "name": "throttle-main-thread-to-60hz",
