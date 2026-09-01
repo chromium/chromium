@@ -8,7 +8,6 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
-import("//services/tracing/public/cpp/stack_sampling/loader_lock_sampling.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -123,7 +122,6 @@ source_set("tests") {
     "//base/tracing/protos:chrome_track_event_zero",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp",
-    "//services/tracing/public/cpp:buildflags",
     "//services/tracing/public/cpp/background_tracing:unit_tests",
     "//services/tracing/public/mojom",
     "//testing/gmock",
@@ -174,16 +172,6 @@ source_set("tests") {
   data_deps = [ "//third_party/perfetto/protos/perfetto/config:descriptor" ]
   data = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/config.descriptor" ]
 
-  if (enable_loader_lock_sampling) {
-    if (is_win) {
-      sources +=
-          [ "public/cpp/stack_sampling/loader_lock_sampler_win_unittest.cc" ]
-    }
-
-    deps += [ ":loader_lock_sampler_test_strings" ]
-    data_deps += [ ":loader_lock_sampler_test_dll" ]
-  }
-
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -199,25 +187,6 @@ if (is_android) {
     testonly = true
     deps = [ "//third_party/jni_zero:jni_zero_java" ]
     sources = [ "android/test/src/org/chromium/tracing/UnwindTestHelper.java" ]
-  }
-}
-
-if (enable_loader_lock_sampling) {
-  source_set("loader_lock_sampler_test_strings") {
-    testonly = true
-
-    sources = [
-      "public/cpp/stack_sampling/loader_lock_sampler_test_strings.cc",
-      "public/cpp/stack_sampling/loader_lock_sampler_test_strings.h",
-    ]
-  }
-
-  loadable_module("loader_lock_sampler_test_dll") {
-    testonly = true
-
-    sources = [ "public/cpp/stack_sampling/loader_lock_sampler_test_dll.cc" ]
-
-    deps = [ ":loader_lock_sampler_test_strings" ]
   }
 }
 

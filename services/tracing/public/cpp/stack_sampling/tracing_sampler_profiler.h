@@ -21,7 +21,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/perfetto/interning_index.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/tracing/data_source.h"
@@ -46,10 +45,6 @@
 #endif
 
 namespace tracing {
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-class LoaderLockSamplingThread;
-#endif
 
 // This class is a bridge between the base stack sampling profiler and chrome
 // tracing. It's listening to TraceLog enabled/disabled events and it's starting
@@ -257,12 +252,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   raw_ptr<TracingProfileBuilder, FlakyDanglingUntriaged> profile_builder_ =
       nullptr;
   base::RepeatingClosure sample_callback_for_testing_;
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  // A thread that periodically samples the loader lock. Sampling will start
-  // and stop at the same time that stack sampling does.
-  std::unique_ptr<LoaderLockSamplingThread> loader_lock_sampling_thread_;
-#endif
 };
 
 }  // namespace tracing

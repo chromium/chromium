@@ -28,7 +28,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_config.h"
@@ -60,10 +59,6 @@
 
 #include "base/debug/elf_reader.h"
 #endif  // ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-#include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
-#endif
 
 using StreamingProfilePacketHandle =
     protozero::MessageHandle<perfetto::protos::pbzero::StreamingProfilePacket>;
@@ -623,14 +618,6 @@ TracingSamplerProfiler::CreateOnMainThread(
   // browser one.
   if (!g_main_thread_instance) {
     g_main_thread_instance = profiler.get();
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-    // The loader lock is process-wide so should only be sampled on a single
-    // thread. So only one TracingSamplerProfiler should create a
-    // LoaderLockSamplingThread.
-    profiler->loader_lock_sampling_thread_ =
-        std::make_unique<LoaderLockSamplingThread>();
-#endif
   }
   return profiler;
 }
@@ -780,12 +767,6 @@ void TracingSamplerProfiler::StartTracing(
     }
     profiler_->Start();
   }
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  if (loader_lock_sampling_thread_) {
-    loader_lock_sampling_thread_->StartSampling();
-  }
-#endif
 }
 
 void TracingSamplerProfiler::StopTracing() {
@@ -798,12 +779,6 @@ void TracingSamplerProfiler::StopTracing() {
   profiler_->Stop();
   profile_builder_ = nullptr;
   profiler_.reset();
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  if (loader_lock_sampling_thread_) {
-    loader_lock_sampling_thread_->StopSampling();
-  }
-#endif
 }
 
 }  // namespace tracing
