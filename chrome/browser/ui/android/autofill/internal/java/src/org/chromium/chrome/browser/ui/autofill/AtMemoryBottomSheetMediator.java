@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Scr
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.components.autofill.AtMemoryPayload;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupNoticeInteractions;
 import org.chromium.components.autofill.SuggestionType;
@@ -232,8 +233,8 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     }
 
     private void onFlyoutClicked(AutofillSuggestion suggestion, int position) {
-        // Assumes the secondary label contains the data type name.
-        mFlyoutModel.set(FlyoutProperties.TITLE, suggestion.getSecondaryLabel());
+        AtMemoryPayload payload = suggestion.getAtMemoryPayload();
+        mFlyoutModel.set(FlyoutProperties.TITLE, payload != null ? payload.getTypeName() : null);
         mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, suggestion.getChildren());
         mFlyoutModel.set(
                 FlyoutProperties.ON_SUGGESTION_CLICKED,

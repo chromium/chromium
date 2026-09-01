@@ -219,6 +219,10 @@ struct Suggestion {
     AtMemoryPayload& operator=(AtMemoryPayload&&);
     ~AtMemoryPayload();
 
+#if BUILDFLAG(IS_ANDROID)
+    base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
+#endif  // BUILDFLAG(IS_ANDROID)
+
     friend bool operator==(const AtMemoryPayload&,
                            const AtMemoryPayload&) = default;
 

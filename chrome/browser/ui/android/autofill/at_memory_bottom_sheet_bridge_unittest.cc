@@ -65,5 +65,15 @@ TEST_F(AtMemoryBottomSheetBridgeTest, RequestShowContentWithChildren) {
   bridge_->RequestShowContent({parent});
 }
 
+TEST_F(AtMemoryBottomSheetBridgeTest, RequestShowContentWithAtMemoryPayload) {
+  Suggestion suggestion(u"Passport", SuggestionType::kAtMemorySearchResult);
+  suggestion.labels = {{Suggestion::Text(u"Passport sublabel")}};
+  suggestion.payload =
+      Suggestion::AtMemoryPayload(u"Passport", MemoryDataType::kPassportNumber);
+
+  EXPECT_CALL(*controller_, OnDismissed());
+  bridge_->RequestShowContent({suggestion});
+}
+
 }  // namespace
 }  // namespace autofill

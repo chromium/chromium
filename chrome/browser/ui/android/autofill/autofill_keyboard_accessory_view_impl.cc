@@ -215,6 +215,10 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
                    std::get_if<Suggestion::AutofillAiPayload>(
                        &suggestion.payload)) {
       payload = ai_payload->CreateJavaObject();
+    } else if (const auto* at_memory_payload =
+                   std::get_if<Suggestion::AtMemoryPayload>(
+                       &suggestion.payload)) {
+      payload = at_memory_payload->CreateJavaObject();
     }
 
     auto* custom_icon_url =

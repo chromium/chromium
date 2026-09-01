@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Ill
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.Acceptability;
+import org.chromium.components.autofill.AtMemoryPayload;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupNoticeInteractions;
 import org.chromium.components.autofill.SuggestionType;
@@ -181,7 +182,7 @@ public class AtMemoryBottomSheetMediatorTest {
                         new AutofillSuggestion.Builder()
                                 .setIconId(R.drawable.travel_trip)
                                 .setLabel("Hotel Booking")
-                                .setSecondaryLabel("Hotel Booking Type")
+                                .setPayload(new AtMemoryPayload("Hotel Booking Type"))
                                 .setSubLabel("Hilton ⋅ 16 May")
                                 .setChildren(List.of(childSuggestion))
                                 .build());

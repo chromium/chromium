@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.Acceptability;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.AutofillSuggestion.Payload;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -68,17 +69,16 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     @CalledByNative
     public static AutofillSuggestion createAutofillSuggestion(
             @JniType("std::u16string") String label,
-            @JniType("std::u16string") String secondaryLabel,
             @JniType("std::u16string") String subLabel,
             int iconId,
             int suggestionType,
             @JniType("std::vector") List<AutofillSuggestion> children,
             @Acceptability int acceptability,
             boolean hasDeactivatedStyle,
-            boolean isLoading) {
+            boolean isLoading,
+            @Nullable Payload payload) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
-                .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
                 .setIconId(iconId)
                 .setSuggestionType(suggestionType)
@@ -86,6 +86,7 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
                 .setAcceptability(acceptability)
                 .setApplyDeactivatedStyle(hasDeactivatedStyle)
                 .setIsLoading(isLoading)
+                .setPayload(payload)
                 .build();
     }
 
