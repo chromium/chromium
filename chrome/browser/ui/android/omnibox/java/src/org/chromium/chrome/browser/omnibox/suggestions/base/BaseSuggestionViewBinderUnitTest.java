@@ -156,7 +156,7 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(View.VISIBLE, actionButtons.get(0).getVisibility());
         assertEquals(list.get(0).icon.drawable, actionButtons.get(0).getDrawable());
         assertNull(actionButtons.get(0).getBackground());
-        verify(mBaseView, times(1)).addView(actionButtons.get(0));
+        verify(mBaseView).addView(actionButtons.get(0));
 
         assertTrue(actionButtons.get(0).performClick());
         assertTrue(actionButtons.get(0).performClick());
@@ -195,20 +195,20 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(View.VISIBLE, actionButtons.get(1).getVisibility());
         assertEquals(View.VISIBLE, actionButtons.get(2).getVisibility());
 
-        verify(mBaseView, times(1)).addView(actionButtons.get(0));
-        verify(mBaseView, times(1)).addView(actionButtons.get(1));
-        verify(mBaseView, times(1)).addView(actionButtons.get(2));
+        verify(mBaseView).addView(actionButtons.get(0));
+        verify(mBaseView).addView(actionButtons.get(1));
+        verify(mBaseView).addView(actionButtons.get(2));
 
         assertEquals(list.get(0).icon.drawable, actionButtons.get(0).getDrawable());
         assertEquals(list.get(1).icon.drawable, actionButtons.get(1).getDrawable());
         assertEquals(list.get(2).icon.drawable, actionButtons.get(2).getDrawable());
 
         assertTrue(actionButtons.get(0).performClick());
-        verify(call1, times(1)).run();
+        verify(call1).run();
         assertTrue(actionButtons.get(1).performClick());
-        verify(call2, times(1)).run();
+        verify(call2).run();
         assertTrue(actionButtons.get(2).performClick());
-        verify(call3, times(1)).run();
+        verify(call3).run();
     }
 
     @Test
@@ -237,21 +237,21 @@ public class BaseSuggestionViewBinderUnitTest {
         final View actionButton1 = actionButtons.get(0);
         final View actionButton2 = actionButtons.get(1);
         final View actionButton3 = actionButtons.get(2);
-        verify(mBaseView, times(1)).addView(actionButton1);
-        verify(mBaseView, times(1)).addView(actionButton2);
-        verify(mBaseView, times(1)).addView(actionButton3);
+        verify(mBaseView).addView(actionButton1);
+        verify(mBaseView).addView(actionButton2);
+        verify(mBaseView).addView(actionButton3);
 
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list.subList(0, 2));
         assertEquals(2, actionButtons.size());
-        verify(mBaseView, times(1)).removeView(actionButton3);
+        verify(mBaseView).removeView(actionButton3);
 
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list.subList(0, 1));
         assertEquals(1, actionButtons.size());
-        verify(mBaseView, times(1)).removeView(actionButton2);
+        verify(mBaseView).removeView(actionButton2);
 
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, null);
         assertEquals(0, actionButtons.size());
-        verify(mBaseView, times(1)).removeView(actionButton1);
+        verify(mBaseView).removeView(actionButton1);
     }
 
     @Test

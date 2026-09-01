@@ -8,8 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -80,7 +80,7 @@ public class SuggestionLayoutUnitTest {
                 "Bottom edge rounding does not reflect the requested state: false",
                 spy.mOutlineProvider.isBottomEdgeRounded());
         // No invalidate calls, because nothing has changed.
-        verify(spy, times(0)).invalidateOutline();
+        verify(spy, never()).invalidateOutline();
 
         // Enable rounding of bottom corners only. Observe redraw.
         spy.setRoundingEdges(false, true);
@@ -90,7 +90,7 @@ public class SuggestionLayoutUnitTest {
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
                 spy.mOutlineProvider.isBottomEdgeRounded());
-        verify(spy, times(1)).invalidateOutline();
+        verify(spy).invalidateOutline();
         clearInvocations(spy);
 
         // Apply the same configuration as previously. Observe no redraw.
@@ -101,7 +101,7 @@ public class SuggestionLayoutUnitTest {
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
                 spy.mOutlineProvider.isBottomEdgeRounded());
-        verify(spy, times(0)).invalidateOutline();
+        verify(spy, never()).invalidateOutline();
 
         // Enable rounding of all corners. Observe redraw.
         spy.setRoundingEdges(true, true);
@@ -111,7 +111,7 @@ public class SuggestionLayoutUnitTest {
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
                 spy.mOutlineProvider.isBottomEdgeRounded());
-        verify(spy, times(1)).invalidateOutline();
+        verify(spy).invalidateOutline();
     }
 
     @Test

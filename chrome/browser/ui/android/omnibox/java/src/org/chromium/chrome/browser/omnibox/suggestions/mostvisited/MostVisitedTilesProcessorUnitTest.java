@@ -12,7 +12,6 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
@@ -238,7 +237,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
 
-        verify(mImageSupplier, times(1)).fetchFavicon(eq(NAV_URL), any());
+        verify(mImageSupplier).fetchFavicon(eq(NAV_URL), any());
         mFavIconCallbackCaptor
                 .getValue()
                 .onResult(new BitmapDrawable(mContext.getResources(), mFaviconBitmap));

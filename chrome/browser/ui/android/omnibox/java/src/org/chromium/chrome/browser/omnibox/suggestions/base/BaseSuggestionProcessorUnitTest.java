@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -276,7 +275,7 @@ public class BaseSuggestionProcessorUnitTest {
         touchDownListener.onResult(1000L);
 
         histogramWatcher.assertExpected();
-        verify(mSuggestionHost, times(1))
+        verify(mSuggestionHost)
                 .onSuggestionTouchDown(mSuggestion, /* position= */ 0, /* eventTime= */ 1000L);
     }
 
