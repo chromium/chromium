@@ -29,8 +29,8 @@
 
 namespace blink {
 
-RTCDTMFToneChangeEvent* RTCDTMFToneChangeEvent::Create(const String& tone) {
-  return MakeGarbageCollected<RTCDTMFToneChangeEvent>(tone);
+RTCDTMFToneChangeEvent* RTCDTMFToneChangeEvent::Create(const String& type) {
+  return Create(AtomicString(type), RTCDTMFToneChangeEventInit::Create());
 }
 
 RTCDTMFToneChangeEvent* RTCDTMFToneChangeEvent::Create(

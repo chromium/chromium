@@ -28,6 +28,6 @@
 [
     Exposed=Window
 ] interface RTCDTMFToneChangeEvent : Event {
-    constructor(DOMString type, RTCDTMFToneChangeEventInit eventInitDict);
+    constructor(DOMString type, optional RTCDTMFToneChangeEventInit eventInitDict = {});
     readonly attribute DOMString tone;
 };

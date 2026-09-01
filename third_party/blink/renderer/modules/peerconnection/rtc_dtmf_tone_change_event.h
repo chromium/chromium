@@ -40,7 +40,7 @@ class RTCDTMFToneChangeEvent final : public Event {
   explicit RTCDTMFToneChangeEvent(const RTCDTMFToneChangeEventInit*);
   ~RTCDTMFToneChangeEvent() override;
 
-  static RTCDTMFToneChangeEvent* Create(const String& tone);
+  static RTCDTMFToneChangeEvent* Create(const String& type);
   static RTCDTMFToneChangeEvent* Create(
       const AtomicString& type,
       const RTCDTMFToneChangeEventInit* initializer);
