@@ -97,7 +97,7 @@ void HistorySidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
 }
 
 bool HistorySidePanelCoordinator::Show(const std::string& query) {
-  SidePanelUI* side_panel_ui = browser_->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser_);
   if (!side_panel_ui) {
     return false;
   }

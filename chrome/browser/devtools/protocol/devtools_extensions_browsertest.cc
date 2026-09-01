@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   EXPECT_FALSE(trigger_result->FindDict("error"));
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
-  SidePanelUI* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(side_panel_ui);
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())));

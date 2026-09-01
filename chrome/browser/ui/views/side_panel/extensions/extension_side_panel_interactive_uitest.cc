@@ -24,9 +24,7 @@ class ExtensionSidePanelInteractiveTest : public ExtensionBrowserTest {
     return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
   }
 
-  SidePanelUI* GetSidePanelUI() {
-    return browser()->GetFeatures().side_panel_ui();
-  }
+  SidePanelUI* GetSidePanelUI() { return SidePanelUI::From(browser()); }
 
   ExtensionSidePanelCoordinator* GetCoordinator(
       const ExtensionId& extension_id,

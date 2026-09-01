@@ -115,10 +115,8 @@ bool IsSiteTrusted(const GURL& url) {
 }
 
 SidePanelUI* GetSidePanelUI(LensSearchController* controller) {
-  return controller->GetTabInterface()
-      ->GetBrowserWindowInterface()
-      ->GetFeatures()
-      .side_panel_ui();
+  return SidePanelUI::From(
+      controller->GetTabInterface()->GetBrowserWindowInterface());
 }
 
 }  // namespace

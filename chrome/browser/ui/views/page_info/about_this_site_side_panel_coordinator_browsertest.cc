@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
@@ -78,7 +79,7 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
   }
 
   bool IsAboutThisSiteSidePanelShowing() {
-    return browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+    return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kAboutThisSite));
   }
 
@@ -263,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   EXPECT_TRUE(IsAboutThisSiteSidePanelShowing());
 
   // Close side panel.
-  browser()->GetFeatures().side_panel_ui()->Close();
+  SidePanelUI::From(browser())->Close();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return BrowserView::GetBrowserViewForBrowser(browser())
                ->side_panel()
@@ -320,8 +321,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   EXPECT_EQ(dialog_manager->delegate(), side_panel_view);
 
   // Verify safe teardown when the live side panel view hierarchy is closed.
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
-  browser()->GetFeatures().side_panel_ui()->Close();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->Close();
   EXPECT_FALSE(IsAboutThisSiteSidePanelShowing());
 }
 

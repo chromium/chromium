@@ -186,7 +186,7 @@ SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           web_contents());
-  return browser ? browser->GetFeatures().side_panel_ui() : nullptr;
+  return browser ? SidePanelUI::From(browser) : nullptr;
 }
 
 GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {

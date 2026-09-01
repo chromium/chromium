@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                        AddingToReadingListWithSidePanelShowsNoToast) {
   GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* const side_panel_ui = SidePanelUI::From(browser());
   side_panel_ui->Show(SidePanelEntryId::kReadingList);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(

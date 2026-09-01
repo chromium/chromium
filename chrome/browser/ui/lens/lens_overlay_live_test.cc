@@ -160,7 +160,7 @@ class LensOverlayLiveTest : public base::test::WithFeatureOverride,
   }
 
   bool IsLensOverlaySidePanelShowing() {
-    return browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+    return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults));
   }
 

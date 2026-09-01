@@ -296,7 +296,7 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
     return nullptr;
   }
 
-  return tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+  return SidePanelUI::From(tab_->GetBrowserWindowInterface());
 }
 
 // Lazily creates and returns the WebUIContentsWrapper for Reading Mode.

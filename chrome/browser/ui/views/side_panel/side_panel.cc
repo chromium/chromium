@@ -711,8 +711,7 @@ void SidePanel::AnnounceResize() {
 void SidePanel::UpdateHorizontalAlignment(
     std::optional<SidePanelEntryId> entry_id) {
   if (!entry_id) {
-    if (auto* side_panel_ui =
-            browser_view_->browser()->GetFeatures().side_panel_ui()) {
+    if (auto* side_panel_ui = SidePanelUI::From(browser_view_->browser())) {
       entry_id = side_panel_ui->GetCurrentEntryId();
     }
   }

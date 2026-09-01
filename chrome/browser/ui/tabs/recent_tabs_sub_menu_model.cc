@@ -436,7 +436,7 @@ void RecentTabsSubMenuModel::Build() {
                  features::IsRoundedIconsEnabled()
                      ? vector_icons::kHistoryIcon
                      : vector_icons::kHistoryChromeRefreshOldIcon);
-  if (browser_->GetFeatures().side_panel_ui()) {
+  if (SidePanelUI::From(browser_)) {
     if (HistoryClustersSidePanelCoordinator::IsSupported(
             browser_->GetProfile())) {
       InsertItemWithStringIdAt(next_command_id++,

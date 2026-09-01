@@ -426,17 +426,14 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
 
       // Verify the side panel is showing in the second browser.
       Check([browser2]() {
-        return browser2->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+        return SidePanelUI::From(browser2)->IsSidePanelEntryShowing(
             SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome));
       }),
 
       // Verify the side panel is NOT showing in the first browser.
       Check([this]() {
-        return !browser()
-                    ->GetFeatures()
-                    .side_panel_ui()
-                    ->IsSidePanelEntryShowing(
-                        SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome));
+        return !SidePanelUI::From(browser())->IsSidePanelEntryShowing(
+            SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome));
       }));
 }
 

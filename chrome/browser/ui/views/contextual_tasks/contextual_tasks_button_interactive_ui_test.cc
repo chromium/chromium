@@ -340,10 +340,7 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
     Base::SetUpOnMainThread();
     this->host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(this->embedded_test_server()->Start());
-    this->browser()
-        ->GetFeatures()
-        .side_panel_ui()
-        ->DisableAnimationsForTesting();
+    SidePanelUI::From(this->browser())->DisableAnimationsForTesting();
   }
 
   auto CreateTaskForTab(int tab_index) {
@@ -780,7 +777,7 @@ class ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest
     ContextualTasksButtonInteractiveTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-    browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+    SidePanelUI::From(browser())->DisableAnimationsForTesting();
   }
 
   auto CreateTaskForTab(int tab_index) {

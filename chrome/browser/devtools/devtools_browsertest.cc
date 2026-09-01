@@ -2094,8 +2094,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   ASSERT_TRUE(extension);
 
   ExtensionTestMessageListener default_path_listener("default_path");
-  browser_window_interface()->GetFeatures().side_panel_ui()->Show(
-      SidePanelEntryKey(SidePanelEntryId::kExtension, extension->id()));
+  SidePanelUI::From(browser_window_interface())
+      ->Show(SidePanelEntryKey(SidePanelEntryId::kExtension, extension->id()));
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
 
   content::WebContents* side_panel_contents =

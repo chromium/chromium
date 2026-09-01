@@ -569,7 +569,7 @@ void OverlayBaseController::ShowModalUI() {
     return;
   }
   auto* const side_panel_ui =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+      SidePanelUI::From(tab_->GetBrowserWindowInterface());
   CHECK(side_panel_ui);
 
   // Setup observer to be notified of side panel opens and closes.
@@ -888,11 +888,10 @@ void OverlayBaseController::SetOverlayRoundedCorner() {
       pref_service_->GetBoolean(prefs::kSidePanelHorizontalAlignment);
   const base::DictValue& overrides =
       pref_service_->GetDict(prefs::kSidePanelAlignmentOverrides);
-  auto* side_panel_ui = tab_ && tab_->GetBrowserWindowInterface()
-                            ? tab_->GetBrowserWindowInterface()
-                                  ->GetFeatures()
-                                  .side_panel_ui()
-                            : nullptr;
+  auto* side_panel_ui =
+      tab_ && tab_->GetBrowserWindowInterface()
+          ? SidePanelUI::From(tab_->GetBrowserWindowInterface())
+          : nullptr;
   if (side_panel_ui) {
     if (auto current_entry_id = side_panel_ui->GetCurrentEntryId()) {
       if (auto override_val = overrides.FindBool(

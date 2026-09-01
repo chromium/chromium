@@ -419,7 +419,7 @@ void LensSearchController::CloseLensAsync(
   // Close the side panel if it is showing. This provides a smooth closing
   // animation.
   auto* const side_panel_ui =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+      SidePanelUI::From(tab_->GetBrowserWindowInterface());
   CHECK(side_panel_ui);
   if (state_ == State::kActive &&
       side_panel_ui->IsSidePanelEntryShowing(

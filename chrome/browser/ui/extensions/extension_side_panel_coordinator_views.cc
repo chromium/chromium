@@ -68,7 +68,7 @@ class ExtensionSidePanelCoordinatorViews
   void CloseSidePanel(SidePanelEntry* entry) override {
     BrowserWindowInterface* browser = coordinator_->GetBrowser();
     DCHECK(browser);
-    auto* const side_panel_ui = browser->GetFeatures().side_panel_ui();
+    auto* const side_panel_ui = SidePanelUI::From(browser);
     DCHECK(entry);
     const bool for_tab = coordinator_->tab_interface() != nullptr;
     if (side_panel_ui &&

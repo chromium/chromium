@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, SidePanelToggle) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
 
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   auto is_any_side_panel_showing = [&]() {
     return side_panel_ui->IsSidePanelShowing();
   };

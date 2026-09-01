@@ -1087,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Show Reading Mode.
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -1286,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
   // Wait until the side panel is showing.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1311,7 +1311,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
   // Wait until the side panel is showing.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1363,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Open Side Panel
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Open Immersive UI
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -1514,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Open Side Panel
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
@@ -1541,7 +1541,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Open Immersive UI
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -1569,7 +1569,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Open Side Panel
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
@@ -1599,7 +1599,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Ensure initially closed
   AssertOverlayVisibility(/*visible=*/false);
@@ -1779,7 +1779,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   AwaitAndAssertOverlayVisibility(/*visible=*/true);
@@ -1831,7 +1831,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
 
@@ -1893,7 +1893,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
   controller->UnlockDistillationStateForTesting();
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Show Immersive UI.
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -1924,7 +1924,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
   controller->UnlockDistillationStateForTesting();
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Show Immersive UI.
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -1949,7 +1949,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
   controller->UnlockDistillationStateForTesting();
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Show Side Panel UI.
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
@@ -1978,7 +1978,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
   controller->UnlockDistillationStateForTesting();
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Start with reading mode closed.
   AssertOverlayVisibility(/*visible=*/false);
@@ -2129,7 +2129,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 2. Check Side Panel mode.
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -2209,7 +2209,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 2. Check Side Panel mode.
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -2605,7 +2605,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Open Side Panel
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
@@ -2638,7 +2638,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
 
   // Wait for Side Panel to show
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -2671,7 +2671,7 @@ IN_PROC_BROWSER_TEST_F(
   controller_a->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
 
   // 3. Wait for the side panel to be fully visible.
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -2704,7 +2704,7 @@ IN_PROC_BROWSER_TEST_F(
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
 
   // Wait for Side Panel to be visible.
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
@@ -2842,7 +2842,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   auto* controller = ReadAnythingController::From(tab);
   PrefService* prefs = browser()->GetProfile()->GetPrefs();
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // 1. Initial state should be immersive (default).
   EXPECT_EQ(
@@ -2971,7 +2971,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   auto* controller = ReadAnythingController::From(tab);
   PrefService* prefs = browser()->GetProfile()->GetPrefs();
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
 
   // Set preference to Side Panel.
   prefs->SetInteger(
@@ -3119,7 +3119,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* controller = ReadAnythingController::From(tab);
   CHECK(controller);
 
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
@@ -3180,7 +3180,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* controller = ReadAnythingController::From(tab);
   CHECK(controller);
 
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(

@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://newtab/")));
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
-  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+  EXPECT_TRUE(SidePanelUI::From(browser())->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
       browser()->GetTabStripModel()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
   EXPECT_NE(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
-  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+  EXPECT_TRUE(SidePanelUI::From(browser())->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        ButtonNotSeenWhenHiddenForSidePanelEntry) {
   // Set the bookmarks side panel entry to not show an ephemeral button.
-  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* const side_panel_ui = SidePanelUI::From(browser());
   side_panel_ui->SetNoDelaysForTesting(true);
   SidePanelEntry* const entry =
       SidePanelRegistry::From(browser())->GetEntryForKey(
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        SidePanelButtonShownActiveStateForPinnedNotEphemeral) {
   // Set the bookmarks side panel entry to not show an ephemeral button but be
   // pinned.
-  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* const side_panel_ui = SidePanelUI::From(browser());
   side_panel_ui->SetNoDelaysForTesting(true);
   SidePanelEntry* const entry =
       SidePanelRegistry::From(browser())->GetEntryForKey(

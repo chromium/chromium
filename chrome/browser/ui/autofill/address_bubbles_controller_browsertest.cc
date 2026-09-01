@@ -41,7 +41,7 @@ class AddressBubblesControllerBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    SidePanelUI* const side_panel_ui = SidePanelUI::From(browser());
     side_panel_ui->SetNoDelaysForTesting(true);
     side_panel_ui->DisableAnimationsForTesting();
   }
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
 // the side panel. It covers the regression found in crbug.com/401068467.
 IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
                        DialogAcceptedInvokesCallbackForSidePanel) {
-  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* const side_panel_ui = SidePanelUI::From(browser());
   content::WebContents* side_panel_web_contents =
       side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadingList);
   side_panel_ui->Show(SidePanelEntryId::kReadingList);

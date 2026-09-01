@@ -132,7 +132,7 @@ void ToastService::RegisterToasts(
           .AddActionButton(IDS_READING_LIST_TOAST_BUTTON,
                            base::BindRepeating(
                                [](BrowserWindowInterface* window) {
-                                 window->GetFeatures().side_panel_ui()->Show(
+                                 SidePanelUI::From(window)->Show(
                                      SidePanelEntryId::kReadingList,
                                      SidePanelOpenTrigger::kReadingListToast);
                                },

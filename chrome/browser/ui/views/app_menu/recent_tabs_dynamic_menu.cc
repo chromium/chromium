@@ -45,10 +45,10 @@ void RecentTabsDynamicMenu::BuildRecentTabsActions(
   }
   cancelable_task_tracker_.TryCancelAll();
   parent_item->ResetActionList();
-  CreateRecentTabsAction(parent_item,
-                         RecentTabsBuilder::BuildRecentTabs(
-                             browser_window_interface_->GetProfile(),
-                             &browser_window_interface_->GetFeatures()));
+  CreateRecentTabsAction(
+      parent_item,
+      RecentTabsBuilder::BuildRecentTabs(
+          browser_window_interface_->GetProfile(), browser_window_interface_));
 }
 
 void RecentTabsDynamicMenu::ExecuteRecentTab(

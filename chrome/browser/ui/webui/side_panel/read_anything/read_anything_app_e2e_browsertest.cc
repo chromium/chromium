@@ -104,7 +104,7 @@ class ReadAnythingAppE2ETest : public InProcessBrowserTest {
         browser(), GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)));
 
     // Get the side panel entry registry.
-    auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    auto* side_panel_ui = SidePanelUI::From(browser());
     auto* side_panel_web_contents =
         side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);
     EXPECT_TRUE(side_panel_web_contents);

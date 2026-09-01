@@ -120,7 +120,7 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
                 return content_view;
               }),
               /*default_content_width_callback=*/base::NullCallback())));
-          browser()->GetFeatures().side_panel_ui()->Show(
+          SidePanelUI::From(browser())->Show(
               SidePanelEntry::Id::kCustomizeChrome);
         }),
         WaitForShow(kSidePanelElementId),

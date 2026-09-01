@@ -443,7 +443,7 @@ std::unique_ptr<views::View> CommerceUiTabHelper::CreateShoppingInsightsWebView(
 
 SidePanelUI* CommerceUiTabHelper::GetSidePanelUI() {
   if (BrowserWindowInterface* bwi = tab().GetBrowserWindowInterface()) {
-    return bwi->GetFeatures().side_panel_ui();
+    return SidePanelUI::From(bwi);
   }
 
   return nullptr;

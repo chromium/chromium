@@ -1031,7 +1031,7 @@ void ExtensionContextMenuModel::AddSidePanelEntryIfPresent(
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
-  SidePanelUI* const side_panel_ui = browser_->GetFeatures().side_panel_ui();
+  SidePanelUI* const side_panel_ui = SidePanelUI::From(browser_);
   CHECK(side_panel_ui);
   bool is_side_panel_open = side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kExtension, extension.id()));

@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
   contextual_tasks::ContextualTasksPanelController* controller =
       contextual_tasks::ContextualTasksPanelController::From(browser());
 
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
   contextual_tasks::ContextualTasksPanelController* controller =
       contextual_tasks::ContextualTasksPanelController::From(browser());
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
   contextual_tasks::ContextualTasksPanelController* controller =
       contextual_tasks::ContextualTasksPanelController::From(browser());
 
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
                                     "contextual-tasks-composebox",
                                     "#composebox", "#lensIcon"};
 
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto off_center_point = base::BindLambdaForTesting([browser_view]() {
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_P(
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto off_center_point = base::BindLambdaForTesting([browser_view]() {

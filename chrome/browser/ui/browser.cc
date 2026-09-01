@@ -738,7 +738,7 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
   // even if the tab strip is empty.
   if (change.type() != TabStripModelChange::kReplaced &&
       !tab_strip_model_->closing_all()) {
-    SidePanelUI* side_panel_ui = GetFeatures().side_panel_ui();
+    SidePanelUI* side_panel_ui = SidePanelUI::From(this);
     if (side_panel_ui) {
       side_panel_ui->OnActiveTabChanged(
           selection.old_contents, selection.new_contents,

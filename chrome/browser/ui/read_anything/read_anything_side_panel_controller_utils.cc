@@ -23,7 +23,7 @@ bool IsReadAnythingEntryShowing(BrowserWindowInterface* browser) {
     return false;
   }
 
-  SidePanelUI* side_panel_ui = browser->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser);
   if (!side_panel_ui) {
     return false;
   }

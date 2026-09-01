@@ -1239,8 +1239,8 @@ void BrowserCommandController::HandleCommandWithDisposition(
       ShowBookmarkManager(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
-      browser_->GetFeatures().side_panel_ui()->Show(
-          SidePanelEntryId::kBookmarks, SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::From(browser_)->Show(SidePanelEntryId::kBookmarks,
+                                        SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_APP_MENU:
       base::RecordAction(base::UserMetricsAction("Accel_Show_App_Menu"));
@@ -1253,20 +1253,19 @@ void BrowserCommandController::HandleCommandWithDisposition(
       ShowHistory(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL:
-      browser_->GetFeatures().side_panel_ui()->Show(
-          SidePanelEntryId::kHistoryClusters, SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::From(browser_)->Show(SidePanelEntryId::kHistoryClusters,
+                                        SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL:
-      browser_->GetFeatures().side_panel_ui()->Show(
-          SidePanelEntryId::kTabsFromOtherDevices,
-          SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::From(browser_)->Show(SidePanelEntryId::kTabsFromOtherDevices,
+                                        SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_DOWNLOADS:
       ShowDownloads(webui::GetBrowserForOpeningWebUi(browser_));
       break;
     case IDC_SHOW_COMMENTS_SIDE_PANEL:
-      browser_->GetFeatures().side_panel_ui()->Show(
-          SidePanelEntryId::kComments, SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::From(browser_)->Show(SidePanelEntryId::kComments,
+                                        SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_MANAGE_EXTENSIONS:
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
@@ -1493,8 +1492,8 @@ void BrowserCommandController::HandleCommandWithDisposition(
       break;
 
     case IDC_READING_LIST_MENU_SHOW_UI:
-      browser_->GetFeatures().side_panel_ui()->Show(
-          SidePanelEntryId::kReadingList, SidePanelOpenTrigger::kAppMenu);
+      SidePanelUI::From(browser_)->Show(SidePanelEntryId::kReadingList,
+                                        SidePanelOpenTrigger::kAppMenu);
       break;
 
     case IDC_SHOW_READING_MODE_SIDE_PANEL: {

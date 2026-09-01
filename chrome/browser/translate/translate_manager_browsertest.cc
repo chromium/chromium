@@ -1515,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, IsReadingModeOpen) {
 
   // 1. Test Side Panel Mode
   // Show reading mode side panel
-  SidePanelUI* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(side_panel_ui);
   side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   EXPECT_TRUE(base::test::RunUntil(

@@ -120,7 +120,7 @@ class ReadAnythingEntryPointControllerBrowserTest
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
                        ShowSidePanelFromPinned) {
   base::HistogramTester histogram_tester;
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
   actions::ActionInvocationContext context;
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
                        ShowSidePanelFromAppMenu) {
   base::HistogramTester histogram_tester;
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
                        ShowSidePanelFromContextMenu) {
   base::HistogramTester histogram_tester;
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        ShowSidePanelFromOmnibox_ResetsIgnoredCount) {
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
   actions::ActionInvocationContext context;

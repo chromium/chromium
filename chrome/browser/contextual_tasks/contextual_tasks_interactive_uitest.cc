@@ -423,7 +423,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
             contextual_search::SearchContentSharingSettingsValue::kEnabled));
 
     // Disable side panel animations to avoid WaitForShow/WaitForHide flakiness.
-    browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+    SidePanelUI::From(browser())->DisableAnimationsForTesting();
   }
 
   void TearDownOnMainThread() override {

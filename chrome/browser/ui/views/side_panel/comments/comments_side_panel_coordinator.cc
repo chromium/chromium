@@ -151,7 +151,7 @@ void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
 
 void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(
     bool should_show_comments_action) {
-  SidePanelUI* const side_panel_ui = browser_->GetFeatures().side_panel_ui();
+  SidePanelUI* const side_panel_ui = SidePanelUI::From(browser_);
 
   SidePanelEntry::Key side_panel_entry_key(SidePanelEntry::Id::kComments);
 

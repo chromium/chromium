@@ -36,10 +36,7 @@ bool LensResultsPanelRouter::IsEntryShowing() {
   // If Lens in contextual tasks is enabled, the side panel to check is the
   // contextual tasks panel.
   if (lens_search_controller_->should_route_to_contextual_tasks()) {
-    return tab_interface()
-        ->GetBrowserWindowInterface()
-        ->GetFeatures()
-        .side_panel_ui()
+    return SidePanelUI::From(tab_interface()->GetBrowserWindowInterface())
         ->IsSidePanelEntryShowing(
             SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
   }

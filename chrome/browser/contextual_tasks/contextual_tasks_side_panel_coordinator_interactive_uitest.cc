@@ -162,7 +162,7 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     coordinator->CreateCachedWebContentsForTesting(task_id1_, /*is_open=*/true);
     coordinator->CreateCachedWebContentsForTesting(task_id2_, /*is_open=*/true);
 
-    browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+    SidePanelUI::From(browser())->DisableAnimationsForTesting();
   }
 
   void SetUpOnMainThread() override {

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
@@ -1057,22 +1058,20 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,
 
 IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,
                        ActionItemsShowInMenuAndActivateFromMenu) {
-  RunTestSequence(PinBookmarkToToolbar(),
-                  AddDummyButtonsToToolbarTillElementOverflows(
-                      ChromeActionIds::kActionSidePanelShowBookmarks),
-                  PressButton(kToolbarOverflowButtonElementId),
-                  CheckMenuMatchesOverflowedElements(),
+  RunTestSequence(
+      PinBookmarkToToolbar(),
+      AddDummyButtonsToToolbarTillElementOverflows(
+          ChromeActionIds::kActionSidePanelShowBookmarks),
+      PressButton(kToolbarOverflowButtonElementId),
+      CheckMenuMatchesOverflowedElements(),
 
-                  // Check bookmark menu item is activated correctly.
-                  ActivateMenuItemWithElementId(
-                      ChromeActionIds::kActionSidePanelShowBookmarks),
-                  WaitForShow(kSidePanelElementId), Check([this]() {
-                    return browser()
-                        ->GetFeatures()
-                        .side_panel_ui()
-                        ->IsSidePanelEntryShowing(SidePanelEntry::Key(
-                            SidePanelEntry::Id::kBookmarks));
-                  }));
+      // Check bookmark menu item is activated correctly.
+      ActivateMenuItemWithElementId(
+          ChromeActionIds::kActionSidePanelShowBookmarks),
+      WaitForShow(kSidePanelElementId), Check([this]() {
+        return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
+            SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+      }));
 }
 
 IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,

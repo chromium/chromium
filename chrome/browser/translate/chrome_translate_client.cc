@@ -137,7 +137,7 @@ SidePanelUI* ChromeTranslateClient::GetSidePanelUIFromTab(
 #if !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* browser =
       tab ? tab->GetBrowserWindowInterface() : nullptr;
-  return browser ? browser->GetFeatures().side_panel_ui() : nullptr;
+  return browser ? SidePanelUI::From(browser) : nullptr;
 #else
   return nullptr;
 #endif

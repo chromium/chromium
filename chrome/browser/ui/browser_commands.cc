@@ -2170,7 +2170,7 @@ void MoveTabsToReadLater(BrowserWindowInterface* browser,
 #if !BUILDFLAG(IS_ANDROID)
   if (toast_features::IsEnabled(toast_features::kReadingListToast)) {
     // Don't show the reading list toast if the side panel is visible.
-    if (browser->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+    if (SidePanelUI::From(browser)->IsSidePanelEntryShowing(
             SidePanelEntryKey(SidePanelEntryId::kReadingList))) {
       return;
     }

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
@@ -93,17 +92,19 @@ class RecentTabItem {
   std::vector<RecentTabItem> children_;
 };
 
+class BrowserWindowInterface;
+
 class RecentTabsBuilder {
  public:
   // Builds and returns the complete list of recent tabs entries for a browser.
   static std::vector<RecentTabItem> BuildRecentTabs(
       Profile* profile,
-      BrowserWindowFeatures* feature);
+      BrowserWindowInterface* browser);
 
   // Helper methods for building subsets of entries:
   static std::vector<RecentTabItem> BuildHistoryEntries(
       Profile* profile,
-      BrowserWindowFeatures* feature);
+      BrowserWindowInterface* browser);
   static std::vector<RecentTabItem> BuildLocalEntries(Profile* profile);
   static std::vector<RecentTabItem> BuildRemoteEntries(Profile* profile);
 };

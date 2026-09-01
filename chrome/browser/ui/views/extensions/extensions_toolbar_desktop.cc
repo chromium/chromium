@@ -1221,7 +1221,7 @@ void ExtensionsToolbarDesktop::UpdateControlsVisibility() {
 }
 
 void ExtensionsToolbarDesktop::CloseSidePanelButtonPressed() {
-  browser_->GetFeatures().side_panel_ui()->Close();
+  SidePanelUI::From(browser_)->Close();
 }
 
 void ExtensionsToolbarDesktop::CollapseConfirmation() {

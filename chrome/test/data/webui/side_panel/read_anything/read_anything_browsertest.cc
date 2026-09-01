@@ -28,7 +28,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {
-    auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    auto* side_panel_ui = SidePanelUI::From(browser());
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
     auto* web_contents =
         side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);

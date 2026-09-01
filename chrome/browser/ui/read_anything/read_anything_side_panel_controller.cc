@@ -285,8 +285,7 @@ void ReadAnythingSidePanelController::TabWillDetach(
   if (!browser_window_interface) {
     return;
   }
-  auto* const side_panel_ui =
-      browser_window_interface->GetFeatures().side_panel_ui();
+  auto* const side_panel_ui = SidePanelUI::From(browser_window_interface);
   // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does
   // not create a SidePanelCoordinator. This block will be unnecessary once that
   // changes.

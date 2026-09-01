@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest,
                             std::move(args));
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->GetTabStripModel()->GetActiveWebContents()));
-  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+  EXPECT_TRUE(SidePanelUI::From(browser())->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 

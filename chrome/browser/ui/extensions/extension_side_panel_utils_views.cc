@@ -44,7 +44,7 @@ void ToggleExtensionSidePanel(BrowserWindowInterface* browser_window,
     return;
   }
 
-  SidePanelUI* side_panel_ui = browser_window->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser_window);
 
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
@@ -64,7 +64,7 @@ void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
     return;
   }
 
-  SidePanelUI* side_panel_ui = browser_window.GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(&browser_window);
 
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
@@ -144,7 +144,7 @@ void OpenContextualExtensionSidePanel(BrowserWindowInterface& browser_window,
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
 
   if (browser_window.GetActiveTabInterface()->GetContents() == &web_contents) {
-    browser_window.GetFeatures().side_panel_ui()->Show(extension_key);
+    SidePanelUI::From(&browser_window)->Show(extension_key);
     return;
   }
 
@@ -168,7 +168,7 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
     return;
   }
 
-  SidePanelUI* side_panel_ui = browser_window->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser_window);
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
 
@@ -226,7 +226,7 @@ void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
   content::WebContents* active_web_contents =
       browser_window->GetActiveTabInterface()->GetContents();
 
-  SidePanelUI* side_panel_ui = browser_window->GetFeatures().side_panel_ui();
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser_window);
 
   // If the provided web_contents refers to the active tab’s WebContents, and
   // the side panel in it was opened by this extension, then simply close the

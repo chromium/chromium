@@ -1541,7 +1541,7 @@ class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
     data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(),
                                    {data_controls_rule});
 
-    auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    auto* const side_panel_ui = SidePanelUI::From(browser());
     EXPECT_TRUE(side_panel_ui);
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
     auto* const web_contents =
@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        ShowToastOnSidePanelContextMenus) {
-  auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto* const side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(side_panel_ui);
   side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   auto* const web_contents =

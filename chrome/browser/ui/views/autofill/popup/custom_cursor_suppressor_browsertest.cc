@@ -273,7 +273,7 @@ class CustomCursorSuppressorExtensionBrowserTest
     CHECK(entry);
 
     ExtensionTestMessageListener default_path_listener("default_path");
-    SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    SidePanelUI* const side_panel_ui = SidePanelUI::From(browser());
     side_panel_ui->Show(extension_key);
     CHECK(default_path_listener.WaitUntilSatisfied());
     CHECK(side_panel_ui->IsSidePanelShowing());

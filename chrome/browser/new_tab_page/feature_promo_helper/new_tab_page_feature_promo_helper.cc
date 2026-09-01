@@ -207,9 +207,9 @@ void NewTabPageFeaturePromoHelper::MaybeTriggerAutomaticCustomizeChromePromo(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
   auto* browser_interface = webui::GetBrowserWindowInterface(web_contents);
-  if (!browser_interface ||
-      browser_interface->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
-          SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome))) {
+  if (!browser_interface || SidePanelUI::From(browser_interface)
+                                ->IsSidePanelEntryShowing(SidePanelEntryKey(
+                                    SidePanelEntryId::kCustomizeChrome))) {
     return;
   }
 

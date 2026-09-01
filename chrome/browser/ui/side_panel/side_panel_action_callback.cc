@@ -33,7 +33,7 @@ actions::ActionItem::InvokeActionCallback CreateToggleSidePanelActionCallback(
         CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
 // TODO(crbug.com/489780669): Temporarily disabled until a coordinator is made.
 #if !BUILDFLAG(IS_ANDROID)
-        bwi->GetFeatures().side_panel_ui()->Toggle(key, open_trigger);
+        SidePanelUI::From(bwi)->Toggle(key, open_trigger);
 #endif
       },
       key, bwi);

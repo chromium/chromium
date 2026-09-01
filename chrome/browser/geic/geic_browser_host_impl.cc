@@ -495,8 +495,8 @@ void GeicBrowserHostImpl::CloseSignInTab(CloseSignInTabCallback callback) {
 void GeicBrowserHostImpl::ClosePanel() {
   BrowserWindowInterface* browser =
       tab_ ? tab_->GetBrowserWindowInterface() : nullptr;
-  if (browser && browser->GetFeatures().side_panel_ui()) {
-    browser->GetFeatures().side_panel_ui()->Close();
+  if (browser && SidePanelUI::From(browser)) {
+    SidePanelUI::From(browser)->Close();
   }
 }
 

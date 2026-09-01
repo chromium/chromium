@@ -155,8 +155,8 @@ bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
     initial_query_ = query;
   }
 
-  browser_->GetFeatures().side_panel_ui()->Show(
-      SidePanelEntry::Id::kHistoryClusters);
+  SidePanelUI::From(&browser_.get())
+      ->Show(SidePanelEntry::Id::kHistoryClusters);
 
   return true;
 }

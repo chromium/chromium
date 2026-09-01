@@ -990,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
               static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
                   SidePanelOpenTrigger::kAppMenu))
           .Build()));
-  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+  EXPECT_TRUE(SidePanelUI::From(browser())->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
               static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
                   SidePanelOpenTrigger::kAppMenu))
           .Build()));
-  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+  EXPECT_TRUE(SidePanelUI::From(browser())->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 
